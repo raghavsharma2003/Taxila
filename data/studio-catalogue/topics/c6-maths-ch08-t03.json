@@ -1,0 +1,1763 @@
+{
+ "topicId": "c6-maths-ch08-t03",
+ "title": "Diagonals and equidistant points",
+ "chapter": "Playing with Constructions",
+ "subject": "maths",
+ "class": 6,
+ "topicType": "T3",
+ "plan": {
+  "game": "geo-forge@1",
+  "hint": "equidistant challenges (circle points, perpendicular bisector)"
+ },
+ "game": {
+  "archetype": "geo-forge@1",
+  "spec": {
+   "archetype": "geo-forge@1",
+   "skills": [
+    "c6-maths-ch08-t03"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "built": "built",
+    "check": "CHECK",
+    "undo": "UNDO",
+    "coach": "Tap pins to place corners; tap the first pin to close",
+    "runDone": "Blueprints done",
+    "perimeter": "perimeter",
+    "area": "area",
+    "units": "units",
+    "sq": "sq units",
+    "polygon": "sides",
+    "sticks": "Pick three sticks",
+    "rigid": "Brace it: it must not wobble",
+    "parallel": "Through the dot, parallel to the line",
+    "perpendicular": "Through the dot, at right angles",
+    "equidistant": "Place a pin the same distance from each dot",
+    "angle": "Make an angle of",
+    "right": "right-angled triangle",
+    "isosceles": "isosceles triangle",
+    "scalene": "scalene triangle",
+    "obtuse": "obtuse-angled triangle",
+    "acute": "acute-angled triangle",
+    "square": "square",
+    "rectangle": "rectangle",
+    "parallelogram": "parallelogram",
+    "rhombus": "rhombus",
+    "trapezium": "trapezium",
+    "kite": "kite",
+    "any": "shape",
+    "triangle": "triangle",
+    "make": "Make a",
+    "withArea": "with area",
+    "withPerim": "with perimeter",
+    "noTriangle": "Pick three that CANNOT close",
+    "wobbles": "WOBBLES",
+    "holds": "HOLDS",
+    "closes": "CLOSES",
+    "gap": "GAP",
+    "time": "time"
+   },
+   "title": "Equal Distance Builders",
+   "rounds": [
+    {
+     "title": "Rectangle check",
+     "sub": "build and inspect the diagonals",
+     "time": 55,
+     "challenges": [
+      {
+       "kind": "quad",
+       "type": "rectangle"
+      },
+      {
+       "kind": "equidistant",
+       "points": [
+        [
+         2,
+         2
+        ],
+        [
+         8,
+         2
+        ]
+       ]
+      }
+     ]
+    },
+    {
+     "title": "Same distance",
+     "sub": "find more than one place",
+     "time": 60,
+     "challenges": [
+      {
+       "kind": "equidistant",
+       "points": [
+        [
+         2,
+         1
+        ],
+        [
+         8,
+         1
+        ]
+       ]
+      },
+      {
+       "kind": "equidistant",
+       "points": [
+        [
+         3,
+         4
+        ],
+        [
+         9,
+         4
+        ]
+       ]
+      }
+     ],
+     "targets": "c6-maths-ch08-t03-m-midpoint-only"
+    },
+    {
+     "title": "Bisector path",
+     "sub": "make the right-angle line",
+     "time": 70,
+     "challenges": [
+      {
+       "kind": "equidistant",
+       "points": [
+        [
+         2,
+         2
+        ],
+        [
+         10,
+         2
+        ]
+       ]
+      }
+     ],
+     "targets": "c6-maths-ch08-t03-m-unequal-arcs"
+    }
+   ]
+  },
+  "repairs": [
+   "challenge:infeasible"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c6-maths-ch08-t03"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Diagonals and equal distances",
+   "accent": "ion",
+   "targets": "c6-maths-ch08-t03-m-diag-right-angle",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Diagonals and equal distances"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Every rectangle's diagonals meet at right angles"
+      },
+      {
+       "id": "rect",
+       "type": "poly",
+       "points": [
+        [
+         220,
+         230
+        ],
+        [
+         780,
+         230
+        ],
+        [
+         780,
+         470
+        ],
+        [
+         220,
+         470
+        ]
+       ],
+       "closed": true
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "a",
+       "type": "node",
+       "text": "A",
+       "sub": "given point",
+       "glyph": "house",
+       "color": "ion"
+      },
+      {
+       "id": "b",
+       "type": "node",
+       "text": "B",
+       "sub": "given point",
+       "glyph": "house",
+       "color": "ion"
+      },
+      {
+       "id": "p1",
+       "type": "node",
+       "text": "P",
+       "sub": "equal distance",
+       "glyph": "spark",
+       "color": "mint"
+      },
+      {
+       "id": "p2",
+       "type": "node",
+       "text": "Q",
+       "sub": "equal distance",
+       "glyph": "spark",
+       "color": "mint"
+      },
+      {
+       "id": "ab",
+       "type": "arrow",
+       "from": "a",
+       "to": "b",
+       "text": "AB"
+      },
+      {
+       "id": "arc1",
+       "type": "arrow",
+       "from": "a",
+       "to": "p1",
+       "text": "4 cm"
+      },
+      {
+       "id": "arc2",
+       "type": "arrow",
+       "from": "b",
+       "to": "p1",
+       "text": "4 cm"
+      },
+      {
+       "id": "arc3",
+       "type": "arrow",
+       "from": "a",
+       "to": "p2",
+       "text": "4 cm"
+      },
+      {
+       "id": "arc4",
+       "type": "arrow",
+       "from": "b",
+       "to": "p2",
+       "text": "4 cm"
+      },
+      {
+       "id": "same",
+       "type": "label",
+       "text": "Same compass opening",
+       "x": 350,
+       "y": 540
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "prompt",
+       "type": "title",
+       "text": "Quick check"
+      },
+      {
+       "id": "opt10",
+       "type": "label",
+       "text": "BD = 10 cm",
+       "x": 100,
+       "y": 360
+      },
+      {
+       "id": "opt5",
+       "type": "label",
+       "text": "BD = 5 cm",
+       "x": 330,
+       "y": 360
+      },
+      {
+       "id": "opt90",
+       "type": "label",
+       "text": "BD = 90 cm",
+       "x": 560,
+       "y": 360
+      },
+      {
+       "id": "optmid",
+       "type": "label",
+       "text": "BD = midpoint",
+       "x": 790,
+       "y": 360
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "A rectangle has two diagonals. They are equal in length, and they cut each other exactly in half.",
+    "L2": "But here is a myth: every rectangle's diagonals meet at right angles. That is not true; only a square has that property.",
+    "L3": "Now take two points, A and B. To find a point equally far from both, open the compass to one chosen distance.",
+    "L4": "Draw an arc from A, then keep the same opening and draw an arc from B. Their crossing point is equally far from A and B.",
+    "L5": "Use arcs above and below AB, and you get two such points. Changing the same opening gives more points.",
+    "L6": "All these points lie on the line through the midpoint of AB at right angles to AB. The midpoint is not the only one.",
+    "L7": "Check your understanding: a rectangle has diagonal AC equal to 10 centimetres. How long is diagonal BD?"
+   },
+   "narration": {
+    "L1": {
+     "text": "A rectangle has two diagonals. They are equal in length, and they cut each other exactly in half.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "But here is a myth: every rectangle's diagonals meet at right angles. That is not true; only a square has that property.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "Now take two points, A and B. To find a point equally far from both, open the compass to one chosen distance.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "Draw an arc from A, then keep the same opening and draw an arc from B. Their crossing point is equally far from A and B.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "Use arcs above and below AB, and you get two such points. Changing the same opening gives more points.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "All these points lie on the line through the midpoint of AB at right angles to AB. The midpoint is not the only one.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Check your understanding: a rectangle has diagonal AC equal to 10 centimetres. How long is diagonal BD?",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "rect"
+      },
+      {
+       "at": 1.5,
+       "do": "highlight",
+       "dur": 1,
+       "target": "rect"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "myth"
+      },
+      {
+       "at": 1,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "a",
+        "b"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.6,
+       "target": "same"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "arc1",
+        "arc2",
+        "p1"
+       ]
+      },
+      {
+       "at": 1.2,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "p1"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "arc3",
+        "arc4",
+        "p2"
+       ]
+      },
+      {
+       "at": 1.2,
+       "do": "focus",
+       "dur": 1,
+       "target": [
+        "p1",
+        "p2"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "ab"
+      },
+      {
+       "at": 0.7,
+       "do": "camera",
+       "dur": 1,
+       "zoom": 1.05
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "prompt",
+        "opt10",
+        "opt5",
+        "opt90",
+        "optmid"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive"
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Tap the correct length of diagonal BD.",
+    "options": [
+     "opt10",
+     "opt5",
+     "opt90",
+     "optmid"
+    ],
+    "answer": "opt10",
+    "src": "c6-maths-ch08-t03-i01"
+   }
+  },
+  "repairs": [
+   "arrow:ends",
+   "arrow:ends",
+   "cue:target"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 40
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch08-t03-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "rect1",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        180,
+        110
+       ],
+       "w": 440,
+       "h": 250
+      },
+      {
+       "id": "d1",
+       "op": "line",
+       "startMs": 1300,
+       "endMs": 2500,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        180,
+        110
+       ],
+       "to": [
+        620,
+        360
+       ]
+      },
+      {
+       "id": "d2",
+       "op": "line",
+       "startMs": 2600,
+       "endMs": 3800,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        620,
+        110
+       ],
+       "to": [
+        180,
+        360
+       ]
+      },
+      {
+       "id": "mid",
+       "op": "circle",
+       "startMs": 3900,
+       "endMs": 4500,
+       "ink": "mark",
+       "weight": 2,
+       "c": [
+        400,
+        235
+       ],
+       "r": 8
+      },
+      {
+       "id": "lab1",
+       "op": "label",
+       "startMs": 4600,
+       "endMs": 5200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        395,
+        85
+       ],
+       "text": "rectangle",
+       "to": [
+        400,
+        110
+       ]
+      },
+      {
+       "id": "lab2",
+       "op": "label",
+       "startMs": 5300,
+       "endMs": 6100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        645,
+        230
+       ],
+       "text": "diagonals",
+       "to": [
+        510,
+        235
+       ]
+      },
+      {
+       "id": "eq",
+       "op": "numwork",
+       "startMs": 6200,
+       "endMs": 7600,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        220,
+        410
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "diagon",
+         "=",
+         "diagon"
+        ],
+        [
+         "equal",
+         "length"
+        ]
+       ]
+      },
+      {
+       "id": "half",
+       "op": "label",
+       "startMs": 7700,
+       "endMs": 8260,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        420,
+        275
+       ],
+       "text": "half",
+       "to": [
+        400,
+        235
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch08-t03-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 9962,
+     "ops": [
+      {
+       "id": "right",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        110
+       ],
+       "to": [
+        400,
+        360
+       ]
+      },
+      {
+       "id": "base",
+       "op": "line",
+       "startMs": 1000,
+       "endMs": 1900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        180,
+        235
+       ],
+       "to": [
+        620,
+        235
+       ]
+      },
+      {
+       "id": "angle",
+       "op": "sector",
+       "startMs": 2000,
+       "endMs": 2800,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        400,
+        235
+       ],
+       "r": 38,
+       "fromDeg": 270,
+       "toDeg": 360
+      },
+      {
+       "id": "myth",
+       "op": "text",
+       "startMs": 2900,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "myth",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "cross",
+       "op": "line",
+       "startMs": 3600,
+       "endMs": 4300,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        355,
+        190
+       ],
+       "to": [
+        445,
+        280
+       ]
+      },
+      {
+       "id": "no",
+       "op": "text",
+       "startMs": 4400,
+       "endMs": 5200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        430
+       ],
+       "text": "not true",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "square",
+       "op": "rect",
+       "startMs": 5600,
+       "endMs": 6400,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        665,
+        150
+       ],
+       "w": 90,
+       "h": 90
+      },
+      {
+       "id": "sqdiag1",
+       "op": "line",
+       "startMs": 6500,
+       "endMs": 7000,
+       "ink": "good",
+       "weight": 1,
+       "from": [
+        665,
+        150
+       ],
+       "to": [
+        755,
+        240
+       ]
+      },
+      {
+       "id": "sqdiag2",
+       "op": "line",
+       "startMs": 7100,
+       "endMs": 7600,
+       "ink": "good",
+       "weight": 1,
+       "from": [
+        755,
+        150
+       ],
+       "to": [
+        665,
+        240
+       ]
+      },
+      {
+       "id": "sq",
+       "op": "label",
+       "startMs": 7700,
+       "endMs": 8400,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        710,
+        275
+       ],
+       "text": "square",
+       "to": [
+        710,
+        240
+       ]
+      },
+      {
+       "id": "prop",
+       "op": "text",
+       "startMs": 8500,
+       "endMs": 9962,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        710,
+        310
+       ],
+       "text": "right angles",
+       "size": "s",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 3,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch08-t03-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9962,
+     "ops": [
+      {
+       "id": "A",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "mark",
+       "weight": 2,
+       "c": [
+        220,
+        300
+       ],
+       "r": 7
+      },
+      {
+       "id": "B",
+       "op": "circle",
+       "startMs": 500,
+       "endMs": 1000,
+       "ink": "mark",
+       "weight": 2,
+       "c": [
+        580,
+        300
+       ],
+       "r": 7
+      },
+      {
+       "id": "labA",
+       "op": "text",
+       "startMs": 1000,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        210,
+        275
+       ],
+       "text": "A",
+       "size": "m"
+      },
+      {
+       "id": "labB",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        575,
+        275
+       ],
+       "text": "B",
+       "size": "m"
+      },
+      {
+       "id": "AB",
+       "op": "line",
+       "startMs": 1800,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        220,
+        300
+       ],
+       "to": [
+        580,
+        300
+       ]
+      },
+      {
+       "id": "compass",
+       "op": "circle",
+       "startMs": 3000,
+       "endMs": 3900,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        400,
+        180
+       ],
+       "r": 95
+      },
+      {
+       "id": "open",
+       "op": "label",
+       "startMs": 4000,
+       "endMs": 5000,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        505,
+        180
+       ],
+       "text": "chosen distance",
+       "to": [
+        495,
+        180
+       ]
+      },
+      {
+       "id": "arcB",
+       "op": "sector",
+       "startMs": 6600,
+       "endMs": 7900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        580,
+        300
+       ],
+       "r": 200,
+       "fromDeg": 140,
+       "toDeg": 220
+      },
+      {
+       "id": "far",
+       "op": "text",
+       "startMs": 8000,
+       "endMs": 9000,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        430
+       ],
+       "text": "equally far",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "same",
+       "op": "label",
+       "startMs": 9100,
+       "endMs": 9962,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        400,
+        110
+       ],
+       "text": "same opening",
+       "to": [
+        400,
+        180
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 3,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch08-t03-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 11664,
+     "ops": [
+      {
+       "id": "arcB2",
+       "op": "sector",
+       "startMs": 1700,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        580,
+        300
+       ],
+       "r": 200,
+       "fromDeg": 140,
+       "toDeg": 220
+      },
+      {
+       "id": "cross",
+       "op": "circle",
+       "startMs": 3500,
+       "endMs": 4200,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        400,
+        140
+       ],
+       "r": 9
+      },
+      {
+       "id": "crosslab",
+       "op": "label",
+       "startMs": 4300,
+       "endMs": 5300,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        420,
+        120
+       ],
+       "text": "crossing point",
+       "to": [
+        400,
+        140
+       ]
+      },
+      {
+       "id": "rA",
+       "op": "line",
+       "startMs": 5500,
+       "endMs": 6500,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        220,
+        300
+       ],
+       "to": [
+        400,
+        140
+       ]
+      },
+      {
+       "id": "rB",
+       "op": "line",
+       "startMs": 6600,
+       "endMs": 7600,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        580,
+        300
+       ],
+       "to": [
+        400,
+        140
+       ]
+      },
+      {
+       "id": "eqfar",
+       "op": "numwork",
+       "startMs": 7800,
+       "endMs": 9000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        220,
+        410
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "distan",
+         "A",
+         "=",
+         "distan",
+         "B"
+        ]
+       ]
+      },
+      {
+       "id": "equal",
+       "op": "highlight",
+       "startMs": 9200,
+       "endMs": 10200,
+       "ink": "good",
+       "weight": 2,
+       "target": "cross",
+       "style": "circle"
+      },
+      {
+       "id": "arcword",
+       "op": "label",
+       "startMs": 10300,
+       "endMs": 11000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        120,
+        160
+       ],
+       "text": "arc from A",
+       "to": [
+        180,
+        190
+       ]
+      },
+      {
+       "id": "arcword2",
+       "op": "label",
+       "startMs": 11000,
+       "endMs": 11664,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        580,
+        160
+       ],
+       "text": "arc from B",
+       "to": [
+        620,
+        190
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 4,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch08-t03-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "belowA",
+       "op": "sector",
+       "startMs": 0,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        220,
+        300
+       ],
+       "r": 200,
+       "fromDeg": 140,
+       "toDeg": 220
+      },
+      {
+       "id": "topPoint",
+       "op": "circle",
+       "startMs": 2800,
+       "endMs": 3400,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        400,
+        140
+       ],
+       "r": 9
+      },
+      {
+       "id": "bottomPoint",
+       "op": "circle",
+       "startMs": 3500,
+       "endMs": 4100,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        400,
+        460
+       ],
+       "r": 9
+      },
+      {
+       "id": "above",
+       "op": "label",
+       "startMs": 4200,
+       "endMs": 4700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        420,
+        125
+       ],
+       "text": "above",
+       "to": [
+        400,
+        140
+       ]
+      },
+      {
+       "id": "below",
+       "op": "label",
+       "startMs": 4700,
+       "endMs": 5200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        420,
+        475
+       ],
+       "text": "below",
+       "to": [
+        400,
+        460
+       ]
+      },
+      {
+       "id": "more",
+       "op": "text",
+       "startMs": 5400,
+       "endMs": 6200,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        70
+       ],
+       "text": "more points",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "newB",
+       "op": "sector",
+       "startMs": 7600,
+       "endMs": 8685,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        580,
+        300
+       ],
+       "r": 190,
+       "fromDeg": 140,
+       "toDeg": 220
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch08-t03-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 10813,
+     "ops": [
+      {
+       "id": "midpoint",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "mark",
+       "weight": 2,
+       "c": [
+        400,
+        300
+       ],
+       "r": 8
+      },
+      {
+       "id": "midlabel",
+       "op": "label",
+       "startMs": 700,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        385,
+        330
+       ],
+       "text": "midpoint",
+       "to": [
+        400,
+        300
+       ]
+      },
+      {
+       "id": "perp",
+       "op": "line",
+       "startMs": 1700,
+       "endMs": 3000,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        400,
+        100
+       ],
+       "to": [
+        400,
+        480
+       ]
+      },
+      {
+       "id": "rightmark",
+       "op": "sector",
+       "startMs": 3100,
+       "endMs": 3900,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        400,
+        300
+       ],
+       "r": 32,
+       "fromDeg": 270,
+       "toDeg": 360
+      },
+      {
+       "id": "lineLabel",
+       "op": "label",
+       "startMs": 4000,
+       "endMs": 4700,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        430,
+        200
+       ],
+       "text": "line",
+       "to": [
+        400,
+        200
+       ]
+      },
+      {
+       "id": "rightLabel",
+       "op": "label",
+       "startMs": 4800,
+       "endMs": 5900,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        450,
+        360
+       ],
+       "text": "at right angles",
+       "to": [
+        400,
+        330
+       ]
+      },
+      {
+       "id": "point1",
+       "op": "circle",
+       "startMs": 6100,
+       "endMs": 6600,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        400,
+        140
+       ],
+       "r": 7
+      },
+      {
+       "id": "point2",
+       "op": "circle",
+       "startMs": 6700,
+       "endMs": 7200,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        400,
+        440
+       ],
+       "r": 7
+      },
+      {
+       "id": "many",
+       "op": "text",
+       "startMs": 7400,
+       "endMs": 8200,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        560,
+        120
+       ],
+       "text": "many points",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "notonly",
+       "op": "text",
+       "startMs": 8500,
+       "endMs": 9500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        55
+       ],
+       "text": "not the only one",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "check",
+       "op": "highlight",
+       "startMs": 9600,
+       "endMs": 10813,
+       "ink": "mark",
+       "weight": 2,
+       "target": "midpoint",
+       "style": "pulse"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch08-t03-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "rect2",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        170,
+        100
+       ],
+       "w": 460,
+       "h": 280
+      },
+      {
+       "id": "ac",
+       "op": "line",
+       "startMs": 1100,
+       "endMs": 2100,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        170,
+        100
+       ],
+       "to": [
+        630,
+        380
+       ]
+      },
+      {
+       "id": "bd",
+       "op": "line",
+       "startMs": 2200,
+       "endMs": 3200,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        630,
+        100
+       ],
+       "to": [
+        170,
+        380
+       ]
+      },
+      {
+       "id": "labac",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 3700,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        145,
+        90
+       ],
+       "text": "AC",
+       "size": "m"
+      },
+      {
+       "id": "labbd",
+       "op": "text",
+       "startMs": 3800,
+       "endMs": 4200,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        640,
+        90
+       ],
+       "text": "BD",
+       "size": "m"
+      },
+      {
+       "id": "given",
+       "op": "numwork",
+       "startMs": 4400,
+       "endMs": 5500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        210,
+        420
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "AC",
+         "=",
+         "10",
+         "centim"
+        ]
+       ]
+      },
+      {
+       "id": "answer",
+       "op": "numwork",
+       "startMs": 5700,
+       "endMs": 7000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        470,
+        420
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "BD",
+         "=",
+         "10",
+         "centim"
+        ]
+       ]
+      },
+      {
+       "id": "equal",
+       "op": "highlight",
+       "startMs": 7100,
+       "endMs": 7834,
+       "ink": "good",
+       "weight": 2,
+       "target": "answer",
+       "style": "underline"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "{\"kind\":\"quad\",\"type\":\"rectangle\"}",
+   "prompt": "quad"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "{\"kind\":\"equidistant\",\"points\":[[2,2],[8,2]]}",
+   "prompt": "equidistant"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "{\"kind\":\"equidistant\",\"points\":[[2,1],[8,1]]}",
+   "prompt": "equidistant"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "{\"kind\":\"equidistant\",\"points\":[[3,4],[9,4]]}",
+   "prompt": "equidistant"
+  },
+  {
+   "itemId": "r3:0",
+   "key": "{\"kind\":\"equidistant\",\"points\":[[2,2],[10,2]]}",
+   "prompt": "equidistant"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ },
+ "firstCheck": {
+  "issues": [
+   {
+    "where": "explainer",
+    "what": "The round's task references kit item i01 (src=c6-maths-ch08-t03-i01) and changes its question's answer from '10 cm' to a tap option 'BD = 10 cm'. That is just a different wording, not a factual error. But the options include 'BD = 90 degrees', which is unsuitable for a 9-15 year old because it is a nonsensical unit (degrees for length) and could confuse children. The task asks 'Tap the correct length of the second diagonal', and one option is 'BD = 90 degrees'—that is physically unrealistic and confusing.",
+    "severity": "high"
+   }
+  ],
+  "verdict": "fail",
+  "model": "DeepSeek-V4-Flash"
+ },
+ "regens": 2
+}

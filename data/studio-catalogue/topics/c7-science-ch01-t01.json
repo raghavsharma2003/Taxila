@@ -1,0 +1,1876 @@
+{
+ "topicId": "c7-science-ch01-t01",
+ "title": "Science changes with evidence",
+ "chapter": "The Ever-Evolving World of Science",
+ "subject": "science",
+ "class": 7,
+ "topicType": "T3",
+ "plan": {
+  "game": "fair-test@1",
+  "hint": "predict and conclude rounds on a simple model (curd or drying); observe-question-predict-test"
+ },
+ "game": {
+  "archetype": "fair-test@1",
+  "spec": {
+   "archetype": "fair-test@1",
+   "skills": [
+    "c7-science-ch01-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "run": "RUN",
+    "day": "day",
+    "predict": "Tap every setup that will show it",
+    "design": "Make it a fair test",
+    "conclude": "Which factor matters?",
+    "notMatter": "Which factor does NOT matter?",
+    "fair": "FAIR TEST",
+    "unfair": "NOT FAIR",
+    "runDone": "Lab closed",
+    "correct": "right calls",
+    "drip": "Hold to add drops; stop when it turns",
+    "drops": "drops",
+    "neutral": "NEUTRAL",
+    "hint": "change only one thing"
+   },
+   "title": "Trust the drying evidence",
+   "model": "drying",
+   "rounds": [
+    {
+     "mode": "predict",
+     "title": "Make a prediction",
+     "sub": "which setups will dry faster?",
+     "setups": [
+      {
+       "spread": "spread",
+       "wind": "yes",
+       "sun": "yes",
+       "humid": "no"
+      },
+      {
+       "spread": "folded",
+       "wind": "yes",
+       "sun": "yes",
+       "humid": "no"
+      },
+      {
+       "spread": "spread",
+       "wind": "no",
+       "sun": "yes",
+       "humid": "no"
+      },
+      {
+       "spread": "spread",
+       "wind": "yes",
+       "sun": "no",
+       "humid": "yes"
+      }
+     ],
+     "src": "c7-science-ch01-t01-i01"
+    },
+    {
+     "mode": "design",
+     "title": "Test one factor",
+     "sub": "change only the wind",
+     "vary": "wind",
+     "start": [
+      {
+       "spread": "spread",
+       "wind": "yes",
+       "sun": "yes",
+       "humid": "no"
+      },
+      {
+       "spread": "spread",
+       "wind": "no",
+       "sun": "yes",
+       "humid": "no"
+      }
+     ]
+    }
+   ]
+  },
+  "repairs": [
+   "conclude:needs-exactly-one-key"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-science-ch01-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Science changes with evidence",
+   "accent": "sci",
+   "targets": "c7-science-ch01-t01-m2",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Science changes with evidence"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "If science changes, it cannot be trusted"
+      },
+      {
+       "id": "idea",
+       "type": "label",
+       "text": "Ideas meet evidence",
+       "x": 570,
+       "y": 300,
+       "color": "sci"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "old",
+       "type": "node",
+       "text": "Old idea",
+       "sub": "Earth is flat",
+       "glyph": "globe",
+       "color": "amber"
+      },
+      {
+       "id": "obs",
+       "type": "node",
+       "text": "Evidence",
+       "sub": "observations",
+       "glyph": "eye",
+       "color": "sci"
+      },
+      {
+       "id": "new",
+       "type": "node",
+       "text": "Better idea",
+       "sub": "Earth is round",
+       "glyph": "earth",
+       "color": "mint"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "old",
+       "to": "obs",
+       "text": "check"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "obs",
+       "to": "new",
+       "text": "change"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "ship",
+       "type": "node",
+       "text": "Ship",
+       "sub": "hull first",
+       "glyph": "ship",
+       "color": "ion"
+      },
+      {
+       "id": "shadow",
+       "type": "node",
+       "text": "Moon shadow",
+       "sub": "round",
+       "glyph": "moon",
+       "color": "sci"
+      },
+      {
+       "id": "space",
+       "type": "node",
+       "text": "Space photos",
+       "sub": "Earth",
+       "glyph": "globe",
+       "color": "mint"
+      },
+      {
+       "id": "round",
+       "type": "label",
+       "text": "Earth is round",
+       "x": 405,
+       "y": 490,
+       "color": "mint"
+      },
+      {
+       "id": "e1",
+       "type": "arrow",
+       "from": "ship",
+       "to": "round",
+       "text": "evidence"
+      },
+      {
+       "id": "e2",
+       "type": "arrow",
+       "from": "shadow",
+       "to": "round",
+       "text": "evidence"
+      },
+      {
+       "id": "e3",
+       "type": "arrow",
+       "from": "space",
+       "to": "round",
+       "text": "evidence"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "test",
+       "type": "node",
+       "text": "Fair test",
+       "sub": "one change",
+       "glyph": "beaker",
+       "color": "sci"
+      },
+      {
+       "id": "repeat",
+       "type": "node",
+       "text": "Repeat",
+       "sub": "measure again",
+       "glyph": "clock",
+       "color": "ion"
+      },
+      {
+       "id": "trust",
+       "type": "node",
+       "text": "Trustworthy",
+       "sub": "same result",
+       "glyph": "shield",
+       "color": "mint"
+      },
+      {
+       "id": "t1",
+       "type": "arrow",
+       "from": "test",
+       "to": "repeat",
+       "text": "repeat"
+      },
+      {
+       "id": "t2",
+       "type": "arrow",
+       "from": "repeat",
+       "to": "trust",
+       "text": "supports"
+      }
+     ]
+    },
+    {
+     "id": "s5",
+     "layout": "column",
+     "els": [
+      {
+       "id": "prompt",
+       "type": "title",
+       "text": "What should guide an idea?"
+      },
+      {
+       "id": "evidence",
+       "type": "label",
+       "text": "Evidence",
+       "x": 200,
+       "y": 300,
+       "color": "mint"
+      },
+      {
+       "id": "opinion",
+       "type": "label",
+       "text": "Someone's opinion",
+       "x": 200,
+       "y": 370,
+       "color": "amber"
+      },
+      {
+       "id": "fame",
+       "type": "label",
+       "text": "Famous person",
+       "x": 200,
+       "y": 440,
+       "color": "amber"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Science uses evidence, not just opinions, to explain the world.",
+    "L2": "When new evidence does not fit an old idea, scientists check it carefully.",
+    "L3": "If the evidence holds up, the idea is changed or replaced.",
+    "L4": "People once thought Earth was flat. Several observations challenged that idea.",
+    "L5": "A ship disappearing hull-first, a round eclipse shadow, and space photos are evidence that Earth is round.",
+    "L6": "Changing an idea because of better evidence is a strength of science, not a failure.",
+    "L7": "A fair test changes one thing at a time and repeats measurements, so the evidence can be trusted.",
+    "L8": "Now choose what should guide a scientific idea."
+   },
+   "narration": {
+    "L1": {
+     "text": "Science uses evidence, not just opinions, to explain the world.",
+     "dur": 6.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L2": {
+     "text": "When new evidence does not fit an old idea, scientists check it carefully.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L3": {
+     "text": "If the evidence holds up, the idea is changed or replaced.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L4": {
+     "text": "People once thought Earth was flat. Several observations challenged that idea.",
+     "dur": 6.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L5": {
+     "text": "A ship disappearing hull-first, a round eclipse shadow, and space photos are evidence that Earth is round.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Changing an idea because of better evidence is a strength of science, not a failure.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L7": {
+     "text": "A fair test changes one thing at a time and repeats measurements, so the evidence can be trusted.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Now choose what should guide a scientific idea.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "title"
+      },
+      {
+       "at": 0.6,
+       "do": "show",
+       "dur": 0.8,
+       "target": "idea"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      },
+      {
+       "at": 1.2,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.5,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "old"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.6,
+       "target": "obs"
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.6,
+       "target": "new"
+      },
+      {
+       "at": 1.4,
+       "do": "flow",
+       "dur": 1,
+       "target": [
+        "a1",
+        "a2"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.5,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "ship",
+        "shadow",
+        "space"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 1,
+       "target": "ship"
+      },
+      {
+       "at": 2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "shadow"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.5,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "round"
+      },
+      {
+       "at": 0.5,
+       "do": "flow",
+       "dur": 1.2,
+       "target": [
+        "e1",
+        "e2",
+        "e3"
+       ],
+       "to": 1
+      },
+      {
+       "at": 1.8,
+       "do": "highlight",
+       "dur": 1,
+       "target": "round"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.5,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "focus",
+       "dur": 1.2,
+       "target": "new"
+      },
+      {
+       "at": 1.4,
+       "do": "highlight",
+       "dur": 1,
+       "target": "obs"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.5,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "test",
+        "repeat",
+        "trust"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 1.2,
+       "target": [
+        "t1",
+        "t2"
+       ],
+       "to": 1
+      },
+      {
+       "at": 2.5,
+       "do": "highlight",
+       "dur": 1,
+       "target": "trust"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s5",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "prompt",
+        "evidence",
+        "opinion",
+        "fame"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive"
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which should guide a scientific idea?",
+    "options": [
+     "evidence",
+     "opinion",
+     "fame"
+    ],
+    "answer": "evidence",
+    "src": "c7-science-ch01-t01-i12"
+   }
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg",
+  "seconds": 58
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch01-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "evidence",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        250,
+        220
+       ],
+       "r": 90
+      },
+      {
+       "id": "world",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        575,
+        220
+       ],
+       "r": 90
+      },
+      {
+       "id": "evidenceText",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        250,
+        220
+       ],
+       "text": "evidence",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "worldText",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        575,
+        220
+       ],
+       "text": "world",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "arrow",
+       "op": "arrow",
+       "startMs": 1400,
+       "endMs": 2300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        345,
+        220
+       ],
+       "to": [
+        475,
+        220
+       ]
+      },
+      {
+       "id": "opinion",
+       "op": "circle",
+       "startMs": 2600,
+       "endMs": 3300,
+       "ink": "soft",
+       "weight": 1,
+       "c": [
+        400,
+        390
+       ],
+       "r": 62
+      },
+      {
+       "id": "opinionText",
+       "op": "text",
+       "startMs": 3200,
+       "endMs": 3800,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        400,
+        390
+       ],
+       "text": "opinions",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "check",
+       "op": "highlight",
+       "startMs": 3900,
+       "endMs": 4855,
+       "ink": "good",
+       "weight": 2,
+       "target": "evidence",
+       "style": "pulse"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch01-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "oldIdea",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        150
+       ],
+       "w": 210,
+       "h": 100,
+       "round": 12
+      },
+      {
+       "id": "oldText",
+       "op": "text",
+       "startMs": 600,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        195,
+        205
+       ],
+       "text": "old idea",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "newEvidence",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        600,
+        200
+       ],
+       "r": 62
+      },
+      {
+       "id": "newText",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        600,
+        200
+       ],
+       "text": "new evidence",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "mismatch",
+       "op": "line",
+       "startMs": 2200,
+       "endMs": 3000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        300,
+        200
+       ],
+       "to": [
+        530,
+        200
+       ]
+      },
+      {
+       "id": "checkArrow",
+       "op": "arrow",
+       "startMs": 3100,
+       "endMs": 3900,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        600,
+        270
+       ],
+       "to": [
+        600,
+        350
+       ]
+      },
+      {
+       "id": "checkText",
+       "op": "text",
+       "startMs": 3800,
+       "endMs": 4400,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        600,
+        390
+       ],
+       "text": "check",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "careful",
+       "op": "highlight",
+       "startMs": 4700,
+       "endMs": 6132,
+       "ink": "good",
+       "weight": 2,
+       "target": "newEvidence",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch01-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "evidenceHold",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        210,
+        180
+       ],
+       "r": 75
+      },
+      {
+       "id": "holds",
+       "op": "text",
+       "startMs": 600,
+       "endMs": 1200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        210,
+        180
+       ],
+       "text": "holds up",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "changeArrow",
+       "op": "arrow",
+       "startMs": 1200,
+       "endMs": 2200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        300,
+        180
+       ],
+       "to": [
+        470,
+        180
+       ]
+      },
+      {
+       "id": "changed",
+       "op": "rect",
+       "startMs": 2100,
+       "endMs": 2900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        470,
+        130
+       ],
+       "w": 220,
+       "h": 100,
+       "round": 12
+      },
+      {
+       "id": "changedText",
+       "op": "text",
+       "startMs": 2800,
+       "endMs": 3400,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        580,
+        180
+       ],
+       "text": "changed",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "replace",
+       "op": "arrow",
+       "startMs": 3500,
+       "endMs": 4300,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        580,
+        240
+       ],
+       "to": [
+        580,
+        340
+       ]
+      },
+      {
+       "id": "replaceText",
+       "op": "text",
+       "startMs": 4200,
+       "endMs": 4800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        580,
+        390
+       ],
+       "text": "replaced",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch01-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "earth",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        260,
+        220
+       ],
+       "r": 105
+      },
+      {
+       "id": "earthText",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        260,
+        220
+       ],
+       "text": "Earth",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "flat",
+       "op": "line",
+       "startMs": 1500,
+       "endMs": 2300,
+       "ink": "soft",
+       "weight": 2,
+       "from": [
+        140,
+        220
+       ],
+       "to": [
+        380,
+        220
+       ]
+      },
+      {
+       "id": "flatText",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 2800,
+       "ink": "soft",
+       "weight": 2,
+       "at": [
+        260,
+        280
+       ],
+       "text": "flat",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "challenge1",
+       "op": "arrow",
+       "startMs": 2800,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        470,
+        140
+       ],
+       "to": [
+        390,
+        190
+       ]
+      },
+      {
+       "id": "challenge2",
+       "op": "arrow",
+       "startMs": 3500,
+       "endMs": 4200,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        470,
+        300
+       ],
+       "to": [
+        390,
+        250
+       ]
+      },
+      {
+       "id": "observations",
+       "op": "text",
+       "startMs": 4100,
+       "endMs": 4800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        600,
+        220
+       ],
+       "text": "observations",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch01-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "horizon",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        80,
+        300
+       ],
+       "to": [
+        720,
+        300
+       ]
+      },
+      {
+       "id": "ship",
+       "op": "polygon",
+       "startMs": 500,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         150,
+         270
+        ],
+        [
+         250,
+         270
+        ],
+        [
+         225,
+         290
+        ],
+        [
+         175,
+         290
+        ]
+       ]
+      },
+      {
+       "id": "hull",
+       "op": "label",
+       "startMs": 1000,
+       "endMs": 1700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        250,
+        250
+       ],
+       "text": "hull-first",
+       "to": [
+        220,
+        280
+       ]
+      },
+      {
+       "id": "eclipse",
+       "op": "circle",
+       "startMs": 1700,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        180
+       ],
+       "r": 65
+      },
+      {
+       "id": "shadow",
+       "op": "circle",
+       "startMs": 2200,
+       "endMs": 2900,
+       "ink": "soft",
+       "weight": 2,
+       "c": [
+        400,
+        180
+       ],
+       "r": 30,
+       "fill": "soft"
+      },
+      {
+       "id": "shadowText",
+       "op": "text",
+       "startMs": 2900,
+       "endMs": 3600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        275
+       ],
+       "text": "round shadow",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "space",
+       "op": "rect",
+       "startMs": 3500,
+       "endMs": 4300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        540,
+        100
+       ],
+       "w": 170,
+       "h": 120,
+       "round": 8
+      },
+      {
+       "id": "spaceEarth",
+       "op": "circle",
+       "startMs": 4000,
+       "endMs": 4700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        625,
+        160
+       ],
+       "r": 42
+      },
+      {
+       "id": "spaceText",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        625,
+        255
+       ],
+       "text": "space photos",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "round",
+       "op": "text",
+       "startMs": 5900,
+       "endMs": 6900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        410
+       ],
+       "text": "Earth is round",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "evidenceMark",
+       "op": "highlight",
+       "startMs": 7000,
+       "endMs": 7834,
+       "ink": "good",
+       "weight": 2,
+       "target": "round",
+       "style": "underline"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch01-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "idea",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        180,
+        210
+       ],
+       "r": 78
+      },
+      {
+       "id": "ideaText",
+       "op": "text",
+       "startMs": 600,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        180,
+        210
+       ],
+       "text": "idea",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "better",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1800,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        620,
+        210
+       ],
+       "r": 90
+      },
+      {
+       "id": "betterText",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        620,
+        210
+       ],
+       "text": "better evidence",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "change",
+       "op": "arrow",
+       "startMs": 2200,
+       "endMs": 3300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        270,
+        210
+       ],
+       "to": [
+        520,
+        210
+       ]
+      },
+      {
+       "id": "strength",
+       "op": "polygon",
+       "startMs": 3500,
+       "endMs": 4300,
+       "ink": "good",
+       "weight": 2,
+       "points": [
+        [
+         340,
+         360
+        ],
+        [
+         390,
+         300
+        ],
+        [
+         440,
+         360
+        ]
+       ]
+      },
+      {
+       "id": "strengthText",
+       "op": "text",
+       "startMs": 4200,
+       "endMs": 4900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        390,
+        400
+       ],
+       "text": "strength",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "failure",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 5900,
+       "ink": "soft",
+       "weight": 2,
+       "at": [
+        610,
+        390
+       ],
+       "text": "not a failure",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "final",
+       "op": "highlight",
+       "startMs": 6000,
+       "endMs": 6983,
+       "ink": "good",
+       "weight": 2,
+       "target": "strength",
+       "style": "pulse"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch01-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "test",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        70,
+        100
+       ],
+       "w": 190,
+       "h": 90,
+       "round": 10
+      },
+      {
+       "id": "testText",
+       "op": "text",
+       "startMs": 600,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        165,
+        145
+       ],
+       "text": "fair test",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "one",
+       "op": "circle",
+       "startMs": 1000,
+       "endMs": 1700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        145
+       ],
+       "r": 55
+      },
+      {
+       "id": "oneText",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        145
+       ],
+       "text": "one thing",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "changeArrow",
+       "op": "arrow",
+       "startMs": 1800,
+       "endMs": 2400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        265,
+        145
+       ],
+       "to": [
+        335,
+        145
+       ]
+      },
+      {
+       "id": "measure",
+       "op": "numwork",
+       "startMs": 2500,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        280
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "measur",
+         "=",
+         "eviden"
+        ]
+       ]
+      },
+      {
+       "id": "repeat",
+       "op": "arrow",
+       "startMs": 2800,
+       "endMs": 3700,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        500,
+        145
+       ],
+       "to": [
+        630,
+        145
+       ],
+       "bend": 1
+      },
+      {
+       "id": "repeatText",
+       "op": "text",
+       "startMs": 3600,
+       "endMs": 4300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        650,
+        145
+       ],
+       "text": "repeats",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "trusted",
+       "op": "circle",
+       "startMs": 4500,
+       "endMs": 5300,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        400,
+        410
+       ],
+       "r": 75
+      },
+      {
+       "id": "trustedText",
+       "op": "text",
+       "startMs": 5100,
+       "endMs": 5800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        410
+       ],
+       "text": "trusted",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "link",
+       "op": "arrow",
+       "startMs": 5800,
+       "endMs": 6700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        220
+       ],
+       "to": [
+        400,
+        330
+       ]
+      },
+      {
+       "id": "finalHighlight",
+       "op": "highlight",
+       "startMs": 7000,
+       "endMs": 8260,
+       "ink": "good",
+       "weight": 2,
+       "target": "trusted",
+       "style": "pulse"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch01-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4004,
+     "ops": [
+      {
+       "id": "question",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        100
+       ],
+       "text": "choose",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "idea",
+       "op": "circle",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "soft",
+       "weight": 2,
+       "c": [
+        210,
+        280
+       ],
+       "r": 75
+      },
+      {
+       "id": "evidence",
+       "op": "circle",
+       "startMs": 700,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        590,
+        280
+       ],
+       "r": 90
+      },
+      {
+       "id": "ideaText",
+       "op": "text",
+       "startMs": 1200,
+       "endMs": 1800,
+       "ink": "soft",
+       "weight": 2,
+       "at": [
+        210,
+        280
+       ],
+       "text": "idea",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "evidenceText",
+       "op": "text",
+       "startMs": 1300,
+       "endMs": 2000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        590,
+        280
+       ],
+       "text": "evidence",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "guide",
+       "op": "arrow",
+       "startMs": 1900,
+       "endMs": 2900,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        300,
+        280
+       ],
+       "to": [
+        490,
+        280
+       ]
+      },
+      {
+       "id": "guideText",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3600,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        400
+       ],
+       "text": "guide",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "select",
+       "op": "highlight",
+       "startMs": 3500,
+       "endMs": 4004,
+       "ink": "good",
+       "weight": 2,
+       "target": "evidence",
+       "style": "circle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1",
+   "key": "1:dries 2:dries 3:dries 4:no",
+   "prompt": "drying: {\"spread\":\"spread\",\"wind\":\"yes\",\"sun\":\"yes\",\"humid\":\"no\"} | {\"spread\":\"folded\",\"wind\":\"yes\",\"sun\":\"yes\",\"humid\":\"no\"} | {\"spread\":\"spread\",\"wind\":\"no\",\"sun\":\"yes\",\"humid\":\"no\"} | {\"spread\":\"spread\",\"wind\":\"yes\",\"sun\":\"no\",\"humid\":\"yes\"}",
+   "src": "c7-science-ch01-t01-i01"
+  },
+  {
+   "itemId": "r2",
+   "key": "vary only wind",
+   "prompt": "fair test for wind"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ },
+ "firstCheck": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "Round r1 predicts that setup 1 (dry soil, light) will not sprout, setup 2 (moist, light) will sprout, setup 3 (moist, no air, dark) will not sprout, setup 4 (moist, cold, dark) will not sprout. The kit item i03 tests weight/air resistance, not seed sprouting. The game uses seed sprouting scenarios and the computed key follows from common germination knowledge, but the round's 'src' attribute references kit item i03, which is about dropping a cricket ball and a tennis ball and has nothing to do with seeds. This is a mismatch: the round names a kit item but changes the topic entirely.",
+    "severity": "high"
+   },
+   {
+    "where": "game",
+    "what": "Round r2 (design) and r3 (conclude) also reference kit items i03 and i11 respectively. i03 is about falling balls, i11 about repeating experiments. Neither matches the seed sprouting theme. The game content does not contradict the kit science (seeds need moisture, air, warmth; light is not required), but the src references are incorrect.",
+    "severity": "low"
+   }
+  ],
+  "verdict": "fail",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

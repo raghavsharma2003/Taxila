@@ -1,0 +1,1772 @@
+{
+ "topicId": "c5-evs-ch02-t01",
+ "title": "From source to sea",
+ "chapter": "Journey of a River",
+ "subject": "evs",
+ "class": 5,
+ "topicType": "T3",
+ "plan": {
+  "game": "land-lab@1",
+  "hint": "river mode then flood mode"
+ },
+ "game": {
+  "archetype": "land-lab@1",
+  "spec": {
+   "archetype": "land-lab@1",
+   "skills": [
+    "c5-evs-ch02-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "done": "right",
+    "wind": "wind",
+    "sea": "sea",
+    "rain": "RAIN",
+    "storm": "STORM",
+    "lock": "LOCK",
+    "wet": "wet",
+    "dry": "dry",
+    "trees": "plant trees",
+    "spring": "spring",
+    "trace": "Tap cells from the spring to the sea",
+    "runDone": "Lab closed",
+    "level": "flood level",
+    "safe": "SAFE",
+    "flooded": "FLOODED",
+    "mm": "mm of rain",
+    "high": "high",
+    "low": "low",
+    "reset": "clear"
+   },
+   "title": "From Source to Sea",
+   "rounds": [
+    {
+     "mode": "rain",
+     "title": "Sea Wind and Hills",
+     "sub": "place each spot in wet or dry air",
+     "coast": 0.2,
+     "hills": [
+      {
+       "x": 0.44,
+       "h": 0.85,
+       "w": 0.1
+      },
+      {
+       "x": 0.72,
+       "h": 0.45,
+       "w": 0.08
+      }
+     ],
+     "asks": [
+      {
+       "label": "west farm",
+       "glyph": "wheat",
+       "need": "wet"
+      },
+      {
+       "label": "east farm",
+       "glyph": "wheat",
+       "need": "dry"
+      }
+     ],
+     "targets": "c5-evs-ch02-t01-m2"
+    },
+    {
+     "mode": "river",
+     "title": "Trace the River",
+     "sub": "follow downhill from the spring",
+     "w": 8,
+     "h": 6,
+     "peaks": [
+      {
+       "x": 2,
+       "y": 1,
+       "h": 9,
+       "r": 2.5
+      },
+      {
+       "x": 6,
+       "y": 4,
+       "h": 2,
+       "r": 1.2
+      }
+     ],
+     "spring": [
+      2,
+      1
+     ],
+     "targets": "c5-evs-ch02-t01-m1"
+    },
+    {
+     "mode": "flood",
+     "title": "Choose a Safe Slope",
+     "sub": "place the building above flood water",
+     "profile": [
+      9,
+      7,
+      5,
+      3.5,
+      2.5,
+      1.5,
+      0.5,
+      0,
+      0.8,
+      2,
+      3.2,
+      5,
+      7.5,
+      9
+     ],
+     "rain": 200,
+     "label": "school",
+     "glyph": "school"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 2,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c5-evs-ch02-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "From source to sea",
+   "accent": "sci",
+   "targets": "c5-evs-ch02-t01-m1",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "From source to sea"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Rivers start at the sea"
+      },
+      {
+       "id": "high",
+       "type": "label",
+       "text": "High land",
+       "x": 150,
+       "y": 300,
+       "color": "sci"
+      },
+      {
+       "id": "low",
+       "type": "label",
+       "text": "Sea",
+       "x": 760,
+       "y": 300,
+       "color": "ion"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "source",
+       "type": "node",
+       "text": "Source",
+       "sub": "high land",
+       "glyph": "mountain",
+       "color": "sci"
+      },
+      {
+       "id": "flow",
+       "type": "arrow",
+       "from": "source",
+       "to": "plain",
+       "text": "downhill"
+      },
+      {
+       "id": "plain",
+       "type": "node",
+       "text": "Plains",
+       "sub": "lower land",
+       "glyph": "wheat",
+       "color": "mint"
+      },
+      {
+       "id": "mouth",
+       "type": "node",
+       "text": "Mouth",
+       "sub": "sea",
+       "glyph": "wave",
+       "color": "ion"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "mount",
+       "type": "node",
+       "text": "Mountain",
+       "sub": "narrow, fast",
+       "glyph": "mountain",
+       "color": "sci"
+      },
+      {
+       "id": "valley",
+       "type": "label",
+       "text": "Cuts valleys",
+       "x": 420,
+       "y": 300,
+       "color": "sci"
+      },
+      {
+       "id": "flat",
+       "type": "node",
+       "text": "Plains",
+       "sub": "wide, slow",
+       "glyph": "wheat",
+       "color": "mint"
+      },
+      {
+       "id": "silt",
+       "type": "label",
+       "text": "Drops silt",
+       "x": 700,
+       "y": 420,
+       "color": "amber"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "mount",
+       "to": "flat",
+       "text": "slows"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "row",
+     "els": [
+      {
+       "id": "main",
+       "type": "node",
+       "text": "Main river",
+       "sub": "grows bigger",
+       "glyph": "river",
+       "color": "ion"
+      },
+      {
+       "id": "trib",
+       "type": "node",
+       "text": "Tributary",
+       "sub": "smaller river",
+       "glyph": "drop",
+       "color": "sci"
+      },
+      {
+       "id": "farm",
+       "type": "node",
+       "text": "Farms",
+       "sub": "fertile soil",
+       "glyph": "wheat",
+       "color": "mint"
+      },
+      {
+       "id": "town",
+       "type": "node",
+       "text": "Towns",
+       "sub": "water, travel",
+       "glyph": "house",
+       "color": "amber"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "trib",
+       "to": "main",
+       "text": "joins"
+      }
+     ]
+    },
+    {
+     "id": "s5",
+     "layout": "row",
+     "els": [
+      {
+       "id": "source2",
+       "type": "label",
+       "text": "Source",
+       "x": 100,
+       "y": 320,
+       "color": "sci"
+      },
+      {
+       "id": "trib2",
+       "type": "label",
+       "text": "Tributary",
+       "x": 330,
+       "y": 320,
+       "color": "ion"
+      },
+      {
+       "id": "plain2",
+       "type": "label",
+       "text": "Plains",
+       "x": 560,
+       "y": 320,
+       "color": "mint"
+      },
+      {
+       "id": "mouth2",
+       "type": "label",
+       "text": "Mouth",
+       "x": 790,
+       "y": 320,
+       "color": "amber"
+      },
+      {
+       "id": "journey",
+       "type": "arrow",
+       "from": "source2",
+       "to": "trib2",
+       "text": "flows"
+      },
+      {
+       "id": "journey2",
+       "type": "arrow",
+       "from": "trib2",
+       "to": "plain2",
+       "text": "continues"
+      },
+      {
+       "id": "journey3",
+       "type": "arrow",
+       "from": "plain2",
+       "to": "mouth2",
+       "text": "ends"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "A river begins at its source, high up in hills or mountains.",
+    "L2": "Water flows downhill, so the river travels from high land to lower land.",
+    "L3": "In the mountains, the river is narrow and fast, and it cuts valleys.",
+    "L4": "In the plains, it slows down, spreads out, and drops fine soil called silt.",
+    "L5": "A smaller river that joins the main river is called a tributary.",
+    "L6": "Tributaries make the main river bigger as it continues its journey.",
+    "L7": "People settle near rivers for water, farming, fishing, and travel.",
+    "L8": "The river ends at its mouth, where it meets a sea, lake, or bigger river."
+   },
+   "narration": {
+    "L1": {
+     "text": "A river begins at its source, high up in hills or mountains.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "Water flows downhill, so the river travels from high land to lower land.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "In the mountains, the river is narrow and fast, and it cuts valleys.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "In the plains, it slows down, spreads out, and drops fine soil called silt.",
+     "dur": 3.2,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "A smaller river that joins the main river is called a tributary.",
+     "dur": 2.8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Tributaries make the main river bigger as it continues its journey.",
+     "dur": 2.8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "People settle near rivers for water, farming, fishing, and travel.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "The river ends at its mouth, where it meets a sea, lake, or bigger river.",
+     "dur": 3.2,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.6,
+       "target": "high"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "low"
+      },
+      {
+       "at": 0.4,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "mount"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.6,
+       "target": "valley"
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 1,
+       "target": "mount"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "flat"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.6,
+       "target": "silt"
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "a1",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "trib"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.7,
+       "target": "main"
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "a2",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "main"
+      },
+      {
+       "at": 0.6,
+       "do": "scale",
+       "dur": 0.8,
+       "target": "main",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "farm",
+        "town"
+       ]
+      },
+      {
+       "at": 0.6,
+       "do": "highlight",
+       "dur": 1,
+       "target": [
+        "farm",
+        "town"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s5",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "source2",
+        "trib2",
+        "plain2",
+        "mouth2"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 1,
+       "target": [
+        "journey",
+        "journey2",
+        "journey3"
+       ],
+       "to": 1
+      },
+      {
+       "at": "end",
+       "do": "interactive"
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "order",
+    "prompt": "Tap the river journey in the correct order.",
+    "items": [
+     "source2",
+     "trib2",
+     "plain2",
+     "mouth2"
+    ],
+    "src": "c5-evs-ch02-t01-i11"
+   }
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg",
+  "seconds": 28
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch02-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "hill1",
+       "op": "polygon",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         40,
+         360
+        ],
+        [
+         150,
+         170
+        ],
+        [
+         250,
+         360
+        ]
+       ]
+      },
+      {
+       "id": "hill2",
+       "op": "polygon",
+       "startMs": 300,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         190,
+         360
+        ],
+        [
+         350,
+         110
+        ],
+        [
+         510,
+         360
+        ]
+       ]
+      },
+      {
+       "id": "src",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        350,
+        125
+       ],
+       "r": 12,
+       "fill": "accent"
+      },
+      {
+       "id": "river",
+       "op": "stroke",
+       "startMs": 1300,
+       "endMs": 3000,
+       "ink": "mark",
+       "weight": 2,
+       "points": [
+        [
+         350,
+         135
+        ],
+        [
+         365,
+         190
+        ],
+        [
+         340,
+         245
+        ],
+        [
+         390,
+         300
+        ],
+        [
+         430,
+         360
+        ],
+        [
+         480,
+         425
+        ]
+       ]
+      },
+      {
+       "id": "source",
+       "op": "label",
+       "startMs": 1700,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        370,
+        115
+       ],
+       "text": "source",
+       "to": [
+        350,
+        125
+       ]
+      },
+      {
+       "id": "hills",
+       "op": "label",
+       "startMs": 3000,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        105,
+        390
+       ],
+       "text": "hills"
+      },
+      {
+       "id": "mountains",
+       "op": "label",
+       "startMs": 3500,
+       "endMs": 4200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        380,
+        75
+       ],
+       "text": "mountains"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch02-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "down",
+       "op": "arrow",
+       "startMs": 0,
+       "endMs": 1700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        350,
+        145
+       ],
+       "to": [
+        475,
+        410
+       ]
+      },
+      {
+       "id": "high",
+       "op": "label",
+       "startMs": 900,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        250,
+        145
+       ],
+       "text": "high land"
+      },
+      {
+       "id": "low",
+       "op": "label",
+       "startMs": 1700,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        500,
+        430
+       ],
+       "text": "lower land"
+      },
+      {
+       "id": "flow",
+       "op": "label",
+       "startMs": 2600,
+       "endMs": 3800,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        390,
+        270
+       ],
+       "text": "flows downhill"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch02-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "narrow",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        335,
+        145
+       ],
+       "to": [
+        350,
+        285
+       ]
+      },
+      {
+       "id": "narrow2",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        365,
+        145
+       ],
+       "to": [
+        380,
+        285
+       ]
+      },
+      {
+       "id": "fast",
+       "op": "arrow",
+       "startMs": 1200,
+       "endMs": 2100,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        355,
+        170
+       ],
+       "to": [
+        365,
+        265
+       ]
+      },
+      {
+       "id": "valleyL",
+       "op": "line",
+       "startMs": 2300,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        280,
+        300
+       ],
+       "to": [
+        350,
+        360
+       ]
+      },
+      {
+       "id": "valleyR",
+       "op": "line",
+       "startMs": 2300,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        430,
+        300
+       ],
+       "to": [
+        380,
+        360
+       ]
+      },
+      {
+       "id": "narrowLabel",
+       "op": "label",
+       "startMs": 3300,
+       "endMs": 4000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        205,
+        220
+       ],
+       "text": "narrow",
+       "to": [
+        340,
+        220
+       ]
+      },
+      {
+       "id": "fastLabel",
+       "op": "label",
+       "startMs": 4000,
+       "endMs": 4500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        420,
+        190
+       ],
+       "text": "fast",
+       "to": [
+        365,
+        220
+       ]
+      },
+      {
+       "id": "valleys",
+       "op": "label",
+       "startMs": 4500,
+       "endMs": 5200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        285,
+        380
+       ],
+       "text": "valleys"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch02-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "plain",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        560,
+        350
+       ],
+       "rx": 190,
+       "ry": 95
+      },
+      {
+       "id": "wide",
+       "op": "stroke",
+       "startMs": 900,
+       "endMs": 2100,
+       "ink": "mark",
+       "weight": 2,
+       "points": [
+        [
+         430,
+         300
+        ],
+        [
+         500,
+         330
+        ],
+        [
+         580,
+         350
+        ],
+        [
+         670,
+         370
+        ],
+        [
+         750,
+         390
+        ]
+       ]
+      },
+      {
+       "id": "slow",
+       "op": "label",
+       "startMs": 2100,
+       "endMs": 3000,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        535,
+        270
+       ],
+       "text": "slows down"
+      },
+      {
+       "id": "spread",
+       "op": "arrow",
+       "startMs": 3000,
+       "endMs": 3700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        570,
+        350
+       ],
+       "to": [
+        510,
+        310
+       ]
+      },
+      {
+       "id": "spread2",
+       "op": "arrow",
+       "startMs": 3000,
+       "endMs": 3700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        570,
+        350
+       ],
+       "to": [
+        650,
+        305
+       ]
+      },
+      {
+       "id": "siltDots",
+       "op": "circle",
+       "startMs": 3800,
+       "endMs": 4200,
+       "ink": "soft",
+       "weight": 1,
+       "c": [
+        530,
+        405
+       ],
+       "r": 5,
+       "fill": "soft"
+      },
+      {
+       "id": "siltDots2",
+       "op": "circle",
+       "startMs": 4000,
+       "endMs": 4400,
+       "ink": "soft",
+       "weight": 1,
+       "c": [
+        590,
+        415
+       ],
+       "r": 5,
+       "fill": "soft"
+      },
+      {
+       "id": "siltDots3",
+       "op": "circle",
+       "startMs": 4200,
+       "endMs": 4600,
+       "ink": "soft",
+       "weight": 1,
+       "c": [
+        650,
+        425
+       ],
+       "r": 5,
+       "fill": "soft"
+      },
+      {
+       "id": "silt",
+       "op": "label",
+       "startMs": 4600,
+       "endMs": 5200,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        665,
+        450
+       ],
+       "text": "silt"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch02-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "tributary",
+       "op": "stroke",
+       "startMs": 0,
+       "endMs": 1800,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         210,
+         420
+        ],
+        [
+         300,
+         390
+        ],
+        [
+         380,
+         360
+        ],
+        [
+         470,
+         350
+        ]
+       ]
+      },
+      {
+       "id": "join",
+       "op": "arrow",
+       "startMs": 1800,
+       "endMs": 2600,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        450,
+        355
+       ],
+       "to": [
+        485,
+        365
+       ]
+      },
+      {
+       "id": "tributaryLabel",
+       "op": "label",
+       "startMs": 2600,
+       "endMs": 3600,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        170,
+        445
+       ],
+       "text": "tributary",
+       "to": [
+        260,
+        400
+       ]
+      },
+      {
+       "id": "main",
+       "op": "label",
+       "startMs": 3600,
+       "endMs": 4600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        490,
+        330
+       ],
+       "text": "main river",
+       "to": [
+        500,
+        365
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch02-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "tributary2",
+       "op": "stroke",
+       "startMs": 0,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         260,
+         250
+        ],
+        [
+         350,
+         290
+        ],
+        [
+         450,
+         350
+        ]
+       ]
+      },
+      {
+       "id": "join2",
+       "op": "arrow",
+       "startMs": 1400,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        420,
+        330
+       ],
+       "to": [
+        470,
+        355
+       ]
+      },
+      {
+       "id": "biggerLabel",
+       "op": "label",
+       "startMs": 3400,
+       "endMs": 4100,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        550,
+        300
+       ],
+       "text": "bigger",
+       "to": [
+        520,
+        350
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch02-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "riverLine",
+       "op": "stroke",
+       "startMs": 0,
+       "endMs": 1300,
+       "ink": "mark",
+       "weight": 2,
+       "points": [
+        [
+         80,
+         300
+        ],
+        [
+         220,
+         290
+        ],
+        [
+         370,
+         315
+        ],
+        [
+         520,
+         300
+        ],
+        [
+         720,
+         320
+        ]
+       ]
+      },
+      {
+       "id": "house",
+       "op": "rect",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        170,
+        220
+       ],
+       "w": 70,
+       "h": 55
+      },
+      {
+       "id": "roof",
+       "op": "polygon",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         155,
+         220
+        ],
+        [
+         205,
+         180
+        ],
+        [
+         255,
+         220
+        ]
+       ]
+      },
+      {
+       "id": "farm",
+       "op": "rect",
+       "startMs": 1500,
+       "endMs": 2100,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        360,
+        210
+       ],
+       "w": 100,
+       "h": 70
+      },
+      {
+       "id": "farmLines",
+       "op": "line",
+       "startMs": 1700,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 1,
+       "from": [
+        375,
+        225
+       ],
+       "to": [
+        445,
+        265
+       ]
+      },
+      {
+       "id": "fish",
+       "op": "ellipse",
+       "startMs": 2100,
+       "endMs": 2600,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        570,
+        250
+       ],
+       "rx": 28,
+       "ry": 14
+      },
+      {
+       "id": "travel",
+       "op": "arrow",
+       "startMs": 2600,
+       "endMs": 3300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        620,
+        300
+       ],
+       "to": [
+        700,
+        300
+       ]
+      },
+      {
+       "id": "people",
+       "op": "label",
+       "startMs": 3300,
+       "endMs": 3800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        150,
+        150
+       ],
+       "text": "people"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch02-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "riverMouth",
+       "op": "stroke",
+       "startMs": 0,
+       "endMs": 1500,
+       "ink": "mark",
+       "weight": 2,
+       "points": [
+        [
+         100,
+         180
+        ],
+        [
+         230,
+         210
+        ],
+        [
+         360,
+         250
+        ],
+        [
+         500,
+         300
+        ],
+        [
+         650,
+         330
+        ]
+       ]
+      },
+      {
+       "id": "sea",
+       "op": "ellipse",
+       "startMs": 900,
+       "endMs": 1800,
+       "ink": "soft",
+       "weight": 1,
+       "c": [
+        680,
+        350
+       ],
+       "rx": 90,
+       "ry": 70,
+       "fill": "soft"
+      },
+      {
+       "id": "mouth",
+       "op": "circle",
+       "startMs": 1700,
+       "endMs": 2300,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        650,
+        330
+       ],
+       "r": 18,
+       "fill": "accent"
+      },
+      {
+       "id": "mouthLabel",
+       "op": "label",
+       "startMs": 2300,
+       "endMs": 3200,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        610,
+        270
+       ],
+       "text": "mouth",
+       "to": [
+        650,
+        330
+       ]
+      },
+      {
+       "id": "seaLabel",
+       "op": "label",
+       "startMs": 3200,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        665,
+        430
+       ],
+       "text": "sea"
+      },
+      {
+       "id": "lake",
+       "op": "ellipse",
+       "startMs": 3700,
+       "endMs": 4500,
+       "ink": "soft",
+       "weight": 1,
+       "c": [
+        210,
+        390
+       ],
+       "rx": 100,
+       "ry": 45,
+       "fill": "soft"
+      },
+      {
+       "id": "lakeLabel",
+       "op": "label",
+       "startMs": 4500,
+       "endMs": 5000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        185,
+        450
+       ],
+       "text": "lake"
+      },
+      {
+       "id": "biggerRiver",
+       "op": "stroke",
+       "startMs": 5000,
+       "endMs": 6100,
+       "ink": "mark",
+       "weight": 2,
+       "points": [
+        [
+         500,
+         440
+        ],
+        [
+         560,
+         390
+        ],
+        [
+         650,
+         330
+        ]
+       ]
+      },
+      {
+       "id": "biggerLabel",
+       "op": "label",
+       "startMs": 6100,
+       "endMs": 6800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        430,
+        455
+       ],
+       "text": "bigger river",
+       "to": [
+        540,
+        390
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "wet: 0.28–0.70",
+   "prompt": "west farm"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "dry: 0.45–1.00",
+   "prompt": "east farm"
+  },
+  {
+   "itemId": "r2",
+   "key": "2,1 → 2,2 → 2,3 → 2,4 → 2,5",
+   "prompt": "trace the river"
+  },
+  {
+   "itemId": "r3",
+   "key": "above 4.4 m (2.6 m with trees)",
+   "prompt": "school"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ },
+ "firstCheck": {
+  "issues": [
+   {
+    "where": "game (round r1)",
+    "what": "The round 'Sea Wind and Hills' is about windward/leeward and rain shadow, not about river myths. The targets field says 'c5-evs-ch02-t01-m2' but the kit's misconception m2 is about rivers flowing downhill based on map orientation, which has no connection to rain shadows or west/east farms. The round does not address the targeted misconception and adds unrelated content.",
+    "severity": "high"
+   },
+   {
+    "where": "explainer",
+    "what": "The task items list 'source2, trib2, plain, mouth2', but the explainer's s5 labels are 'Source', 'Tributary', 'Plains', 'Mouth'. The prompt says 'Tap the river journey in the correct order' and the source item in the kit (c5-evs-ch02-t01-i11) asks to label source, tributary, plains, and mouth. However, the explainer uses different labels (with '2' suffix in the code), which contradicts the kit's exact wording and may confuse learners. This is a factual mismatch.",
+    "severity": "high"
+   }
+  ],
+  "verdict": "fail",
+  "model": "DeepSeek-V4-Flash"
+ },
+ "regens": 2
+}

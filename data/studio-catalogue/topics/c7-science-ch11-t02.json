@@ -1,0 +1,1723 @@
+{
+ "topicId": "c7-science-ch11-t02",
+ "title": "Shadow formation",
+ "chapter": "Light: Shadows and Reflections",
+ "subject": "science",
+ "class": 7,
+ "topicType": "T3",
+ "plan": {
+  "game": "shadow-play@1",
+  "hint": "Shadow Play: luminous/opaque/translucent and shadow formation"
+ },
+ "game": {
+  "archetype": "shadow-play@1",
+  "spec": {
+   "archetype": "shadow-play@1",
+   "skills": [
+    "c7-science-ch11-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "step": "Step",
+    "torch": "Drag the torch",
+    "tall": "TALL",
+    "times": "× the object",
+    "hold": "hold it",
+    "got": "Locked",
+    "band": "Keep the shadow's top in the band",
+    "opaque": "Opaque",
+    "translucent": "Translucent",
+    "transparent": "Transparent",
+    "sort": "Drop each one in the light, then sort it",
+    "done": "Light done",
+    "shadowColour": "shadow colour"
+   },
+   "steps": [
+    {
+     "kind": "size",
+     "factor": 2,
+     "targets": "c7-science-ch11-t02-m3"
+    },
+    {
+     "kind": "catch",
+     "lo": 1.45,
+     "hi": 2.2,
+     "seconds": 4
+    },
+    {
+     "kind": "materials",
+     "items": [
+      "redcard",
+      "card",
+      "tracing",
+      "glass"
+     ],
+     "targets": "c7-science-ch11-t02-m2"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-science-ch11-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "How shadows form",
+   "accent": "sci",
+   "targets": "c7-science-ch11-t02-m1",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "row",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "How shadows form"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "A shadow is a reflection"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "torch",
+       "type": "node",
+       "text": "Light source",
+       "sub": "torch",
+       "glyph": "torch",
+       "color": "sun"
+      },
+      {
+       "id": "ball",
+       "type": "node",
+       "text": "Opaque object",
+       "sub": "blocks light",
+       "color": "sci"
+      },
+      {
+       "id": "wall",
+       "type": "node",
+       "text": "Screen",
+       "sub": "wall",
+       "color": "ion"
+      },
+      {
+       "id": "ray1",
+       "type": "arrow",
+       "from": "torch",
+       "to": "ball",
+       "text": "straight ray"
+      },
+      {
+       "id": "ray2",
+       "type": "arrow",
+       "from": "ball",
+       "to": "wall",
+       "text": "blocked path"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "split",
+     "els": [
+      {
+       "id": "near",
+       "type": "node",
+       "text": "Closer to torch",
+       "sub": "bigger shadow",
+       "color": "amber"
+      },
+      {
+       "id": "far",
+       "type": "node",
+       "text": "Near wall",
+       "sub": "smaller shadow",
+       "color": "mint"
+      },
+      {
+       "id": "big",
+       "type": "bar",
+       "parts": 5,
+       "shaded": 5,
+       "text": "shadow"
+      },
+      {
+       "id": "small",
+       "type": "bar",
+       "parts": 5,
+       "shaded": 2,
+       "text": "shadow"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Light travels in straight lines. A shadow forms when an opaque object blocks those lines.",
+    "L2": "A shadow is not a reflection. It is the dark region behind the object where light cannot reach.",
+    "L3": "To see a shadow, we need a light source, an opaque object, and a screen such as a wall or the ground.",
+    "L4": "The torch sends straight rays toward the wall, but the ball stops the rays in its path.",
+    "L5": "The shadow shows the object's outline, but it does not show its colour or details.",
+    "L6": "Move the object closer to the torch, and it blocks a wider cone of light. Its shadow becomes bigger.",
+    "L7": "Near the wall, the object blocks a narrower cone, so the shadow is about its own size.",
+    "L8": "Turn the object, and the shape of its shadow can change. Now check the idea."
+   },
+   "narration": {},
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "torch",
+        "ball",
+        "wall"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "ray1",
+        "ray2"
+       ]
+      },
+      {
+       "at": 0.5,
+       "do": "flow",
+       "dur": 0.8,
+       "target": [
+        "ray1",
+        "ray2"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "wall"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "near",
+        "big"
+       ]
+      },
+      {
+       "at": 0.5,
+       "do": "scale",
+       "dur": 0.8,
+       "target": "big",
+       "to": 1.2
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "far",
+        "small"
+       ]
+      },
+      {
+       "at": 0.5,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "small"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "interactive",
+       "dur": 0.5
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "What happens when the object moves closer to the light source?",
+    "options": [
+     "near",
+     "far"
+    ],
+    "answer": "near",
+    "src": "c7-science-ch11-t02-i01"
+   }
+  },
+  "repairs": [
+   "glyph",
+   "glyph",
+   "glyph",
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 65
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch11-t02-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "light",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        90,
+        150
+       ],
+       "r": 32,
+       "fill": "accent"
+      },
+      {
+       "id": "sourceLabel",
+       "op": "label",
+       "startMs": 500,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        55,
+        95
+       ],
+       "text": "light",
+       "to": [
+        90,
+        120
+       ]
+      },
+      {
+       "id": "ray1",
+       "op": "line",
+       "startMs": 700,
+       "endMs": 1800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        125,
+        140
+       ],
+       "to": [
+        580,
+        140
+       ]
+      },
+      {
+       "id": "ray2",
+       "op": "line",
+       "startMs": 1000,
+       "endMs": 2100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        125,
+        160
+       ],
+       "to": [
+        580,
+        300
+       ]
+      },
+      {
+       "id": "ray3",
+       "op": "line",
+       "startMs": 1300,
+       "endMs": 2400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        125,
+        180
+       ],
+       "to": [
+        580,
+        420
+       ]
+      },
+      {
+       "id": "object",
+       "op": "rect",
+       "startMs": 2200,
+       "endMs": 3000,
+       "ink": "ink",
+       "weight": 2,
+       "at": [
+        390,
+        190
+       ],
+       "w": 55,
+       "h": 150,
+       "fill": "ink",
+       "round": 4
+      },
+      {
+       "id": "block1",
+       "op": "line",
+       "startMs": 3000,
+       "endMs": 3800,
+       "ink": "soft",
+       "weight": 2,
+       "from": [
+        445,
+        205
+       ],
+       "to": [
+        580,
+        205
+       ]
+      },
+      {
+       "id": "block2",
+       "op": "line",
+       "startMs": 3200,
+       "endMs": 4000,
+       "ink": "soft",
+       "weight": 2,
+       "from": [
+        445,
+        325
+       ],
+       "to": [
+        580,
+        390
+       ]
+      },
+      {
+       "id": "shadow",
+       "op": "polygon",
+       "startMs": 4000,
+       "endMs": 5000,
+       "ink": "soft",
+       "weight": 2,
+       "points": [
+        [
+         580,
+         205
+        ],
+        [
+         720,
+         205
+        ],
+        [
+         720,
+         390
+        ],
+        [
+         580,
+         390
+        ]
+       ],
+       "fill": "soft"
+      },
+      {
+       "id": "shadowLabel",
+       "op": "label",
+       "startMs": 5000,
+       "endMs": 5800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        645,
+        430
+       ],
+       "text": "shadow",
+       "target": "shadow"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 3,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch11-t02-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "reflection",
+       "op": "arrow",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        420,
+        250
+       ],
+       "to": [
+        520,
+        170
+       ]
+      },
+      {
+       "id": "reflectionLabel",
+       "op": "label",
+       "startMs": 1400,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        535,
+        155
+       ],
+       "text": "reflection",
+       "to": [
+        510,
+        180
+       ]
+      },
+      {
+       "id": "darkLabel",
+       "op": "label",
+       "startMs": 2500,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        625,
+        275
+       ],
+       "text": "dark"
+      },
+      {
+       "id": "noLight",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4300,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        620,
+        350
+       ],
+       "text": "no light",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "behind",
+       "op": "label",
+       "startMs": 4500,
+       "endMs": 5300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        575,
+        180
+       ],
+       "text": "behind",
+       "to": [
+        590,
+        210
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch11-t02-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9962,
+     "ops": [
+      {
+       "id": "source",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        100,
+        250
+       ],
+       "r": 35,
+       "fill": "accent"
+      },
+      {
+       "id": "sourceText",
+       "op": "text",
+       "startMs": 600,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        100,
+        320
+       ],
+       "text": "source",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "opaque",
+       "op": "rect",
+       "startMs": 1300,
+       "endMs": 2000,
+       "ink": "ink",
+       "weight": 2,
+       "at": [
+        350,
+        215
+       ],
+       "w": 45,
+       "h": 100,
+       "fill": "ink",
+       "round": 4
+      },
+      {
+       "id": "opaqueText",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        372,
+        180
+       ],
+       "text": "opaque",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "wall",
+       "op": "rect",
+       "startMs": 2500,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        680,
+        100
+       ],
+       "w": 18,
+       "h": 300,
+       "fill": "soft"
+      },
+      {
+       "id": "wallText",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 4000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        690,
+        430
+       ],
+       "text": "wall",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "rayA",
+       "op": "line",
+       "startMs": 4000,
+       "endMs": 5000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        135,
+        235
+       ],
+       "to": [
+        350,
+        235
+       ]
+      },
+      {
+       "id": "rayB",
+       "op": "line",
+       "startMs": 4200,
+       "endMs": 5200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        135,
+        265
+       ],
+       "to": [
+        350,
+        300
+       ]
+      },
+      {
+       "id": "screenRay",
+       "op": "line",
+       "startMs": 5200,
+       "endMs": 6200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        395,
+        235
+       ],
+       "to": [
+        680,
+        235
+       ]
+      },
+      {
+       "id": "ground",
+       "op": "line",
+       "startMs": 6500,
+       "endMs": 7300,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        60,
+        450
+       ],
+       "to": [
+        740,
+        450
+       ]
+      },
+      {
+       "id": "groundText",
+       "op": "text",
+       "startMs": 7300,
+       "endMs": 8000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        760,
+        450
+       ],
+       "text": "ground",
+       "size": "s"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch11-t02-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "torch",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        90,
+        250
+       ],
+       "r": 32,
+       "fill": "accent"
+      },
+      {
+       "id": "torchText",
+       "op": "text",
+       "startMs": 500,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        90,
+        310
+       ],
+       "text": "torch",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "wall4",
+       "op": "line",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 3,
+       "from": [
+        690,
+        100
+       ],
+       "to": [
+        690,
+        410
+       ]
+      },
+      {
+       "id": "ball",
+       "op": "circle",
+       "startMs": 1600,
+       "endMs": 2400,
+       "ink": "ink",
+       "weight": 2,
+       "c": [
+        360,
+        250
+       ],
+       "r": 42,
+       "fill": "ink"
+      },
+      {
+       "id": "ballText",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        360,
+        325
+       ],
+       "text": "ball",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "straight1",
+       "op": "line",
+       "startMs": 2900,
+       "endMs": 3900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        125,
+        235
+       ],
+       "to": [
+        318,
+        235
+       ]
+      },
+      {
+       "id": "straight2",
+       "op": "line",
+       "startMs": 3100,
+       "endMs": 4100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        125,
+        265
+       ],
+       "to": [
+        318,
+        265
+       ]
+      },
+      {
+       "id": "blocked1",
+       "op": "line",
+       "startMs": 4300,
+       "endMs": 5400,
+       "ink": "soft",
+       "weight": 2,
+       "from": [
+        402,
+        235
+       ],
+       "to": [
+        690,
+        235
+       ]
+      },
+      {
+       "id": "blocked2",
+       "op": "line",
+       "startMs": 4500,
+       "endMs": 5600,
+       "ink": "soft",
+       "weight": 2,
+       "from": [
+        402,
+        265
+       ],
+       "to": [
+        690,
+        300
+       ]
+      },
+      {
+       "id": "path",
+       "op": "label",
+       "startMs": 5700,
+       "endMs": 6600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        220,
+        205
+       ],
+       "text": "straight rays",
+       "to": [
+        240,
+        240
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch11-t02-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "object5",
+       "op": "polygon",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "ink",
+       "weight": 2,
+       "points": [
+        [
+         300,
+         180
+        ],
+        [
+         350,
+         180
+        ],
+        [
+         375,
+         230
+        ],
+        [
+         350,
+         320
+        ],
+        [
+         300,
+         320
+        ],
+        [
+         275,
+         230
+        ]
+       ],
+       "fill": "ink"
+      },
+      {
+       "id": "shadow5",
+       "op": "polygon",
+       "startMs": 1000,
+       "endMs": 2100,
+       "ink": "soft",
+       "weight": 2,
+       "points": [
+        [
+         520,
+         190
+        ],
+        [
+         650,
+         190
+        ],
+        [
+         675,
+         235
+        ],
+        [
+         650,
+         330
+        ],
+        [
+         520,
+         330
+        ]
+       ],
+       "fill": "soft"
+      },
+      {
+       "id": "outline",
+       "op": "label",
+       "startMs": 2200,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        600,
+        165
+       ],
+       "text": "outline",
+       "to": [
+        590,
+        200
+       ]
+      },
+      {
+       "id": "dark5",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        600,
+        270
+       ],
+       "text": "dark",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "colour",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 4700,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        300,
+        370
+       ],
+       "text": "colour",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "crossColour",
+       "op": "line",
+       "startMs": 4700,
+       "endMs": 5200,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        270,
+        350
+       ],
+       "to": [
+        330,
+        390
+       ]
+      },
+      {
+       "id": "crossColour2",
+       "op": "line",
+       "startMs": 4800,
+       "endMs": 5300,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        330,
+        350
+       ],
+       "to": [
+        270,
+        390
+       ]
+      },
+      {
+       "id": "details",
+       "op": "text",
+       "startMs": 5400,
+       "endMs": 6100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        600,
+        390
+       ],
+       "text": "details",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch11-t02-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "torch6",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        90,
+        250
+       ],
+       "r": 30,
+       "fill": "accent"
+      },
+      {
+       "id": "nearObject",
+       "op": "rect",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "ink",
+       "weight": 2,
+       "at": [
+        220,
+        220
+       ],
+       "w": 35,
+       "h": 70,
+       "fill": "ink",
+       "round": 3
+      },
+      {
+       "id": "wall6",
+       "op": "line",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 3,
+       "from": [
+        690,
+        100
+       ],
+       "to": [
+        690,
+        410
+       ]
+      },
+      {
+       "id": "wide1",
+       "op": "line",
+       "startMs": 1600,
+       "endMs": 2400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        120,
+        230
+       ],
+       "to": [
+        220,
+        220
+       ]
+      },
+      {
+       "id": "wide2",
+       "op": "line",
+       "startMs": 1800,
+       "endMs": 2600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        120,
+        270
+       ],
+       "to": [
+        220,
+        290
+       ]
+      },
+      {
+       "id": "wide3",
+       "op": "line",
+       "startMs": 2700,
+       "endMs": 3900,
+       "ink": "soft",
+       "weight": 2,
+       "from": [
+        255,
+        220
+       ],
+       "to": [
+        690,
+        150
+       ]
+      },
+      {
+       "id": "wide4",
+       "op": "line",
+       "startMs": 2900,
+       "endMs": 4100,
+       "ink": "soft",
+       "weight": 2,
+       "from": [
+        255,
+        290
+       ],
+       "to": [
+        690,
+        390
+       ]
+      },
+      {
+       "id": "bigShadow",
+       "op": "polygon",
+       "startMs": 4100,
+       "endMs": 5200,
+       "ink": "soft",
+       "weight": 2,
+       "points": [
+        [
+         690,
+         150
+        ],
+        [
+         690,
+         390
+        ],
+        [
+         760,
+         390
+        ],
+        [
+         760,
+         150
+        ]
+       ],
+       "fill": "soft"
+      },
+      {
+       "id": "bigger",
+       "op": "label",
+       "startMs": 5500,
+       "endMs": 6300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        730,
+        430
+       ],
+       "text": "bigger",
+       "to": [
+        725,
+        380
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch11-t02-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "torch7",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        90,
+        250
+       ],
+       "r": 30,
+       "fill": "accent"
+      },
+      {
+       "id": "nearWallObject",
+       "op": "rect",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "ink",
+       "weight": 2,
+       "at": [
+        570,
+        220
+       ],
+       "w": 35,
+       "h": 70,
+       "fill": "ink",
+       "round": 3
+      },
+      {
+       "id": "wall7",
+       "op": "line",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 3,
+       "from": [
+        690,
+        100
+       ],
+       "to": [
+        690,
+        410
+       ]
+      },
+      {
+       "id": "narrow1",
+       "op": "line",
+       "startMs": 1600,
+       "endMs": 2500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        120,
+        242
+       ],
+       "to": [
+        570,
+        220
+       ]
+      },
+      {
+       "id": "narrow2",
+       "op": "line",
+       "startMs": 1800,
+       "endMs": 2700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        120,
+        258
+       ],
+       "to": [
+        570,
+        290
+       ]
+      },
+      {
+       "id": "short1",
+       "op": "line",
+       "startMs": 2900,
+       "endMs": 3600,
+       "ink": "soft",
+       "weight": 2,
+       "from": [
+        605,
+        220
+       ],
+       "to": [
+        690,
+        220
+       ]
+      },
+      {
+       "id": "short2",
+       "op": "line",
+       "startMs": 3100,
+       "endMs": 3800,
+       "ink": "soft",
+       "weight": 2,
+       "from": [
+        605,
+        290
+       ],
+       "to": [
+        690,
+        290
+       ]
+      },
+      {
+       "id": "smallShadow",
+       "op": "rect",
+       "startMs": 3900,
+       "endMs": 4800,
+       "ink": "soft",
+       "weight": 2,
+       "at": [
+        690,
+        220
+       ],
+       "w": 45,
+       "h": 70,
+       "fill": "soft"
+      },
+      {
+       "id": "ownSize",
+       "op": "label",
+       "startMs": 5000,
+       "endMs": 5900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        710,
+        330
+       ],
+       "text": "own size",
+       "to": [
+        710,
+        290
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch11-t02-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "object8",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "ink",
+       "weight": 2,
+       "at": [
+        300,
+        180
+       ],
+       "w": 55,
+       "h": 130,
+       "fill": "ink",
+       "round": 3
+      },
+      {
+       "id": "shadow8a",
+       "op": "polygon",
+       "startMs": 1000,
+       "endMs": 1900,
+       "ink": "soft",
+       "weight": 2,
+       "points": [
+        [
+         520,
+         180
+        ],
+        [
+         650,
+         210
+        ],
+        [
+         650,
+         350
+        ],
+        [
+         520,
+         310
+        ]
+       ],
+       "fill": "soft"
+      },
+      {
+       "id": "turnArrow",
+       "op": "arrow",
+       "startMs": 2000,
+       "endMs": 3000,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        330,
+        150
+       ],
+       "to": [
+        400,
+        115
+       ],
+       "bend": 1
+      },
+      {
+       "id": "turned",
+       "op": "polygon",
+       "startMs": 3100,
+       "endMs": 4000,
+       "ink": "ink",
+       "weight": 2,
+       "points": [
+        [
+         300,
+         240
+        ],
+        [
+         420,
+         200
+        ],
+        [
+         445,
+         260
+        ],
+        [
+         325,
+         300
+        ]
+       ],
+       "fill": "ink"
+      },
+      {
+       "id": "shadow8b",
+       "op": "polygon",
+       "startMs": 4000,
+       "endMs": 5100,
+       "ink": "soft",
+       "weight": 2,
+       "points": [
+        [
+         520,
+         200
+        ],
+        [
+         690,
+         175
+        ],
+        [
+         690,
+         350
+        ],
+        [
+         520,
+         320
+        ]
+       ],
+       "fill": "soft"
+      },
+      {
+       "id": "shapeText",
+       "op": "label",
+       "startMs": 5200,
+       "endMs": 6000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        625,
+        390
+       ],
+       "text": "shape",
+       "to": [
+        620,
+        350
+       ]
+      },
+      {
+       "id": "check",
+       "op": "text",
+       "startMs": 6000,
+       "endMs": 6800,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        450
+       ],
+       "text": "check the idea",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

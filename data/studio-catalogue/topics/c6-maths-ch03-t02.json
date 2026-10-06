@@ -1,0 +1,1869 @@
+{
+ "topicId": "c6-maths-ch03-t02",
+ "title": "Playing with digits and palindromes",
+ "chapter": "Number Play",
+ "subject": "maths",
+ "class": 6,
+ "topicType": "T5",
+ "plan": {
+  "game": "sieve-storm@1",
+  "hint": "rules palindrome and square; digit properties"
+ },
+ "game": {
+  "archetype": "sieve-storm@1",
+  "spec": {
+   "archetype": "sieve-storm@1",
+   "skills": [
+    "c6-maths-ch03-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "slashed": "right calls",
+    "combo": "combo",
+    "coach": "Swipe numbers that fit",
+    "runDone": "Storm over",
+    "prime": "prime",
+    "composite": "composite",
+    "even": "even",
+    "odd": "odd",
+    "multipleOf": "multiples of",
+    "commonOf": "common multiples of",
+    "factorOf": "factors of",
+    "cfactorOf": "common factors of",
+    "divisibleBy": "divisible by",
+    "coprimeWith": "co-prime with",
+    "square": "square numbers",
+    "palindrome": "palindromes",
+    "slipped": "slipped",
+    "wrongCut": "not this one",
+    "and": "and"
+   },
+   "title": "Sieve Storm: Digits",
+   "rounds": [
+    {
+     "rule": "palindrome",
+     "title": "Palindrome watch",
+     "sub": "Read each number both ways",
+     "lo": 10,
+     "hi": 99,
+     "count": 12,
+     "hitRate": 0.4,
+     "seed": 21,
+     "speed": 0.8
+    },
+    {
+     "rule": "square",
+     "title": "Square number rain",
+     "sub": "",
+     "lo": 2,
+     "hi": 99,
+     "count": 14,
+     "hitRate": 0.35,
+     "seed": 48,
+     "speed": 1
+    },
+    {
+     "rule": "palindrome",
+     "title": "Check the pattern",
+     "sub": "Do not trust only a few examples",
+     "lo": 100,
+     "hi": 999,
+     "count": 16,
+     "hitRate": 0.3,
+     "seed": 73,
+     "speed": 1.2,
+     "targets": "c6-maths-ch03-t02-m-few-works"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c6-maths-ch03-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Correct",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "BUSTED",
+    "order": "Tap in order"
+   },
+   "title": "Digits, patterns and 6174",
+   "accent": "ion",
+   "targets": "c6-maths-ch03-t02-m-few-works",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "row",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Digits, patterns and 6174"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "A few examples prove a pattern always works"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "split",
+     "els": [
+      {
+       "id": "sum",
+       "type": "bar",
+       "parts": 4,
+       "shaded": 4,
+       "x": 90,
+       "y": 300,
+       "w": 420,
+       "text": "4+7+5+2=18"
+      },
+      {
+       "id": "small",
+       "type": "node",
+       "text": "99",
+       "sub": "sum 18",
+       "glyph": "coin",
+       "x": 200,
+       "y": 210,
+       "color": "amber"
+      },
+      {
+       "id": "large",
+       "type": "node",
+       "text": "1000",
+       "sub": "sum 1",
+       "glyph": "bank",
+       "x": 600,
+       "y": 210,
+       "color": "ion"
+      },
+      {
+       "id": "compare",
+       "type": "arrow",
+       "from": "small",
+       "to": "large",
+       "text": "compare"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "p1",
+       "type": "node",
+       "text": "121",
+       "sub": "palindrome",
+       "glyph": "mirror",
+       "x": 180,
+       "y": 220,
+       "color": "mint"
+      },
+      {
+       "id": "p2",
+       "type": "node",
+       "text": "47",
+       "sub": "start",
+       "glyph": "ruler",
+       "x": 500,
+       "y": 180,
+       "color": "ion"
+      },
+      {
+       "id": "p3",
+       "type": "node",
+       "text": "74",
+       "sub": "reverse",
+       "glyph": "ruler",
+       "x": 500,
+       "y": 360,
+       "color": "ion"
+      },
+      {
+       "id": "p4",
+       "type": "node",
+       "text": "121",
+       "sub": "palindrome",
+       "glyph": "mirror",
+       "x": 800,
+       "y": 260,
+       "color": "mint"
+      },
+      {
+       "id": "r1",
+       "type": "arrow",
+       "from": "p2",
+       "to": "p3",
+       "text": "reverse"
+      },
+      {
+       "id": "r2",
+       "type": "arrow",
+       "from": "p2",
+       "to": "p4",
+       "text": "+ reverse"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "k1",
+       "type": "node",
+       "text": "2111",
+       "sub": "start",
+       "glyph": "gear",
+       "x": 130,
+       "y": 270,
+       "color": "ion"
+      },
+      {
+       "id": "k2",
+       "type": "node",
+       "text": "0999",
+       "sub": "keep 0",
+       "glyph": "gear",
+       "x": 380,
+       "y": 180,
+       "color": "amber"
+      },
+      {
+       "id": "k3",
+       "type": "node",
+       "text": "8991",
+       "sub": "next",
+       "glyph": "gear",
+       "x": 620,
+       "y": 180,
+       "color": "amber"
+      },
+      {
+       "id": "k4",
+       "type": "node",
+       "text": "6174",
+       "sub": "repeats",
+       "glyph": "spark",
+       "x": 820,
+       "y": 300,
+       "color": "mint"
+      },
+      {
+       "id": "ka1",
+       "type": "arrow",
+       "from": "k1",
+       "to": "k2",
+       "text": "subtract"
+      },
+      {
+       "id": "ka2",
+       "type": "arrow",
+       "from": "k2",
+       "to": "k3",
+       "text": "subtract"
+      },
+      {
+       "id": "ka3",
+       "type": "arrow",
+       "from": "k3",
+       "to": "k4",
+       "text": "continue"
+      }
+     ]
+    },
+    {
+     "id": "s5",
+     "layout": "row",
+     "els": [
+      {
+       "id": "checkTitle",
+       "type": "title",
+       "text": "Quick check"
+      },
+      {
+       "id": "optA",
+       "type": "node",
+       "text": "6174",
+       "sub": "special number",
+       "glyph": "spark",
+       "x": 200,
+       "y": 300,
+       "color": "mint"
+      },
+      {
+       "id": "optB",
+       "type": "node",
+       "text": "9999",
+       "sub": "all same",
+       "glyph": "question",
+       "x": 500,
+       "y": 300,
+       "color": "amber"
+      },
+      {
+       "id": "optC",
+       "type": "node",
+       "text": "1234",
+       "sub": "four digits",
+       "glyph": "question",
+       "x": 800,
+       "y": 300,
+       "color": "ion"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Numbers can hide patterns in their digits. We can test those patterns instead of guessing.",
+    "L2": "A digit sum adds the digits, so 4752 has digit sum 18.",
+    "L3": "A bigger number does not always have a bigger digit sum: 99 has sum 18, but 1000 has sum 1.",
+    "L4": "A palindrome reads the same forwards and backwards, like 121.",
+    "L5": "With reverse-and-add, 47 plus its reverse, 74, makes 121, a palindrome.",
+    "L6": "For the Kaprekar routine, arrange four digits largest-first and smallest-first, keeping every zero, then subtract.",
+    "L7": "Starting with 2111, the routine reaches 6174, and 6174 repeats when the routine is continued.",
+    "L8": "But a few successful examples do not prove a pattern for every number. A conjecture needs full checking or an explanation."
+   },
+   "narration": {
+    "L1": {
+     "text": "Numbers can hide patterns in their digits. We can test those patterns instead of guessing.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "A digit sum adds the digits, so 4752 has digit sum 18.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "A bigger number does not always have a bigger digit sum: 99 has sum 18, but 1000 has sum 1.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "A palindrome reads the same forwards and backwards, like 121.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "With reverse-and-add, 47 plus its reverse, 74, makes 121, a palindrome.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "For the Kaprekar routine, arrange four digits largest-first and smallest-first, keeping every zero, then subtract.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Starting with 2111, the routine reaches 6174, and 6174 repeats when the routine is continued.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "But a few successful examples do not prove a pattern for every number. A conjecture needs full checking or an explanation.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "title"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "sum"
+      },
+      {
+       "at": 0.5,
+       "do": "count",
+       "dur": 1,
+       "target": "sum",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "small",
+        "large"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 1,
+       "target": "small"
+      },
+      {
+       "at": 1.5,
+       "do": "highlight",
+       "dur": 1,
+       "target": "large"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "p1"
+      },
+      {
+       "at": 0.8,
+       "do": "focus",
+       "dur": 1,
+       "target": "p1"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "p2",
+        "p3"
+       ]
+      },
+      {
+       "at": 0.7,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "r1",
+       "to": 1
+      },
+      {
+       "at": 1.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": "p4"
+      },
+      {
+       "at": 2,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "r2",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "k1"
+      },
+      {
+       "at": 0.7,
+       "do": "show",
+       "dur": 0.7,
+       "target": "k2"
+      },
+      {
+       "at": 1.4,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "ka1",
+       "to": 1
+      },
+      {
+       "at": 2,
+       "do": "show",
+       "dur": 0.7,
+       "target": "k3"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "k4"
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "ka3",
+       "to": 1
+      },
+      {
+       "at": 1.8,
+       "do": "highlight",
+       "dur": 1,
+       "target": "k4"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      },
+      {
+       "at": 1,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      },
+      {
+       "at": "end",
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which number is the repeating result of the 4-digit Kaprekar routine?",
+    "options": [
+     "optA",
+     "optB",
+     "optC"
+    ],
+    "answer": "optA",
+    "src": "c6-maths-ch03-t02-i12"
+   }
+  },
+  "repairs": [],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 36
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch03-t02-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "title",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "digit patterns",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "digits",
+       "op": "numwork",
+       "startMs": 1000,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        180,
+        170
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "4",
+         "7",
+         "5",
+         "2"
+        ]
+       ]
+      },
+      {
+       "id": "pattern",
+       "op": "ellipse",
+       "startMs": 2300,
+       "endMs": 3400,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        175
+       ],
+       "rx": 150,
+       "ry": 55
+      },
+      {
+       "id": "arrow",
+       "op": "arrow",
+       "startMs": 3500,
+       "endMs": 4100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        235
+       ],
+       "to": [
+        400,
+        280
+       ]
+      },
+      {
+       "id": "test",
+       "op": "text",
+       "startMs": 3800,
+       "endMs": 4700,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        400,
+        300
+       ],
+       "text": "test patterns",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "check",
+       "op": "circle",
+       "startMs": 4900,
+       "endMs": 5700,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        400,
+        365
+       ],
+       "r": 38
+      },
+      {
+       "id": "notguess",
+       "op": "text",
+       "startMs": 5800,
+       "endMs": 6600,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        440
+       ],
+       "text": "not guessing",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch03-t02-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "sumtitle",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        65
+       ],
+       "text": "digit sum",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "digitsum",
+       "op": "numwork",
+       "startMs": 900,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        270,
+        150
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "4",
+         "+",
+         "7",
+         "+",
+         "5",
+         "+",
+         "2",
+         "=",
+         "18"
+        ]
+       ]
+      },
+      {
+       "id": "bracket",
+       "op": "line",
+       "startMs": 2700,
+       "endMs": 3200,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        275,
+        205
+       ],
+       "to": [
+        525,
+        205
+       ]
+      },
+      {
+       "id": "result",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 4000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        280
+       ],
+       "text": "4752",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "sumlabel",
+       "op": "label",
+       "startMs": 4100,
+       "endMs": 4800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        355
+       ],
+       "text": "18"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch03-t02-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9111,
+     "ops": [
+      {
+       "id": "big",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        130
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "99",
+         "=",
+         "9",
+         "+",
+         "9",
+         "=",
+         "18"
+        ]
+       ]
+      },
+      {
+       "id": "small",
+       "op": "numwork",
+       "startMs": 2000,
+       "endMs": 4000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        250
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "1000",
+         "=",
+         "1",
+         "+",
+         "0",
+         "+",
+         "0",
+         "+",
+         "0",
+         "=",
+         "1"
+        ]
+       ]
+      },
+      {
+       "id": "bignum",
+       "op": "text",
+       "startMs": 4200,
+       "endMs": 4800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        570,
+        145
+       ],
+       "text": "99",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "smallnum",
+       "op": "text",
+       "startMs": 4900,
+       "endMs": 5600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        570,
+        265
+       ],
+       "text": "1000",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "versus",
+       "op": "text",
+       "startMs": 5650,
+       "endMs": 6200,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        570,
+        205
+       ],
+       "text": "but",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "contrast",
+       "op": "arrow",
+       "startMs": 6500,
+       "endMs": 7200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        570,
+        170
+       ],
+       "to": [
+        570,
+        235
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch03-t02-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "pal",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "palindrome",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "forward",
+       "op": "text",
+       "startMs": 1000,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        170
+       ],
+       "text": "121",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "backward",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        280
+       ],
+       "text": "121",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "same",
+       "op": "arrow",
+       "startMs": 2700,
+       "endMs": 3300,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        400,
+        205
+       ],
+       "to": [
+        400,
+        250
+       ]
+      },
+      {
+       "id": "circlepal",
+       "op": "ellipse",
+       "startMs": 3500,
+       "endMs": 4400,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        400,
+        225
+       ],
+       "rx": 70,
+       "ry": 105
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch03-t02-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "reverse",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        65
+       ],
+       "text": "reverse-and-add",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "add",
+       "op": "numwork",
+       "startMs": 1000,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        260,
+        150
+       ],
+       "layout": "column_add",
+       "rows": [
+        [
+         "4",
+         "7"
+        ],
+        [
+         "+",
+         "7",
+         "4"
+        ],
+        [
+         "1",
+         "2",
+         "1"
+        ]
+       ]
+      },
+      {
+       "id": "arrowr",
+       "op": "arrow",
+       "startMs": 2900,
+       "endMs": 3500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        330,
+        115
+       ],
+       "to": [
+        470,
+        115
+       ]
+      },
+      {
+       "id": "pal121",
+       "op": "text",
+       "startMs": 3700,
+       "endMs": 4400,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        370
+       ],
+       "text": "121",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "ring121",
+       "op": "circle",
+       "startMs": 4500,
+       "endMs": 5000,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        400,
+        350
+       ],
+       "r": 55
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch03-t02-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "kap",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "Kaprekar routine",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "four",
+       "op": "text",
+       "startMs": 1000,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        115
+       ],
+       "text": "four digits",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "large",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        180,
+        220
+       ],
+       "text": "largest-first",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "small",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        620,
+        220
+       ],
+       "text": "smallest-first",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "zero",
+       "op": "text",
+       "startMs": 2900,
+       "endMs": 3900,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        400,
+        300
+       ],
+       "text": "keep every zero",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "minus",
+       "op": "numwork",
+       "startMs": 4100,
+       "endMs": 5700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        300,
+        385
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "larges",
+         "−",
+         "smalle"
+        ]
+       ]
+      },
+      {
+       "id": "flow",
+       "op": "arrow",
+       "startMs": 5800,
+       "endMs": 6400,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        400,
+        330
+       ],
+       "to": [
+        400,
+        370
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch03-t02-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "start",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        60
+       ],
+       "text": "2111",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "step1",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        125
+       ],
+       "text": "0999",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "step2",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 2000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        190
+       ],
+       "text": "8991",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "step3",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        255
+       ],
+       "text": "8082",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "step4",
+       "op": "text",
+       "startMs": 2800,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        320
+       ],
+       "text": "8532",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "goal",
+       "op": "text",
+       "startMs": 3700,
+       "endMs": 4500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        220
+       ],
+       "text": "6174",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "repeat",
+       "op": "numwork",
+       "startMs": 4700,
+       "endMs": 6200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        470,
+        180
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "7641",
+         "−",
+         "1467",
+         "=",
+         "6174"
+        ]
+       ]
+      },
+      {
+       "id": "loop",
+       "op": "arrow",
+       "startMs": 6250,
+       "endMs": 6800,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        535,
+        250
+       ],
+       "to": [
+        535,
+        310
+       ],
+       "bend": 1
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch03-t02-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9536,
+     "ops": [
+      {
+       "id": "examples",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        65
+       ],
+       "text": "few examples",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "arrowex",
+       "op": "arrow",
+       "startMs": 1000,
+       "endMs": 1500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        105
+       ],
+       "to": [
+        400,
+        160
+       ]
+      },
+      {
+       "id": "conj",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        205
+       ],
+       "text": "conjecture",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "question",
+       "op": "text",
+       "startMs": 2800,
+       "endMs": 3600,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        400,
+        270
+       ],
+       "text": "every number?",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "check",
+       "op": "circle",
+       "startMs": 4000,
+       "endMs": 4800,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        270,
+        390
+       ],
+       "r": 48
+      },
+      {
+       "id": "explain",
+       "op": "rect",
+       "startMs": 4000,
+       "endMs": 4800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        475,
+        345
+       ],
+       "w": 180,
+       "h": 90,
+       "round": 12
+      },
+      {
+       "id": "full",
+       "op": "text",
+       "startMs": 4900,
+       "endMs": 5900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        270,
+        390
+       ],
+       "text": "full checking",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "explanation",
+       "op": "text",
+       "startMs": 4900,
+       "endMs": 5900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        565,
+        390
+       ],
+       "text": "explanation",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "conclude",
+       "op": "text",
+       "startMs": 6900,
+       "endMs": 8200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        470
+       ],
+       "text": "check or explain",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 39 palindrome?"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 66 palindrome?"
+  },
+  {
+   "itemId": "r1:2",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 10 palindrome?"
+  },
+  {
+   "itemId": "r1:3",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 70 palindrome?"
+  },
+  {
+   "itemId": "r1:4",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 77 palindrome?"
+  },
+  {
+   "itemId": "r1:5",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 46 palindrome?"
+  },
+  {
+   "itemId": "r1:6",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 55 palindrome?"
+  },
+  {
+   "itemId": "r1:7",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 38 palindrome?"
+  },
+  {
+   "itemId": "r1:8",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 78 palindrome?"
+  },
+  {
+   "itemId": "r1:9",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 33 palindrome?"
+  },
+  {
+   "itemId": "r1:10",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 59 palindrome?"
+  },
+  {
+   "itemId": "r1:11",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 24 palindrome?"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 50 square?"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 99 square?"
+  },
+  {
+   "itemId": "r2:2",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 88 square?"
+  },
+  {
+   "itemId": "r2:3",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 81 square?"
+  },
+  {
+   "itemId": "r2:4",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 49 square?"
+  },
+  {
+   "itemId": "r2:5",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 34 square?"
+  },
+  {
+   "itemId": "r2:6",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 45 square?"
+  },
+  {
+   "itemId": "r2:7",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 94 square?"
+  },
+  {
+   "itemId": "r2:8",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 36 square?"
+  },
+  {
+   "itemId": "r2:9",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 44 square?"
+  },
+  {
+   "itemId": "r2:10",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 9 square?"
+  },
+  {
+   "itemId": "r2:11",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 43 square?"
+  },
+  {
+   "itemId": "r2:12",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 4 square?"
+  },
+  {
+   "itemId": "r2:13",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 61 square?"
+  },
+  {
+   "itemId": "r3:0",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 766 palindrome?"
+  },
+  {
+   "itemId": "r3:1",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 170 palindrome?"
+  },
+  {
+   "itemId": "r3:2",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 478 palindrome?"
+  },
+  {
+   "itemId": "r3:3",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 161 palindrome?"
+  },
+  {
+   "itemId": "r3:4",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 361 palindrome?"
+  },
+  {
+   "itemId": "r3:5",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 815 palindrome?"
+  },
+  {
+   "itemId": "r3:6",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 801 palindrome?"
+  },
+  {
+   "itemId": "r3:7",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 665 palindrome?"
+  },
+  {
+   "itemId": "r3:8",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 748 palindrome?"
+  },
+  {
+   "itemId": "r3:9",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 972 palindrome?"
+  },
+  {
+   "itemId": "r3:10",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 650 palindrome?"
+  },
+  {
+   "itemId": "r3:11",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 519 palindrome?"
+  },
+  {
+   "itemId": "r3:12",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 544 palindrome?"
+  },
+  {
+   "itemId": "r3:13",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 137 palindrome?"
+  },
+  {
+   "itemId": "r3:14",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 688 palindrome?"
+  },
+  {
+   "itemId": "r3:15",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 151 palindrome?"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

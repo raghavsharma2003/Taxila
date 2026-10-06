@@ -1,0 +1,1688 @@
+{
+ "topicId": "c4-evs-ch01-t01",
+ "title": "Living as a community",
+ "chapter": "Living Together",
+ "subject": "evs",
+ "class": 4,
+ "topicType": "T3",
+ "plan": {
+  "game": "town-lab@1",
+  "hint": "council mode: a community deciding together what to fund"
+ },
+ "game": {
+  "archetype": "town-lab@1",
+  "spec": {
+   "archetype": "town-lab@1",
+   "skills": [
+    "c4-evs-ch01-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "done": "right",
+    "have": "you have",
+    "need": "you need",
+    "has": "has",
+    "wants": "wants",
+    "trades": "trades",
+    "market": "market",
+    "coins": "coins",
+    "open": "OPEN",
+    "price": "price",
+    "cost": "cost",
+    "profit": "profit",
+    "sold": "sold",
+    "target": "target",
+    "stock": "stock",
+    "lock": "LOCK",
+    "run": "RUN",
+    "perMonth": "per month",
+    "years": "years",
+    "goal": "goal",
+    "saved": "saved",
+    "interest": "interest",
+    "budget": "budget",
+    "left": "left",
+    "families": "families helped",
+    "runDone": "Town closed",
+    "noDeal": "no deal",
+    "reset": "start again",
+    "rupee": "₹"
+   },
+   "title": "Town Lab",
+   "rounds": [
+    {
+     "mode": "barter",
+     "title": "Swap help in the lane",
+     "sub": "chain trades to get what you need",
+     "start": "water",
+     "goal": "vegetables",
+     "traders": [
+      {
+       "name": "Sweeper",
+       "glyph": "person",
+       "has": "cleaning",
+       "wants": "water"
+      },
+      {
+       "name": "Seller",
+       "glyph": "shop",
+       "has": "vegetables",
+       "wants": "cleaning"
+      }
+     ],
+     "money": true
+    },
+    {
+     "mode": "market",
+     "title": "Vegetable stall",
+     "sub": "set a price for the lane",
+     "good": "vegetables",
+     "glyph": "wheat",
+     "cost": 20,
+     "stock": 8,
+     "buyers": [
+      25,
+      30,
+      35,
+      40,
+      45,
+      50,
+      55,
+      60
+     ],
+     "target": 90
+    },
+    {
+     "mode": "savings",
+     "title": "Save for a shared goal",
+     "sub": "choose monthly saving for a goal",
+     "goal": 1000,
+     "years": 2,
+     "rate": 5
+    },
+    {
+     "mode": "council",
+     "title": "Every helper counts",
+     "sub": "choose projects for more families",
+     "budget": 50,
+     "projects": [
+      {
+       "name": "Clean street",
+       "glyph": "road",
+       "cost": 10,
+       "helps": 80
+      },
+      {
+       "name": "Safe gate",
+       "glyph": "shield",
+       "cost": 12,
+       "helps": 70
+      },
+      {
+       "name": "Fresh veg",
+       "glyph": "wheat",
+       "cost": 15,
+       "helps": 90
+      },
+      {
+       "name": "Letters route",
+       "glyph": "letter",
+       "cost": 8,
+       "helps": 45
+      },
+      {
+       "name": "Clinic help",
+       "glyph": "hand",
+       "cost": 20,
+       "helps": 100
+      }
+     ],
+     "targets": "c4-evs-ch01-t01-m2"
+    }
+   ]
+  },
+  "repairs": [
+   "market:target-lowered"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c4-evs-ch01-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Living as a community",
+   "accent": "mint",
+   "targets": "c4-evs-ch01-t01-m2",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "row",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Living as a community"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Only doctors and teachers matter"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "community",
+       "type": "node",
+       "text": "Community",
+       "sub": "same place",
+       "glyph": "group",
+       "color": "mint"
+      },
+      {
+       "id": "family",
+       "type": "node",
+       "text": "Family",
+       "sub": "one part",
+       "glyph": "house",
+       "color": "amber"
+      },
+      {
+       "id": "neighbour",
+       "type": "node",
+       "text": "Neighbours",
+       "sub": "share and help",
+       "glyph": "person",
+       "color": "ion"
+      },
+      {
+       "id": "helpers",
+       "type": "node",
+       "text": "Helpers",
+       "sub": "different jobs",
+       "glyph": "hand",
+       "color": "sci"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "family",
+       "to": "community",
+       "text": "part of"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "neighbour",
+       "to": "community",
+       "text": "share"
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "helpers",
+       "to": "community",
+       "text": "depend"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "postman",
+       "type": "node",
+       "text": "Postman",
+       "sub": "letters",
+       "glyph": "letter",
+       "color": "ion"
+      },
+      {
+       "id": "sweeper",
+       "type": "node",
+       "text": "Sweeper",
+       "sub": "clean streets",
+       "glyph": "recycle",
+       "color": "mint"
+      },
+      {
+       "id": "seller",
+       "type": "node",
+       "text": "Seller",
+       "sub": "vegetables",
+       "glyph": "apple",
+       "color": "amber"
+      },
+      {
+       "id": "guard",
+       "type": "node",
+       "text": "Guard",
+       "sub": "keeps watch",
+       "glyph": "shield",
+       "color": "sci"
+      },
+      {
+       "id": "jobs",
+       "type": "label",
+       "text": "Different jobs matter",
+       "x": 300,
+       "y": 520,
+       "color": "mint"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "row",
+     "els": [
+      {
+       "id": "people",
+       "type": "node",
+       "text": "People",
+       "sub": "many hands",
+       "glyph": "group",
+       "color": "mint"
+      },
+      {
+       "id": "clean",
+       "type": "node",
+       "text": "Cleaning",
+       "sub": "shared work",
+       "glyph": "recycle",
+       "color": "sci"
+      },
+      {
+       "id": "trees",
+       "type": "node",
+       "text": "Tree planting",
+       "sub": "shared work",
+       "glyph": "tree",
+       "color": "amber"
+      },
+      {
+       "id": "festival",
+       "type": "node",
+       "text": "Festival",
+       "sub": "celebrate together",
+       "glyph": "spark",
+       "color": "sun"
+      },
+      {
+       "id": "b1",
+       "type": "arrow",
+       "from": "people",
+       "to": "clean",
+       "text": "do together"
+      },
+      {
+       "id": "b2",
+       "type": "arrow",
+       "from": "people",
+       "to": "trees",
+       "text": "do together"
+      },
+      {
+       "id": "b3",
+       "type": "arrow",
+       "from": "people",
+       "to": "festival",
+       "text": "celebrate"
+      }
+     ]
+    },
+    {
+     "id": "s5",
+     "layout": "split",
+     "els": [
+      {
+       "id": "tasktitle",
+       "type": "title",
+       "text": "Cleaning day"
+      },
+      {
+       "id": "planA",
+       "type": "label",
+       "text": "Plan A: all sweep",
+       "x": 100,
+       "y": 350,
+       "color": "amber"
+      },
+      {
+       "id": "planB",
+       "type": "label",
+       "text": "Plan B: split jobs",
+       "x": 550,
+       "y": 350,
+       "color": "mint"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "A community is a group of people who live in the same place and help each other.",
+    "L2": "It is bigger than one family. Neighbours and helpers are part of it too.",
+    "L3": "People do different jobs, such as selling vegetables, sweeping, guarding and teaching.",
+    "L4": "Every job matters because people in a community depend on one another.",
+    "L5": "When people share jobs, big work gets done faster and becomes easier.",
+    "L6": "Cleaning drives, tree planting and festivals bring people closer when we do them together.",
+    "L7": "Now choose the cleaning plan that shows people sharing different jobs."
+   },
+   "narration": {},
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "myth"
+      },
+      {
+       "at": 0.8,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "postman",
+        "sweeper",
+        "seller",
+        "guard"
+       ]
+      },
+      {
+       "at": 1.1,
+       "do": "highlight",
+       "dur": 1,
+       "target": "jobs"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1.2,
+       "target": [
+        "sweeper",
+        "seller"
+       ]
+      },
+      {
+       "at": 1.3,
+       "do": "focus",
+       "dur": 0.8,
+       "target": "jobs"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "people"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "clean",
+        "trees"
+       ]
+      },
+      {
+       "at": 1.3,
+       "do": "flow",
+       "dur": 0.8,
+       "target": [
+        "b1",
+        "b2"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "festival"
+      },
+      {
+       "at": 0.6,
+       "do": "show",
+       "dur": 0.7,
+       "target": "b3"
+      },
+      {
+       "at": 1.1,
+       "do": "highlight",
+       "dur": 1,
+       "target": [
+        "clean",
+        "trees",
+        "festival"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0,
+     "scene": "s5",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "tasktitle",
+        "planA",
+        "planB"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "interactive",
+       "dur": 0.5
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which cleaning plan shows people sharing different jobs?",
+    "options": [
+     "planA",
+     "planB"
+    ],
+    "answer": "planB",
+    "src": "c4-evs-ch01-t01-i11"
+   }
+  },
+  "repairs": [
+   "cue:target",
+   "cue:target"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 45
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-evs-ch01-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "place",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        240
+       ],
+       "r": 150
+      },
+      {
+       "id": "people1",
+       "op": "circle",
+       "startMs": 800,
+       "endMs": 1200,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        350,
+        180
+       ],
+       "r": 22
+      },
+      {
+       "id": "people2",
+       "op": "circle",
+       "startMs": 1000,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        450,
+        180
+       ],
+       "r": 22
+      },
+      {
+       "id": "people3",
+       "op": "circle",
+       "startMs": 1200,
+       "endMs": 1600,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        260
+       ],
+       "r": 22
+      },
+      {
+       "id": "p1",
+       "op": "line",
+       "startMs": 1400,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        350,
+        202
+       ],
+       "to": [
+        350,
+        270
+       ]
+      },
+      {
+       "id": "p2",
+       "op": "line",
+       "startMs": 1500,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        450,
+        202
+       ],
+       "to": [
+        450,
+        270
+       ]
+      },
+      {
+       "id": "p3",
+       "op": "line",
+       "startMs": 1600,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        400,
+        282
+       ],
+       "to": [
+        400,
+        350
+       ]
+      },
+      {
+       "id": "placeLabel",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        100
+       ],
+       "text": "community",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "same",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        410
+       ],
+       "text": "same place",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "help1",
+       "op": "arrow",
+       "startMs": 3900,
+       "endMs": 4500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        320,
+        300
+       ],
+       "to": [
+        380,
+        270
+       ]
+      },
+      {
+       "id": "help2",
+       "op": "arrow",
+       "startMs": 4500,
+       "endMs": 5100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        480,
+        300
+       ],
+       "to": [
+        420,
+        270
+       ]
+      },
+      {
+       "id": "help",
+       "op": "text",
+       "startMs": 5400,
+       "endMs": 6200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        465
+       ],
+       "text": "help each other",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-evs-ch01-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "family",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        70,
+        150
+       ],
+       "w": 180,
+       "h": 130
+      },
+      {
+       "id": "familyLabel",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        160,
+        320
+       ],
+       "text": "one family",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "large",
+       "op": "ellipse",
+       "startMs": 1300,
+       "endMs": 2100,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        550,
+        240
+       ],
+       "rx": 190,
+       "ry": 150
+      },
+      {
+       "id": "neighbours",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        550,
+        100
+       ],
+       "text": "Neighbours",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "helpers",
+       "op": "text",
+       "startMs": 2900,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        550,
+        390
+       ],
+       "text": "helpers",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "join1",
+       "op": "arrow",
+       "startMs": 3600,
+       "endMs": 4200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        250,
+        215
+       ],
+       "to": [
+        350,
+        215
+       ]
+      },
+      {
+       "id": "join2",
+       "op": "arrow",
+       "startMs": 4200,
+       "endMs": 4800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        250,
+        245
+       ],
+       "to": [
+        350,
+        275
+       ]
+      },
+      {
+       "id": "bigger",
+       "op": "highlight",
+       "startMs": 5000,
+       "endMs": 5800,
+       "ink": "good",
+       "weight": 2,
+       "target": "large",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-evs-ch01-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "seller",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        120,
+        150
+       ],
+       "r": 38
+      },
+      {
+       "id": "sellerLabel",
+       "op": "text",
+       "startMs": 500,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        220
+       ],
+       "text": "selling vegetables",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "sweeper",
+       "op": "circle",
+       "startMs": 800,
+       "endMs": 1300,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        320,
+        150
+       ],
+       "r": 38
+      },
+      {
+       "id": "sweeperLabel",
+       "op": "text",
+       "startMs": 1300,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        320,
+        220
+       ],
+       "text": "sweeping",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "guard",
+       "op": "circle",
+       "startMs": 1600,
+       "endMs": 2100,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        520,
+        150
+       ],
+       "r": 38
+      },
+      {
+       "id": "guardLabel",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        520,
+        220
+       ],
+       "text": "guarding",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "teacher",
+       "op": "circle",
+       "startMs": 2400,
+       "endMs": 2900,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        680,
+        150
+       ],
+       "r": 38
+      },
+      {
+       "id": "teacherLabel",
+       "op": "text",
+       "startMs": 2900,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        680,
+        220
+       ],
+       "text": "teaching",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "jobs",
+       "op": "text",
+       "startMs": 3800,
+       "endMs": 4500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        400
+       ],
+       "text": "different jobs",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-evs-ch01-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "jobCircle",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        240
+       ],
+       "r": 105
+      },
+      {
+       "id": "matters",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1600,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        240
+       ],
+       "text": "Every job matters",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "dep1",
+       "op": "arrow",
+       "startMs": 1800,
+       "endMs": 2400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        180,
+        300
+       ],
+       "to": [
+        300,
+        270
+       ]
+      },
+      {
+       "id": "dep2",
+       "op": "arrow",
+       "startMs": 2400,
+       "endMs": 3000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        620,
+        300
+       ],
+       "to": [
+        500,
+        270
+       ]
+      },
+      {
+       "id": "dep3",
+       "op": "arrow",
+       "startMs": 3000,
+       "endMs": 3600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        120
+       ],
+       "to": [
+        400,
+        200
+       ]
+      },
+      {
+       "id": "depend",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        420
+       ],
+       "text": "depend on one another",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-evs-ch01-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "jobA",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        180
+       ],
+       "w": 150,
+       "h": 90
+      },
+      {
+       "id": "jobB",
+       "op": "rect",
+       "startMs": 500,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        325,
+        180
+       ],
+       "w": 150,
+       "h": 90
+      },
+      {
+       "id": "jobC",
+       "op": "rect",
+       "startMs": 1000,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        550,
+        180
+       ],
+       "w": 150,
+       "h": 90
+      },
+      {
+       "id": "share1",
+       "op": "arrow",
+       "startMs": 1700,
+       "endMs": 2300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        250,
+        225
+       ],
+       "to": [
+        325,
+        225
+       ]
+      },
+      {
+       "id": "share2",
+       "op": "arrow",
+       "startMs": 2300,
+       "endMs": 2900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        475,
+        225
+       ],
+       "to": [
+        550,
+        225
+       ]
+      },
+      {
+       "id": "shared",
+       "op": "text",
+       "startMs": 3100,
+       "endMs": 3800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        370
+       ],
+       "text": "share jobs",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "faster",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 4500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        270,
+        440
+       ],
+       "text": "faster",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "easier",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        530,
+        440
+       ],
+       "text": "easier",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-evs-ch01-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "cleaning",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        70,
+        120
+       ],
+       "w": 190,
+       "h": 100
+      },
+      {
+       "id": "cleaningText",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        165,
+        170
+       ],
+       "text": "Cleaning drives",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "tree",
+       "op": "line",
+       "startMs": 900,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        400,
+        220
+       ],
+       "to": [
+        400,
+        120
+       ]
+      },
+      {
+       "id": "treeTop",
+       "op": "circle",
+       "startMs": 1100,
+       "endMs": 1600,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        100
+       ],
+       "r": 45
+      },
+      {
+       "id": "festival",
+       "op": "circle",
+       "startMs": 1400,
+       "endMs": 2000,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        635,
+        170
+       ],
+       "r": 55
+      },
+      {
+       "id": "planting",
+       "op": "text",
+       "startMs": 1600,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        280
+       ],
+       "text": "tree planting",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "festivalText",
+       "op": "text",
+       "startMs": 2000,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        635,
+        260
+       ],
+       "text": "festivals",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "together1",
+       "op": "arrow",
+       "startMs": 2700,
+       "endMs": 3300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        260,
+        170
+       ],
+       "to": [
+        350,
+        170
+       ]
+      },
+      {
+       "id": "together2",
+       "op": "arrow",
+       "startMs": 3300,
+       "endMs": 3900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        450,
+        170
+       ],
+       "to": [
+        575,
+        170
+       ]
+      },
+      {
+       "id": "closer",
+       "op": "text",
+       "startMs": 4200,
+       "endMs": 5100,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        410
+       ],
+       "text": "bring people closer",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-evs-ch01-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "plan",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        170,
+        70
+       ],
+       "w": 460,
+       "h": 90
+      },
+      {
+       "id": "planText",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        115
+       ],
+       "text": "cleaning plan",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "people",
+       "op": "circle",
+       "startMs": 1300,
+       "endMs": 1800,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        160,
+        300
+       ],
+       "r": 35
+      },
+      {
+       "id": "jobs",
+       "op": "rect",
+       "startMs": 1700,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        300,
+        250
+       ],
+       "w": 170,
+       "h": 100
+      },
+      {
+       "id": "jobsText",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        385,
+        300
+       ],
+       "text": "different jobs",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "share",
+       "op": "arrow",
+       "startMs": 3000,
+       "endMs": 3600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        195,
+        300
+       ],
+       "to": [
+        300,
+        300
+       ]
+      },
+      {
+       "id": "choice",
+       "op": "polygon",
+       "startMs": 3200,
+       "endMs": 3800,
+       "ink": "good",
+       "weight": 2,
+       "points": [
+        [
+         570,
+         250
+        ],
+        [
+         650,
+         300
+        ],
+        [
+         570,
+         350
+        ]
+       ]
+      },
+      {
+       "id": "choose",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        610,
+        400
+       ],
+       "text": "choose",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1",
+   "key": "2 trades",
+   "prompt": "chain trades to get what you need"
+  },
+  {
+   "itemId": "r2",
+   "key": "₹40 → profit 100 (target 90)",
+   "prompt": "set a price for the lane"
+  },
+  {
+   "itemId": "r3",
+   "key": "₹41 a month",
+   "prompt": "choose monthly saving for a goal"
+  },
+  {
+   "itemId": "r4",
+   "key": "295 families: Clean street, Safe gate, Letters route, Clinic help",
+   "prompt": "choose projects for more families"
+  }
+ ],
+ "check": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "Round 1 ('Swap help in the lane') names a 'Sweeper' and 'Seller' as traders, which matches kit items. However, the trade chain (water → cleaning → vegetables) does not contradict any kit fact; it is a new scenario. No issue.",
+    "severity": "low"
+   },
+   {
+    "where": "game",
+    "what": "Round 4 ('Every helper counts') includes projects 'Safe gate' (guard), 'Letters route' (postman), 'Clinic help' (doctor). These correctly reflect kit's diverse jobs. The target for misconception c4-evs-ch01-t01-m2 is appropriate. No issue.",
+    "severity": "low"
+   },
+   {
+    "where": "explainer",
+    "what": "Scene s5 labels 'Plan A: all sweep' and 'Plan B: split jobs'. This matches the kit item i11 (two plans for colony cleaning day) and the task answer is 'planB'. Correct. No issue.",
+    "severity": "low"
+   },
+   {
+    "where": "explainer",
+    "what": "The myth 'Only doctors and teachers matter' and the scenes countering it align with kit misconception m2. No factual error.",
+    "severity": "low"
+   }
+  ],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

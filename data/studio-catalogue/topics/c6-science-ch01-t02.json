@@ -1,0 +1,1526 @@
+{
+ "topicId": "c6-science-ch01-t02",
+ "title": "Observing, recording and fair tests",
+ "chapter": "The Wonderful World of Science",
+ "subject": "science",
+ "class": 6,
+ "topicType": "T4",
+ "plan": {
+  "game": "fair-test@1",
+  "hint": "design round (change one thing only) then conclude"
+ },
+ "game": {
+  "archetype": "fair-test@1",
+  "spec": {
+   "archetype": "fair-test@1",
+   "skills": [
+    "c6-science-ch01-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "run": "RUN",
+    "day": "day",
+    "predict": "Tap every setup that will show it",
+    "design": "Make it a fair test",
+    "conclude": "Which factor matters?",
+    "notMatter": "Which factor does NOT matter?",
+    "fair": "FAIR TEST",
+    "unfair": "NOT FAIR",
+    "runDone": "Lab closed",
+    "correct": "right calls",
+    "drip": "Hold to add drops; stop when it turns",
+    "drops": "drops",
+    "neutral": "NEUTRAL",
+    "hint": "change only one thing"
+   },
+   "title": "What helps seeds sprout?",
+   "model": "germination",
+   "rounds": [
+    {
+     "mode": "predict",
+     "title": "Make a prediction",
+     "sub": "which dishes will sprout?",
+     "setups": [
+      {
+       "water": "dry",
+       "air": "yes",
+       "warmth": "warm",
+       "light": "light"
+      },
+      {
+       "water": "moist",
+       "air": "yes",
+       "warmth": "warm",
+       "light": "light"
+      },
+      {
+       "water": "moist",
+       "air": "no",
+       "warmth": "warm",
+       "light": "dark"
+      },
+      {
+       "water": "moist",
+       "air": "yes",
+       "warmth": "cold",
+       "light": "dark"
+      }
+     ]
+    },
+    {
+     "mode": "design",
+     "title": "Plan a fair test",
+     "sub": "change only the light",
+     "vary": "light",
+     "start": [
+      {
+       "water": "moist",
+       "air": "yes",
+       "warmth": "warm",
+       "light": "light"
+      },
+      {
+       "water": "moist",
+       "air": "yes",
+       "warmth": "warm",
+       "light": "dark"
+      }
+     ],
+     "targets": "c6-science-ch01-t02-m1"
+    },
+    {
+     "mode": "conclude",
+     "title": "Conclude",
+     "sub": "what did the test show?",
+     "ask": "not",
+     "options": [
+      "water",
+      "air",
+      "warmth",
+      "light"
+     ],
+     "targets": "c6-science-ch01-t02-m1"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 2,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c6-science-ch01-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Correct",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "BUSTED",
+    "order": "Tap them in order"
+   },
+   "title": "How to make a fair test",
+   "accent": "sci",
+   "targets": "c6-science-ch01-t02-m1",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "How to make a fair test"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Change many things for a quicker answer"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "cloth",
+       "type": "node",
+       "text": "Cloth type",
+       "sub": "change one",
+       "color": "sci"
+      },
+      {
+       "id": "same",
+       "type": "node",
+       "text": "Everything else",
+       "sub": "keep same",
+       "glyph": "balance",
+       "color": "mint"
+      },
+      {
+       "id": "result",
+       "type": "node",
+       "text": "Drying time",
+       "sub": "measure",
+       "glyph": "clock",
+       "color": "amber"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "cloth",
+       "to": "result",
+       "text": "test"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "same",
+       "to": "result",
+       "text": "control"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "table",
+       "type": "bars",
+       "values": [
+        30,
+        20,
+        50
+       ],
+       "labels": [
+        "Cotton",
+        "Nylon",
+        "Wool"
+       ],
+       "unit": "minutes"
+      },
+      {
+       "id": "heading1",
+       "type": "label",
+       "text": "Cloth",
+       "x": 180,
+       "y": 190,
+       "color": "sci"
+      },
+      {
+       "id": "heading2",
+       "type": "label",
+       "text": "Time to dry",
+       "x": 520,
+       "y": 190,
+       "color": "amber"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "measure",
+       "type": "node",
+       "text": "Measure",
+       "sub": "clear units",
+       "glyph": "ruler",
+       "color": "amber"
+      },
+      {
+       "id": "record",
+       "type": "node",
+       "text": "Record",
+       "sub": "table",
+       "glyph": "book",
+       "color": "mint"
+      },
+      {
+       "id": "repeat",
+       "type": "node",
+       "text": "Repeat",
+       "sub": "trust result",
+       "glyph": "recycle",
+       "color": "ion"
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "measure",
+       "to": "record",
+       "text": "write"
+      },
+      {
+       "id": "a4",
+       "type": "arrow",
+       "from": "record",
+       "to": "repeat",
+       "text": "check"
+      },
+      {
+       "id": "a5",
+       "type": "arrow",
+       "from": "repeat",
+       "to": "measure",
+       "text": "again"
+      }
+     ]
+    },
+    {
+     "id": "s5",
+     "layout": "row",
+     "els": [
+      {
+       "id": "tapTitle",
+       "type": "title",
+       "text": "Choose the fair test"
+      },
+      {
+       "id": "planA",
+       "type": "label",
+       "text": "Same size, water, place",
+       "x": 100,
+       "y": 300,
+       "color": "mint"
+      },
+      {
+       "id": "planB",
+       "type": "label",
+       "text": "Different size and place",
+       "x": 520,
+       "y": 300,
+       "color": "amber"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "A fair test changes only one thing: the thing we are testing.",
+    "L2": "Everything else stays the same, so we can tell what caused the result.",
+    "L3": "For a cloth test, change only the type of cloth. Keep its size, water, place and hanging time the same.",
+    "L4": "Measure how long each cloth takes to dry, and record the results in a table with clear headings and units.",
+    "L5": "A result should be an observation or measurement, not an opinion such as good or nice.",
+    "L6": "Repeat the test because one try could be a mistake or happen by chance.",
+    "L7": "Now choose the plan that changes only the cloth type."
+   },
+   "narration": {
+    "L1": {
+     "text": "A fair test changes only one thing: the thing we are testing.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L2": {
+     "text": "Everything else stays the same, so we can tell what caused the result.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L3": {
+     "text": "For a cloth test, change only the type of cloth. Keep its size, water, place and hanging time the same.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L4": {
+     "text": "Measure how long each cloth takes to dry, and record the results in a table with clear headings and units.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L5": {
+     "text": "A result should be an observation or measurement, not an opinion such as good or nice.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Repeat the test because one try could be a mistake or happen by chance.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Now choose the plan that changes only the cloth type.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.3,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      },
+      {
+       "at": 1,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "cloth",
+        "same"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "a1",
+        "a2",
+        "result"
+       ]
+      },
+      {
+       "at": 2,
+       "do": "flow",
+       "dur": 0.7,
+       "target": [
+        "a1",
+        "a2"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "heading1",
+        "heading2",
+        "table"
+       ]
+      },
+      {
+       "at": 1.2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "table"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "measure"
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.7,
+       "target": "record"
+      },
+      {
+       "at": 1.6,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "a3",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "repeat"
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 0.8,
+       "target": [
+        "a4",
+        "a5"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0,
+     "scene": "s5",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "tapTitle",
+        "planA",
+        "planB"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive"
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which plan is a fair test of cloth type?",
+    "options": [
+     "planA",
+     "planB"
+    ],
+    "answer": "planA",
+    "src": "c6-science-ch01-t02-i06"
+   }
+  },
+  "repairs": [
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 35
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch01-t02-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "test",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        250,
+        100
+       ],
+       "w": 300,
+       "h": 260,
+       "round": 12
+      },
+      {
+       "id": "change",
+       "op": "arrow",
+       "startMs": 900,
+       "endMs": 1700,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        400,
+        250
+       ],
+       "to": [
+        400,
+        150
+       ]
+      },
+      {
+       "id": "thing",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        130
+       ],
+       "text": "thing tested",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "one",
+       "op": "circle",
+       "startMs": 2500,
+       "endMs": 3200,
+       "ink": "mark",
+       "weight": 2,
+       "c": [
+        400,
+        250
+       ],
+       "r": 38
+      },
+      {
+       "id": "oneLabel",
+       "op": "text",
+       "startMs": 3200,
+       "endMs": 3700,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        400,
+        257
+       ],
+       "text": "one",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "fair",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 4900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        410
+       ],
+       "text": "fair test",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch01-t02-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "same",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        110,
+        100
+       ],
+       "w": 180,
+       "h": 100,
+       "round": 10
+      },
+      {
+       "id": "sameText",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        200,
+        155
+       ],
+       "text": "same",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "sameArrow",
+       "op": "arrow",
+       "startMs": 1400,
+       "endMs": 2200,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        290,
+        150
+       ],
+       "to": [
+        500,
+        150
+       ]
+      },
+      {
+       "id": "result",
+       "op": "circle",
+       "startMs": 2300,
+       "endMs": 3000,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        600,
+        150
+       ],
+       "r": 48
+      },
+      {
+       "id": "resultText",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        600,
+        157
+       ],
+       "text": "result",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "cause",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4700,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        400,
+        330
+       ],
+       "text": "cause",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "causeArrow",
+       "op": "arrow",
+       "startMs": 4700,
+       "endMs": 5600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        300
+       ],
+       "to": [
+        600,
+        210
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch01-t02-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9111,
+     "ops": [
+      {
+       "id": "clothBox",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        70,
+        70
+       ],
+       "w": 660,
+       "h": 350,
+       "round": 12
+      },
+      {
+       "id": "cloth",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        115
+       ],
+       "text": "cloth type",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "cotton",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        150,
+        210
+       ],
+       "text": "cotton",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "nylon",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        210
+       ],
+       "text": "nylon",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "wool",
+       "op": "text",
+       "startMs": 2900,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        650,
+        210
+       ],
+       "text": "wool",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "size",
+       "op": "label",
+       "startMs": 3700,
+       "endMs": 4400,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        130,
+        300
+       ],
+       "text": "same size",
+       "to": [
+        130,
+        260
+       ]
+      },
+      {
+       "id": "water",
+       "op": "label",
+       "startMs": 4400,
+       "endMs": 5200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        330,
+        300
+       ],
+       "text": "same water",
+       "to": [
+        330,
+        260
+       ]
+      },
+      {
+       "id": "place",
+       "op": "label",
+       "startMs": 5200,
+       "endMs": 6000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        520,
+        300
+       ],
+       "text": "same place",
+       "to": [
+        520,
+        260
+       ]
+      },
+      {
+       "id": "time",
+       "op": "label",
+       "startMs": 6000,
+       "endMs": 6800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        670,
+        300
+       ],
+       "text": "same time",
+       "to": [
+        670,
+        260
+       ]
+      },
+      {
+       "id": "only",
+       "op": "text",
+       "startMs": 7200,
+       "endMs": 8300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        380
+       ],
+       "text": "only cloth type changes",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch01-t02-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 9111,
+     "ops": [
+      {
+       "id": "table",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        80
+       ],
+       "w": 560,
+       "h": 300
+      },
+      {
+       "id": "vline",
+       "op": "line",
+       "startMs": 700,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        350,
+        80
+       ],
+       "to": [
+        350,
+        380
+       ]
+      },
+      {
+       "id": "hline",
+       "op": "line",
+       "startMs": 1100,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        120,
+        150
+       ],
+       "to": [
+        680,
+        150
+       ]
+      },
+      {
+       "id": "clothHead",
+       "op": "text",
+       "startMs": 1600,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        235,
+        125
+       ],
+       "text": "Cloth",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "timeHead",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        515,
+        115
+       ],
+       "text": "Time to dry",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "unit",
+       "op": "text",
+       "startMs": 2900,
+       "endMs": 3400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        515,
+        140
+       ],
+       "text": "minutes",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "measure",
+       "op": "arrow",
+       "startMs": 3800,
+       "endMs": 4400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        420
+       ],
+       "to": [
+        400,
+        390
+       ]
+      },
+      {
+       "id": "measureText",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5300,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        400,
+        460
+       ],
+       "text": "measure time",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch01-t02-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "obs",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        100,
+        100
+       ],
+       "w": 250,
+       "h": 230,
+       "round": 10
+      },
+      {
+       "id": "obsText",
+       "op": "text",
+       "startMs": 800,
+       "endMs": 1500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        225,
+        145
+       ],
+       "text": "observation",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "dry",
+       "op": "text",
+       "startMs": 1600,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        225,
+        220
+       ],
+       "text": "dry",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "minutes",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 2900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        225,
+        275
+       ],
+       "text": "30 minutes",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "opinion",
+       "op": "rect",
+       "startMs": 3000,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        450,
+        100
+       ],
+       "w": 250,
+       "h": 230,
+       "round": 10
+      },
+      {
+       "id": "opText",
+       "op": "text",
+       "startMs": 3700,
+       "endMs": 4300,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        575,
+        145
+       ],
+       "text": "opinion",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "nice",
+       "op": "text",
+       "startMs": 4400,
+       "endMs": 5000,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        575,
+        230
+       ],
+       "text": "nice",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "cross",
+       "op": "line",
+       "startMs": 5400,
+       "endMs": 6100,
+       "ink": "accent",
+       "weight": 3,
+       "from": [
+        480,
+        130
+       ],
+       "to": [
+        670,
+        300
+       ]
+      },
+      {
+       "id": "cross2",
+       "op": "line",
+       "startMs": 6100,
+       "endMs": 6800,
+       "ink": "accent",
+       "weight": 3,
+       "from": [
+        670,
+        130
+       ],
+       "to": [
+        480,
+        300
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch01-t02-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "try1",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        220,
+        180
+       ],
+       "r": 65
+      },
+      {
+       "id": "oneTry",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        220,
+        190
+       ],
+       "text": "one try",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "chance",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2100,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        220,
+        310
+       ],
+       "text": "chance",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "repeatArrow",
+       "op": "arrow",
+       "startMs": 2200,
+       "endMs": 2900,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        310,
+        180
+       ],
+       "to": [
+        470,
+        180
+       ]
+      },
+      {
+       "id": "try2",
+       "op": "circle",
+       "startMs": 3000,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        580,
+        180
+       ],
+       "r": 65
+      },
+      {
+       "id": "try2Text",
+       "op": "text",
+       "startMs": 3700,
+       "endMs": 4300,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        580,
+        190
+       ],
+       "text": "repeat",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "trust",
+       "op": "text",
+       "startMs": 4600,
+       "endMs": 5500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        350
+       ],
+       "text": "trustworthy",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch01-t02-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "plan",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        80
+       ],
+       "w": 560,
+       "h": 330,
+       "round": 12
+      },
+      {
+       "id": "choose",
+       "op": "text",
+       "startMs": 800,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        125
+       ],
+       "text": "choose plan",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "clothType",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        220
+       ],
+       "text": "cloth type",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "onlyArrow",
+       "op": "arrow",
+       "startMs": 2500,
+       "endMs": 3200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        270
+       ],
+       "to": [
+        400,
+        340
+       ]
+      },
+      {
+       "id": "onlyText",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 4000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        380
+       ],
+       "text": "only change",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1",
+   "key": "1:no 2:sprouts 3:no 4:no",
+   "prompt": "germination: {\"water\":\"dry\",\"air\":\"yes\",\"warmth\":\"warm\",\"light\":\"light\"} | {\"water\":\"moist\",\"air\":\"yes\",\"warmth\":\"warm\",\"light\":\"light\"} | {\"water\":\"moist\",\"air\":\"no\",\"warmth\":\"warm\",\"light\":\"dark\"} | {\"water\":\"moist\",\"air\":\"yes\",\"warmth\":\"cold\",\"light\":\"dark\"}"
+  },
+  {
+   "itemId": "r2",
+   "key": "vary only light",
+   "prompt": "fair test for light"
+  },
+  {
+   "itemId": "r3",
+   "key": "light",
+   "prompt": "which does not matter for sprouts: water, air, warmth, light"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

@@ -39,7 +39,9 @@ test("catalog: RS-4 admissibility from ENGINE_SPECS outcomes, kind order, miscon
 });
 
 test("sources: request lexicon in both scripts; requests are explicit, pNeed 1, never live", () => {
-  assert.equal(requestFromText("mujhe diagram dikhao"), "visual_request");
+  // ship5 p4-content: a diagram / board / draw ask is the live whiteboard's (board_request); a picture is a visual request
+  assert.equal(requestFromText("mujhe diagram dikhao"), "board_request");
+  assert.equal(requestFromText("picture dikhao"), "visual_request");
   assert.equal(requestFromText("game khelna hai"), "game_request");
   assert.equal(requestFromText("dusre tarike se samjhao"), "explain_differently");
   assert.equal(requestFromText("दूसरे तरीके से दिखाओ"), "explain_differently");
@@ -305,8 +307,11 @@ test("seam bridge: on → Stagecraft owns the proposal through a seam piece; sha
     studioSeam.prefetch({ lessonId, purpose: "practice" });
     const host = bridge.attach(lessonId, new StagecraftHost({ lessonId, mode, catalog, builders, clock: () => 30_000 }));
     host.input({ t: "state", key: key({ lessonId }), at: 0 });
-    const p = revealPoint({ lessonId, turnSeq: 6, safety: false, beat: "explain", beatChanged: true, topicId: TOPIC, skillId: SKILL, band: "B2", lang: "hinglish", kitHash: "k1", lastPolicyRevealTurn: 0, at: 30_000, phase: "her_turn" }, { catalog });
-    assert.equal(p.want.need, "explain");
+    // ship5 p4-content: explanation beats are the live whiteboard's (REST_CFG.boardOwnsExplain), so the plan-led piece here
+    // is the practice beat's
+    const p = revealPoint({ lessonId, turnSeq: 6, safety: false, beat: "practice_set", beatChanged: true, topicId: TOPIC, skillId: SKILL, band: "B2", lang: "hinglish", kitHash: "k1", lastPolicyRevealTurn: 0, at: 30_000, phase: "her_turn" }, { catalog });
+    assert.equal(p.want.need, "practice");
+    assert.equal(revealPoint({ lessonId, turnSeq: 6, safety: false, beat: "explain", beatChanged: true, topicId: TOPIC, skillId: SKILL, band: "B2", lang: "hinglish", kitHash: "k1", lastPolicyRevealTurn: 0, at: 30_000, phase: "her_turn" }, { catalog }).want, null);
     const w2view = { statuses: [], onScreen: null, propose: { reveal: "w2-piece" } };
     const v = bridge.augmentView(lessonId, w2view, p);
     if (mode === "shadow") assert.equal(v, w2view);

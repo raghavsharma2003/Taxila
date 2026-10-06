@@ -1,0 +1,2030 @@
+{
+ "topicId": "c6-sst-ch12-t01",
+ "title": "Grassroots Democracy — Part 3: Local Government in Urban Areas",
+ "chapter": "Grassroots Democracy — Part 3: Local Government in Urban Areas",
+ "subject": "sst",
+ "class": 6,
+ "topicType": "T3",
+ "plan": {
+  "game": "town-lab@1",
+  "hint": "council mode: gram sabha / panchayat / ward decisions within a budget"
+ },
+ "game": {
+  "archetype": "town-lab@1",
+  "spec": {
+   "archetype": "town-lab@1",
+   "skills": [
+    "c6-sst-ch12-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "done": "right",
+    "have": "you have",
+    "need": "you need",
+    "has": "has",
+    "wants": "wants",
+    "trades": "trades",
+    "market": "market",
+    "coins": "coins",
+    "open": "OPEN",
+    "price": "price",
+    "cost": "cost",
+    "profit": "profit",
+    "sold": "sold",
+    "target": "target",
+    "stock": "stock",
+    "lock": "LOCK",
+    "run": "RUN",
+    "perMonth": "per month",
+    "years": "years",
+    "goal": "goal",
+    "saved": "saved",
+    "interest": "interest",
+    "budget": "budget",
+    "left": "left",
+    "families": "families helped",
+    "runDone": "Town closed",
+    "noDeal": "no deal",
+    "reset": "start again",
+    "rupee": "₹"
+   },
+   "title": "Town Lab",
+   "rounds": [
+    {
+     "mode": "council",
+     "title": "Choose ward projects",
+     "sub": "help the most families",
+     "budget": 50,
+     "projects": [
+      {
+       "name": "handpumps",
+       "glyph": "tap",
+       "cost": 12,
+       "helps": 180
+      },
+      {
+       "name": "school roof",
+       "glyph": "school",
+       "cost": 25,
+       "helps": 220
+      },
+      {
+       "name": "streetlights",
+       "glyph": "bulb",
+       "cost": 15,
+       "helps": 150
+      },
+      {
+       "name": "drain repair",
+       "glyph": "road",
+       "cost": 20,
+       "helps": 200
+      },
+      {
+       "name": "waste bins",
+       "glyph": "recycle",
+       "cost": 10,
+       "helps": 160
+      }
+     ],
+     "targets": "c6-sst-ch12-t01-m1"
+    }
+   ]
+  },
+  "repairs": [
+   "string:project.name",
+   "council:no-choice"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c6-sst-ch12-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "How a City Works",
+   "accent": "mint",
+   "targets": "c6-sst-ch12-t01-m1",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "How a City Works"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Only the municipality keeps the city clean"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "column",
+     "els": [
+      {
+       "id": "people",
+       "type": "node",
+       "text": "City people",
+       "sub": "choose leaders",
+       "glyph": "group",
+       "color": "mint"
+      },
+      {
+       "id": "wards",
+       "type": "node",
+       "text": "Wards",
+       "sub": "city areas",
+       "glyph": "map",
+       "color": "ion"
+      },
+      {
+       "id": "council",
+       "type": "node",
+       "text": "Councillors",
+       "sub": "elected",
+       "glyph": "ballot",
+       "color": "mint"
+      },
+      {
+       "id": "mayor",
+       "type": "node",
+       "text": "Mayor",
+       "sub": "heads council",
+       "glyph": "crown",
+       "color": "amber"
+      },
+      {
+       "id": "commissioner",
+       "type": "node",
+       "text": "Commissioner",
+       "sub": "appointed officer",
+       "glyph": "person",
+       "color": "sci"
+      },
+      {
+       "id": "p1",
+       "type": "arrow",
+       "from": "people",
+       "to": "wards",
+       "text": "divided into"
+      },
+      {
+       "id": "p2",
+       "type": "arrow",
+       "from": "wards",
+       "to": "council",
+       "text": "elect"
+      },
+      {
+       "id": "p3",
+       "type": "arrow",
+       "from": "council",
+       "to": "mayor",
+       "text": "headed by"
+      },
+      {
+       "id": "p4",
+       "type": "arrow",
+       "from": "commissioner",
+       "to": "council",
+       "text": "runs work"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "services",
+       "type": "title",
+       "text": "Municipal services"
+      },
+      {
+       "id": "water",
+       "type": "node",
+       "text": "Water",
+       "glyph": "drop",
+       "color": "ion"
+      },
+      {
+       "id": "waste",
+       "type": "node",
+       "text": "Garbage",
+       "glyph": "recycle",
+       "color": "mint"
+      },
+      {
+       "id": "lights",
+       "type": "node",
+       "text": "Streetlights",
+       "glyph": "bulb",
+       "color": "amber"
+      },
+      {
+       "id": "roads",
+       "type": "node",
+       "text": "Local roads",
+       "glyph": "road",
+       "color": "sci"
+      },
+      {
+       "id": "parks",
+       "type": "node",
+       "text": "Parks",
+       "glyph": "tree",
+       "color": "mint"
+      },
+      {
+       "id": "health",
+       "type": "node",
+       "text": "Public health",
+       "glyph": "shield",
+       "color": "volt"
+      },
+      {
+       "id": "money",
+       "type": "node",
+       "text": "Taxes and fees",
+       "glyph": "coin",
+       "color": "amber"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "row",
+     "els": [
+      {
+       "id": "citizens",
+       "type": "title",
+       "text": "Citizens participate"
+      },
+      {
+       "id": "pay",
+       "type": "node",
+       "text": "Pay taxes",
+       "glyph": "coin",
+       "color": "amber"
+      },
+      {
+       "id": "report",
+       "type": "node",
+       "text": "Report problems",
+       "glyph": "phone",
+       "color": "ion"
+      },
+      {
+       "id": "separate",
+       "type": "node",
+       "text": "Separate waste",
+       "glyph": "recycle",
+       "color": "mint"
+      },
+      {
+       "id": "vote",
+       "type": "node",
+       "text": "Vote",
+       "glyph": "ballot",
+       "color": "sci"
+      },
+      {
+       "id": "choice1",
+       "type": "label",
+       "text": "Mayor",
+       "x": 120,
+       "y": 500,
+       "color": "amber"
+      },
+      {
+       "id": "choice2",
+       "type": "label",
+       "text": "Councillor",
+       "x": 400,
+       "y": 500,
+       "color": "mint"
+      },
+      {
+       "id": "choice3",
+       "type": "label",
+       "text": "Commissioner",
+       "x": 700,
+       "y": 500,
+       "color": "sci"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Cities are divided into wards so people can take part in local government.",
+    "L2": "Myth: keeping the city clean is only the municipality's job. Citizens have no role.",
+    "L3": "The people in each ward elect a councillor, also called a corporator, to represent them.",
+    "L4": "The elected councillors form a council led by the mayor. An appointed municipal commissioner runs the day-to-day administration.",
+    "L5": "Municipal bodies provide water, collect garbage, manage drains, roads, streetlights, parks and public health.",
+    "L6": "These services need money. It comes mainly from local taxes and fees, along with grants from state and central governments.",
+    "L7": "Citizens help by paying taxes, voting, reporting problems and separating wet and dry waste.",
+    "L8": "When citizens and the municipal body work together, the city works better. Now choose the representative elected by a ward."
+   },
+   "narration": {},
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.6,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "myth"
+      },
+      {
+       "at": 1,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "people",
+        "wards"
+       ]
+      },
+      {
+       "at": 0.6,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "p1",
+        "council",
+        "p2"
+       ]
+      },
+      {
+       "at": 1.4,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "p2",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.9,
+       "target": [
+        "mayor",
+        "commissioner",
+        "p3",
+        "p4"
+       ]
+      },
+      {
+       "at": 0.9,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "commissioner"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "services",
+        "water",
+        "waste",
+        "lights",
+        "roads"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "parks",
+        "health"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "money"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "citizens",
+        "pay",
+        "report"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "separate",
+        "vote"
+       ]
+      },
+      {
+       "at": 1.6,
+       "do": "highlight",
+       "dur": 0.7,
+       "target": "separate"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "choice1",
+        "choice2",
+        "choice3"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive"
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which representative do people in a ward elect?",
+    "options": [
+     "choice1",
+     "choice2",
+     "choice3"
+    ],
+    "answer": "choice2"
+   }
+  },
+  "repairs": [
+   "string:grants.text",
+   "arrow:dangling",
+   "arrow:dangling",
+   "cue:target",
+   "cue:target",
+   "src"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 61
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch12-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "city",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        80,
+        90
+       ],
+       "w": 640,
+       "h": 300
+      },
+      {
+       "id": "ward1",
+       "op": "line",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        293,
+        90
+       ],
+       "to": [
+        293,
+        390
+       ]
+      },
+      {
+       "id": "ward2",
+       "op": "line",
+       "startMs": 1500,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        506,
+        90
+       ],
+       "to": [
+        506,
+        390
+       ]
+      },
+      {
+       "id": "ward3",
+       "op": "line",
+       "startMs": 2100,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        80,
+        240
+       ],
+       "to": [
+        720,
+        240
+       ]
+      },
+      {
+       "id": "citylabel",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        65
+       ],
+       "text": "Cities",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "wlabel",
+       "op": "text",
+       "startMs": 3200,
+       "endMs": 3700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        186,
+        220
+       ],
+       "text": "ward",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "wlabel2",
+       "op": "text",
+       "startMs": 3700,
+       "endMs": 4200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        220
+       ],
+       "text": "ward",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "wlabel3",
+       "op": "text",
+       "startMs": 4200,
+       "endMs": 4700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        613,
+        220
+       ],
+       "text": "ward",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "people",
+       "op": "circle",
+       "startMs": 4700,
+       "endMs": 5200,
+       "ink": "mark",
+       "weight": 2,
+       "c": [
+        400,
+        440
+       ],
+       "r": 24
+      },
+      {
+       "id": "takepart",
+       "op": "arrow",
+       "startMs": 5200,
+       "endMs": 5900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        415
+       ],
+       "to": [
+        400,
+        395
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch12-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "myth",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        75
+       ],
+       "text": "Myth",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "municipality",
+       "op": "rect",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        150
+       ],
+       "w": 250,
+       "h": 130
+      },
+      {
+       "id": "mlabel",
+       "op": "text",
+       "startMs": 1300,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        215,
+        220
+       ],
+       "text": "municipality",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "citizens",
+       "op": "circle",
+       "startMs": 1900,
+       "endMs": 2500,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        585,
+        215
+       ],
+       "r": 65
+      },
+      {
+       "id": "clabel",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        585,
+        215
+       ],
+       "text": "Citizens",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "only",
+       "op": "text",
+       "startMs": 3100,
+       "endMs": 3600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        340
+       ],
+       "text": "only",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "cross1",
+       "op": "line",
+       "startMs": 3800,
+       "endMs": 4300,
+       "ink": "mark",
+       "weight": 3,
+       "from": [
+        370,
+        315
+       ],
+       "to": [
+        430,
+        365
+       ]
+      },
+      {
+       "id": "cross2",
+       "op": "line",
+       "startMs": 4300,
+       "endMs": 4800,
+       "ink": "mark",
+       "weight": 3,
+       "from": [
+        430,
+        315
+       ],
+       "to": [
+        370,
+        365
+       ]
+      },
+      {
+       "id": "role",
+       "op": "arrow",
+       "startMs": 5000,
+       "endMs": 5800,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        520,
+        280
+       ],
+       "to": [
+        360,
+        280
+       ]
+      },
+      {
+       "id": "rolelabel",
+       "op": "text",
+       "startMs": 5800,
+       "endMs": 6300,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        425
+       ],
+       "text": "role",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch12-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "wardbox",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        70,
+        110
+       ],
+       "w": 250,
+       "h": 230
+      },
+      {
+       "id": "wardtxt",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        195,
+        145
+       ],
+       "text": "ward",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "person1",
+       "op": "circle",
+       "startMs": 1300,
+       "endMs": 1700,
+       "ink": "mark",
+       "weight": 2,
+       "c": [
+        140,
+        230
+       ],
+       "r": 25
+      },
+      {
+       "id": "person2",
+       "op": "circle",
+       "startMs": 1700,
+       "endMs": 2100,
+       "ink": "mark",
+       "weight": 2,
+       "c": [
+        195,
+        230
+       ],
+       "r": 25
+      },
+      {
+       "id": "person3",
+       "op": "circle",
+       "startMs": 2100,
+       "endMs": 2500,
+       "ink": "mark",
+       "weight": 2,
+       "c": [
+        250,
+        230
+       ],
+       "r": 25
+      },
+      {
+       "id": "vote",
+       "op": "arrow",
+       "startMs": 2600,
+       "endMs": 3200,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        195,
+        285
+       ],
+       "to": [
+        195,
+        340
+       ]
+      },
+      {
+       "id": "councillor",
+       "op": "circle",
+       "startMs": 3400,
+       "endMs": 4100,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        550,
+        220
+       ],
+       "r": 60
+      },
+      {
+       "id": "ctext",
+       "op": "text",
+       "startMs": 4100,
+       "endMs": 4700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        550,
+        220
+       ],
+       "text": "councillor",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "also",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        550,
+        310
+       ],
+       "text": "corporator",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "rep",
+       "op": "arrow",
+       "startMs": 5400,
+       "endMs": 6300,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        320,
+        220
+       ],
+       "to": [
+        485,
+        220
+       ]
+      },
+      {
+       "id": "represent",
+       "op": "text",
+       "startMs": 6300,
+       "endMs": 6800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        390
+       ],
+       "text": "represent",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch12-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "council",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        120
+       ],
+       "w": 300,
+       "h": 210
+      },
+      {
+       "id": "clabel",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        240,
+        160
+       ],
+       "text": "councillors",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "council2",
+       "op": "text",
+       "startMs": 1300,
+       "endMs": 1900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        240,
+        205
+       ],
+       "text": "council",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "mayor",
+       "op": "circle",
+       "startMs": 1900,
+       "endMs": 2400,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        240,
+        270
+       ],
+       "r": 35
+      },
+      {
+       "id": "mayortxt",
+       "op": "text",
+       "startMs": 2400,
+       "endMs": 2900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        240,
+        275
+       ],
+       "text": "mayor",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "lead",
+       "op": "arrow",
+       "startMs": 2900,
+       "endMs": 3500,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        240,
+        235
+       ],
+       "to": [
+        240,
+        190
+       ]
+      },
+      {
+       "id": "commissioner",
+       "op": "rect",
+       "startMs": 3700,
+       "endMs": 4400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        480,
+        150
+       ],
+       "w": 230,
+       "h": 130
+      },
+      {
+       "id": "comtxt",
+       "op": "text",
+       "startMs": 4400,
+       "endMs": 5100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        595,
+        215
+       ],
+       "text": "commissioner",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "appointed",
+       "op": "text",
+       "startMs": 5100,
+       "endMs": 5700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        595,
+        320
+       ],
+       "text": "appointed",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "admin",
+       "op": "text",
+       "startMs": 5700,
+       "endMs": 6400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        595,
+        365
+       ],
+       "text": "administration",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "day",
+       "op": "arrow",
+       "startMs": 6500,
+       "endMs": 7300,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        595,
+        285
+       ],
+       "to": [
+        595,
+        390
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch12-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "services",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "Municipal bodies",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "water",
+       "op": "circle",
+       "startMs": 800,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        110,
+        150
+       ],
+       "r": 45
+      },
+      {
+       "id": "watert",
+       "op": "text",
+       "startMs": 1200,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        110,
+        150
+       ],
+       "text": "water",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "garbage",
+       "op": "rect",
+       "startMs": 1700,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        220,
+        115
+       ],
+       "w": 110,
+       "h": 70
+      },
+      {
+       "id": "gt",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        275,
+        150
+       ],
+       "text": "garbage",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "drains",
+       "op": "line",
+       "startMs": 2700,
+       "endMs": 3100,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        400,
+        120
+       ],
+       "to": [
+        400,
+        185
+       ]
+      },
+      {
+       "id": "dt",
+       "op": "text",
+       "startMs": 3100,
+       "endMs": 3600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        215
+       ],
+       "text": "drains",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "roads",
+       "op": "line",
+       "startMs": 3600,
+       "endMs": 4000,
+       "ink": "chalk",
+       "weight": 3,
+       "from": [
+        490,
+        150
+       ],
+       "to": [
+        590,
+        150
+       ]
+      },
+      {
+       "id": "rt",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 4500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        540,
+        195
+       ],
+       "text": "roads",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "parks",
+       "op": "circle",
+       "startMs": 4500,
+       "endMs": 4900,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        680,
+        150
+       ],
+       "r": 35
+      },
+      {
+       "id": "pt",
+       "op": "text",
+       "startMs": 4900,
+       "endMs": 5400,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        680,
+        205
+       ],
+       "text": "parks",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "health",
+       "op": "text",
+       "startMs": 5400,
+       "endMs": 6200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        320
+       ],
+       "text": "public health",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch12-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9111,
+     "ops": [
+      {
+       "id": "money",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        110
+       ],
+       "r": 55
+      },
+      {
+       "id": "moneytxt",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        110
+       ],
+       "text": "money",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "tax",
+       "op": "rect",
+       "startMs": 1300,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        240
+       ],
+       "w": 190,
+       "h": 100
+      },
+      {
+       "id": "taxt",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        195,
+        295
+       ],
+       "text": "local taxes",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "fees",
+       "op": "rect",
+       "startMs": 2500,
+       "endMs": 3100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        310,
+        240
+       ],
+       "w": 180,
+       "h": 100
+      },
+      {
+       "id": "feest",
+       "op": "text",
+       "startMs": 3100,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        295
+       ],
+       "text": "fees",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "grants",
+       "op": "rect",
+       "startMs": 3500,
+       "endMs": 4100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        510,
+        240
+       ],
+       "w": 190,
+       "h": 100
+      },
+      {
+       "id": "grantst",
+       "op": "text",
+       "startMs": 4100,
+       "endMs": 4600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        605,
+        295
+       ],
+       "text": "grants",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "a1",
+       "op": "arrow",
+       "startMs": 4700,
+       "endMs": 5500,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        195,
+        240
+       ],
+       "to": [
+        350,
+        155
+       ]
+      },
+      {
+       "id": "a2",
+       "op": "arrow",
+       "startMs": 5500,
+       "endMs": 6300,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        400,
+        240
+       ],
+       "to": [
+        400,
+        165
+       ]
+      },
+      {
+       "id": "a3",
+       "op": "arrow",
+       "startMs": 6300,
+       "endMs": 7100,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        605,
+        240
+       ],
+       "to": [
+        450,
+        155
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch12-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "citizens",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        235
+       ],
+       "r": 75
+      },
+      {
+       "id": "ct",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        235
+       ],
+       "text": "Citizens",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "pay",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 2000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        130,
+        105
+       ],
+       "text": "paying taxes",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "vote",
+       "op": "text",
+       "startMs": 2000,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        650,
+        105
+       ],
+       "text": "voting",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "report",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        130,
+        390
+       ],
+       "text": "reporting problems",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "waste",
+       "op": "text",
+       "startMs": 3200,
+       "endMs": 4000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        650,
+        390
+       ],
+       "text": "wet and dry waste",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "a1",
+       "op": "arrow",
+       "startMs": 4000,
+       "endMs": 4500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        190,
+        130
+       ],
+       "to": [
+        330,
+        190
+       ]
+      },
+      {
+       "id": "a2",
+       "op": "arrow",
+       "startMs": 4500,
+       "endMs": 5000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        610,
+        130
+       ],
+       "to": [
+        470,
+        190
+       ]
+      },
+      {
+       "id": "a3",
+       "op": "arrow",
+       "startMs": 5000,
+       "endMs": 5500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        190,
+        365
+       ],
+       "to": [
+        330,
+        280
+       ]
+      },
+      {
+       "id": "a4",
+       "op": "arrow",
+       "startMs": 5500,
+       "endMs": 6100,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        610,
+        365
+       ],
+       "to": [
+        470,
+        280
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch12-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9111,
+     "ops": [
+      {
+       "id": "city",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        100
+       ],
+       "w": 600,
+       "h": 280
+      },
+      {
+       "id": "citizen",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        210,
+        235
+       ],
+       "r": 55
+      },
+      {
+       "id": "citizent",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        210,
+        235
+       ],
+       "text": "citizens",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "body",
+       "op": "circle",
+       "startMs": 2100,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        590,
+        235
+       ],
+       "r": 65
+      },
+      {
+       "id": "bodyt",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        590,
+        235
+       ],
+       "text": "municipal body",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "work1",
+       "op": "arrow",
+       "startMs": 3500,
+       "endMs": 4500,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        270,
+        235
+       ],
+       "to": [
+        515,
+        235
+       ]
+      },
+      {
+       "id": "work2",
+       "op": "arrow",
+       "startMs": 4500,
+       "endMs": 5500,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        515,
+        275
+       ],
+       "to": [
+        270,
+        275
+       ]
+      },
+      {
+       "id": "better",
+       "op": "text",
+       "startMs": 5600,
+       "endMs": 6400,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        100
+       ],
+       "text": "city works better",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "ward",
+       "op": "rect",
+       "startMs": 8000,
+       "endMs": 8500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        335,
+        150
+       ],
+       "w": 130,
+       "h": 70
+      },
+      {
+       "id": "wardt",
+       "op": "text",
+       "startMs": 8500,
+       "endMs": 9000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        185
+       ],
+       "text": "ward",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1",
+   "key": "560 families: handpumps, school roof, waste bins",
+   "prompt": "help the most families"
+  }
+ ],
+ "check": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "The round title says 'help the most families' but the targets attribute incorrectly references 'c6-sst-ch12-t01-m1' (a misconception about citizens' role) instead of being a factual item about ward projects. However, the round itself is a math/puzzle about selecting projects to maximize families helped, which is allowed and not a factual contradiction to the kit.",
+    "severity": "low"
+   }
+  ],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

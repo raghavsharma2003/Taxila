@@ -1,0 +1,2004 @@
+{
+ "topicId": "c7-english-ch08-t01",
+ "title": "Paper Boats",
+ "chapter": "Paper Boats",
+ "subject": "english",
+ "class": 7,
+ "topicType": "T3",
+ "plan": {
+  "game": "story-rail@1",
+  "hint": "sequence, cause and who modes from the lesson's events and speakers"
+ },
+ "game": {
+  "archetype": "story-rail@1",
+  "spec": {
+   "archetype": "story-rail@1",
+   "skills": [
+    "c7-english-ch08-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "picked": "coupled",
+    "streak": "streak",
+    "next": "What happens next?",
+    "effect": "What does this lead to?",
+    "who": "Who said this?",
+    "runDone": "Line complete",
+    "order": "your train",
+    "right": "Coupled",
+    "wrong": "Not this one",
+    "coach": "Tap a wagon before the train reaches the fork"
+   },
+   "title": "Paper Boats",
+   "rounds": [
+    {
+     "mode": "sequence",
+     "title": "The paper boats",
+     "sub": "couple the poem events in order",
+     "cards": [
+      {
+       "id": "e1",
+       "text": "The child floats a boat",
+       "glyph": "boat",
+       "src": "c7-english-ch08-t01-i01"
+      },
+      {
+       "id": "e2",
+       "text": "He writes his name",
+       "glyph": "pen",
+       "src": "c7-english-ch08-t01-i01"
+      },
+      {
+       "id": "e3",
+       "text": "He writes his village",
+       "glyph": "map",
+       "src": "c7-english-ch08-t01-i01"
+      },
+      {
+       "id": "e4",
+       "text": "He wishes for a friend",
+       "glyph": "person",
+       "src": "c7-english-ch08-t01-i02"
+      },
+      {
+       "id": "e5",
+       "text": "Stars steer boats at night",
+       "glyph": "star",
+       "src": "c7-english-ch08-t01-i04"
+      }
+     ],
+     "speed": 0.95,
+     "targets": "c7-english-ch08-t01-m-personification-literal"
+    },
+    {
+     "mode": "cause",
+     "title": "Cause and effect",
+     "sub": "match each cause to its effect",
+     "pairs": [
+      {
+       "cause": {
+        "id": "c1",
+        "text": "The boy is one person",
+        "src": "c7-english-ch08-t01-i07"
+       },
+       "effect": {
+        "id": "f1",
+        "text": "He floats a paper boat",
+        "src": "c7-english-ch08-t01-i07"
+       }
+      },
+      {
+       "cause": {
+        "id": "c2",
+        "text": "The paper boats are plural",
+        "src": "c7-english-ch08-t01-i09"
+       },
+       "effect": {
+        "id": "f2",
+        "text": "The boats float downstream",
+        "src": "c7-english-ch08-t01-i09"
+       }
+      },
+      {
+       "cause": {
+        "id": "c3",
+        "text": "The stars get human actions"
+       },
+       "effect": {
+        "id": "f3",
+        "text": "The image is personification"
+       }
+      },
+      {
+       "cause": {
+        "id": "c4",
+        "text": "The child wants to connect",
+        "src": "c7-english-ch08-t01-i02"
+       },
+       "effect": {
+        "id": "f4",
+        "text": "He writes his name and village",
+        "src": "c7-english-ch08-t01-i02"
+       }
+      }
+     ],
+     "speed": 0.85,
+     "targets": "c7-english-ch08-t01-m-plural-s"
+    },
+    {
+     "mode": "who",
+     "title": "Who said it?",
+     "sub": "send each line to its speaker",
+     "speakers": [
+      {
+       "id": "child",
+       "name": "The child",
+       "glyph": "person"
+      },
+      {
+       "id": "girl",
+       "name": "Faraway girl",
+       "glyph": "person"
+      }
+     ],
+     "lines": [
+      {
+       "id": "w1",
+       "text": "Each day I float a boat",
+       "speaker": "child",
+       "src": "c7-english-ch08-t01-i01"
+      },
+      {
+       "id": "w2",
+       "text": "I hope someone finds my boat",
+       "speaker": "child",
+       "src": "c7-english-ch08-t01-i11"
+      },
+      {
+       "id": "w3",
+       "text": "I might send a boat back",
+       "speaker": "girl",
+       "src": "c7-english-ch08-t01-i03"
+      }
+     ],
+     "speed": 0.8
+    }
+   ]
+  },
+  "repairs": [
+   "src",
+   "src"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-english-ch08-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Paper Boats",
+   "accent": "ion",
+   "targets": "c7-english-ch08-t01-m-personification-literal",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Paper Boats"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Stars really steer boats"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "child",
+       "type": "node",
+       "text": "The child",
+       "sub": "writes and floats",
+       "glyph": "person",
+       "color": "ion"
+      },
+      {
+       "id": "boat",
+       "type": "node",
+       "text": "Paper boat",
+       "sub": "name and village",
+       "glyph": "boat",
+       "color": "mint"
+      },
+      {
+       "id": "far",
+       "type": "node",
+       "text": "Far away",
+       "sub": "another person",
+       "glyph": "globe",
+       "color": "sci"
+      },
+      {
+       "id": "hope",
+       "type": "node",
+       "text": "Hope to connect",
+       "sub": "wish for a friend",
+       "color": "amber"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "child",
+       "to": "boat",
+       "text": "writes on"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "boat",
+       "to": "far",
+       "text": "floats toward"
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "far",
+       "to": "hope",
+       "text": "may find"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "free",
+     "els": [
+      {
+       "id": "night",
+       "type": "node",
+       "text": "Night",
+       "sub": "dark and light",
+       "glyph": "moon",
+       "color": "ion"
+      },
+      {
+       "id": "stars",
+       "type": "node",
+       "text": "Stars",
+       "sub": "like sailors",
+       "glyph": "star",
+       "color": "amber"
+      },
+      {
+       "id": "boats",
+       "type": "node",
+       "text": "My boats",
+       "sub": "guided in thought",
+       "glyph": "boat",
+       "color": "mint"
+      },
+      {
+       "id": "a4",
+       "type": "arrow",
+       "from": "stars",
+       "to": "boats",
+       "text": "steer in poem"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "row",
+     "els": [
+      {
+       "id": "boy",
+       "type": "node",
+       "text": "The boy",
+       "sub": "one person",
+       "glyph": "person",
+       "color": "ion"
+      },
+      {
+       "id": "floats",
+       "type": "node",
+       "text": "floats",
+       "sub": "one subject",
+       "glyph": "boat",
+       "color": "mint"
+      },
+      {
+       "id": "friends",
+       "type": "node",
+       "text": "his friends",
+       "sub": "plural subject",
+       "glyph": "group",
+       "color": "sci"
+      },
+      {
+       "id": "watch",
+       "type": "node",
+       "text": "watch",
+       "sub": "plural verb",
+       "glyph": "eye",
+       "color": "amber"
+      },
+      {
+       "id": "float",
+       "type": "node",
+       "text": "float",
+       "sub": "not for boy",
+       "glyph": "boat",
+       "color": "volt"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "In Paper Boats, a child floats a paper boat each day.",
+    "L2": "He writes his name and village on it, so someone far away may know him.",
+    "L3": "The boat carries his hope of finding a friend and connecting with others.",
+    "L4": "At night, the stars steer his boats in the poem. This personification creates an image of hope and imagination.",
+    "L5": "MYTH: The stars really steer boats. NOT TRUE—the poet gives stars a human action to show the child's imagination.",
+    "L6": "Now notice the grammar: the boy floats his boats, but his friends watch them.",
+    "L7": "For one person, the verb takes -s. With a plural subject, the verb does not take -s.",
+    "L8": "Choose the verb that completes the sentence about the boy."
+   },
+   "narration": {
+    "L1": {
+     "text": "In Paper Boats, a child floats a paper boat each day.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "He writes his name and village on it, so someone far away may know him.",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "The boat carries his hope of finding a friend and connecting with others.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "At night, the stars steer his boats in the poem. This personification creates an image of hope and imagination.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "MYTH: The stars really steer boats. NOT TRUE—the poet gives stars a human action to show the child's imagination.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Now notice the grammar: the boy floats his boats, but his friends watch them.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "For one person, the verb takes -s. With a plural subject, the verb does not take -s.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Choose the verb that completes the sentence about the boy.",
+     "dur": 2.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "title"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.5,
+       "target": "child"
+      },
+      {
+       "at": 0.3,
+       "do": "show",
+       "dur": 0.6,
+       "target": "boat"
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "a1",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "far",
+        "hope"
+       ]
+      },
+      {
+       "at": 0.5,
+       "do": "flow",
+       "dur": 0.8,
+       "target": [
+        "a2",
+        "a3"
+       ],
+       "to": 1
+      },
+      {
+       "at": 1.2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "hope"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "night",
+        "stars",
+        "boats"
+       ]
+      },
+      {
+       "at": 0.7,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "a4",
+       "to": 1
+      },
+      {
+       "at": 1.5,
+       "do": "highlight",
+       "dur": 1,
+       "target": "stars"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "myth"
+      },
+      {
+       "at": 1,
+       "do": "bust",
+       "dur": 1.2,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "boy",
+        "floats"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "friends",
+        "watch"
+       ]
+      },
+      {
+       "at": 1.5,
+       "do": "highlight",
+       "dur": 1,
+       "target": [
+        "floats",
+        "watch"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "focus",
+       "dur": 0.8,
+       "target": "floats"
+      },
+      {
+       "at": 0.8,
+       "do": "focus",
+       "dur": 0.8,
+       "target": "watch"
+      },
+      {
+       "at": 1.6,
+       "do": "unfocus",
+       "dur": 0.5
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "interactive",
+       "dur": 1
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Choose the verb: Every morning, the boy ___ a paper boat.",
+    "options": [
+     "float",
+     "floats"
+    ],
+    "answer": "floats",
+    "src": "c7-english-ch08-t01-i07"
+   }
+  },
+  "repairs": [
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 34
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch08-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "paper",
+       "op": "polygon",
+       "startMs": 0,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         250,
+         220
+        ],
+        [
+         510,
+         220
+        ],
+        [
+         455,
+         330
+        ],
+        [
+         305,
+         330
+        ]
+       ],
+       "fill": "soft"
+      },
+      {
+       "id": "fold1",
+       "op": "line",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 1,
+       "from": [
+        250,
+        220
+       ],
+       "to": [
+        380,
+        275
+       ]
+      },
+      {
+       "id": "fold2",
+       "op": "line",
+       "startMs": 1300,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 1,
+       "from": [
+        510,
+        220
+       ],
+       "to": [
+        380,
+        275
+       ]
+      },
+      {
+       "id": "water",
+       "op": "stroke",
+       "startMs": 1700,
+       "endMs": 2600,
+       "ink": "mark",
+       "weight": 2,
+       "points": [
+        [
+         150,
+         370
+        ],
+        [
+         210,
+         360
+        ],
+        [
+         270,
+         370
+        ],
+        [
+         330,
+         360
+        ],
+        [
+         390,
+         370
+        ],
+        [
+         450,
+         360
+        ],
+        [
+         510,
+         370
+        ],
+        [
+         570,
+         360
+        ],
+        [
+         630,
+         370
+        ]
+       ]
+      },
+      {
+       "id": "child",
+       "op": "circle",
+       "startMs": 2700,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        145,
+        170
+       ],
+       "r": 25
+      },
+      {
+       "id": "body",
+       "op": "stroke",
+       "startMs": 3100,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         145,
+         195
+        ],
+        [
+         145,
+         285
+        ],
+        [
+         115,
+         340
+        ],
+        [
+         145,
+         285
+        ],
+        [
+         175,
+         340
+        ]
+       ]
+      },
+      {
+       "id": "float",
+       "op": "arrow",
+       "startMs": 3900,
+       "endMs": 4700,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        300,
+        350
+       ],
+       "to": [
+        470,
+        350
+       ]
+      },
+      {
+       "id": "boats",
+       "op": "label",
+       "startMs": 4300,
+       "endMs": 5000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        380,
+        205
+       ],
+       "text": "paper boat",
+       "to": [
+        380,
+        275
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch08-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "name",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        330,
+        255
+       ],
+       "text": "name",
+       "size": "m"
+      },
+      {
+       "id": "village",
+       "op": "text",
+       "startMs": 800,
+       "endMs": 1700,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        330,
+        295
+       ],
+       "text": "village",
+       "size": "m"
+      },
+      {
+       "id": "write1",
+       "op": "line",
+       "startMs": 1600,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 1,
+       "from": [
+        310,
+        270
+       ],
+       "to": [
+        455,
+        270
+       ]
+      },
+      {
+       "id": "write2",
+       "op": "line",
+       "startMs": 2100,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 1,
+       "from": [
+        310,
+        310
+       ],
+       "to": [
+        455,
+        310
+       ]
+      },
+      {
+       "id": "far",
+       "op": "arrow",
+       "startMs": 2800,
+       "endMs": 3900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        500,
+        275
+       ],
+       "to": [
+        680,
+        180
+       ]
+      },
+      {
+       "id": "away",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        650,
+        160
+       ],
+       "text": "far away",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "know",
+       "op": "label",
+       "startMs": 4800,
+       "endMs": 5900,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        560,
+        235
+       ],
+       "text": "know him",
+       "to": [
+        600,
+        210
+       ]
+      },
+      {
+       "id": "person",
+       "op": "circle",
+       "startMs": 5600,
+       "endMs": 6100,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        680,
+        130
+       ],
+       "r": 25
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch08-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "hope",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        110
+       ],
+       "text": "hope",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "heart",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        190
+       ],
+       "r": 35
+      },
+      {
+       "id": "heartline",
+       "op": "stroke",
+       "startMs": 1400,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         380,
+         185
+        ],
+        [
+         390,
+         175
+        ],
+        [
+         400,
+         185
+        ],
+        [
+         410,
+         175
+        ],
+        [
+         420,
+         185
+        ],
+        [
+         400,
+         215
+        ],
+        [
+         380,
+         185
+        ]
+       ]
+      },
+      {
+       "id": "friend1",
+       "op": "circle",
+       "startMs": 2200,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        180,
+        325
+       ],
+       "r": 24
+      },
+      {
+       "id": "friend2",
+       "op": "circle",
+       "startMs": 2700,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        620,
+        325
+       ],
+       "r": 24
+      },
+      {
+       "id": "connect",
+       "op": "arrow",
+       "startMs": 3200,
+       "endMs": 4500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        220,
+        325
+       ],
+       "to": [
+        580,
+        325
+       ]
+      },
+      {
+       "id": "friends",
+       "op": "label",
+       "startMs": 4500,
+       "endMs": 5400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        365
+       ],
+       "text": "friend",
+       "to": [
+        400,
+        325
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch08-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "night",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        40,
+        40
+       ],
+       "w": 720,
+       "h": 360,
+       "fill": "soft"
+      },
+      {
+       "id": "star1",
+       "op": "polygon",
+       "startMs": 800,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         180,
+         100
+        ],
+        [
+         188,
+         122
+        ],
+        [
+         212,
+         122
+        ],
+        [
+         193,
+         136
+        ],
+        [
+         200,
+         160
+        ],
+        [
+         180,
+         145
+        ],
+        [
+         160,
+         160
+        ],
+        [
+         167,
+         136
+        ],
+        [
+         148,
+         122
+        ],
+        [
+         172,
+         122
+        ]
+       ],
+       "fill": "accent"
+      },
+      {
+       "id": "star2",
+       "op": "polygon",
+       "startMs": 1300,
+       "endMs": 2000,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         620,
+         100
+        ],
+        [
+         628,
+         122
+        ],
+        [
+         652,
+         122
+        ],
+        [
+         633,
+         136
+        ],
+        [
+         640,
+         160
+        ],
+        [
+         620,
+         145
+        ],
+        [
+         600,
+         160
+        ],
+        [
+         607,
+         136
+        ],
+        [
+         588,
+         122
+        ],
+        [
+         612,
+         122
+        ]
+       ],
+       "fill": "accent"
+      },
+      {
+       "id": "boat",
+       "op": "polygon",
+       "startMs": 1900,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         300,
+         300
+        ],
+        [
+         500,
+         300
+        ],
+        [
+         460,
+         365
+        ],
+        [
+         340,
+         365
+        ]
+       ],
+       "fill": "soft"
+      },
+      {
+       "id": "steer1",
+       "op": "arrow",
+       "startMs": 2800,
+       "endMs": 4000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        180,
+        145
+       ],
+       "to": [
+        340,
+        315
+       ],
+       "bend": 1
+      },
+      {
+       "id": "steer2",
+       "op": "arrow",
+       "startMs": 3500,
+       "endMs": 4700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        620,
+        145
+       ],
+       "to": [
+        460,
+        315
+       ],
+       "bend": -1
+      },
+      {
+       "id": "stars",
+       "op": "label",
+       "startMs": 4700,
+       "endMs": 5500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        75
+       ],
+       "text": "stars",
+       "to": [
+        400,
+        125
+       ]
+      },
+      {
+       "id": "image",
+       "op": "text",
+       "startMs": 5800,
+       "endMs": 7200,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        440
+       ],
+       "text": "image of hope",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch08-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "myth",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        150,
+        90
+       ],
+       "text": "MYTH",
+       "size": "l"
+      },
+      {
+       "id": "mythline",
+       "op": "line",
+       "startMs": 700,
+       "endMs": 1200,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        145,
+        105
+       ],
+       "to": [
+        270,
+        105
+       ]
+      },
+      {
+       "id": "steerword",
+       "op": "text",
+       "startMs": 1300,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        220
+       ],
+       "text": "steer",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "cross",
+       "op": "line",
+       "startMs": 2100,
+       "endMs": 2700,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        340,
+        180
+       ],
+       "to": [
+        460,
+        260
+       ]
+      },
+      {
+       "id": "cross2",
+       "op": "line",
+       "startMs": 2500,
+       "endMs": 3100,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        460,
+        180
+       ],
+       "to": [
+        340,
+        260
+       ]
+      },
+      {
+       "id": "nottrue",
+       "op": "text",
+       "startMs": 3200,
+       "endMs": 4200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        330
+       ],
+       "text": "NOT TRUE",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "action",
+       "op": "label",
+       "startMs": 4400,
+       "endMs": 5700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        405
+       ],
+       "text": "human action",
+       "to": [
+        400,
+        220
+       ]
+      },
+      {
+       "id": "imagination",
+       "op": "text",
+       "startMs": 5900,
+       "endMs": 7000,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        455
+       ],
+       "text": "imagination",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch08-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "boy",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        145,
+        145
+       ],
+       "r": 25
+      },
+      {
+       "id": "boylabel",
+       "op": "label",
+       "startMs": 500,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        145,
+        195
+       ],
+       "text": "boy",
+       "to": [
+        145,
+        170
+       ]
+      },
+      {
+       "id": "boats2",
+       "op": "polygon",
+       "startMs": 1000,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         100,
+         300
+        ],
+        [
+         250,
+         300
+        ],
+        [
+         220,
+         350
+        ],
+        [
+         130,
+         350
+        ]
+       ],
+       "fill": "soft"
+      },
+      {
+       "id": "floats",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2600,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        175,
+        260
+       ],
+       "text": "floats",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "friends2",
+       "op": "circle",
+       "startMs": 2600,
+       "endMs": 3100,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        610,
+        145
+       ],
+       "r": 25
+      },
+      {
+       "id": "friendslabel",
+       "op": "label",
+       "startMs": 3100,
+       "endMs": 3800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        610,
+        195
+       ],
+       "text": "friends",
+       "to": [
+        610,
+        170
+       ]
+      },
+      {
+       "id": "watch",
+       "op": "text",
+       "startMs": 3800,
+       "endMs": 4500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        610,
+        260
+       ],
+       "text": "watch",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "them",
+       "op": "arrow",
+       "startMs": 4500,
+       "endMs": 5600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        250,
+        325
+       ],
+       "to": [
+        570,
+        325
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch08-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "one",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        180,
+        100
+       ],
+       "text": "one",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "singular",
+       "op": "text",
+       "startMs": 500,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        145
+       ],
+       "text": "person",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "verbS",
+       "op": "text",
+       "startMs": 1200,
+       "endMs": 2100,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        180,
+        230
+       ],
+       "text": "verb + -s",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "plural",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 2900,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        600,
+        100
+       ],
+       "text": "plural",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "verbNoS",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        600,
+        230
+       ],
+       "text": "verb",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "minus",
+       "op": "text",
+       "startMs": 3800,
+       "endMs": 4500,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        600,
+        275
+       ],
+       "text": "no -s",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "compare",
+       "op": "line",
+       "startMs": 4700,
+       "endMs": 5500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        280,
+        230
+       ],
+       "to": [
+        500,
+        230
+       ]
+      },
+      {
+       "id": "rule",
+       "op": "text",
+       "startMs": 5600,
+       "endMs": 6400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        370
+       ],
+       "text": "one -s",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch08-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "prompt",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        80
+       ],
+       "text": "Choose the verb",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "sentence",
+       "op": "numwork",
+       "startMs": 900,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        100,
+        175
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "The",
+         "boy",
+         "(",
+         "float",
+         "/",
+         "floats",
+         ")"
+        ]
+       ]
+      },
+      {
+       "id": "boats3",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        500,
+        175
+       ],
+       "text": "boats",
+       "size": "m"
+      },
+      {
+       "id": "choice1",
+       "op": "text",
+       "startMs": 2800,
+       "endMs": 3400,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        270,
+        275
+       ],
+       "text": "float",
+       "size": "m"
+      },
+      {
+       "id": "choice2",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 3900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        430,
+        275
+       ],
+       "text": "floats",
+       "size": "m"
+      },
+      {
+       "id": "circlechoice",
+       "op": "circle",
+       "startMs": 3900,
+       "endMs": 4600,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        465,
+        270
+       ],
+       "r": 55
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "He writes his name",
+   "prompt": "sequence: after/for \"The child floats a boat\"",
+   "src": "c7-english-ch08-t01-i01"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "He writes his village",
+   "prompt": "sequence: after/for \"He writes his name\"",
+   "src": "c7-english-ch08-t01-i01"
+  },
+  {
+   "itemId": "r1:2",
+   "key": "He wishes for a friend",
+   "prompt": "sequence: after/for \"He writes his village\"",
+   "src": "c7-english-ch08-t01-i02"
+  },
+  {
+   "itemId": "r1:3",
+   "key": "Stars steer boats at night",
+   "prompt": "sequence: after/for \"He wishes for a friend\"",
+   "src": "c7-english-ch08-t01-i04"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "He floats a paper boat",
+   "prompt": "cause: after/for \"The boy is one person\"",
+   "src": "c7-english-ch08-t01-i07"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "The boats float downstream",
+   "prompt": "cause: after/for \"The paper boats are plural\"",
+   "src": "c7-english-ch08-t01-i09"
+  },
+  {
+   "itemId": "r2:2",
+   "key": "The image is personification",
+   "prompt": "cause: after/for \"The stars get human actions\""
+  },
+  {
+   "itemId": "r2:3",
+   "key": "He writes his name and village",
+   "prompt": "cause: after/for \"The child wants to connect\"",
+   "src": "c7-english-ch08-t01-i02"
+  },
+  {
+   "itemId": "r3:0",
+   "key": "The child",
+   "prompt": "who: after/for \"Each day I float a boat\"",
+   "src": "c7-english-ch08-t01-i01"
+  },
+  {
+   "itemId": "r3:1",
+   "key": "The child",
+   "prompt": "who: after/for \"I hope someone finds my boat\"",
+   "src": "c7-english-ch08-t01-i11"
+  },
+  {
+   "itemId": "r3:2",
+   "key": "Faraway girl",
+   "prompt": "who: after/for \"I might send a boat back\"",
+   "src": "c7-english-ch08-t01-i03"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

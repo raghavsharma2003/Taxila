@@ -1,0 +1,1966 @@
+{
+ "topicId": "c7-science-ch12-t02",
+ "title": "Seasons",
+ "chapter": "Earth, Moon, and the Sun",
+ "subject": "science",
+ "class": 7,
+ "topicType": "T3",
+ "plan": {
+  "game": "sky-lab@1",
+  "hint": "season mode (longest, shortest, equal, summer north/south)"
+ },
+ "game": {
+  "archetype": "sky-lab@1",
+  "spec": {
+   "archetype": "sky-lab@1",
+   "skills": [
+    "c7-science-ch12-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "done": "Great work",
+    "lock": "LOCK",
+    "spin": "Drag to spin the Earth",
+    "sun": "Sun",
+    "noon": "noon",
+    "midnight": "midnight",
+    "sunrise": "sunrise",
+    "sunset": "sunset",
+    "localTime": "time in",
+    "north": "North Pole",
+    "dayLength": "day length",
+    "sunHigh": "noon Sun height",
+    "distance": "Earth–Sun distance",
+    "orbit": "Drag the Earth along its orbit",
+    "longest": "longest day",
+    "shortest": "shortest day",
+    "equal": "equal day and night",
+    "summerNorth": "summer in the north",
+    "summerSouth": "summer in the south",
+    "solar": "solar eclipse",
+    "lunar": "lunar eclipse",
+    "moon": "Moon",
+    "date": "date",
+    "night": "night sky",
+    "stillStar": "Tap the star that stays still",
+    "pointer": "Drag from Merak through Dubhe",
+    "join": "Join the stars",
+    "polaris": "Pole Star",
+    "wrongWay": "The Earth spins west to east",
+    "runDone": "Sky Lab complete",
+    "hours": "hours",
+    "months": "Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec",
+    "saptarishi": "Saptarishi",
+    "cassiopeia": "Cassiopeia",
+    "new": "new moon",
+    "waxingCrescent": "waxing crescent",
+    "firstQuarter": "first quarter",
+    "waxingGibbous": "waxing gibbous",
+    "full": "full moon",
+    "waningGibbous": "waning gibbous",
+    "lastQuarter": "last quarter",
+    "waningCrescent": "waning crescent",
+    "fromEarth": "seen from Earth",
+    "place": "Place the Moon"
+   },
+   "title": "Seasons in Sky Lab",
+   "rounds": [
+    {
+     "mode": "season",
+     "title": "Follow the orbit",
+     "sub": "find the longest day",
+     "ask": "longest",
+     "targets": "c7-science-ch12-t02-m1"
+    },
+    {
+     "mode": "season",
+     "title": "Compare two worlds",
+     "sub": "find summer in the south",
+     "ask": "summerSouth",
+     "targets": "c7-science-ch12-t02-m2"
+    },
+    {
+     "mode": "season",
+     "title": "Read the sunlight",
+     "sub": "find the shortest day",
+     "ask": "shortest",
+     "targets": "c7-science-ch12-t02-m3"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-science-ch12-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Why do seasons change?",
+   "accent": "sci",
+   "targets": "c7-science-ch12-t02-m1",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Why do seasons change?"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Closer Sun means summer"
+      },
+      {
+       "id": "sun1",
+       "type": "glyph",
+       "name": "sun",
+       "x": 220,
+       "y": 330,
+       "size": 150,
+       "color": "sun"
+      },
+      {
+       "id": "earth1",
+       "type": "glyph",
+       "name": "earth",
+       "x": 700,
+       "y": 330,
+       "size": 150,
+       "color": "sci"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "sun2",
+       "type": "node",
+       "text": "Sun",
+       "glyph": "sun",
+       "color": "sun"
+      },
+      {
+       "id": "earth2",
+       "type": "node",
+       "text": "Earth",
+       "sub": "tilted axis",
+       "glyph": "earth",
+       "color": "sci"
+      },
+      {
+       "id": "axis",
+       "type": "node",
+       "text": "Axis",
+       "sub": "23.5° tilt",
+       "glyph": "compass",
+       "color": "ion"
+      },
+      {
+       "id": "angle",
+       "type": "angle",
+       "deg": 23.5,
+       "rot": -23.5,
+       "x": 700,
+       "y": 400,
+       "r": 100
+      },
+      {
+       "id": "fixed",
+       "type": "label",
+       "text": "Same direction",
+       "x": 760,
+       "y": 220,
+       "color": "ion"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "sun2",
+       "to": "earth2",
+       "text": "orbit"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "split",
+     "els": [
+      {
+       "id": "sun3",
+       "type": "node",
+       "text": "Sun",
+       "glyph": "sun",
+       "color": "sun"
+      },
+      {
+       "id": "north",
+       "type": "node",
+       "text": "North",
+       "sub": "towards Sun",
+       "glyph": "globe",
+       "color": "mint"
+      },
+      {
+       "id": "direct",
+       "type": "label",
+       "text": "Direct rays",
+       "x": 650,
+       "y": 260,
+       "color": "sun"
+      },
+      {
+       "id": "long",
+       "type": "label",
+       "text": "Longer days",
+       "x": 650,
+       "y": 370,
+       "color": "ion"
+      },
+      {
+       "id": "summer",
+       "type": "label",
+       "text": "Summer",
+       "x": 650,
+       "y": 480,
+       "color": "mint"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "sun3",
+       "to": "north",
+       "text": "more direct"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "column",
+     "els": [
+      {
+       "id": "south",
+       "type": "node",
+       "text": "South",
+       "sub": "towards Sun",
+       "glyph": "globe",
+       "color": "mint"
+      },
+      {
+       "id": "slant",
+       "type": "label",
+       "text": "Slanting rays",
+       "x": 620,
+       "y": 250,
+       "color": "amber"
+      },
+      {
+       "id": "spread",
+       "type": "label",
+       "text": "Spread out",
+       "x": 620,
+       "y": 350,
+       "color": "amber"
+      },
+      {
+       "id": "short",
+       "type": "label",
+       "text": "Shorter days",
+       "x": 620,
+       "y": 440,
+       "color": "ion"
+      },
+      {
+       "id": "winter",
+       "type": "label",
+       "text": "Winter",
+       "x": 620,
+       "y": 530,
+       "color": "sci"
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "south",
+       "to": "slant",
+       "text": "less direct"
+      }
+     ]
+    },
+    {
+     "id": "s5",
+     "layout": "row",
+     "els": [
+      {
+       "id": "june",
+       "type": "node",
+       "text": "June",
+       "sub": "India summer",
+       "glyph": "sun",
+       "color": "sun"
+      },
+      {
+       "id": "dec",
+       "type": "node",
+       "text": "December",
+       "sub": "India winter",
+       "color": "ion"
+      },
+      {
+       "id": "australia",
+       "type": "node",
+       "text": "Australia",
+       "sub": "opposite season",
+       "glyph": "globe",
+       "color": "mint"
+      },
+      {
+       "id": "jan",
+       "type": "label",
+       "text": "Closest: early January",
+       "x": 500,
+       "y": 500,
+       "color": "amber"
+      },
+      {
+       "id": "wall",
+       "type": "node",
+       "text": "Same wall",
+       "glyph": "shield",
+       "color": "mint"
+      },
+      {
+       "id": "lamp",
+       "type": "node",
+       "text": "Face lamp",
+       "glyph": "sun",
+       "color": "amber"
+      },
+      {
+       "id": "turn",
+       "type": "node",
+       "text": "Turn axis",
+       "glyph": "compass",
+       "color": "volt"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Seasons come from Earth's tilted axis, not from changing distance from the Sun.",
+    "L2": "A common myth says that summer happens when Earth is closer to the Sun. That is not true.",
+    "L3": "Earth's axis is tilted about 23.5 degrees, and it keeps pointing the same way as Earth goes around the Sun.",
+    "L4": "Around June, the northern half is tilted towards the Sun. Rays are more direct and days are longer, so it is summer in the north.",
+    "L5": "Around December, the northern half tilts away. Rays slant and spread out, and days are shorter, so it is winter in the north.",
+    "L6": "The southern hemisphere is tilted the opposite way, so its seasons are opposite. When it is summer in India, it is winter in Australia.",
+    "L7": "Distance cannot explain this: Earth is closest to the Sun in early January, during northern winter.",
+    "L8": "So tilt changes the angle of sunlight and the length of daylight. Now check the model."
+   },
+   "narration": {
+    "L1": {
+     "text": "Seasons come from Earth's tilted axis, not from changing distance from the Sun.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L2": {
+     "text": "A common myth says that summer happens when Earth is closer to the Sun. That is not true.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L3": {
+     "text": "Earth's axis is tilted about 23.5 degrees, and it keeps pointing the same way as Earth goes around the Sun.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L4": {
+     "text": "Around June, the northern half is tilted towards the Sun. Rays are more direct and days are longer, so it is summer in the north.",
+     "dur": 9,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L5": {
+     "text": "Around December, the northern half tilts away. Rays slant and spread out, and days are shorter, so it is winter in the north.",
+     "dur": 9,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L6": {
+     "text": "The southern hemisphere is tilted the opposite way, so its seasons are opposite. When it is summer in India, it is winter in Australia.",
+     "dur": 9,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Distance cannot explain this: Earth is closest to the Sun in early January, during northern winter.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L8": {
+     "text": "So tilt changes the angle of sunlight and the length of daylight. Now check the model.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "sun1",
+        "earth1"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "myth"
+      },
+      {
+       "at": 3,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "sun2",
+        "earth2",
+        "axis"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.8,
+       "target": "angle"
+      },
+      {
+       "at": 3,
+       "do": "highlight",
+       "dur": 1,
+       "target": "fixed"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "sun3",
+        "north"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.7,
+       "target": "a2"
+      },
+      {
+       "at": 2,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "a2",
+       "to": 1
+      },
+      {
+       "at": 4,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "direct",
+        "long",
+        "summer"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "south"
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.7,
+       "target": "a3"
+      },
+      {
+       "at": 2,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "a3",
+       "to": 1
+      },
+      {
+       "at": 4,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "slant",
+        "spread",
+        "short",
+        "winter"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s5",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "june",
+        "dec",
+        "australia"
+       ]
+      },
+      {
+       "at": 2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "australia"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s5",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "jan"
+      },
+      {
+       "at": 2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "jan"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s5",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "wall",
+        "lamp",
+        "turn"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "As Earth orbits the Sun, which direction should its tilted axis keep pointing?",
+    "options": [
+     "wall",
+     "lamp",
+     "turn"
+    ],
+    "answer": "wall"
+   }
+  },
+  "repairs": [
+   "glyph",
+   "src"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 65
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch12-t02-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "sun1",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        250
+       ],
+       "r": 58,
+       "fill": "accent"
+      },
+      {
+       "id": "earth1",
+       "op": "circle",
+       "startMs": 700,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        650,
+        250
+       ],
+       "r": 42
+      },
+      {
+       "id": "axis1",
+       "op": "line",
+       "startMs": 1400,
+       "endMs": 2200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        632,
+        210
+       ],
+       "to": [
+        668,
+        290
+       ]
+      },
+      {
+       "id": "orbit1",
+       "op": "circle",
+       "startMs": 1800,
+       "endMs": 2800,
+       "ink": "soft",
+       "weight": 1,
+       "c": [
+        400,
+        250
+       ],
+       "r": 250
+      },
+      {
+       "id": "season1",
+       "op": "text",
+       "startMs": 2900,
+       "endMs": 3600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "Seasons",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "tilt1",
+       "op": "label",
+       "startMs": 3500,
+       "endMs": 4400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        690,
+        205
+       ],
+       "text": "tilted axis",
+       "to": [
+        650,
+        250
+       ]
+      },
+      {
+       "id": "sunray1",
+       "op": "arrow",
+       "startMs": 4300,
+       "endMs": 5200,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        455,
+        235
+       ],
+       "to": [
+        610,
+        235
+       ]
+      },
+      {
+       "id": "distance1",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 6132,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        455
+       ],
+       "text": "not changing distance",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch12-t02-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "mythbox2",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        55,
+        55
+       ],
+       "w": 250,
+       "h": 105,
+       "round": 12
+      },
+      {
+       "id": "myth2",
+       "op": "text",
+       "startMs": 500,
+       "endMs": 1300,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        180,
+        95
+       ],
+       "text": "common myth",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "close2",
+       "op": "arrow",
+       "startMs": 1200,
+       "endMs": 2200,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        285,
+        145
+       ],
+       "to": [
+        610,
+        245
+       ]
+      },
+      {
+       "id": "near2",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        135
+       ],
+       "text": "closer to Sun",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "cross2",
+       "op": "line",
+       "startMs": 2200,
+       "endMs": 3100,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        80,
+        170
+       ],
+       "to": [
+        285,
+        55
+       ]
+      },
+      {
+       "id": "cross2b",
+       "op": "line",
+       "startMs": 2500,
+       "endMs": 3400,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        285,
+        170
+       ],
+       "to": [
+        80,
+        55
+       ]
+      },
+      {
+       "id": "false2",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        180,
+        215
+       ],
+       "text": "not true",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "earth2",
+       "op": "circle",
+       "startMs": 4500,
+       "endMs": 5200,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        650,
+        250
+       ],
+       "r": 42
+      },
+      {
+       "id": "sun2",
+       "op": "circle",
+       "startMs": 4700,
+       "endMs": 5500,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        250
+       ],
+       "r": 58,
+       "fill": "accent"
+      },
+      {
+       "id": "true2",
+       "op": "text",
+       "startMs": 5700,
+       "endMs": 6500,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        525,
+        380
+       ],
+       "text": "seasons",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch12-t02-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9111,
+     "ops": [
+      {
+       "id": "sun3",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        250
+       ],
+       "r": 55,
+       "fill": "accent"
+      },
+      {
+       "id": "earth3",
+       "op": "circle",
+       "startMs": 600,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        650,
+        250
+       ],
+       "r": 48
+      },
+      {
+       "id": "axis3",
+       "op": "line",
+       "startMs": 1300,
+       "endMs": 2300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        625,
+        205
+       ],
+       "to": [
+        675,
+        295
+       ]
+      },
+      {
+       "id": "deg3",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 4000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        730,
+        300
+       ],
+       "text": "23.5 degrees",
+       "size": "s"
+      },
+      {
+       "id": "orbit3",
+       "op": "circle",
+       "startMs": 3500,
+       "endMs": 4500,
+       "ink": "soft",
+       "weight": 1,
+       "c": [
+        400,
+        250
+       ],
+       "r": 250
+      },
+      {
+       "id": "same3",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        65
+       ],
+       "text": "same way",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "axis3b",
+       "op": "line",
+       "startMs": 5400,
+       "endMs": 6200,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        220,
+        155
+       ],
+       "to": [
+        260,
+        245
+       ]
+      },
+      {
+       "id": "axis3c",
+       "op": "line",
+       "startMs": 5700,
+       "endMs": 6500,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        540,
+        155
+       ],
+       "to": [
+        580,
+        245
+       ]
+      },
+      {
+       "id": "around3",
+       "op": "arrow",
+       "startMs": 6500,
+       "endMs": 7800,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        590,
+        410
+       ],
+       "to": [
+        255,
+        410
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch12-t02-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 11238,
+     "ops": [
+      {
+       "id": "june4",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "June",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "sun4",
+       "op": "circle",
+       "startMs": 500,
+       "endMs": 1200,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        135,
+        250
+       ],
+       "r": 55,
+       "fill": "accent"
+      },
+      {
+       "id": "earth4",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        610,
+        250
+       ],
+       "r": 95
+      },
+      {
+       "id": "axis4",
+       "op": "line",
+       "startMs": 1600,
+       "endMs": 2500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        560,
+        165
+       ],
+       "to": [
+        660,
+        335
+       ]
+      },
+      {
+       "id": "north4",
+       "op": "label",
+       "startMs": 2400,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        660,
+        175
+       ],
+       "text": "northern half",
+       "to": [
+        620,
+        205
+       ]
+      },
+      {
+       "id": "toward4",
+       "op": "arrow",
+       "startMs": 3300,
+       "endMs": 4400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        555,
+        205
+       ],
+       "to": [
+        205,
+        205
+       ]
+      },
+      {
+       "id": "rays4",
+       "op": "arrow",
+       "startMs": 4300,
+       "endMs": 5200,
+       "ink": "accent",
+       "weight": 1,
+       "from": [
+        205,
+        205
+       ],
+       "to": [
+        535,
+        220
+       ]
+      },
+      {
+       "id": "direct4",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 5900,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        390,
+        170
+       ],
+       "text": "more direct",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "days4",
+       "op": "text",
+       "startMs": 6100,
+       "endMs": 7000,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        610,
+        410
+       ],
+       "text": "days longer",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "summer4",
+       "op": "text",
+       "startMs": 7200,
+       "endMs": 8500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        610,
+        460
+       ],
+       "text": "summer in the north",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch12-t02-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 10387,
+     "ops": [
+      {
+       "id": "dec5",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "December",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "sun5",
+       "op": "circle",
+       "startMs": 500,
+       "endMs": 1200,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        135,
+        250
+       ],
+       "r": 55,
+       "fill": "accent"
+      },
+      {
+       "id": "earth5",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        610,
+        250
+       ],
+       "r": 95
+      },
+      {
+       "id": "axis5",
+       "op": "line",
+       "startMs": 1600,
+       "endMs": 2500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        560,
+        165
+       ],
+       "to": [
+        660,
+        335
+       ]
+      },
+      {
+       "id": "away5",
+       "op": "arrow",
+       "startMs": 2600,
+       "endMs": 3700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        555,
+        205
+       ],
+       "to": [
+        690,
+        175
+       ]
+      },
+      {
+       "id": "slant5",
+       "op": "arrow",
+       "startMs": 3600,
+       "endMs": 4600,
+       "ink": "accent",
+       "weight": 1,
+       "from": [
+        205,
+        205
+       ],
+       "to": [
+        535,
+        285
+       ]
+      },
+      {
+       "id": "slant5b",
+       "op": "arrow",
+       "startMs": 4000,
+       "endMs": 5000,
+       "ink": "accent",
+       "weight": 1,
+       "from": [
+        205,
+        225
+       ],
+       "to": [
+        535,
+        305
+       ]
+      },
+      {
+       "id": "spread5",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 5900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        380,
+        170
+       ],
+       "text": "spread out",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "days5",
+       "op": "text",
+       "startMs": 6000,
+       "endMs": 6900,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        610,
+        410
+       ],
+       "text": "days shorter",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "winter5",
+       "op": "text",
+       "startMs": 7100,
+       "endMs": 8500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        610,
+        460
+       ],
+       "text": "winter in the north",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch12-t02-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 10813,
+     "ops": [
+      {
+       "id": "earth6",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        250
+       ],
+       "r": 125
+      },
+      {
+       "id": "axis6",
+       "op": "line",
+       "startMs": 900,
+       "endMs": 2000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        335,
+        135
+       ],
+       "to": [
+        465,
+        365
+       ]
+      },
+      {
+       "id": "north6",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        470,
+        150
+       ],
+       "text": "north",
+       "size": "m"
+      },
+      {
+       "id": "south6",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 3100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        470,
+        345
+       ],
+       "text": "south",
+       "size": "m"
+      },
+      {
+       "id": "india6",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3800,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        300,
+        180
+       ],
+       "text": "India",
+       "size": "m"
+      },
+      {
+       "id": "australia6",
+       "op": "text",
+       "startMs": 3400,
+       "endMs": 4300,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        300,
+        325
+       ],
+       "text": "Australia",
+       "size": "m"
+      },
+      {
+       "id": "summer6",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5300,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        80,
+        100
+       ],
+       "text": "summer",
+       "size": "m"
+      },
+      {
+       "id": "winter6",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 5800,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        650,
+        100
+       ],
+       "text": "winter",
+       "size": "m"
+      },
+      {
+       "id": "opp6",
+       "op": "arrow",
+       "startMs": 5800,
+       "endMs": 6800,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        170,
+        115
+       ],
+       "to": [
+        620,
+        115
+       ]
+      },
+      {
+       "id": "opposite6",
+       "op": "text",
+       "startMs": 7000,
+       "endMs": 8200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        470
+       ],
+       "text": "seasons are opposite",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch12-t02-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "sun7",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        250
+       ],
+       "r": 55,
+       "fill": "accent"
+      },
+      {
+       "id": "earth7a",
+       "op": "circle",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        650,
+        250
+       ],
+       "r": 42
+      },
+      {
+       "id": "earth7b",
+       "op": "circle",
+       "startMs": 1400,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        585,
+        250
+       ],
+       "r": 42
+      },
+      {
+       "id": "orbit7",
+       "op": "circle",
+       "startMs": 1800,
+       "endMs": 2900,
+       "ink": "soft",
+       "weight": 1,
+       "c": [
+        400,
+        250
+       ],
+       "r": 250
+      },
+      {
+       "id": "closest7",
+       "op": "text",
+       "startMs": 2900,
+       "endMs": 3700,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        585,
+        155
+       ],
+       "text": "closest",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "jan7",
+       "op": "text",
+       "startMs": 3700,
+       "endMs": 4700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        585,
+        350
+       ],
+       "text": "early January",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "winter7",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5600,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        585,
+        410
+       ],
+       "text": "northern winter",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "not7",
+       "op": "text",
+       "startMs": 5700,
+       "endMs": 7409,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        455
+       ],
+       "text": "distance cannot explain",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch12-t02-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "sun8",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        110,
+        250
+       ],
+       "r": 52,
+       "fill": "accent"
+      },
+      {
+       "id": "earth8",
+       "op": "circle",
+       "startMs": 500,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        610,
+        250
+       ],
+       "r": 90
+      },
+      {
+       "id": "axis8",
+       "op": "line",
+       "startMs": 1200,
+       "endMs": 2100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        560,
+        170
+       ],
+       "to": [
+        660,
+        330
+       ]
+      },
+      {
+       "id": "rays8",
+       "op": "arrow",
+       "startMs": 1900,
+       "endMs": 2900,
+       "ink": "accent",
+       "weight": 1,
+       "from": [
+        165,
+        220
+       ],
+       "to": [
+        520,
+        220
+       ]
+      },
+      {
+       "id": "angle8",
+       "op": "text",
+       "startMs": 2900,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        350,
+        175
+       ],
+       "text": "angle of sunlight",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "daylight8",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 5200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        610,
+        420
+       ],
+       "text": "length of daylight",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "check8",
+       "op": "rect",
+       "startMs": 5500,
+       "endMs": 6300,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        270,
+        65
+       ],
+       "w": 260,
+       "h": 70,
+       "round": 10
+      },
+      {
+       "id": "model8",
+       "op": "text",
+       "startMs": 5900,
+       "endMs": 7409,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        108
+       ],
+       "text": "check the model",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1",
+   "key": "day 172",
+   "prompt": "find the longest day"
+  },
+  {
+   "itemId": "r2",
+   "key": "day 355",
+   "prompt": "find summer in the south"
+  },
+  {
+   "itemId": "r3",
+   "key": "day 355",
+   "prompt": "find the shortest day"
+  }
+ ],
+ "check": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "Round 1 targets misconception 'c7-science-ch12-t02-m1' (distance myth) but asks 'find the longest day'. The longest day is a tilt/day-length fact, not a distance fact; targeting a misconception about distance with a question about day length is mismatched and could mislead.",
+    "severity": "low"
+   }
+  ],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

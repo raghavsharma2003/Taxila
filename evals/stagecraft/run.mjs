@@ -15,17 +15,26 @@ async function env() {
   const { topicPool } = await import("./scripts.mjs");
   const { buildCatalog } = await import("../../server/stagecraft/catalog.js");
   const pool = topicPool(S.ENGINE_SPECS);
-  const catalog = buildCatalog(S.ENGINE_SPECS, { w2Topics: pool.w2Topics, w2Kinds: pool.w2Kinds, library: ["slice-at@1", "food-web@1", "area-claim@1"] });
+  let catalog = buildCatalog(S.ENGINE_SPECS, { w2Topics: pool.w2Topics, w2Kinds: pool.w2Kinds, library: ["slice-at@1", "food-web@1", "area-claim@1"] });
+  let engineSpecs = S.ENGINE_SPECS;
+  // ship5 p4-content --catalogue: the production admissibility table (server/stagecraft/lesson.js productionCatalog: the base
+  // engines plus the checked authored catalogue's games and explainers), keeping the W2 live rows of the same pool
+  if (has("catalogue")) {
+    const { productionCatalog } = await import("../../server/stagecraft/lesson.js");
+    const pc = productionCatalog({ fresh: true });
+    catalog = { ...pc, w2Topics: catalog.w2Topics, w2Kinds: catalog.w2Kinds, w2Live: catalog.w2Live, library: catalog.library };
+    engineSpecs = Object.fromEntries(Object.entries(pc.rs4).map(([id, a]) => [id, { title: S.ENGINE_SPECS[id]?.title ?? id, outcomes: { topics: a.topics, misconceptions: a.misconceptions, classes: a.classes } }]));
+  }
   let cdf = null;
   const stress = arg("stress", null) ? JSON.parse(arg("stress")) : null;
   if (stress?.sampleCalibrated) stress.sampleCdf = JSON.parse(fs.readFileSync(path.join(HERE, "calibration.json"), "utf8"));
   if (has("calibrated") && fs.existsSync(path.join(HERE, "calibration.json"))) cdf = JSON.parse(fs.readFileSync(path.join(HERE, "calibration.json"), "utf8"));
-  return { S, pool, catalog, cdf, stress };
+  return { S, pool, catalog, cdf, stress, engineSpecs };
 }
 
 // ───────────── worker: one arm over a seed range ─────────────
 if (has("worker")) {
-  const { S, pool, catalog, cdf, stress } = await env();
+  const { S, pool, catalog, cdf, stress, engineSpecs } = await env();
   const { makeLesson } = await import("./scripts.mjs");
   const { simulate } = await import("./sim.mjs");
   const arm = arg("worker"), [a, b] = arg("seeds").split("-").map(Number), flags = arg("flags", "");
@@ -34,7 +43,7 @@ if (has("worker")) {
   for (let seed = a; seed <= b; seed++) {
     const L = makeLesson(seed, { pool, forceSafety: flags.includes("safety"), forceStorm: flags.includes("storm") });
     let rows = null;
-    const r = simulate(L, arm, { catalog, engineSpecs: S.ENGINE_SPECS, cdf, stress, onRows: (x) => { rows = x; } });
+    const r = simulate(L, arm, { catalog, engineSpecs, cdf, stress, onRows: (x) => { rows = x; } });
     if (arm === "sc_on" && !flags) calibrate(rows, cal);
     out.push({ seed, ...r });
   }
@@ -69,7 +78,7 @@ const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "stagecraft-"));
 function runWorker(arm, a, b, flags = "") {
   const out = path.join(tmp, `${arm.replace(/[^a-z0-9_]/gi, "_").slice(0, 60)}-${a}-${b}-${flags || "x"}.json`);
   return new Promise((res, rej) => {
-    const p = spawn(process.execPath, [new URL(import.meta.url).pathname, "--worker", arm, "--seeds", `${a}-${b}`, "--out", out, "--flags", flags, ...(has("calibrated") ? ["--calibrated"] : []), ...(arg("stress") ? ["--stress", arg("stress")] : [])], { stdio: ["ignore", "ignore", "inherit"] });
+    const p = spawn(process.execPath, [new URL(import.meta.url).pathname, "--worker", arm, "--seeds", `${a}-${b}`, "--out", out, "--flags", flags, ...(has("calibrated") ? ["--calibrated"] : []), ...(has("catalogue") ? ["--catalogue"] : []), ...(arg("stress") ? ["--stress", arg("stress")] : [])], { stdio: ["ignore", "ignore", "inherit"] });
     p.on("exit", (c) => (c === 0 ? res(JSON.parse(fs.readFileSync(out, "utf8"))) : rej(new Error(`${arm} ${a}-${b} exit ${c}`))));
   });
 }
@@ -142,6 +151,7 @@ console.log(`| metric | ${ARMS.join(" | ")} |`);
 console.log(`|---|${ARMS.map(() => "---").join("|")}|`);
 row("lessons / served points", null, (c) => `${c.lessons} / ${c.points}`);
 row("right artifact ready when needed", "readyWhenNeededRate");
+row("  an on-topic checked piece ready (not the board)", "pieceReadyRate");
 for (const t of ["plan_lookahead", "child_request", "partial_intent", "child_signal", "board_state"]) row(`  ready: ${t}`, null, (c) => { const x = c.readyWhenNeededByTrigger[t]; return x ? `${f(x.rate)} (n ${x.n})` : "—"; });
 row("request → first frame p50 / p95 (ms)", null, (c) => `${f(c.requestToFirstFrameMs.p50, 0)} / ${f(c.requestToFirstFrameMs.p95, 0)} (n ${c.requestToFirstFrameMs.n})`);
 row("spec time-to-ready p50 / p90 (ms)", null, (c) => `${f(c.timeToReadyMs.spec.p50, 0)} / ${f(c.timeToReadyMs.spec.p90, 0)}`);
@@ -157,6 +167,9 @@ row("specs built / 25 min", "specsLaunchedPer25", (c) => f(c.specsLaunchedPer25,
 row("stage active share", "stageActiveShare");
 row("median gap between pieces (s)", null, (c) => f((c.medianGapBetweenPiecesMs ?? 0) / 1000, 0));
 row("child-initiated share", "childInitiatedShare");
+row("3-min windows with a visual (flow-exempt)", null, (c) => (c.visualWindowCoverage == null ? "—" : `${f(c.visualWindowCoverage, 3)} (n ${c.visualWindows}, exempt ${c.visualWindowsFlowExempt})`));
+row("rest retires", "restRetires", (c) => f(c.restRetires, 0));
+row("live whiteboards / 25 min (modelled, sc_rest)", "whiteboardsPer25", (c) => f(c.whiteboardsPer25, 1));
 console.log(`\nlossless (sc_off vs sc_on want stream): ${out.lossless.agree}/${out.lossless.pointsCompared} = ${out.lossless.rate}; identical lessons ${out.lossless.lessonsIdentical}/${out.lossless.lessons}`);
 if (out.calibration.hitAtK) console.log(`E-ST2 hit@1/3/5: ${out.calibration.hitAtK.h1} / ${out.calibration.hitAtK.h3} / ${out.calibration.hitAtK.h5} (n ${out.calibration.hitAtK.n}); ECE ${JSON.stringify(out.calibration.ece)}`);
 if (out.safetyBattery) console.log(`E-ST6 safety battery: ${JSON.stringify(out.safetyBattery)}`);

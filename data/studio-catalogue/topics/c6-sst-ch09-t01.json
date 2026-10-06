@@ -1,0 +1,1741 @@
+{
+ "topicId": "c6-sst-ch09-t01",
+ "title": "Family and Community",
+ "chapter": "Family and Community",
+ "subject": "sst",
+ "class": 6,
+ "topicType": "T3",
+ "plan": {
+  "game": "story-rail@1",
+  "hint": "cause and who modes: roles in a family and a community"
+ },
+ "game": {
+  "archetype": "story-rail@1",
+  "spec": {
+   "archetype": "story-rail@1",
+   "skills": [
+    "c6-sst-ch09-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "picked": "coupled",
+    "streak": "streak",
+    "next": "What happens next?",
+    "effect": "What does this lead to?",
+    "who": "Who said this?",
+    "runDone": "Line complete",
+    "order": "your train",
+    "right": "Coupled",
+    "wrong": "Not this one",
+    "coach": "Tap a wagon before the train reaches the fork"
+   },
+   "title": "Family and Community",
+   "rounds": [
+    {
+     "mode": "cause",
+     "title": "Share the work",
+     "sub": "match each cause to its effect",
+     "pairs": [
+      {
+       "cause": {
+        "id": "c1",
+        "text": "Everyone uses the home",
+        "glyph": "house"
+       },
+       "effect": {
+        "id": "e1",
+        "text": "Everyone helps with chores",
+        "glyph": "group"
+       }
+      },
+      {
+       "cause": {
+        "id": "c2",
+        "text": "A child can fold clothes",
+        "glyph": "person"
+       },
+       "effect": {
+        "id": "e2",
+        "text": "The child shares a task",
+        "glyph": "hand"
+       }
+      },
+      {
+       "cause": {
+        "id": "c3",
+        "text": "Tasks are shared fairly",
+        "glyph": "balance"
+       },
+       "effect": {
+        "id": "e3",
+        "text": "No one does everything",
+        "glyph": "group"
+       }
+      },
+      {
+       "cause": {
+        "id": "c4",
+        "text": "An elder needs support",
+        "glyph": "person"
+       },
+       "effect": {
+        "id": "e4",
+        "text": "Family members give care"
+       }
+      }
+     ],
+     "speed": 1,
+     "targets": "c6-sst-ch09-t01-m2"
+    },
+    {
+     "mode": "who",
+     "title": "Who said it?",
+     "sub": "send each line to the right speaker",
+     "speakers": [
+      {
+       "id": "child",
+       "name": "Asha",
+       "glyph": "person"
+      },
+      {
+       "id": "neighbour",
+       "name": "Neighbour",
+       "glyph": "house"
+      },
+      {
+       "id": "volunteer",
+       "name": "Volunteer",
+       "glyph": "group"
+      }
+     ],
+     "lines": [
+      {
+       "id": "l1",
+       "text": "I will lay the table.",
+       "speaker": "child"
+      },
+      {
+       "id": "l2",
+       "text": "We can share drinking water.",
+       "speaker": "neighbour"
+      },
+      {
+       "id": "l3",
+       "text": "Everyone may eat here freely.",
+       "speaker": "volunteer"
+      },
+      {
+       "id": "l4",
+       "text": "I will help fold clothes.",
+       "speaker": "child"
+      },
+      {
+       "id": "l5",
+       "text": "Our neighbours need our help.",
+       "speaker": "neighbour"
+      }
+     ],
+     "speed": 0.85,
+     "targets": "c6-sst-ch09-t01-m3"
+    }
+   ]
+  },
+  "repairs": [
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c6-sst-ch09-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Families and communities care",
+   "accent": "mint",
+   "targets": "c6-sst-ch09-t01-m2",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Families and communities"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Housework is only Mummy's job"
+      },
+      {
+       "id": "family",
+       "type": "node",
+       "text": "Family",
+       "sub": "care and share",
+       "glyph": "house",
+       "color": "mint"
+      },
+      {
+       "id": "community",
+       "type": "node",
+       "text": "Community",
+       "sub": "help together",
+       "glyph": "group",
+       "color": "ion"
+      },
+      {
+       "id": "link",
+       "type": "arrow",
+       "from": "family",
+       "to": "community",
+       "text": "extends care"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "adult",
+       "type": "node",
+       "text": "Adults",
+       "sub": "cooking",
+       "glyph": "pot",
+       "color": "amber"
+      },
+      {
+       "id": "child",
+       "type": "node",
+       "text": "Class 6 child",
+       "sub": "table, clothes",
+       "glyph": "person",
+       "color": "mint"
+      },
+      {
+       "id": "young",
+       "type": "node",
+       "text": "Young child",
+       "sub": "plants",
+       "glyph": "leaf",
+       "color": "sun"
+      },
+      {
+       "id": "share",
+       "type": "label",
+       "text": "Share by ability",
+       "x": 430,
+       "y": 190,
+       "color": "ion"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "adult",
+       "to": "child",
+       "text": "plan"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "child",
+       "to": "young",
+       "text": "help"
+      },
+      {
+       "id": "fair",
+       "type": "node",
+       "text": "Fair plan",
+       "sub": "review and adjust",
+       "glyph": "balance",
+       "color": "mint"
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "share",
+       "to": "fair",
+       "text": "check"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Families come in many forms, and every caring family can support its members.",
+    "L2": "Family members care for children and elders, share work and money, and pass on values, skills and stories.",
+    "L3": "Housework is not one person's job. Everyone should help according to age and ability.",
+    "L4": "For example, adults may cook, a Class 6 child may lay the table and fold clothes, and a young child may water plants.",
+    "L5": "Tasks should be shared fairly, and disliked tasks can be rotated so nobody does everything.",
+    "L6": "A community is larger than a family: neighbours or villagers can share work and help one another.",
+    "L7": "When families and communities care together, support reaches more people."
+   },
+   "narration": {
+    "L1": {
+     "text": "Families come in many forms, and every caring family can support its members.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "Family members care for children and elders, share work and money, and pass on values, skills and stories.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "Housework is not one person's job. Everyone should help according to age and ability.",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "For example, adults may cook, a Class 6 child may lay the table and fold clothes, and a young child may water plants.",
+     "dur": 4.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "Tasks should be shared fairly, and disliked tasks can be rotated so nobody does everything.",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "A community is larger than a family: neighbours or villagers can share work and help one another.",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "When families and communities care together, support reaches more people.",
+     "dur": 2.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": "family"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "community"
+      },
+      {
+       "at": 0.5,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "link",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "myth"
+      },
+      {
+       "at": 1,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "adult"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.6,
+       "target": "child"
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.6,
+       "target": "young"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "share"
+      },
+      {
+       "at": 0.5,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "a1",
+       "to": 1
+      },
+      {
+       "at": 1.2,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "a2",
+       "to": 1
+      },
+      {
+       "at": 2,
+       "do": "show",
+       "dur": 0.7,
+       "target": "fair"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "community"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "link"
+      },
+      {
+       "at": "end",
+       "do": "interactive"
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which action shows fair sharing at home?",
+    "options": [
+     "adult",
+     "child",
+     "young",
+     "fair"
+    ],
+    "answer": "child",
+    "src": "c6-sst-ch09-t01-i09"
+   }
+  },
+  "repairs": [],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "passes": 2,
+  "seconds": 28
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "Everyone helps with chores",
+   "prompt": "cause: after/for \"Everyone uses the home\""
+  },
+  {
+   "itemId": "r1:1",
+   "key": "The child shares a task",
+   "prompt": "cause: after/for \"A child can fold clothes\""
+  },
+  {
+   "itemId": "r1:2",
+   "key": "No one does everything",
+   "prompt": "cause: after/for \"Tasks are shared fairly\""
+  },
+  {
+   "itemId": "r1:3",
+   "key": "Family members give care",
+   "prompt": "cause: after/for \"An elder needs support\""
+  },
+  {
+   "itemId": "r2:0",
+   "key": "Asha",
+   "prompt": "who: after/for \"I will lay the table.\""
+  },
+  {
+   "itemId": "r2:1",
+   "key": "Neighbour",
+   "prompt": "who: after/for \"We can share drinking water.\""
+  },
+  {
+   "itemId": "r2:2",
+   "key": "Volunteer",
+   "prompt": "who: after/for \"Everyone may eat here freely.\""
+  },
+  {
+   "itemId": "r2:3",
+   "key": "Asha",
+   "prompt": "who: after/for \"I will help fold clothes.\""
+  },
+  {
+   "itemId": "r2:4",
+   "key": "Neighbour",
+   "prompt": "who: after/for \"Our neighbours need our help.\""
+  }
+ ],
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch09-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "fam1",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        180,
+        210
+       ],
+       "r": 70
+      },
+      {
+       "id": "fam2",
+       "op": "circle",
+       "startMs": 500,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        210
+       ],
+       "r": 70
+      },
+      {
+       "id": "fam3",
+       "op": "circle",
+       "startMs": 1000,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        620,
+        210
+       ],
+       "r": 70
+      },
+      {
+       "id": "l1",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        315
+       ],
+       "text": "families",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "l2",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        315
+       ],
+       "text": "many forms",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "heart",
+       "op": "polygon",
+       "startMs": 2800,
+       "endMs": 3600,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         380,
+         400
+        ],
+        [
+         400,
+         380
+        ],
+        [
+         420,
+         400
+        ],
+        [
+         400,
+         430
+        ]
+       ],
+       "fill": "accent"
+      },
+      {
+       "id": "care",
+       "op": "text",
+       "startMs": 3700,
+       "endMs": 4500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        465
+       ],
+       "text": "caring family",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "a1",
+       "op": "arrow",
+       "startMs": 4300,
+       "endMs": 5200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        250,
+        250
+       ],
+       "to": [
+        370,
+        390
+       ]
+      },
+      {
+       "id": "a2",
+       "op": "arrow",
+       "startMs": 4700,
+       "endMs": 5600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        550,
+        250
+       ],
+       "to": [
+        430,
+        390
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch09-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "family",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        220
+       ],
+       "r": 85
+      },
+      {
+       "id": "child",
+       "op": "circle",
+       "startMs": 500,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        230,
+        110
+       ],
+       "r": 30
+      },
+      {
+       "id": "elder",
+       "op": "circle",
+       "startMs": 700,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        570,
+        110
+       ],
+       "r": 30
+      },
+      {
+       "id": "care",
+       "op": "text",
+       "startMs": 1200,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        95
+       ],
+       "text": "care",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "work",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        370
+       ],
+       "text": "work",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "money",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        370
+       ],
+       "text": "money",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "values",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        620,
+        370
+       ],
+       "text": "values",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "skills",
+       "op": "text",
+       "startMs": 3400,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        300,
+        455
+       ],
+       "text": "skills",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "stories",
+       "op": "text",
+       "startMs": 3800,
+       "endMs": 4300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        500,
+        455
+       ],
+       "text": "stories",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "ar1",
+       "op": "arrow",
+       "startMs": 4400,
+       "endMs": 5000,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        310,
+        200
+       ],
+       "to": [
+        240,
+        135
+       ]
+      },
+      {
+       "id": "ar2",
+       "op": "arrow",
+       "startMs": 4900,
+       "endMs": 5500,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        490,
+        200
+       ],
+       "to": [
+        560,
+        135
+       ]
+      },
+      {
+       "id": "ar3",
+       "op": "arrow",
+       "startMs": 5400,
+       "endMs": 6000,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        350,
+        270
+       ],
+       "to": [
+        210,
+        350
+       ]
+      },
+      {
+       "id": "ar4",
+       "op": "arrow",
+       "startMs": 5900,
+       "endMs": 6500,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        450,
+        270
+       ],
+       "to": [
+        590,
+        350
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch09-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "house",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        250,
+        100
+       ],
+       "w": 300,
+       "h": 220
+      },
+      {
+       "id": "roof",
+       "op": "polygon",
+       "startMs": 500,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         220,
+         100
+        ],
+        [
+         400,
+         35
+        ],
+        [
+         580,
+         100
+        ]
+       ]
+      },
+      {
+       "id": "task",
+       "op": "text",
+       "startMs": 1300,
+       "endMs": 2000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        180
+       ],
+       "text": "housework",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "cross",
+       "op": "line",
+       "startMs": 2100,
+       "endMs": 2700,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        300,
+        370
+       ],
+       "to": [
+        500,
+        370
+       ]
+      },
+      {
+       "id": "all",
+       "op": "text",
+       "startMs": 2800,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        430
+       ],
+       "text": "Everyone",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "help",
+       "op": "arrow",
+       "startMs": 3600,
+       "endMs": 4400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        330
+       ],
+       "to": [
+        400,
+        270
+       ]
+      },
+      {
+       "id": "age",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        260,
+        465
+       ],
+       "text": "age",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "ability",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 5600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        540,
+        465
+       ],
+       "text": "ability",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch09-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 10387,
+     "ops": [
+      {
+       "id": "adult",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        150,
+        150
+       ],
+       "r": 45
+      },
+      {
+       "id": "child6",
+       "op": "circle",
+       "startMs": 500,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        150
+       ],
+       "r": 45
+      },
+      {
+       "id": "young",
+       "op": "circle",
+       "startMs": 1000,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        650,
+        150
+       ],
+       "r": 45
+      },
+      {
+       "id": "adults",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        150,
+        235
+       ],
+       "text": "adults",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "class6",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        235
+       ],
+       "text": "Class 6",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "youngchild",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        650,
+        235
+       ],
+       "text": "young child",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "cook",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        150,
+        350
+       ],
+       "text": "cook",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "table",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        350
+       ],
+       "text": "lay table",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "fold",
+       "op": "text",
+       "startMs": 4100,
+       "endMs": 4700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        420
+       ],
+       "text": "fold clothes",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "water",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        650,
+        350
+       ],
+       "text": "water plants",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "a1",
+       "op": "arrow",
+       "startMs": 5400,
+       "endMs": 6000,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        150,
+        200
+       ],
+       "to": [
+        150,
+        325
+       ]
+      },
+      {
+       "id": "a2",
+       "op": "arrow",
+       "startMs": 5900,
+       "endMs": 6500,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        400,
+        200
+       ],
+       "to": [
+        400,
+        325
+       ]
+      },
+      {
+       "id": "a3",
+       "op": "arrow",
+       "startMs": 6400,
+       "endMs": 7000,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        650,
+        200
+       ],
+       "to": [
+        650,
+        325
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch09-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "tasks",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        90
+       ],
+       "text": "Tasks",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "box1",
+       "op": "rect",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        100,
+        170
+       ],
+       "w": 160,
+       "h": 90
+      },
+      {
+       "id": "box2",
+       "op": "rect",
+       "startMs": 1000,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        320,
+        170
+       ],
+       "w": 160,
+       "h": 90
+      },
+      {
+       "id": "box3",
+       "op": "rect",
+       "startMs": 1300,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        540,
+        170
+       ],
+       "w": 160,
+       "h": 90
+      },
+      {
+       "id": "fair",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 2800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        330
+       ],
+       "text": "shared fairly",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "rot",
+       "op": "arrow",
+       "startMs": 3000,
+       "endMs": 3800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        180,
+        280
+       ],
+       "to": [
+        400,
+        280
+       ],
+       "bend": 1
+      },
+      {
+       "id": "rot2",
+       "op": "arrow",
+       "startMs": 3600,
+       "endMs": 4400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        280
+       ],
+       "to": [
+        620,
+        280
+       ],
+       "bend": 1
+      },
+      {
+       "id": "rotate",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        430
+       ],
+       "text": "rotated",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch09-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "fam",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        210,
+        230
+       ],
+       "r": 100
+      },
+      {
+       "id": "comm",
+       "op": "circle",
+       "startMs": 600,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        590,
+        230
+       ],
+       "r": 135
+      },
+      {
+       "id": "family",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        210,
+        230
+       ],
+       "text": "family",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "community",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        590,
+        230
+       ],
+       "text": "community",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "neighbours",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        590,
+        125
+       ],
+       "text": "neighbours",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "villagers",
+       "op": "text",
+       "startMs": 2900,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        590,
+        345
+       ],
+       "text": "villagers",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "bridge",
+       "op": "arrow",
+       "startMs": 3500,
+       "endMs": 4300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        320,
+        230
+       ],
+       "to": [
+        450,
+        230
+       ]
+      },
+      {
+       "id": "share",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 5000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        180
+       ],
+       "text": "share work",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "help",
+       "op": "text",
+       "startMs": 5100,
+       "endMs": 6000,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        430
+       ],
+       "text": "help one another",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch09-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "left",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        250,
+        230
+       ],
+       "r": 100
+      },
+      {
+       "id": "right",
+       "op": "circle",
+       "startMs": 400,
+       "endMs": 1200,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        550,
+        230
+       ],
+       "r": 100
+      },
+      {
+       "id": "families",
+       "op": "text",
+       "startMs": 1200,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        250,
+        230
+       ],
+       "text": "families",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "communities",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        550,
+        230
+       ],
+       "text": "communities",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "join",
+       "op": "arrow",
+       "startMs": 2200,
+       "endMs": 3000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        350,
+        230
+       ],
+       "to": [
+        450,
+        230
+       ]
+      },
+      {
+       "id": "support",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        360
+       ],
+       "text": "support",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "more",
+       "op": "text",
+       "startMs": 3700,
+       "endMs": 4500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        440
+       ],
+       "text": "more people",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "check": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "Round 1's 'who' mode states 'We can share drinking water.' belongs to Neighbour, but the kit item c6-sst-ch09-t01-rl-h3 describes a neighbourhood collecting drinking water for families it does not know after a cyclone, illustrating 'the world is one family' — not specifically a neighbour's action.",
+    "severity": "low"
+   }
+  ],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

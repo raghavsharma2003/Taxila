@@ -1,0 +1,14 @@
+--- a/server/brain/propose.js
++++ b/server/brain/propose.js
+@@ -25,7 +25,10 @@
+   const p = view?.propose;
+   if (!p || typeof p !== "object") return [];
+   const out = [];
+-  if (p.reveal) out.push(proposal("studio", "reveal", AUTHORITY.studio, { payload: { reveal: String(p.reveal) }, costs: { attention: 1, novelty: 1 }, reason: ["studio.reveal"] }));
++  // ship5 p4-content: a piece the CHILD asked for ("animation dikhao", "game khelna hai") is the one new thing they chose:
++  // it costs no attention, so the Director's own chips cannot price their request out (the seam's slotFor still yields to
++  // the Director's tray, and a closing move still refuses any reveal)
++  if (p.reveal) out.push(proposal("studio", "reveal", AUTHORITY.studio, { payload: { reveal: String(p.reveal) }, costs: { attention: p.requested ? 0 : 1, novelty: 1 }, urgency: p.requested ? 3 : 0, reason: p.requested ? ["studio.reveal", "child.asked_visual"] : ["studio.reveal"] }));
+   if (p.highlight) out.push(proposal("studio", "highlight", AUTHORITY.studio, { payload: { highlight: String(p.highlight) }, reason: ["studio.highlight"] }));
+   if (p.retire) out.push(proposal("studio", "retire", AUTHORITY.studio, { payload: { retire: String(p.retire) }, urgency: 1, reason: ["studio.retire"] }));
+   if (p.setParam && typeof p.setParam === "object") out.push(proposal("studio", "set_param", AUTHORITY.studio, { payload: { setParam: p.setParam }, reason: ["studio.set_param"] }));

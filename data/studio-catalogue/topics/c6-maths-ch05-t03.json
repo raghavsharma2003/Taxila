@@ -1,0 +1,1711 @@
+{
+ "topicId": "c6-maths-ch05-t03",
+ "title": "Co-prime numbers",
+ "chapter": "Prime Time",
+ "subject": "maths",
+ "class": 6,
+ "topicType": "T3",
+ "plan": {
+  "game": "sieve-storm@1",
+  "hint": "rule coprime (co-prime with a), contrast rounds"
+ },
+ "game": {
+  "archetype": "sieve-storm@1",
+  "spec": {
+   "archetype": "sieve-storm@1",
+   "skills": [
+    "c6-maths-ch05-t03"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "slashed": "right calls",
+    "combo": "combo",
+    "coach": "Swipe the numbers that fit the rule",
+    "runDone": "Storm over",
+    "prime": "prime",
+    "composite": "composite",
+    "even": "even",
+    "odd": "odd",
+    "multipleOf": "multiples of",
+    "commonOf": "common multiples of",
+    "factorOf": "factors of",
+    "cfactorOf": "common factors of",
+    "divisibleBy": "divisible by",
+    "coprimeWith": "co-prime with",
+    "square": "square numbers",
+    "palindrome": "palindromes",
+    "slipped": "slipped",
+    "wrongCut": "not this one",
+    "and": "and"
+   },
+   "title": "Co-Prime Sieve Storm",
+   "rounds": [
+    {
+     "rule": "coprime",
+     "a": 3,
+     "title": "Kriti's prime trap",
+     "sub": "Check each number with 3",
+     "lo": 4,
+     "hi": 12,
+     "count": 10,
+     "hitRate": 0.45,
+     "seed": 29,
+     "speed": 1
+    },
+    {
+     "rule": "coprime",
+     "a": 9,
+     "title": "Odd pair challenge",
+     "sub": "Check each number with 9",
+     "lo": 10,
+     "hi": 20,
+     "count": 12,
+     "hitRate": 0.4,
+     "seed": 43,
+     "speed": 1.2,
+     "targets": "c6-maths-ch05-t03-m-odd-coprime"
+    }
+   ]
+  },
+  "repairs": [
+   "stream:no-contrast"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c6-maths-ch05-t03"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Co-prime numbers",
+   "accent": "ion",
+   "targets": "c6-maths-ch05-t03-m-both-prime",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Co-prime numbers"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Both numbers must be prime"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "pair",
+       "type": "node",
+       "text": "A pair",
+       "sub": "two numbers",
+       "glyph": "group",
+       "color": "ion"
+      },
+      {
+       "id": "common",
+       "type": "node",
+       "text": "Common factor",
+       "sub": "shared divisor",
+       "glyph": "balance",
+       "color": "sci"
+      },
+      {
+       "id": "one",
+       "type": "node",
+       "text": "Only 1",
+       "sub": "co-prime test",
+       "glyph": "spark",
+       "color": "mint"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "pair",
+       "to": "common",
+       "text": "check"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "common",
+       "to": "one",
+       "text": "only 1"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "column",
+     "els": [
+      {
+       "id": "n14",
+       "type": "node",
+       "text": "14",
+       "sub": "1, 2, 7, 14",
+       "glyph": "ruler",
+       "color": "ion"
+      },
+      {
+       "id": "n25",
+       "type": "node",
+       "text": "25",
+       "sub": "1, 5, 25",
+       "glyph": "ruler",
+       "color": "amber"
+      },
+      {
+       "id": "shared",
+       "type": "label",
+       "text": "Common: 1",
+       "x": 380,
+       "y": 320,
+       "color": "mint"
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "n14",
+       "to": "shared",
+       "text": "factors"
+      },
+      {
+       "id": "a4",
+       "type": "arrow",
+       "from": "n25",
+       "to": "shared",
+       "text": "factors"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "row",
+     "els": [
+      {
+       "id": "pA",
+       "type": "node",
+       "text": "9 and 14",
+       "sub": "candidate",
+       "glyph": "question",
+       "color": "mint"
+      },
+      {
+       "id": "pB",
+       "type": "node",
+       "text": "9 and 15",
+       "sub": "candidate",
+       "glyph": "question",
+       "color": "amber"
+      },
+      {
+       "id": "hint",
+       "type": "label",
+       "text": "Check shared factors",
+       "x": 300,
+       "y": 500,
+       "color": "ion"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Co-prime describes a pair of numbers, not just one number.",
+    "L2": "Two numbers are co-prime when their only common factor is 1.",
+    "L3": "Being prime is about one number. Co-prime is about what two numbers share.",
+    "L4": "Here is the myth: both numbers must be prime. That is not true.",
+    "L5": "Fourteen has factors 1, 2, 7 and 14. Twenty-five has factors 1, 5 and 25.",
+    "L6": "Their only common factor is 1, so 14 and 25 are co-prime, although neither is prime.",
+    "L7": "To decide, list factors for both numbers and look for a shared factor besides 1."
+   },
+   "narration": {},
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "pair"
+      },
+      {
+       "at": 0.4,
+       "do": "show",
+       "dur": 0.6,
+       "target": "common"
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.6,
+       "target": "one"
+      },
+      {
+       "at": 1.2,
+       "do": "flow",
+       "dur": 0.8,
+       "target": [
+        "a1",
+        "a2"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "pair"
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "common"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "myth"
+      },
+      {
+       "at": 0.6,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "n14",
+        "n25"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "focus",
+       "dur": 0.8,
+       "target": "n14"
+      },
+      {
+       "at": 1.6,
+       "do": "focus",
+       "dur": 0.8,
+       "target": "n25"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "shared"
+      },
+      {
+       "at": 0.5,
+       "do": "flow",
+       "dur": 0.8,
+       "target": [
+        "a3",
+        "a4"
+       ],
+       "to": 1
+      },
+      {
+       "at": 1.4,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "shared"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "pA",
+        "pB",
+        "hint"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which pair is co-prime?",
+    "options": [
+     "pA",
+     "pB"
+    ],
+    "answer": "pA",
+    "src": "c6-maths-ch05-t03-i05"
+   }
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg",
+  "seconds": 45
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch05-t03-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "title",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "co-prime",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "pairbox",
+       "op": "rect",
+       "startMs": 700,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        145
+       ],
+       "w": 560,
+       "h": 180
+      },
+      {
+       "id": "n1",
+       "op": "circle",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        280,
+        235
+       ],
+       "r": 58
+      },
+      {
+       "id": "n2",
+       "op": "circle",
+       "startMs": 1900,
+       "endMs": 2600,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        520,
+        235
+       ],
+       "r": 58
+      },
+      {
+       "id": "one",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        280,
+        245
+       ],
+       "text": "number",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "two",
+       "op": "text",
+       "startMs": 2600,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        520,
+        245
+       ],
+       "text": "number",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "pair",
+       "op": "label",
+       "startMs": 3300,
+       "endMs": 4000,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        400,
+        370
+       ],
+       "text": "pair",
+       "to": [
+        400,
+        325
+       ]
+      },
+      {
+       "id": "notone",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 4800,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        400,
+        440
+       ],
+       "text": "not one number",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch05-t03-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "head",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        65
+       ],
+       "text": "common factors",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "left",
+       "op": "circle",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        240,
+        190
+       ],
+       "r": 76
+      },
+      {
+       "id": "right",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1600,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        560,
+        190
+       ],
+       "r": 76
+      },
+      {
+       "id": "f1",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        240,
+        190
+       ],
+       "text": "factors",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "f2",
+       "op": "text",
+       "startMs": 1600,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        560,
+        190
+       ],
+       "text": "factors",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "overlap",
+       "op": "ellipse",
+       "startMs": 2200,
+       "endMs": 3000,
+       "ink": "mark",
+       "weight": 2,
+       "c": [
+        400,
+        190
+       ],
+       "rx": 65,
+       "ry": 45
+      },
+      {
+       "id": "only",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        315
+       ],
+       "text": "only common factor",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "eqone",
+       "op": "numwork",
+       "startMs": 3900,
+       "endMs": 4600,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        350,
+        375
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "=",
+         "1"
+        ]
+       ]
+      },
+      {
+       "id": "underline",
+       "op": "highlight",
+       "startMs": 4600,
+       "endMs": 5200,
+       "ink": "good",
+       "weight": 2,
+       "target": "eqone",
+       "style": "underline"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch05-t03-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "prime",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        210,
+        85
+       ],
+       "text": "prime",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "onearrow",
+       "op": "arrow",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        210,
+        115
+       ],
+       "to": [
+        210,
+        205
+       ]
+      },
+      {
+       "id": "onebox",
+       "op": "rect",
+       "startMs": 1400,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        100,
+        205
+       ],
+       "w": 220,
+       "h": 90
+      },
+      {
+       "id": "onefact",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        210,
+        255
+       ],
+       "text": "one number",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "cop",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        590,
+        85
+       ],
+       "text": "co-prime",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "twoarrow",
+       "op": "arrow",
+       "startMs": 3300,
+       "endMs": 4000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        590,
+        115
+       ],
+       "to": [
+        590,
+        205
+       ]
+      },
+      {
+       "id": "twobox",
+       "op": "rect",
+       "startMs": 4000,
+       "endMs": 4500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        460,
+        205
+       ],
+       "w": 260,
+       "h": 90
+      },
+      {
+       "id": "share",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        590,
+        255
+       ],
+       "text": "two numbers share",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "contrast",
+       "op": "arrow",
+       "startMs": 5400,
+       "endMs": 6100,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        320,
+        250
+       ],
+       "to": [
+        460,
+        250
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch05-t03-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "myth",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "myth",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "both",
+       "op": "text",
+       "startMs": 800,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        145
+       ],
+       "text": "both numbers prime",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "cross1",
+       "op": "line",
+       "startMs": 1700,
+       "endMs": 2500,
+       "ink": "accent",
+       "weight": 3,
+       "from": [
+        250,
+        110
+       ],
+       "to": [
+        550,
+        180
+       ]
+      },
+      {
+       "id": "cross2",
+       "op": "line",
+       "startMs": 2100,
+       "endMs": 2900,
+       "ink": "accent",
+       "weight": 3,
+       "from": [
+        550,
+        110
+       ],
+       "to": [
+        250,
+        180
+       ]
+      },
+      {
+       "id": "nottrue",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        270
+       ],
+       "text": "not true",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "pair",
+       "op": "circle",
+       "startMs": 3900,
+       "endMs": 4600,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        390
+       ],
+       "r": 75
+      },
+      {
+       "id": "two",
+       "op": "text",
+       "startMs": 4600,
+       "endMs": 5200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        400
+       ],
+       "text": "pair",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "check",
+       "op": "highlight",
+       "startMs": 5200,
+       "endMs": 6100,
+       "ink": "good",
+       "weight": 2,
+       "target": "nottrue",
+       "style": "pulse"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch05-t03-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "fourteen",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        220,
+        65
+       ],
+       "text": "14",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "f14",
+       "op": "numwork",
+       "startMs": 600,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        80,
+        130
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "1",
+         ",",
+         "2",
+         ",",
+         "7",
+         ",",
+         "14"
+        ]
+       ]
+      },
+      {
+       "id": "factors14",
+       "op": "label",
+       "startMs": 1900,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        220,
+        240
+       ],
+       "text": "factors",
+       "to": [
+        220,
+        205
+       ]
+      },
+      {
+       "id": "twentyfive",
+       "op": "text",
+       "startMs": 2400,
+       "endMs": 3000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        580,
+        65
+       ],
+       "text": "25",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "f25",
+       "op": "numwork",
+       "startMs": 3000,
+       "endMs": 4300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        430,
+        130
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "1",
+         ",",
+         "5",
+         ",",
+         "25"
+        ]
+       ]
+      },
+      {
+       "id": "factors25",
+       "op": "label",
+       "startMs": 4300,
+       "endMs": 4800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        580,
+        240
+       ],
+       "text": "factors",
+       "to": [
+        580,
+        205
+       ]
+      },
+      {
+       "id": "compare",
+       "op": "arrow",
+       "startMs": 4800,
+       "endMs": 5600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        300,
+        280
+       ],
+       "to": [
+        500,
+        280
+       ]
+      },
+      {
+       "id": "common",
+       "op": "text",
+       "startMs": 5600,
+       "endMs": 6200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        370
+       ],
+       "text": "common",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "one",
+       "op": "text",
+       "startMs": 6200,
+       "endMs": 6900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        440
+       ],
+       "text": "1",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch05-t03-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "pairnums",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        250,
+        65
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "14",
+         "and",
+         "25"
+        ]
+       ]
+      },
+      {
+       "id": "f14b",
+       "op": "numwork",
+       "startMs": 800,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        80,
+        155
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "1",
+         ",",
+         "2",
+         ",",
+         "7",
+         ",",
+         "14"
+        ]
+       ]
+      },
+      {
+       "id": "f25b",
+       "op": "numwork",
+       "startMs": 1200,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        430,
+        155
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "1",
+         ",",
+         "5",
+         ",",
+         "25"
+        ]
+       ]
+      },
+      {
+       "id": "commonb",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        285
+       ],
+       "text": "common factor",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "oneb",
+       "op": "circle",
+       "startMs": 3400,
+       "endMs": 4100,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        400,
+        365
+       ],
+       "r": 42
+      },
+      {
+       "id": "onebt",
+       "op": "text",
+       "startMs": 4100,
+       "endMs": 4700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        375
+       ],
+       "text": "1",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "coprime",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        440
+       ],
+       "text": "co-prime",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "neither",
+       "op": "text",
+       "startMs": 5700,
+       "endMs": 6500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        485
+       ],
+       "text": "neither prime",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "finalmark",
+       "op": "highlight",
+       "startMs": 6500,
+       "endMs": 7350,
+       "ink": "good",
+       "weight": 2,
+       "target": "coprime",
+       "style": "underline"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch05-t03-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "decide",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        65
+       ],
+       "text": "decide",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "step1",
+       "op": "circle",
+       "startMs": 700,
+       "endMs": 1200,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        140,
+        170
+       ],
+       "r": 42
+      },
+      {
+       "id": "num1",
+       "op": "text",
+       "startMs": 1200,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        140,
+        180
+       ],
+       "text": "1",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "list1",
+       "op": "text",
+       "startMs": 1600,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        140,
+        260
+       ],
+       "text": "list factors",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "arr1",
+       "op": "arrow",
+       "startMs": 2400,
+       "endMs": 2900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        190,
+        170
+       ],
+       "to": [
+        290,
+        170
+       ]
+      },
+      {
+       "id": "step2",
+       "op": "circle",
+       "startMs": 2900,
+       "endMs": 3400,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        350,
+        170
+       ],
+       "r": 42
+      },
+      {
+       "id": "num2",
+       "op": "text",
+       "startMs": 3400,
+       "endMs": 3800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        350,
+        180
+       ],
+       "text": "2",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "list2",
+       "op": "text",
+       "startMs": 3800,
+       "endMs": 4500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        350,
+        260
+       ],
+       "text": "both numbers",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "arr2",
+       "op": "arrow",
+       "startMs": 4500,
+       "endMs": 5000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        170
+       ],
+       "to": [
+        500,
+        170
+       ]
+      },
+      {
+       "id": "shared",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 5800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        630,
+        155
+       ],
+       "text": "shared factor",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "besides",
+       "op": "text",
+       "startMs": 5800,
+       "endMs": 6500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        630,
+        225
+       ],
+       "text": "besides 1",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "question",
+       "op": "text",
+       "startMs": 6500,
+       "endMs": 6980,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        630,
+        320
+       ],
+       "text": "co-prime?",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 10 coprime 3?"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 9 coprime 3?"
+  },
+  {
+   "itemId": "r1:2",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 12 coprime 3?"
+  },
+  {
+   "itemId": "r1:3",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 8 coprime 3?"
+  },
+  {
+   "itemId": "r1:4",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 6 coprime 3?"
+  },
+  {
+   "itemId": "r1:5",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 9 coprime 3?"
+  },
+  {
+   "itemId": "r1:6",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 8 coprime 3?"
+  },
+  {
+   "itemId": "r1:7",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 8 coprime 3?"
+  },
+  {
+   "itemId": "r1:8",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 4 coprime 3?"
+  },
+  {
+   "itemId": "r1:9",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 5 coprime 3?"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 14 coprime 9?"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 15 coprime 9?"
+  },
+  {
+   "itemId": "r2:2",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 12 coprime 9?"
+  },
+  {
+   "itemId": "r2:3",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 15 coprime 9?"
+  },
+  {
+   "itemId": "r2:4",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 18 coprime 9?"
+  },
+  {
+   "itemId": "r2:5",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 18 coprime 9?"
+  },
+  {
+   "itemId": "r2:6",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 17 coprime 9?"
+  },
+  {
+   "itemId": "r2:7",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 12 coprime 9?"
+  },
+  {
+   "itemId": "r2:8",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 12 coprime 9?"
+  },
+  {
+   "itemId": "r2:9",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 12 coprime 9?"
+  },
+  {
+   "itemId": "r2:10",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 11 coprime 9?"
+  },
+  {
+   "itemId": "r2:11",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 12 coprime 9?"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ },
+ "firstCheck": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "Round 1 asks 'is 14 coprime 14?' which should say they are not co-prime, but it uses the pair (14,14) with the same number. The kit never pairs a number with itself; co-prime is defined for two distinct numbers. The computed key shows 'does not fit' which is correct, but the question itself is misleading and unsuitable for children.",
+    "severity": "high"
+   },
+   {
+    "where": "explainer",
+    "what": "The task's prompt says 'Which pair has only 1 as its common factor?' and gives options optA (14 and 25) and optB (12 and 18). However, the 'src' attribute says 'c6-maths-ch05-t03-i01' which is about the pair 4 and 9, not 14 and 25. The content uses numbers from the worked example kit item, but the stated src is wrong.",
+    "severity": "high"
+   },
+   {
+    "where": "explainer",
+    "what": "Scene s4 shows optB as 12 and 18, but the label says 'sub': choice B and color: volt, which is consistent. However, the text and task seem correct, but the 'src' mismatch is a factual error in referencing.",
+    "severity": "low"
+   }
+  ],
+  "verdict": "fail",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

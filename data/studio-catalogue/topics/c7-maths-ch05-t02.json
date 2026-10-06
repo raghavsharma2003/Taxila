@@ -1,0 +1,1571 @@
+{
+ "topicId": "c7-maths-ch05-t02",
+ "title": "Parallel and perpendicular lines",
+ "chapter": "Parallel and Intersecting Lines",
+ "subject": "maths",
+ "class": 7,
+ "topicType": "T3",
+ "plan": {
+  "game": "geo-forge@1",
+  "hint": "parallel and perpendicular challenges; angle challenges"
+ },
+ "game": {
+  "archetype": "geo-forge@1",
+  "spec": {
+   "archetype": "geo-forge@1",
+   "skills": [
+    "c7-maths-ch05-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "built": "built",
+    "check": "CHECK",
+    "undo": "UNDO",
+    "coach": "Tap pins to place lines and angles",
+    "runDone": "Blueprints done",
+    "perimeter": "perimeter",
+    "area": "area",
+    "units": "units",
+    "sq": "sq units",
+    "polygon": "sides",
+    "sticks": "Pick three sticks",
+    "rigid": "Brace it: it must not wobble",
+    "parallel": "Through the dot, parallel to the line",
+    "perpendicular": "Through the dot, at right angles",
+    "equidistant": "Place a pin the same distance from each dot",
+    "angle": "Make an angle of",
+    "right": "right-angled triangle",
+    "isosceles": "isosceles triangle",
+    "scalene": "scalene triangle",
+    "obtuse": "obtuse-angled triangle",
+    "acute": "acute-angled triangle",
+    "square": "square",
+    "rectangle": "rectangle",
+    "parallelogram": "parallelogram",
+    "rhombus": "rhombus",
+    "trapezium": "trapezium",
+    "kite": "kite",
+    "any": "shape",
+    "triangle": "triangle",
+    "make": "Make a",
+    "withArea": "with area",
+    "withPerim": "with perimeter",
+    "noTriangle": "Pick three that CANNOT close",
+    "wobbles": "WOBBLES",
+    "holds": "HOLDS",
+    "closes": "CLOSES",
+    "gap": "GAP",
+    "time": "time"
+   },
+   "title": "Parallel Path",
+   "rounds": [
+    {
+     "title": "Same direction",
+     "sub": "keep the gap equal",
+     "time": 55,
+     "challenges": [
+      {
+       "kind": "parallel",
+       "line": [
+        [
+         2,
+         1
+        ],
+        [
+         8,
+         1
+        ]
+       ],
+       "through": [
+        3,
+        4
+       ]
+      },
+      {
+       "kind": "parallel",
+       "line": [
+        [
+         1,
+         5
+        ],
+        [
+         5,
+         5
+        ]
+       ],
+       "through": [
+        9,
+        2
+       ]
+      }
+     ],
+     "targets": "c7-maths-ch05-t02-m-same-length"
+    },
+    {
+     "title": "Right-angle route",
+     "sub": "tilted lines can work",
+     "time": 55,
+     "challenges": [
+      {
+       "kind": "perpendicular",
+       "line": [
+        [
+         2,
+         2
+        ],
+        [
+         8,
+         2
+        ]
+       ],
+       "through": [
+        4,
+        5
+       ]
+      },
+      {
+       "kind": "perpendicular",
+       "line": [
+        [
+         1,
+         1
+        ],
+        [
+         5,
+         5
+        ]
+       ],
+       "through": [
+        8,
+        2
+       ]
+      }
+     ],
+     "targets": "c7-maths-ch05-t02-m-perp-upright"
+    },
+    {
+     "title": "Check the gap",
+     "sub": "look beyond the page",
+     "time": 60,
+     "challenges": [
+      {
+       "kind": "parallel",
+       "line": [
+        [
+         1,
+         1
+        ],
+        [
+         4,
+         1
+        ]
+       ],
+       "through": [
+        8,
+        4
+       ]
+      },
+      {
+       "kind": "perpendicular",
+       "line": [
+        [
+         2,
+         2
+        ],
+        [
+         6,
+         6
+        ]
+       ],
+       "through": [
+        3,
+        5
+       ]
+      }
+     ],
+     "targets": "c7-maths-ch05-t02-m-not-meet-on-page"
+    }
+   ]
+  },
+  "repairs": [
+   "challenge:infeasible"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-maths-ch05-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Parallel or perpendicular?",
+   "accent": "ion",
+   "targets": "c7-maths-ch05-t02-m-same-length",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Parallel or perpendicular?"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Parallel lines must be the same length"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "ab",
+       "type": "node",
+       "text": "AB",
+       "glyph": "ruler",
+       "color": "ion"
+      },
+      {
+       "id": "cd",
+       "type": "node",
+       "text": "CD",
+       "glyph": "ruler",
+       "color": "mint"
+      },
+      {
+       "id": "same",
+       "type": "label",
+       "text": "same direction",
+       "x": 300,
+       "y": 260,
+       "color": "ion"
+      },
+      {
+       "id": "gap",
+       "type": "label",
+       "text": "same gap",
+       "x": 520,
+       "y": 360,
+       "color": "mint"
+      },
+      {
+       "id": "parrow",
+       "type": "arrow",
+       "from": "ab",
+       "to": "cd",
+       "text": "parallel"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "column",
+     "els": [
+      {
+       "id": "left",
+       "type": "node",
+       "text": "Left: 3 cm",
+       "glyph": "ruler",
+       "color": "ion"
+      },
+      {
+       "id": "middle",
+       "type": "node",
+       "text": "Middle: 3 cm",
+       "glyph": "ruler",
+       "color": "ion"
+      },
+      {
+       "id": "right",
+       "type": "node",
+       "text": "Right: 3 cm",
+       "glyph": "ruler",
+       "color": "ion"
+      },
+      {
+       "id": "check",
+       "type": "label",
+       "text": "gap stays equal",
+       "x": 380,
+       "y": 500,
+       "color": "mint"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "split",
+     "els": [
+      {
+       "id": "linea",
+       "type": "node",
+       "text": "Line A",
+       "glyph": "ruler",
+       "color": "amber"
+      },
+      {
+       "id": "lineb",
+       "type": "node",
+       "text": "Line B",
+       "glyph": "ruler",
+       "color": "amber"
+      },
+      {
+       "id": "rightangle",
+       "type": "angle",
+       "deg": 90,
+       "rot": 25,
+       "x": 520,
+       "y": 330,
+       "r": 120
+      },
+      {
+       "id": "all90",
+       "type": "label",
+       "text": "four angles: 90°",
+       "x": 360,
+       "y": 500,
+       "color": "sun"
+      }
+     ]
+    },
+    {
+     "id": "s5",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "gaptest",
+       "type": "node",
+       "text": "same gap",
+       "glyph": "ruler",
+       "color": "mint"
+      },
+      {
+       "id": "lengthtest",
+       "type": "node",
+       "text": "same length",
+       "glyph": "ruler",
+       "color": "amber"
+      },
+      {
+       "id": "pagetest",
+       "type": "node",
+       "text": "not meet here",
+       "glyph": "road",
+       "color": "amber"
+      },
+      {
+       "id": "uprighttest",
+       "type": "node",
+       "text": "upright lines",
+       "glyph": "ruler",
+       "color": "amber"
+      },
+      {
+       "id": "final",
+       "type": "label",
+       "text": "Choose the reliable test",
+       "x": 350,
+       "y": 520,
+       "color": "ion"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Lines are parallel when they go in the same direction and never meet, even when extended.",
+    "L2": "Their gap stays the same everywhere. Their lengths may be different.",
+    "L3": "For AB and CD, the gap is 3 centimetres at the left, middle, and right.",
+    "L4": "Because the gap stays the same, AB and CD are parallel.",
+    "L5": "If the gap shrinks, the lines will meet when extended. Not meeting on this page is not enough.",
+    "L6": "Perpendicular lines meet at a right angle. All four angles at the crossing are 90 degrees.",
+    "L7": "The lines may be tilted; they do not need to stand upright. Now choose the reliable parallel-line test."
+   },
+   "narration": {},
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "ab",
+        "cd",
+        "same",
+        "gap"
+       ]
+      },
+      {
+       "at": 0.7,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "parrow",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.5,
+       "target": "left"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.5,
+       "target": "middle"
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.5,
+       "target": "right"
+      },
+      {
+       "at": 1.5,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "check"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "focus",
+       "dur": 1,
+       "target": [
+        "left",
+        "middle",
+        "right"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "hide",
+       "dur": 0.4,
+       "target": "gap"
+      },
+      {
+       "at": 0.4,
+       "do": "show",
+       "dur": 0.6,
+       "target": "parrow"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "linea",
+        "lineb",
+        "rightangle"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.7,
+       "target": "all90"
+      },
+      {
+       "at": 1.5,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "rightangle"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0,
+     "scene": "s5",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "gaptest",
+        "lengthtest",
+        "pagetest",
+        "uprighttest",
+        "final"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "interactive"
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which test is reliable for identifying parallel lines?",
+    "options": [
+     "gaptest",
+     "lengthtest",
+     "pagetest",
+     "uprighttest"
+    ],
+    "answer": "gaptest",
+    "src": "c7-maths-ch05-t02-i12"
+   }
+  },
+  "repairs": [
+   "cue:target"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 50
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch05-t02-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "l1a",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        120,
+        150
+       ],
+       "to": [
+        680,
+        150
+       ]
+      },
+      {
+       "id": "l1b",
+       "op": "line",
+       "startMs": 900,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        120,
+        300
+       ],
+       "to": [
+        680,
+        300
+       ]
+      },
+      {
+       "id": "l1c",
+       "op": "arrow",
+       "startMs": 2200,
+       "endMs": 2800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        650,
+        150
+       ],
+       "to": [
+        740,
+        150
+       ]
+      },
+      {
+       "id": "l1d",
+       "op": "arrow",
+       "startMs": 2800,
+       "endMs": 3400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        650,
+        300
+       ],
+       "to": [
+        740,
+        300
+       ]
+      },
+      {
+       "id": "l1e",
+       "op": "text",
+       "startMs": 3400,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        95
+       ],
+       "text": "same direction",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "l1f",
+       "op": "text",
+       "startMs": 4200,
+       "endMs": 4900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        385
+       ],
+       "text": "never meet",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "l1g",
+       "op": "arrow",
+       "startMs": 5000,
+       "endMs": 5700,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        680,
+        150
+       ],
+       "to": [
+        760,
+        150
+       ]
+      },
+      {
+       "id": "l1h",
+       "op": "arrow",
+       "startMs": 5700,
+       "endMs": 6400,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        680,
+        300
+       ],
+       "to": [
+        760,
+        300
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch05-t02-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "l2a",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        120,
+        150
+       ],
+       "to": [
+        680,
+        150
+       ]
+      },
+      {
+       "id": "l2b",
+       "op": "line",
+       "startMs": 500,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        120,
+        300
+       ],
+       "to": [
+        680,
+        300
+       ]
+      },
+      {
+       "id": "l2c",
+       "op": "line",
+       "startMs": 1300,
+       "endMs": 1900,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        180,
+        150
+       ],
+       "to": [
+        180,
+        300
+       ]
+      },
+      {
+       "id": "l2d",
+       "op": "line",
+       "startMs": 1900,
+       "endMs": 2500,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        400,
+        150
+       ],
+       "to": [
+        400,
+        300
+       ]
+      },
+      {
+       "id": "l2e",
+       "op": "line",
+       "startMs": 2500,
+       "endMs": 3100,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        620,
+        150
+       ],
+       "to": [
+        620,
+        300
+       ]
+      },
+      {
+       "id": "l2f",
+       "op": "text",
+       "startMs": 3200,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        370
+       ],
+       "text": "same gap",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "l2g",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 4800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        420
+       ],
+       "text": "different lengths",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch05-t02-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "l3a",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        110,
+        115
+       ],
+       "text": "AB",
+       "size": "m"
+      },
+      {
+       "id": "l3b",
+       "op": "text",
+       "startMs": 500,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        110,
+        335
+       ],
+       "text": "CD",
+       "size": "m"
+      },
+      {
+       "id": "l3c",
+       "op": "line",
+       "startMs": 1000,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        140,
+        150
+       ],
+       "to": [
+        650,
+        150
+       ]
+      },
+      {
+       "id": "l3d",
+       "op": "line",
+       "startMs": 1400,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        140,
+        300
+       ],
+       "to": [
+        650,
+        300
+       ]
+      },
+      {
+       "id": "l3e",
+       "op": "line",
+       "startMs": 2200,
+       "endMs": 2800,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        200,
+        150
+       ],
+       "to": [
+        200,
+        300
+       ]
+      },
+      {
+       "id": "l3f",
+       "op": "line",
+       "startMs": 3000,
+       "endMs": 3600,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        400,
+        150
+       ],
+       "to": [
+        400,
+        300
+       ]
+      },
+      {
+       "id": "l3g",
+       "op": "line",
+       "startMs": 3800,
+       "endMs": 4400,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        600,
+        150
+       ],
+       "to": [
+        600,
+        300
+       ]
+      },
+      {
+       "id": "l3h",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        220,
+        230
+       ],
+       "text": "3 cm",
+       "size": "m"
+      },
+      {
+       "id": "l3i",
+       "op": "text",
+       "startMs": 5100,
+       "endMs": 5700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        420,
+        230
+       ],
+       "text": "3 cm",
+       "size": "m"
+      },
+      {
+       "id": "l3j",
+       "op": "text",
+       "startMs": 5700,
+       "endMs": 6300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        620,
+        230
+       ],
+       "text": "3 cm",
+       "size": "m"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 3,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch05-t02-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "l4a",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        95
+       ],
+       "text": "same gap",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "l4e",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 4200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        400
+       ],
+       "text": "AB parallel CD",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch05-t02-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "l5a",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        120,
+        150
+       ],
+       "to": [
+        500,
+        250
+       ]
+      },
+      {
+       "id": "l5b",
+       "op": "line",
+       "startMs": 700,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        120,
+        300
+       ],
+       "to": [
+        500,
+        250
+       ]
+      },
+      {
+       "id": "l5c",
+       "op": "arrow",
+       "startMs": 2100,
+       "endMs": 2900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        500,
+        250
+       ],
+       "to": [
+        700,
+        225
+       ]
+      },
+      {
+       "id": "l5d",
+       "op": "arrow",
+       "startMs": 2900,
+       "endMs": 3700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        500,
+        250
+       ],
+       "to": [
+        700,
+        275
+       ]
+      },
+      {
+       "id": "l5e",
+       "op": "circle",
+       "startMs": 3800,
+       "endMs": 4300,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        500,
+        250
+       ],
+       "r": 12
+      },
+      {
+       "id": "l5f",
+       "op": "text",
+       "startMs": 4400,
+       "endMs": 5200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        370
+       ],
+       "text": "gap shrinks",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "l5g",
+       "op": "text",
+       "startMs": 5400,
+       "endMs": 6200,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        420
+       ],
+       "text": "not enough",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "l5h",
+       "op": "text",
+       "startMs": 6300,
+       "endMs": 6900,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        500,
+        200
+       ],
+       "text": "meet",
+       "size": "m"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch05-t02-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "l6a",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        180,
+        330
+       ],
+       "to": [
+        620,
+        110
+       ]
+      },
+      {
+       "id": "l6b",
+       "op": "line",
+       "startMs": 700,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        180,
+        110
+       ],
+       "to": [
+        620,
+        330
+       ]
+      },
+      {
+       "id": "l6c",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2700,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        70
+       ],
+       "text": "90 degrees",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "l6d",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        410
+       ],
+       "text": "90 degrees",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "l6e",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4300,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        125,
+        220
+       ],
+       "text": "90 degrees",
+       "size": "s"
+      },
+      {
+       "id": "l6f",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 5100,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        675,
+        220
+       ],
+       "text": "90 degrees",
+       "size": "s"
+      },
+      {
+       "id": "l6g",
+       "op": "circle",
+       "startMs": 5200,
+       "endMs": 5900,
+       "ink": "good",
+       "weight": 1,
+       "c": [
+        400,
+        220
+       ],
+       "r": 24
+      },
+      {
+       "id": "l6h",
+       "op": "text",
+       "startMs": 6000,
+       "endMs": 6800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        460
+       ],
+       "text": "right angle",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch05-t02-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "l7a",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        120,
+        350
+       ],
+       "to": [
+        680,
+        110
+       ]
+      },
+      {
+       "id": "l7b",
+       "op": "line",
+       "startMs": 700,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        120,
+        200
+       ],
+       "to": [
+        680,
+        440
+       ]
+      },
+      {
+       "id": "l7c",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        75
+       ],
+       "text": "tilted lines",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "l7d",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 4000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        125
+       ],
+       "text": "parallel test",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "l7e",
+       "op": "line",
+       "startMs": 4200,
+       "endMs": 4700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        220,
+        307
+       ],
+       "to": [
+        220,
+        243
+       ]
+      },
+      {
+       "id": "l7f",
+       "op": "line",
+       "startMs": 4700,
+       "endMs": 5300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        230
+       ],
+       "to": [
+        400,
+        370
+       ]
+      },
+      {
+       "id": "l7g",
+       "op": "line",
+       "startMs": 5300,
+       "endMs": 5900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        580,
+        152
+       ],
+       "to": [
+        580,
+        348
+       ]
+      },
+      {
+       "id": "l7h",
+       "op": "text",
+       "startMs": 6200,
+       "endMs": 7000,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        460
+       ],
+       "text": "same gap",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "{\"kind\":\"parallel\",\"line\":[[2,1],[8,1]],\"through\":[3,4]}",
+   "prompt": "parallel"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "{\"kind\":\"parallel\",\"line\":[[1,5],[5,5]],\"through\":[9,2]}",
+   "prompt": "parallel"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "{\"kind\":\"perpendicular\",\"line\":[[2,2],[8,2]],\"through\":[4,5]}",
+   "prompt": "perpendicular"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "{\"kind\":\"perpendicular\",\"line\":[[1,1],[5,5]],\"through\":[8,2]}",
+   "prompt": "perpendicular"
+  },
+  {
+   "itemId": "r3:0",
+   "key": "{\"kind\":\"parallel\",\"line\":[[1,1],[4,1]],\"through\":[8,4]}",
+   "prompt": "parallel"
+  },
+  {
+   "itemId": "r3:1",
+   "key": "{\"kind\":\"perpendicular\",\"line\":[[2,2],[6,6]],\"through\":[3,5]}",
+   "prompt": "perpendicular"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

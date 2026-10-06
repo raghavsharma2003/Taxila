@@ -1,0 +1,1589 @@
+{
+ "topicId": "c7-maths-ch06-t01",
+ "title": "Parity",
+ "chapter": "Number Play",
+ "subject": "maths",
+ "class": 7,
+ "topicType": "T5",
+ "plan": {
+  "game": "sieve-storm@1",
+  "hint": "rules even / odd (parity rounds with large numbers in a later round)"
+ },
+ "game": {
+  "archetype": "sieve-storm@1",
+  "spec": {
+   "archetype": "sieve-storm@1",
+   "skills": [
+    "c7-maths-ch06-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "slashed": "right calls",
+    "combo": "combo",
+    "coach": "Swipe the numbers that fit the rule",
+    "runDone": "Storm over",
+    "prime": "prime",
+    "composite": "composite",
+    "even": "even",
+    "odd": "odd",
+    "multipleOf": "multiples of",
+    "commonOf": "common multiples of",
+    "factorOf": "factors of",
+    "cfactorOf": "common factors of",
+    "divisibleBy": "divisible by",
+    "coprimeWith": "co-prime with",
+    "square": "square numbers",
+    "palindrome": "palindromes",
+    "slipped": "slipped",
+    "wrongCut": "not this one",
+    "and": "and"
+   },
+   "title": "Sieve Storm: Parity",
+   "rounds": [
+    {
+     "rule": "even",
+     "title": "Pair up the numbers",
+     "sub": "Even numbers split into pairs",
+     "lo": 2,
+     "hi": 40,
+     "count": 12,
+     "hitRate": 0.5,
+     "seed": 17,
+     "speed": 0.8
+    },
+    {
+     "rule": "odd",
+     "title": "Count the odd picks",
+     "sub": "Use the count, not the total",
+     "lo": 3,
+     "hi": 65,
+     "count": 16,
+     "hitRate": 0.45,
+     "seed": 29,
+     "speed": 1
+    },
+    {
+     "rule": "even",
+     "title": "Big-number pairs",
+     "sub": "Parity works without full adding",
+     "lo": 1000,
+     "hi": 9999,
+     "count": 20,
+     "hitRate": 0.4,
+     "seed": 43,
+     "speed": 1.2,
+     "targets": "c7-maths-ch06-t01-m-three-odds-even"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-maths-ch06-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Parity proves what is possible",
+   "accent": "ion",
+   "targets": "c7-maths-ch06-t01-m-three-odds-even",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Parity proves what is possible"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Three odd numbers can make an even total"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "oddA",
+       "type": "node",
+       "text": "Odd",
+       "sub": "pairs + 1",
+       "glyph": "group",
+       "color": "amber"
+      },
+      {
+       "id": "oddB",
+       "type": "node",
+       "text": "Odd",
+       "sub": "pairs + 1",
+       "glyph": "group",
+       "color": "amber"
+      },
+      {
+       "id": "evenA",
+       "type": "node",
+       "text": "Even",
+       "sub": "pairs only",
+       "glyph": "group",
+       "color": "mint"
+      },
+      {
+       "id": "pairArrow",
+       "type": "arrow",
+       "from": "oddA",
+       "to": "evenA",
+       "text": "two extras"
+      },
+      {
+       "id": "pairArrow2",
+       "type": "arrow",
+       "from": "oddB",
+       "to": "evenA",
+       "text": "make a pair"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "column",
+     "els": [
+      {
+       "id": "seven",
+       "type": "label",
+       "text": "7 odd numbers",
+       "x": 160,
+       "y": 220,
+       "color": "amber"
+      },
+      {
+       "id": "six",
+       "type": "bar",
+       "parts": 6,
+       "shaded": 6,
+       "x": 120,
+       "y": 280,
+       "w": 420,
+       "text": "6 odds"
+      },
+      {
+       "id": "one",
+       "type": "bar",
+       "parts": 1,
+       "shaded": 1,
+       "x": 570,
+       "y": 280,
+       "w": 220,
+       "text": "1 odd"
+      },
+      {
+       "id": "sixEven",
+       "type": "label",
+       "text": "even",
+       "x": 260,
+       "y": 370,
+       "color": "mint"
+      },
+      {
+       "id": "oneOdd",
+       "type": "label",
+       "text": "odd",
+       "x": 630,
+       "y": 370,
+       "color": "amber"
+      },
+      {
+       "id": "sumRule",
+       "type": "label",
+       "text": "even + odd = odd",
+       "x": 300,
+       "y": 460,
+       "color": "ion"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "row",
+     "els": [
+      {
+       "id": "prompt",
+       "type": "title",
+       "text": "Can 5 odds make 50?"
+      },
+      {
+       "id": "possible",
+       "type": "label",
+       "text": "Possible",
+       "x": 180,
+       "y": 350,
+       "color": "mint"
+      },
+      {
+       "id": "impossible",
+       "type": "label",
+       "text": "Impossible",
+       "x": 620,
+       "y": 350,
+       "color": "amber"
+      },
+      {
+       "id": "checkIcon",
+       "type": "glyph",
+       "name": "question",
+       "x": 500,
+       "y": 470,
+       "size": 100,
+       "color": "ion"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Parity means checking whether a number is odd or even, without needing its exact value.",
+    "L2": "An even number splits into pairs. An odd number has pairs and one left over.",
+    "L3": "When two odd numbers meet, their two leftovers make one more pair.",
+    "L4": "So odd plus odd is even, while odd plus even is odd.",
+    "L5": "Here is the worked example: seven odd numbers cannot add to 100.",
+    "L6": "Pair six of them to get an even total. The seventh is odd, so the whole sum is odd.",
+    "L7": "Therefore 100 cannot be the sum of seven odd numbers. Parity proves it without trying every choice.",
+    "L8": "Now decide whether five odd numbers can add up to 50."
+   },
+   "narration": {
+    "L1": {
+     "text": "Parity means checking whether a number is odd or even, without needing its exact value.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "An even number splits into pairs. An odd number has pairs and one left over.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "When two odd numbers meet, their two leftovers make one more pair.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "So odd plus odd is even, while odd plus even is odd.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "Here is the worked example: seven odd numbers cannot add to 100.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Pair six of them to get an even total. The seventh is odd, so the whole sum is odd.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Therefore 100 cannot be the sum of seven odd numbers. Parity proves it without trying every choice.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Now decide whether five odd numbers can add up to 50.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "oddA",
+        "evenA"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 1,
+       "target": "oddA"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "oddB",
+        "pairArrow",
+        "pairArrow2"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 0.8,
+       "target": [
+        "pairArrow",
+        "pairArrow2"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1.2,
+       "target": "evenA"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "myth"
+      },
+      {
+       "at": 1,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "seven",
+        "six",
+        "one"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "sumRule"
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 1.2,
+       "target": [
+        "sixEven",
+        "oneOdd",
+        "sumRule"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "prompt",
+        "possible",
+        "impossible"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Can five odd numbers add up to 50?",
+    "options": [
+     "possible",
+     "impossible"
+    ],
+    "answer": "impossible",
+    "src": "c7-maths-ch06-t01-i05"
+   }
+  },
+  "repairs": [
+   "arrow:dangling",
+   "arrow:dangling",
+   "cue:target",
+   "cue:target"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 51
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch06-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "parity",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        80
+       ],
+       "text": "parity",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "odd",
+       "op": "text",
+       "startMs": 1100,
+       "endMs": 1900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        220,
+        230
+       ],
+       "text": "odd",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "even",
+       "op": "text",
+       "startMs": 1100,
+       "endMs": 1900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        580,
+        230
+       ],
+       "text": "even",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch06-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "pair1",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        160,
+        180
+       ],
+       "r": 35
+      },
+      {
+       "id": "pair2",
+       "op": "circle",
+       "startMs": 300,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        260,
+        180
+       ],
+       "r": 35
+      },
+      {
+       "id": "pairline",
+       "op": "line",
+       "startMs": 900,
+       "endMs": 1300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        195,
+        180
+       ],
+       "to": [
+        225,
+        180
+       ]
+      },
+      {
+       "id": "pairs",
+       "op": "label",
+       "startMs": 1300,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        210,
+        250
+       ],
+       "text": "pairs",
+       "to": [
+        210,
+        215
+       ]
+      },
+      {
+       "id": "left",
+       "op": "circle",
+       "startMs": 2200,
+       "endMs": 2900,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        540,
+        180
+       ],
+       "r": 35
+      },
+      {
+       "id": "leftlabel",
+       "op": "label",
+       "startMs": 2900,
+       "endMs": 3600,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        540,
+        250
+       ],
+       "text": "one left over",
+       "to": [
+        540,
+        215
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch06-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "oddA",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        220,
+        180
+       ],
+       "r": 38
+      },
+      {
+       "id": "oddB",
+       "op": "circle",
+       "startMs": 500,
+       "endMs": 1100,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        340,
+        180
+       ],
+       "r": 38
+      },
+      {
+       "id": "leftA",
+       "op": "circle",
+       "startMs": 1500,
+       "endMs": 2100,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        220,
+        300
+       ],
+       "r": 24
+      },
+      {
+       "id": "leftB",
+       "op": "circle",
+       "startMs": 1600,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        340,
+        300
+       ],
+       "r": 24
+      },
+      {
+       "id": "newpair",
+       "op": "ellipse",
+       "startMs": 2400,
+       "endMs": 3300,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        280,
+        300
+       ],
+       "rx": 85,
+       "ry": 42
+      },
+      {
+       "id": "pairlabel",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4200,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        280,
+        390
+       ],
+       "text": "one pair",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch06-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "oo",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        120
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "odd",
+         "+",
+         "odd",
+         "=",
+         "even"
+        ]
+       ]
+      },
+      {
+       "id": "oe",
+       "op": "numwork",
+       "startMs": 1800,
+       "endMs": 3300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        120,
+        260
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "odd",
+         "+",
+         "even",
+         "=",
+         "odd"
+        ]
+       ]
+      },
+      {
+       "id": "evenmark",
+       "op": "highlight",
+       "startMs": 3500,
+       "endMs": 4300,
+       "ink": "good",
+       "weight": 2,
+       "target": "oo",
+       "style": "underline"
+      },
+      {
+       "id": "oddmark",
+       "op": "highlight",
+       "startMs": 4400,
+       "endMs": 5200,
+       "ink": "accent",
+       "weight": 2,
+       "target": "oe",
+       "style": "underline"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch06-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "worked",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "worked example",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "seven",
+       "op": "text",
+       "startMs": 1100,
+       "endMs": 2100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        240,
+        210
+       ],
+       "text": "seven odd numbers",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "cannot",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        310
+       ],
+       "text": "cannot add",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "hundred",
+       "op": "text",
+       "startMs": 3200,
+       "endMs": 4000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        570,
+        210
+       ],
+       "text": "100",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "cross",
+       "op": "line",
+       "startMs": 4200,
+       "endMs": 5000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        520,
+        170
+       ],
+       "to": [
+        620,
+        250
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch06-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "six",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "six odd numbers",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "g1",
+       "op": "ellipse",
+       "startMs": 1100,
+       "endMs": 1800,
+       "ink": "mark",
+       "weight": 2,
+       "c": [
+        200,
+        180
+       ],
+       "rx": 75,
+       "ry": 45
+      },
+      {
+       "id": "g2",
+       "op": "ellipse",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "mark",
+       "weight": 2,
+       "c": [
+        400,
+        180
+       ],
+       "rx": 75,
+       "ry": 45
+      },
+      {
+       "id": "g3",
+       "op": "ellipse",
+       "startMs": 1900,
+       "endMs": 2600,
+       "ink": "mark",
+       "weight": 2,
+       "c": [
+        600,
+        180
+       ],
+       "rx": 75,
+       "ry": 45
+      },
+      {
+       "id": "even",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        300
+       ],
+       "text": "even total",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "seventh",
+       "op": "text",
+       "startMs": 4400,
+       "endMs": 5400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        390
+       ],
+       "text": "seventh: odd",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "sum",
+       "op": "numwork",
+       "startMs": 5700,
+       "endMs": 7200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        250,
+        430
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "even",
+         "+",
+         "odd",
+         "=",
+         "odd"
+        ]
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch06-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "sevenodd",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        260,
+        100
+       ],
+       "text": "seven odd numbers",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "oddresult",
+       "op": "text",
+       "startMs": 1300,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        260,
+        190
+       ],
+       "text": "odd sum",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "hundred",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        590,
+        100
+       ],
+       "text": "100",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "evenresult",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4300,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        590,
+        190
+       ],
+       "text": "even",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "impossible",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        330
+       ],
+       "text": "impossible",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "proof",
+       "op": "text",
+       "startMs": 6100,
+       "endMs": 7000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        430
+       ],
+       "text": "parity proves",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch06-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "decide",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "decide",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "five",
+       "op": "text",
+       "startMs": 1000,
+       "endMs": 1900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        220,
+        190
+       ],
+       "text": "five odd numbers",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "add",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        290
+       ],
+       "text": "add up to",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "fifty",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        580,
+        190
+       ],
+       "text": "50",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "question",
+       "op": "text",
+       "startMs": 4100,
+       "endMs": 4700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        410
+       ],
+       "text": "?",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 14 even?"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 28 even?"
+  },
+  {
+   "itemId": "r1:2",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 40 even?"
+  },
+  {
+   "itemId": "r1:3",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 15 even?"
+  },
+  {
+   "itemId": "r1:4",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 4 even?"
+  },
+  {
+   "itemId": "r1:5",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 22 even?"
+  },
+  {
+   "itemId": "r1:6",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 8 even?"
+  },
+  {
+   "itemId": "r1:7",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 6 even?"
+  },
+  {
+   "itemId": "r1:8",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 10 even?"
+  },
+  {
+   "itemId": "r1:9",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 21 even?"
+  },
+  {
+   "itemId": "r1:10",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 18 even?"
+  },
+  {
+   "itemId": "r1:11",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 34 even?"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 55 odd?"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 26 odd?"
+  },
+  {
+   "itemId": "r2:2",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 21 odd?"
+  },
+  {
+   "itemId": "r2:3",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 54 odd?"
+  },
+  {
+   "itemId": "r2:4",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 50 odd?"
+  },
+  {
+   "itemId": "r2:5",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 49 odd?"
+  },
+  {
+   "itemId": "r2:6",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 11 odd?"
+  },
+  {
+   "itemId": "r2:7",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 28 odd?"
+  },
+  {
+   "itemId": "r2:8",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 32 odd?"
+  },
+  {
+   "itemId": "r2:9",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 36 odd?"
+  },
+  {
+   "itemId": "r2:10",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 60 odd?"
+  },
+  {
+   "itemId": "r2:11",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 8 odd?"
+  },
+  {
+   "itemId": "r2:12",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 27 odd?"
+  },
+  {
+   "itemId": "r2:13",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 6 odd?"
+  },
+  {
+   "itemId": "r2:14",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 18 odd?"
+  },
+  {
+   "itemId": "r2:15",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 10 odd?"
+  },
+  {
+   "itemId": "r3:0",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 1864 even?"
+  },
+  {
+   "itemId": "r3:1",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 1015 even?"
+  },
+  {
+   "itemId": "r3:2",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 2123 even?"
+  },
+  {
+   "itemId": "r3:3",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 3613 even?"
+  },
+  {
+   "itemId": "r3:4",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 1405 even?"
+  },
+  {
+   "itemId": "r3:5",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 3148 even?"
+  },
+  {
+   "itemId": "r3:6",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 3149 even?"
+  },
+  {
+   "itemId": "r3:7",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 2200 even?"
+  },
+  {
+   "itemId": "r3:8",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 2895 even?"
+  },
+  {
+   "itemId": "r3:9",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 3722 even?"
+  },
+  {
+   "itemId": "r3:10",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 3992 even?"
+  },
+  {
+   "itemId": "r3:11",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 1485 even?"
+  },
+  {
+   "itemId": "r3:12",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 4286 even?"
+  },
+  {
+   "itemId": "r3:13",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 2368 even?"
+  },
+  {
+   "itemId": "r3:14",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 3323 even?"
+  },
+  {
+   "itemId": "r3:15",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 2889 even?"
+  },
+  {
+   "itemId": "r3:16",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 3089 even?"
+  },
+  {
+   "itemId": "r3:17",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 2168 even?"
+  },
+  {
+   "itemId": "r3:18",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 4211 even?"
+  },
+  {
+   "itemId": "r3:19",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 1914 even?"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ },
+ "firstCheck": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "Round 2 title \"Watch the leftovers\" has subtitle \"Three odd picks leave a clue\" which reinforces misconception c7-maths-ch06-t01-m-three-odds-even (thinking three odds can be even). This may confuse learners.",
+    "severity": "high"
+   },
+   {
+    "where": "game",
+    "what": "Round 3 title \"Big-number pairs\" subtitle \"Use parity without calculating\" and target includes c7-maths-ch06-t01-m-three-odds-even, which is a misconception about sums, but the round's rule is about even numbers, not sums. The target is misapplied.",
+    "severity": "low"
+   }
+  ],
+  "verdict": "fail",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

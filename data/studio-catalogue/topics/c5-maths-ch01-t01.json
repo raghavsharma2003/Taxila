@@ -1,0 +1,1463 @@
+{
+ "topicId": "c5-maths-ch01-t01",
+ "title": "Numbers in thousands and beyond",
+ "chapter": "We the Travellers — I",
+ "subject": "maths",
+ "class": 5,
+ "topicType": "T3",
+ "plan": {
+  "game": "vault-heist@1",
+  "hint": "place-value vault codes (Indian system)"
+ },
+ "game": {
+  "archetype": "vault-heist@1",
+  "spec": {
+   "archetype": "vault-heist@1",
+   "skills": [
+    "c5-maths-ch01-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "coach": "Tap place-value blocks to load the vault",
+    "round": "Vault",
+    "target": "TARGET",
+    "loaded": "loaded",
+    "over": "over by",
+    "under": "short by",
+    "cracked": "VAULT OPEN",
+    "regroup": "REGROUPED",
+    "runDone": "Heist complete",
+    "words": "say it",
+    "time": "laser"
+   },
+   "system": "indian",
+   "belt": 1,
+   "rounds": [
+    {
+     "target": 24360,
+     "seconds": 35,
+     "show": "digits",
+     "denoms": [
+      1,
+      10,
+      100,
+      1000,
+      10000
+     ]
+    },
+    {
+     "target": 10500,
+     "seconds": 40,
+     "show": "words",
+     "denoms": [
+      1,
+      10,
+      100,
+      1000,
+      10000
+     ]
+    },
+    {
+     "target": 102345,
+     "seconds": 50,
+     "show": "digits",
+     "denoms": [
+      1,
+      10,
+      100,
+      1000,
+      10000,
+      100000
+     ]
+    },
+    {
+     "target": 125000,
+     "seconds": 55,
+     "show": "words",
+     "denoms": [
+      1,
+      10,
+      100,
+      1000,
+      10000,
+      100000
+     ]
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c5-maths-ch01-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Numbers in thousands and beyond",
+   "accent": "ion",
+   "targets": "c5-maths-ch01-t01-m-comma-anywhere",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Place value and commas"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Commas can go anywhere"
+      },
+      {
+       "id": "comma",
+       "type": "label",
+       "text": "Indian commas",
+       "x": 650,
+       "y": 300,
+       "color": "ion"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "lakhs",
+       "type": "node",
+       "text": "Lakhs",
+       "sub": "1,00,000",
+       "glyph": "bank",
+       "color": "ion"
+      },
+      {
+       "id": "tenth",
+       "type": "node",
+       "text": "Ten thousands",
+       "sub": "10,000",
+       "glyph": "ruler",
+       "color": "sci"
+      },
+      {
+       "id": "thou",
+       "type": "node",
+       "text": "Thousands",
+       "sub": "1,000",
+       "glyph": "book",
+       "color": "mint"
+      },
+      {
+       "id": "hund",
+       "type": "node",
+       "text": "Hundreds",
+       "sub": "100",
+       "glyph": "coin",
+       "color": "amber"
+      },
+      {
+       "id": "tens",
+       "type": "node",
+       "text": "Tens",
+       "sub": "10",
+       "glyph": "gear",
+       "color": "sun"
+      },
+      {
+       "id": "ones",
+       "type": "node",
+       "text": "Ones",
+       "sub": "1",
+       "glyph": "spark",
+       "color": "volt"
+      },
+      {
+       "id": "p1",
+       "type": "arrow",
+       "from": "lakhs",
+       "to": "tenth",
+       "text": "10 times"
+      },
+      {
+       "id": "p2",
+       "type": "arrow",
+       "from": "tenth",
+       "to": "thou",
+       "text": "10 times"
+      },
+      {
+       "id": "p3",
+       "type": "arrow",
+       "from": "thou",
+       "to": "hund",
+       "text": "10 times"
+      },
+      {
+       "id": "p4",
+       "type": "arrow",
+       "from": "hund",
+       "to": "tens",
+       "text": "10 times"
+      },
+      {
+       "id": "p5",
+       "type": "arrow",
+       "from": "tens",
+       "to": "ones",
+       "text": "10 times"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "column",
+     "els": [
+      {
+       "id": "example",
+       "type": "title",
+       "text": "One lakh seven thousand forty"
+      },
+      {
+       "id": "part1",
+       "type": "node",
+       "text": "1 lakh",
+       "glyph": "bank",
+       "color": "ion"
+      },
+      {
+       "id": "part2",
+       "type": "node",
+       "text": "7 thousand",
+       "glyph": "book",
+       "color": "mint"
+      },
+      {
+       "id": "part3",
+       "type": "node",
+       "text": "40",
+       "glyph": "coin",
+       "color": "amber"
+      },
+      {
+       "id": "result",
+       "type": "node",
+       "text": "1,07,040",
+       "glyph": "note",
+       "color": "volt"
+      },
+      {
+       "id": "zero",
+       "type": "label",
+       "text": "Zeros hold places",
+       "x": 650,
+       "y": 360,
+       "color": "sci"
+      },
+      {
+       "id": "indian",
+       "type": "node",
+       "text": "1,25,000",
+       "color": "mint"
+      },
+      {
+       "id": "wrong",
+       "type": "node",
+       "text": "125,000",
+       "glyph": "question",
+       "color": "amber"
+      },
+      {
+       "id": "six",
+       "type": "node",
+       "text": "1,00,000",
+       "sub": "one lakh",
+       "glyph": "bank",
+       "color": "ion"
+      },
+      {
+       "id": "five",
+       "type": "node",
+       "text": "10,000",
+       "sub": "ten thousand",
+       "glyph": "ruler",
+       "color": "sci"
+      },
+      {
+       "id": "tenx",
+       "type": "arrow",
+       "from": "five",
+       "to": "six",
+       "text": "10 times"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Numbers become larger as we move left through place values.",
+    "L2": "A comma is not decorative. In the Indian system, its position follows a fixed pattern.",
+    "L3": "Each place is ten times the place to its right: ones, tens, hundreds, thousands and lakhs.",
+    "L4": "To write one lakh seven thousand forty, place the digits as 1, 0, 7, 0, 4, 0.",
+    "L5": "The zeros hold empty places, so the number is 1,07,040, not a shorter number.",
+    "L6": "First put a comma after three digits from the right, then after every two digits.",
+    "L7": "A number with more digits is bigger; 1,00,000 is the smallest six-digit number and is ten times 10,000.",
+    "L8": "Now choose the correct Indian comma pattern for 125000."
+   },
+   "narration": {},
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      },
+      {
+       "at": 0.4,
+       "do": "show",
+       "dur": 0.6,
+       "target": "comma"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "myth"
+      },
+      {
+       "at": 0.8,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "lakhs",
+        "tenth",
+        "thou",
+        "hund",
+        "tens",
+        "ones"
+       ]
+      },
+      {
+       "at": 0.7,
+       "do": "flow",
+       "dur": 1.2,
+       "target": [
+        "p1",
+        "p2",
+        "p3",
+        "p4",
+        "p5"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.5,
+       "target": "example"
+      },
+      {
+       "at": 0.3,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "part1",
+        "part2",
+        "part3"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.8,
+       "target": "result"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 0.9,
+       "target": "zero"
+      },
+      {
+       "at": 0.5,
+       "do": "focus",
+       "dur": 0.8,
+       "target": "result"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "indian",
+        "wrong"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "indian"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "six",
+        "five",
+        "tenx"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "tenx",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "interactive",
+       "dur": 0.5
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which display uses Indian commas for 125000?",
+    "options": [
+     "indian",
+     "wrong"
+    ],
+    "answer": "indian",
+    "src": "c5-maths-ch01-t01-i03"
+   }
+  },
+  "repairs": [
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 55
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch01-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "axis",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        120,
+        300
+       ],
+       "to": [
+        680,
+        300
+       ]
+      },
+      {
+       "id": "arr",
+       "op": "arrow",
+       "startMs": 900,
+       "endMs": 1300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        650,
+        300
+       ],
+       "to": [
+        700,
+        300
+       ]
+      },
+      {
+       "id": "p1",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        150,
+        260
+       ],
+       "text": "ones",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "p2",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        280,
+        260
+       ],
+       "text": "tens",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "p3",
+       "op": "text",
+       "startMs": 2400,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        420,
+        260
+       ],
+       "text": "hundreds",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "p4",
+       "op": "text",
+       "startMs": 2900,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        570,
+        260
+       ],
+       "text": "thousands",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "larger",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        180
+       ],
+       "text": "larger",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "left",
+       "op": "arrow",
+       "startMs": 4100,
+       "endMs": 4855,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        600,
+        210
+       ],
+       "to": [
+        220,
+        210
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch01-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "title",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        80
+       ],
+       "text": "Indian system",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "digits",
+       "op": "numwork",
+       "startMs": 1000,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        190,
+        190
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "1",
+         "0",
+         "7",
+         "0",
+         "4",
+         "0"
+        ]
+       ]
+      },
+      {
+       "id": "comma1",
+       "op": "stroke",
+       "startMs": 2400,
+       "endMs": 2900,
+       "ink": "accent",
+       "weight": 3,
+       "points": [
+        [
+         405,
+         160
+        ],
+        [
+         405,
+         225
+        ]
+       ]
+      },
+      {
+       "id": "comma2",
+       "op": "stroke",
+       "startMs": 3000,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 3,
+       "points": [
+        [
+         285,
+         160
+        ],
+        [
+         285,
+         225
+        ]
+       ]
+      },
+      {
+       "id": "fixed",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 5000,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        400,
+        350
+       ],
+       "text": "fixed pattern",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "commaLabel",
+       "op": "label",
+       "startMs": 5200,
+       "endMs": 6100,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        455,
+        145
+       ],
+       "text": "comma",
+       "to": [
+        405,
+        175
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch01-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "ten",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        290
+       ],
+       "text": "10 times",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "a1",
+       "op": "arrow",
+       "startMs": 3700,
+       "endMs": 4400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        175,
+        330
+       ],
+       "to": [
+        275,
+        330
+       ]
+      },
+      {
+       "id": "a2",
+       "op": "arrow",
+       "startMs": 4400,
+       "endMs": 5100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        355,
+        330
+       ],
+       "to": [
+        455,
+        330
+       ]
+      },
+      {
+       "id": "a3",
+       "op": "arrow",
+       "startMs": 5100,
+       "endMs": 5800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        555,
+        330
+       ],
+       "to": [
+        655,
+        330
+       ]
+      },
+      {
+       "id": "lakhs",
+       "op": "text",
+       "startMs": 5900,
+       "endMs": 6500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        690,
+        170
+       ],
+       "text": "lakhs",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch01-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "digits",
+       "op": "numwork",
+       "startMs": 1500,
+       "endMs": 3000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        170,
+        190
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "1",
+         "0",
+         "7",
+         "0",
+         "4",
+         "0"
+        ]
+       ]
+      },
+      {
+       "id": "lakhs",
+       "op": "label",
+       "startMs": 3200,
+       "endMs": 3900,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        190,
+        140
+       ],
+       "text": "lakhs",
+       "target": "digits"
+      },
+      {
+       "id": "thousands",
+       "op": "label",
+       "startMs": 4000,
+       "endMs": 4800,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        390,
+        140
+       ],
+       "text": "thousands",
+       "target": "digits"
+      },
+      {
+       "id": "forty",
+       "op": "label",
+       "startMs": 4900,
+       "endMs": 5600,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        570,
+        140
+       ],
+       "text": "forty",
+       "target": "digits"
+      },
+      {
+       "id": "digits2",
+       "op": "text",
+       "startMs": 5900,
+       "endMs": 7000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        360
+       ],
+       "text": "1 0 7 0 4 0",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch01-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "number",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        210,
+        170
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "1",
+         ",",
+         "0",
+         "7",
+         ",",
+         "0",
+         "4",
+         "0"
+        ]
+       ]
+      },
+      {
+       "id": "zero1",
+       "op": "circle",
+       "startMs": 1900,
+       "endMs": 2400,
+       "ink": "mark",
+       "weight": 2,
+       "c": [
+        290,
+        195
+       ],
+       "r": 25
+      },
+      {
+       "id": "zero2",
+       "op": "circle",
+       "startMs": 2400,
+       "endMs": 2900,
+       "ink": "mark",
+       "weight": 2,
+       "c": [
+        470,
+        195
+       ],
+       "r": 25
+      },
+      {
+       "id": "zero3",
+       "op": "circle",
+       "startMs": 2900,
+       "endMs": 3400,
+       "ink": "mark",
+       "weight": 2,
+       "c": [
+        590,
+        195
+       ],
+       "r": 25
+      },
+      {
+       "id": "empty",
+       "op": "text",
+       "startMs": 3700,
+       "endMs": 4700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        330
+       ],
+       "text": "empty places",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "notshort",
+       "op": "text",
+       "startMs": 4900,
+       "endMs": 6100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        410
+       ],
+       "text": "not a shorter number",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch01-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "raw",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        100
+       ],
+       "text": "125000",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "first",
+       "op": "stroke",
+       "startMs": 1300,
+       "endMs": 1800,
+       "ink": "accent",
+       "weight": 3,
+       "points": [
+        [
+         480,
+         65
+        ],
+        [
+         480,
+         135
+        ]
+       ]
+      },
+      {
+       "id": "second",
+       "op": "stroke",
+       "startMs": 2300,
+       "endMs": 2800,
+       "ink": "accent",
+       "weight": 3,
+       "points": [
+        [
+         360,
+         65
+        ],
+        [
+         360,
+         135
+        ]
+       ]
+      },
+      {
+       "id": "third",
+       "op": "stroke",
+       "startMs": 3300,
+       "endMs": 3800,
+       "ink": "accent",
+       "weight": 3,
+       "points": [
+        [
+         240,
+         65
+        ],
+        [
+         240,
+         135
+        ]
+       ]
+      },
+      {
+       "id": "three",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 4700,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        620,
+        210
+       ],
+       "text": "3 digits",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "two",
+       "op": "text",
+       "startMs": 4900,
+       "endMs": 5600,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        620,
+        290
+       ],
+       "text": "2 digits",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "pattern",
+       "op": "text",
+       "startMs": 5800,
+       "endMs": 6800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        420
+       ],
+       "text": "3, 2, 2",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch01-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "small",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        150
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "10,000"
+        ]
+       ]
+      },
+      {
+       "id": "big",
+       "op": "numwork",
+       "startMs": 1300,
+       "endMs": 2500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        500,
+        150
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "1,00,0"
+        ]
+       ]
+      },
+      {
+       "id": "compare",
+       "op": "arrow",
+       "startMs": 2700,
+       "endMs": 3500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        270,
+        190
+       ],
+       "to": [
+        490,
+        190
+       ]
+      },
+      {
+       "id": "tenx",
+       "op": "text",
+       "startMs": 3700,
+       "endMs": 4700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        290
+       ],
+       "text": "10 times",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "six",
+       "op": "text",
+       "startMs": 4900,
+       "endMs": 5700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        620,
+        350
+       ],
+       "text": "six-digit",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch01-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4430,
+     "ops": [
+      {
+       "id": "digits",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        90
+       ],
+       "text": "125000",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "comma1",
+       "op": "stroke",
+       "startMs": 1100,
+       "endMs": 1600,
+       "ink": "accent",
+       "weight": 3,
+       "points": [
+        [
+         510,
+         55
+        ],
+        [
+         510,
+         125
+        ]
+       ]
+      },
+      {
+       "id": "comma2",
+       "op": "stroke",
+       "startMs": 1900,
+       "endMs": 2400,
+       "ink": "accent",
+       "weight": 3,
+       "points": [
+        [
+         390,
+         55
+        ],
+        [
+         390,
+         125
+        ]
+       ]
+      },
+      {
+       "id": "result",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        270
+       ],
+       "text": "1,25,000",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [],
+ "check": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "Round 3 target (102345) is shown as 'digits' but the kit's item i06 uses 1,02,345 in a comparison context; the number itself is fine. However round 4 target (125000) shown as 'words' expects the player to build 1,25,000, but the kit item i03 is about putting commas in 125000. That is not a contradiction; it is a new number for a different task. No high-severity issue found.",
+    "severity": "low"
+   }
+  ],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

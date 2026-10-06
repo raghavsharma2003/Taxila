@@ -1,0 +1,1639 @@
+{
+ "topicId": "c5-evs-ch09-t01",
+ "title": "Day and night",
+ "chapter": "Rhythms of Nature",
+ "subject": "evs",
+ "class": 5,
+ "topicType": "T3",
+ "plan": {
+  "game": "sky-lab@1",
+  "hint": "daynight mode (sunrise, noon, sunset, midnight in Indian and world cities)"
+ },
+ "game": {
+  "archetype": "sky-lab@1",
+  "spec": {
+   "archetype": "sky-lab@1",
+   "skills": [
+    "c5-evs-ch09-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "done": "right",
+    "lock": "LOCK",
+    "spin": "Drag to spin the Earth",
+    "sun": "Sun",
+    "noon": "noon",
+    "midnight": "midnight",
+    "sunrise": "sunrise",
+    "sunset": "sunset",
+    "localTime": "time in",
+    "north": "North Pole",
+    "dayLength": "day",
+    "sunHigh": "noon Sun",
+    "distance": "Earth–Sun",
+    "orbit": "Drag the Earth along its orbit",
+    "longest": "longer day",
+    "shortest": "shorter day",
+    "equal": "same length",
+    "summerNorth": "north side",
+    "summerSouth": "south side",
+    "solar": "Sun alignment",
+    "lunar": "Moon alignment",
+    "moon": "Moon",
+    "date": "date",
+    "night": "night",
+    "stillStar": "Tap the still star",
+    "pointer": "Follow the pointer",
+    "join": "Join the stars",
+    "polaris": "Pole Star",
+    "wrongWay": "Try another turn",
+    "runDone": "Sky closed",
+    "hours": "hours",
+    "months": "months",
+    "saptarishi": "shape A",
+    "cassiopeia": "shape B",
+    "new": "new moon",
+    "waxingCrescent": "waxing crescent",
+    "firstQuarter": "first quarter",
+    "waxingGibbous": "waxing gibbous",
+    "full": "full moon",
+    "waningGibbous": "waning gibbous",
+    "lastQuarter": "last quarter",
+    "waningCrescent": "waning crescent",
+    "fromEarth": "seen from Earth",
+    "place": "Drag the Moon round its orbit"
+   },
+   "title": "Sky Lab: Day and night",
+   "rounds": [
+    {
+     "mode": "daynight",
+     "title": "Spin to morning",
+     "sub": "bring Delhi to the morning light",
+     "city": "Delhi",
+     "lon": 77.2,
+     "ask": "sunrise",
+     "tolH": 1,
+     "targets": "c5-evs-ch09-t01-m2"
+    },
+    {
+     "mode": "daynight",
+     "title": "Check a nearby place",
+     "sub": "find noon in Dubai",
+     "city": "Dubai",
+     "lon": 55.3,
+     "ask": "noon",
+     "tolH": 1
+    },
+    {
+     "mode": "daynight",
+     "title": "Compare far away",
+     "sub": "find sunset in the USA",
+     "city": "USA",
+     "lon": -100,
+     "ask": "sunset",
+     "tolH": 1,
+     "targets": "c5-evs-ch09-t01-m4"
+    },
+    {
+     "mode": "daynight",
+     "title": "Turn to midnight",
+     "sub": "find midnight in Delhi",
+     "city": "Delhi",
+     "lon": 77.2,
+     "ask": "midnight",
+     "tolH": 1
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c5-evs-ch09-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Day and night",
+   "accent": "sci",
+   "targets": "c5-evs-ch09-t01-m1",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Day and night"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "At night the Sun hides behind mountains"
+      },
+      {
+       "id": "sun",
+       "type": "glyph",
+       "name": "sun",
+       "x": 180,
+       "y": 310,
+       "size": 150,
+       "color": "sun"
+      },
+      {
+       "id": "earth",
+       "type": "node",
+       "text": "Earth",
+       "sub": "spinning ball",
+       "glyph": "globe",
+       "x": 650,
+       "y": 310,
+       "color": "sci"
+      },
+      {
+       "id": "beam",
+       "type": "arrow",
+       "from": "sun",
+       "to": "earth",
+       "text": "light",
+       "bend": 0
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "sun2",
+       "type": "node",
+       "text": "Sun",
+       "sub": "keeps shining",
+       "glyph": "sun",
+       "x": 130,
+       "y": 310,
+       "color": "sun"
+      },
+      {
+       "id": "day",
+       "type": "node",
+       "text": "Day",
+       "sub": "faces Sun",
+       "glyph": "earth",
+       "x": 500,
+       "y": 190,
+       "color": "amber"
+      },
+      {
+       "id": "night",
+       "type": "node",
+       "text": "Night",
+       "sub": "turns away",
+       "glyph": "moon",
+       "x": 500,
+       "y": 450,
+       "color": "ion"
+      },
+      {
+       "id": "spin",
+       "type": "arrow",
+       "from": "day",
+       "to": "night",
+       "text": "Earth turns",
+       "bend": 0.4
+      },
+      {
+       "id": "back",
+       "type": "arrow",
+       "from": "night",
+       "to": "day",
+       "text": "full turn",
+       "bend": -0.4
+      },
+      {
+       "id": "time",
+       "type": "label",
+       "text": "about 24 hours",
+       "x": 700,
+       "y": 310,
+       "color": "mint"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "west",
+       "type": "node",
+       "text": "West",
+       "sub": "turns from",
+       "glyph": "compass",
+       "x": 130,
+       "y": 310,
+       "color": "ion"
+      },
+      {
+       "id": "india",
+       "type": "node",
+       "text": "India",
+       "sub": "place on Earth",
+       "glyph": "map",
+       "x": 430,
+       "y": 310,
+       "color": "sci"
+      },
+      {
+       "id": "east",
+       "type": "node",
+       "text": "East",
+       "sub": "sunrise",
+       "glyph": "sun",
+       "x": 760,
+       "y": 190,
+       "color": "sun"
+      },
+      {
+       "id": "set",
+       "type": "node",
+       "text": "West",
+       "sub": "sunset",
+       "glyph": "moon",
+       "x": 760,
+       "y": 450,
+       "color": "ion"
+      },
+      {
+       "id": "turn",
+       "type": "arrow",
+       "from": "west",
+       "to": "india",
+       "text": "Earth spins",
+       "bend": 0
+      },
+      {
+       "id": "rise",
+       "type": "arrow",
+       "from": "india",
+       "to": "east",
+       "text": "sunrise",
+       "bend": -0.4
+      },
+      {
+       "id": "fall",
+       "type": "arrow",
+       "from": "india",
+       "to": "set",
+       "text": "sunset",
+       "bend": 0.4
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "row",
+     "els": [
+      {
+       "id": "spinOpt",
+       "type": "node",
+       "text": "Earth spins",
+       "sub": "on its axis",
+       "glyph": "globe",
+       "x": 150,
+       "y": 310,
+       "color": "sci"
+      },
+      {
+       "id": "sunOpt",
+       "type": "node",
+       "text": "Sun travels",
+       "sub": "around Earth",
+       "glyph": "sun",
+       "x": 400,
+       "y": 310,
+       "color": "sun"
+      },
+      {
+       "id": "cloudOpt",
+       "type": "node",
+       "text": "Clouds cover",
+       "sub": "the Sun",
+       "glyph": "cloud",
+       "x": 650,
+       "y": 310,
+       "color": "ion"
+      },
+      {
+       "id": "mountOpt",
+       "type": "node",
+       "text": "Mountains hide",
+       "sub": "the Sun",
+       "glyph": "mountain",
+       "x": 880,
+       "y": 310,
+       "color": "amber"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "The Earth is a ball, and the Sun shines on it like a torch.",
+    "L2": "The half facing the Sun has day; the half turned away has night.",
+    "L3": "The Earth keeps spinning on its axis, making one full turn in about 24 hours.",
+    "L4": "As the Earth turns, a place moves from dark into light, then from light into dark.",
+    "L5": "The Sun seems to rise in the east and set in the west because the Earth spins from west to east.",
+    "L6": "At night the Sun does not hide behind mountains or go around the Earth; our side has turned away.",
+    "L7": "When it is day in India, the other side of Earth can have night, while nearby Dubai differs by only a little time.",
+    "L8": "So what causes day and night? Tap the best explanation."
+   },
+   "narration": {},
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "title"
+      },
+      {
+       "at": 0.4,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "sun",
+        "earth",
+        "beam"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "day",
+        "night"
+       ]
+      },
+      {
+       "at": 0.7,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "day"
+      },
+      {
+       "at": 1.4,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "night"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "time"
+      },
+      {
+       "at": 0.3,
+       "do": "flow",
+       "dur": 1.2,
+       "target": [
+        "spin",
+        "back"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "focus",
+       "dur": 0.7,
+       "target": "day"
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 1,
+       "target": "spin",
+       "to": 1
+      },
+      {
+       "at": 1.9,
+       "do": "focus",
+       "dur": 0.7,
+       "target": "night"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "west",
+        "india",
+        "east",
+        "set",
+        "turn"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 1,
+       "target": [
+        "rise",
+        "fall"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "myth"
+      },
+      {
+       "at": 0.8,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "day"
+      },
+      {
+       "at": 0.9,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "night"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "spinOpt",
+        "sunOpt",
+        "cloudOpt",
+        "mountOpt"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Tap what causes day and night.",
+    "options": [
+     "spinOpt",
+     "sunOpt",
+     "cloudOpt",
+     "mountOpt"
+    ],
+    "answer": "spinOpt",
+    "src": "c5-evs-ch09-t01-i14"
+   }
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg",
+  "seconds": 62
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch09-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "earth",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        520,
+        250
+       ],
+       "r": 125
+      },
+      {
+       "id": "sun",
+       "op": "circle",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        135,
+        250
+       ],
+       "r": 58,
+       "fill": "accent"
+      },
+      {
+       "id": "ray1",
+       "op": "line",
+       "startMs": 1400,
+       "endMs": 1900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        195,
+        215
+       ],
+       "to": [
+        390,
+        215
+       ]
+      },
+      {
+       "id": "ray2",
+       "op": "line",
+       "startMs": 1600,
+       "endMs": 2100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        195,
+        250
+       ],
+       "to": [
+        390,
+        250
+       ]
+      },
+      {
+       "id": "ray3",
+       "op": "line",
+       "startMs": 1800,
+       "endMs": 2300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        195,
+        285
+       ],
+       "to": [
+        390,
+        285
+       ]
+      },
+      {
+       "id": "sunlabel",
+       "op": "text",
+       "startMs": 2400,
+       "endMs": 2900,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        135,
+        350
+       ],
+       "text": "Sun",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "earthlabel",
+       "op": "text",
+       "startMs": 2900,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        520,
+        410
+       ],
+       "text": "Earth",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch09-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "dayhalf",
+       "op": "sector",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        520,
+        250
+       ],
+       "r": 125,
+       "fill": "accent",
+       "fromDeg": -90,
+       "toDeg": 90
+      },
+      {
+       "id": "nightline",
+       "op": "line",
+       "startMs": 1000,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        520,
+        125
+       ],
+       "to": [
+        520,
+        375
+       ]
+      },
+      {
+       "id": "daylabel",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        590,
+        250
+       ],
+       "text": "day",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "nightlabel",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        450,
+        250
+       ],
+       "text": "night",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch09-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "axis",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        520,
+        110
+       ],
+       "to": [
+        520,
+        390
+       ]
+      },
+      {
+       "id": "spin",
+       "op": "arrow",
+       "startMs": 800,
+       "endMs": 1800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        610,
+        170
+       ],
+       "to": [
+        610,
+        330
+       ]
+      },
+      {
+       "id": "axislabel",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2400,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        550,
+        105
+       ],
+       "text": "axis",
+       "size": "m"
+      },
+      {
+       "id": "turn",
+       "op": "circle",
+       "startMs": 2500,
+       "endMs": 3300,
+       "ink": "soft",
+       "weight": 1,
+       "c": [
+        520,
+        250
+       ],
+       "r": 145
+      },
+      {
+       "id": "full",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        520,
+        445
+       ],
+       "text": "one full turn",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "hours",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 4900,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        520,
+        475
+       ],
+       "text": "24 hours",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch09-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "dark",
+       "op": "sector",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "soft",
+       "weight": 2,
+       "c": [
+        400,
+        260
+       ],
+       "r": 115,
+       "fill": "soft",
+       "fromDeg": 90,
+       "toDeg": 270
+      },
+      {
+       "id": "light",
+       "op": "sector",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        260
+       ],
+       "r": 115,
+       "fill": "accent",
+       "fromDeg": -90,
+       "toDeg": 90
+      },
+      {
+       "id": "place",
+       "op": "circle",
+       "startMs": 1400,
+       "endMs": 1800,
+       "ink": "mark",
+       "weight": 2,
+       "c": [
+        400,
+        145
+       ],
+       "r": 7
+      },
+      {
+       "id": "move1",
+       "op": "arrow",
+       "startMs": 1900,
+       "endMs": 2700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        335,
+        180
+       ],
+       "to": [
+        390,
+        155
+       ]
+      },
+      {
+       "id": "move2",
+       "op": "arrow",
+       "startMs": 2800,
+       "endMs": 3600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        410,
+        155
+       ],
+       "to": [
+        465,
+        180
+       ]
+      },
+      {
+       "id": "darklabel",
+       "op": "text",
+       "startMs": 3800,
+       "endMs": 4300,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        285,
+        260
+       ],
+       "text": "dark",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "lightlabel",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 4800,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        515,
+        260
+       ],
+       "text": "light",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch09-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9536,
+     "ops": [
+      {
+       "id": "sun5",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        125,
+        250
+       ],
+       "r": 48,
+       "fill": "accent"
+      },
+      {
+       "id": "earth5",
+       "op": "circle",
+       "startMs": 500,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        500,
+        250
+       ],
+       "r": 105
+      },
+      {
+       "id": "spin5",
+       "op": "arrow",
+       "startMs": 1300,
+       "endMs": 2400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        555,
+        165
+       ],
+       "to": [
+        555,
+        335
+       ]
+      },
+      {
+       "id": "west",
+       "op": "text",
+       "startMs": 2600,
+       "endMs": 3100,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        390,
+        420
+       ],
+       "text": "west",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "east",
+       "op": "text",
+       "startMs": 3100,
+       "endMs": 3600,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        610,
+        420
+       ],
+       "text": "east",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "rise",
+       "op": "arrow",
+       "startMs": 3900,
+       "endMs": 4700,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        500,
+        145
+       ],
+       "to": [
+        610,
+        145
+       ]
+      },
+      {
+       "id": "set",
+       "op": "arrow",
+       "startMs": 4800,
+       "endMs": 5600,
+       "ink": "soft",
+       "weight": 2,
+       "from": [
+        610,
+        355
+       ],
+       "to": [
+        500,
+        355
+       ]
+      },
+      {
+       "id": "riselabel",
+       "op": "text",
+       "startMs": 5800,
+       "endMs": 6300,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        610,
+        115
+       ],
+       "text": "rise",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "setlabel",
+       "op": "text",
+       "startMs": 6300,
+       "endMs": 6800,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        500,
+        385
+       ],
+       "text": "set",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch09-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "earth6",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        430,
+        260
+       ],
+       "r": 120
+      },
+      {
+       "id": "sun6",
+       "op": "circle",
+       "startMs": 500,
+       "endMs": 1100,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        105,
+        260
+       ],
+       "r": 45,
+       "fill": "accent"
+      },
+      {
+       "id": "away",
+       "op": "arrow",
+       "startMs": 1300,
+       "endMs": 2000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        310,
+        260
+       ],
+       "to": [
+        220,
+        260
+       ]
+      },
+      {
+       "id": "night6",
+       "op": "sector",
+       "startMs": 2100,
+       "endMs": 2900,
+       "ink": "soft",
+       "weight": 2,
+       "c": [
+        430,
+        260
+       ],
+       "r": 120,
+       "fill": "soft",
+       "fromDeg": 90,
+       "toDeg": 270
+      },
+      {
+       "id": "sunlabel6",
+       "op": "text",
+       "startMs": 3100,
+       "endMs": 3600,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        105,
+        335
+       ],
+       "text": "Sun",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "awaylabel",
+       "op": "text",
+       "startMs": 3700,
+       "endMs": 4200,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        215,
+        225
+       ],
+       "text": "away",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "nightlabel6",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 4800,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        430,
+        390
+       ],
+       "text": "night",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch09-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 10387,
+     "ops": [
+      {
+       "id": "earth7",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        250
+       ],
+       "r": 135
+      },
+      {
+       "id": "india",
+       "op": "circle",
+       "startMs": 1000,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        475,
+        180
+       ],
+       "r": 8
+      },
+      {
+       "id": "usa",
+       "op": "circle",
+       "startMs": 1300,
+       "endMs": 1700,
+       "ink": "soft",
+       "weight": 2,
+       "c": [
+        325,
+        320
+       ],
+       "r": 8
+      },
+      {
+       "id": "dubai",
+       "op": "circle",
+       "startMs": 1600,
+       "endMs": 2000,
+       "ink": "mark",
+       "weight": 2,
+       "c": [
+        455,
+        205
+       ],
+       "r": 8
+      },
+      {
+       "id": "day7",
+       "op": "sector",
+       "startMs": 2100,
+       "endMs": 3000,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        250
+       ],
+       "r": 135,
+       "fill": "accent",
+       "fromDeg": -120,
+       "toDeg": 60
+      },
+      {
+       "id": "indialabel",
+       "op": "label",
+       "startMs": 3100,
+       "endMs": 3700,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        535,
+        155
+       ],
+       "text": "India",
+       "to": [
+        475,
+        180
+       ]
+      },
+      {
+       "id": "usalabel",
+       "op": "label",
+       "startMs": 3700,
+       "endMs": 4300,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        250,
+        365
+       ],
+       "text": "USA",
+       "to": [
+        325,
+        320
+       ]
+      },
+      {
+       "id": "dubailabel",
+       "op": "label",
+       "startMs": 4300,
+       "endMs": 5000,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        540,
+        225
+       ],
+       "text": "Dubai",
+       "to": [
+        455,
+        205
+       ]
+      },
+      {
+       "id": "night7",
+       "op": "text",
+       "startMs": 5100,
+       "endMs": 5600,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        285,
+        170
+       ],
+       "text": "night",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "day7label",
+       "op": "text",
+       "startMs": 5600,
+       "endMs": 6100,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        510,
+        325
+       ],
+       "text": "day",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "time",
+       "op": "text",
+       "startMs": 6200,
+       "endMs": 7000,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        680,
+        410
+       ],
+       "text": "little time",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch09-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "question",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        90
+       ],
+       "text": "day and night",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "earth8",
+       "op": "circle",
+       "startMs": 1000,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        270
+       ],
+       "r": 105
+      },
+      {
+       "id": "axis8",
+       "op": "line",
+       "startMs": 1700,
+       "endMs": 2200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        150
+       ],
+       "to": [
+        400,
+        390
+       ]
+      },
+      {
+       "id": "spin8",
+       "op": "arrow",
+       "startMs": 2300,
+       "endMs": 3300,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        470,
+        190
+       ],
+       "to": [
+        470,
+        350
+       ]
+      },
+      {
+       "id": "answer",
+       "op": "text",
+       "startMs": 3400,
+       "endMs": 4300,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        445
+       ],
+       "text": "spinning Earth",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1",
+   "key": "Delhi at 6:00 (spin +120°)",
+   "prompt": "bring Delhi to the morning light"
+  },
+  {
+   "itemId": "r2",
+   "key": "Dubai at 12:00 (spin +120°)",
+   "prompt": "find noon in Dubai"
+  },
+  {
+   "itemId": "r3",
+   "key": "USA at 18:00 (spin +120°)",
+   "prompt": "find sunset in the USA"
+  },
+  {
+   "itemId": "r4",
+   "key": "Delhi at 0:00 (spin +120°)",
+   "prompt": "find midnight in Delhi"
+  }
+ ],
+ "check": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "The round identifies 'USA' as a city with a specific longitude, but the USA spans multiple time zones; using a single longitude is an oversimplification that may mislead students into thinking the entire USA has the same time or sunset moment.",
+    "severity": "low"
+   }
+  ],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

@@ -1,0 +1,1758 @@
+{
+ "topicId": "c6-english-ch05-t01",
+ "title": "A Friend’s Prayer",
+ "chapter": "A Friend’s Prayer",
+ "subject": "english",
+ "class": 6,
+ "topicType": "T3",
+ "plan": {
+  "game": "story-rail@1",
+  "hint": "sequence, cause and who modes from the lesson's events and speakers"
+ },
+ "game": {
+  "archetype": "story-rail@1",
+  "spec": {
+   "archetype": "story-rail@1",
+   "skills": [
+    "c6-english-ch05-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "picked": "coupled",
+    "streak": "streak",
+    "next": "What happens next?",
+    "effect": "What does this lead to?",
+    "who": "Who said this?",
+    "runDone": "Line complete",
+    "order": "your train",
+    "right": "Coupled",
+    "wrong": "Not this one",
+    "coach": "Tap a wagon before the train reaches the fork"
+   },
+   "title": "A Friend’s Prayer",
+   "rounds": [
+    {
+     "mode": "sequence",
+     "title": "The prayer’s idea",
+     "sub": "couple the thoughts in order",
+     "cards": [
+      {
+       "id": "e1",
+       "text": "The speaker begins with May",
+       "glyph": "letter",
+       "src": "c6-english-ch05-t01-i07"
+      },
+      {
+       "id": "e2",
+       "text": "She wants to give her best",
+       "glyph": "hand",
+       "src": "c6-english-ch05-t01-i04"
+      },
+      {
+       "id": "e3",
+       "text": "She helps friends’ wishes",
+       "glyph": "star",
+       "src": "c6-english-ch05-t01-i04"
+      },
+      {
+       "id": "e4",
+       "text": "She sees with her heart",
+       "glyph": "eye",
+       "src": "c6-english-ch05-t01-i05"
+      },
+      {
+       "id": "e5",
+       "text": "She loves friends as they are",
+       "src": "c6-english-ch05-t01-i06"
+      }
+     ],
+     "speed": 0.9,
+     "targets": "c6-english-ch05-t01-m-prayer-asks-gifts"
+    },
+    {
+     "mode": "cause",
+     "title": "Friendship choices",
+     "sub": "match each cause to its effect",
+     "pairs": [
+      {
+       "cause": {
+        "id": "c1",
+        "text": "She sees with her heart",
+        "glyph": "eye",
+        "src": "c6-english-ch05-t01-i05"
+       },
+       "effect": {
+        "id": "f1",
+        "text": "She understands feelings",
+        "glyph": "person",
+        "src": "c6-english-ch05-t01-i05"
+       }
+      },
+      {
+       "cause": {
+        "id": "c2",
+        "text": "She does not judge from afar",
+        "glyph": "compass",
+        "src": "c6-english-ch05-t01-i06"
+       },
+       "effect": {
+        "id": "f2",
+        "text": "She loves friends as they are",
+        "glyph": "person",
+        "src": "c6-english-ch05-t01-i06"
+       }
+      },
+      {
+       "cause": {
+        "id": "c3",
+        "text": "She wants to help friends",
+        "glyph": "hand",
+        "src": "c6-english-ch05-t01-i04"
+       },
+       "effect": {
+        "id": "f3",
+        "text": "She helps wishes come true",
+        "glyph": "star",
+        "src": "c6-english-ch05-t01-i04"
+       }
+      }
+     ],
+     "speed": 0.85,
+     "targets": "c6-english-ch05-t01-m-change-friends"
+    },
+    {
+     "mode": "who",
+     "title": "Who says the line?",
+     "sub": "send each line to its speaker",
+     "speakers": [
+      {
+       "id": "speaker",
+       "name": "Speaker",
+       "glyph": "person"
+      },
+      {
+       "id": "friend",
+       "name": "Friend",
+       "glyph": "group"
+      }
+     ],
+     "lines": [
+      {
+       "id": "w1",
+       "text": "May my friend get well soon.",
+       "speaker": "speaker",
+       "src": "c6-english-ch05-t01-i07"
+      },
+      {
+       "id": "w2",
+       "text": "Let me carry your bag.",
+       "speaker": "speaker",
+       "src": "c6-english-ch05-t01-i11"
+      },
+      {
+       "id": "w3",
+       "text": "I love you as you are.",
+       "speaker": "speaker",
+       "src": "c6-english-ch05-t01-i06"
+      }
+     ],
+     "speed": 0.85,
+     "targets": "c6-english-ch05-t01-m-may-verb-s"
+    }
+   ]
+  },
+  "repairs": [
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c6-english-ch05-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "BUSTED",
+    "order": "Tap them in order"
+   },
+   "title": "A Friend’s Prayer",
+   "accent": "mint",
+   "targets": "c6-english-ch05-t01-m-prayer-asks-gifts",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "A Friend’s Prayer"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "A prayer asks for gifts"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "may",
+       "type": "node",
+       "text": "May",
+       "sub": "a good wish",
+       "glyph": "spark",
+       "color": "mint"
+      },
+      {
+       "id": "best",
+       "type": "node",
+       "text": "Give my best",
+       "sub": "for friends",
+       "glyph": "star",
+       "color": "sun"
+      },
+      {
+       "id": "help",
+       "type": "node",
+       "text": "Help wishes",
+       "sub": "come true",
+       "glyph": "hand",
+       "color": "ion"
+      },
+      {
+       "id": "heartsee",
+       "type": "node",
+       "text": "See with heart",
+       "sub": "understand",
+       "glyph": "eye",
+       "color": "sci"
+      },
+      {
+       "id": "accept",
+       "type": "node",
+       "text": "Love as they are",
+       "sub": "accept friends",
+       "glyph": "group",
+       "color": "amber"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "may",
+       "to": "best",
+       "text": "asks"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "best",
+       "to": "help",
+       "text": "gives"
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "help",
+       "to": "heartsee",
+       "text": "understands"
+      },
+      {
+       "id": "a4",
+       "type": "arrow",
+       "from": "heartsee",
+       "to": "accept",
+       "text": "accepts"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "couplet",
+       "type": "node",
+       "text": "Couplet",
+       "sub": "two rhyming lines",
+       "glyph": "book",
+       "color": "ion"
+      },
+      {
+       "id": "rhyme",
+       "type": "label",
+       "text": "share — care",
+       "x": 390,
+       "y": 360,
+       "color": "sun"
+      },
+      {
+       "id": "mayrule",
+       "type": "label",
+       "text": "May + plain verb",
+       "x": 620,
+       "y": 360,
+       "color": "mint"
+      },
+      {
+       "id": "gifts",
+       "type": "node",
+       "text": "Receive gifts",
+       "sub": "not the idea",
+       "glyph": "coin",
+       "color": "amber"
+      },
+      {
+       "id": "goodfriend",
+       "type": "node",
+       "text": "Be a good friend",
+       "sub": "central idea",
+       "color": "mint"
+      },
+      {
+       "id": "change",
+       "type": "node",
+       "text": "Change friends",
+       "sub": "not the idea",
+       "glyph": "mirror",
+       "color": "volt"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "A Friend’s Prayer is a prayer to be a good friend, not a request for gifts.",
+    "L2": "The opening word is “May”. It asks for something good for the friendship.",
+    "L3": "The speaker wants to give her very best and help her friends’ wishes come true.",
+    "L4": "She wants to see with her heart and love her friends the way they are.",
+    "L5": "So she will not judge friends from afar. She will accept them instead.",
+    "L6": "The poem has rhyming couplets, such as “share” and “care”.",
+    "L7": "Remember: after “May”, use the plain verb, as in “May my friend get well”.",
+    "L8": "Now choose the idea that best states what the poem is about."
+   },
+   "narration": {
+    "L1": {
+     "text": "A Friend’s Prayer is a prayer to be a good friend, not a request for gifts.",
+     "dur": 6.5,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L2": {
+     "text": "The opening word is “May”. It asks for something good for the friendship.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L3": {
+     "text": "The speaker wants to give her very best and help her friends’ wishes come true.",
+     "dur": 6.5,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L4": {
+     "text": "She wants to see with her heart and love her friends the way they are.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L5": {
+     "text": "So she will not judge friends from afar. She will accept them instead.",
+     "dur": 5.5,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L6": {
+     "text": "The poem has rhyming couplets, such as “share” and “care”.",
+     "dur": 5.5,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Remember: after “May”, use the plain verb, as in “May my friend get well”.",
+     "dur": 6.5,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Now choose the idea that best states what the poem is about.",
+     "dur": 4.5,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "title"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0.4,
+       "do": "show",
+       "dur": 0.8,
+       "target": "may"
+      },
+      {
+       "at": 1.2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "may"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "best",
+        "help"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "a1",
+       "to": 1
+      },
+      {
+       "at": 1.8,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "a2",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "heartsee",
+        "accept"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 1,
+       "target": [
+        "a3",
+        "a4"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "focus",
+       "dur": 1.2,
+       "target": "accept"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "couplet"
+      },
+      {
+       "at": 0.7,
+       "do": "show",
+       "dur": 0.8,
+       "target": "rhyme"
+      },
+      {
+       "at": 1.5,
+       "do": "highlight",
+       "dur": 1,
+       "target": "rhyme"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "mayrule"
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 1,
+       "target": "mayrule"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "gifts",
+        "goodfriend",
+        "change"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which idea best states the central idea of the poem?",
+    "options": [
+     "gifts",
+     "goodfriend",
+     "change"
+    ],
+    "answer": "goodfriend",
+    "src": "c6-english-ch05-t01-i08"
+   }
+  },
+  "repairs": [
+   "glyph:name",
+   "glyph",
+   "cue:target"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 51
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-english-ch05-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "title",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "A Friend’s Prayer",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "pray",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        270,
+        210
+       ],
+       "r": 82
+      },
+      {
+       "id": "heart",
+       "op": "polygon",
+       "startMs": 1300,
+       "endMs": 1900,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         530,
+         180
+        ],
+        [
+         550,
+         160
+        ],
+        [
+         570,
+         180
+        ],
+        [
+         550,
+         215
+        ]
+       ]
+      },
+      {
+       "id": "friend1",
+       "op": "circle",
+       "startMs": 1800,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        490,
+        300
+       ],
+       "r": 28
+      },
+      {
+       "id": "friend2",
+       "op": "circle",
+       "startMs": 1900,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        610,
+        300
+       ],
+       "r": 28
+      },
+      {
+       "id": "link",
+       "op": "line",
+       "startMs": 2200,
+       "endMs": 2700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        518,
+        300
+       ],
+       "to": [
+        582,
+        300
+       ]
+      },
+      {
+       "id": "good",
+       "op": "label",
+       "startMs": 2700,
+       "endMs": 3500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        230,
+        335
+       ],
+       "text": "good friend",
+       "to": [
+        270,
+        290
+       ]
+      },
+      {
+       "id": "notgifts",
+       "op": "label",
+       "startMs": 3600,
+       "endMs": 4500,
+       "ink": "soft",
+       "weight": 2,
+       "at": [
+        530,
+        410
+       ],
+       "text": "not gifts",
+       "to": [
+        550,
+        215
+       ]
+      },
+      {
+       "id": "central",
+       "op": "arrow",
+       "startMs": 4700,
+       "endMs": 5400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        350,
+        210
+       ],
+       "to": [
+        450,
+        210
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-english-ch05-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "may",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        90
+       ],
+       "text": "May",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "maybox",
+       "op": "rect",
+       "startMs": 800,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        340,
+        45
+       ],
+       "w": 120,
+       "h": 70,
+       "round": 12
+      },
+      {
+       "id": "ask",
+       "op": "arrow",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        130
+       ],
+       "to": [
+        400,
+        210
+       ]
+      },
+      {
+       "id": "good2",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 2800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        250
+       ],
+       "text": "good",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "friendship",
+       "op": "text",
+       "startMs": 2900,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        310
+       ],
+       "text": "friendship",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "wish",
+       "op": "label",
+       "startMs": 3800,
+       "endMs": 4500,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        470,
+        205
+       ],
+       "text": "asks",
+       "to": [
+        400,
+        210
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-english-ch05-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "best",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        90
+       ],
+       "text": "very best",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "give",
+       "op": "arrow",
+       "startMs": 1000,
+       "endMs": 1800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        125
+       ],
+       "to": [
+        300,
+        220
+       ]
+      },
+      {
+       "id": "help",
+       "op": "arrow",
+       "startMs": 1000,
+       "endMs": 1800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        125
+       ],
+       "to": [
+        500,
+        220
+       ]
+      },
+      {
+       "id": "friends3",
+       "op": "circle",
+       "startMs": 1900,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        300,
+        290
+       ],
+       "r": 32
+      },
+      {
+       "id": "friends4",
+       "op": "circle",
+       "startMs": 1900,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        500,
+        290
+       ],
+       "r": 32
+      },
+      {
+       "id": "wishes",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        390
+       ],
+       "text": "friends’ wishes",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "come",
+       "op": "arrow",
+       "startMs": 3700,
+       "endMs": 4500,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        300,
+        330
+       ],
+       "to": [
+        390,
+        375
+       ]
+      },
+      {
+       "id": "true",
+       "op": "arrow",
+       "startMs": 3700,
+       "endMs": 4500,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        500,
+        330
+       ],
+       "to": [
+        410,
+        375
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-english-ch05-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "heart2",
+       "op": "polygon",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         390,
+         120
+        ],
+        [
+         420,
+         95
+        ],
+        [
+         450,
+         120
+        ],
+        [
+         420,
+         165
+        ]
+       ]
+      },
+      {
+       "id": "see",
+       "op": "text",
+       "startMs": 1000,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        300,
+        225
+       ],
+       "text": "see",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "heartword",
+       "op": "text",
+       "startMs": 1000,
+       "endMs": 1700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        500,
+        225
+       ],
+       "text": "heart",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "heartline",
+       "op": "line",
+       "startMs": 1800,
+       "endMs": 2400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        335,
+        225
+       ],
+       "to": [
+        465,
+        225
+       ]
+      },
+      {
+       "id": "love",
+       "op": "arrow",
+       "startMs": 2600,
+       "endMs": 3400,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        420,
+        175
+       ],
+       "to": [
+        300,
+        300
+       ]
+      },
+      {
+       "id": "friends5",
+       "op": "circle",
+       "startMs": 2800,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        300,
+        340
+       ],
+       "r": 30
+      },
+      {
+       "id": "are",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        500,
+        340
+       ],
+       "text": "the way they are",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "accept2",
+       "op": "label",
+       "startMs": 4700,
+       "endMs": 5500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        420,
+        420
+       ],
+       "text": "love",
+       "to": [
+        500,
+        340
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-english-ch05-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "afar",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "soft",
+       "weight": 2,
+       "at": [
+        400,
+        90
+       ],
+       "text": "from afar",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "eye",
+       "op": "ellipse",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        190
+       ],
+       "rx": 58,
+       "ry": 30
+      },
+      {
+       "id": "eye2",
+       "op": "circle",
+       "startMs": 1300,
+       "endMs": 1700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        190
+       ],
+       "r": 10
+      },
+      {
+       "id": "judge",
+       "op": "line",
+       "startMs": 1900,
+       "endMs": 2500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        300,
+        270
+       ],
+       "to": [
+        500,
+        270
+       ]
+      },
+      {
+       "id": "cross",
+       "op": "line",
+       "startMs": 2200,
+       "endMs": 2800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        325,
+        245
+       ],
+       "to": [
+        475,
+        295
+       ]
+      },
+      {
+       "id": "accept",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        365
+       ],
+       "text": "accept",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "friends6",
+       "op": "circle",
+       "startMs": 4000,
+       "endMs": 4400,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        400,
+        435
+       ],
+       "r": 24
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-english-ch05-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "couplets",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "rhyming couplets",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "share",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        270,
+        190
+       ],
+       "text": "share",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "care",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        530,
+        190
+       ],
+       "text": "care",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "rhyme",
+       "op": "line",
+       "startMs": 1700,
+       "endMs": 2400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        315,
+        190
+       ],
+       "to": [
+        485,
+        190
+       ]
+      },
+      {
+       "id": "sound",
+       "op": "label",
+       "startMs": 2500,
+       "endMs": 3300,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        270
+       ],
+       "text": "rhyme",
+       "to": [
+        400,
+        190
+       ]
+      },
+      {
+       "id": "rhythm1",
+       "op": "line",
+       "startMs": 3500,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 1,
+       "from": [
+        220,
+        360
+       ],
+       "to": [
+        340,
+        360
+       ]
+      },
+      {
+       "id": "rhythm2",
+       "op": "line",
+       "startMs": 3500,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 1,
+       "from": [
+        460,
+        360
+       ],
+       "to": [
+        580,
+        360
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-english-ch05-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "may3",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        65
+       ],
+       "text": "May",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "plain",
+       "op": "text",
+       "startMs": 800,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        145
+       ],
+       "text": "plain verb",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "equation",
+       "op": "numwork",
+       "startMs": 1700,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        170,
+        220
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "May",
+         "my",
+         "friend",
+         "get",
+         "well"
+        ]
+       ]
+      },
+      {
+       "id": "verb",
+       "op": "label",
+       "startMs": 3400,
+       "endMs": 4200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        470,
+        290
+       ],
+       "text": "get",
+       "target": "equation"
+      },
+      {
+       "id": "arrowv",
+       "op": "arrow",
+       "startMs": 4300,
+       "endMs": 5000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        95
+       ],
+       "to": [
+        400,
+        190
+       ]
+      },
+      {
+       "id": "well",
+       "op": "text",
+       "startMs": 5100,
+       "endMs": 5700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        390
+       ],
+       "text": "well",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-english-ch05-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "choose",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "choose",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "idea",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        145
+       ],
+       "text": "central idea",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "option1",
+       "op": "rect",
+       "startMs": 1700,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        220
+       ],
+       "w": 280,
+       "h": 80,
+       "round": 12
+      },
+      {
+       "id": "option2",
+       "op": "rect",
+       "startMs": 1700,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        430,
+        220
+       ],
+       "w": 280,
+       "h": 80,
+       "round": 12
+      },
+      {
+       "id": "option1t",
+       "op": "text",
+       "startMs": 2000,
+       "endMs": 2800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        230,
+        265
+       ],
+       "text": "good friend",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "option2t",
+       "op": "text",
+       "startMs": 2000,
+       "endMs": 2800,
+       "ink": "soft",
+       "weight": 2,
+       "at": [
+        570,
+        265
+       ],
+       "text": "gifts",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "select",
+       "op": "highlight",
+       "startMs": 3500,
+       "endMs": 4500,
+       "ink": "good",
+       "weight": 2,
+       "target": "option1",
+       "style": "circle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "She wants to give her best",
+   "prompt": "sequence: after/for \"The speaker begins with May\"",
+   "src": "c6-english-ch05-t01-i04"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "She helps friends’ wishes",
+   "prompt": "sequence: after/for \"She wants to give her best\"",
+   "src": "c6-english-ch05-t01-i04"
+  },
+  {
+   "itemId": "r1:2",
+   "key": "She sees with her heart",
+   "prompt": "sequence: after/for \"She helps friends’ wishes\"",
+   "src": "c6-english-ch05-t01-i05"
+  },
+  {
+   "itemId": "r1:3",
+   "key": "She loves friends as they are",
+   "prompt": "sequence: after/for \"She sees with her heart\"",
+   "src": "c6-english-ch05-t01-i06"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "She understands feelings",
+   "prompt": "cause: after/for \"She sees with her heart\"",
+   "src": "c6-english-ch05-t01-i05"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "She loves friends as they are",
+   "prompt": "cause: after/for \"She does not judge from afar\"",
+   "src": "c6-english-ch05-t01-i06"
+  },
+  {
+   "itemId": "r2:2",
+   "key": "She helps wishes come true",
+   "prompt": "cause: after/for \"She wants to help friends\"",
+   "src": "c6-english-ch05-t01-i04"
+  },
+  {
+   "itemId": "r3:0",
+   "key": "Speaker",
+   "prompt": "who: after/for \"May my friend get well soon.\"",
+   "src": "c6-english-ch05-t01-i07"
+  },
+  {
+   "itemId": "r3:1",
+   "key": "Speaker",
+   "prompt": "who: after/for \"Let me carry your bag.\"",
+   "src": "c6-english-ch05-t01-i11"
+  },
+  {
+   "itemId": "r3:2",
+   "key": "Speaker",
+   "prompt": "who: after/for \"I love you as you are.\"",
+   "src": "c6-english-ch05-t01-i06"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

@@ -1,0 +1,2078 @@
+{
+ "topicId": "c6-hindi-ch07-t01",
+ "title": "जलाते चलो",
+ "chapter": "जलाते चलो",
+ "subject": "hindi",
+ "class": 6,
+ "topicType": "T1",
+ "plan": {
+  "game": "beat-line@1",
+  "hint": "beat and rhyme rounds (Hindi: matra round on a doha/chaupai line)"
+ },
+ "game": {
+  "archetype": "beat-line@1",
+  "spec": {
+   "archetype": "beat-line@1",
+   "skills": [
+    "c6-hindi-ch07-t01"
+   ],
+   "lang": "hi",
+   "strings": {
+    "round": "चरण",
+    "onBeat": "ताल पर",
+    "combo": "लगातार सही",
+    "tap": "ताल पर थपकी दो",
+    "catch": "तुक वाला शब्द पकड़ो",
+    "mark": "छोटी या बड़ी?",
+    "short": "ह्रस्व",
+    "long": "दीर्घ",
+    "practice": "अभ्यास पंक्ति",
+    "runDone": "कविता पूरी हुई",
+    "perfect": "सही ताल",
+    "early": "जल्दी",
+    "late": "देर से",
+    "meter": "मात्रा"
+   },
+   "title": "जलाते चलो",
+   "bpm": 76,
+   "lines": [
+    {
+     "text": "कदम बढ़ाओ, दीप जलाओ",
+     "beats": [
+      0,
+      2
+     ],
+     "own": true
+    },
+    {
+     "text": "मिलकर नया सवेरा लाओ",
+     "beats": [
+      0,
+      2
+     ],
+     "own": true
+    },
+    {
+     "text": "दिये में स्नेह भरते चलो",
+     "beats": [
+      0,
+      2,
+      4
+     ],
+     "own": true
+    },
+    {
+     "text": "एक दीया ज्ञान का, मिटाए अँधेरा अज्ञान का",
+     "beats": [
+      0,
+      3,
+      6
+     ],
+     "own": true
+    }
+   ],
+   "rounds": [
+    {
+     "mode": "beat",
+     "title": "ताल पकड़ो",
+     "sub": "नियमित कदमताल वाली लय रखो",
+     "lines": [
+      0,
+      1
+     ]
+    },
+    {
+     "mode": "rhyme",
+     "title": "तुक पकड़ो",
+     "sub": "सुनकर सही शब्द चुनो",
+     "items": [
+      {
+       "cue": "कदम बढ़ाओ, दीप ____",
+       "options": [
+        "जलाओ",
+        "स्नेह",
+        "अँधेरा"
+       ],
+       "answer": "जलाओ"
+      },
+      {
+       "cue": "दिये में ऐसा शब्द भरो, जिसका अर्थ तेल भी हो",
+       "options": [
+        "स्नेह",
+        "ज्ञान",
+        "अँधेरा"
+       ],
+       "answer": "स्नेह",
+       "src": "c6-hindi-ch07-t01-i03"
+      },
+      {
+       "cue": "एक दीया ____ का, मिटाए अँधेरा अज्ञान का",
+       "options": [
+        "ज्ञान",
+        "तेल",
+        "प्रेम"
+       ],
+       "answer": "ज्ञान",
+       "src": "c6-hindi-ch07-t01-i10"
+      }
+     ]
+    },
+    {
+     "mode": "matra",
+     "title": "मात्रा भरो",
+     "sub": "हर अक्षर की मात्रा पहचानो",
+     "lines": [
+      2,
+      3
+     ]
+    }
+   ]
+  },
+  "repairs": [
+   "src",
+   "targets"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c6-hindi-ch07-t01"
+   ],
+   "lang": "hi",
+   "strings": {
+    "again": "फिर दिखाएँ",
+    "yourTurn": "आपकी बारी",
+    "check": "जाँचें",
+    "right": "सही",
+    "look": "फिर देखें",
+    "myth": "भ्रम",
+    "busted": "गलत",
+    "order": "क्रम में रखें"
+   },
+   "title": "जलाते चलो: उजाले का संदेश",
+   "accent": "amber",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "जलाते चलो"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "यह केवल असली दीयों और रात की बात है"
+      },
+      {
+       "id": "dark",
+       "type": "label",
+       "text": "अँधेरा",
+       "x": 650,
+       "y": 300,
+       "color": "sci"
+      },
+      {
+       "id": "lamp",
+       "type": "glyph",
+       "name": "torch",
+       "x": 300,
+       "y": 300,
+       "size": 150,
+       "color": "amber"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "diya",
+       "type": "node",
+       "text": "दिया",
+       "sub": "प्रेम और ज्ञान",
+       "glyph": "torch",
+       "color": "amber"
+      },
+      {
+       "id": "ujala",
+       "type": "node",
+       "text": "उजाला",
+       "sub": "आशा",
+       "glyph": "sun",
+       "color": "sun"
+      },
+      {
+       "id": "andhera",
+       "type": "node",
+       "text": "अँधेरा",
+       "sub": "दुख और अज्ञान",
+       "glyph": "cloud",
+       "color": "sci"
+      },
+      {
+       "id": "samuh",
+       "type": "node",
+       "text": "मिलकर प्रयास",
+       "sub": "लगातार",
+       "glyph": "group",
+       "color": "mint"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "diya",
+       "to": "ujala",
+       "text": "फैलता है"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "ujala",
+       "to": "andhera",
+       "text": "मिटाता है"
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "samuh",
+       "to": "diya",
+       "text": "जलाते हैं"
+      },
+      {
+       "id": "a4",
+       "type": "arrow",
+       "from": "andhera",
+       "to": "samuh",
+       "text": "बड़ी चुनौती"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "sneh",
+       "type": "node",
+       "text": "स्नेह",
+       "sub": "प्रेम और तेल",
+       "glyph": "drop",
+       "color": "amber"
+      },
+      {
+       "id": "prem",
+       "type": "label",
+       "text": "प्रेम",
+       "x": 180,
+       "y": 320,
+       "color": "mint"
+      },
+      {
+       "id": "tel",
+       "type": "label",
+       "text": "तेल",
+       "x": 440,
+       "y": 320,
+       "color": "amber"
+      },
+      {
+       "id": "gyaan",
+       "type": "node",
+       "text": "ज्ञान",
+       "sub": "उजाला",
+       "glyph": "book",
+       "color": "sun"
+      },
+      {
+       "id": "answer",
+       "type": "label",
+       "text": "सही शब्द: स्नेह",
+       "x": 650,
+       "y": 430,
+       "color": "volt"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "कवि कहता है, प्रेम और ज्ञान के दिये जलाते चलो।",
+    "L2": "यह कविता केवल असली दीयों और रात के अँधेरे की बात नहीं है।",
+    "L3": "दिया प्रेम और ज्ञान का प्रतीक है, जबकि अँधेरा दुख, बुराई और अज्ञान का संकेत है।",
+    "L4": "एक दिया थोड़ी जगह रोशन करता है, पर मिलकर जलाएँ तो उजाला दूर तक फैलता है।",
+    "L5": "इसलिए बड़ी कठिनाई देखकर भी कोशिश छोड़नी नहीं चाहिए।",
+    "L6": "‘स्नेह’ के दो अर्थ यहाँ ठीक बैठते हैं—प्रेम और तेल।",
+    "L7": "दिये में तेल भरो और मन में प्रेम रखो; यही कविता का सुंदर संदेश है।",
+    "L8": "सही लिखावट ‘स्नेह’ है, ‘सनेह’ नहीं।",
+    "L9": "लगातार मिलकर उजाला फैलाएँ, एक दिन अँधेरा मिटेगा।"
+   },
+   "narration": {
+    "L1": {
+     "text": "कवि कहता है, प्रेम और ज्ञान के दिये जलाते चलो।",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L2": {
+     "text": "यह कविता केवल असली दीयों और रात के अँधेरे की बात नहीं है।",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L3": {
+     "text": "दिया प्रेम और ज्ञान का प्रतीक है, जबकि अँधेरा दुख, बुराई और अज्ञान का संकेत है।",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L4": {
+     "text": "एक दिया थोड़ी जगह रोशन करता है, पर मिलकर जलाएँ तो उजाला दूर तक फैलता है।",
+     "dur": 4.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L5": {
+     "text": "इसलिए बड़ी कठिनाई देखकर भी कोशिश छोड़नी नहीं चाहिए।",
+     "dur": 3.2,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L6": {
+     "text": "‘स्नेह’ के दो अर्थ यहाँ ठीक बैठते हैं—प्रेम और तेल।",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L7": {
+     "text": "दिये में तेल भरो और मन में प्रेम रखो; यही कविता का सुंदर संदेश है।",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L8": {
+     "text": "सही लिखावट ‘स्नेह’ है, ‘सनेह’ नहीं।",
+     "dur": 2.6,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L9": {
+     "text": "लगातार मिलकर उजाला फैलाएँ, एक दिन अँधेरा मिटेगा।",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "title"
+      },
+      {
+       "at": 0.4,
+       "do": "show",
+       "dur": 0.8,
+       "target": "lamp"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      },
+      {
+       "at": 1.2,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "diya"
+      },
+      {
+       "at": 0.4,
+       "do": "show",
+       "dur": 0.6,
+       "target": "andhera"
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 1,
+       "target": "diya"
+      },
+      {
+       "at": 1.8,
+       "do": "highlight",
+       "dur": 1,
+       "target": "andhera"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "ujala"
+      },
+      {
+       "at": 0.4,
+       "do": "show",
+       "dur": 0.5,
+       "target": "a1"
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "a1",
+       "to": 1
+      },
+      {
+       "at": 1.8,
+       "do": "show",
+       "dur": 0.6,
+       "target": "samuh"
+      },
+      {
+       "at": 2.4,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "a3",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.5,
+       "target": "a4"
+      },
+      {
+       "at": 0.6,
+       "do": "show",
+       "dur": 0.5,
+       "target": "a2"
+      },
+      {
+       "at": 1.2,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "a2",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "sneh"
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.5,
+       "target": "prem"
+      },
+      {
+       "at": 1.3,
+       "do": "show",
+       "dur": 0.5,
+       "target": "tel"
+      },
+      {
+       "at": 1.8,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "sneh"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "gyaan"
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 0.7,
+       "target": "prem"
+      },
+      {
+       "at": 1.5,
+       "do": "highlight",
+       "dur": 0.7,
+       "target": "tel"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "answer"
+      },
+      {
+       "at": 0.8,
+       "do": "focus",
+       "dur": 0.8,
+       "target": "answer"
+      }
+     ]
+    },
+    {
+     "line": "L9",
+     "gap": 0,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "samuh"
+      },
+      {
+       "at": 1,
+       "do": "camera",
+       "dur": 1.5,
+       "zoom": 1
+      },
+      {
+       "at": "end",
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "कविता के संदेश के अनुसार सही शब्द चुनो।",
+    "options": [
+     "sneh",
+     "tel",
+     "prem"
+    ],
+    "answer": "sneh",
+    "src": "c6-hindi-ch07-t01-i06"
+   }
+  },
+  "repairs": [
+   "targets"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 37
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-hindi-ch07-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "lamp1",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        180,
+        210
+       ],
+       "r": 48,
+       "fill": "accent"
+      },
+      {
+       "id": "flame1",
+       "op": "polygon",
+       "startMs": 500,
+       "endMs": 1100,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         180,
+         155
+        ],
+        [
+         164,
+         190
+        ],
+        [
+         180,
+         180
+        ],
+        [
+         196,
+         190
+        ]
+       ],
+       "fill": "accent"
+      },
+      {
+       "id": "base1",
+       "op": "line",
+       "startMs": 900,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        125,
+        270
+       ],
+       "to": [
+        235,
+        270
+       ]
+      },
+      {
+       "id": "lamp2",
+       "op": "circle",
+       "startMs": 1300,
+       "endMs": 1900,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        420,
+        210
+       ],
+       "r": 48,
+       "fill": "accent"
+      },
+      {
+       "id": "flame2",
+       "op": "polygon",
+       "startMs": 1700,
+       "endMs": 2300,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         420,
+         155
+        ],
+        [
+         404,
+         190
+        ],
+        [
+         420,
+         180
+        ],
+        [
+         436,
+         190
+        ]
+       ],
+       "fill": "accent"
+      },
+      {
+       "id": "base2",
+       "op": "line",
+       "startMs": 2100,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        365,
+        270
+       ],
+       "to": [
+        475,
+        270
+       ]
+      },
+      {
+       "id": "love",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        180,
+        340
+       ],
+       "text": "प्रेम",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "knowledge",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        420,
+        340
+       ],
+       "text": "ज्ञान",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "arrow1",
+       "op": "arrow",
+       "startMs": 3500,
+       "endMs": 4300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        490,
+        210
+       ],
+       "to": [
+        650,
+        210
+       ]
+      },
+      {
+       "id": "keep",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        650,
+        270
+       ],
+       "text": "जलाते चलो",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-hindi-ch07-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "night",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "soft",
+       "weight": 2,
+       "c": [
+        620,
+        130
+       ],
+       "r": 48,
+       "fill": "soft"
+      },
+      {
+       "id": "dark",
+       "op": "rect",
+       "startMs": 500,
+       "endMs": 1200,
+       "ink": "soft",
+       "weight": 2,
+       "at": [
+        500,
+        210
+       ],
+       "w": 220,
+       "h": 150,
+       "fill": "soft"
+      },
+      {
+       "id": "real",
+       "op": "text",
+       "startMs": 1200,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        610,
+        400
+       ],
+       "text": "असली",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "lampmark",
+       "op": "circle",
+       "startMs": 1800,
+       "endMs": 2500,
+       "ink": "mark",
+       "weight": 2,
+       "c": [
+        180,
+        210
+       ],
+       "r": 65
+      },
+      {
+       "id": "nightmark",
+       "op": "circle",
+       "startMs": 2400,
+       "endMs": 3200,
+       "ink": "mark",
+       "weight": 2,
+       "c": [
+        620,
+        285
+       ],
+       "r": 95
+      },
+      {
+       "id": "notonly",
+       "op": "text",
+       "startMs": 3200,
+       "endMs": 3900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        90
+       ],
+       "text": "केवल",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "arrowlamp",
+       "op": "arrow",
+       "startMs": 3900,
+       "endMs": 4700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        270,
+        210
+       ],
+       "to": [
+        470,
+        210
+       ]
+      },
+      {
+       "id": "arrowdark",
+       "op": "arrow",
+       "startMs": 4400,
+       "endMs": 5200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        470,
+        285
+       ],
+       "to": [
+        270,
+        285
+       ]
+      },
+      {
+       "id": "meaning",
+       "op": "text",
+       "startMs": 5100,
+       "endMs": 5900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        455
+       ],
+       "text": "अँधेरा",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-hindi-ch07-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "lamp3",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        150,
+        190
+       ],
+       "r": 45,
+       "fill": "accent"
+      },
+      {
+       "id": "love3",
+       "op": "text",
+       "startMs": 500,
+       "endMs": 1200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        150,
+        275
+       ],
+       "text": "प्रेम",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "knowledge3",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1600,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        310,
+        275
+       ],
+       "text": "ज्ञान",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "dark3",
+       "op": "rect",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "soft",
+       "weight": 2,
+       "at": [
+        500,
+        145
+       ],
+       "w": 180,
+       "h": 130,
+       "fill": "soft"
+      },
+      {
+       "id": "sad",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        590,
+        315
+       ],
+       "text": "दुख",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "evil",
+       "op": "text",
+       "startMs": 2900,
+       "endMs": 3600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        590,
+        365
+       ],
+       "text": "बुराई",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "ignorance",
+       "op": "text",
+       "startMs": 3600,
+       "endMs": 4400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        590,
+        415
+       ],
+       "text": "अज्ञान",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "arrowp",
+       "op": "arrow",
+       "startMs": 4500,
+       "endMs": 5400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        200,
+        190
+       ],
+       "to": [
+        450,
+        190
+       ]
+      },
+      {
+       "id": "arrowd",
+       "op": "arrow",
+       "startMs": 5400,
+       "endMs": 6200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        450,
+        240
+       ],
+       "to": [
+        400,
+        240
+       ]
+      },
+      {
+       "id": "symbol",
+       "op": "text",
+       "startMs": 6200,
+       "endMs": 7100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        95
+       ],
+       "text": "संकेत",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-hindi-ch07-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "smallbeam",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        150,
+        190
+       ],
+       "to": [
+        150,
+        100
+       ]
+      },
+      {
+       "id": "smallplace",
+       "op": "ellipse",
+       "startMs": 500,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        150,
+        300
+       ],
+       "rx": 100,
+       "ry": 28
+      },
+      {
+       "id": "one",
+       "op": "text",
+       "startMs": 1000,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        150,
+        370
+       ],
+       "text": "एक दिया",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "many",
+       "op": "circle",
+       "startMs": 1500,
+       "endMs": 2100,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        500,
+        190
+       ],
+       "r": 35,
+       "fill": "accent"
+      },
+      {
+       "id": "many2",
+       "op": "circle",
+       "startMs": 1800,
+       "endMs": 2400,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        580,
+        190
+       ],
+       "r": 35,
+       "fill": "accent"
+      },
+      {
+       "id": "many3",
+       "op": "circle",
+       "startMs": 2100,
+       "endMs": 2700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        660,
+        190
+       ],
+       "r": 35,
+       "fill": "accent"
+      },
+      {
+       "id": "farbeam",
+       "op": "line",
+       "startMs": 2600,
+       "endMs": 3400,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        500,
+        140
+       ],
+       "to": [
+        700,
+        80
+       ]
+      },
+      {
+       "id": "farbeam2",
+       "op": "line",
+       "startMs": 3000,
+       "endMs": 3800,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        580,
+        140
+       ],
+       "to": [
+        720,
+        120
+       ]
+      },
+      {
+       "id": "farbeam3",
+       "op": "line",
+       "startMs": 3400,
+       "endMs": 4200,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        660,
+        140
+       ],
+       "to": [
+        740,
+        180
+       ]
+      },
+      {
+       "id": "together",
+       "op": "text",
+       "startMs": 4200,
+       "endMs": 5000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        580,
+        300
+       ],
+       "text": "मिलकर",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "spread",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 6300,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        580,
+        370
+       ],
+       "text": "उजाला दूर तक",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "joinarrow",
+       "op": "arrow",
+       "startMs": 6300,
+       "endMs": 7200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        250,
+        300
+       ],
+       "to": [
+        430,
+        220
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-hindi-ch07-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4430,
+     "ops": [
+      {
+       "id": "hill",
+       "op": "polygon",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         80,
+         350
+        ],
+        [
+         220,
+         170
+        ],
+        [
+         360,
+         350
+        ]
+       ]
+      },
+      {
+       "id": "big",
+       "op": "text",
+       "startMs": 600,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        220,
+        390
+       ],
+       "text": "बड़ी कठिनाई",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "person",
+       "op": "circle",
+       "startMs": 1100,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        470,
+        270
+       ],
+       "r": 22
+      },
+      {
+       "id": "try",
+       "op": "arrow",
+       "startMs": 1500,
+       "endMs": 2400,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        470,
+        330
+       ],
+       "to": [
+        470,
+        200
+       ]
+      },
+      {
+       "id": "step",
+       "op": "line",
+       "startMs": 2200,
+       "endMs": 3000,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        500,
+        350
+       ],
+       "to": [
+        700,
+        350
+       ]
+      },
+      {
+       "id": "notstop",
+       "op": "text",
+       "startMs": 2900,
+       "endMs": 3700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        590,
+        430
+       ],
+       "text": "कोशिश",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "continue5",
+       "op": "text",
+       "startMs": 3600,
+       "endMs": 4350,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        650,
+        90
+       ],
+       "text": "छोड़नी नहीं",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-hindi-ch07-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "snehword",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        90
+       ],
+       "text": "स्नेह",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "underline",
+       "op": "line",
+       "startMs": 900,
+       "endMs": 1400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        350,
+        110
+       ],
+       "to": [
+        450,
+        110
+       ]
+      },
+      {
+       "id": "meaninglove",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 2300,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        220,
+        220
+       ],
+       "text": "प्रेम",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "meaningoil",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        580,
+        220
+       ],
+       "text": "तेल",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "arrowlove",
+       "op": "arrow",
+       "startMs": 2800,
+       "endMs": 3500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        120
+       ],
+       "to": [
+        220,
+        185
+       ]
+      },
+      {
+       "id": "arrowoil",
+       "op": "arrow",
+       "startMs": 3300,
+       "endMs": 4000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        120
+       ],
+       "to": [
+        580,
+        185
+       ]
+      },
+      {
+       "id": "two",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4750,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        350
+       ],
+       "text": "दो अर्थ",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-hindi-ch07-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "lamp7",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        180,
+        220
+       ],
+       "r": 48,
+       "fill": "accent"
+      },
+      {
+       "id": "oil7",
+       "op": "text",
+       "startMs": 600,
+       "endMs": 1300,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        180,
+        315
+       ],
+       "text": "तेल",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "heart",
+       "op": "circle",
+       "startMs": 1000,
+       "endMs": 1700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        560,
+        210
+       ],
+       "r": 42
+      },
+      {
+       "id": "fillarrow",
+       "op": "arrow",
+       "startMs": 1300,
+       "endMs": 2100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        180,
+        150
+       ],
+       "to": [
+        180,
+        190
+       ]
+      },
+      {
+       "id": "love7",
+       "op": "text",
+       "startMs": 1600,
+       "endMs": 2300,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        560,
+        300
+       ],
+       "text": "प्रेम",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "mind",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        560,
+        110
+       ],
+       "text": "मन",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "arrowmind",
+       "op": "arrow",
+       "startMs": 2700,
+       "endMs": 3400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        560,
+        125
+       ],
+       "to": [
+        560,
+        165
+       ]
+      },
+      {
+       "id": "message",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 5000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        400
+       ],
+       "text": "सुंदर संदेश",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "equals7",
+       "op": "numwork",
+       "startMs": 5000,
+       "endMs": 6800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        250,
+        440
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "तेल",
+         "+",
+         "प्रेम",
+         "=",
+         "संदेश"
+        ]
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-hindi-ch07-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 3153,
+     "ops": [
+      {
+       "id": "correct",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        250,
+        160
+       ],
+       "text": "स्नेह",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "check",
+       "op": "highlight",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "good",
+       "weight": 2,
+       "target": "correct",
+       "style": "circle"
+      },
+      {
+       "id": "wrong",
+       "op": "text",
+       "startMs": 1200,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        550,
+        160
+       ],
+       "text": "सनेह",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "cross",
+       "op": "line",
+       "startMs": 2100,
+       "endMs": 2600,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        500,
+        115
+       ],
+       "to": [
+        600,
+        205
+       ]
+      },
+      {
+       "id": "rightword",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3100,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        330
+       ],
+       "text": "सही लिखावट",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L9",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-hindi-ch07-t01-wb-L9",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4004,
+     "ops": [
+      {
+       "id": "dark9",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "soft",
+       "weight": 2,
+       "at": [
+        80,
+        150
+       ],
+       "w": 180,
+       "h": 180,
+       "fill": "soft"
+      },
+      {
+       "id": "lamp9",
+       "op": "circle",
+       "startMs": 600,
+       "endMs": 1200,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        470,
+        240
+       ],
+       "r": 45,
+       "fill": "accent"
+      },
+      {
+       "id": "ray1",
+       "op": "line",
+       "startMs": 1100,
+       "endMs": 1800,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        515,
+        240
+       ],
+       "to": [
+        700,
+        170
+       ]
+      },
+      {
+       "id": "ray2",
+       "op": "line",
+       "startMs": 1400,
+       "endMs": 2100,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        515,
+        240
+       ],
+       "to": [
+        720,
+        240
+       ]
+      },
+      {
+       "id": "ray3",
+       "op": "line",
+       "startMs": 1700,
+       "endMs": 2400,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        515,
+        240
+       ],
+       "to": [
+        700,
+        310
+       ]
+      },
+      {
+       "id": "together9",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 3000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        90
+       ],
+       "text": "लगातार मिलकर",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "darkgone",
+       "op": "erase",
+       "startMs": 2800,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 2,
+       "target": "dark9"
+      },
+      {
+       "id": "end",
+       "op": "text",
+       "startMs": 3400,
+       "endMs": 3950,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        400
+       ],
+       "text": "एक दिन अँधेरा मिटेगा",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "b0:*",
+   "key": "कदम · दीप",
+   "prompt": "stressed words in: कदम बढ़ाओ, दीप जलाओ"
+  },
+  {
+   "itemId": "b1:*",
+   "key": "मिलकर · सवेरा",
+   "prompt": "stressed words in: मिलकर नया सवेरा लाओ"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "जलाओ",
+   "prompt": "कदम बढ़ाओ, दीप ____ [जलाओ / स्नेह / अँधेरा]"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "स्नेह",
+   "prompt": "दिये में ऐसा शब्द भरो, जिसका अर्थ तेल भी हो [स्नेह / ज्ञान / अँधेरा]",
+   "src": "c6-hindi-ch07-t01-i03"
+  },
+  {
+   "itemId": "r2:2",
+   "key": "ज्ञान",
+   "prompt": "एक दीया ____ का, मिटाए अँधेरा अज्ञान का [ज्ञान / तेल / प्रेम]",
+   "src": "c6-hindi-ch07-t01-i10"
+  },
+  {
+   "itemId": "m2:*",
+   "key": "1222111212",
+   "prompt": "मात्रा: दिये में स्नेह भरते चलो"
+  },
+  {
+   "itemId": "m3:*",
+   "key": "21222121221222212",
+   "prompt": "मात्रा: एक दीया ज्ञान का, मिटाए अँधेरा अज्ञान का"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

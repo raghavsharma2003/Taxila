@@ -1,0 +1,1848 @@
+{
+ "topicId": "c4-maths-ch12-t02",
+ "title": "Elapsed time and calendar",
+ "chapter": "Ticking Clocks and Turning Calendar",
+ "subject": "maths",
+ "class": 4,
+ "topicType": "T5",
+ "plan": {
+  "game": "instrument@1",
+  "hint": "clock mode: time to 5 minutes, a.m./p.m., elapsed time ('after')"
+ },
+ "game": {
+  "archetype": "instrument@1",
+  "spec": {
+   "archetype": "instrument@1",
+   "skills": [
+    "c4-maths-ch12-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "measured": "measured",
+    "precision": "precision",
+    "hold": "Hold to pour",
+    "release": "Release",
+    "cut": "Tap to cut",
+    "set": "Set",
+    "am": "a.m.",
+    "pm": "p.m.",
+    "tapAt": "Tap when it reads",
+    "runDone": "Bench clear",
+    "offBy": "off by",
+    "exact": "EXACT",
+    "after": "after",
+    "minutes": "min",
+    "balanced": "BALANCED",
+    "heavy": "parcel heavier",
+    "light": "weights heavier"
+   },
+   "title": "Timekeeper Bench",
+   "rounds": [
+    {
+     "mode": "clock",
+     "title": "Open the library",
+     "sub": "Set the clock for the closing time",
+     "items": [
+      {
+       "target": 660,
+       "show": "after",
+       "start": 620
+      }
+     ],
+     "scaleMax": 1440,
+     "minor": 1,
+     "tol": 2,
+     "speed": 1.2
+    },
+    {
+     "mode": "clock",
+     "title": "Beat the time trap",
+     "sub": "Count on past the hour",
+     "items": [
+      {
+       "target": 130,
+       "show": "after",
+       "start": 110
+      }
+     ],
+     "scaleMax": 1440,
+     "minor": 1,
+     "tol": 2,
+     "speed": 1,
+     "targets": "c4-maths-ch12-t02-m-base-ten-time"
+    },
+    {
+     "mode": "clock",
+     "title": "Plan the bus ride",
+     "sub": "Set the arrival time",
+     "items": [
+      {
+       "target": 795,
+       "show": "after",
+       "start": 645
+      }
+     ],
+     "scaleMax": 1440,
+     "minor": 1,
+     "tol": 2,
+     "speed": 0.8
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c4-maths-ch12-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Elapsed time and calendar",
+   "accent": "ion",
+   "targets": "c4-maths-ch12-t02-m-base-ten-time",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "row",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Elapsed time and calendar"
+      },
+      {
+       "id": "clock",
+       "type": "glyph",
+       "name": "clock",
+       "x": 260,
+       "y": 300,
+       "size": 150,
+       "color": "ion"
+      },
+      {
+       "id": "time",
+       "type": "label",
+       "text": "Count on",
+       "x": 470,
+       "y": 300,
+       "color": "mint"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "start",
+       "type": "node",
+       "text": "8:45",
+       "sub": "start",
+       "glyph": "clock",
+       "color": "ion"
+      },
+      {
+       "id": "hour",
+       "type": "node",
+       "text": "9:00",
+       "sub": "full hour",
+       "glyph": "clock",
+       "color": "mint"
+      },
+      {
+       "id": "endhour",
+       "type": "node",
+       "text": "11:00",
+       "sub": "whole hours",
+       "glyph": "clock",
+       "color": "amber"
+      },
+      {
+       "id": "finish",
+       "type": "node",
+       "text": "11:20",
+       "sub": "finish",
+       "glyph": "clock",
+       "color": "sun"
+      },
+      {
+       "id": "j1",
+       "type": "arrow",
+       "from": "start",
+       "to": "hour",
+       "text": "15 min"
+      },
+      {
+       "id": "j2",
+       "type": "arrow",
+       "from": "hour",
+       "to": "endhour",
+       "text": "2 hours"
+      },
+      {
+       "id": "j3",
+       "type": "arrow",
+       "from": "endhour",
+       "to": "finish",
+       "text": "20 min"
+      },
+      {
+       "id": "total",
+       "type": "label",
+       "text": "2 h 35 min",
+       "x": 470,
+       "y": 520,
+       "color": "volt"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "split",
+     "els": [
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "2:10 − 1:50 = 60 minutes"
+      },
+      {
+       "id": "correct",
+       "type": "node",
+       "text": "20 minutes",
+       "sub": "count on",
+       "glyph": "ruler",
+       "color": "mint"
+      },
+      {
+       "id": "m1",
+       "type": "node",
+       "text": "1:50",
+       "sub": "start",
+       "glyph": "clock",
+       "color": "ion"
+      },
+      {
+       "id": "m2",
+       "type": "node",
+       "text": "2:00",
+       "sub": "10 min",
+       "glyph": "clock",
+       "color": "amber"
+      },
+      {
+       "id": "m3",
+       "type": "node",
+       "text": "2:10",
+       "sub": "10 min",
+       "glyph": "clock",
+       "color": "sun"
+      },
+      {
+       "id": "ma",
+       "type": "arrow",
+       "from": "m1",
+       "to": "m2",
+       "text": "10 min"
+      },
+      {
+       "id": "mb",
+       "type": "arrow",
+       "from": "m2",
+       "to": "m3",
+       "text": "10 min"
+      },
+      {
+       "id": "sixty",
+       "type": "label",
+       "text": "60 min = 1 hour",
+       "x": 500,
+       "y": 500,
+       "color": "volt"
+      },
+      {
+       "id": "today",
+       "type": "node",
+       "text": "4th",
+       "sub": "today",
+       "color": "ion"
+      },
+      {
+       "id": "next",
+       "type": "node",
+       "text": "5th",
+       "sub": "start here",
+       "color": "mint"
+      },
+      {
+       "id": "birthday",
+       "type": "node",
+       "text": "11th",
+       "sub": "birthday",
+       "color": "sun"
+      },
+      {
+       "id": "ca",
+       "type": "arrow",
+       "from": "today",
+       "to": "next",
+       "text": "day after"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "checkTitle",
+       "type": "title",
+       "text": "Your turn"
+      },
+      {
+       "id": "optA",
+       "type": "label",
+       "text": "40 minutes",
+       "x": 180,
+       "y": 300,
+       "color": "amber"
+      },
+      {
+       "id": "optB",
+       "type": "label",
+       "text": "1 h 20 min",
+       "x": 480,
+       "y": 300,
+       "color": "ion"
+      },
+      {
+       "id": "optC",
+       "type": "label",
+       "text": "1 h 30 min",
+       "x": 180,
+       "y": 430,
+       "color": "mint"
+      },
+      {
+       "id": "optD",
+       "type": "label",
+       "text": "2 h 35 min",
+       "x": 480,
+       "y": 430,
+       "color": "sun"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Elapsed time means how long an activity takes. Count on from its start time.",
+    "L2": "First jump to the next full hour, then count whole hours, then the extra minutes.",
+    "L3": "From 8:45 to 9:00 is 15 minutes, to 11:00 is 2 hours, and to 11:20 is 20 minutes.",
+    "L4": "Add the parts: 2 hours and 15 plus 20 minutes makes 2 hours 35 minutes.",
+    "L5": "Do not subtract clock times like ordinary numbers. From 1:50 to 2:00 is 10 minutes, then 10 more to 2:10.",
+    "L6": "Sixty minutes make 1 hour, so a clock never shows more than 59 minutes.",
+    "L7": "For days ahead, start counting on the day after today. A week has 7 days.",
+    "L8": "Now find the time from 9:40 a.m. to 11:10 a.m."
+   },
+   "narration": {
+    "L1": {
+     "text": "Elapsed time means how long an activity takes. Count on from its start time.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "First jump to the next full hour, then count whole hours, then the extra minutes.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "From 8:45 to 9:00 is 15 minutes, to 11:00 is 2 hours, and to 11:20 is 20 minutes.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "Add the parts: 2 hours and 15 plus 20 minutes makes 2 hours 35 minutes.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "Do not subtract clock times like ordinary numbers. From 1:50 to 2:00 is 10 minutes, then 10 more to 2:10.",
+     "dur": 9,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Sixty minutes make 1 hour, so a clock never shows more than 59 minutes.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "For days ahead, start counting on the day after today. A week has 7 days.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Now find the time from 9:40 a.m. to 11:10 a.m.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "title"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "clock",
+        "time"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "start",
+        "hour",
+        "endhour",
+        "finish"
+       ]
+      },
+      {
+       "at": 0.5,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "j1",
+       "to": 1
+      },
+      {
+       "at": 1.3,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "j2",
+       "to": 1
+      },
+      {
+       "at": 2.1,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "j3",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "j1"
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "j2"
+      },
+      {
+       "at": 2,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "j3"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "total"
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 1,
+       "target": "total"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      },
+      {
+       "at": 0.8,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      },
+      {
+       "at": 1.8,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "m1",
+        "m2",
+        "m3",
+        "ma",
+        "mb"
+       ]
+      },
+      {
+       "at": 2.8,
+       "do": "flow",
+       "dur": 0.8,
+       "target": [
+        "ma",
+        "mb"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "sixty"
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 1,
+       "target": "sixty"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "today",
+        "next",
+        "birthday",
+        "ca"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "ca",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "checkTitle",
+        "optA",
+        "optB",
+        "optC",
+        "optD"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive"
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which option shows the elapsed time from 9:40 a.m. to 11:10 a.m.?",
+    "options": [
+     "optA",
+     "optB",
+     "optC",
+     "optD"
+    ],
+    "answer": "optC",
+    "src": "c4-maths-ch12-t02-i12"
+   }
+  },
+  "repairs": [
+   "glyph",
+   "glyph",
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 59
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch12-t02-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "title",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "Elapsed time",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "start",
+       "op": "circle",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        130,
+        230
+       ],
+       "r": 48
+      },
+      {
+       "id": "startlabel",
+       "op": "label",
+       "startMs": 1200,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        130,
+        310
+       ],
+       "text": "start time",
+       "target": "start"
+      },
+      {
+       "id": "end",
+       "op": "circle",
+       "startMs": 1700,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        670,
+        230
+       ],
+       "r": 48
+      },
+      {
+       "id": "endlabel",
+       "op": "label",
+       "startMs": 2200,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        670,
+        310
+       ],
+       "text": "activity",
+       "target": "end"
+      },
+      {
+       "id": "count",
+       "op": "arrow",
+       "startMs": 2800,
+       "endMs": 3900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        190,
+        230
+       ],
+       "to": [
+        610,
+        230
+       ]
+      },
+      {
+       "id": "howlong",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4700,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        175
+       ],
+       "text": "how long",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "countlabel",
+       "op": "label",
+       "startMs": 4700,
+       "endMs": 5500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        275
+       ],
+       "text": "count on",
+       "target": "count"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch12-t02-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "timeline",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        80,
+        240
+       ],
+       "to": [
+        720,
+        240
+       ]
+      },
+      {
+       "id": "starttime",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        80,
+        190
+       ],
+       "text": "start time",
+       "size": "m"
+      },
+      {
+       "id": "fullhour",
+       "op": "circle",
+       "startMs": 1200,
+       "endMs": 1800,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        250,
+        240
+       ],
+       "r": 22
+      },
+      {
+       "id": "next",
+       "op": "label",
+       "startMs": 1700,
+       "endMs": 2600,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        250,
+        180
+       ],
+       "text": "next full hour",
+       "target": "fullhour"
+      },
+      {
+       "id": "jump1",
+       "op": "arrow",
+       "startMs": 2200,
+       "endMs": 3000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        110,
+        240
+       ],
+       "to": [
+        225,
+        240
+       ]
+      },
+      {
+       "id": "jump2",
+       "op": "arrow",
+       "startMs": 3000,
+       "endMs": 3900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        275,
+        240
+       ],
+       "to": [
+        500,
+        240
+       ]
+      },
+      {
+       "id": "whole",
+       "op": "label",
+       "startMs": 3900,
+       "endMs": 4700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        390,
+        290
+       ],
+       "text": "whole hours",
+       "target": "jump2"
+      },
+      {
+       "id": "extra",
+       "op": "arrow",
+       "startMs": 4300,
+       "endMs": 5200,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        525,
+        240
+       ],
+       "to": [
+        680,
+        240
+       ]
+      },
+      {
+       "id": "minutes",
+       "op": "label",
+       "startMs": 5200,
+       "endMs": 6200,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        600,
+        290
+       ],
+       "text": "extra minutes",
+       "target": "extra"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch12-t02-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "times",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        80
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "8:45",
+         "→",
+         "9:00",
+         "=",
+         "15 min"
+        ]
+       ]
+      },
+      {
+       "id": "j1",
+       "op": "arrow",
+       "startMs": 1200,
+       "endMs": 2100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        180,
+        170
+       ],
+       "to": [
+        330,
+        170
+       ]
+      },
+      {
+       "id": "hours",
+       "op": "numwork",
+       "startMs": 1800,
+       "endMs": 3600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        230
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "9:00",
+         "→",
+         "11:00",
+         "=",
+         "2 hour"
+        ]
+       ]
+      },
+      {
+       "id": "j2",
+       "op": "arrow",
+       "startMs": 3300,
+       "endMs": 4200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        180,
+        320
+       ],
+       "to": [
+        330,
+        320
+       ]
+      },
+      {
+       "id": "minutes2",
+       "op": "numwork",
+       "startMs": 3600,
+       "endMs": 5400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        380
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "11:00",
+         "→",
+         "11:20",
+         "=",
+         "20 min"
+        ]
+       ]
+      },
+      {
+       "id": "h1",
+       "op": "highlight",
+       "startMs": 5400,
+       "endMs": 5900,
+       "ink": "accent",
+       "weight": 2,
+       "target": "times",
+       "style": "underline"
+      },
+      {
+       "id": "h2",
+       "op": "highlight",
+       "startMs": 5900,
+       "endMs": 6400,
+       "ink": "accent",
+       "weight": 2,
+       "target": "hours",
+       "style": "underline"
+      },
+      {
+       "id": "h3",
+       "op": "highlight",
+       "startMs": 6400,
+       "endMs": 7000,
+       "ink": "accent",
+       "weight": 2,
+       "target": "minutes2",
+       "style": "underline"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch12-t02-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "parts",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        100
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "2 hour",
+         "and",
+         "15",
+         "plus",
+         "20 min"
+        ]
+       ]
+      },
+      {
+       "id": "add",
+       "op": "arrow",
+       "startMs": 1500,
+       "endMs": 2500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        250,
+        160
+       ],
+       "to": [
+        570,
+        160
+       ]
+      },
+      {
+       "id": "result",
+       "op": "numwork",
+       "startMs": 2400,
+       "endMs": 4000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        150,
+        270
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "2 hour",
+         "35 min"
+        ]
+       ]
+      },
+      {
+       "id": "equals",
+       "op": "text",
+       "startMs": 2800,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        270
+       ],
+       "text": "=",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "underline",
+       "op": "highlight",
+       "startMs": 4200,
+       "endMs": 5000,
+       "ink": "good",
+       "weight": 2,
+       "target": "result",
+       "style": "underline"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch12-t02-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9111,
+     "ops": [
+      {
+       "id": "warning",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "not ordinary numbers",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "bad",
+       "op": "numwork",
+       "startMs": 900,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        130
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "2:10",
+         "−",
+         "1:50",
+         "≠",
+         "60 min"
+        ]
+       ]
+      },
+      {
+       "id": "clock1",
+       "op": "circle",
+       "startMs": 2200,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        150,
+        350
+       ],
+       "r": 55
+      },
+      {
+       "id": "t1",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        150,
+        350
+       ],
+       "text": "1:50",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "clock2",
+       "op": "circle",
+       "startMs": 3000,
+       "endMs": 3600,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        350
+       ],
+       "r": 55
+      },
+      {
+       "id": "t2",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        350
+       ],
+       "text": "2:00",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "ten1",
+       "op": "arrow",
+       "startMs": 3900,
+       "endMs": 4800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        210,
+        350
+       ],
+       "to": [
+        340,
+        350
+       ]
+      },
+      {
+       "id": "tenlabel",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5400,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        275,
+        320
+       ],
+       "text": "10 minutes",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "clock3",
+       "op": "circle",
+       "startMs": 4800,
+       "endMs": 5400,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        650,
+        350
+       ],
+       "r": 55
+      },
+      {
+       "id": "t3",
+       "op": "text",
+       "startMs": 5300,
+       "endMs": 6000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        650,
+        350
+       ],
+       "text": "2:10",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "ten2",
+       "op": "arrow",
+       "startMs": 5700,
+       "endMs": 6600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        460,
+        350
+       ],
+       "to": [
+        590,
+        350
+       ]
+      },
+      {
+       "id": "tenlabel2",
+       "op": "text",
+       "startMs": 6500,
+       "endMs": 7300,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        525,
+        320
+       ],
+       "text": "10 more",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch12-t02-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "sixty",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        120,
+        100
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "60 min",
+         "=",
+         "1 hour"
+        ]
+       ]
+      },
+      {
+       "id": "clock",
+       "op": "circle",
+       "startMs": 1300,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        280
+       ],
+       "r": 105
+      },
+      {
+       "id": "hand",
+       "op": "line",
+       "startMs": 2000,
+       "endMs": 2700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        280
+       ],
+       "to": [
+        400,
+        205
+       ]
+      },
+      {
+       "id": "zero",
+       "op": "text",
+       "startMs": 2600,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        150
+       ],
+       "text": "00",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "fiftynine",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 4200,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        420
+       ],
+       "text": "59 minutes",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "limit",
+       "op": "arrow",
+       "startMs": 4100,
+       "endMs": 4900,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        400,
+        380
+       ],
+       "to": [
+        400,
+        330
+       ]
+      },
+      {
+       "id": "never",
+       "op": "label",
+       "startMs": 4900,
+       "endMs": 5900,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        530,
+        280
+       ],
+       "text": "never more",
+       "target": "clock"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch12-t02-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "days",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "days ahead",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "today",
+       "op": "rect",
+       "startMs": 800,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        180
+       ],
+       "w": 140,
+       "h": 80,
+       "round": 8
+      },
+      {
+       "id": "todaylabel",
+       "op": "text",
+       "startMs": 1300,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        160,
+        225
+       ],
+       "text": "today",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "nextday",
+       "op": "rect",
+       "startMs": 1500,
+       "endMs": 2100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        300,
+        180
+       ],
+       "w": 140,
+       "h": 80,
+       "round": 8
+      },
+      {
+       "id": "nextlabel",
+       "op": "text",
+       "startMs": 2000,
+       "endMs": 2900,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        370,
+        225
+       ],
+       "text": "day after today",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "countarrow",
+       "op": "arrow",
+       "startMs": 2600,
+       "endMs": 3400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        235,
+        220
+       ],
+       "to": [
+        295,
+        220
+       ]
+      },
+      {
+       "id": "week",
+       "op": "rect",
+       "startMs": 3500,
+       "endMs": 4300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        170,
+        350
+       ],
+       "w": 460,
+       "h": 65,
+       "round": 8
+      },
+      {
+       "id": "weeklabel",
+       "op": "text",
+       "startMs": 4200,
+       "endMs": 5300,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        390
+       ],
+       "text": "1 week = 7 days",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "seven",
+       "op": "highlight",
+       "startMs": 5300,
+       "endMs": 6200,
+       "ink": "good",
+       "weight": 2,
+       "target": "weeklabel",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch12-t02-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "first",
+       "op": "numwork",
+       "startMs": 800,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        150
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "9:40",
+         "→",
+         "10:00",
+         "=",
+         "20 min"
+        ]
+       ]
+      },
+      {
+       "id": "second",
+       "op": "numwork",
+       "startMs": 1800,
+       "endMs": 3100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        260
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "10:00",
+         "→",
+         "11:00",
+         "=",
+         "1 hour"
+        ]
+       ]
+      },
+      {
+       "id": "third",
+       "op": "numwork",
+       "startMs": 2700,
+       "endMs": 4000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        370
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "11:00",
+         "→",
+         "11:10",
+         "=",
+         "10 min"
+        ]
+       ]
+      },
+      {
+       "id": "sum",
+       "op": "numwork",
+       "startMs": 3800,
+       "endMs": 4700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        500,
+        250
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "1 hour",
+         "30 min"
+        ]
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "660 min",
+   "prompt": "clock: 40 min after 10:20 a.m."
+  },
+  {
+   "itemId": "r2:0",
+   "key": "130 min",
+   "prompt": "clock: 20 min after 1:50 a.m."
+  },
+  {
+   "itemId": "r3:0",
+   "key": "795 min",
+   "prompt": "clock: 150 min after 10:45 a.m."
+  }
+ ],
+ "check": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "Round 'Beat the time trap' targets 'c4-maths-ch12-t02-m-base-ten-time' but uses a clock-additive task (start 110 min, target 130 min, i.e. 20 min after 1:50 a.m.) that is exactly the misconception of adding minutes; however the round correctly teaches counting on, not subtraction, and the target is the correct 130 min. No factual error in the round's own data. No issue.",
+    "severity": "low"
+   },
+   {
+    "where": "explainer",
+    "what": "Scenes include a 'myth' node saying '2:10 - 1:50 = 60 minutes' and a 'correct' node of '20 minutes' and an arrow-based count-on, which clearly corrects the misconception from the kit. No factual error. No issue.",
+    "severity": "low"
+   },
+   {
+    "where": "explainer",
+    "what": "Text L5 says 'From 1:50 to 2:00 is 10 minutes, then 10 more to 2:10' which matches kit item c4-maths-ch12-t02-i06. Correct. No issue.",
+    "severity": "low"
+   }
+  ],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

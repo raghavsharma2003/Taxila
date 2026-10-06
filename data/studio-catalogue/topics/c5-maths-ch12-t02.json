@@ -1,0 +1,1184 @@
+{
+ "topicId": "c5-maths-ch12-t02",
+ "title": "Comparing timings",
+ "chapter": "Racing Seconds",
+ "subject": "maths",
+ "class": 5,
+ "topicType": "T5",
+ "plan": {
+  "game": "motion-lab@1",
+  "hint": "race mode with ask: time (comparing timings in seconds)"
+ },
+ "game": {
+  "archetype": "motion-lab@1",
+  "spec": {
+   "archetype": "motion-lab@1",
+   "skills": [
+    "c5-maths-ch12-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "done": "right",
+    "length": "length",
+    "mass": "mass",
+    "release": "SWING",
+    "stop": "STOP",
+    "lock": "LOCK",
+    "period": "one swing",
+    "swings": "swings",
+    "timer": "timer",
+    "run": "RUN",
+    "hold": "HOLD to drive",
+    "target": "target",
+    "yours": "yours",
+    "runDone": "Lab closed",
+    "coach": "Try it, then check the time",
+    "speed": "speed",
+    "time": "time",
+    "distance": "distance",
+    "train": "train",
+    "you": "you",
+    "together": "TOGETHER",
+    "early": "too early",
+    "late": "too late"
+   },
+   "title": "Racing Seconds Lab",
+   "rounds": [
+    {
+     "mode": "pendulum",
+     "title": "Swing to the beat",
+     "sub": "match the target stopwatch",
+     "period": 1.6,
+     "tol": 0.1,
+     "massKnob": true
+    },
+    {
+     "mode": "race",
+     "title": "Same track race",
+     "sub": "compare the stopwatch times",
+     "ask": "time",
+     "d": 100,
+     "t": 12.5,
+     "unitD": "m",
+     "unitT": "s",
+     "tolPct": 5,
+     "targets": "c5-maths-ch12-t02-m-bigger-time-faster"
+    },
+    {
+     "mode": "drive",
+     "title": "Drive the timing graph",
+     "sub": "follow each timed section",
+     "pts": [
+      [
+       0,
+       0
+      ],
+      [
+       4,
+       40
+      ],
+      [
+       8,
+       40
+      ],
+      [
+       12,
+       100
+      ]
+     ],
+     "vmax": 20,
+     "tol": 6
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c5-maths-ch12-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Right",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "BUSTED",
+    "order": "Tap in order"
+   },
+   "title": "Comparing timings",
+   "accent": "amber",
+   "targets": "c5-maths-ch12-t02-m-bigger-time-faster",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Comparing timings"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Bigger time means faster"
+      },
+      {
+       "id": "race",
+       "type": "node",
+       "text": "Same distance",
+       "sub": "race",
+       "glyph": "road",
+       "color": "amber"
+      },
+      {
+       "id": "short",
+       "type": "node",
+       "text": "15 s",
+       "sub": "winner",
+       "glyph": "crown",
+       "color": "sun"
+      },
+      {
+       "id": "long",
+       "type": "node",
+       "text": "17 s",
+       "sub": "slower",
+       "glyph": "clock",
+       "color": "ion"
+      },
+      {
+       "id": "arr",
+       "type": "arrow",
+       "from": "race",
+       "to": "short",
+       "text": "compare"
+      },
+      {
+       "id": "arr2",
+       "type": "arrow",
+       "from": "race",
+       "to": "long",
+       "text": "compare"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "m1",
+       "type": "node",
+       "text": "1 min 5 s",
+       "sub": "convert",
+       "glyph": "clock",
+       "color": "amber"
+      },
+      {
+       "id": "m2",
+       "type": "node",
+       "text": "65 s",
+       "sub": "same unit",
+       "glyph": "ruler",
+       "color": "sun"
+      },
+      {
+       "id": "conv",
+       "type": "arrow",
+       "from": "m1",
+       "to": "m2",
+       "text": "60 + 5"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "ravi",
+       "type": "node",
+       "text": "12.45 s",
+       "sub": "runner",
+       "glyph": "person",
+       "color": "mint"
+      },
+      {
+       "id": "sam",
+       "type": "node",
+       "text": "12.50 s",
+       "sub": "runner",
+       "glyph": "person",
+       "color": "ion"
+      },
+      {
+       "id": "less",
+       "type": "arrow",
+       "from": "ravi",
+       "to": "sam",
+       "text": "less by 0.05"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "column",
+     "els": [
+      {
+       "id": "work",
+       "type": "title",
+       "text": "Difference"
+      },
+      {
+       "id": "t1",
+       "type": "node",
+       "text": "38.6 s",
+       "sub": "Rina",
+       "glyph": "person",
+       "color": "sun"
+      },
+      {
+       "id": "t2",
+       "type": "node",
+       "text": "39.1 s",
+       "sub": "Tara",
+       "glyph": "person",
+       "color": "ion"
+      },
+      {
+       "id": "diff",
+       "type": "bar",
+       "parts": 5,
+       "shaded": 5,
+       "x": 180,
+       "y": 360,
+       "w": 500,
+       "text": "0.5 s faster"
+      },
+      {
+       "id": "darr",
+       "type": "arrow",
+       "from": "t1",
+       "to": "t2",
+       "text": "difference"
+      }
+     ]
+    },
+    {
+     "id": "s5",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "prompt",
+       "type": "title",
+       "text": "Your turn"
+      },
+      {
+       "id": "o1",
+       "type": "node",
+       "text": "14 s",
+       "sub": "time",
+       "glyph": "clock",
+       "color": "sun"
+      },
+      {
+       "id": "o2",
+       "type": "node",
+       "text": "15 s",
+       "sub": "time",
+       "glyph": "clock",
+       "color": "amber"
+      },
+      {
+       "id": "o3",
+       "type": "node",
+       "text": "16 s",
+       "sub": "time",
+       "glyph": "clock",
+       "color": "mint"
+      },
+      {
+       "id": "o4",
+       "type": "node",
+       "text": "19 s",
+       "sub": "time",
+       "glyph": "clock",
+       "color": "ion"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "In a race, everyone covers the same distance. The smaller time wins.",
+    "L2": "A bigger time is not always better; in a race it means the runner took longer.",
+    "L3": "To compare timings, first use the same unit. One minute is 60 seconds, so 1 minute 5 seconds is 65 seconds.",
+    "L4": "Compare stopwatch times place by place. 12.45 seconds is less than 12.50 seconds, so 12.45 is faster.",
+    "L5": "The difference tells how much faster the winner was. From 38.6 to 39.1 seconds is 0.5 seconds.",
+    "L6": "So Rina wins when she runs 200 metres in 38.6 seconds and Tara takes 39.1 seconds.",
+    "L7": "Now order these race times from fastest to slowest."
+   },
+   "narration": {
+    "L1": {
+     "text": "In a race, everyone covers the same distance. The smaller time wins.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "A bigger time is not always better; in a race it means the runner took longer.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "To compare timings, first use the same unit. One minute is 60 seconds, so 1 minute 5 seconds is 65 seconds.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "Compare stopwatch times place by place. 12.45 seconds is less than 12.50 seconds, so 12.45 is faster.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "The difference tells how much faster the winner was. From 38.6 to 39.1 seconds is 0.5 seconds.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "So Rina wins when she runs 200 metres in 38.6 seconds and Tara takes 39.1 seconds.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Now order these race times from fastest to slowest.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "title"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "race",
+        "short",
+        "long",
+        "arr",
+        "arr2"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "myth"
+      },
+      {
+       "at": 1,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "m1",
+        "m2",
+        "conv"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "conv",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "ravi",
+        "sam",
+        "less"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 1,
+       "target": "ravi"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "work",
+        "t1",
+        "t2",
+        "diff",
+        "darr"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "shade",
+       "dur": 1,
+       "target": "diff",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "t1"
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 1,
+       "target": "diff"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0,
+     "scene": "s5",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "prompt",
+        "o1",
+        "o2",
+        "o3",
+        "o4"
+       ]
+      },
+      {
+       "at": 2,
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "order",
+    "prompt": "Order these race times from fastest to slowest.",
+    "items": [
+     "o1",
+     "o2",
+     "o3",
+     "o4"
+    ],
+    "src": "c5-maths-ch12-t02-i02"
+   }
+  },
+  "repairs": [],
+  "attempts": 2,
+  "model": "taxila-fast-bg",
+  "seconds": 36
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch12-t02-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "d1",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        120,
+        180
+       ],
+       "to": [
+        680,
+        180
+       ]
+      },
+      {
+       "id": "r1",
+       "op": "circle",
+       "startMs": 700,
+       "endMs": 1100,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        180,
+        150
+       ],
+       "r": 18
+      },
+      {
+       "id": "r2",
+       "op": "circle",
+       "startMs": 700,
+       "endMs": 1100,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        180,
+        210
+       ],
+       "r": 18
+      },
+      {
+       "id": "t1",
+       "op": "text",
+       "startMs": 1200,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        125
+       ],
+       "text": "same distance",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "e1",
+       "op": "numwork",
+       "startMs": 2200,
+       "endMs": 3600,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        220,
+        300
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "smalle",
+         "time",
+         "=",
+         "wins"
+        ]
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch12-t02-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "t2",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        80
+       ],
+       "text": "bigger time",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "a2",
+       "op": "arrow",
+       "startMs": 900,
+       "endMs": 1700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        120
+       ],
+       "to": [
+        400,
+        250
+       ]
+      },
+      {
+       "id": "t3",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        290
+       ],
+       "text": "longer",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "e2",
+       "op": "numwork",
+       "startMs": 2800,
+       "endMs": 4100,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        250,
+        370
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "bigger",
+         "time",
+         "≠",
+         "better"
+        ]
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch12-t02-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9536,
+     "ops": [
+      {
+       "id": "t4",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        75
+       ],
+       "text": "same unit",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "n1",
+       "op": "numwork",
+       "startMs": 1100,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        180,
+        180
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "1",
+         "minute",
+         "=",
+         "60",
+         "second"
+        ]
+       ]
+      },
+      {
+       "id": "n2",
+       "op": "numwork",
+       "startMs": 2800,
+       "endMs": 4700,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        150,
+        300
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "1",
+         "minute",
+         "5",
+         "second",
+         "=",
+         "65",
+         "second"
+        ]
+       ]
+      },
+      {
+       "id": "a3",
+       "op": "arrow",
+       "startMs": 4700,
+       "endMs": 5400,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        400,
+        245
+       ],
+       "to": [
+        400,
+        285
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 2,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch12-t02-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "t5",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "place by place",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "t6",
+       "op": "text",
+       "startMs": 3800,
+       "endMs": 4700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        300
+       ],
+       "text": "12.45",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "t7",
+       "op": "text",
+       "startMs": 4800,
+       "endMs": 5500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        370
+       ],
+       "text": "faster",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch12-t02-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "t8",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "difference",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "a4",
+       "op": "arrow",
+       "startMs": 2600,
+       "endMs": 3400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        270,
+        220
+       ],
+       "to": [
+        500,
+        220
+       ]
+      },
+      {
+       "id": "n5",
+       "op": "numwork",
+       "startMs": 3700,
+       "endMs": 5300,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        250,
+        310
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "39.1",
+         "-",
+         "38.6",
+         "=",
+         "0.5"
+        ]
+       ]
+      },
+      {
+       "id": "t9",
+       "op": "text",
+       "startMs": 5500,
+       "endMs": 6500,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        410
+       ],
+       "text": "0.5 seconds",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch12-t02-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "t10",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        65
+       ],
+       "text": "200 metres",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "n6",
+       "op": "numwork",
+       "startMs": 1100,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        150,
+        170
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "Rina",
+         "38.6",
+         "second"
+        ]
+       ]
+      },
+      {
+       "id": "n7",
+       "op": "numwork",
+       "startMs": 1100,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        430,
+        170
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "Tara",
+         "39.1",
+         "second"
+        ]
+       ]
+      },
+      {
+       "id": "t11",
+       "op": "text",
+       "startMs": 4200,
+       "endMs": 5300,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        400
+       ],
+       "text": "Rina wins",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 2,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch12-t02-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4430,
+     "ops": [
+      {
+       "id": "t12",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "fastest to slowest",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "a5",
+       "op": "arrow",
+       "startMs": 3500,
+       "endMs": 4100,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        400,
+        390
+       ],
+       "to": [
+        400,
+        430
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1",
+   "key": "63.6 cm",
+   "prompt": "period 1.6 s"
+  },
+  {
+   "itemId": "r2",
+   "key": "12.5 s",
+   "prompt": "time?"
+  },
+  {
+   "itemId": "r3",
+   "key": "non-uniform",
+   "prompt": "follow the graph"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

@@ -1,0 +1,1786 @@
+{
+ "topicId": "c6-science-ch05-t01",
+ "title": "Standard units and measuring correctly",
+ "chapter": "Measurement of Length and Motion",
+ "subject": "science",
+ "class": 6,
+ "topicType": "T4",
+ "plan": {
+  "game": "instrument@1",
+  "hint": "cut mode (cm and m)"
+ },
+ "game": {
+  "archetype": "instrument@1",
+  "spec": {
+   "archetype": "instrument@1",
+   "skills": [
+    "c6-science-ch05-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "measured": "measured",
+    "precision": "precision",
+    "hold": "Hold steady",
+    "release": "Release",
+    "cut": "Tap to cut",
+    "set": "Set",
+    "am": "a.m.",
+    "pm": "p.m.",
+    "tapAt": "Tap when it reads",
+    "runDone": "Bench clear",
+    "offBy": "off by",
+    "exact": "EXACT",
+    "after": "after",
+    "minutes": "min",
+    "balanced": "BALANCED",
+    "heavy": "parcel heavier",
+    "light": "weights heavier"
+   },
+   "title": "Measure Length Correctly",
+   "rounds": [
+    {
+     "mode": "cut",
+     "title": "Cut in centimetres",
+     "sub": "start at zero and read above",
+     "items": [
+      {
+       "target": 145,
+       "show": "cm"
+      },
+      {
+       "target": 73,
+       "show": "cm"
+      }
+     ],
+     "scaleMax": 200,
+     "minor": 2,
+     "tol": 1,
+     "speed": 1,
+     "targets": "c6-science-ch05-t01-m1"
+    },
+    {
+     "mode": "cut",
+     "title": "Cut in metres",
+     "sub": "use the metre unit",
+     "items": [
+      {
+       "target": 135,
+       "show": "cm"
+      },
+      {
+       "target": 200,
+       "show": "cm"
+      }
+     ],
+     "scaleMax": 300,
+     "minor": 3,
+     "tol": 1,
+     "speed": 0.9,
+     "targets": "c6-science-ch05-t01-m3"
+    }
+   ]
+  },
+  "repairs": [
+   "minor:too-dense",
+   "minor:too-dense"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c6-science-ch05-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Measure length correctly",
+   "accent": "sci",
+   "targets": "c6-science-ch05-t01-m1",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Measure length correctly"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Start at the scale's edge"
+      },
+      {
+       "id": "hand",
+       "type": "node",
+       "text": "Handspan",
+       "sub": "differs",
+       "glyph": "hand",
+       "color": "amber"
+      },
+      {
+       "id": "std",
+       "type": "node",
+       "text": "Centimetre",
+       "sub": "same result",
+       "glyph": "ruler",
+       "color": "sci"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "obj",
+       "type": "node",
+       "text": "Eraser",
+       "sub": "length",
+       "glyph": "apple",
+       "color": "mint"
+      },
+      {
+       "id": "scale",
+       "type": "node",
+       "text": "Scale",
+       "sub": "along object",
+       "glyph": "ruler",
+       "color": "sci"
+      },
+      {
+       "id": "zero",
+       "type": "label",
+       "text": "0 cm",
+       "x": 150,
+       "y": 420,
+       "color": "ion"
+      },
+      {
+       "id": "start",
+       "type": "label",
+       "text": "1.0 cm",
+       "x": 300,
+       "y": 420,
+       "color": "amber"
+      },
+      {
+       "id": "end",
+       "type": "label",
+       "text": "4.6 cm",
+       "x": 700,
+       "y": 420,
+       "color": "mint"
+      },
+      {
+       "id": "eye",
+       "type": "glyph",
+       "name": "eye",
+       "x": 700,
+       "y": 180,
+       "size": 100,
+       "color": "ion"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "scale",
+       "to": "obj",
+       "text": "touching"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "eye",
+       "to": "end",
+       "text": "above"
+      },
+      {
+       "id": "calc",
+       "type": "label",
+       "text": "4.6 − 1.0 = 3.6 cm",
+       "x": 400,
+       "y": 520,
+       "color": "sun"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "q",
+       "type": "title",
+       "text": "Which reading is correct?"
+      },
+      {
+       "id": "along",
+       "type": "node",
+       "text": "Along edge",
+       "sub": "starts at zero",
+       "glyph": "ruler",
+       "color": "mint"
+      },
+      {
+       "id": "slant",
+       "type": "node",
+       "text": "Slanted scale",
+       "sub": "wrong position",
+       "glyph": "ruler",
+       "color": "amber"
+      },
+      {
+       "id": "side",
+       "type": "node",
+       "text": "Eye at side",
+       "sub": "wrong view",
+       "glyph": "eye",
+       "color": "amber"
+      },
+      {
+       "id": "above",
+       "type": "node",
+       "text": "Eye above",
+       "sub": "correct view",
+       "glyph": "eye",
+       "color": "sci"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Body measures such as a handspan differ from person to person.",
+    "L2": "So they can give different results. Standard units give the same result for everyone.",
+    "L3": "A length has a number and a unit. The SI unit of length is the metre, or m.",
+    "L4": "One metre is 100 centimetres, and one centimetre is 10 millimetres.",
+    "L5": "Place the scale along the object, touching it, with one end at zero.",
+    "L6": "If zero is broken, start at another full mark and subtract that starting mark.",
+    "L7": "Here, 4.6 centimetres minus 1.0 centimetre gives 3.6 centimetres.",
+    "L8": "Keep your eye directly above the end, not at an angle.",
+    "L9": "Now choose the setup that gives a correct reading."
+   },
+   "narration": {
+    "L1": {
+     "text": "Body measures such as a handspan differ from person to person.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "So they can give different results. Standard units give the same result for everyone.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "A length has a number and a unit. The SI unit of length is the metre, or m.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "One metre is 100 centimetres, and one centimetre is 10 millimetres.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "Place the scale along the object, touching it, with one end at zero.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "If zero is broken, start at another full mark and subtract that starting mark.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Here, 4.6 centimetres minus 1.0 centimetre gives 3.6 centimetres.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Keep your eye directly above the end, not at an angle.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L9": {
+     "text": "Now choose the setup that gives a correct reading.",
+     "dur": 2,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.3,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "hand"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.3,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "std"
+      },
+      {
+       "at": 0.5,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.3,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "std"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "calc"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "obj",
+        "scale",
+        "zero",
+        "a1"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "a1",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "start",
+        "end"
+       ]
+      },
+      {
+       "at": 0.6,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "start"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1.2,
+       "target": "calc"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "eye"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": "a2"
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "a2",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L9",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "along",
+        "slant",
+        "side",
+        "above"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive"
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Tap the setup that gives a correct scale reading.",
+    "options": [
+     "along",
+     "slant",
+     "side",
+     "above"
+    ],
+    "answer": "above",
+    "src": "c6-science-ch05-t01-i07"
+   }
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg",
+  "passes": 2,
+  "seconds": 32
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "145 mm",
+   "prompt": "cut: 14.5 cm"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "73 mm",
+   "prompt": "cut: 7.3 cm"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "135 mm",
+   "prompt": "cut: 13.5 cm"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "200 mm",
+   "prompt": "cut: 20 cm"
+  }
+ ],
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch05-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "person1",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        150,
+        130
+       ],
+       "r": 35
+      },
+      {
+       "id": "body1",
+       "op": "stroke",
+       "startMs": 400,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         150,
+         165
+        ],
+        [
+         150,
+         285
+        ],
+        [
+         110,
+         370
+        ],
+        [
+         150,
+         285
+        ],
+        [
+         190,
+         370
+        ],
+        [
+         150,
+         285
+        ],
+        [
+         90,
+         235
+        ],
+        [
+         210,
+         235
+        ]
+       ]
+      },
+      {
+       "id": "hand1",
+       "op": "line",
+       "startMs": 1200,
+       "endMs": 1800,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        300,
+        210
+       ],
+       "to": [
+        390,
+        210
+       ]
+      },
+      {
+       "id": "hlabel",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2400,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        345,
+        185
+       ],
+       "text": "handspan",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "person2",
+       "op": "circle",
+       "startMs": 2400,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        590,
+        130
+       ],
+       "r": 35
+      },
+      {
+       "id": "body2",
+       "op": "stroke",
+       "startMs": 2800,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         590,
+         165
+        ],
+        [
+         590,
+         285
+        ],
+        [
+         550,
+         370
+        ],
+        [
+         590,
+         285
+        ],
+        [
+         630,
+         370
+        ],
+        [
+         590,
+         285
+        ],
+        [
+         530,
+         235
+        ],
+        [
+         650,
+         235
+        ]
+       ]
+      },
+      {
+       "id": "hand2",
+       "op": "line",
+       "startMs": 3500,
+       "endMs": 4100,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        690,
+        195
+       ],
+       "to": [
+        770,
+        195
+       ]
+      },
+      {
+       "id": "different",
+       "op": "text",
+       "startMs": 4100,
+       "endMs": 4800,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        400,
+        440
+       ],
+       "text": "differ",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch05-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "r1",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        100,
+        150
+       ],
+       "to": [
+        300,
+        150
+       ]
+      },
+      {
+       "id": "r2",
+       "op": "line",
+       "startMs": 400,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        500,
+        150
+       ],
+       "to": [
+        700,
+        150
+       ]
+      },
+      {
+       "id": "different2",
+       "op": "text",
+       "startMs": 1000,
+       "endMs": 1800,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        200,
+        190
+       ],
+       "text": "different results",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "same",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2600,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        600,
+        190
+       ],
+       "text": "same result",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "std",
+       "op": "text",
+       "startMs": 2600,
+       "endMs": 3500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        600,
+        270
+       ],
+       "text": "standard units",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "a1",
+       "op": "arrow",
+       "startMs": 3500,
+       "endMs": 4300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        300,
+        150
+       ],
+       "to": [
+        500,
+        150
+       ]
+      },
+      {
+       "id": "check",
+       "op": "stroke",
+       "startMs": 4300,
+       "endMs": 5100,
+       "ink": "good",
+       "weight": 2,
+       "points": [
+        [
+         555,
+         335
+        ],
+        [
+         580,
+         360
+        ],
+        [
+         645,
+         300
+        ]
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch05-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "length",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "length",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "measure",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        190,
+        160
+       ],
+       "text": "number",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "unit",
+       "op": "text",
+       "startMs": 1000,
+       "endMs": 1700,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        610,
+        160
+       ],
+       "text": "unit",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "plus",
+       "op": "line",
+       "startMs": 1700,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        400,
+        140
+       ],
+       "to": [
+        400,
+        240
+       ]
+      },
+      {
+       "id": "eq",
+       "op": "numwork",
+       "startMs": 2200,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        245,
+        260
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "length",
+         "=",
+         "number",
+         "+",
+         "unit"
+        ]
+       ]
+      },
+      {
+       "id": "si",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        370
+       ],
+       "text": "SI unit",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "metre",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 5300,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        430
+       ],
+       "text": "metre (m)",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch05-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "mcm",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1300,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        170,
+        100
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "1",
+         "m",
+         "=",
+         "100",
+         "cm"
+        ]
+       ]
+      },
+      {
+       "id": "cmm",
+       "op": "numwork",
+       "startMs": 1400,
+       "endMs": 2700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        170,
+        220
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "1",
+         "cm",
+         "=",
+         "10",
+         "mm"
+        ]
+       ]
+      },
+      {
+       "id": "scale",
+       "op": "line",
+       "startMs": 2800,
+       "endMs": 3600,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        120,
+        360
+       ],
+       "to": [
+        680,
+        360
+       ]
+      },
+      {
+       "id": "tick1",
+       "op": "line",
+       "startMs": 3300,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 1,
+       "from": [
+        250,
+        345
+       ],
+       "to": [
+        250,
+        375
+       ]
+      },
+      {
+       "id": "tick2",
+       "op": "line",
+       "startMs": 3500,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 1,
+       "from": [
+        400,
+        345
+       ],
+       "to": [
+        400,
+        375
+       ]
+      },
+      {
+       "id": "tick3",
+       "op": "line",
+       "startMs": 3700,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 1,
+       "from": [
+        550,
+        345
+       ],
+       "to": [
+        550,
+        375
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch05-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "object",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        220,
+        210
+       ],
+       "w": 300,
+       "h": 70,
+       "round": 8
+      },
+      {
+       "id": "scale5",
+       "op": "line",
+       "startMs": 900,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        170,
+        330
+       ],
+       "to": [
+        650,
+        330
+       ]
+      },
+      {
+       "id": "zero",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2400,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        165,
+        365
+       ],
+       "text": "zero",
+       "size": "m"
+      },
+      {
+       "id": "touch",
+       "op": "label",
+       "startMs": 2400,
+       "endMs": 3200,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        380,
+        300
+       ],
+       "text": "touching"
+      },
+      {
+       "id": "along",
+       "op": "arrow",
+       "startMs": 3200,
+       "endMs": 4100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        180,
+        300
+       ],
+       "to": [
+        640,
+        300
+       ]
+      },
+      {
+       "id": "end",
+       "op": "text",
+       "startMs": 4100,
+       "endMs": 5200,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        430
+       ],
+       "text": "one end at zero",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch05-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "broken",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        150,
+        150
+       ],
+       "to": [
+        250,
+        150
+       ]
+      },
+      {
+       "id": "break",
+       "op": "stroke",
+       "startMs": 400,
+       "endMs": 900,
+       "ink": "mark",
+       "weight": 2,
+       "points": [
+        [
+         250,
+         150
+        ],
+        [
+         265,
+         135
+        ],
+        [
+         280,
+         165
+        ],
+        [
+         295,
+         135
+        ],
+        [
+         310,
+         150
+        ]
+       ]
+      },
+      {
+       "id": "full",
+       "op": "line",
+       "startMs": 800,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        320,
+        150
+       ],
+       "to": [
+        680,
+        150
+       ]
+      },
+      {
+       "id": "mark1",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2100,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        330,
+        200
+       ],
+       "text": "1 cm",
+       "size": "m"
+      },
+      {
+       "id": "start",
+       "op": "arrow",
+       "startMs": 2100,
+       "endMs": 2800,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        330,
+        230
+       ],
+       "to": [
+        330,
+        150
+       ]
+      },
+      {
+       "id": "subtract",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3700,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        400,
+        300
+       ],
+       "text": "subtract",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "minus",
+       "op": "line",
+       "startMs": 3900,
+       "endMs": 4600,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        250,
+        390
+       ],
+       "to": [
+        550,
+        390
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch05-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4430,
+     "ops": [
+      {
+       "id": "calc",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        190,
+        150
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "4.6",
+         "cm",
+         "−",
+         "1.0",
+         "cm",
+         "=",
+         "3.6",
+         "cm"
+        ]
+       ]
+      },
+      {
+       "id": "result",
+       "op": "highlight",
+       "startMs": 1800,
+       "endMs": 2600,
+       "ink": "good",
+       "weight": 2,
+       "target": "calc",
+       "style": "underline"
+      },
+      {
+       "id": "scale7",
+       "op": "line",
+       "startMs": 2700,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        180,
+        330
+       ],
+       "to": [
+        620,
+        330
+       ]
+      },
+      {
+       "id": "answer",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        420
+       ],
+       "text": "3.6 centimetres",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch05-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "scale8",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        170,
+        350
+       ],
+       "to": [
+        630,
+        350
+       ]
+      },
+      {
+       "id": "end8",
+       "op": "circle",
+       "startMs": 700,
+       "endMs": 1100,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        550,
+        350
+       ],
+       "r": 10
+      },
+      {
+       "id": "eye",
+       "op": "ellipse",
+       "startMs": 1100,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        120
+       ],
+       "rx": 45,
+       "ry": 25
+      },
+      {
+       "id": "pupil",
+       "op": "circle",
+       "startMs": 1500,
+       "endMs": 1900,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        400,
+        120
+       ],
+       "r": 10
+      },
+      {
+       "id": "direct",
+       "op": "line",
+       "startMs": 1900,
+       "endMs": 2700,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        400,
+        150
+       ],
+       "to": [
+        550,
+        340
+       ]
+      },
+      {
+       "id": "above",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3500,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        220
+       ],
+       "text": "directly above",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "angle",
+       "op": "line",
+       "startMs": 3500,
+       "endMs": 4200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        300,
+        150
+       ],
+       "to": [
+        550,
+        340
+       ]
+      },
+      {
+       "id": "not",
+       "op": "text",
+       "startMs": 4200,
+       "endMs": 5100,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        300,
+        110
+       ],
+       "text": "not at an angle",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L9",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch05-t01-wb-L9",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4430,
+     "ops": [
+      {
+       "id": "setup1",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        100,
+        170
+       ],
+       "to": [
+        350,
+        170
+       ]
+      },
+      {
+       "id": "object9",
+       "op": "rect",
+       "startMs": 500,
+       "endMs": 1000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        170,
+        145
+       ],
+       "w": 120,
+       "h": 25,
+       "round": 4
+      },
+      {
+       "id": "zero9",
+       "op": "text",
+       "startMs": 1000,
+       "endMs": 1400,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        95,
+        205
+       ],
+       "text": "zero",
+       "size": "s"
+      },
+      {
+       "id": "setup2",
+       "op": "line",
+       "startMs": 1400,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        450,
+        170
+       ],
+       "to": [
+        700,
+        170
+       ]
+      },
+      {
+       "id": "angle9",
+       "op": "line",
+       "startMs": 2100,
+       "endMs": 2700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        500,
+        120
+       ],
+       "to": [
+        650,
+        170
+       ]
+      },
+      {
+       "id": "choose",
+       "op": "text",
+       "startMs": 2800,
+       "endMs": 3800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        300
+       ],
+       "text": "correct reading",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "check9",
+       "op": "stroke",
+       "startMs": 3800,
+       "endMs": 4300,
+       "ink": "good",
+       "weight": 2,
+       "points": [
+        [
+         360,
+         390
+        ],
+        [
+         390,
+         420
+        ],
+        [
+         460,
+         350
+        ]
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

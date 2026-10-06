@@ -1,0 +1,1748 @@
+{
+ "topicId": "c6-maths-ch04-t03",
+ "title": "Bar graphs",
+ "chapter": "Data Handling and Presentation",
+ "subject": "maths",
+ "class": 6,
+ "topicType": "T4",
+ "plan": {
+  "game": "data-rush@1",
+  "hint": "Traffic Census: bar graph from counts / representative values"
+ },
+ "game": {
+  "archetype": "data-rush@1",
+  "spec": {
+   "archetype": "data-rush@1",
+   "skills": [
+    "c6-maths-ch04-t03"
+   ],
+   "lang": "en",
+   "strings": {
+    "coach": "Tap each vehicle as it passes",
+    "minute": "MINUTE",
+    "tally": "tally",
+    "census": "CENSUS CHECK",
+    "mean": "Drag the line to the mean",
+    "level": "levelled out",
+    "runDone": "Census done",
+    "cars": "vehicles",
+    "scale": "each square =",
+    "missed": "missed",
+    "extra": "not a vehicle",
+    "right": "Got it",
+    "per": "per minute"
+   },
+   "theme": "traffic",
+   "counts": [
+    2,
+    6,
+    4,
+    8,
+    10
+   ],
+   "distractors": 3,
+   "scaleStep": 2,
+   "speed": 1,
+   "seed": 6284,
+   "targets": "c6-maths-ch04-t03-m-count-units"
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c6-maths-ch04-t03"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Read a bar graph fairly",
+   "accent": "mint",
+   "targets": "c6-maths-ch04-t03-m-width-ok",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "row",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Read a bar graph fairly"
+      },
+      {
+       "id": "intro",
+       "type": "label",
+       "text": "Height shows value",
+       "x": 120,
+       "y": 300,
+       "color": "mint"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "graphTitle",
+       "type": "title",
+       "text": "Runs scored"
+      },
+      {
+       "id": "axis",
+       "type": "axis",
+       "min": 0,
+       "max": 40,
+       "step": 5,
+       "unit": "runs",
+       "scale": "linear",
+       "y": 500
+      },
+      {
+       "id": "runbars",
+       "type": "bars",
+       "values": [
+        25,
+        40,
+        15,
+        35
+       ],
+       "labels": [
+        "Anu",
+        "Bilal",
+        "Chinu",
+        "Dev"
+       ],
+       "unit": "runs"
+      },
+      {
+       "id": "scaleLabel",
+       "type": "label",
+       "text": "1 unit = 5 runs",
+       "x": 620,
+       "y": 180,
+       "color": "ion"
+      },
+      {
+       "id": "barAnu",
+       "type": "bar",
+       "parts": 5,
+       "shaded": 5,
+       "x": 100,
+       "y": 450,
+       "w": 220,
+       "text": "Anu 25"
+      },
+      {
+       "id": "barBilal",
+       "type": "bar",
+       "parts": 8,
+       "shaded": 8,
+       "x": 300,
+       "y": 450,
+       "w": 220,
+       "text": "Bilal 40"
+      },
+      {
+       "id": "barChinu",
+       "type": "bar",
+       "parts": 3,
+       "shaded": 3,
+       "x": 500,
+       "y": 450,
+       "w": 220,
+       "text": "Chinu 15"
+      },
+      {
+       "id": "barDev",
+       "type": "bar",
+       "parts": 7,
+       "shaded": 7,
+       "x": 700,
+       "y": 450,
+       "w": 220,
+       "text": "Dev 35"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "split",
+     "els": [
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Wider bars are fine if the value is bigger"
+      },
+      {
+       "id": "fair",
+       "type": "label",
+       "text": "Same width, equal gaps",
+       "x": 560,
+       "y": 240,
+       "color": "mint"
+      },
+      {
+       "id": "wrong",
+       "type": "bar",
+       "parts": 4,
+       "shaded": 4,
+       "x": 120,
+       "y": 430,
+       "w": 360,
+       "text": "unfair width"
+      },
+      {
+       "id": "right",
+       "type": "bar",
+       "parts": 4,
+       "shaded": 4,
+       "x": 600,
+       "y": 430,
+       "w": 220,
+       "text": "fair width"
+      },
+      {
+       "id": "zero",
+       "type": "label",
+       "text": "Axis starts at 0",
+       "x": 560,
+       "y": 330,
+       "color": "ion"
+      },
+      {
+       "id": "zeroAxis",
+       "type": "axis",
+       "min": 0,
+       "max": 40,
+       "step": 10,
+       "unit": "runs",
+       "scale": "linear",
+       "y": 540
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "column",
+     "els": [
+      {
+       "id": "checkTitle",
+       "type": "title",
+       "text": "Choose a suitable scale"
+      },
+      {
+       "id": "scale5",
+       "type": "label",
+       "text": "1 unit = 5 runs",
+       "x": 180,
+       "y": 260,
+       "color": "mint"
+      },
+      {
+       "id": "scale10",
+       "type": "label",
+       "text": "1 unit = 10 runs",
+       "x": 180,
+       "y": 350,
+       "color": "amber"
+      },
+      {
+       "id": "scale2",
+       "type": "label",
+       "text": "1 unit = 2 runs",
+       "x": 180,
+       "y": 440,
+       "color": "volt"
+      },
+      {
+       "id": "checkHint",
+       "type": "label",
+       "text": "Biggest value: 40",
+       "x": 600,
+       "y": 300,
+       "color": "ion"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "A bar graph makes comparisons quick. The height of each bar shows its value on the axis.",
+    "L2": "Let us use runs scored by four batters: 25, 40, 15 and 35.",
+    "L3": "The biggest value is 40, so choose a scale of 1 unit equals 5 runs. Then 40 needs 8 units.",
+    "L4": "Start the value axis at zero and mark 0, 5, 10, and so on up to 40.",
+    "L5": "The bar heights are 5, 8, 3 and 7 units. Read each height against the scale, not by counting squares alone.",
+    "L6": "Here is a myth: wider bars are fine if the value is bigger. Not true—bars must have the same width and equal gaps.",
+    "L7": "A fair graph uses a clear title and labels, a suitable scale, and heights that match the values. Now choose the scale that fits."
+   },
+   "narration": {
+    "L1": {
+     "text": "A bar graph makes comparisons quick. The height of each bar shows its value on the axis.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "Let us use runs scored by four batters: 25, 40, 15 and 35.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "The biggest value is 40, so choose a scale of 1 unit equals 5 runs. Then 40 needs 8 units.",
+     "dur": 10,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "Start the value axis at zero and mark 0, 5, 10, and so on up to 40.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "The bar heights are 5, 8, 3 and 7 units. Read each height against the scale, not by counting squares alone.",
+     "dur": 10,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Here is a myth: wider bars are fine if the value is bigger. Not true—bars must have the same width and equal gaps.",
+     "dur": 10,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "A fair graph uses a clear title and labels, a suitable scale, and heights that match the values. Now choose the scale that fits.",
+     "dur": 9,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "title"
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 1,
+       "target": "intro"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "graphTitle"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 1,
+       "target": "runbars"
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "barAnu",
+        "barBilal",
+        "barChinu",
+        "barDev"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "scaleLabel"
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 1.2,
+       "target": "barBilal"
+      },
+      {
+       "at": 2,
+       "do": "count",
+       "dur": 1,
+       "target": "barBilal",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "axis"
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 1,
+       "target": "axis",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1.5,
+       "target": [
+        "barAnu",
+        "barBilal",
+        "barChinu",
+        "barDev"
+       ]
+      },
+      {
+       "at": 2,
+       "do": "focus",
+       "dur": 1,
+       "target": "scaleLabel"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.5,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      },
+      {
+       "at": 1,
+       "do": "bust",
+       "dur": 1.2,
+       "target": "myth"
+      },
+      {
+       "at": 2.5,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "fair",
+        "wrong",
+        "right"
+       ]
+      },
+      {
+       "at": 4,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "zero",
+        "zeroAxis"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "checkTitle"
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "scale5",
+        "scale10",
+        "scale2",
+        "checkHint"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which scale makes the biggest value fit in a graph 10 units tall?",
+    "options": [
+     "scale5",
+     "scale10",
+     "scale2"
+    ],
+    "answer": "scale5",
+    "src": "c6-maths-ch04-t03-i03"
+   }
+  },
+  "repairs": [
+   "arrow:ends"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 65
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch04-t03-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "axis",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        110,
+        420
+       ],
+       "to": [
+        110,
+        70
+       ]
+      },
+      {
+       "id": "base",
+       "op": "line",
+       "startMs": 500,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        110,
+        420
+       ],
+       "to": [
+        730,
+        420
+       ]
+      },
+      {
+       "id": "bar1",
+       "op": "rect",
+       "startMs": 1500,
+       "endMs": 2400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        180,
+        250
+       ],
+       "w": 75,
+       "h": 170,
+       "fill": "accent"
+      },
+      {
+       "id": "bar2",
+       "op": "rect",
+       "startMs": 2200,
+       "endMs": 3100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        320,
+        150
+       ],
+       "w": 75,
+       "h": 270,
+       "fill": "accent"
+      },
+      {
+       "id": "bar3",
+       "op": "rect",
+       "startMs": 2900,
+       "endMs": 3800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        460,
+        310
+       ],
+       "w": 75,
+       "h": 110,
+       "fill": "accent"
+      },
+      {
+       "id": "bar4",
+       "op": "rect",
+       "startMs": 3600,
+       "endMs": 4500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        600,
+        190
+       ],
+       "w": 75,
+       "h": 230,
+       "fill": "accent"
+      },
+      {
+       "id": "title",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5500,
+       "ink": "chalk",
+       "at": [
+        400,
+        45
+       ],
+       "text": "bar graph",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "value",
+       "op": "label",
+       "startMs": 5600,
+       "endMs": 6400,
+       "ink": "chalk",
+       "at": [
+        65,
+        230
+       ],
+       "text": "value",
+       "to": [
+        110,
+        230
+       ]
+      },
+      {
+       "id": "compare",
+       "op": "text",
+       "startMs": 6500,
+       "endMs": 7300,
+       "ink": "chalk",
+       "at": [
+        400,
+        470
+       ],
+       "text": "comparisons",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch04-t03-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "anu",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "chalk",
+       "at": [
+        217,
+        440
+       ],
+       "text": "25",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "bilal",
+       "op": "text",
+       "startMs": 450,
+       "endMs": 950,
+       "ink": "chalk",
+       "at": [
+        357,
+        440
+       ],
+       "text": "40",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "chinu",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1400,
+       "ink": "chalk",
+       "at": [
+        497,
+        440
+       ],
+       "text": "15",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "dev",
+       "op": "text",
+       "startMs": 1350,
+       "endMs": 1850,
+       "ink": "chalk",
+       "at": [
+        637,
+        440
+       ],
+       "text": "35",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "runs",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 2700,
+       "ink": "chalk",
+       "at": [
+        400,
+        95
+       ],
+       "text": "runs",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "p1",
+       "op": "label",
+       "startMs": 2800,
+       "endMs": 3300,
+       "ink": "mark",
+       "at": [
+        217,
+        235
+       ],
+       "text": "25",
+       "to": [
+        217,
+        250
+       ]
+      },
+      {
+       "id": "p2",
+       "op": "label",
+       "startMs": 3300,
+       "endMs": 3800,
+       "ink": "mark",
+       "at": [
+        357,
+        135
+       ],
+       "text": "40",
+       "to": [
+        357,
+        150
+       ]
+      },
+      {
+       "id": "p3",
+       "op": "label",
+       "startMs": 3800,
+       "endMs": 4300,
+       "ink": "mark",
+       "at": [
+        497,
+        295
+       ],
+       "text": "15",
+       "to": [
+        497,
+        310
+       ]
+      },
+      {
+       "id": "p4",
+       "op": "label",
+       "startMs": 4300,
+       "endMs": 4800,
+       "ink": "mark",
+       "at": [
+        637,
+        175
+       ],
+       "text": "35",
+       "to": [
+        637,
+        190
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch04-t03-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 9111,
+     "ops": [
+      {
+       "id": "scaleeq",
+       "op": "numwork",
+       "startMs": 1300,
+       "endMs": 3000,
+       "ink": "chalk",
+       "at": [
+        180,
+        110
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "1",
+         "unit",
+         "=",
+         "5",
+         "runs"
+        ]
+       ]
+      },
+      {
+       "id": "eight",
+       "op": "numwork",
+       "startMs": 3000,
+       "endMs": 4800,
+       "ink": "chalk",
+       "at": [
+        180,
+        180
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "40",
+         "÷",
+         "5",
+         "=",
+         "8",
+         "units"
+        ]
+       ]
+      },
+      {
+       "id": "scale",
+       "op": "label",
+       "startMs": 4900,
+       "endMs": 5600,
+       "ink": "mark",
+       "at": [
+        470,
+        115
+       ],
+       "text": "scale",
+       "to": [
+        400,
+        130
+       ]
+      },
+      {
+       "id": "u5",
+       "op": "label",
+       "startMs": 5700,
+       "endMs": 6300,
+       "ink": "mark",
+       "at": [
+        520,
+        150
+       ],
+       "text": "5",
+       "to": [
+        520,
+        250
+       ]
+      },
+      {
+       "id": "u8",
+       "op": "label",
+       "startMs": 6400,
+       "endMs": 7000,
+       "ink": "mark",
+       "at": [
+        570,
+        150
+       ],
+       "text": "8",
+       "to": [
+        357,
+        150
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch04-t03-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "valueaxis",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "chalk",
+       "at": [
+        55,
+        70
+       ],
+       "text": "value",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "ticks",
+       "op": "line",
+       "startMs": 500,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        110,
+        420
+       ],
+       "to": [
+        110,
+        100
+       ]
+      },
+      {
+       "id": "tick0",
+       "op": "line",
+       "startMs": 1100,
+       "endMs": 1350,
+       "ink": "chalk",
+       "from": [
+        103,
+        420
+       ],
+       "to": [
+        117,
+        420
+       ]
+      },
+      {
+       "id": "tick5",
+       "op": "line",
+       "startMs": 1350,
+       "endMs": 1600,
+       "ink": "chalk",
+       "from": [
+        103,
+        380
+       ],
+       "to": [
+        117,
+        380
+       ]
+      },
+      {
+       "id": "tick10",
+       "op": "line",
+       "startMs": 1600,
+       "endMs": 1850,
+       "ink": "chalk",
+       "from": [
+        103,
+        340
+       ],
+       "to": [
+        117,
+        340
+       ]
+      },
+      {
+       "id": "tick15",
+       "op": "line",
+       "startMs": 1850,
+       "endMs": 2100,
+       "ink": "chalk",
+       "from": [
+        103,
+        300
+       ],
+       "to": [
+        117,
+        300
+       ]
+      },
+      {
+       "id": "tick20",
+       "op": "line",
+       "startMs": 2100,
+       "endMs": 2350,
+       "ink": "chalk",
+       "from": [
+        103,
+        260
+       ],
+       "to": [
+        117,
+        260
+       ]
+      },
+      {
+       "id": "tick25",
+       "op": "line",
+       "startMs": 2350,
+       "endMs": 2600,
+       "ink": "chalk",
+       "from": [
+        103,
+        220
+       ],
+       "to": [
+        117,
+        220
+       ]
+      },
+      {
+       "id": "tick30",
+       "op": "line",
+       "startMs": 2600,
+       "endMs": 2850,
+       "ink": "chalk",
+       "from": [
+        103,
+        180
+       ],
+       "to": [
+        117,
+        180
+       ]
+      },
+      {
+       "id": "tick35",
+       "op": "line",
+       "startMs": 2850,
+       "endMs": 3100,
+       "ink": "chalk",
+       "from": [
+        103,
+        140
+       ],
+       "to": [
+        117,
+        140
+       ]
+      },
+      {
+       "id": "tick40",
+       "op": "line",
+       "startMs": 3100,
+       "endMs": 3350,
+       "ink": "chalk",
+       "from": [
+        103,
+        100
+       ],
+       "to": [
+        117,
+        100
+       ]
+      },
+      {
+       "id": "axisnums",
+       "op": "numwork",
+       "startMs": 3500,
+       "endMs": 5200,
+       "ink": "chalk",
+       "at": [
+        35,
+        92
+       ],
+       "layout": "number_line",
+       "rows": [
+        [
+         "40",
+         "35",
+         "30",
+         "25",
+         "20",
+         "15",
+         "10",
+         "5",
+         "0"
+        ]
+       ],
+       "range": [
+        35,
+        575
+       ]
+      },
+      {
+       "id": "zero",
+       "op": "highlight",
+       "startMs": 5600,
+       "endMs": 6500,
+       "ink": "good",
+       "weight": 2,
+       "target": "axisnums",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch04-t03-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 9536,
+     "ops": [
+      {
+       "id": "h25",
+       "op": "label",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "mark",
+       "at": [
+        255,
+        210
+       ],
+       "text": "5",
+       "to": [
+        217,
+        220
+       ]
+      },
+      {
+       "id": "h40",
+       "op": "label",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "mark",
+       "at": [
+        395,
+        100
+       ],
+       "text": "8",
+       "to": [
+        357,
+        150
+       ]
+      },
+      {
+       "id": "h15",
+       "op": "label",
+       "startMs": 1400,
+       "endMs": 2100,
+       "ink": "mark",
+       "at": [
+        535,
+        290
+       ],
+       "text": "3",
+       "to": [
+        497,
+        300
+       ]
+      },
+      {
+       "id": "h35",
+       "op": "label",
+       "startMs": 2100,
+       "endMs": 2800,
+       "ink": "mark",
+       "at": [
+        675,
+        170
+       ],
+       "text": "7",
+       "to": [
+        637,
+        190
+       ]
+      },
+      {
+       "id": "calc1",
+       "op": "numwork",
+       "startMs": 3000,
+       "endMs": 4200,
+       "ink": "chalk",
+       "at": [
+        180,
+        75
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "25",
+         "÷",
+         "5",
+         "=",
+         "5"
+        ]
+       ]
+      },
+      {
+       "id": "calc2",
+       "op": "numwork",
+       "startMs": 4200,
+       "endMs": 5400,
+       "ink": "chalk",
+       "at": [
+        360,
+        75
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "40",
+         "÷",
+         "5",
+         "=",
+         "8"
+        ]
+       ]
+      },
+      {
+       "id": "calc3",
+       "op": "numwork",
+       "startMs": 5400,
+       "endMs": 6600,
+       "ink": "chalk",
+       "at": [
+        180,
+        175
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "15",
+         "÷",
+         "5",
+         "=",
+         "3"
+        ]
+       ]
+      },
+      {
+       "id": "calc4",
+       "op": "numwork",
+       "startMs": 6600,
+       "endMs": 7800,
+       "ink": "chalk",
+       "at": [
+        360,
+        175
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "35",
+         "÷",
+         "5",
+         "=",
+         "7"
+        ]
+       ]
+      },
+      {
+       "id": "against",
+       "op": "label",
+       "startMs": 8000,
+       "endMs": 8700,
+       "ink": "good",
+       "at": [
+        570,
+        75
+       ],
+       "text": "scale",
+       "to": [
+        110,
+        200
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch04-t03-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 10387,
+     "ops": [
+      {
+       "id": "myth",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "at": [
+        400,
+        55
+       ],
+       "text": "myth",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "wide",
+       "op": "rect",
+       "startMs": 900,
+       "endMs": 1700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        170,
+        270
+       ],
+       "w": 150,
+       "h": 150,
+       "fill": "soft"
+      },
+      {
+       "id": "bad",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2300,
+       "ink": "accent",
+       "at": [
+        245,
+        245
+       ],
+       "text": "wider",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "cross",
+       "op": "line",
+       "startMs": 2400,
+       "endMs": 3000,
+       "ink": "accent",
+       "weight": 3,
+       "from": [
+        150,
+        250
+       ],
+       "to": [
+        340,
+        430
+       ]
+      },
+      {
+       "id": "equal1",
+       "op": "rect",
+       "startMs": 3300,
+       "endMs": 3900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        420,
+        300
+       ],
+       "w": 70,
+       "h": 120,
+       "fill": "good"
+      },
+      {
+       "id": "equal2",
+       "op": "rect",
+       "startMs": 3900,
+       "endMs": 4500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        530,
+        260
+       ],
+       "w": 70,
+       "h": 160,
+       "fill": "good"
+      },
+      {
+       "id": "equal3",
+       "op": "rect",
+       "startMs": 4500,
+       "endMs": 5100,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        640,
+        280
+       ],
+       "w": 70,
+       "h": 140,
+       "fill": "good"
+      },
+      {
+       "id": "same",
+       "op": "label",
+       "startMs": 5400,
+       "endMs": 6200,
+       "ink": "good",
+       "at": [
+        505,
+        235
+       ],
+       "text": "same width",
+       "to": [
+        455,
+        300
+       ]
+      },
+      {
+       "id": "gaps",
+       "op": "label",
+       "startMs": 6500,
+       "endMs": 7300,
+       "ink": "good",
+       "at": [
+        585,
+        450
+       ],
+       "text": "equal gaps",
+       "to": [
+        605,
+        420
+       ]
+      },
+      {
+       "id": "true",
+       "op": "text",
+       "startMs": 7600,
+       "endMs": 8300,
+       "ink": "good",
+       "at": [
+        400,
+        480
+       ],
+       "text": "not true",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch04-t03-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 10813,
+     "ops": [
+      {
+       "id": "clear",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "at": [
+        400,
+        55
+       ],
+       "text": "bar graph",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "labels",
+       "op": "label",
+       "startMs": 900,
+       "endMs": 1600,
+       "ink": "chalk",
+       "at": [
+        55,
+        230
+       ],
+       "text": "labels",
+       "to": [
+        110,
+        230
+       ]
+      },
+      {
+       "id": "scaleok",
+       "op": "label",
+       "startMs": 1800,
+       "endMs": 2500,
+       "ink": "chalk",
+       "at": [
+        510,
+        80
+       ],
+       "text": "scale",
+       "to": [
+        110,
+        200
+       ]
+      },
+      {
+       "id": "titleok",
+       "op": "label",
+       "startMs": 2600,
+       "endMs": 3300,
+       "ink": "chalk",
+       "at": [
+        400,
+        80
+       ],
+       "text": "title",
+       "to": [
+        400,
+        55
+       ]
+      },
+      {
+       "id": "fit",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5500,
+       "ink": "good",
+       "at": [
+        400,
+        480
+       ],
+       "text": "choose scale",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "option1",
+       "op": "numwork",
+       "startMs": 5900,
+       "endMs": 7300,
+       "ink": "chalk",
+       "at": [
+        180,
+        120
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "1",
+         "unit",
+         "=",
+         "5",
+         "runs"
+        ]
+       ]
+      },
+      {
+       "id": "option2",
+       "op": "numwork",
+       "startMs": 7300,
+       "endMs": 8700,
+       "ink": "chalk",
+       "at": [
+        180,
+        200
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "1",
+         "unit",
+         "=",
+         "10",
+         "runs"
+        ]
+       ]
+      },
+      {
+       "id": "fitcheck",
+       "op": "label",
+       "startMs": 8900,
+       "endMs": 9600,
+       "ink": "mark",
+       "at": [
+        500,
+        180
+       ],
+       "text": "40",
+       "to": [
+        357,
+        150
+       ]
+      },
+      {
+       "id": "final",
+       "op": "highlight",
+       "startMs": 9800,
+       "endMs": 10400,
+       "ink": "good",
+       "target": "scaleok",
+       "style": "underline"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [],
+ "check": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "The round names *c6-maths-ch04-t03-m-count-units* (the misconception about ignoring scale when reading bar heights) but the game's data—scaleStep=2, theme=traffic, etc.—does not contain any item or scenario that clearly presents that misconception to be practiced; the connection is not factually wrong but is insufficiently realized to test the named misconception with an actual question from the KIT. This does not contradict the KIT but is a pedagogical mismatch.",
+    "severity": "high"
+   }
+  ],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

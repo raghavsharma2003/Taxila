@@ -1,0 +1,1708 @@
+{
+ "topicId": "c6-hindi-ch01-t01",
+ "title": "मातृभूमि",
+ "chapter": "मातृभूमि",
+ "subject": "hindi",
+ "class": 6,
+ "topicType": "T1",
+ "plan": {
+  "game": "beat-line@1",
+  "hint": "beat and rhyme rounds (Hindi: matra round on a doha/chaupai line)"
+ },
+ "game": {
+  "archetype": "beat-line@1",
+  "spec": {
+   "archetype": "beat-line@1",
+   "skills": [
+    "c6-hindi-ch01-t01"
+   ],
+   "lang": "hi",
+   "strings": {
+    "round": "दौर",
+    "onBeat": "ताल पर",
+    "combo": "लगातार ताल",
+    "tap": "ताल पर थपकी दो",
+    "catch": "तुक पकड़ो",
+    "mark": "ह्रस्व या दीर्घ?",
+    "short": "ह्रस्व",
+    "long": "दीर्घ",
+    "practice": "अभ्यास पंक्ति",
+    "runDone": "कविता पूरी हुई",
+    "perfect": "सही ताल",
+    "early": "जल्दी",
+    "late": "देर से",
+    "meter": "मात्रा"
+   },
+   "title": "मातृभूमि की ताल",
+   "bpm": 78,
+   "lines": [
+    {
+     "text": "चमचम चमके चाँदी-सा चंदा",
+     "beats": [
+      0,
+      2
+     ],
+     "own": true
+    },
+    {
+     "text": "नदी किनारे मेरा गाँव",
+     "beats": [
+      0,
+      3
+     ],
+     "own": true
+    },
+    {
+     "text": "नीम की ठंडी-ठंडी छाँव",
+     "beats": [
+      0,
+      3
+     ],
+     "own": true
+    },
+    {
+     "text": "खेतों में सरसों लहराए",
+     "beats": [
+      0,
+      3
+     ],
+     "own": true
+    }
+   ],
+   "rounds": [
+    {
+     "mode": "beat",
+     "title": "ताल पर बोलो",
+     "sub": "हर पंक्ति के अंत में ठहरो",
+     "lines": [
+      0,
+      1,
+      2
+     ]
+    },
+    {
+     "mode": "rhyme",
+     "title": "तुक पकड़ो",
+     "sub": "सही ध्वनि वाला शब्द चुनो",
+     "items": [
+      {
+       "cue": "‘नदी किनारे मेरा गाँव, नीम की ठंडी-ठंडी ___’",
+       "options": [
+        "छाँव",
+        "भूमिका",
+        "आकाश"
+       ],
+       "answer": "छाँव",
+       "src": "c6-hindi-ch01-t01-i09"
+      },
+      {
+       "cue": "‘चमचम चमके चाँदी-सा ___’",
+       "options": [
+        "चंदा",
+        "चंदन",
+        "धरम"
+       ],
+       "answer": "चंदा",
+       "src": "c6-hindi-ch01-t01-i07"
+      },
+      {
+       "cue": "‘खेतों में सरसों ___’",
+       "options": [
+        "लहराए",
+        "लहराती",
+        "लहर"
+       ],
+       "answer": "लहराए",
+       "src": "c6-hindi-ch01-t01-i09"
+      }
+     ]
+    },
+    {
+     "mode": "matra",
+     "title": "मात्रा पहचानो",
+     "sub": "पंक्ति भरते समय मात्रा चिह्नित करो",
+     "lines": [
+      0,
+      1
+     ]
+    }
+   ]
+  },
+  "repairs": [
+   "targets"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c6-hindi-ch01-t01"
+   ],
+   "lang": "hi",
+   "strings": {
+    "again": "फिर दिखाएँ",
+    "yourTurn": "अब आपकी बारी",
+    "check": "जाँचें",
+    "right": "सही",
+    "look": "फिर देखें",
+    "myth": "भ्रम",
+    "busted": "गलत",
+    "order": "क्रम में छुएँ"
+   },
+   "title": "मातृभूमि का भाव",
+   "accent": "amber",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "row",
+     "els": [
+      {
+       "id": "ttl",
+       "type": "title",
+       "text": "मातृभूमि का भाव"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "‘मात्रभूमि’ ही सही शब्द है"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "land",
+       "type": "node",
+       "text": "भूमि",
+       "sub": "धरती",
+       "glyph": "earth",
+       "color": "mint"
+      },
+      {
+       "id": "mother",
+       "type": "node",
+       "text": "मातृ",
+       "sub": "माता का",
+       "glyph": "person",
+       "color": "amber"
+      },
+      {
+       "id": "word",
+       "type": "node",
+       "text": "मातृभूमि",
+       "sub": "माँ जैसी धरती",
+       "glyph": "map",
+       "color": "sun"
+      },
+      {
+       "id": "join1",
+       "type": "arrow",
+       "from": "mother",
+       "to": "word",
+       "text": "जोड़ो"
+      },
+      {
+       "id": "join2",
+       "type": "arrow",
+       "from": "land",
+       "to": "word",
+       "text": "जोड़ो"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "himalaya",
+       "type": "node",
+       "text": "हिमालय",
+       "sub": "पहाड़",
+       "glyph": "mountain",
+       "color": "sci"
+      },
+      {
+       "id": "rivers",
+       "type": "node",
+       "text": "नदियाँ",
+       "sub": "जल",
+       "glyph": "river",
+       "color": "ion"
+      },
+      {
+       "id": "sea",
+       "type": "node",
+       "text": "समुद्र",
+       "sub": "जलराशि",
+       "glyph": "wave",
+       "color": "sci"
+      },
+      {
+       "id": "fields",
+       "type": "node",
+       "text": "हरे खेत",
+       "sub": "अन्न",
+       "glyph": "wheat",
+       "color": "mint"
+      },
+      {
+       "id": "pride",
+       "type": "label",
+       "text": "प्रेम, गर्व और सम्मान",
+       "color": "amber"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "row",
+     "els": [
+      {
+       "id": "prompt",
+       "type": "title",
+       "text": "अपनी समझ जाँचो"
+      },
+      {
+       "id": "love",
+       "type": "node",
+       "text": "प्रेम और गर्व",
+       "sub": "मुख्य भाव",
+       "color": "amber"
+      },
+      {
+       "id": "birth",
+       "type": "node",
+       "text": "केवल जन्मस्थान",
+       "sub": "गलत विचार",
+       "glyph": "house",
+       "color": "sci"
+      },
+      {
+       "id": "work",
+       "type": "node",
+       "text": "काम करने की जगह",
+       "sub": "अलग शब्द",
+       "glyph": "school",
+       "color": "ion"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "‘मातृभूमि’ कविता अपने देश, यानी भारत, के प्रति प्रेम और गर्व की बात करती है।",
+    "L2": "एक भ्रम है कि सही शब्द ‘मात्रभूमि’ है। यह सही नहीं है।",
+    "L3": "सही शब्द ‘मातृभूमि’ है: मातृ में त के नीचे ऋ की मात्रा ‘ृ’ लगती है।",
+    "L4": "मातृ का अर्थ ‘माता का’ और भूमि का अर्थ ‘धरती’ है। इसलिए मातृभूमि माँ जैसी धरती है।",
+    "L5": "देश को माँ जैसा इसलिए मानते हैं, क्योंकि वह हमें अन्न, पानी, घर और प्यार देकर पालती है।",
+    "L6": "कविता हिमालय, नदियों, समुद्र और हरे खेतों जैसी प्रकृति की सुंदरता का गुणगान करती है।",
+    "L7": "इसे पढ़ते समय हर पंक्ति के अंत में रुकें और गर्व भरी, स्थिर आवाज़ रखें।",
+    "L8": "अब अपनी समझ जाँचो और कविता का मुख्य भाव चुनो।"
+   },
+   "narration": {
+    "L1": {
+     "text": "‘मातृभूमि’ कविता अपने देश, यानी भारत, के प्रति प्रेम और गर्व की बात करती है।",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": [
+      [
+       2.3,
+       0.3
+      ]
+     ]
+    },
+    "L2": {
+     "text": "एक भ्रम है कि सही शब्द ‘मात्रभूमि’ है। यह सही नहीं है।",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": [
+      [
+       1.8,
+       0.3
+      ]
+     ]
+    },
+    "L3": {
+     "text": "सही शब्द ‘मातृभूमि’ है: मातृ में त के नीचे ऋ की मात्रा ‘ृ’ लगती है।",
+     "dur": 4.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": [
+      [
+       2.4,
+       0.3
+      ]
+     ]
+    },
+    "L4": {
+     "text": "मातृ का अर्थ ‘माता का’ और भूमि का अर्थ ‘धरती’ है। इसलिए मातृभूमि माँ जैसी धरती है।",
+     "dur": 5.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": [
+      [
+       2.3,
+       0.3
+      ]
+     ]
+    },
+    "L5": {
+     "text": "देश को माँ जैसा इसलिए मानते हैं, क्योंकि वह हमें अन्न, पानी, घर और प्यार देकर पालती है।",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": [
+      [
+       2.8,
+       0.3
+      ]
+     ]
+    },
+    "L6": {
+     "text": "कविता हिमालय, नदियों, समुद्र और हरे खेतों जैसी प्रकृति की सुंदरता का गुणगान करती है।",
+     "dur": 4.8,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": [
+      [
+       2.5,
+       0.3
+      ]
+     ]
+    },
+    "L7": {
+     "text": "इसे पढ़ते समय हर पंक्ति के अंत में रुकें और गर्व भरी, स्थिर आवाज़ रखें।",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": [
+      [
+       2.2,
+       0.3
+      ]
+     ]
+    },
+    "L8": {
+     "text": "अब अपनी समझ जाँचो और कविता का मुख्य भाव चुनो।",
+     "dur": 2.8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "ttl"
+      },
+      {
+       "at": 0.5,
+       "do": "highlight",
+       "dur": 1,
+       "target": "ttl"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      },
+      {
+       "at": 1,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "mother"
+      },
+      {
+       "at": 0.5,
+       "do": "highlight",
+       "dur": 1.2,
+       "target": "mother"
+      },
+      {
+       "at": 1.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": "word"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "land"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "join1",
+        "join2"
+       ]
+      },
+      {
+       "at": 1.2,
+       "do": "flow",
+       "dur": 0.7,
+       "target": [
+        "join1",
+        "join2"
+       ],
+       "to": 1
+      },
+      {
+       "at": 2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "word"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "fields"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.6,
+       "target": "rivers"
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 1,
+       "target": "fields"
+      },
+      {
+       "at": 2,
+       "do": "show",
+       "dur": 0.7,
+       "target": "pride"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "himalaya",
+        "sea"
+       ]
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.6,
+       "target": "rivers"
+      },
+      {
+       "at": 1.2,
+       "do": "highlight",
+       "dur": 1.3,
+       "target": [
+        "himalaya",
+        "rivers",
+        "sea",
+        "fields"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "focus",
+       "dur": 1,
+       "target": "pride"
+      },
+      {
+       "at": 1.2,
+       "do": "camera",
+       "dur": 1.5,
+       "zoom": 1.05
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "prompt",
+        "love",
+        "birth",
+        "work"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "कविता का मुख्य भाव कौन-सा है?",
+    "options": [
+     "love",
+     "birth",
+     "work"
+    ],
+    "answer": "love",
+    "src": "c6-hindi-ch01-t01-i01"
+   }
+  },
+  "repairs": [
+   "glyph",
+   "targets"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 38
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-hindi-ch01-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "india",
+       "op": "polygon",
+       "startMs": 300,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         390,
+         90
+        ],
+        [
+         450,
+         110
+        ],
+        [
+         475,
+         170
+        ],
+        [
+         455,
+         235
+        ],
+        [
+         420,
+         300
+        ],
+        [
+         390,
+         370
+        ],
+        [
+         350,
+         315
+        ],
+        [
+         325,
+         245
+        ],
+        [
+         340,
+         175
+        ]
+       ]
+      },
+      {
+       "id": "heart",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        560,
+        175
+       ],
+       "r": 48
+      },
+      {
+       "id": "a1",
+       "op": "arrow",
+       "startMs": 1600,
+       "endMs": 2500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        520,
+        210
+       ],
+       "to": [
+        460,
+        250
+       ]
+      },
+      {
+       "id": "t1",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "मातृभूमि",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "t2",
+       "op": "text",
+       "startMs": 2800,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        430
+       ],
+       "text": "भारत",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "t3",
+       "op": "text",
+       "startMs": 3600,
+       "endMs": 4400,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        555,
+        270
+       ],
+       "text": "प्रेम",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "t4",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5300,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        555,
+        330
+       ],
+       "text": "गर्व",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-hindi-ch01-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "q",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "soft",
+       "weight": 2,
+       "at": [
+        120,
+        100
+       ],
+       "text": "भ्रम",
+       "size": "l"
+      },
+      {
+       "id": "wrongword",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        180
+       ],
+       "text": "मात्रभूमि",
+       "size": "l"
+      },
+      {
+       "id": "cross",
+       "op": "line",
+       "startMs": 1600,
+       "endMs": 2300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        110,
+        165
+       ],
+       "to": [
+        310,
+        205
+       ]
+      },
+      {
+       "id": "rightword",
+       "op": "text",
+       "startMs": 2400,
+       "endMs": 3400,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        470,
+        180
+       ],
+       "text": "मातृभूमि",
+       "size": "l"
+      },
+      {
+       "id": "check",
+       "op": "circle",
+       "startMs": 3400,
+       "endMs": 4200,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        590,
+        175
+       ],
+       "r": 75
+      },
+      {
+       "id": "not",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 5200,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        280,
+        290
+       ],
+       "text": "सही नहीं",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-hindi-ch01-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "word",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        80
+       ],
+       "text": "मातृभूमि",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "split",
+       "op": "numwork",
+       "startMs": 900,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        170,
+        190
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "मातृ",
+         "=",
+         "मा",
+         "+",
+         "त",
+         "+",
+         "ृ"
+        ]
+       ]
+      },
+      {
+       "id": "meaning",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3900,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        290
+       ],
+       "text": "ऋ की मात्रा",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "mark",
+       "op": "circle",
+       "startMs": 4000,
+       "endMs": 4700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        470,
+        205
+       ],
+       "r": 22
+      },
+      {
+       "id": "arrow",
+       "op": "arrow",
+       "startMs": 4700,
+       "endMs": 5400,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        470,
+        230
+       ],
+       "to": [
+        470,
+        275
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-hindi-ch01-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "parts",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        130,
+        90
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "मातृ",
+         "+",
+         "भूमि",
+         "=",
+         "मातृभू"
+        ]
+       ]
+      },
+      {
+       "id": "mmeaning",
+       "op": "text",
+       "startMs": 1600,
+       "endMs": 2500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        170,
+        190
+       ],
+       "text": "माता का",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "bmeaning",
+       "op": "text",
+       "startMs": 2600,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        190
+       ],
+       "text": "धरती",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "earth",
+       "op": "ellipse",
+       "startMs": 3600,
+       "endMs": 4500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        390,
+        350
+       ],
+       "rx": 120,
+       "ry": 55
+      },
+      {
+       "id": "arrow",
+       "op": "arrow",
+       "startMs": 4500,
+       "endMs": 5200,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        390,
+        290
+       ],
+       "to": [
+        390,
+        245
+       ]
+      },
+      {
+       "id": "mother",
+       "op": "text",
+       "startMs": 5400,
+       "endMs": 6800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        390,
+        430
+       ],
+       "text": "माँ जैसी धरती",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-hindi-ch01-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "mother",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        145
+       ],
+       "r": 55
+      },
+      {
+       "id": "body",
+       "op": "stroke",
+       "startMs": 800,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         400,
+         200
+        ],
+        [
+         350,
+         300
+        ],
+        [
+         450,
+         300
+        ],
+        [
+         400,
+         200
+        ]
+       ]
+      },
+      {
+       "id": "food",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        150,
+        380
+       ],
+       "text": "अन्न",
+       "size": "m"
+      },
+      {
+       "id": "water",
+       "op": "text",
+       "startMs": 2600,
+       "endMs": 3400,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        300,
+        380
+       ],
+       "text": "पानी",
+       "size": "m"
+      },
+      {
+       "id": "home",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4300,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        445,
+        380
+       ],
+       "text": "घर",
+       "size": "m"
+      },
+      {
+       "id": "love",
+       "op": "text",
+       "startMs": 4400,
+       "endMs": 5200,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        570,
+        380
+       ],
+       "text": "प्यार",
+       "size": "m"
+      },
+      {
+       "id": "arrows",
+       "op": "arrow",
+       "startMs": 5300,
+       "endMs": 6000,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        190,
+        350
+       ],
+       "to": [
+        350,
+        270
+       ]
+      },
+      {
+       "id": "arrows2",
+       "op": "arrow",
+       "startMs": 6000,
+       "endMs": 6700,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        610,
+        350
+       ],
+       "to": [
+        450,
+        270
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-hindi-ch01-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "mountain",
+       "op": "polygon",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         70,
+         330
+        ],
+        [
+         160,
+         170
+        ],
+        [
+         250,
+         330
+        ]
+       ]
+      },
+      {
+       "id": "mountain2",
+       "op": "polygon",
+       "startMs": 700,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         150,
+         330
+        ],
+        [
+         260,
+         130
+        ],
+        [
+         370,
+         330
+        ]
+       ]
+      },
+      {
+       "id": "river",
+       "op": "stroke",
+       "startMs": 1500,
+       "endMs": 2400,
+       "ink": "mark",
+       "weight": 2,
+       "points": [
+        [
+         430,
+         150
+        ],
+        [
+         400,
+         210
+        ],
+        [
+         440,
+         270
+        ],
+        [
+         410,
+         330
+        ],
+        [
+         450,
+         390
+        ]
+       ]
+      },
+      {
+       "id": "sea",
+       "op": "ellipse",
+       "startMs": 2400,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        650,
+        340
+       ],
+       "rx": 100,
+       "ry": 38
+      },
+      {
+       "id": "field",
+       "op": "rect",
+       "startMs": 3300,
+       "endMs": 4100,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        500,
+        170
+       ],
+       "w": 170,
+       "h": 80
+      },
+      {
+       "id": "t1",
+       "op": "text",
+       "startMs": 4100,
+       "endMs": 5000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        190,
+        390
+       ],
+       "text": "हिमालय",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "t2",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 5800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        410,
+        120
+       ],
+       "text": "नदियाँ",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "t3",
+       "op": "text",
+       "startMs": 5800,
+       "endMs": 6600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        650,
+        420
+       ],
+       "text": "समुद्र",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-hindi-ch01-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "line1",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        100,
+        120
+       ],
+       "to": [
+        680,
+        120
+       ]
+      },
+      {
+       "id": "line2",
+       "op": "line",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        100,
+        220
+       ],
+       "to": [
+        680,
+        220
+       ]
+      },
+      {
+       "id": "pause1",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2300,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        700,
+        120
+       ],
+       "text": "रुकें",
+       "size": "m"
+      },
+      {
+       "id": "pause2",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 3100,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        700,
+        220
+       ],
+       "text": "रुकें",
+       "size": "m"
+      },
+      {
+       "id": "pride",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 4200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        330
+       ],
+       "text": "गर्व",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "steady",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 5500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        410
+       ],
+       "text": "स्थिर आवाज़",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-hindi-ch01-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "question",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        90
+       ],
+       "text": "समझ",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "box1",
+       "op": "rect",
+       "startMs": 900,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        110,
+        180
+       ],
+       "w": 240,
+       "h": 130,
+       "round": 12
+      },
+      {
+       "id": "box2",
+       "op": "rect",
+       "startMs": 1700,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        450,
+        180
+       ],
+       "w": 240,
+       "h": 130,
+       "round": 12
+      },
+      {
+       "id": "label1",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        230,
+        245
+       ],
+       "text": "मुख्य भाव",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "label2",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        570,
+        245
+       ],
+       "text": "कविता",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "b0:*",
+   "key": "चमचम · चाँदी-सा",
+   "prompt": "stressed words in: चमचम चमके चाँदी-सा चंदा"
+  },
+  {
+   "itemId": "b1:*",
+   "key": "नदी · गाँव",
+   "prompt": "stressed words in: नदी किनारे मेरा गाँव"
+  },
+  {
+   "itemId": "b2:*",
+   "key": "नीम · छाँव",
+   "prompt": "stressed words in: नीम की ठंडी-ठंडी छाँव"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "छाँव",
+   "prompt": "‘नदी किनारे मेरा गाँव, नीम की ठंडी-ठंडी ___’ [छाँव / भूमिका / आकाश]",
+   "src": "c6-hindi-ch01-t01-i09"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "चंदा",
+   "prompt": "‘चमचम चमके चाँदी-सा ___’ [चंदा / चंदन / धरम]",
+   "src": "c6-hindi-ch01-t01-i07"
+  },
+  {
+   "itemId": "r2:2",
+   "key": "लहराए",
+   "prompt": "‘खेतों में सरसों ___’ [लहराए / लहराती / लहर]",
+   "src": "c6-hindi-ch01-t01-i09"
+  },
+  {
+   "itemId": "m0:*",
+   "key": "111111222222",
+   "prompt": "मात्रा: चमचम चमके चाँदी-सा चंदा"
+  },
+  {
+   "itemId": "m1:*",
+   "key": "121222221",
+   "prompt": "मात्रा: नदी किनारे मेरा गाँव"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

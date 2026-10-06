@@ -1,0 +1,1985 @@
+{
+ "topicId": "c4-evs-ch06-t01",
+ "title": "Sleep, play and feelings",
+ "chapter": "Happy and Healthy Living",
+ "subject": "evs",
+ "class": 4,
+ "topicType": "T3",
+ "plan": {
+  "game": "story-rail@1",
+  "hint": "cause mode: sleep, play, feelings and what helps"
+ },
+ "game": {
+  "archetype": "story-rail@1",
+  "spec": {
+   "archetype": "story-rail@1",
+   "skills": [
+    "c4-evs-ch06-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "picked": "coupled",
+    "streak": "streak",
+    "next": "What happens next?",
+    "effect": "What does this lead to?",
+    "who": "Who said this?",
+    "runDone": "Line complete",
+    "order": "your train",
+    "right": "Coupled",
+    "wrong": "Not this one",
+    "coach": "Tap a wagon before the train reaches the fork"
+   },
+   "title": "Sleep, Play and Feelings",
+   "rounds": [
+    {
+     "mode": "sequence",
+     "title": "Plan the evening",
+     "sub": "couple the evening steps",
+     "cards": [
+      {
+       "id": "s1",
+       "text": "Play outside after school"
+      },
+      {
+       "id": "s2",
+       "text": "Do homework",
+       "glyph": "book"
+      },
+      {
+       "id": "s3",
+       "text": "Eat dinner",
+       "glyph": "plate"
+      },
+      {
+       "id": "s4",
+       "text": "Wind down with a story",
+       "glyph": "book"
+      },
+      {
+       "id": "s5",
+       "text": "Go to sleep",
+       "glyph": "moon"
+      }
+     ],
+     "speed": 0.95
+    },
+    {
+     "mode": "cause",
+     "title": "Cause and care",
+     "sub": "match each cause to its effect",
+     "pairs": [
+      {
+       "cause": {
+        "id": "c1",
+        "text": "Feeling sad sometimes",
+        "glyph": "cloud",
+        "src": "c4-evs-ch06-t01-i11"
+       },
+       "effect": {
+        "id": "e1",
+        "text": "Sad feelings are normal",
+        "src": "c4-evs-ch06-t01-i11"
+       }
+      },
+      {
+       "cause": {
+        "id": "c2",
+        "text": "Bright screen before bed",
+        "glyph": "phone",
+        "src": "c4-evs-ch06-t01-i05"
+       },
+       "effect": {
+        "id": "e2",
+        "text": "Falling asleep is harder",
+        "glyph": "moon",
+        "src": "c4-evs-ch06-t01-i05"
+       }
+      },
+      {
+       "cause": {
+        "id": "c3",
+        "text": "Play outside each day",
+        "src": "c4-evs-ch06-t01-i06"
+       },
+       "effect": {
+        "id": "e3",
+        "text": "Body and mind benefit",
+        "glyph": "spark",
+        "src": "c4-evs-ch06-t01-i06"
+       }
+      },
+      {
+       "cause": {
+        "id": "c4",
+        "text": "Talk to someone trusted",
+        "glyph": "person",
+        "src": "c4-evs-ch06-t01-i08"
+       },
+       "effect": {
+        "id": "e4",
+        "text": "Feelings can feel better",
+        "glyph": "sun",
+        "src": "c4-evs-ch06-t01-i08"
+       }
+      }
+     ],
+     "speed": 0.8,
+     "targets": "c4-evs-ch06-t01-m1"
+    }
+   ]
+  },
+  "repairs": [
+   "glyph",
+   "glyph",
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c4-evs-ch06-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Sleep, play and feelings",
+   "accent": "mint",
+   "targets": "c4-evs-ch06-t01-m1",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "row",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Sleep, play and feelings"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Sad means something is wrong"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "sleep",
+       "type": "node",
+       "text": "Sleep",
+       "sub": "9 to 12 hours",
+       "glyph": "moon",
+       "color": "ion"
+      },
+      {
+       "id": "grow",
+       "type": "node",
+       "text": "Grow",
+       "sub": "body",
+       "glyph": "seed",
+       "color": "mint"
+      },
+      {
+       "id": "learn",
+       "type": "node",
+       "text": "Remember",
+       "sub": "what we learnt",
+       "glyph": "book",
+       "color": "sci"
+      },
+      {
+       "id": "fresh",
+       "type": "node",
+       "text": "Feel fresh",
+       "sub": "and alert",
+       "glyph": "spark",
+       "color": "sun"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "sleep",
+       "to": "grow",
+       "text": "helps"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "sleep",
+       "to": "learn",
+       "text": "helps"
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "sleep",
+       "to": "fresh",
+       "text": "helps"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "play",
+       "type": "node",
+       "text": "Play",
+       "sub": "about 1 hour",
+       "color": "amber"
+      },
+      {
+       "id": "body",
+       "type": "node",
+       "text": "Strong body",
+       "sub": "heart works well",
+       "color": "mint"
+      },
+      {
+       "id": "mind",
+       "type": "node",
+       "text": "Happy mind",
+       "sub": "calm and social",
+       "glyph": "person",
+       "color": "sun"
+      },
+      {
+       "id": "a4",
+       "type": "arrow",
+       "from": "play",
+       "to": "body",
+       "text": "strengthens"
+      },
+      {
+       "id": "a5",
+       "type": "arrow",
+       "from": "play",
+       "to": "mind",
+       "text": "supports"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "happy",
+       "type": "node",
+       "text": "Happy",
+       "glyph": "sun",
+       "color": "sun"
+      },
+      {
+       "id": "sad",
+       "type": "node",
+       "text": "Sad",
+       "glyph": "rain",
+       "color": "ion"
+      },
+      {
+       "id": "angry",
+       "type": "node",
+       "text": "Angry",
+       "glyph": "fire",
+       "color": "amber"
+      },
+      {
+       "id": "worried",
+       "type": "node",
+       "text": "Worried",
+       "glyph": "question",
+       "color": "sci"
+      },
+      {
+       "id": "feel",
+       "type": "label",
+       "text": "Feelings are normal",
+       "x": 300,
+       "y": 500,
+       "color": "mint"
+      },
+      {
+       "id": "talk",
+       "type": "node",
+       "text": "Talk",
+       "sub": "trusted person",
+       "color": "mint"
+      },
+      {
+       "id": "a6",
+       "type": "arrow",
+       "from": "sad",
+       "to": "talk",
+       "text": "share"
+      },
+      {
+       "id": "a7",
+       "type": "arrow",
+       "from": "worried",
+       "to": "talk",
+       "text": "share"
+      }
+     ]
+    },
+    {
+     "id": "s5",
+     "layout": "column",
+     "els": [
+      {
+       "id": "routine",
+       "type": "title",
+       "text": "A healthy evening"
+      },
+      {
+       "id": "play2",
+       "type": "label",
+       "text": "Outdoor play",
+       "x": 180,
+       "y": 250,
+       "color": "amber"
+      },
+      {
+       "id": "homework",
+       "type": "label",
+       "text": "Homework",
+       "x": 180,
+       "y": 330,
+       "color": "sci"
+      },
+      {
+       "id": "screen",
+       "type": "label",
+       "text": "Screens off",
+       "x": 180,
+       "y": 410,
+       "color": "volt"
+      },
+      {
+       "id": "bed",
+       "type": "label",
+       "text": "Sleep by 8:30",
+       "x": 180,
+       "y": 490,
+       "color": "ion"
+      },
+      {
+       "id": "r1",
+       "type": "arrow",
+       "from": "play2",
+       "to": "homework",
+       "text": "then"
+      },
+      {
+       "id": "r2",
+       "type": "arrow",
+       "from": "homework",
+       "to": "screen",
+       "text": "then"
+      },
+      {
+       "id": "r3",
+       "type": "arrow",
+       "from": "screen",
+       "to": "bed",
+       "text": "then"
+      }
+     ]
+    },
+    {
+     "id": "s6",
+     "layout": "row",
+     "els": [
+      {
+       "id": "checkTitle",
+       "type": "title",
+       "text": "What is true?"
+      },
+      {
+       "id": "opt1",
+       "type": "node",
+       "text": "Feelings pass",
+       "glyph": "cloud",
+       "color": "mint"
+      },
+      {
+       "id": "opt2",
+       "type": "node",
+       "text": "Sad is wrong",
+       "glyph": "question",
+       "color": "amber"
+      },
+      {
+       "id": "opt3",
+       "type": "node",
+       "text": "Sleep is wasted",
+       "glyph": "clock",
+       "color": "volt"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Sleep, play and feelings all help us live well.",
+    "L2": "Children need about 9 to 12 hours of sleep each night.",
+    "L3": "Sleep helps the body grow, the brain remember learning and us feel fresh.",
+    "L4": "Playing and exercising for about an hour each day keeps the body strong and the mind happy.",
+    "L5": "We can feel happy, sad, angry, scared or worried. Every feeling is normal, and feelings pass.",
+    "L6": "MYTH: Feeling sad means something is wrong with you. NOT TRUE—talking to someone we trust can help us feel better.",
+    "L7": "Aarav can play after school, do homework before dinner, turn screens off by 7:30 and sleep by 8:30.",
+    "L8": "Now tap the true idea about feelings."
+   },
+   "narration": {},
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "title"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.6,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "sleep"
+      },
+      {
+       "at": 0.4,
+       "do": "highlight",
+       "dur": 1,
+       "target": "sleep"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "grow",
+        "learn",
+        "fresh"
+       ]
+      },
+      {
+       "at": 0.5,
+       "do": "flow",
+       "dur": 0.8,
+       "target": [
+        "a1",
+        "a2",
+        "a3"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "play"
+      },
+      {
+       "at": 0.4,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "body",
+        "mind"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 0.8,
+       "target": [
+        "a4",
+        "a5"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.9,
+       "target": [
+        "happy",
+        "sad",
+        "angry",
+        "worried"
+       ]
+      },
+      {
+       "at": 0.6,
+       "do": "show",
+       "dur": 0.7,
+       "target": "feel"
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 1,
+       "target": "feel"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      },
+      {
+       "at": 0.6,
+       "do": "show",
+       "dur": 0.5,
+       "target": "myth"
+      },
+      {
+       "at": 1.2,
+       "do": "camera",
+       "dur": 1,
+       "zoom": 1.05
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s5",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "routine"
+      },
+      {
+       "at": 0.4,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "play2",
+        "homework",
+        "screen",
+        "bed"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 1,
+       "target": [
+        "r1",
+        "r2",
+        "r3"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s6",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "checkTitle",
+        "opt1",
+        "opt2",
+        "opt3"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive"
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which idea about feelings is true?",
+    "options": [
+     "opt1",
+     "opt2",
+     "opt3"
+    ],
+    "answer": "opt1",
+    "src": "c4-evs-ch06-t01-i11"
+   }
+  },
+  "repairs": [
+   "glyph",
+   "glyph",
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 54
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-evs-ch06-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4430,
+     "ops": [
+      {
+       "id": "title",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "Live well",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "sleep",
+       "op": "circle",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        180,
+        220
+       ],
+       "r": 65,
+       "fill": "soft"
+      },
+      {
+       "id": "moon",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        230
+       ],
+       "text": "sleep",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "play",
+       "op": "circle",
+       "startMs": 1900,
+       "endMs": 2600,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        220
+       ],
+       "r": 65,
+       "fill": "soft"
+      },
+      {
+       "id": "playword",
+       "op": "text",
+       "startMs": 2600,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        230
+       ],
+       "text": "play",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "feel",
+       "op": "circle",
+       "startMs": 3000,
+       "endMs": 3700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        620,
+        220
+       ],
+       "r": 65,
+       "fill": "soft"
+      },
+      {
+       "id": "feelword",
+       "op": "text",
+       "startMs": 3700,
+       "endMs": 4300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        620,
+        230
+       ],
+       "text": "feelings",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-evs-ch06-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "sleephead",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        65
+       ],
+       "text": "Sleep",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "hours",
+       "op": "numwork",
+       "startMs": 700,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        250,
+        150
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "9",
+         "to",
+         "12",
+         "hours"
+        ]
+       ]
+      },
+      {
+       "id": "night",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        285
+       ],
+       "text": "each night",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "bed",
+       "op": "rect",
+       "startMs": 2800,
+       "endMs": 3900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        250,
+        350
+       ],
+       "w": 300,
+       "h": 55,
+       "round": 12
+      },
+      {
+       "id": "bedlabel",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        385
+       ],
+       "text": "sleep",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "range",
+       "op": "highlight",
+       "startMs": 4500,
+       "endMs": 5200,
+       "ink": "good",
+       "weight": 2,
+       "target": "hours",
+       "style": "underline"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-evs-ch06-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "grow",
+       "op": "arrow",
+       "startMs": 0,
+       "endMs": 1100,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        160,
+        390
+       ],
+       "to": [
+        160,
+        160
+       ]
+      },
+      {
+       "id": "growlabel",
+       "op": "text",
+       "startMs": 1100,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        160,
+        125
+       ],
+       "text": "grow",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "brain",
+       "op": "ellipse",
+       "startMs": 1700,
+       "endMs": 2600,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        220
+       ],
+       "rx": 105,
+       "ry": 75
+      },
+      {
+       "id": "remember",
+       "op": "text",
+       "startMs": 2600,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        220
+       ],
+       "text": "remember",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "learn",
+       "op": "text",
+       "startMs": 3200,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        270
+       ],
+       "text": "learning",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "freshlabel",
+       "op": "text",
+       "startMs": 4800,
+       "endMs": 5400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        620,
+        300
+       ],
+       "text": "fresh",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-evs-ch06-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "playtitle",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "Play + exercise",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "clock",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1600,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        180,
+        220
+       ],
+       "r": 75
+      },
+      {
+       "id": "hour",
+       "op": "text",
+       "startMs": 1600,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        220
+       ],
+       "text": "1 hour",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "sun",
+       "op": "circle",
+       "startMs": 2300,
+       "endMs": 2900,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        185
+       ],
+       "r": 42,
+       "fill": "accent"
+      },
+      {
+       "id": "body",
+       "op": "circle",
+       "startMs": 3000,
+       "endMs": 3600,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        620,
+        190
+       ],
+       "r": 42
+      },
+      {
+       "id": "bodylabel",
+       "op": "text",
+       "startMs": 3600,
+       "endMs": 4300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        620,
+        275
+       ],
+       "text": "strong body",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "mind",
+       "op": "ellipse",
+       "startMs": 4400,
+       "endMs": 5200,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        380
+       ],
+       "rx": 115,
+       "ry": 55
+      },
+      {
+       "id": "mindlabel",
+       "op": "text",
+       "startMs": 5200,
+       "endMs": 5900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        380
+       ],
+       "text": "happy mind",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "heart",
+       "op": "text",
+       "startMs": 6000,
+       "endMs": 6800,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        180,
+        380
+       ],
+       "text": "heart healthy",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "daily",
+       "op": "text",
+       "startMs": 6900,
+       "endMs": 7700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        465
+       ],
+       "text": "every day",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-evs-ch06-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "feeltitle",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        50
+       ],
+       "text": "Feelings",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "happy",
+       "op": "circle",
+       "startMs": 800,
+       "endMs": 1300,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        130,
+        170
+       ],
+       "r": 48,
+       "fill": "soft"
+      },
+      {
+       "id": "happytext",
+       "op": "text",
+       "startMs": 1300,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        130,
+        180
+       ],
+       "text": "happy",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "sad",
+       "op": "circle",
+       "startMs": 1700,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        300,
+        170
+       ],
+       "r": 48,
+       "fill": "soft"
+      },
+      {
+       "id": "sadtext",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 2550,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        300,
+        180
+       ],
+       "text": "sad",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "angry",
+       "op": "circle",
+       "startMs": 2550,
+       "endMs": 3050,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        470,
+        170
+       ],
+       "r": 48,
+       "fill": "soft"
+      },
+      {
+       "id": "angrytext",
+       "op": "text",
+       "startMs": 3050,
+       "endMs": 3450,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        470,
+        180
+       ],
+       "text": "angry",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "scared",
+       "op": "circle",
+       "startMs": 3450,
+       "endMs": 3950,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        640,
+        170
+       ],
+       "r": 48,
+       "fill": "soft"
+      },
+      {
+       "id": "scaredtext",
+       "op": "text",
+       "startMs": 3950,
+       "endMs": 4400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        640,
+        180
+       ],
+       "text": "scared",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "worried",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        300
+       ],
+       "text": "worried",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "normal",
+       "op": "text",
+       "startMs": 5100,
+       "endMs": 5700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        270,
+        390
+       ],
+       "text": "normal",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "pass",
+       "op": "arrow",
+       "startMs": 5800,
+       "endMs": 6700,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        500,
+        390
+       ],
+       "to": [
+        650,
+        390
+       ]
+      },
+      {
+       "id": "passtext",
+       "op": "text",
+       "startMs": 6700,
+       "endMs": 7300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        575,
+        445
+       ],
+       "text": "pass",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-evs-ch06-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 9111,
+     "ops": [
+      {
+       "id": "myth",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        200,
+        60
+       ],
+       "text": "MYTH",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "mythline",
+       "op": "text",
+       "startMs": 800,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        145
+       ],
+       "text": "sad = wrong",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "cross",
+       "op": "line",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 3,
+       "from": [
+        300,
+        110
+       ],
+       "to": [
+        500,
+        175
+       ]
+      },
+      {
+       "id": "nottrue",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 3000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        600,
+        60
+       ],
+       "text": "NOT TRUE",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "talk",
+       "op": "ellipse",
+       "startMs": 3200,
+       "endMs": 4000,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        250,
+        310
+       ],
+       "rx": 120,
+       "ry": 65
+      },
+      {
+       "id": "talktext",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 4400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        250,
+        310
+       ],
+       "text": "talk",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "trust",
+       "op": "rect",
+       "startMs": 4500,
+       "endMs": 5500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        460,
+        250
+       ],
+       "w": 220,
+       "h": 120,
+       "round": 15
+      },
+      {
+       "id": "trusttext",
+       "op": "text",
+       "startMs": 5500,
+       "endMs": 6400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        570,
+        310
+       ],
+       "text": "someone trusted",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "better",
+       "op": "arrow",
+       "startMs": 6400,
+       "endMs": 7100,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        370,
+        310
+       ],
+       "to": [
+        450,
+        310
+       ]
+      },
+      {
+       "id": "bettertext",
+       "op": "text",
+       "startMs": 7200,
+       "endMs": 8000,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        430
+       ],
+       "text": "feel better",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-evs-ch06-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "aarav",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        50
+       ],
+       "text": "Aarav's evening",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "plan",
+       "op": "numwork",
+       "startMs": 900,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        125
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "play",
+         "after "
+        ],
+        [
+         "homewo",
+         "before"
+        ],
+        [
+         "screen",
+         "off 7:"
+        ],
+        [
+         "sleep",
+         "8:30"
+        ]
+       ]
+      },
+      {
+       "id": "playbox",
+       "op": "rect",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        105,
+        115
+       ],
+       "w": 260,
+       "h": 55,
+       "round": 10
+      },
+      {
+       "id": "homebox",
+       "op": "rect",
+       "startMs": 1500,
+       "endMs": 2100,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        105,
+        170
+       ],
+       "w": 300,
+       "h": 55,
+       "round": 10
+      },
+      {
+       "id": "screenbox",
+       "op": "rect",
+       "startMs": 2100,
+       "endMs": 2700,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        105,
+        225
+       ],
+       "w": 300,
+       "h": 55,
+       "round": 10
+      },
+      {
+       "id": "sleepbox",
+       "op": "rect",
+       "startMs": 2700,
+       "endMs": 3300,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        105,
+        280
+       ],
+       "w": 240,
+       "h": 55,
+       "round": 10
+      },
+      {
+       "id": "clock",
+       "op": "circle",
+       "startMs": 3600,
+       "endMs": 4500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        610,
+        230
+       ],
+       "r": 105
+      },
+      {
+       "id": "t730",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        610,
+        170
+       ],
+       "text": "7:30",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "t830",
+       "op": "text",
+       "startMs": 5100,
+       "endMs": 5700,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        610,
+        300
+       ],
+       "text": "8:30",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "last",
+       "op": "arrow",
+       "startMs": 5700,
+       "endMs": 6500,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        610,
+        210
+       ],
+       "to": [
+        610,
+        275
+       ]
+      },
+      {
+       "id": "ten",
+       "op": "text",
+       "startMs": 6700,
+       "endMs": 7600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        610,
+        410
+       ],
+       "text": "about 10 hours",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-evs-ch06-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 3579,
+     "ops": [
+      {
+       "id": "prompt",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        60
+       ],
+       "text": "True idea",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "option1",
+       "op": "rect",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        100,
+        140
+       ],
+       "w": 600,
+       "h": 70,
+       "round": 12
+      },
+      {
+       "id": "option1text",
+       "op": "text",
+       "startMs": 1300,
+       "endMs": 2100,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        180
+       ],
+       "text": "feelings are normal",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "option2",
+       "op": "rect",
+       "startMs": 2100,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        100,
+        280
+       ],
+       "w": 600,
+       "h": 70,
+       "round": 12
+      },
+      {
+       "id": "option2text",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3400,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        320
+       ],
+       "text": "sad means wrong",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "tap",
+       "op": "highlight",
+       "startMs": 3000,
+       "endMs": 3500,
+       "ink": "good",
+       "weight": 2,
+       "target": "option1",
+       "style": "pulse"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "Do homework",
+   "prompt": "sequence: after/for \"Play outside after school\""
+  },
+  {
+   "itemId": "r1:1",
+   "key": "Eat dinner",
+   "prompt": "sequence: after/for \"Do homework\""
+  },
+  {
+   "itemId": "r1:2",
+   "key": "Wind down with a story",
+   "prompt": "sequence: after/for \"Eat dinner\""
+  },
+  {
+   "itemId": "r1:3",
+   "key": "Go to sleep",
+   "prompt": "sequence: after/for \"Wind down with a story\""
+  },
+  {
+   "itemId": "r2:0",
+   "key": "Sad feelings are normal",
+   "prompt": "cause: after/for \"Feeling sad sometimes\"",
+   "src": "c4-evs-ch06-t01-i11"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "Falling asleep is harder",
+   "prompt": "cause: after/for \"Bright screen before bed\"",
+   "src": "c4-evs-ch06-t01-i05"
+  },
+  {
+   "itemId": "r2:2",
+   "key": "Body and mind benefit",
+   "prompt": "cause: after/for \"Play outside each day\"",
+   "src": "c4-evs-ch06-t01-i06"
+  },
+  {
+   "itemId": "r2:3",
+   "key": "Feelings can feel better",
+   "prompt": "cause: after/for \"Talk to someone trusted\"",
+   "src": "c4-evs-ch06-t01-i08"
+  }
+ ],
+ "check": {
+  "issues": [
+   {
+    "where": "game (story-rail@1)",
+    "what": "In round 1, the computed key says 'Play outside after school' should be followed by 'Do homework'. The content uses a sequence named 'Plan the evening', and the worked example in the kit ('Plan Aarav's evening') puts outdoor play first, then homework. However, the kit's worked example says 'Fit in about an hour of outdoor play after school' and 'Do homework before dinner'. The order in the content 'Play outside after school' → 'Do homework' matches the worked example. No contradiction.",
+    "severity": "low"
+   },
+   {
+    "where": "explainer",
+    "what": "The explainer scene s5 shows a healthy evening routine: 'Outdoor play' → 'Homework' → 'Screens off' → 'Sleep by 8:30'. The kit worked example says 'Screens off for the last hour: no phone after 7:30' and then 'Sleep by 8:30', so screens off before sleep. But the content text says 'Screens off' then 'Sleep by 8:30', which is correct. The kit also says 'dinner' and 'wind down with a story' before sleep. The content does not mention dinner in the arrow sequence, but the earlier 'Plan the evening' round includes 'Eat dinner' and 'Wind down with a story'. The explainer scene s5 omits dinner and story. The explainer's label 'Screens off' as a step between homework and sleep, without dinner, contradicts the kit's more detailed order. This is a minor inconsistency but not a factual error.",
+    "severity": "low"
+   },
+   {
+    "where": "explainer",
+    "what": "The explainer text L6 says 'MYTH: Feeling sad means something is wrong with you. NOT TRUE—talking to someone we trust can help us feel better.' The accompanying 'What is true?' scene (s6) asks to tap the true idea, with options: opt1 'Feelings pass', opt2 'Sad is wrong', opt3 'Sleep is wasted'. The correct answer is opt1, which matches the kit item i11. However, the task's answer is 'opt1' and the scene's 'text' says 'Now tap the true idea about feelings.' This is correct. No issue.",
+    "severity": "low"
+   }
+  ],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ },
+ "firstCheck": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "Round 1 uses src c4-evs-ch06-t01-i12 as source for cards, but that item is an explanation to a younger cousin about sleep, not a sequence of evening activities. The kit's worked example shows the order (play after school, then homework, then dinner, then screens off, then wind down, then sleep), but the round does not follow the worked example's steps — the round places 'Eat dinner' before 'Switch screens off', while the worked example places screens off before dinner. This contradicts the kit's scenario.",
+    "severity": "high"
+   }
+  ],
+  "verdict": "fail",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

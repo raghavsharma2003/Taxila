@@ -8,6 +8,8 @@
 // paints within MOUNT_DEADLINE_MS is replaced by the item's board twin (same values), and the outgoing piece keeps
 // showing until something has painted.
 import { ENGINES } from "../studio-v2/engines/index.ts";
+import "../studio-v2/core/fonts.css";       // the stage's display and mono faces (the lesson app declares neither)
+import type { EngineDef } from "../studio-v2/core/types.ts";
 import { mountStudio, type StudioHandle } from "../studio-v2/core/host.ts";
 import { drawBoard, sanitizeBoard, type BoardSpec } from "../studio-v2/core/board.ts";
 import { W, H } from "../studio-v2/core/tokens.ts";
@@ -15,6 +17,28 @@ import type { Knob, StudioMessage } from "../studio-v2/core/types.ts";
 import { CROSSFADE_MS, command, failed, initStage, painted, retire, tick, view, type StageItem, type StageState } from "./stage.ts";
 
 export const MOUNT_DEADLINE_MS = 1500;
+
+// ship5 p4-content: the 26 extension engines (shared/studio-spec-ext, the authored catalogue's games and the scene explainer)
+// load as their own chunk, fetched once on first need (and warmed when this module loads, off the critical path), so the
+// lesson bundle does not carry them. registerExtSpecs() lets the unmodified Studio v2 host validate their specs.
+type ExtEngines = Record<string, EngineDef<never>>;
+let extP: Promise<ExtEngines> | null = null;
+export function loadExtEngines(): Promise<ExtEngines> {
+  extP ??= Promise.all([import("../studio-v2/engines/ext/index.ts"), import("../../shared/studio-spec-ext/index.ts")])
+    .then(([e, s]) => { s.registerExtSpecs(); return e.ENGINES_EXT as ExtEngines; })
+    .catch((err) => { extP = null; throw err; });
+  return extP;
+}
+/** The engine for an archetype: base (bundled) or extension (chunk). null when neither registry knows it. */
+export async function engineFor(archetype: string): Promise<EngineDef<never> | null> {
+  if (ENGINES[archetype]) return ENGINES[archetype];
+  try { return (await loadExtEngines())[archetype] ?? null; } catch { return null; }
+}
+if (typeof window !== "undefined") {
+  const warm = () => { void loadExtEngines().catch(() => null); };
+  const ric = (window as unknown as { requestIdleCallback?: (f: () => void) => void }).requestIdleCallback;
+  if (ric) ric(warm); else setTimeout(warm, 2000);
+}
 
 interface Layer { item: StageItem; el: HTMLDivElement; handle: StudioHandle | null; raf: number; timer: number }
 
@@ -83,15 +107,24 @@ export class StageController {
     else this.mountBoard(layer);          // board, and (until W2-H's frame host is wired here) frame/image via their twin
   }
   private mountEngine(layer: Layer): void {
-    const def = ENGINES[layer.item.archetype];
-    if (!def) { this.fail(layer.item.id); return; }
+    // the deadline runs from the reveal, whichever registry the engine comes from (a chunk that is slow is a board twin)
+    layer.timer = window.setTimeout(() => { if (this.state.incoming?.id === layer.item.id && this.state.phase === "mounting") this.fail(layer.item.id); }, MOUNT_DEADLINE_MS);
+    const base = ENGINES[layer.item.archetype];
+    if (base) { this.mountWith(layer, base); return; }
+    void engineFor(layer.item.archetype).then((def) => {
+      if (this.disposed || this.layers.get(layer.item.id) !== layer) return;
+      if (!def) { this.fail(layer.item.id); return; }
+      this.mountWith(layer, def);
+    }, () => this.fail(layer.item.id));
+  }
+  private mountWith(layer: Layer, def: EngineDef<never>): void {
     try {
-      const h = mountStudio(layer.el, def, { spec: layer.item.spec, motion: this.opts.reducedMotion ? "reduce" : undefined, teacher: this.opts.teacher ?? null,
+      // in the live lesson her face is above the stage: no "AI teacher" placeholder inside it (ship5 p4-content)
+      const h = mountStudio(layer.el, def, { spec: layer.item.spec, motion: this.opts.reducedMotion ? "reduce" : undefined, teacher: this.opts.teacher ?? null, pip: !!this.opts.teacher,
         onMessage: (m) => { try { this.opts.onMessage?.({ ...m, stageItem: layer.item.id }); } catch { /* listeners never break the stage */ } } });
       layer.handle = h;
       // the host fires `ready` even when it fell back to its own board (STUDIO-V2 §8): either way something painted
       h.ready.then(() => this.onPainted(layer.item.id), () => this.fail(layer.item.id));
-      layer.timer = window.setTimeout(() => { if (this.state.incoming?.id === layer.item.id && this.state.phase === "mounting") this.fail(layer.item.id); }, MOUNT_DEADLINE_MS);
     } catch { this.fail(layer.item.id); }
   }
   private mountBoard(layer: Layer): void {

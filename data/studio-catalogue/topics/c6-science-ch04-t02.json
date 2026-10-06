@@ -1,0 +1,1494 @@
+{
+ "topicId": "c6-science-ch04-t02",
+ "title": "Poles, attraction and repulsion",
+ "chapter": "Exploring Magnets",
+ "subject": "science",
+ "class": 6,
+ "topicType": "T3",
+ "plan": {
+  "game": "field-lab@1",
+  "hint": "poles rounds (left, right, middle) and a label round"
+ },
+ "game": {
+  "archetype": "field-lab@1",
+  "spec": {
+   "archetype": "field-lab@1",
+   "skills": [
+    "c6-science-ch04-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "done": "Done",
+    "run": "RELEASE",
+    "lock": "LOCK",
+    "empty": "empty",
+    "left": "left",
+    "right": "right",
+    "middle": "stay in the middle",
+    "toLeft": "roll to the left",
+    "toRight": "roll to the right",
+    "push": "PUSH",
+    "pull": "PULL",
+    "tapN": "Tap the end you think is N",
+    "probe": "Drag your N pole to an end",
+    "needle": "compass",
+    "moveAway": "Something is bending the needle",
+    "pick": "Tap the place",
+    "north": "north",
+    "south": "south",
+    "east": "east",
+    "west": "west",
+    "of": "of",
+    "tests": "tests",
+    "runDone": "Lab closed"
+   },
+   "title": "Magnet Field Lab",
+   "rounds": [
+    {
+     "mode": "poles",
+     "title": "Left lane",
+     "sub": "make the car roll to the left",
+     "car": "NS",
+     "goal": "left"
+    },
+    {
+     "mode": "poles",
+     "title": "Centre mark",
+     "sub": "keep the car in the middle",
+     "car": "SN",
+     "goal": "middle",
+     "targets": "c6-science-ch04-t02-m3"
+    },
+    {
+     "mode": "poles",
+     "title": "Right lane",
+     "sub": "make the car roll to the right",
+     "car": "NS",
+     "goal": "right"
+    },
+    {
+     "mode": "label",
+     "title": "Mystery bar",
+     "sub": "test both ends and label north",
+     "hidden": "SN"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c6-science-ch04-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Poles, attraction and repulsion",
+   "accent": "sci",
+   "targets": "c6-science-ch04-t02-m4",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Every magnet has two poles"
+      },
+      {
+       "id": "mag",
+       "type": "node",
+       "text": "Magnet",
+       "sub": "N and S",
+       "glyph": "magnet",
+       "color": "sci"
+      },
+      {
+       "id": "n",
+       "type": "label",
+       "text": "North",
+       "x": 260,
+       "y": 300,
+       "color": "ion"
+      },
+      {
+       "id": "s",
+       "type": "label",
+       "text": "South",
+       "x": 620,
+       "y": 300,
+       "color": "mint"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Attraction proves it is a magnet"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "ns",
+       "type": "node",
+       "text": "N + S",
+       "sub": "unlike poles",
+       "glyph": "magnet",
+       "color": "mint"
+      },
+      {
+       "id": "nn",
+       "type": "node",
+       "text": "N + N",
+       "sub": "like poles",
+       "glyph": "magnet",
+       "color": "amber"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "column",
+     "els": [
+      {
+       "id": "test",
+       "type": "title",
+       "text": "The sure test"
+      },
+      {
+       "id": "attract",
+       "type": "label",
+       "text": "Attraction only",
+       "x": 180,
+       "y": 330,
+       "color": "amber"
+      },
+      {
+       "id": "rep",
+       "type": "label",
+       "text": "Repulsion",
+       "x": 600,
+       "y": 330,
+       "color": "sci"
+      },
+      {
+       "id": "known",
+       "type": "node",
+       "text": "Known magnet",
+       "sub": "marked pole",
+       "glyph": "magnet",
+       "color": "ion"
+      },
+      {
+       "id": "object",
+       "type": "node",
+       "text": "Object",
+       "sub": "test it",
+       "glyph": "question",
+       "color": "mint"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Every magnet has two poles: north and south. The pull is strongest at the poles, near the two ends.",
+    "L2": "Attraction alone does not prove that an object is a magnet. Iron can be attracted too.",
+    "L3": "Bring unlike poles together, such as north and south. They attract each other.",
+    "L4": "Bring like poles together, such as north and north. They repel each other.",
+    "L5": "Repulsion is the sure test for a magnet. If an object pushes away a pole of a known magnet, it is a magnet.",
+    "L6": "If a magnet breaks, each piece becomes a complete magnet with its own north and south pole.",
+    "L7": "So remember: unlike poles attract, like poles repel, and poles come in pairs."
+   },
+   "narration": {},
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "title"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": "mag"
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "n",
+        "s"
+       ]
+      },
+      {
+       "at": 1.5,
+       "do": "highlight",
+       "dur": 1,
+       "target": [
+        "n",
+        "s"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      },
+      {
+       "at": 0.8,
+       "do": "bust",
+       "dur": 1.2,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "ns"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "nn"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "test",
+        "known",
+        "object"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "attract"
+      },
+      {
+       "at": 1.5,
+       "do": "highlight",
+       "dur": 1,
+       "target": "rep"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "focus",
+       "dur": 0.8,
+       "target": "mag"
+      },
+      {
+       "at": 0.8,
+       "do": "scale",
+       "dur": 0.8,
+       "target": "mag",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "camera",
+       "dur": 1.5,
+       "zoom": 1.05
+      },
+      {
+       "at": "end",
+       "do": "interactive"
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which test proves that an object is a magnet?",
+    "options": [
+     "attract",
+     "rep",
+     "known",
+     "object"
+    ],
+    "answer": "rep",
+    "src": "c6-science-ch04-t02-i13"
+   }
+  },
+  "repairs": [
+   "arrow:ends",
+   "arrow:ends",
+   "cue:target",
+   "cue:target",
+   "cue:target",
+   "cue:target"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 54
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch04-t02-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "magnet",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        190,
+        210
+       ],
+       "w": 420,
+       "h": 80,
+       "round": 12
+      },
+      {
+       "id": "north",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        210,
+        250
+       ],
+       "text": "north",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "south",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        590,
+        250
+       ],
+       "text": "south",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "pole1",
+       "op": "circle",
+       "startMs": 1300,
+       "endMs": 1800,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        190,
+        250
+       ],
+       "r": 16
+      },
+      {
+       "id": "pole2",
+       "op": "circle",
+       "startMs": 1300,
+       "endMs": 1800,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        610,
+        250
+       ],
+       "r": 16
+      },
+      {
+       "id": "pull1",
+       "op": "arrow",
+       "startMs": 2600,
+       "endMs": 3300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        190,
+        155
+       ],
+       "to": [
+        190,
+        205
+       ]
+      },
+      {
+       "id": "pull2",
+       "op": "arrow",
+       "startMs": 3300,
+       "endMs": 4000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        610,
+        155
+       ],
+       "to": [
+        610,
+        205
+       ]
+      },
+      {
+       "id": "strong",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 5000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        115
+       ],
+       "text": "strongest",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "near",
+       "op": "label",
+       "startMs": 5000,
+       "endMs": 5900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        165
+       ],
+       "text": "two ends",
+       "to": [
+        400,
+        210
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch04-t02-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "magnet",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        110,
+        170
+       ],
+       "w": 250,
+       "h": 65,
+       "round": 10
+      },
+      {
+       "id": "iron",
+       "op": "rect",
+       "startMs": 700,
+       "endMs": 1500,
+       "ink": "soft",
+       "weight": 2,
+       "at": [
+        470,
+        170
+       ],
+       "w": 180,
+       "h": 65,
+       "round": 8
+      },
+      {
+       "id": "ironlabel",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        560,
+        205
+       ],
+       "text": "iron",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "attract",
+       "op": "arrow",
+       "startMs": 1800,
+       "endMs": 2700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        360,
+        202
+       ],
+       "to": [
+        465,
+        202
+       ]
+      },
+      {
+       "id": "attraction",
+       "op": "text",
+       "startMs": 2800,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        120
+       ],
+       "text": "attraction",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "alone",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4500,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        400,
+        315
+       ],
+       "text": "alone",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "notmagnet",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        380
+       ],
+       "text": "not a magnet",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "cross",
+       "op": "line",
+       "startMs": 5700,
+       "endMs": 6200,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        350,
+        335
+       ],
+       "to": [
+        450,
+        405
+       ]
+      },
+      {
+       "id": "cross2",
+       "op": "line",
+       "startMs": 5700,
+       "endMs": 6200,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        450,
+        335
+       ],
+       "to": [
+        350,
+        405
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch04-t02-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "nmag",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        205
+       ],
+       "w": 220,
+       "h": 70,
+       "round": 10
+      },
+      {
+       "id": "smag",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        480,
+        205
+       ],
+       "w": 220,
+       "h": 70,
+       "round": 10
+      },
+      {
+       "id": "nlabel",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        120,
+        240
+       ],
+       "text": "north",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "slabel",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        680,
+        240
+       ],
+       "text": "south",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "attract1",
+       "op": "arrow",
+       "startMs": 1800,
+       "endMs": 2700,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        320,
+        240
+       ],
+       "to": [
+        475,
+        240
+       ]
+      },
+      {
+       "id": "attract2",
+       "op": "arrow",
+       "startMs": 2700,
+       "endMs": 3600,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        480,
+        260
+       ],
+       "to": [
+        325,
+        260
+       ]
+      },
+      {
+       "id": "caption",
+       "op": "text",
+       "startMs": 3800,
+       "endMs": 5000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        125
+       ],
+       "text": "unlike poles attract",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch04-t02-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "nmag1",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        205
+       ],
+       "w": 220,
+       "h": 70,
+       "round": 10
+      },
+      {
+       "id": "nmag2",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        480,
+        205
+       ],
+       "w": 220,
+       "h": 70,
+       "round": 10
+      },
+      {
+       "id": "nlabel1",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        120,
+        240
+       ],
+       "text": "north",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "nlabel2",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        680,
+        240
+       ],
+       "text": "north",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "repel1",
+       "op": "arrow",
+       "startMs": 1800,
+       "endMs": 2700,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        320,
+        235
+       ],
+       "to": [
+        250,
+        235
+       ]
+      },
+      {
+       "id": "repel2",
+       "op": "arrow",
+       "startMs": 1800,
+       "endMs": 2700,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        480,
+        235
+       ],
+       "to": [
+        550,
+        235
+       ]
+      },
+      {
+       "id": "caption",
+       "op": "text",
+       "startMs": 3800,
+       "endMs": 5000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        125
+       ],
+       "text": "like poles repel",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch04-t02-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 10387,
+     "ops": [
+      {
+       "id": "known",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        210
+       ],
+       "w": 230,
+       "h": 70,
+       "round": 10
+      },
+      {
+       "id": "object",
+       "op": "rect",
+       "startMs": 500,
+       "endMs": 1300,
+       "ink": "soft",
+       "weight": 2,
+       "at": [
+        480,
+        210
+       ],
+       "w": 230,
+       "h": 70,
+       "round": 10
+      },
+      {
+       "id": "pole",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        205,
+        245
+       ],
+       "text": "north",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "push1",
+       "op": "arrow",
+       "startMs": 1800,
+       "endMs": 2800,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        320,
+        225
+       ],
+       "to": [
+        405,
+        225
+       ]
+      },
+      {
+       "id": "push2",
+       "op": "arrow",
+       "startMs": 2800,
+       "endMs": 3800,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        480,
+        265
+       ],
+       "to": [
+        395,
+        265
+       ]
+      },
+      {
+       "id": "repulsion",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 4800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        125
+       ],
+       "text": "repulsion",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "sure",
+       "op": "text",
+       "startMs": 4800,
+       "endMs": 5500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        165
+       ],
+       "text": "sure test",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "magnet",
+       "op": "text",
+       "startMs": 5800,
+       "endMs": 6500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        595,
+        315
+       ],
+       "text": "magnet",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "ifobject",
+       "op": "label",
+       "startMs": 6800,
+       "endMs": 7500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        355
+       ],
+       "text": "object",
+       "to": [
+        595,
+        280
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch04-t02-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "whole",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        230,
+        190
+       ],
+       "w": 340,
+       "h": 80,
+       "round": 12
+      },
+      {
+       "id": "break",
+       "op": "line",
+       "startMs": 1200,
+       "endMs": 1900,
+       "ink": "accent",
+       "weight": 3,
+       "from": [
+        400,
+        180
+       ],
+       "to": [
+        400,
+        280
+       ]
+      },
+      {
+       "id": "piece1",
+       "op": "rect",
+       "startMs": 2300,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        190
+       ],
+       "w": 220,
+       "h": 80,
+       "round": 12
+      },
+      {
+       "id": "piece2",
+       "op": "rect",
+       "startMs": 2300,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        460,
+        190
+       ],
+       "w": 220,
+       "h": 80,
+       "round": 12
+      },
+      {
+       "id": "n1",
+       "op": "text",
+       "startMs": 3400,
+       "endMs": 4000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        140,
+        230
+       ],
+       "text": "north",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "s1",
+       "op": "text",
+       "startMs": 3400,
+       "endMs": 4000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        320,
+        230
+       ],
+       "text": "south",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "n2",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 4600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        480,
+        230
+       ],
+       "text": "north",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "s2",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 4600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        660,
+        230
+       ],
+       "text": "south",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "complete",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 6200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        350
+       ],
+       "text": "complete magnet",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch04-t02-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "unlike",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        145,
+        95
+       ],
+       "text": "unlike poles",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "like",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        95
+       ],
+       "text": "like poles",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "pairs",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        655,
+        95
+       ],
+       "text": "poles in pairs",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "attract",
+       "op": "arrow",
+       "startMs": 1800,
+       "endMs": 2700,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        145,
+        135
+       ],
+       "to": [
+        145,
+        235
+       ]
+      },
+      {
+       "id": "repel1",
+       "op": "arrow",
+       "startMs": 2700,
+       "endMs": 3600,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        365,
+        235
+       ],
+       "to": [
+        300,
+        235
+       ]
+      },
+      {
+       "id": "repel2",
+       "op": "arrow",
+       "startMs": 2700,
+       "endMs": 3600,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        435,
+        235
+       ],
+       "to": [
+        500,
+        235
+       ]
+      },
+      {
+       "id": "pair1",
+       "op": "rect",
+       "startMs": 3600,
+       "endMs": 4200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        570,
+        210
+       ],
+       "w": 150,
+       "h": 45,
+       "round": 8
+      },
+      {
+       "id": "pair2",
+       "op": "rect",
+       "startMs": 3600,
+       "endMs": 4200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        570,
+        270
+       ],
+       "w": 150,
+       "h": 45,
+       "round": 8
+      },
+      {
+       "id": "summary",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        400
+       ],
+       "text": "attract, repel, pairs",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1",
+   "key": "net push left",
+   "prompt": "make the car roll to the left"
+  },
+  {
+   "itemId": "r2",
+   "key": "both ends repel",
+   "prompt": "keep the car in the middle"
+  },
+  {
+   "itemId": "r3",
+   "key": "net push right",
+   "prompt": "make the car roll to the right"
+  },
+  {
+   "itemId": "r4",
+   "key": "N at right",
+   "prompt": "test both ends and label north"
+  }
+ ],
+ "check": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "Round 'poles' with car 'NS' and goal 'left': the kit states that unlike poles attract and like poles repel, and a car labelled 'NS' moving left requires a net push left, which is consistent with computation. However, the goal 'left' and 'right' lanes and 'Centre mark' with targets c6-science-ch04-t02-m3 are new applications, not contradictions. No kit fact is changed or contradicted here.",
+    "severity": "high"
+   }
+  ],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

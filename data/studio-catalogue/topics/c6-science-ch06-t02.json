@@ -1,0 +1,2256 @@
+{
+ "topicId": "c6-science-ch06-t02",
+ "title": "Grouping by properties",
+ "chapter": "Materials Around Us",
+ "subject": "science",
+ "class": 6,
+ "topicType": "T3",
+ "plan": {
+  "game": "sort-storm@1",
+  "hint": "tools torch / tank / tester / magnet: properties of materials (byProp)"
+ },
+ "game": {
+  "archetype": "sort-storm@1",
+  "spec": {
+   "archetype": "sort-storm@1",
+   "skills": [
+    "c6-science-ch06-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "sorted": "sorted",
+    "tests": "tests",
+    "coach": "Test it, then drag it into a bin",
+    "runDone": "Belt cleared",
+    "missed": "missed",
+    "why": "because",
+    "yes": "yes",
+    "no": "no",
+    "magnetic": "magnetic",
+    "light": "light",
+    "floats": "floats",
+    "conducts": "conducts",
+    "burns": "burns",
+    "starch": "starch",
+    "tMagnet": "Magnet",
+    "tTorch": "Torch",
+    "tTank": "Water",
+    "tTester": "Circuit",
+    "tFlame": "Flame",
+    "tIodine": "Iodine",
+    "tPaper": "Paper",
+    "tBiuret": "Protein test",
+    "tTurmeric": "Turmeric",
+    "tLitmus": "Litmus",
+    "tRose": "China rose",
+    "fat": "fat",
+    "protein": "protein",
+    "acidity": "acidity",
+    "acid": "acid",
+    "base": "base",
+    "neutral": "neutral"
+   },
+   "title": "Group materials by properties",
+   "rounds": [
+    {
+     "title": "Can you see through?",
+     "sub": "Use the torch to check each material",
+     "byProp": "light",
+     "bins": [
+      {
+       "id": "transparent",
+       "label": "See through",
+       "glyph": "sun"
+      },
+      {
+       "id": "translucent",
+       "label": "Partly seen",
+       "glyph": "cloud"
+      },
+      {
+       "id": "opaque",
+       "label": "Cannot see",
+       "glyph": "moon"
+      }
+     ],
+     "tools": [
+      "torch"
+     ],
+     "items": [
+      {
+       "id": "glass",
+       "text": "Glass",
+       "glyph": "mirror",
+       "bin": "transparent",
+       "props": {
+        "light": "transparent"
+       },
+       "src": "c6-science-ch06-t02-i02"
+      },
+      {
+       "id": "clearplastic",
+       "text": "Clear plastic",
+       "glyph": "drop",
+       "bin": "transparent",
+       "props": {
+        "light": "transparent"
+       },
+       "src": "c6-science-ch06-t02-i02"
+      },
+      {
+       "id": "wood",
+       "text": "Wood",
+       "glyph": "tree",
+       "bin": "opaque",
+       "props": {
+        "light": "opaque"
+       },
+       "src": "c6-science-ch06-t02-i02"
+      },
+      {
+       "id": "iron",
+       "text": "Iron",
+       "glyph": "gear",
+       "bin": "opaque",
+       "props": {
+        "light": "opaque"
+       },
+       "src": "c6-science-ch06-t02-i02"
+      },
+      {
+       "id": "cardboard",
+       "text": "Cardboard",
+       "glyph": "book",
+       "bin": "opaque",
+       "props": {
+        "light": "opaque"
+       },
+       "src": "c6-science-ch06-t02-i02"
+      }
+     ],
+     "speed": 0.8
+    },
+    {
+     "title": "Float or sink",
+     "sub": "Test each item in the water tank",
+     "byProp": "floats",
+     "bins": [
+      {
+       "id": "yes",
+       "label": "Floats",
+       "glyph": "boat"
+      },
+      {
+       "id": "no",
+       "label": "Sinks",
+       "glyph": "mountain"
+      }
+     ],
+     "tools": [
+      "tank"
+     ],
+     "items": [
+      {
+       "id": "woodblock",
+       "text": "Wooden block",
+       "glyph": "tree",
+       "bin": "yes",
+       "props": {
+        "floats": "yes"
+       },
+       "src": "c6-science-ch06-t02-i09"
+      },
+      {
+       "id": "plasticball",
+       "text": "Plastic ball",
+       "bin": "yes",
+       "props": {
+        "floats": "yes"
+       },
+       "src": "c6-science-ch06-t02-i09"
+      },
+      {
+       "id": "steelsppon",
+       "text": "Steel spoon",
+       "bin": "no",
+       "props": {
+        "floats": "no"
+       },
+       "src": "c6-science-ch06-t02-i09"
+      },
+      {
+       "id": "stone",
+       "text": "Stone",
+       "glyph": "mountain",
+       "bin": "no",
+       "props": {
+        "floats": "no"
+       },
+       "src": "c6-science-ch06-t02-i09"
+      }
+     ],
+     "speed": 1.05
+    },
+    {
+     "title": "Object or material?",
+     "sub": "Sort things into the right group",
+     "bins": [
+      {
+       "id": "object",
+       "label": "Object"
+      },
+      {
+       "id": "material",
+       "label": "Material",
+       "glyph": "gear"
+      }
+     ],
+     "tools": [],
+     "items": [
+      {
+       "id": "chair",
+       "text": "Chair",
+       "bin": "object",
+       "src": "c6-science-ch06-t02-i10"
+      },
+      {
+       "id": "bottle",
+       "text": "Bottle",
+       "glyph": "jug",
+       "bin": "object",
+       "src": "c6-science-ch06-t02-i10"
+      },
+      {
+       "id": "spoon",
+       "text": "Spoon",
+       "glyph": "plate",
+       "bin": "object",
+       "src": "c6-science-ch06-t02-i10"
+      },
+      {
+       "id": "woodmat",
+       "text": "Wood",
+       "glyph": "tree",
+       "bin": "material",
+       "src": "c6-science-ch06-t02-i10"
+      },
+      {
+       "id": "plasticmat",
+       "text": "Plastic",
+       "glyph": "drop",
+       "bin": "material",
+       "src": "c6-science-ch06-t02-i10"
+      },
+      {
+       "id": "steelmat",
+       "text": "Steel",
+       "glyph": "gear",
+       "bin": "material",
+       "src": "c6-science-ch06-t02-i10"
+      }
+     ],
+     "speed": 1.25,
+     "targets": "c6-science-ch06-t02-m1"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 2,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c6-science-ch06-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Properties guide material choices",
+   "accent": "sci",
+   "targets": "c6-science-ch06-t02-m3",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Properties guide choices"
+      },
+      {
+       "id": "obj",
+       "type": "node",
+       "text": "Object",
+       "sub": "thing made",
+       "color": "amber"
+      },
+      {
+       "id": "mat",
+       "type": "node",
+       "text": "Material",
+       "sub": "what it is made of",
+       "glyph": "book",
+       "color": "sci"
+      },
+      {
+       "id": "link",
+       "type": "arrow",
+       "from": "mat",
+       "to": "obj",
+       "text": "makes"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Handles are plastic only for looks"
+      },
+      {
+       "id": "bust",
+       "type": "label",
+       "text": "Property matters",
+       "x": 520,
+       "y": 300,
+       "color": "mint"
+      },
+      {
+       "id": "handle",
+       "type": "node",
+       "text": "Handle",
+       "sub": "plastic or wood",
+       "glyph": "hand",
+       "color": "mint"
+      },
+      {
+       "id": "heat",
+       "type": "arrow",
+       "from": "heatprop",
+       "to": "handle",
+       "text": "stays cool"
+      },
+      {
+       "id": "heatprop",
+       "type": "node",
+       "text": "Poor heat flow",
+       "sub": "property",
+       "glyph": "thermometer",
+       "color": "sci"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "pan",
+       "type": "node",
+       "text": "Pan body",
+       "sub": "metal",
+       "glyph": "pot",
+       "color": "sci"
+      },
+      {
+       "id": "metalprop",
+       "type": "node",
+       "text": "Heat passes",
+       "sub": "quickly",
+       "glyph": "fire",
+       "color": "amber"
+      },
+      {
+       "id": "cook",
+       "type": "arrow",
+       "from": "metalprop",
+       "to": "pan",
+       "text": "cooks food"
+      },
+      {
+       "id": "safe",
+       "type": "label",
+       "text": "Does not melt",
+       "x": 650,
+       "y": 350,
+       "color": "mint"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "groupTitle",
+       "type": "title",
+       "text": "Group by properties"
+      },
+      {
+       "id": "glass",
+       "type": "node",
+       "text": "Glass",
+       "sub": "transparent",
+       "glyph": "eye",
+       "color": "ion"
+      },
+      {
+       "id": "wood",
+       "type": "node",
+       "text": "Wood",
+       "sub": "opaque",
+       "glyph": "tree",
+       "color": "amber"
+      },
+      {
+       "id": "clear",
+       "type": "node",
+       "text": "Clear plastic",
+       "sub": "transparent",
+       "glyph": "shield",
+       "color": "mint"
+      },
+      {
+       "id": "iron",
+       "type": "node",
+       "text": "Iron",
+       "sub": "opaque",
+       "glyph": "magnet",
+       "color": "sci"
+      },
+      {
+       "id": "group",
+       "type": "arrow",
+       "from": "glass",
+       "to": "clear",
+       "text": "same group"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "An object is a thing, such as a chair. A material is what the object is made of, such as wood or plastic.",
+    "L2": "The same object can use different materials, and one material can make many objects.",
+    "L3": "We group materials by properties, such as transparent or opaque, hard or soft, and whether heat passes through easily.",
+    "L4": "Here is a myth: handles are plastic only for colour or looks.",
+    "L5": "That is not true. Plastic or wood handles have a useful property: heat does not pass through them easily, so they stay fairly cool to hold.",
+    "L6": "A pan body is metal because heat passes through metal quickly and metal does not melt on the stove.",
+    "L7": "So we choose a material by matching its properties to the job. For a lunchbox, steel or food-safe plastic is strong, waterproof and does not break easily.",
+    "L8": "Now group materials by a property: which ones are transparent?",
+    "L9": "Tap the transparent material."
+   },
+   "narration": {
+    "L1": {
+     "text": "An object is a thing, such as a chair. A material is what the object is made of, such as wood or plastic.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L2": {
+     "text": "The same object can use different materials, and one material can make many objects.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L3": {
+     "text": "We group materials by properties, such as transparent or opaque, hard or soft, and whether heat passes through easily.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L4": {
+     "text": "Here is a myth: handles are plastic only for colour or looks.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L5": {
+     "text": "That is not true. Plastic or wood handles have a useful property: heat does not pass through them easily, so they stay fairly cool to hold.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L6": {
+     "text": "A pan body is metal because heat passes through metal quickly and metal does not melt on the stove.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L7": {
+     "text": "So we choose a material by matching its properties to the job. For a lunchbox, steel or food-safe plastic is strong, waterproof and does not break easily.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Now group materials by a property: which ones are transparent?",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L9": {
+     "text": "Tap the transparent material.",
+     "dur": 2,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.7,
+       "target": "obj"
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.7,
+       "target": "mat"
+      },
+      {
+       "at": 1.4,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "link",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "obj"
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 1,
+       "target": "mat"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "groupTitle"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.6,
+       "target": "glass"
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.6,
+       "target": "wood"
+      },
+      {
+       "at": 1.1,
+       "do": "show",
+       "dur": 0.6,
+       "target": "clear"
+      },
+      {
+       "at": 1.4,
+       "do": "show",
+       "dur": 0.6,
+       "target": "iron"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.7,
+       "target": "heatprop"
+      },
+      {
+       "at": 1.3,
+       "do": "show",
+       "dur": 0.7,
+       "target": "handle"
+      },
+      {
+       "at": 1.8,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "heat",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "pan"
+      },
+      {
+       "at": 0.6,
+       "do": "show",
+       "dur": 0.7,
+       "target": "metalprop"
+      },
+      {
+       "at": 1.3,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "cook",
+       "to": 1
+      },
+      {
+       "at": 2,
+       "do": "show",
+       "dur": 0.6,
+       "target": "safe"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "metalprop"
+      },
+      {
+       "at": 1.2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "safe"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "focus",
+       "dur": 0.7,
+       "target": "glass"
+      },
+      {
+       "at": 0.7,
+       "do": "focus",
+       "dur": 0.7,
+       "target": "clear"
+      },
+      {
+       "at": 1.4,
+       "do": "unfocus",
+       "dur": 0.5
+      },
+      {
+       "at": 1.8,
+       "do": "unfocus",
+       "dur": 0.5
+      }
+     ]
+    },
+    {
+     "line": "L9",
+     "gap": 0,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "interactive",
+       "dur": 1
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which material is transparent?",
+    "options": [
+     "glass",
+     "wood",
+     "iron"
+    ],
+    "answer": "glass",
+    "src": "c6-science-ch06-t02-i02"
+   }
+  },
+  "repairs": [
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 43
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch06-t02-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 10387,
+     "ops": [
+      {
+       "id": "obj",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        70,
+        100
+       ],
+       "w": 180,
+       "h": 120,
+       "round": 12
+      },
+      {
+       "id": "chair",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        160,
+        260
+       ],
+       "text": "chair",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "object",
+       "op": "label",
+       "startMs": 1300,
+       "endMs": 2100,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        285,
+        150
+       ],
+       "text": "object",
+       "to": [
+        250,
+        150
+       ]
+      },
+      {
+       "id": "wood",
+       "op": "rect",
+       "startMs": 2400,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        500,
+        100
+       ],
+       "w": 100,
+       "h": 120
+      },
+      {
+       "id": "woodlabel",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        550,
+        260
+       ],
+       "text": "wood",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "plastic",
+       "op": "rect",
+       "startMs": 3500,
+       "endMs": 4400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        650,
+        100
+       ],
+       "w": 100,
+       "h": 120,
+       "fill": "accent"
+      },
+      {
+       "id": "plasticlabel",
+       "op": "text",
+       "startMs": 4100,
+       "endMs": 4600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        700,
+        260
+       ],
+       "text": "plastic",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "made",
+       "op": "arrow",
+       "startMs": 4800,
+       "endMs": 5700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        250,
+        160
+       ],
+       "to": [
+        500,
+        160
+       ]
+      },
+      {
+       "id": "material",
+       "op": "text",
+       "startMs": 5800,
+       "endMs": 6600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        330
+       ],
+       "text": "material",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "woodarrow",
+       "op": "arrow",
+       "startMs": 6800,
+       "endMs": 7700,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        400,
+        330
+       ],
+       "to": [
+        550,
+        225
+       ]
+      },
+      {
+       "id": "plasticarrow",
+       "op": "arrow",
+       "startMs": 7700,
+       "endMs": 8600,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        400,
+        350
+       ],
+       "to": [
+        700,
+        225
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch06-t02-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "chair2",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        70,
+        100
+       ],
+       "w": 180,
+       "h": 120,
+       "round": 12
+      },
+      {
+       "id": "object2",
+       "op": "text",
+       "startMs": 500,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        160,
+        260
+       ],
+       "text": "object",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "wood2",
+       "op": "rect",
+       "startMs": 1100,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        470,
+        80
+       ],
+       "w": 100,
+       "h": 100
+      },
+      {
+       "id": "woodtext",
+       "op": "text",
+       "startMs": 1600,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        520,
+        210
+       ],
+       "text": "wood",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "plastic2",
+       "op": "rect",
+       "startMs": 1800,
+       "endMs": 2400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        620,
+        80
+       ],
+       "w": 100,
+       "h": 100,
+       "fill": "accent"
+      },
+      {
+       "id": "plastictext",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        670,
+        210
+       ],
+       "text": "plastic",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "many",
+       "op": "arrow",
+       "startMs": 2800,
+       "endMs": 3700,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        160,
+        150
+       ],
+       "to": [
+        520,
+        130
+       ]
+      },
+      {
+       "id": "many2",
+       "op": "arrow",
+       "startMs": 3700,
+       "endMs": 4600,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        160,
+        150
+       ],
+       "to": [
+        670,
+        130
+       ]
+      },
+      {
+       "id": "one",
+       "op": "arrow",
+       "startMs": 4600,
+       "endMs": 5500,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        670,
+        130
+       ],
+       "to": [
+        150,
+        150
+       ]
+      },
+      {
+       "id": "manylabel",
+       "op": "text",
+       "startMs": 5300,
+       "endMs": 6000,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        380
+       ],
+       "text": "many objects",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch06-t02-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "group",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        245
+       ],
+       "r": 75
+      },
+      {
+       "id": "properties",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        250
+       ],
+       "text": "properties",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "transparent",
+       "op": "rect",
+       "startMs": 1500,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        70,
+        80
+       ],
+       "w": 210,
+       "h": 90,
+       "fill": "soft"
+      },
+      {
+       "id": "opaque",
+       "op": "rect",
+       "startMs": 1800,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        520,
+        80
+       ],
+       "w": 210,
+       "h": 90,
+       "fill": "mark"
+      },
+      {
+       "id": "tlabel",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        175,
+        215
+       ],
+       "text": "transparent",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "olabel",
+       "op": "text",
+       "startMs": 2400,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        625,
+        215
+       ],
+       "text": "opaque",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "hard",
+       "op": "circle",
+       "startMs": 3000,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        175,
+        370
+       ],
+       "r": 55
+      },
+      {
+       "id": "soft",
+       "op": "circle",
+       "startMs": 3200,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        625,
+        370
+       ],
+       "r": 55,
+       "fill": "soft"
+      },
+      {
+       "id": "hardlabel",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        175,
+        455
+       ],
+       "text": "hard",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "softlabel",
+       "op": "text",
+       "startMs": 3700,
+       "endMs": 4200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        625,
+        455
+       ],
+       "text": "soft",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "heat",
+       "op": "arrow",
+       "startMs": 4500,
+       "endMs": 5500,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        400,
+        300
+       ],
+       "to": [
+        400,
+        420
+       ]
+      },
+      {
+       "id": "heatlabel",
+       "op": "text",
+       "startMs": 5600,
+       "endMs": 6100,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        475
+       ],
+       "text": "heat",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch06-t02-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "handle",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        180
+       ],
+       "w": 150,
+       "h": 55,
+       "round": 20
+      },
+      {
+       "id": "pan",
+       "op": "ellipse",
+       "startMs": 600,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        390,
+        220
+       ],
+       "rx": 130,
+       "ry": 45
+      },
+      {
+       "id": "myth",
+       "op": "text",
+       "startMs": 1200,
+       "endMs": 1900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        90
+       ],
+       "text": "myth",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "plastic",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        195,
+        290
+       ],
+       "text": "plastic",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "looks",
+       "op": "text",
+       "startMs": 2600,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        360
+       ],
+       "text": "colour or looks",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "cross1",
+       "op": "line",
+       "startMs": 3500,
+       "endMs": 4100,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        300,
+        330
+       ],
+       "to": [
+        500,
+        400
+       ]
+      },
+      {
+       "id": "cross2",
+       "op": "line",
+       "startMs": 3900,
+       "endMs": 4500,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        500,
+        330
+       ],
+       "to": [
+        300,
+        400
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch06-t02-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 11664,
+     "ops": [
+      {
+       "id": "nottrue",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "not true",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "handle5",
+       "op": "rect",
+       "startMs": 900,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        180
+       ],
+       "w": 150,
+       "h": 55,
+       "round": 20
+      },
+      {
+       "id": "plastic5",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        195,
+        290
+       ],
+       "text": "plastic",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "wood5",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        600,
+        290
+       ],
+       "text": "wood",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "heat5",
+       "op": "arrow",
+       "startMs": 2700,
+       "endMs": 3700,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        400,
+        170
+       ],
+       "to": [
+        400,
+        330
+       ]
+      },
+      {
+       "id": "doesnot",
+       "op": "text",
+       "startMs": 3700,
+       "endMs": 4700,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        380
+       ],
+       "text": "heat does not pass",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "cool",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 5900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        455
+       ],
+       "text": "fairly cool",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "hold",
+       "op": "label",
+       "startMs": 6000,
+       "endMs": 6800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        570,
+        455
+       ],
+       "text": "hold",
+       "to": [
+        480,
+        455
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch06-t02-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "panbody",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        250
+       ],
+       "rx": 180,
+       "ry": 70
+      },
+      {
+       "id": "metal",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        250
+       ],
+       "text": "metal",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "stove",
+       "op": "line",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        180,
+        370
+       ],
+       "to": [
+        620,
+        370
+       ]
+      },
+      {
+       "id": "flame1",
+       "op": "sector",
+       "startMs": 2200,
+       "endMs": 3000,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        300,
+        370
+       ],
+       "r": 45,
+       "fill": "accent",
+       "fromDeg": 200,
+       "toDeg": 340
+      },
+      {
+       "id": "flame2",
+       "op": "sector",
+       "startMs": 2400,
+       "endMs": 3200,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        370
+       ],
+       "r": 45,
+       "fill": "accent",
+       "fromDeg": 200,
+       "toDeg": 340
+      },
+      {
+       "id": "flame3",
+       "op": "sector",
+       "startMs": 2600,
+       "endMs": 3400,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        500,
+        370
+       ],
+       "r": 45,
+       "fill": "accent",
+       "fromDeg": 200,
+       "toDeg": 340
+      },
+      {
+       "id": "heatfast",
+       "op": "arrow",
+       "startMs": 3500,
+       "endMs": 4500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        330
+       ],
+       "to": [
+        400,
+        170
+       ]
+      },
+      {
+       "id": "quick",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5300,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        120
+       ],
+       "text": "heat quickly",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "doesntmelt",
+       "op": "text",
+       "startMs": 5700,
+       "endMs": 6500,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        455
+       ],
+       "text": "does not melt",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch06-t02-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 12089,
+     "ops": [
+      {
+       "id": "job",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "lunchbox",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "box",
+       "op": "rect",
+       "startMs": 700,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        270,
+        110
+       ],
+       "w": 260,
+       "h": 150,
+       "round": 12
+      },
+      {
+       "id": "strong",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        110,
+        340
+       ],
+       "text": "strong",
+       "size": "m"
+      },
+      {
+       "id": "waterproof",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        300,
+        340
+       ],
+       "text": "waterproof",
+       "size": "m"
+      },
+      {
+       "id": "safe",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        560,
+        340
+       ],
+       "text": "food-safe",
+       "size": "m"
+      },
+      {
+       "id": "steel",
+       "op": "rect",
+       "startMs": 3100,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        405
+       ],
+       "w": 100,
+       "h": 45
+      },
+      {
+       "id": "foodplastic",
+       "op": "rect",
+       "startMs": 3200,
+       "endMs": 3800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        580,
+        405
+       ],
+       "w": 100,
+       "h": 45,
+       "fill": "soft"
+      },
+      {
+       "id": "steellabel",
+       "op": "text",
+       "startMs": 3600,
+       "endMs": 4200,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        170,
+        480
+       ],
+       "text": "steel",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "plasticlabel",
+       "op": "text",
+       "startMs": 3700,
+       "endMs": 4500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        630,
+        480
+       ],
+       "text": "food-safe plastic",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "match1",
+       "op": "arrow",
+       "startMs": 4700,
+       "endMs": 5700,
+       "ink": "good",
+       "weight": 1,
+       "from": [
+        220,
+        425
+       ],
+       "to": [
+        270,
+        185
+       ]
+      },
+      {
+       "id": "match2",
+       "op": "arrow",
+       "startMs": 5000,
+       "endMs": 6000,
+       "ink": "good",
+       "weight": 1,
+       "from": [
+        580,
+        425
+       ],
+       "to": [
+        530,
+        185
+       ]
+      },
+      {
+       "id": "choose",
+       "op": "text",
+       "startMs": 6500,
+       "endMs": 7400,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        400
+       ],
+       "text": "match properties",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch06-t02-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "group8",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        245
+       ],
+       "r": 85
+      },
+      {
+       "id": "property8",
+       "op": "text",
+       "startMs": 500,
+       "endMs": 1100,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        250
+       ],
+       "text": "property",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "transparent8",
+       "op": "rect",
+       "startMs": 1200,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        100
+       ],
+       "w": 210,
+       "h": 150,
+       "fill": "soft"
+      },
+      {
+       "id": "opaque8",
+       "op": "rect",
+       "startMs": 1400,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        490,
+        100
+       ],
+       "w": 210,
+       "h": 150,
+       "fill": "mark"
+      },
+      {
+       "id": "tl8",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 2800,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        205,
+        290
+       ],
+       "text": "transparent",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "ol8",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        595,
+        290
+       ],
+       "text": "opaque",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "ask",
+       "op": "arrow",
+       "startMs": 3000,
+       "endMs": 3900,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        400,
+        330
+       ],
+       "to": [
+        205,
+        250
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L9",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch06-t02-wb-L9",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 2302,
+     "ops": [
+      {
+       "id": "taplabel",
+       "op": "text",
+       "startMs": 1100,
+       "endMs": 1800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        205,
+        390
+       ],
+       "text": "tap",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "taparrow",
+       "op": "arrow",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "good",
+       "weight": 1,
+       "from": [
+        205,
+        380
+       ],
+       "to": [
+        205,
+        255
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:glass",
+   "key": "See through",
+   "prompt": "Glass → which of [See through | Partly seen | Cannot see] props {\"light\":\"transparent\"}",
+   "src": "c6-science-ch06-t02-i02"
+  },
+  {
+   "itemId": "r1:clearplastic",
+   "key": "See through",
+   "prompt": "Clear plastic → which of [See through | Partly seen | Cannot see] props {\"light\":\"transparent\"}",
+   "src": "c6-science-ch06-t02-i02"
+  },
+  {
+   "itemId": "r1:wood",
+   "key": "Cannot see",
+   "prompt": "Wood → which of [See through | Partly seen | Cannot see] props {\"light\":\"opaque\"}",
+   "src": "c6-science-ch06-t02-i02"
+  },
+  {
+   "itemId": "r1:iron",
+   "key": "Cannot see",
+   "prompt": "Iron → which of [See through | Partly seen | Cannot see] props {\"light\":\"opaque\"}",
+   "src": "c6-science-ch06-t02-i02"
+  },
+  {
+   "itemId": "r1:cardboard",
+   "key": "Cannot see",
+   "prompt": "Cardboard → which of [See through | Partly seen | Cannot see] props {\"light\":\"opaque\"}",
+   "src": "c6-science-ch06-t02-i02"
+  },
+  {
+   "itemId": "r2:woodblock",
+   "key": "Floats",
+   "prompt": "Wooden block → which of [Floats | Sinks] props {\"floats\":\"yes\"}",
+   "src": "c6-science-ch06-t02-i09"
+  },
+  {
+   "itemId": "r2:plasticball",
+   "key": "Floats",
+   "prompt": "Plastic ball → which of [Floats | Sinks] props {\"floats\":\"yes\"}",
+   "src": "c6-science-ch06-t02-i09"
+  },
+  {
+   "itemId": "r2:steelsppon",
+   "key": "Sinks",
+   "prompt": "Steel spoon → which of [Floats | Sinks] props {\"floats\":\"no\"}",
+   "src": "c6-science-ch06-t02-i09"
+  },
+  {
+   "itemId": "r2:stone",
+   "key": "Sinks",
+   "prompt": "Stone → which of [Floats | Sinks] props {\"floats\":\"no\"}",
+   "src": "c6-science-ch06-t02-i09"
+  },
+  {
+   "itemId": "r3:chair",
+   "key": "Object",
+   "prompt": "Chair → which of [Object | Material]",
+   "src": "c6-science-ch06-t02-i10"
+  },
+  {
+   "itemId": "r3:bottle",
+   "key": "Object",
+   "prompt": "Bottle → which of [Object | Material]",
+   "src": "c6-science-ch06-t02-i10"
+  },
+  {
+   "itemId": "r3:spoon",
+   "key": "Object",
+   "prompt": "Spoon → which of [Object | Material]",
+   "src": "c6-science-ch06-t02-i10"
+  },
+  {
+   "itemId": "r3:woodmat",
+   "key": "Material",
+   "prompt": "Wood → which of [Object | Material]",
+   "src": "c6-science-ch06-t02-i10"
+  },
+  {
+   "itemId": "r3:plasticmat",
+   "key": "Material",
+   "prompt": "Plastic → which of [Object | Material]",
+   "src": "c6-science-ch06-t02-i10"
+  },
+  {
+   "itemId": "r3:steelmat",
+   "key": "Material",
+   "prompt": "Steel → which of [Object | Material]",
+   "src": "c6-science-ch06-t02-i10"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

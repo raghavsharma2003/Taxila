@@ -1,0 +1,1901 @@
+{
+ "topicId": "c5-evs-ch06-t01",
+ "title": "Islands, forests and ghats",
+ "chapter": "Some Unique Places",
+ "subject": "evs",
+ "class": 5,
+ "topicType": "T3",
+ "plan": {
+  "game": "land-lab@1",
+  "hint": "rain mode (coast, hills, rain shadow) and flood mode"
+ },
+ "game": {
+  "archetype": "land-lab@1",
+  "spec": {
+   "archetype": "land-lab@1",
+   "skills": [
+    "c5-evs-ch06-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "done": "right",
+    "wind": "wind",
+    "sea": "sea",
+    "rain": "RAIN",
+    "storm": "STORM",
+    "lock": "LOCK",
+    "wet": "wet",
+    "dry": "dry",
+    "trees": "plant trees",
+    "spring": "spring",
+    "trace": "Tap cells from spring to sea",
+    "runDone": "Lab closed",
+    "level": "flood level",
+    "safe": "SAFE",
+    "flooded": "FLOODED",
+    "mm": "mm of rain",
+    "high": "high",
+    "low": "low",
+    "reset": "clear"
+   },
+   "title": "Land & Water Lab",
+   "rounds": [
+    {
+     "mode": "rain",
+     "title": "Monsoon and the Ghats",
+     "sub": "sea wind meets the hills",
+     "coast": 0.2,
+     "hills": [
+      {
+       "x": 0.46,
+       "h": 0.85,
+       "w": 0.1
+      }
+     ],
+     "asks": [
+      {
+       "label": "Andaman forest",
+       "glyph": "tree",
+       "need": "wet"
+      },
+      {
+       "label": "Pune farm",
+       "glyph": "wheat",
+       "need": "dry"
+      }
+     ],
+     "targets": "c5-evs-ch06-t01-m4"
+    },
+    {
+     "mode": "river",
+     "title": "Trace the river",
+     "sub": "follow the slope to the sea",
+     "w": 9,
+     "h": 6,
+     "peaks": [
+      {
+       "x": 2,
+       "y": 1,
+       "h": 3.2,
+       "r": 2
+      },
+      {
+       "x": 7,
+       "y": 2,
+       "h": 2.5,
+       "r": 1.8
+      }
+     ],
+     "spring": [
+      4,
+      0
+     ],
+     "targets": "c5-evs-ch06-t01-m4"
+    },
+    {
+     "mode": "flood",
+     "title": "Safe valley place",
+     "sub": "choose a safer high slope",
+     "profile": [
+      9,
+      7,
+      5,
+      3.5,
+      2.5,
+      1.5,
+      0.5,
+      0,
+      0.8,
+      2,
+      3.2,
+      5,
+      7.5,
+      9
+     ],
+     "rain": 200,
+     "label": "school",
+     "glyph": "school",
+     "targets": "c5-evs-ch06-t01-m1"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 2,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c5-evs-ch06-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Islands, forests and ghats",
+   "accent": "mint",
+   "targets": "c5-evs-ch06-t01-m2",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "ttl",
+       "type": "title",
+       "text": "Islands, forests and ghats"
+      },
+      {
+       "id": "island",
+       "type": "node",
+       "text": "Island",
+       "sub": "land and water",
+       "glyph": "earth",
+       "color": "mint"
+      },
+      {
+       "id": "sea",
+       "type": "node",
+       "text": "Water all around",
+       "glyph": "wave",
+       "color": "sci"
+      },
+      {
+       "id": "myth2",
+       "type": "myth",
+       "text": "An island floats like a boat"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "anda",
+       "type": "node",
+       "text": "Andaman",
+       "sub": "rainforest",
+       "glyph": "tree",
+       "color": "mint"
+      },
+      {
+       "id": "mang",
+       "type": "node",
+       "text": "Mangroves",
+       "glyph": "leaf",
+       "color": "mint"
+      },
+      {
+       "id": "reef",
+       "type": "node",
+       "text": "Coral reefs",
+       "sub": "tiny animals",
+       "glyph": "fish",
+       "color": "sci"
+      },
+      {
+       "id": "life",
+       "type": "node",
+       "text": "Many animals",
+       "color": "amber"
+      },
+      {
+       "id": "ia1",
+       "type": "arrow",
+       "from": "anda",
+       "to": "mang",
+       "text": "includes"
+      },
+      {
+       "id": "ia2",
+       "type": "arrow",
+       "from": "mang",
+       "to": "reef",
+       "text": "near"
+      },
+      {
+       "id": "ia3",
+       "type": "arrow",
+       "from": "reef",
+       "to": "life",
+       "text": "shelter"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "split",
+     "els": [
+      {
+       "id": "ghats",
+       "type": "node",
+       "text": "Western Ghats",
+       "sub": "west coast hills",
+       "glyph": "mountain",
+       "color": "mint"
+      },
+      {
+       "id": "wind",
+       "type": "node",
+       "text": "Moist winds",
+       "sub": "Arabian Sea",
+       "glyph": "wind",
+       "color": "sci"
+      },
+      {
+       "id": "clouds",
+       "type": "node",
+       "text": "Rising air",
+       "glyph": "cloud",
+       "color": "ion"
+      },
+      {
+       "id": "west",
+       "type": "node",
+       "text": "Sea-facing side",
+       "sub": "more rain",
+       "glyph": "rain",
+       "color": "sci"
+      },
+      {
+       "id": "east",
+       "type": "node",
+       "text": "Far side",
+       "sub": "less rain",
+       "glyph": "sun",
+       "color": "amber"
+      },
+      {
+       "id": "ga1",
+       "type": "arrow",
+       "from": "wind",
+       "to": "ghats",
+       "text": "blows to"
+      },
+      {
+       "id": "ga2",
+       "type": "arrow",
+       "from": "ghats",
+       "to": "clouds",
+       "text": "air rises"
+      },
+      {
+       "id": "ga3",
+       "type": "arrow",
+       "from": "clouds",
+       "to": "west",
+       "text": "heavy rain"
+      },
+      {
+       "id": "ga4",
+       "type": "arrow",
+       "from": "ghats",
+       "to": "east",
+       "text": "less rain"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "An island is land with water all around it. It is the top of land rising from the sea floor.",
+    "L2": "An island does not float like a boat. It stays connected to land below the sea.",
+    "L3": "The Andaman and Nicobar Islands have thick rainforests, mangroves and coral reefs.",
+    "L4": "Coral reefs are built by tiny coral animals called polyps. They shelter a huge variety of sea life.",
+    "L5": "The Western Ghats are a long chain of hills along India's west coast.",
+    "L6": "Moist monsoon winds from the Arabian Sea rise over the hills and drop heavy rain on the sea-facing side.",
+    "L7": "The far side gets much less rain. Warmth and heavy rain help thick forests grow there.",
+    "L8": "Now show what you know: which side of the Western Ghats gets more rain?"
+   },
+   "narration": {
+    "L1": {
+     "text": "An island is land with water all around it. It is the top of land rising from the sea floor.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L2": {
+     "text": "An island does not float like a boat. It stays connected to land below the sea.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L3": {
+     "text": "The Andaman and Nicobar Islands have thick rainforests, mangroves and coral reefs.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L4": {
+     "text": "Coral reefs are built by tiny coral animals called polyps. They shelter a huge variety of sea life.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L5": {
+     "text": "The Western Ghats are a long chain of hills along India's west coast.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Moist monsoon winds from the Arabian Sea rise over the hills and drop heavy rain on the sea-facing side.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L7": {
+     "text": "The far side gets much less rain. Warmth and heavy rain help thick forests grow there.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Now show what you know: which side of the Western Ghats gets more rain?",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.5,
+       "target": "ttl"
+      },
+      {
+       "at": 0.4,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "island",
+        "sea"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "myth2"
+      },
+      {
+       "at": 1,
+       "do": "bust",
+       "dur": 1.2,
+       "target": "myth2"
+      },
+      {
+       "at": 2.2,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "island"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "anda"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "mang",
+        "reef"
+       ]
+      },
+      {
+       "at": 1.2,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "ia1",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "life"
+      },
+      {
+       "at": 0.5,
+       "do": "flow",
+       "dur": 0.8,
+       "target": [
+        "ia2",
+        "ia3"
+       ],
+       "to": 1
+      },
+      {
+       "at": 1.4,
+       "do": "highlight",
+       "dur": 1,
+       "target": "reef"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "ghats"
+      },
+      {
+       "at": 0.6,
+       "do": "show",
+       "dur": 0.7,
+       "target": "wind"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "ga1",
+       "to": 1
+      },
+      {
+       "at": 0.7,
+       "do": "show",
+       "dur": 0.6,
+       "target": "clouds"
+      },
+      {
+       "at": 1.2,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "ga2",
+       "to": 1
+      },
+      {
+       "at": 1.9,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "ga3",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "east"
+      },
+      {
+       "at": 0.5,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "ga4",
+       "to": 1
+      },
+      {
+       "at": 1.4,
+       "do": "highlight",
+       "dur": 1,
+       "target": [
+        "west",
+        "east"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "focus",
+       "dur": 0.8,
+       "target": "west"
+      },
+      {
+       "at": "end",
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which side of the Western Ghats gets more monsoon rain?",
+    "options": [
+     "west",
+     "east"
+    ],
+    "answer": "west",
+    "src": "c5-evs-ch06-t01-i04"
+   }
+  },
+  "repairs": [
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 46
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch06-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9111,
+     "ops": [
+      {
+       "id": "island",
+       "op": "polygon",
+       "startMs": 0,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         290,
+         220
+        ],
+        [
+         340,
+         180
+        ],
+        [
+         420,
+         175
+        ],
+        [
+         485,
+         210
+        ],
+        [
+         520,
+         270
+        ],
+        [
+         480,
+         315
+        ],
+        [
+         390,
+         325
+        ],
+        [
+         320,
+         295
+        ]
+       ]
+      },
+      {
+       "id": "water",
+       "op": "ellipse",
+       "startMs": 300,
+       "endMs": 1700,
+       "ink": "soft",
+       "weight": 1,
+       "c": [
+        405,
+        260
+       ],
+       "rx": 300,
+       "ry": 170
+      },
+      {
+       "id": "sea",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        405,
+        455
+       ],
+       "text": "sea",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "islandLabel",
+       "op": "label",
+       "startMs": 2300,
+       "endMs": 3000,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        405,
+        150
+       ],
+       "text": "island",
+       "to": [
+        405,
+        190
+       ]
+      },
+      {
+       "id": "floor",
+       "op": "stroke",
+       "startMs": 3400,
+       "endMs": 4300,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         100,
+         370
+        ],
+        [
+         180,
+         390
+        ],
+        [
+         260,
+         375
+        ],
+        [
+         340,
+         395
+        ],
+        [
+         420,
+         378
+        ],
+        [
+         500,
+         398
+        ],
+        [
+         580,
+         380
+        ],
+        [
+         680,
+         395
+        ]
+       ]
+      },
+      {
+       "id": "rise",
+       "op": "arrow",
+       "startMs": 4500,
+       "endMs": 5200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        405,
+        365
+       ],
+       "to": [
+        405,
+        315
+       ]
+      },
+      {
+       "id": "floorLabel",
+       "op": "label",
+       "startMs": 5300,
+       "endMs": 6100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        550,
+        425
+       ],
+       "text": "sea floor",
+       "to": [
+        500,
+        390
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch06-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "boat",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        150,
+        125
+       ],
+       "rx": 85,
+       "ry": 28
+      },
+      {
+       "id": "boatLabel",
+       "op": "label",
+       "startMs": 900,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        150,
+        75
+       ],
+       "text": "boat",
+       "to": [
+        150,
+        105
+       ]
+      },
+      {
+       "id": "islandLink",
+       "op": "line",
+       "startMs": 1600,
+       "endMs": 2300,
+       "ink": "mark",
+       "weight": 3,
+       "from": [
+        405,
+        325
+       ],
+       "to": [
+        405,
+        395
+       ]
+      },
+      {
+       "id": "ground",
+       "op": "stroke",
+       "startMs": 2300,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         120,
+         410
+        ],
+        [
+         220,
+         425
+        ],
+        [
+         320,
+         412
+        ],
+        [
+         420,
+         430
+        ],
+        [
+         520,
+         415
+        ],
+        [
+         680,
+         428
+        ]
+       ]
+      },
+      {
+       "id": "connected",
+       "op": "label",
+       "startMs": 3400,
+       "endMs": 4300,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        470,
+        360
+       ],
+       "text": "connected",
+       "to": [
+        405,
+        380
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch06-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "forest",
+       "op": "polygon",
+       "startMs": 1100,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         100,
+         210
+        ],
+        [
+         150,
+         160
+        ],
+        [
+         210,
+         180
+        ],
+        [
+         250,
+         145
+        ],
+        [
+         300,
+         190
+        ],
+        [
+         285,
+         260
+        ],
+        [
+         220,
+         275
+        ],
+        [
+         160,
+         250
+        ]
+       ]
+      },
+      {
+       "id": "forestLabel",
+       "op": "label",
+       "startMs": 2100,
+       "endMs": 2700,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        180,
+        120
+       ],
+       "text": "rainforests",
+       "to": [
+        195,
+        175
+       ]
+      },
+      {
+       "id": "mangrove",
+       "op": "stroke",
+       "startMs": 2800,
+       "endMs": 3800,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         390,
+         270
+        ],
+        [
+         390,
+         200
+        ],
+        [
+         375,
+         235
+        ],
+        [
+         420,
+         190
+        ],
+        [
+         430,
+         270
+        ],
+        [
+         465,
+         210
+        ],
+        [
+         470,
+         275
+        ]
+       ]
+      },
+      {
+       "id": "mangroveLabel",
+       "op": "label",
+       "startMs": 3800,
+       "endMs": 4400,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        430,
+        320
+       ],
+       "text": "mangroves",
+       "to": [
+        430,
+        270
+       ]
+      },
+      {
+       "id": "reef",
+       "op": "sector",
+       "startMs": 4000,
+       "endMs": 5000,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        635,
+        245
+       ],
+       "r": 75,
+       "fill": "accent",
+       "fromDeg": 190,
+       "toDeg": 350
+      },
+      {
+       "id": "reefLabel",
+       "op": "label",
+       "startMs": 4700,
+       "endMs": 5500,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        635,
+        350
+       ],
+       "text": "coral reefs",
+       "to": [
+        635,
+        300
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch06-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "polyp",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        180,
+        180
+       ],
+       "r": 28
+      },
+      {
+       "id": "tentacles",
+       "op": "stroke",
+       "startMs": 500,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         180,
+         208
+        ],
+        [
+         155,
+         240
+        ],
+        [
+         165,
+         215
+        ],
+        [
+         135,
+         230
+        ],
+        [
+         165,
+         205
+        ],
+        [
+         145,
+         195
+        ],
+        [
+         175,
+         205
+        ],
+        [
+         190,
+         170
+        ],
+        [
+         215,
+         195
+        ],
+        [
+         195,
+         180
+        ],
+        [
+         220,
+         165
+        ],
+        [
+         195,
+         175
+        ]
+       ]
+      },
+      {
+       "id": "polyps",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2100,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        180,
+        285
+       ],
+       "text": "polyps",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "reefBase",
+       "op": "ellipse",
+       "startMs": 2300,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        350
+       ],
+       "rx": 220,
+       "ry": 55
+      },
+      {
+       "id": "reefGrowth",
+       "op": "stroke",
+       "startMs": 3300,
+       "endMs": 4700,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         250,
+         350
+        ],
+        [
+         270,
+         300
+        ],
+        [
+         290,
+         340
+        ],
+        [
+         315,
+         275
+        ],
+        [
+         340,
+         340
+        ],
+        [
+         365,
+         290
+        ],
+        [
+         395,
+         340
+        ],
+        [
+         430,
+         285
+        ],
+        [
+         455,
+         340
+        ],
+        [
+         490,
+         305
+        ],
+        [
+         520,
+         345
+        ]
+       ]
+      },
+      {
+       "id": "shelter",
+       "op": "text",
+       "startMs": 5200,
+       "endMs": 5900,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        440
+       ],
+       "text": "sea life",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "lifeArrow",
+       "op": "arrow",
+       "startMs": 5900,
+       "endMs": 6800,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        400,
+        300
+       ],
+       "to": [
+        400,
+        410
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch06-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "india",
+       "op": "polygon",
+       "startMs": 0,
+       "endMs": 1200,
+       "ink": "soft",
+       "weight": 1,
+       "points": [
+        [
+         310,
+         80
+        ],
+        [
+         390,
+         105
+        ],
+        [
+         450,
+         170
+        ],
+        [
+         470,
+         260
+        ],
+        [
+         430,
+         350
+        ],
+        [
+         350,
+         400
+        ],
+        [
+         285,
+         350
+        ],
+        [
+         300,
+         250
+        ],
+        [
+         270,
+         170
+        ]
+       ]
+      },
+      {
+       "id": "coast",
+       "op": "line",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        270,
+        120
+       ],
+       "to": [
+        270,
+        380
+       ]
+      },
+      {
+       "id": "ghats",
+       "op": "stroke",
+       "startMs": 1600,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 3,
+       "points": [
+        [
+         320,
+         110
+        ],
+        [
+         350,
+         150
+        ],
+        [
+         330,
+         195
+        ],
+        [
+         370,
+         235
+        ],
+        [
+         345,
+         285
+        ],
+        [
+         380,
+         330
+        ],
+        [
+         360,
+         375
+        ]
+       ]
+      },
+      {
+       "id": "ghLabel",
+       "op": "label",
+       "startMs": 3000,
+       "endMs": 3900,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        450,
+        220
+       ],
+       "text": "Western Ghats",
+       "to": [
+        365,
+        240
+       ]
+      },
+      {
+       "id": "westCoast",
+       "op": "label",
+       "startMs": 4000,
+       "endMs": 4800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        170,
+        250
+       ],
+       "text": "west coast",
+       "to": [
+        270,
+        250
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch06-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "seaSide",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        110,
+        80
+       ],
+       "text": "Arabian Sea",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "wind1",
+       "op": "arrow",
+       "startMs": 700,
+       "endMs": 1700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        100,
+        145
+       ],
+       "to": [
+        310,
+        180
+       ]
+      },
+      {
+       "id": "wind2",
+       "op": "arrow",
+       "startMs": 1100,
+       "endMs": 2100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        100,
+        220
+       ],
+       "to": [
+        320,
+        225
+       ]
+      },
+      {
+       "id": "rise",
+       "op": "arrow",
+       "startMs": 2200,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 3,
+       "from": [
+        350,
+        310
+       ],
+       "to": [
+        390,
+        130
+       ]
+      },
+      {
+       "id": "cloud",
+       "op": "ellipse",
+       "startMs": 3500,
+       "endMs": 4300,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        475,
+        120
+       ],
+       "rx": 85,
+       "ry": 32
+      },
+      {
+       "id": "rain",
+       "op": "stroke",
+       "startMs": 4400,
+       "endMs": 5700,
+       "ink": "mark",
+       "weight": 2,
+       "points": [
+        [
+         440,
+         165
+        ],
+        [
+         430,
+         230
+        ],
+        [
+         450,
+         195
+        ],
+        [
+         460,
+         265
+        ],
+        [
+         480,
+         215
+        ],
+        [
+         500,
+         275
+        ],
+        [
+         520,
+         220
+        ]
+       ]
+      },
+      {
+       "id": "heavyRain",
+       "op": "label",
+       "startMs": 5700,
+       "endMs": 6600,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        540,
+        300
+       ],
+       "text": "heavy rain",
+       "to": [
+        490,
+        240
+       ]
+      },
+      {
+       "id": "seaFacing",
+       "op": "text",
+       "startMs": 6800,
+       "endMs": 7700,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        570,
+        390
+       ],
+       "text": "sea-facing side",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch06-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "farSide",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        665,
+        80
+       ],
+       "text": "far side",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "lessRain",
+       "op": "label",
+       "startMs": 700,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        650,
+        180
+       ],
+       "text": "much less rain",
+       "to": [
+        620,
+        220
+       ]
+      },
+      {
+       "id": "smallRain",
+       "op": "stroke",
+       "startMs": 1500,
+       "endMs": 2100,
+       "ink": "mark",
+       "weight": 2,
+       "points": [
+        [
+         610,
+         220
+        ],
+        [
+         600,
+         250
+        ],
+        [
+         625,
+         240
+        ]
+       ]
+      },
+      {
+       "id": "warmth",
+       "op": "circle",
+       "startMs": 2200,
+       "endMs": 2900,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        160,
+        330
+       ],
+       "r": 38,
+       "fill": "accent"
+      },
+      {
+       "id": "warmthLabel",
+       "op": "label",
+       "startMs": 2900,
+       "endMs": 3500,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        160,
+        400
+       ],
+       "text": "warmth",
+       "to": [
+        160,
+        370
+       ]
+      },
+      {
+       "id": "forest",
+       "op": "polygon",
+       "startMs": 3600,
+       "endMs": 5000,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         300,
+         390
+        ],
+        [
+         325,
+         300
+        ],
+        [
+         350,
+         390
+        ],
+        [
+         375,
+         280
+        ],
+        [
+         405,
+         390
+        ],
+        [
+         435,
+         305
+        ],
+        [
+         465,
+         390
+        ],
+        [
+         500,
+         320
+        ],
+        [
+         530,
+         390
+        ]
+       ]
+      },
+      {
+       "id": "forestLabel2",
+       "op": "label",
+       "startMs": 5100,
+       "endMs": 6000,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        415,
+        450
+       ],
+       "text": "thick forests",
+       "to": [
+        415,
+        390
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch06-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "seaSide2",
+       "op": "label",
+       "startMs": 1200,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        210,
+        150
+       ],
+       "text": "sea-facing side",
+       "to": [
+        300,
+        210
+       ]
+      },
+      {
+       "id": "farSide2",
+       "op": "label",
+       "startMs": 1800,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        620,
+        150
+       ],
+       "text": "far side",
+       "to": [
+        570,
+        210
+       ]
+      },
+      {
+       "id": "rainArrow",
+       "op": "arrow",
+       "startMs": 2600,
+       "endMs": 3500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        230,
+        260
+       ],
+       "to": [
+        350,
+        260
+       ]
+      },
+      {
+       "id": "moreRain",
+       "op": "highlight",
+       "startMs": 3700,
+       "endMs": 5000,
+       "ink": "good",
+       "weight": 2,
+       "target": "seaSide2",
+       "style": "circle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "wet: 0.29–0.44",
+   "prompt": "Andaman forest"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "dry: 0.47–1.00",
+   "prompt": "Pune farm"
+  },
+  {
+   "itemId": "r2",
+   "key": "4,0 → 5,0 → 5,1 → 5,2 → 5,3 → 5,4 → 5,5",
+   "prompt": "trace the river"
+  },
+  {
+   "itemId": "r3",
+   "key": "above 4.4 m (2.6 m with trees)",
+   "prompt": "school"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

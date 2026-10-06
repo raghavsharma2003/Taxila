@@ -1,0 +1,1996 @@
+{
+ "topicId": "c6-sst-ch01-t01",
+ "title": "Locating Places on the Earth",
+ "chapter": "Locating Places on the Earth",
+ "subject": "sst",
+ "class": 6,
+ "topicType": "T4",
+ "plan": {
+  "game": "map-route@1",
+  "hint": "globe mode: pins at latitudes/longitudes (equator, tropics, India's extent); one region round"
+ },
+ "game": {
+  "archetype": "map-route@1",
+  "spec": {
+   "archetype": "map-route@1",
+   "skills": [
+    "c6-sst-ch01-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "thread": "Drag the thread along the winding road",
+    "round": "Round",
+    "done": "maps",
+    "go": "FLY",
+    "undo": "UNDO",
+    "coach": "Plan the route, then FLY",
+    "runDone": "Map room closed",
+    "fwd": "forward",
+    "left": "left",
+    "right": "right",
+    "km": "km",
+    "scale": "1 square =",
+    "measure": "Measure the map distance, then set it",
+    "lat": "lat",
+    "lon": "long",
+    "drop": "Drop the pin here",
+    "fly": "Fly to",
+    "set": "SET",
+    "N": "N",
+    "S": "S",
+    "E": "E",
+    "W": "W",
+    "blocked": "BLOCKED",
+    "arrived": "ARRIVED"
+   },
+   "title": "Map Room",
+   "rounds": [
+    {
+     "mode": "route",
+     "title": "Drone route",
+     "sub": "use directions around the blocks",
+     "w": 9,
+     "h": 6,
+     "blocks": [
+      [
+       3,
+       1
+      ],
+      [
+       3,
+       2
+      ],
+      [
+       3,
+       3
+      ],
+      [
+       4,
+       3
+      ],
+      [
+       5,
+       3
+      ],
+      [
+       6,
+       3
+      ],
+      [
+       6,
+       4
+      ]
+     ],
+     "places": [
+      {
+       "at": [
+        8,
+        1
+       ],
+       "label": "School",
+       "glyph": "school"
+      },
+      {
+       "at": [
+        8,
+        5
+       ],
+       "label": "Station",
+       "glyph": "train"
+      }
+     ],
+     "start": [
+      0,
+      5
+     ],
+     "goal": 0,
+     "steer": "compass",
+     "maxSteps": 18
+    },
+    {
+     "mode": "thread",
+     "title": "Winding road",
+     "sub": "lay the thread, then read the scale",
+     "w": 9,
+     "h": 6,
+     "curve": [
+      [
+       0.5,
+       4.8
+      ],
+      [
+       1.5,
+       3.8
+      ],
+      [
+       2.3,
+       4.2
+      ],
+      [
+       3.2,
+       2.6
+      ],
+      [
+       4.4,
+       3.4
+      ],
+      [
+       5.5,
+       1.8
+      ],
+      [
+       6.7,
+       2.5
+      ],
+      [
+       8.2,
+       1.2
+      ]
+     ],
+     "kmPerSquare": 5,
+     "tolPct": 12,
+     "targets": "c6-sst-ch01-t01-m3"
+    },
+    {
+     "mode": "globe",
+     "title": "Pin the globe",
+     "sub": "use latitude, then longitude",
+     "pins": [
+      {
+       "lat": 0,
+       "lon": 0,
+       "label": "Equator"
+      },
+      {
+       "lat": 23.5,
+       "lon": 0,
+       "label": "Tropic"
+      },
+      {
+       "lat": 28.6,
+       "lon": 77.2,
+       "label": "New Delhi"
+      }
+     ],
+     "tol": 5,
+     "targets": "c6-sst-ch01-t01-m1"
+    },
+    {
+     "mode": "region",
+     "title": "Fly to a region",
+     "sub": "choose the named continent or ocean",
+     "asks": [
+      "Asia",
+      "Indian Ocean",
+      "Africa"
+     ]
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c6-sst-ch01-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Locate a Place on Earth",
+   "accent": "ion",
+   "targets": "c6-sst-ch01-t01-m1",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "row",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Locate a Place on Earth"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Longitude measures north-south"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "map",
+       "type": "node",
+       "text": "Map",
+       "sub": "scale and symbols",
+       "glyph": "map",
+       "color": "mint"
+      },
+      {
+       "id": "scale",
+       "type": "node",
+       "text": "Scale",
+       "sub": "real distance",
+       "glyph": "ruler",
+       "color": "amber"
+      },
+      {
+       "id": "direction",
+       "type": "node",
+       "text": "Directions",
+       "sub": "N S E W",
+       "glyph": "compass",
+       "color": "ion"
+      },
+      {
+       "id": "symbol",
+       "type": "node",
+       "text": "Symbols",
+       "sub": "map key",
+       "glyph": "spark",
+       "color": "sun"
+      },
+      {
+       "id": "ma1",
+       "type": "arrow",
+       "from": "map",
+       "to": "scale",
+       "text": "shows"
+      },
+      {
+       "id": "ma2",
+       "type": "arrow",
+       "from": "map",
+       "to": "direction",
+       "text": "shows"
+      },
+      {
+       "id": "ma3",
+       "type": "arrow",
+       "from": "map",
+       "to": "symbol",
+       "text": "shows"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "equator",
+       "type": "node",
+       "text": "Equator 0°",
+       "sub": "latitude",
+       "glyph": "earth",
+       "color": "sci"
+      },
+      {
+       "id": "pm",
+       "type": "node",
+       "text": "Prime Meridian",
+       "sub": "longitude 0°",
+       "glyph": "globe",
+       "color": "ion"
+      },
+      {
+       "id": "lat",
+       "type": "node",
+       "text": "Latitude",
+       "sub": "north or south",
+       "glyph": "wave",
+       "color": "mint"
+      },
+      {
+       "id": "long",
+       "type": "node",
+       "text": "Longitude",
+       "sub": "east or west",
+       "glyph": "compass",
+       "color": "amber"
+      },
+      {
+       "id": "la1",
+       "type": "arrow",
+       "from": "equator",
+       "to": "lat",
+       "text": "measures"
+      },
+      {
+       "id": "lo1",
+       "type": "arrow",
+       "from": "pm",
+       "to": "long",
+       "text": "measures"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "nd",
+       "type": "node",
+       "text": "New Delhi",
+       "sub": "28.6°N, 77.2°E",
+       "color": "sun"
+      },
+      {
+       "id": "north",
+       "type": "label",
+       "text": "28.6°N",
+       "x": 240,
+       "y": 280,
+       "color": "mint"
+      },
+      {
+       "id": "east",
+       "type": "label",
+       "text": "77.2°E",
+       "x": 650,
+       "y": 360,
+       "color": "amber"
+      },
+      {
+       "id": "cross",
+       "type": "glyph",
+       "name": "spark",
+       "x": 510,
+       "y": 330,
+       "size": 100,
+       "color": "sun"
+      }
+     ]
+    },
+    {
+     "id": "s5",
+     "layout": "row",
+     "els": [
+      {
+       "id": "ujjain",
+       "type": "node",
+       "text": "Ujjain",
+       "sub": "madhya rekha",
+       "glyph": "temple",
+       "color": "amber"
+      },
+      {
+       "id": "ist",
+       "type": "node",
+       "text": "IST",
+       "sub": "82.5°E",
+       "glyph": "clock",
+       "color": "ion"
+      },
+      {
+       "id": "green",
+       "type": "node",
+       "text": "Greenwich",
+       "sub": "0°",
+       "glyph": "clock",
+       "color": "mint"
+      },
+      {
+       "id": "ta1",
+       "type": "arrow",
+       "from": "green",
+       "to": "ist",
+       "text": "5 h 30 min"
+      },
+      {
+       "id": "ta2",
+       "type": "arrow",
+       "from": "ujjain",
+       "to": "ist",
+       "text": "reference"
+      }
+     ]
+    },
+    {
+     "id": "s6",
+     "layout": "row",
+     "els": [
+      {
+       "id": "eqopt",
+       "type": "label",
+       "text": "Equator",
+       "x": 180,
+       "y": 330,
+       "color": "mint"
+      },
+      {
+       "id": "pmopt",
+       "type": "label",
+       "text": "Prime Meridian",
+       "x": 520,
+       "y": 330,
+       "color": "ion"
+      },
+      {
+       "id": "tasktitle",
+       "type": "title",
+       "text": "Choose the longitude line"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Maps help us locate places using scale, directions, and symbols.",
+    "L2": "Latitude and longitude are different kinds of imaginary lines.",
+    "L3": "Latitude tells how far north or south a place is from the Equator.",
+    "L4": "Longitude tells how far east or west a place is from the Prime Meridian.",
+    "L5": "New Delhi is where 28.6°N and 77.2°E cross.",
+    "L6": "Indian astronomers once used Ujjain as a reference meridian.",
+    "L7": "India's time is 5 hours 30 minutes ahead of Greenwich because IST uses 82.5°E.",
+    "L8": "Now check: which 0° line is longitude?"
+   },
+   "narration": {
+    "L1": {
+     "text": "Maps help us locate places using scale, directions, and symbols.",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L2": {
+     "text": "Latitude and longitude are different kinds of imaginary lines.",
+     "dur": 3.2,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L3": {
+     "text": "Latitude tells how far north or south a place is from the Equator.",
+     "dur": 3.4,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L4": {
+     "text": "Longitude tells how far east or west a place is from the Prime Meridian.",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L5": {
+     "text": "New Delhi is where 28.6°N and 77.2°E cross.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Indian astronomers once used Ujjain as a reference meridian.",
+     "dur": 3.2,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L7": {
+     "text": "India's time is 5 hours 30 minutes ahead of Greenwich because IST uses 82.5°E.",
+     "dur": 4.2,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Now check: which 0° line is longitude?",
+     "dur": 2.2,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      },
+      {
+       "at": 1.2,
+       "do": "show",
+       "dur": 0.6,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0.2,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "map",
+        "scale",
+        "direction",
+        "symbol"
+       ]
+      },
+      {
+       "at": 2.2,
+       "do": "flow",
+       "dur": 0.6,
+       "target": [
+        "ma1",
+        "ma2",
+        "ma3"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "equator",
+        "lat",
+        "la1"
+       ]
+      },
+      {
+       "at": 1.8,
+       "do": "highlight",
+       "dur": 1,
+       "target": "lat"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "pm",
+        "long",
+        "lo1"
+       ]
+      },
+      {
+       "at": 1.4,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "lo1",
+       "to": 1
+      },
+      {
+       "at": 2.1,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "long"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "nd",
+        "north",
+        "east"
+       ]
+      },
+      {
+       "at": 1.2,
+       "do": "show",
+       "dur": 0.5,
+       "target": "cross"
+      },
+      {
+       "at": 2.4,
+       "do": "focus",
+       "dur": 0.8,
+       "target": "nd"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s5",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "ujjain"
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 1,
+       "target": "ujjain"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s5",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "green",
+        "ist"
+       ]
+      },
+      {
+       "at": 1.2,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "ta1",
+       "to": 1
+      },
+      {
+       "at": 2.2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "ist"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s6",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "tasktitle",
+        "eqopt",
+        "pmopt"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "interactive"
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which option names the 0° line of longitude?",
+    "options": [
+     "eqopt",
+     "pmopt"
+    ],
+    "answer": "pmopt",
+    "src": "c6-sst-ch01-t01-i02"
+   }
+  },
+  "repairs": [
+   "glyph",
+   "bars:n",
+   "arrow:dangling",
+   "arrow:dangling",
+   "cue:target",
+   "cue:target",
+   "cue:target"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 30
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch01-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "map",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        80,
+        90
+       ],
+       "w": 400,
+       "h": 280,
+       "round": 10
+      },
+      {
+       "id": "north",
+       "op": "arrow",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        280,
+        190
+       ],
+       "to": [
+        280,
+        115
+       ]
+      },
+      {
+       "id": "south",
+       "op": "arrow",
+       "startMs": 1100,
+       "endMs": 1700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        280,
+        270
+       ],
+       "to": [
+        280,
+        345
+       ]
+      },
+      {
+       "id": "east",
+       "op": "arrow",
+       "startMs": 1500,
+       "endMs": 2100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        320,
+        230
+       ],
+       "to": [
+        405,
+        230
+       ]
+      },
+      {
+       "id": "west",
+       "op": "arrow",
+       "startMs": 1800,
+       "endMs": 2400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        240,
+        230
+       ],
+       "to": [
+        155,
+        230
+       ]
+      },
+      {
+       "id": "scale",
+       "op": "line",
+       "startMs": 2300,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        110,
+        405
+       ],
+       "to": [
+        230,
+        405
+       ]
+      },
+      {
+       "id": "scaleLabel",
+       "op": "label",
+       "startMs": 2700,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        170,
+        435
+       ],
+       "text": "scale",
+       "to": [
+        170,
+        405
+       ]
+      },
+      {
+       "id": "symbol",
+       "op": "circle",
+       "startMs": 3000,
+       "endMs": 3400,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        420,
+        145
+       ],
+       "r": 14
+      },
+      {
+       "id": "symbolLabel",
+       "op": "label",
+       "startMs": 3300,
+       "endMs": 4000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        510,
+        145
+       ],
+       "text": "symbols",
+       "to": [
+        434,
+        145
+       ]
+      },
+      {
+       "id": "directions",
+       "op": "label",
+       "startMs": 3700,
+       "endMs": 4500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        560,
+        235
+       ],
+       "text": "directions",
+       "to": [
+        405,
+        230
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch01-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4430,
+     "ops": [
+      {
+       "id": "grid",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        80
+       ],
+       "w": 560,
+       "h": 320
+      },
+      {
+       "id": "lat1",
+       "op": "ellipse",
+       "startMs": 600,
+       "endMs": 1200,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        180
+       ],
+       "rx": 270,
+       "ry": 35
+      },
+      {
+       "id": "lat2",
+       "op": "ellipse",
+       "startMs": 1000,
+       "endMs": 1600,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        300
+       ],
+       "rx": 270,
+       "ry": 35
+      },
+      {
+       "id": "long1",
+       "op": "ellipse",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "mark",
+       "weight": 2,
+       "c": [
+        400,
+        240
+       ],
+       "rx": 45,
+       "ry": 155
+      },
+      {
+       "id": "long2",
+       "op": "ellipse",
+       "startMs": 1900,
+       "endMs": 2600,
+       "ink": "mark",
+       "weight": 2,
+       "c": [
+        400,
+        240
+       ],
+       "rx": 145,
+       "ry": 155
+      },
+      {
+       "id": "latitude",
+       "op": "label",
+       "startMs": 2500,
+       "endMs": 3200,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        150,
+        145
+       ],
+       "text": "latitude",
+       "to": [
+        180,
+        180
+       ]
+      },
+      {
+       "id": "longitude",
+       "op": "label",
+       "startMs": 3000,
+       "endMs": 3800,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        555,
+        105
+       ],
+       "text": "longitude",
+       "to": [
+        540,
+        125
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch01-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "earthLat",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        350,
+        260
+       ],
+       "r": 150
+      },
+      {
+       "id": "equator",
+       "op": "ellipse",
+       "startMs": 600,
+       "endMs": 1300,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        350,
+        260
+       ],
+       "rx": 145,
+       "ry": 28
+      },
+      {
+       "id": "northLat",
+       "op": "ellipse",
+       "startMs": 1100,
+       "endMs": 1800,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        350,
+        205
+       ],
+       "rx": 135,
+       "ry": 24
+      },
+      {
+       "id": "southLat",
+       "op": "ellipse",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        350,
+        315
+       ],
+       "rx": 135,
+       "ry": 24
+      },
+      {
+       "id": "equatorLabel",
+       "op": "label",
+       "startMs": 2100,
+       "endMs": 2900,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        525,
+        260
+       ],
+       "text": "Equator",
+       "to": [
+        495,
+        260
+       ]
+      },
+      {
+       "id": "zero",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3200,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        525,
+        290
+       ],
+       "text": "0°",
+       "size": "m"
+      },
+      {
+       "id": "northArrow",
+       "op": "arrow",
+       "startMs": 3200,
+       "endMs": 3800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        350,
+        190
+       ],
+       "to": [
+        350,
+        125
+       ]
+      },
+      {
+       "id": "southArrow",
+       "op": "arrow",
+       "startMs": 3500,
+       "endMs": 4100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        350,
+        330
+       ],
+       "to": [
+        350,
+        395
+       ]
+      },
+      {
+       "id": "northLabel",
+       "op": "label",
+       "startMs": 3900,
+       "endMs": 4500,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        375,
+        130
+       ],
+       "text": "north",
+       "to": [
+        350,
+        145
+       ]
+      },
+      {
+       "id": "southLabel",
+       "op": "label",
+       "startMs": 4200,
+       "endMs": 4900,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        375,
+        395
+       ],
+       "text": "south",
+       "to": [
+        350,
+        375
+       ]
+      },
+      {
+       "id": "farLabel",
+       "op": "text",
+       "startMs": 4900,
+       "endMs": 5700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        100,
+        455
+       ],
+       "text": "latitude",
+       "size": "l"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch01-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "earthLong",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        350,
+        260
+       ],
+       "r": 150
+      },
+      {
+       "id": "prime",
+       "op": "ellipse",
+       "startMs": 700,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        350,
+        260
+       ],
+       "rx": 25,
+       "ry": 145
+      },
+      {
+       "id": "eastLong",
+       "op": "ellipse",
+       "startMs": 1200,
+       "endMs": 2000,
+       "ink": "mark",
+       "weight": 2,
+       "c": [
+        425,
+        260
+       ],
+       "rx": 65,
+       "ry": 145
+      },
+      {
+       "id": "westLong",
+       "op": "ellipse",
+       "startMs": 1500,
+       "endMs": 2300,
+       "ink": "mark",
+       "weight": 2,
+       "c": [
+        275,
+        260
+       ],
+       "rx": 65,
+       "ry": 145
+      },
+      {
+       "id": "primeLabel",
+       "op": "label",
+       "startMs": 2200,
+       "endMs": 3200,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        390,
+        105
+       ],
+       "text": "Prime Meridian",
+       "to": [
+        365,
+        125
+       ]
+      },
+      {
+       "id": "primeZero",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        390,
+        140
+       ],
+       "text": "0°",
+       "size": "m"
+      },
+      {
+       "id": "eastArrow",
+       "op": "arrow",
+       "startMs": 3400,
+       "endMs": 4100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        430,
+        260
+       ],
+       "to": [
+        510,
+        260
+       ]
+      },
+      {
+       "id": "westArrow",
+       "op": "arrow",
+       "startMs": 3700,
+       "endMs": 4400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        270,
+        260
+       ],
+       "to": [
+        190,
+        260
+       ]
+      },
+      {
+       "id": "eastLabel",
+       "op": "label",
+       "startMs": 4300,
+       "endMs": 4900,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        515,
+        240
+       ],
+       "text": "east",
+       "to": [
+        485,
+        260
+       ]
+      },
+      {
+       "id": "westLabel",
+       "op": "label",
+       "startMs": 4600,
+       "endMs": 5200,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        135,
+        240
+       ],
+       "text": "west",
+       "to": [
+        195,
+        260
+       ]
+      },
+      {
+       "id": "longitudeLabel",
+       "op": "text",
+       "startMs": 5200,
+       "endMs": 6100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        350,
+        455
+       ],
+       "text": "longitude",
+       "size": "l"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch01-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4004,
+     "ops": [
+      {
+       "id": "grid5",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        80
+       ],
+       "w": 560,
+       "h": 320
+      },
+      {
+       "id": "lat5",
+       "op": "ellipse",
+       "startMs": 500,
+       "endMs": 1100,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        380,
+        235
+       ],
+       "rx": 270,
+       "ry": 32
+      },
+      {
+       "id": "long5",
+       "op": "ellipse",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "mark",
+       "weight": 2,
+       "c": [
+        380,
+        235
+       ],
+       "rx": 55,
+       "ry": 150
+      },
+      {
+       "id": "cross5",
+       "op": "circle",
+       "startMs": 1500,
+       "endMs": 2000,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        380,
+        235
+       ],
+       "r": 9,
+       "fill": "good"
+      },
+      {
+       "id": "nd",
+       "op": "label",
+       "startMs": 1900,
+       "endMs": 2800,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        420,
+        220
+       ],
+       "text": "New Delhi",
+       "to": [
+        389,
+        235
+       ]
+      },
+      {
+       "id": "coords",
+       "op": "numwork",
+       "startMs": 2700,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        190,
+        425
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "28.6°N",
+         "+",
+         "77.2°E"
+        ]
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch01-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4430,
+     "ops": [
+      {
+       "id": "india",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        150,
+        100
+       ],
+       "w": 500,
+       "h": 280,
+       "round": 12
+      },
+      {
+       "id": "ujjainLine",
+       "op": "line",
+       "startMs": 700,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 3,
+       "from": [
+        400,
+        110
+       ],
+       "to": [
+        400,
+        370
+       ]
+      },
+      {
+       "id": "ujjainMark",
+       "op": "circle",
+       "startMs": 1400,
+       "endMs": 1900,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        400,
+        250
+       ],
+       "r": 10,
+       "fill": "good"
+      },
+      {
+       "id": "ujjain",
+       "op": "label",
+       "startMs": 1800,
+       "endMs": 2600,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        430,
+        245
+       ],
+       "text": "Ujjain",
+       "to": [
+        410,
+        250
+       ]
+      },
+      {
+       "id": "reference",
+       "op": "label",
+       "startMs": 2500,
+       "endMs": 3600,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        240,
+        80
+       ],
+       "text": "reference meridian",
+       "to": [
+        400,
+        110
+       ]
+      },
+      {
+       "id": "astronomers",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        235,
+        430
+       ],
+       "text": "Indian astronomers",
+       "size": "m"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch01-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "earth7",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        220,
+        230
+       ],
+       "r": 130
+      },
+      {
+       "id": "meridian7",
+       "op": "ellipse",
+       "startMs": 600,
+       "endMs": 1300,
+       "ink": "mark",
+       "weight": 2,
+       "c": [
+        220,
+        230
+       ],
+       "rx": 28,
+       "ry": 125
+      },
+      {
+       "id": "east82",
+       "op": "arrow",
+       "startMs": 1100,
+       "endMs": 1800,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        250,
+        230
+       ],
+       "to": [
+        330,
+        230
+       ]
+      },
+      {
+       "id": "e82",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2400,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        340,
+        215
+       ],
+       "text": "82.5°E",
+       "size": "m"
+      },
+      {
+       "id": "ist",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 2800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        500,
+        110
+       ],
+       "text": "IST",
+       "size": "l"
+      },
+      {
+       "id": "timework",
+       "op": "numwork",
+       "startMs": 2700,
+       "endMs": 4000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        450,
+        180
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "82.5°",
+         "÷",
+         "15°",
+         "=",
+         "5.5"
+        ]
+       ]
+      },
+      {
+       "id": "ahead",
+       "op": "numwork",
+       "startMs": 3900,
+       "endMs": 5000,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        450,
+        280
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "5",
+         "hours",
+         "+",
+         "30",
+         "minute"
+        ]
+       ]
+      },
+      {
+       "id": "greenwich",
+       "op": "label",
+       "startMs": 5000,
+       "endMs": 5800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        100,
+        410
+       ],
+       "text": "Greenwich",
+       "to": [
+        220,
+        360
+       ]
+      },
+      {
+       "id": "aheadLabel",
+       "op": "label",
+       "startMs": 5500,
+       "endMs": 6300,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        570,
+        350
+       ],
+       "text": "ahead",
+       "to": [
+        560,
+        300
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch01-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 3579,
+     "ops": [
+      {
+       "id": "checkGrid",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        75
+       ],
+       "w": 560,
+       "h": 330
+      },
+      {
+       "id": "latCheck",
+       "op": "ellipse",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        380,
+        240
+       ],
+       "rx": 270,
+       "ry": 35
+      },
+      {
+       "id": "longCheck",
+       "op": "ellipse",
+       "startMs": 1100,
+       "endMs": 1800,
+       "ink": "mark",
+       "weight": 2,
+       "c": [
+        380,
+        240
+       ],
+       "rx": 55,
+       "ry": 155
+      },
+      {
+       "id": "zeroLat",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2300,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        670,
+        220
+       ],
+       "text": "0°",
+       "size": "m"
+      },
+      {
+       "id": "zeroLong",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 2600,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        430,
+        85
+       ],
+       "text": "0°",
+       "size": "m"
+      },
+      {
+       "id": "question",
+       "op": "text",
+       "startMs": 2600,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        190,
+        445
+       ],
+       "text": "longitude?",
+       "size": "l"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "12 steps",
+   "prompt": "to School"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "56.0 km",
+   "prompt": "road length at 5 km/square"
+  },
+  {
+   "itemId": "r3:0",
+   "key": "0,0",
+   "prompt": "Equator"
+  },
+  {
+   "itemId": "r3:1",
+   "key": "23.5,0",
+   "prompt": "Tropic"
+  },
+  {
+   "itemId": "r3:2",
+   "key": "28.6,77.2",
+   "prompt": "New Delhi"
+  },
+  {
+   "itemId": "r4:0",
+   "key": "Asia",
+   "prompt": "fly to Asia"
+  },
+  {
+   "itemId": "r4:1",
+   "key": "Indian Ocean",
+   "prompt": "fly to Indian Ocean"
+  },
+  {
+   "itemId": "r4:2",
+   "key": "Africa",
+   "prompt": "fly to Africa"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

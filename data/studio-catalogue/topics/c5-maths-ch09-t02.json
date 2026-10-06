@@ -1,0 +1,1664 @@
+{
+ "topicId": "c5-maths-ch09-t02",
+ "title": "Making sense of remainders",
+ "chapter": "Coconut Farm",
+ "subject": "maths",
+ "class": 5,
+ "topicType": "T5",
+ "plan": {
+  "game": "dukaan@1",
+  "hint": "pack mode: crates of k (full / all, remainders)"
+ },
+ "game": {
+  "archetype": "dukaan@1",
+  "spec": {
+   "archetype": "dukaan@1",
+   "skills": [
+    "c5-maths-ch09-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "served": "served",
+    "patience": "patience",
+    "bill": "Bill",
+    "pays": "Pays",
+    "change": "Change",
+    "pack": "Pack",
+    "crates": "crates",
+    "left": "left over",
+    "enough": "Enough",
+    "notEnough": "Not enough",
+    "budget": "Has",
+    "coach": "Read the story, then pack carefully",
+    "runDone": "Shop closed",
+    "exact": "EXACT",
+    "short": "short by",
+    "over": "over by",
+    "carry": "carry them all",
+    "full": "full crates to sell",
+    "each": "each",
+    "inLast": "in the last"
+   },
+   "title": "Dukaan Rush",
+   "rounds": [
+    {
+     "mode": "pack",
+     "title": "Pack the coconuts",
+     "sub": "Pack all and check the floor",
+     "jobs": [
+      {
+       "thing": "coconuts",
+       "n": 17,
+       "per": 5,
+       "need": "all"
+      }
+     ],
+     "speed": 0.75,
+     "targets": "c5-maths-ch09-t02-m-quotient-always"
+    },
+    {
+     "mode": "pack",
+     "title": "Store the rackets",
+     "sub": "Every racket must fit",
+     "jobs": [
+      {
+       "thing": "rackets",
+       "n": 19,
+       "per": 6,
+       "need": "all"
+      }
+     ],
+     "speed": 0.9,
+     "targets": "c5-maths-ch09-t02-m-always-drop"
+    },
+    {
+     "mode": "pack",
+     "title": "Pack the laddoos",
+     "sub": "Count only full boxes",
+     "jobs": [
+      {
+       "thing": "laddoos",
+       "n": 29,
+       "per": 6,
+       "need": "full"
+      }
+     ],
+     "speed": 1.05,
+     "targets": "c5-maths-ch09-t02-m-always-up"
+    },
+    {
+     "mode": "pack",
+     "title": "Plan the vans",
+     "sub": "Make room for everyone",
+     "jobs": [
+      {
+       "thing": "children",
+       "n": 47,
+       "per": 10,
+       "need": "all"
+      }
+     ],
+     "speed": 1.2,
+     "targets": "c5-maths-ch09-t02-m-always-drop"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c5-maths-ch09-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Making sense of remainders",
+   "accent": "amber",
+   "targets": "c5-maths-ch09-t02-m-always-drop",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Making sense of remainders"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Always drop the remainder"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "divide",
+       "type": "node",
+       "text": "52 ÷ 5",
+       "sub": "divide",
+       "glyph": "ruler",
+       "color": "amber"
+      },
+      {
+       "id": "full",
+       "type": "node",
+       "text": "10 cars",
+       "sub": "50 people",
+       "glyph": "car",
+       "color": "mint"
+      },
+      {
+       "id": "left",
+       "type": "node",
+       "text": "2 left",
+       "sub": "still need help",
+       "glyph": "person",
+       "color": "sun"
+      },
+      {
+       "id": "answer",
+       "type": "node",
+       "text": "11 cars",
+       "sub": "everyone fits",
+       "glyph": "car",
+       "color": "volt"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "divide",
+       "to": "full",
+       "text": "10 groups"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "full",
+       "to": "left",
+       "text": "remainder"
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "left",
+       "to": "answer",
+       "text": "add one"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "fit",
+       "type": "node",
+       "text": "Everyone fits",
+       "sub": "round up",
+       "glyph": "group",
+       "color": "mint"
+      },
+      {
+       "id": "fullonly",
+       "type": "node",
+       "text": "Full groups",
+       "sub": "drop leftover",
+       "color": "ion"
+      },
+      {
+       "id": "leftask",
+       "type": "node",
+       "text": "What is left?",
+       "sub": "give remainder",
+       "glyph": "question",
+       "color": "sun"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "row",
+     "els": [
+      {
+       "id": "qtitle",
+       "type": "title",
+       "text": "23 students, 4 per auto"
+      },
+      {
+       "id": "five",
+       "type": "node",
+       "text": "5 autos",
+       "sub": "20 students",
+       "glyph": "car",
+       "color": "sun"
+      },
+      {
+       "id": "six",
+       "type": "node",
+       "text": "6 autos",
+       "sub": "everyone fits",
+       "glyph": "car",
+       "color": "mint"
+      },
+      {
+       "id": "seven",
+       "type": "node",
+       "text": "7 autos",
+       "sub": "too many",
+       "glyph": "car",
+       "color": "ion"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "A remainder is not an automatic instruction. The story tells us what to do.",
+    "L2": "Here is a myth: always drop the remainder. That is wrong when people still need a group.",
+    "L3": "In the worked example, 52 divided by 5 is 10 remainder 2.",
+    "L4": "Ten cars carry 50 people. Two people are still left, so one more car is needed.",
+    "L5": "When everyone must fit, round up to the next group.",
+    "L6": "When only full groups count, drop the remainder. If the question asks what is left, give the remainder.",
+    "L7": "Always read the question again after dividing. The same division can give different answers in different stories.",
+    "L8": "Now choose the number of autos needed for 23 students, with 4 students in each auto."
+   },
+   "narration": {
+    "L1": {
+     "text": "A remainder is not an automatic instruction. The story tells us what to do.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "Here is a myth: always drop the remainder. That is wrong when people still need a group.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "In the worked example, 52 divided by 5 is 10 remainder 2.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "Ten cars carry 50 people. Two people are still left, so one more car is needed.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "When everyone must fit, round up to the next group.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "When only full groups count, drop the remainder. If the question asks what is left, give the remainder.",
+     "dur": 10,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Always read the question again after dividing. The same division can give different answers in different stories.",
+     "dur": 9,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Now choose the number of autos needed for 23 students, with 4 students in each auto.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "title"
+      },
+      {
+       "at": 1,
+       "do": "focus",
+       "dur": 2,
+       "target": "title"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "myth"
+      },
+      {
+       "at": 2,
+       "do": "bust",
+       "dur": 2,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.5,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "divide"
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 1,
+       "target": "a1"
+      },
+      {
+       "at": 2,
+       "do": "flow",
+       "dur": 1,
+       "target": "a1",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.5,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "full",
+        "left"
+       ]
+      },
+      {
+       "at": 2,
+       "do": "show",
+       "dur": 1,
+       "target": "a2"
+      },
+      {
+       "at": 3,
+       "do": "flow",
+       "dur": 1,
+       "target": "a2",
+       "to": 1
+      },
+      {
+       "at": 4,
+       "do": "show",
+       "dur": 1,
+       "target": "a3"
+      },
+      {
+       "at": 5,
+       "do": "flow",
+       "dur": 1,
+       "target": "a3",
+       "to": 1
+      },
+      {
+       "at": 6,
+       "do": "show",
+       "dur": 1,
+       "target": "answer"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.5,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "fit"
+      },
+      {
+       "at": 2,
+       "do": "highlight",
+       "dur": 2,
+       "target": "fit"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.5,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "fullonly",
+        "leftask"
+       ]
+      },
+      {
+       "at": 2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "fullonly"
+      },
+      {
+       "at": 4,
+       "do": "highlight",
+       "dur": 1,
+       "target": "leftask"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.5,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "camera",
+       "dur": 2,
+       "zoom": 1.05
+      },
+      {
+       "at": 3,
+       "do": "unfocus",
+       "dur": 1
+      },
+      {
+       "at": 4,
+       "do": "focus",
+       "dur": 1,
+       "target": "divide"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "qtitle"
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "five",
+        "six",
+        "seven"
+       ]
+      },
+      {
+       "at": 3,
+       "do": "interactive",
+       "dur": 1
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "How many autos are needed for 23 students, with 4 students in each auto?",
+    "options": [
+     "five",
+     "six",
+     "seven"
+    ],
+    "answer": "six",
+    "src": "c5-maths-ch09-t02-i01"
+   }
+  },
+  "repairs": [
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 66
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch09-t02-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "q",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "remainder",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "a",
+       "op": "arrow",
+       "startMs": 800,
+       "endMs": 1400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        110
+       ],
+       "to": [
+        400,
+        165
+       ]
+      },
+      {
+       "id": "story",
+       "op": "text",
+       "startMs": 1300,
+       "endMs": 2100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        205
+       ],
+       "text": "story",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "s1",
+       "op": "stroke",
+       "startMs": 1900,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         280,
+         245
+        ],
+        [
+         520,
+         245
+        ]
+       ]
+      },
+      {
+       "id": "decide",
+       "op": "text",
+       "startMs": 2400,
+       "endMs": 3400,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        300
+       ],
+       "text": "what to do",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "a2",
+       "op": "arrow",
+       "startMs": 3500,
+       "endMs": 4100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        335
+       ],
+       "to": [
+        400,
+        395
+       ]
+      },
+      {
+       "id": "result",
+       "op": "text",
+       "startMs": 4100,
+       "endMs": 5000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        440
+       ],
+       "text": "answer",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch09-t02-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "myth",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        65
+       ],
+       "text": "always drop",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "rem",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        125
+       ],
+       "text": "remainder",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "x",
+       "op": "stroke",
+       "startMs": 1500,
+       "endMs": 2300,
+       "ink": "mark",
+       "weight": 3,
+       "points": [
+        [
+         300,
+         45
+        ],
+        [
+         500,
+         150
+        ],
+        [
+         500,
+         45
+        ],
+        [
+         300,
+         150
+        ]
+       ]
+      },
+      {
+       "id": "wrong",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 3100,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        400,
+        205
+       ],
+       "text": "wrong",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "people",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        290
+       ],
+       "text": "people",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "need",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 5000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        350
+       ],
+       "text": "need a group",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "arr",
+       "op": "arrow",
+       "startMs": 5100,
+       "endMs": 5800,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        400,
+        380
+       ],
+       "to": [
+        400,
+        440
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch09-t02-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "eq",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        170,
+        110
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "52",
+         "÷",
+         "5",
+         "=",
+         "10",
+         "remain",
+         "2"
+        ]
+       ]
+      },
+      {
+       "id": "box10",
+       "op": "rect",
+       "startMs": 2200,
+       "endMs": 2800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        180,
+        245
+       ],
+       "w": 100,
+       "h": 75,
+       "round": 12
+      },
+      {
+       "id": "ten",
+       "op": "text",
+       "startMs": 2600,
+       "endMs": 3300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        230,
+        285
+       ],
+       "text": "10",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "box2",
+       "op": "rect",
+       "startMs": 3000,
+       "endMs": 3600,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        500,
+        245
+       ],
+       "w": 100,
+       "h": 75,
+       "round": 12
+      },
+      {
+       "id": "two",
+       "op": "text",
+       "startMs": 3400,
+       "endMs": 4000,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        550,
+        285
+       ],
+       "text": "2",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "r1",
+       "op": "label",
+       "startMs": 3900,
+       "endMs": 4700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        300,
+        280
+       ],
+       "text": "remainder",
+       "to": [
+        490,
+        280
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch09-t02-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "cars",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        150,
+        65
+       ],
+       "text": "10 cars",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "people",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        150,
+        125
+       ],
+       "text": "50 people",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "arrow1",
+       "op": "arrow",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        150,
+        155
+       ],
+       "to": [
+        150,
+        220
+       ]
+      },
+      {
+       "id": "left",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        500,
+        65
+       ],
+       "text": "2 people",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "arrow2",
+       "op": "arrow",
+       "startMs": 2800,
+       "endMs": 3500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        500,
+        155
+       ],
+       "to": [
+        500,
+        220
+       ]
+      },
+      {
+       "id": "more",
+       "op": "text",
+       "startMs": 3400,
+       "endMs": 4500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        500,
+        270
+       ],
+       "text": "1 more car",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "total",
+       "op": "numwork",
+       "startMs": 4700,
+       "endMs": 6500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        270,
+        390
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "10",
+         "cars",
+         "+",
+         "1",
+         "=",
+         "11",
+         "cars"
+        ]
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch09-t02-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "fit",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        65
+       ],
+       "text": "everyone must fit",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "div",
+       "op": "text",
+       "startMs": 1000,
+       "endMs": 1900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        145
+       ],
+       "text": "leftovers",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "arrow",
+       "op": "arrow",
+       "startMs": 1900,
+       "endMs": 2700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        190
+       ],
+       "to": [
+        400,
+        280
+       ]
+      },
+      {
+       "id": "next",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        330
+       ],
+       "text": "next group",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "up",
+       "op": "arrow",
+       "startMs": 3700,
+       "endMs": 4400,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        400,
+        385
+       ],
+       "to": [
+        400,
+        450
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch09-t02-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "full",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        170,
+        70
+       ],
+       "text": "full groups",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "drop",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        170,
+        145
+       ],
+       "text": "drop remainder",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "slash",
+       "op": "stroke",
+       "startMs": 1900,
+       "endMs": 2500,
+       "ink": "mark",
+       "weight": 3,
+       "points": [
+        [
+         80,
+         105
+        ],
+        [
+         260,
+         180
+        ]
+       ]
+      },
+      {
+       "id": "leftq",
+       "op": "text",
+       "startMs": 2400,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        600,
+        70
+       ],
+       "text": "what is left",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "remainder",
+       "op": "text",
+       "startMs": 3400,
+       "endMs": 4400,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        600,
+        145
+       ],
+       "text": "remainder",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "arrow",
+       "op": "arrow",
+       "startMs": 4400,
+       "endMs": 5100,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        600,
+        185
+       ],
+       "to": [
+        600,
+        260
+       ]
+      },
+      {
+       "id": "answer",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 5900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        600,
+        310
+       ],
+       "text": "answer",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch09-t02-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "read",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        65
+       ],
+       "text": "read question",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "again",
+       "op": "arrow",
+       "startMs": 1100,
+       "endMs": 1800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        105
+       ],
+       "to": [
+        400,
+        170
+       ]
+      },
+      {
+       "id": "divide",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        215
+       ],
+       "text": "same division",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "arrow1",
+       "op": "arrow",
+       "startMs": 2900,
+       "endMs": 3700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        350,
+        255
+       ],
+       "to": [
+        230,
+        340
+       ]
+      },
+      {
+       "id": "arrow2",
+       "op": "arrow",
+       "startMs": 2900,
+       "endMs": 3700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        450,
+        255
+       ],
+       "to": [
+        570,
+        340
+       ]
+      },
+      {
+       "id": "story1",
+       "op": "text",
+       "startMs": 3600,
+       "endMs": 4300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        190,
+        390
+       ],
+       "text": "story",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "story2",
+       "op": "text",
+       "startMs": 3600,
+       "endMs": 4300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        610,
+        390
+       ],
+       "text": "story",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "different",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 6000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        465
+       ],
+       "text": "different answers",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch09-t02-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "problem",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        60
+       ],
+       "text": "23 students",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "num",
+       "op": "numwork",
+       "startMs": 1000,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        225,
+        140
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "23",
+         "÷",
+         "4",
+         "="
+        ]
+       ]
+      },
+      {
+       "id": "cars",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 3100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        255
+       ],
+       "text": "autos",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "groups",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 4000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        315
+       ],
+       "text": "4 students",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "arrow",
+       "op": "arrow",
+       "startMs": 4000,
+       "endMs": 4700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        350
+       ],
+       "to": [
+        400,
+        410
+       ]
+      },
+      {
+       "id": "answer",
+       "op": "numwork",
+       "startMs": 4700,
+       "endMs": 6200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        285,
+        425
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "6",
+         "autos"
+        ]
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "4",
+   "prompt": "17 coconuts in crates of 5, carry all"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "4",
+   "prompt": "19 rackets in crates of 6, carry all"
+  },
+  {
+   "itemId": "r3:0",
+   "key": "4",
+   "prompt": "29 laddoos in crates of 6, full crates"
+  },
+  {
+   "itemId": "r4:0",
+   "key": "5",
+   "prompt": "47 children in crates of 10, carry all"
+  }
+ ],
+ "check": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "Round 1 (17 coconuts per 5, pack all) key says 4 crates, but kit expects 3 full sacks and 2 left; packing all should give 4 crates, not 3.",
+    "severity": "low"
+   },
+   {
+    "where": "game",
+    "what": "Round 2 (19 rackets per 6, pack all) key says 4 cases, matching kit item rl-o1: 4 cases needed. No issue.",
+    "severity": "low"
+   },
+   {
+    "where": "game",
+    "what": "Round 3 (29 laddoos per 6, full crates) key says 4 full crates, but kit item i03 gives remainder 5 (pack 6 per box, 4 full boxes, 5 left). Correct.",
+    "severity": "low"
+   },
+   {
+    "where": "game",
+    "what": "Round 4 (47 children per 10, pack all) key says 5 vans, matching kit item i08 (5 vans needed). Correct.",
+    "severity": "low"
+   }
+  ],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

@@ -1,0 +1,2061 @@
+{
+ "topicId": "c4-english-ch05-t01",
+ "title": "The Old Stag",
+ "chapter": "The Old Stag",
+ "subject": "english",
+ "class": 4,
+ "topicType": "T3",
+ "plan": {
+  "game": "story-rail@1",
+  "hint": "sequence, cause and who modes from the lesson's events and speakers"
+ },
+ "game": {
+  "archetype": "story-rail@1",
+  "spec": {
+   "archetype": "story-rail@1",
+   "skills": [
+    "c4-english-ch05-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "picked": "coupled",
+    "streak": "streak",
+    "next": "What happens next?",
+    "effect": "What does this lead to?",
+    "who": "Who said this?",
+    "runDone": "Line complete",
+    "order": "your train",
+    "right": "Coupled",
+    "wrong": "Not this one",
+    "coach": "Tap a wagon before the train reaches the fork"
+   },
+   "title": "The Old Stag",
+   "rounds": [
+    {
+     "mode": "sequence",
+     "title": "The forest story",
+     "sub": "couple the events in order",
+     "cards": [
+      {
+       "id": "e1",
+       "text": "The pond dries up",
+       "src": "c4-english-ch05-t01-i01"
+      },
+      {
+       "id": "e2",
+       "text": "The monkey shakes berries",
+       "glyph": "tree",
+       "src": "c4-english-ch05-t01-i02"
+      },
+      {
+       "id": "e3",
+       "text": "The elephant brings water",
+       "src": "c4-english-ch05-t01-i03"
+      },
+      {
+       "id": "e4",
+       "text": "Dhruv remembers a spring",
+       "glyph": "question",
+       "src": "c4-english-ch05-t01-i04"
+      },
+      {
+       "id": "e5",
+       "text": "Dhruv shows the hidden spring",
+       "glyph": "drop",
+       "src": "c4-english-ch05-t01-i11"
+      }
+     ],
+     "speed": 0.9,
+     "targets": "c4-english-ch05-t01-m-spring-one-meaning"
+    },
+    {
+     "mode": "cause",
+     "title": "Because",
+     "sub": "match each cause to its effect",
+     "pairs": [
+      {
+       "cause": {
+        "id": "c1",
+        "text": "The pond dries up",
+        "glyph": "sun",
+        "src": "c4-english-ch05-t01-i01"
+       },
+       "effect": {
+        "id": "f1",
+        "text": "Dhruv feels weak and thirsty",
+        "glyph": "thermometer"
+       }
+      },
+      {
+       "cause": {
+        "id": "c2",
+        "text": "The monkey shakes the tree",
+        "glyph": "tree",
+        "src": "c4-english-ch05-t01-i02"
+       },
+       "effect": {
+        "id": "f2",
+        "text": "Berries fall near Dhruv",
+        "glyph": "apple"
+       }
+      },
+      {
+       "cause": {
+        "id": "c3",
+        "text": "The animals are kind to Dhruv",
+        "glyph": "group"
+       },
+       "effect": {
+        "id": "f3",
+        "text": "Dhruv helps them in return",
+        "glyph": "drop",
+        "src": "c4-english-ch05-t01-i11"
+       }
+      },
+      {
+       "cause": {
+        "id": "c4",
+        "text": "Dhruv shows the spring",
+        "glyph": "drop",
+        "src": "c4-english-ch05-t01-i11"
+       },
+       "effect": {
+        "id": "f4",
+        "text": "Everyone can find water",
+        "glyph": "group"
+       }
+      }
+     ],
+     "speed": 0.85,
+     "targets": "c4-english-ch05-t01-m-a-an"
+    },
+    {
+     "mode": "who",
+     "title": "Who said it?",
+     "sub": "send each line to its speaker",
+     "speakers": [
+      {
+       "id": "dhruv",
+       "name": "Dhruv"
+      },
+      {
+       "id": "elephant",
+       "name": "Elephant"
+      },
+      {
+       "id": "monkey",
+       "name": "Monkey"
+      }
+     ],
+     "lines": [
+      {
+       "id": "w1",
+       "text": "I know where water comes out.",
+       "speaker": "dhruv",
+       "src": "c4-english-ch05-t01-i11"
+      },
+      {
+       "id": "w2",
+       "text": "I brought cool water for you.",
+       "speaker": "elephant",
+       "src": "c4-english-ch05-t01-i03"
+      },
+      {
+       "id": "w3",
+       "text": "I shook the berry tree.",
+       "speaker": "monkey",
+       "src": "c4-english-ch05-t01-i02"
+      }
+     ],
+     "speed": 0.8,
+     "targets": "c4-english-ch05-t01-m-plural-irregular"
+    }
+   ]
+  },
+  "repairs": [
+   "glyph",
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c4-english-ch05-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "The Old Stag",
+   "accent": "mint",
+   "targets": "c4-english-ch05-t01-m-spring-one-meaning",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "row",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "The Old Stag"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Spring always means the season"
+      },
+      {
+       "id": "stag",
+       "type": "node",
+       "text": "Dhruv",
+       "sub": "old stag",
+       "color": "amber"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "pond",
+       "type": "node",
+       "text": "Dry pond",
+       "sub": "Dhruv is tired",
+       "glyph": "drop",
+       "color": "sci"
+      },
+      {
+       "id": "monkey",
+       "type": "node",
+       "text": "Monkey",
+       "sub": "helpful",
+       "color": "mint"
+      },
+      {
+       "id": "elephant",
+       "type": "node",
+       "text": "Elephant",
+       "sub": "kind",
+       "color": "ion"
+      },
+      {
+       "id": "spring",
+       "type": "node",
+       "text": "Hidden spring",
+       "sub": "water source",
+       "glyph": "river",
+       "color": "sci"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "pond",
+       "to": "monkey",
+       "text": "helps"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "monkey",
+       "to": "elephant",
+       "text": "then helps"
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "elephant",
+       "to": "spring",
+       "text": "brings water"
+      },
+      {
+       "id": "a4",
+       "type": "arrow",
+       "from": "spring",
+       "to": "pond",
+       "text": "shared"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "column",
+     "els": [
+      {
+       "id": "kind",
+       "type": "node",
+       "text": "Kindness",
+       "sub": "comes back",
+       "color": "mint"
+      },
+      {
+       "id": "an",
+       "type": "label",
+       "text": "an elephant, an old stag",
+       "x": 120,
+       "y": 250,
+       "color": "ion"
+      },
+      {
+       "id": "a",
+       "type": "label",
+       "text": "a monkey",
+       "x": 120,
+       "y": 330,
+       "color": "amber"
+      },
+      {
+       "id": "season",
+       "type": "label",
+       "text": "spring: season",
+       "x": 500,
+       "y": 250,
+       "color": "sun"
+      },
+      {
+       "id": "water",
+       "type": "label",
+       "text": "spring: water source",
+       "x": 500,
+       "y": 330,
+       "color": "sci"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "In the hot summer, the pond dries up, and Dhruv is too tired to walk to the far river.",
+    "L2": "A little monkey helps him by shaking the berry tree, so berries fall near him.",
+    "L3": "The elephant is kind because she brings cool water from the river for Dhruv to drink.",
+    "L4": "Dhruv is wise because he remembers a hidden spring and shows it to everyone.",
+    "L5": "Here is the myth: spring always means the season. That is not true.",
+    "L6": "In one sentence, spring means the season. In another, it means water coming out of the ground.",
+    "L7": "Use an before a vowel sound: an elephant and an old stag. Use a before a consonant sound: a monkey.",
+    "L8": "The lesson is simple: when we are kind to others, kindness comes back and everyone is helped."
+   },
+   "narration": {
+    "L1": {
+     "text": "In the hot summer, the pond dries up, and Dhruv is too tired to walk to the far river.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L2": {
+     "text": "A little monkey helps him by shaking the berry tree, so berries fall near him.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L3": {
+     "text": "The elephant is kind because she brings cool water from the river for Dhruv to drink.",
+     "dur": 4.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L4": {
+     "text": "Dhruv is wise because he remembers a hidden spring and shows it to everyone.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L5": {
+     "text": "Here is the myth: spring always means the season. That is not true.",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L6": {
+     "text": "In one sentence, spring means the season. In another, it means water coming out of the ground.",
+     "dur": 4.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Use an before a vowel sound: an elephant and an old stag. Use a before a consonant sound: a monkey.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L8": {
+     "text": "The lesson is simple: when we are kind to others, kindness comes back and everyone is helped.",
+     "dur": 4.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "title"
+      },
+      {
+       "at": 0.6,
+       "do": "show",
+       "dur": 0.7,
+       "target": "stag"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "pond"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.7,
+       "target": "monkey"
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "a1",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "elephant"
+      },
+      {
+       "at": 0.6,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "a2",
+       "to": 1
+      },
+      {
+       "at": 1.3,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "a3",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "spring"
+      },
+      {
+       "at": 0.7,
+       "do": "highlight",
+       "dur": 1,
+       "target": "spring"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "myth"
+      },
+      {
+       "at": 0.8,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "season"
+      },
+      {
+       "at": 0.7,
+       "do": "show",
+       "dur": 0.6,
+       "target": "water"
+      },
+      {
+       "at": 1.2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "water"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "an"
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.7,
+       "target": "a"
+      },
+      {
+       "at": 1.5,
+       "do": "highlight",
+       "dur": 1,
+       "target": "an"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "kind"
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 1,
+       "target": "kind"
+      },
+      {
+       "at": "end",
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which sentence uses the correct article?",
+    "options": [
+     "an",
+     "a"
+    ],
+    "answer": "an",
+    "src": "c4-english-ch05-t01-i07"
+   }
+  },
+  "repairs": [
+   "glyph",
+   "glyph",
+   "glyph",
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 39
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-english-ch05-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "sun",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        120,
+        90
+       ],
+       "r": 42,
+       "fill": "accent"
+      },
+      {
+       "id": "pond",
+       "op": "ellipse",
+       "startMs": 500,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        220,
+        350
+       ],
+       "rx": 130,
+       "ry": 48
+      },
+      {
+       "id": "dry",
+       "op": "label",
+       "startMs": 1300,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        220,
+        430
+       ],
+       "text": "pond",
+       "to": [
+        220,
+        350
+       ]
+      },
+      {
+       "id": "river",
+       "op": "ellipse",
+       "startMs": 1900,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        650,
+        300
+       ],
+       "rx": 90,
+       "ry": 150
+      },
+      {
+       "id": "far",
+       "op": "label",
+       "startMs": 2700,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        650,
+        475
+       ],
+       "text": "far river",
+       "to": [
+        650,
+        330
+       ]
+      },
+      {
+       "id": "dhruv",
+       "op": "circle",
+       "startMs": 3400,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        330
+       ],
+       "r": 24
+      },
+      {
+       "id": "tired",
+       "op": "label",
+       "startMs": 3900,
+       "endMs": 4500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        390,
+        390
+       ],
+       "text": "Dhruv",
+       "to": [
+        400,
+        330
+       ]
+      },
+      {
+       "id": "walk",
+       "op": "line",
+       "startMs": 4500,
+       "endMs": 5400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        430,
+        330
+       ],
+       "to": [
+        560,
+        330
+       ]
+      },
+      {
+       "id": "no",
+       "op": "line",
+       "startMs": 5400,
+       "endMs": 6000,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        500,
+        285
+       ],
+       "to": [
+        500,
+        375
+       ]
+      },
+      {
+       "id": "hot",
+       "op": "label",
+       "startMs": 6000,
+       "endMs": 6800,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        120,
+        155
+       ],
+       "text": "hot summer",
+       "to": [
+        120,
+        110
+       ]
+      },
+      {
+       "id": "drymark",
+       "op": "highlight",
+       "startMs": 6800,
+       "endMs": 8685,
+       "ink": "accent",
+       "weight": 2,
+       "target": "pond",
+       "style": "pulse"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-english-ch05-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "tree",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        300,
+        150
+       ],
+       "to": [
+        300,
+        350
+       ]
+      },
+      {
+       "id": "branch1",
+       "op": "line",
+       "startMs": 500,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        300,
+        210
+       ],
+       "to": [
+        210,
+        160
+       ]
+      },
+      {
+       "id": "branch2",
+       "op": "line",
+       "startMs": 800,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        300,
+        220
+       ],
+       "to": [
+        390,
+        160
+       ]
+      },
+      {
+       "id": "monkey",
+       "op": "circle",
+       "startMs": 1300,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        300,
+        115
+       ],
+       "r": 28
+      },
+      {
+       "id": "monkeylabel",
+       "op": "label",
+       "startMs": 1800,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        300,
+        70
+       ],
+       "text": "monkey",
+       "to": [
+        300,
+        115
+       ]
+      },
+      {
+       "id": "berry1",
+       "op": "circle",
+       "startMs": 2300,
+       "endMs": 2700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        220,
+        205
+       ],
+       "r": 10,
+       "fill": "accent"
+      },
+      {
+       "id": "berry2",
+       "op": "circle",
+       "startMs": 2500,
+       "endMs": 2900,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        380,
+        215
+       ],
+       "r": 10,
+       "fill": "accent"
+      },
+      {
+       "id": "fall1",
+       "op": "arrow",
+       "startMs": 3000,
+       "endMs": 3800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        220,
+        220
+       ],
+       "to": [
+        220,
+        320
+       ]
+      },
+      {
+       "id": "fall2",
+       "op": "arrow",
+       "startMs": 3400,
+       "endMs": 4200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        380,
+        230
+       ],
+       "to": [
+        380,
+        320
+       ]
+      },
+      {
+       "id": "near",
+       "op": "label",
+       "startMs": 4200,
+       "endMs": 5000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        380,
+        365
+       ],
+       "text": "near him",
+       "to": [
+        380,
+        320
+       ]
+      },
+      {
+       "id": "help",
+       "op": "highlight",
+       "startMs": 5000,
+       "endMs": 6983,
+       "ink": "good",
+       "weight": 2,
+       "target": "monkey",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-english-ch05-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "elephant",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        270,
+        270
+       ],
+       "r": 55
+      },
+      {
+       "id": "ear",
+       "op": "ellipse",
+       "startMs": 500,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        220,
+        220
+       ],
+       "rx": 25,
+       "ry": 40
+      },
+      {
+       "id": "elephantlabel",
+       "op": "label",
+       "startMs": 1000,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        270,
+        350
+       ],
+       "text": "elephant",
+       "to": [
+        270,
+        270
+       ]
+      },
+      {
+       "id": "trunk",
+       "op": "line",
+       "startMs": 1300,
+       "endMs": 2000,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        315,
+        285
+       ],
+       "to": [
+        390,
+        335
+       ]
+      },
+      {
+       "id": "water",
+       "op": "ellipse",
+       "startMs": 1800,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        620,
+        300
+       ],
+       "rx": 100,
+       "ry": 55
+      },
+      {
+       "id": "riverlabel",
+       "op": "label",
+       "startMs": 2500,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        620,
+        385
+       ],
+       "text": "river",
+       "to": [
+        620,
+        300
+       ]
+      },
+      {
+       "id": "carry",
+       "op": "arrow",
+       "startMs": 3000,
+       "endMs": 4100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        540,
+        290
+       ],
+       "to": [
+        405,
+        325
+       ]
+      },
+      {
+       "id": "drink",
+       "op": "arrow",
+       "startMs": 4100,
+       "endMs": 4800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        390,
+        325
+       ],
+       "to": [
+        350,
+        310
+       ]
+      },
+      {
+       "id": "dhruvwater",
+       "op": "label",
+       "startMs": 4800,
+       "endMs": 5600,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        370,
+        380
+       ],
+       "text": "cool water",
+       "to": [
+        390,
+        325
+       ]
+      },
+      {
+       "id": "kind",
+       "op": "label",
+       "startMs": 5600,
+       "endMs": 6300,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        180,
+        420
+       ],
+       "text": "kind",
+       "to": [
+        270,
+        270
+       ]
+      },
+      {
+       "id": "kindmark",
+       "op": "highlight",
+       "startMs": 6300,
+       "endMs": 7409,
+       "ink": "good",
+       "weight": 2,
+       "target": "elephant",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-english-ch05-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "dhruvwise",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        250,
+        260
+       ],
+       "r": 28
+      },
+      {
+       "id": "wise",
+       "op": "label",
+       "startMs": 500,
+       "endMs": 1000,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        250,
+        210
+       ],
+       "text": "wise",
+       "to": [
+        250,
+        260
+       ]
+      },
+      {
+       "id": "spring",
+       "op": "ellipse",
+       "startMs": 1000,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        570,
+        350
+       ],
+       "rx": 100,
+       "ry": 45
+      },
+      {
+       "id": "ground",
+       "op": "line",
+       "startMs": 1500,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        450,
+        350
+       ],
+       "to": [
+        690,
+        350
+       ]
+      },
+      {
+       "id": "springwater",
+       "op": "arrow",
+       "startMs": 2100,
+       "endMs": 3000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        570,
+        350
+       ],
+       "to": [
+        570,
+        230
+       ]
+      },
+      {
+       "id": "hidden",
+       "op": "label",
+       "startMs": 3000,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        570,
+        420
+       ],
+       "text": "hidden spring",
+       "to": [
+        570,
+        350
+       ]
+      },
+      {
+       "id": "show",
+       "op": "arrow",
+       "startMs": 3900,
+       "endMs": 5000,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        280,
+        270
+       ],
+       "to": [
+        500,
+        300
+       ]
+      },
+      {
+       "id": "everyone",
+       "op": "label",
+       "startMs": 5000,
+       "endMs": 5700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        500,
+        190
+       ],
+       "text": "everyone",
+       "to": [
+        570,
+        230
+       ]
+      },
+      {
+       "id": "wisemark",
+       "op": "highlight",
+       "startMs": 5700,
+       "endMs": 6557,
+       "ink": "good",
+       "weight": 2,
+       "target": "spring",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-english-ch05-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "springword",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        80
+       ],
+       "text": "spring",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "season",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        220,
+        250
+       ],
+       "r": 80
+      },
+      {
+       "id": "seasonlabel",
+       "op": "label",
+       "startMs": 1600,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        220,
+        370
+       ],
+       "text": "season",
+       "to": [
+        220,
+        250
+       ]
+      },
+      {
+       "id": "not",
+       "op": "line",
+       "startMs": 2300,
+       "endMs": 3100,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        350,
+        150
+       ],
+       "to": [
+        470,
+        350
+       ]
+      },
+      {
+       "id": "springground",
+       "op": "line",
+       "startMs": 3100,
+       "endMs": 3800,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        550,
+        300
+       ],
+       "to": [
+        750,
+        300
+       ]
+      },
+      {
+       "id": "waterup",
+       "op": "arrow",
+       "startMs": 3800,
+       "endMs": 4700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        650,
+        300
+       ],
+       "to": [
+        650,
+        190
+       ]
+      },
+      {
+       "id": "groundlabel",
+       "op": "label",
+       "startMs": 4700,
+       "endMs": 5300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        650,
+        370
+       ],
+       "text": "ground",
+       "to": [
+        650,
+        300
+       ]
+      },
+      {
+       "id": "true",
+       "op": "highlight",
+       "startMs": 5300,
+       "endMs": 6132,
+       "ink": "good",
+       "weight": 2,
+       "target": "waterup",
+       "style": "pulse"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-english-ch05-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "seasonword",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        230,
+        100
+       ],
+       "text": "spring",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "equals1",
+       "op": "numwork",
+       "startMs": 700,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        115,
+        180
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "spring",
+         "=",
+         "season"
+        ]
+       ]
+      },
+      {
+       "id": "waterword",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        570,
+        100
+       ],
+       "text": "spring",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "equals2",
+       "op": "numwork",
+       "startMs": 2400,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        430,
+        180
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "spring",
+         "=",
+         "water"
+        ]
+       ]
+      },
+      {
+       "id": "coming",
+       "op": "arrow",
+       "startMs": 3400,
+       "endMs": 4300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        570,
+        330
+       ],
+       "to": [
+        570,
+        235
+       ]
+      },
+      {
+       "id": "groundline",
+       "op": "line",
+       "startMs": 3900,
+       "endMs": 4600,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        450,
+        330
+       ],
+       "to": [
+        690,
+        330
+       ]
+      },
+      {
+       "id": "groundword",
+       "op": "label",
+       "startMs": 4600,
+       "endMs": 5300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        570,
+        400
+       ],
+       "text": "ground",
+       "to": [
+        570,
+        330
+       ]
+      },
+      {
+       "id": "meanings",
+       "op": "highlight",
+       "startMs": 5300,
+       "endMs": 7834,
+       "ink": "good",
+       "weight": 2,
+       "target": "equals2",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-english-ch05-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9111,
+     "ops": [
+      {
+       "id": "rule",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "an",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "vowel",
+       "op": "label",
+       "startMs": 600,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        105
+       ],
+       "text": "vowel sound",
+       "to": [
+        400,
+        70
+       ]
+      },
+      {
+       "id": "an1",
+       "op": "numwork",
+       "startMs": 1300,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        100,
+        190
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "an",
+         "elepha"
+        ]
+       ]
+      },
+      {
+       "id": "an2",
+       "op": "numwork",
+       "startMs": 2200,
+       "endMs": 3100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        100,
+        270
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "an",
+         "old st"
+        ]
+       ]
+      },
+      {
+       "id": "a",
+       "op": "text",
+       "startMs": 3100,
+       "endMs": 3700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        610,
+        55
+       ],
+       "text": "a",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "consonant",
+       "op": "label",
+       "startMs": 3700,
+       "endMs": 4500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        610,
+        105
+       ],
+       "text": "consonant sound",
+       "to": [
+        610,
+        70
+       ]
+      },
+      {
+       "id": "a1",
+       "op": "numwork",
+       "startMs": 4500,
+       "endMs": 5400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        490,
+        190
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "a",
+         "monkey"
+        ]
+       ]
+      },
+      {
+       "id": "vowelmark",
+       "op": "highlight",
+       "startMs": 5400,
+       "endMs": 6500,
+       "ink": "good",
+       "weight": 2,
+       "target": "an1",
+       "style": "circle"
+      },
+      {
+       "id": "consmark",
+       "op": "highlight",
+       "startMs": 6500,
+       "endMs": 7600,
+       "ink": "good",
+       "weight": 2,
+       "target": "a1",
+       "style": "circle"
+      },
+      {
+       "id": "arrow1",
+       "op": "arrow",
+       "startMs": 7600,
+       "endMs": 8300,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        400,
+        130
+       ],
+       "to": [
+        250,
+        185
+       ]
+      },
+      {
+       "id": "arrow2",
+       "op": "arrow",
+       "startMs": 8300,
+       "endMs": 9111,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        610,
+        130
+       ],
+       "to": [
+        600,
+        185
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-english-ch05-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "kindness",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        75
+       ],
+       "text": "kindness",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "person1",
+       "op": "circle",
+       "startMs": 800,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        180,
+        250
+       ],
+       "r": 28
+      },
+      {
+       "id": "person2",
+       "op": "circle",
+       "startMs": 1000,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        620,
+        250
+       ],
+       "r": 28
+      },
+      {
+       "id": "others",
+       "op": "label",
+       "startMs": 1500,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        170
+       ],
+       "text": "others",
+       "to": [
+        620,
+        250
+       ]
+      },
+      {
+       "id": "give",
+       "op": "arrow",
+       "startMs": 2100,
+       "endMs": 3200,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        220,
+        250
+       ],
+       "to": [
+        575,
+        250
+       ]
+      },
+      {
+       "id": "return",
+       "op": "arrow",
+       "startMs": 3200,
+       "endMs": 4300,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        575,
+        290
+       ],
+       "to": [
+        225,
+        290
+       ]
+      },
+      {
+       "id": "back",
+       "op": "label",
+       "startMs": 4300,
+       "endMs": 4900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        350
+       ],
+       "text": "back",
+       "to": [
+        400,
+        290
+       ]
+      },
+      {
+       "id": "everyone",
+       "op": "label",
+       "startMs": 4900,
+       "endMs": 5600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        410
+       ],
+       "text": "everyone",
+       "to": [
+        400,
+        250
+       ]
+      },
+      {
+       "id": "helped",
+       "op": "highlight",
+       "startMs": 5600,
+       "endMs": 7834,
+       "ink": "good",
+       "weight": 2,
+       "target": "return",
+       "style": "pulse"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "The monkey shakes berries",
+   "prompt": "sequence: after/for \"The pond dries up\"",
+   "src": "c4-english-ch05-t01-i02"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "The elephant brings water",
+   "prompt": "sequence: after/for \"The monkey shakes berries\"",
+   "src": "c4-english-ch05-t01-i03"
+  },
+  {
+   "itemId": "r1:2",
+   "key": "Dhruv remembers a spring",
+   "prompt": "sequence: after/for \"The elephant brings water\"",
+   "src": "c4-english-ch05-t01-i04"
+  },
+  {
+   "itemId": "r1:3",
+   "key": "Dhruv shows the hidden spring",
+   "prompt": "sequence: after/for \"Dhruv remembers a spring\"",
+   "src": "c4-english-ch05-t01-i11"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "Dhruv feels weak and thirsty",
+   "prompt": "cause: after/for \"The pond dries up\""
+  },
+  {
+   "itemId": "r2:1",
+   "key": "Berries fall near Dhruv",
+   "prompt": "cause: after/for \"The monkey shakes the tree\""
+  },
+  {
+   "itemId": "r2:2",
+   "key": "Dhruv helps them in return",
+   "prompt": "cause: after/for \"The animals are kind to Dhruv\"",
+   "src": "c4-english-ch05-t01-i11"
+  },
+  {
+   "itemId": "r2:3",
+   "key": "Everyone can find water",
+   "prompt": "cause: after/for \"Dhruv shows the spring\""
+  },
+  {
+   "itemId": "r3:0",
+   "key": "Dhruv",
+   "prompt": "who: after/for \"I know where water comes out.\"",
+   "src": "c4-english-ch05-t01-i11"
+  },
+  {
+   "itemId": "r3:1",
+   "key": "Elephant",
+   "prompt": "who: after/for \"I brought cool water for you.\"",
+   "src": "c4-english-ch05-t01-i03"
+  },
+  {
+   "itemId": "r3:2",
+   "key": "Monkey",
+   "prompt": "who: after/for \"I shook the berry tree.\"",
+   "src": "c4-english-ch05-t01-i02"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

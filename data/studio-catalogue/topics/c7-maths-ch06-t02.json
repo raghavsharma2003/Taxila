@@ -1,0 +1,1382 @@
+{
+ "topicId": "c7-maths-ch06-t02",
+ "title": "Explorations in grids and magic squares",
+ "chapter": "Number Play",
+ "subject": "maths",
+ "class": 7,
+ "topicType": "T5",
+ "plan": {
+  "game": "pattern-lab@1",
+  "hint": "magic mode (3x3 magic squares, row/column sums)"
+ },
+ "game": {
+  "archetype": "pattern-lab@1",
+  "spec": {
+   "archetype": "pattern-lab@1",
+   "skills": [
+    "c7-maths-ch06-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "done": "right",
+    "check": "CHECK",
+    "add": "ADD",
+    "clear": "CLEAR",
+    "sum": "sum",
+    "found": "found",
+    "short": "short",
+    "long": "long",
+    "beats": "beats",
+    "cipher": "Turn the dials until the sum is true",
+    "tiles": "Fit shapes round the point",
+    "gap": "gap",
+    "overlap": "overlap",
+    "runDone": "Lab closed",
+    "repeat": "already found",
+    "magic": "every line adds to",
+    "rows": "rows",
+    "cols": "columns"
+   },
+   "title": "Magic Square Lab",
+   "rounds": [
+    {
+     "mode": "magic",
+     "title": "Build a magic square",
+     "sub": "Use each tile and check every line",
+     "n": 3,
+     "tiles": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+     ],
+     "givens": [
+      [
+       4,
+       5
+      ]
+     ],
+     "diagonals": true
+    },
+    {
+     "mode": "magic",
+     "title": "Double the tiles",
+     "sub": "See what changes when every tile doubles",
+     "n": 3,
+     "tiles": [
+      2,
+      4,
+      6,
+      8,
+      10,
+      12,
+      14,
+      16,
+      18
+     ],
+     "givens": [
+      [
+       4,
+       10
+      ]
+     ],
+     "diagonals": true,
+     "targets": "c7-maths-ch06-t02-m-add-breaks"
+    },
+    {
+     "mode": "magic",
+     "title": "Check the whole grid",
+     "sub": "Rows are not enough: check every line",
+     "n": 3,
+     "tiles": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+     ],
+     "givens": [
+      [
+       0,
+       2
+      ],
+      [
+       4,
+       5
+      ],
+      [
+       8,
+       8
+      ]
+     ],
+     "diagonals": true,
+     "targets": "c7-maths-ch06-t02-m-rows-only"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-maths-ch06-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Build a magic square",
+   "accent": "ion",
+   "targets": "c7-maths-ch06-t02-m-trial-only",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Build a magic square"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Magic squares need trial and error"
+      },
+      {
+       "id": "reason",
+       "type": "label",
+       "text": "Use sums and pairs",
+       "x": 560,
+       "y": 300,
+       "color": "mint"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "grid",
+       "type": "grid",
+       "cols": 3,
+       "rows": 3,
+       "shaded": 9,
+       "x": 220,
+       "y": 190
+      },
+      {
+       "id": "sum",
+       "type": "node",
+       "text": "Sum 15",
+       "sub": "each line",
+       "glyph": "balance",
+       "x": 650,
+       "y": 240,
+       "color": "amber"
+      },
+      {
+       "id": "center",
+       "type": "node",
+       "text": "Centre 5",
+       "sub": "four lines",
+       "glyph": "spark",
+       "x": 650,
+       "y": 370,
+       "color": "mint"
+      },
+      {
+       "id": "check",
+       "type": "label",
+       "text": "3 rows + 3 columns + 2 diagonals",
+       "x": 150,
+       "y": 500,
+       "color": "ion"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "gA",
+       "type": "node",
+       "text": "Rows only",
+       "sub": "not magic",
+       "glyph": "question",
+       "x": 170,
+       "y": 310,
+       "color": "amber"
+      },
+      {
+       "id": "gB",
+       "type": "node",
+       "text": "All 8 lines",
+       "sub": "magic",
+       "glyph": "star",
+       "x": 470,
+       "y": 310,
+       "color": "mint"
+      },
+      {
+       "id": "gC",
+       "type": "node",
+       "text": "Unequal sums",
+       "sub": "not magic",
+       "glyph": "question",
+       "x": 770,
+       "y": 310,
+       "color": "volt"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "A magic square is a grid where every row, column, and diagonal has the same sum.",
+    "L2": "You do not need only trial and error. Start with the total of the numbers.",
+    "L3": "For 1 to 9, the total is 45, so each of the three rows must add to 15.",
+    "L4": "The centre must be 5. The four lines through it add to 60, which gives 45 plus three extra centres.",
+    "L5": "Opposite numbers then make pairs that add to 10, because 10 plus the centre 5 makes 15.",
+    "L6": "One working square is 2, 7, 6; 9, 5, 1; 4, 3, 8. Check all eight lines.",
+    "L7": "A grid is magic only when all three rows, three columns, and two diagonals match."
+   },
+   "narration": {
+    "L1": {
+     "text": "A magic square is a grid where every row, column, and diagonal has the same sum.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "You do not need only trial and error. Start with the total of the numbers.",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "For 1 to 9, the total is 45, so each of the three rows must add to 15.",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "The centre must be 5. The four lines through it add to 60, which gives 45 plus three extra centres.",
+     "dur": 4.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "Opposite numbers then make pairs that add to 10, because 10 plus the centre 5 makes 15.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "One working square is 2, 7, 6; 9, 5, 1; 4, 3, 8. Check all eight lines.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "A grid is magic only when all three rows, three columns, and two diagonals match.",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": "reason"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "grid"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": "sum"
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "sum"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "center"
+      },
+      {
+       "at": 0.5,
+       "do": "highlight",
+       "dur": 1,
+       "target": "center"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "check"
+      },
+      {
+       "at": 0.5,
+       "do": "focus",
+       "dur": 1,
+       "target": "grid"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "grid"
+      },
+      {
+       "at": 0.5,
+       "do": "highlight",
+       "dur": 1,
+       "target": "grid"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "gA"
+      },
+      {
+       "at": 0.3,
+       "do": "show",
+       "dur": 0.6,
+       "target": "gB"
+      },
+      {
+       "at": 0.6,
+       "do": "show",
+       "dur": 0.6,
+       "target": "gC"
+      },
+      {
+       "at": "end",
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which grid meets the definition of a magic square?",
+    "options": [
+     "gA",
+     "gB",
+     "gC"
+    ],
+    "answer": "gB",
+    "src": "c7-maths-ch06-t02-i11"
+   }
+  },
+  "repairs": [],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 30
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch06-t02-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "grid",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        170,
+        100
+       ],
+       "w": 300,
+       "h": 300
+      },
+      {
+       "id": "v1",
+       "op": "line",
+       "startMs": 900,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        270,
+        100
+       ],
+       "to": [
+        270,
+        400
+       ]
+      },
+      {
+       "id": "v2",
+       "op": "line",
+       "startMs": 1100,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        370,
+        100
+       ],
+       "to": [
+        370,
+        400
+       ]
+      },
+      {
+       "id": "h1",
+       "op": "line",
+       "startMs": 1300,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        170,
+        200
+       ],
+       "to": [
+        470,
+        200
+       ]
+      },
+      {
+       "id": "h2",
+       "op": "line",
+       "startMs": 1500,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        170,
+        300
+       ],
+       "to": [
+        470,
+        300
+       ]
+      },
+      {
+       "id": "row",
+       "op": "label",
+       "startMs": 2400,
+       "endMs": 3000,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        520,
+        145
+       ],
+       "text": "row",
+       "to": [
+        470,
+        150
+       ]
+      },
+      {
+       "id": "column",
+       "op": "label",
+       "startMs": 3100,
+       "endMs": 3800,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        285,
+        70
+       ],
+       "text": "column",
+       "to": [
+        320,
+        100
+       ]
+      },
+      {
+       "id": "diagonal",
+       "op": "label",
+       "startMs": 3900,
+       "endMs": 4700,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        500,
+        350
+       ],
+       "text": "diagonal",
+       "to": [
+        400,
+        330
+       ]
+      },
+      {
+       "id": "sum",
+       "op": "text",
+       "startMs": 5100,
+       "endMs": 6000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        320,
+        455
+       ],
+       "text": "same sum",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch06-t02-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "trial",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1400,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        570,
+        120
+       ],
+       "text": "trial and error",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "cross",
+       "op": "line",
+       "startMs": 1200,
+       "endMs": 1700,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        500,
+        90
+       ],
+       "to": [
+        700,
+        150
+       ]
+      },
+      {
+       "id": "total",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 3000,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        220,
+        455
+       ],
+       "text": "total",
+       "size": "l"
+      },
+      {
+       "id": "numbers",
+       "op": "numwork",
+       "startMs": 3300,
+       "endMs": 4900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        500,
+        210
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "number",
+         "=",
+         "total"
+        ]
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch06-t02-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "range",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        65
+       ],
+       "text": "1 to 9",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "total45",
+       "op": "numwork",
+       "startMs": 1000,
+       "endMs": 2600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        180,
+        145
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "1",
+         "to",
+         "9",
+         "=",
+         "45"
+        ]
+       ]
+      },
+      {
+       "id": "rows3",
+       "op": "text",
+       "startMs": 2800,
+       "endMs": 3900,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        575,
+        150
+       ],
+       "text": "three rows",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "divide",
+       "op": "numwork",
+       "startMs": 4100,
+       "endMs": 5700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        190,
+        270
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "45",
+         "÷",
+         "3",
+         "=",
+         "15"
+        ]
+       ]
+      },
+      {
+       "id": "row15",
+       "op": "label",
+       "startMs": 5900,
+       "endMs": 6600,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        550,
+        290
+       ],
+       "text": "15",
+       "to": [
+        470,
+        290
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch06-t02-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9111,
+     "ops": [
+      {
+       "id": "centre",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        250
+       ],
+       "r": 42
+      },
+      {
+       "id": "five",
+       "op": "text",
+       "startMs": 800,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 3,
+       "at": [
+        400,
+        265
+       ],
+       "text": "5",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "fourlines",
+       "op": "line",
+       "startMs": 1800,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        220,
+        250
+       ],
+       "to": [
+        580,
+        250
+       ]
+      },
+      {
+       "id": "fourlines2",
+       "op": "line",
+       "startMs": 2200,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        400,
+        100
+       ],
+       "to": [
+        400,
+        400
+       ]
+      },
+      {
+       "id": "fourlines3",
+       "op": "line",
+       "startMs": 2600,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        260,
+        110
+       ],
+       "to": [
+        540,
+        390
+       ]
+      },
+      {
+       "id": "fourlines4",
+       "op": "line",
+       "startMs": 3000,
+       "endMs": 3800,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        540,
+        110
+       ],
+       "to": [
+        260,
+        390
+       ]
+      },
+      {
+       "id": "sixty",
+       "op": "numwork",
+       "startMs": 4700,
+       "endMs": 7000,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        190,
+        440
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "45",
+         "+",
+         "3",
+         "extra",
+         "centre",
+         "=",
+         "60"
+        ]
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch06-t02-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "pair1",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        160,
+        120
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "1",
+         "+",
+         "9",
+         "=",
+         "10"
+        ]
+       ]
+      },
+      {
+       "id": "pair2",
+       "op": "numwork",
+       "startMs": 1500,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        160,
+        205
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "2",
+         "+",
+         "8",
+         "=",
+         "10"
+        ]
+       ]
+      },
+      {
+       "id": "pair3",
+       "op": "numwork",
+       "startMs": 3000,
+       "endMs": 4400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        160,
+        290
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "3",
+         "+",
+         "7",
+         "=",
+         "10"
+        ]
+       ]
+      },
+      {
+       "id": "pair4",
+       "op": "numwork",
+       "startMs": 4500,
+       "endMs": 5900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        160,
+        375
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "4",
+         "+",
+         "6",
+         "=",
+         "10"
+        ]
+       ]
+      },
+      {
+       "id": "centre5",
+       "op": "numwork",
+       "startMs": 6200,
+       "endMs": 7600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        500,
+        220
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "10",
+         "+",
+         "5",
+         "=",
+         "15"
+        ]
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch06-t02-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "square",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 3,
+       "at": [
+        190,
+        90
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "2",
+         "7",
+         "6"
+        ],
+        [
+         "9",
+         "5",
+         "1"
+        ],
+        [
+         "4",
+         "3",
+         "8"
+        ]
+       ]
+      },
+      {
+       "id": "outline",
+       "op": "rect",
+       "startMs": 2600,
+       "endMs": 3400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        170,
+        70
+       ],
+       "w": 180,
+       "h": 180
+      },
+      {
+       "id": "line1",
+       "op": "line",
+       "startMs": 3700,
+       "endMs": 4400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        190,
+        90
+       ],
+       "to": [
+        330,
+        230
+       ]
+      },
+      {
+       "id": "line2",
+       "op": "line",
+       "startMs": 4400,
+       "endMs": 5100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        330,
+        90
+       ],
+       "to": [
+        190,
+        230
+       ]
+      },
+      {
+       "id": "check",
+       "op": "text",
+       "startMs": 5500,
+       "endMs": 6700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        500,
+        150
+       ],
+       "text": "eight lines",
+       "size": "m"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch06-t02-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "rlabel",
+       "op": "label",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        400,
+        275
+       ],
+       "text": "three rows",
+       "to": [
+        350,
+        250
+       ]
+      },
+      {
+       "id": "clabel",
+       "op": "label",
+       "startMs": 1100,
+       "endMs": 2300,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        410,
+        65
+       ],
+       "text": "three columns",
+       "to": [
+        270,
+        90
+       ]
+      },
+      {
+       "id": "dlabel",
+       "op": "label",
+       "startMs": 2400,
+       "endMs": 3700,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        500,
+        330
+       ],
+       "text": "two diagonals",
+       "to": [
+        290,
+        170
+       ]
+      },
+      {
+       "id": "match",
+       "op": "numwork",
+       "startMs": 4300,
+       "endMs": 6000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        500,
+        410
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "all",
+         "=",
+         "same",
+         "sum"
+        ]
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1",
+   "key": "sum 15: 2,7,6,9,5,1,4,3,8",
+   "prompt": "Use each tile and check every line"
+  },
+  {
+   "itemId": "r2",
+   "key": "sum 30: 4,14,12,18,10,2,8,6,16",
+   "prompt": "See what changes when every tile doubles"
+  },
+  {
+   "itemId": "r3",
+   "key": "sum 15: 2,7,6,9,5,1,4,3,8",
+   "prompt": "Rows are not enough: check every line"
+  }
+ ],
+ "check": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "Round 2 is titled 'Double the tiles' but tiles are [2,4,6,8,10,12,14,16,18] which are not double the kit's 1-9 square (doubling would give 2,4,6,8,10,12,14,16,18) — that is correct. However, the round gives givens [[4,10]] which marks the centre as 10 (correct). But the computed answer gives sum 30 and grid 4,14,12,18,10,2,8,6,16. The kit item i08 asks for magic sum 30 and centre 10, but the computed arrangement here does not match the kit's example (the kit says 'double every number of a 1-9 magic square' which would give 4,14,12,18,10,2,8,6,16; the kit's own 1-9 square is 2,7,6,9,5,1,4,3,8 — doubling gives 4,14,12,18,10,2,8,6,16. The computed answer matches that. So no issue there. Wait: recheck — the kit does not prescribe the exact arrangement for the doubled square, only that it exists. So this is fine.",
+    "severity": "high"
+   },
+   {
+    "where": "explainer",
+    "what": "The explainer scene s3 labels gA as 'Rows only' and 'not magic', gB as 'All 8 lines' and 'magic', gC as 'Unequal sums' and 'not magic'. This mirrors the kit's item i05 and is correct. No issue."
+   },
+   {
+    "where": "game",
+    "what": "Round 1: tiles [1..9], givens [[4,5]] — means row 0 col 0 is index 4? Actually givens are [row, col] where row 0 is top? The givens [[4,5]] likely mean position (row 4, col 5) which is out of bounds for a 3x3 grid. This is ambiguous but not a factual error per kit. However, the computed answer shows the standard magic square 2,7,6,9,5,1,4,3,8. There is no contradiction.",
+    "severity": "low"
+   },
+   {
+    "where": "game",
+    "what": "Round 3: givens [[0,2],[4,5],[8,8]] — again out-of-bounds indices. This is likely a data error in the game spec, but does not affect kit content. Not a high-severity issue for the kit.",
+    "severity": "low"
+   }
+  ],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

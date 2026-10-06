@@ -1,0 +1,1531 @@
+{
+ "topicId": "c6-maths-ch05-t04",
+ "title": "Prime factorisation",
+ "chapter": "Prime Time",
+ "subject": "maths",
+ "class": 6,
+ "topicType": "T4",
+ "plan": {
+  "game": "sieve-storm@1",
+  "hint": "rules prime / composite"
+ },
+ "game": {
+  "archetype": "sieve-storm@1",
+  "spec": {
+   "archetype": "sieve-storm@1",
+   "skills": [
+    "c6-maths-ch05-t04"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "slashed": "right calls",
+    "combo": "combo",
+    "coach": "Swipe numbers that fit the rule",
+    "runDone": "Storm over",
+    "prime": "prime",
+    "composite": "composite",
+    "even": "even",
+    "odd": "odd",
+    "multipleOf": "multiples of",
+    "commonOf": "common multiples of",
+    "factorOf": "factors of",
+    "cfactorOf": "common factors of",
+    "divisibleBy": "divisible by",
+    "coprimeWith": "co-prime with",
+    "square": "square numbers",
+    "palindrome": "palindromes",
+    "slipped": "slipped",
+    "wrongCut": "not this one",
+    "and": "and"
+   },
+   "title": "Prime Factor Storm",
+   "rounds": [
+    {
+     "rule": "prime",
+     "title": "Prime patrol",
+     "sub": "Spot primes before they fall",
+     "lo": 1,
+     "hi": 40,
+     "count": 10,
+     "hitRate": 0.45,
+     "seed": 17,
+     "speed": 0.75
+    },
+    {
+     "rule": "composite",
+     "title": "Split the composites",
+     "sub": "Stop only at prime leaves",
+     "lo": 2,
+     "hi": 60,
+     "count": 14,
+     "hitRate": 0.5,
+     "seed": 43,
+     "speed": 0.95,
+     "targets": "c6-maths-ch05-t04-m-stop-composite"
+    },
+    {
+     "rule": "prime",
+     "title": "Fast prime finish",
+     "sub": "Check each number carefully",
+     "lo": 2,
+     "hi": 99,
+     "count": 20,
+     "hitRate": 0.35,
+     "seed": 89,
+     "speed": 1.2
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c6-maths-ch05-t04"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Prime factorisation",
+   "accent": "ion",
+   "targets": "c6-maths-ch05-t04-m-stop-composite",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Prime factorisation"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Stop at 9 × 10"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "n90",
+       "type": "node",
+       "text": "90",
+       "sub": "start",
+       "glyph": "question",
+       "color": "ion"
+      },
+      {
+       "id": "n9",
+       "type": "node",
+       "text": "9",
+       "sub": "composite",
+       "color": "amber"
+      },
+      {
+       "id": "n10",
+       "type": "node",
+       "text": "10",
+       "sub": "composite",
+       "color": "amber"
+      },
+      {
+       "id": "n3a",
+       "type": "node",
+       "text": "3",
+       "sub": "prime",
+       "glyph": "spark",
+       "color": "mint"
+      },
+      {
+       "id": "n3b",
+       "type": "node",
+       "text": "3",
+       "sub": "prime",
+       "glyph": "spark",
+       "color": "mint"
+      },
+      {
+       "id": "n2",
+       "type": "node",
+       "text": "2",
+       "sub": "prime",
+       "glyph": "spark",
+       "color": "mint"
+      },
+      {
+       "id": "n5",
+       "type": "node",
+       "text": "5",
+       "sub": "prime",
+       "glyph": "spark",
+       "color": "mint"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "n90",
+       "to": "n9",
+       "text": "split"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "n90",
+       "to": "n10",
+       "text": "split"
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "n9",
+       "to": "n3a",
+       "text": "split"
+      },
+      {
+       "id": "a4",
+       "type": "arrow",
+       "from": "n9",
+       "to": "n3b",
+       "text": "split"
+      },
+      {
+       "id": "a5",
+       "type": "arrow",
+       "from": "n10",
+       "to": "n2",
+       "text": "split"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "checkTitle",
+       "type": "title",
+       "text": "Check the leaves"
+      },
+      {
+       "id": "optA",
+       "type": "label",
+       "text": "9 × 10",
+       "x": 80,
+       "y": 350,
+       "color": "amber"
+      },
+      {
+       "id": "optB",
+       "type": "label",
+       "text": "2 × 3 × 3 × 5",
+       "x": 300,
+       "y": 350,
+       "color": "mint"
+      },
+      {
+       "id": "optC",
+       "type": "label",
+       "text": "1 × 2 × 3 × 3 × 5",
+       "x": 580,
+       "y": 350,
+       "color": "volt"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Prime factorisation writes a number as a product of prime numbers.",
+    "L2": "Start with 90 and split it into any two factors: 9 and 10.",
+    "L3": "Nine and ten are composite, so the tree is not finished.",
+    "L4": "Split 9 into 3 and 3, and split 10 into 2 and 5.",
+    "L5": "Now every leaf is prime, so stop the tree.",
+    "L6": "The prime factorisation is 90 = 2 × 3 × 3 × 5. Multiply back to check.",
+    "L7": "A different tree can find the primes in another order, but the final primes are the same."
+   },
+   "narration": {
+    "L1": {
+     "text": "Prime factorisation writes a number as a product of prime numbers.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "Start with 90 and split it into any two factors: 9 and 10.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "Nine and ten are composite, so the tree is not finished.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "Split 9 into 3 and 3, and split 10 into 2 and 5.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "Now every leaf is prime, so stop the tree.",
+     "dur": 2.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "The prime factorisation is 90 = 2 × 3 × 3 × 5. Multiply back to check.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "A different tree can find the primes in another order, but the final primes are the same.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "title"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "n90",
+        "n9",
+        "n10",
+        "a1",
+        "a2"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 0.6,
+       "target": [
+        "a1",
+        "a2"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "myth"
+      },
+      {
+       "at": "s2",
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "n3a",
+        "n3b",
+        "n2",
+        "n5",
+        "a3",
+        "a4",
+        "a5"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 0.8,
+       "target": [
+        "a3",
+        "a4",
+        "a5"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1.2,
+       "target": [
+        "n3a",
+        "n3b",
+        "n2",
+        "n5"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "focus",
+       "dur": 1.2,
+       "target": [
+        "n3a",
+        "n3b",
+        "n2",
+        "n5"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "checkTitle",
+        "optA",
+        "optB",
+        "optC"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive"
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which expression is the complete prime factorisation of 90?",
+    "options": [
+     "optA",
+     "optB",
+     "optC"
+    ],
+    "answer": "optB",
+    "src": "c6-maths-ch05-t04-i03"
+   }
+  },
+  "repairs": [
+   "glyph",
+   "glyph",
+   "cue:target"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 26
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch05-t04-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "title",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "Prime factorisation",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "prod",
+       "op": "text",
+       "startMs": 1200,
+       "endMs": 2600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        180
+       ],
+       "text": "number = prime × prime",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "prime",
+       "op": "circle",
+       "startMs": 2800,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        250,
+        340
+       ],
+       "r": 55
+      },
+      {
+       "id": "primeText",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4300,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        250,
+        350
+       ],
+       "text": "prime",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch05-t04-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "n90",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        105
+       ],
+       "text": "90",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "branch",
+       "op": "line",
+       "startMs": 800,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        400,
+        125
+       ],
+       "to": [
+        280,
+        220
+       ]
+      },
+      {
+       "id": "branch2",
+       "op": "line",
+       "startMs": 800,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        400,
+        125
+       ],
+       "to": [
+        520,
+        220
+       ]
+      },
+      {
+       "id": "n9",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        280,
+        250
+       ],
+       "text": "9",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "n10",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        520,
+        250
+       ],
+       "text": "10",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "factors",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        410
+       ],
+       "text": "9 × 10",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch05-t04-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "c9",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        280,
+        250
+       ],
+       "r": 34
+      },
+      {
+       "id": "c10",
+       "op": "circle",
+       "startMs": 500,
+       "endMs": 1200,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        520,
+        250
+       ],
+       "r": 38
+      },
+      {
+       "id": "lab9",
+       "op": "label",
+       "startMs": 1400,
+       "endMs": 2400,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        215,
+        310
+       ],
+       "text": "composite",
+       "to": [
+        280,
+        285
+       ]
+      },
+      {
+       "id": "lab10",
+       "op": "label",
+       "startMs": 2400,
+       "endMs": 3400,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        535,
+        310
+       ],
+       "text": "composite",
+       "to": [
+        520,
+        288
+       ]
+      },
+      {
+       "id": "unfinished",
+       "op": "text",
+       "startMs": 3600,
+       "endMs": 4700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        455
+       ],
+       "text": "not finished",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch05-t04-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "b93",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        280,
+        285
+       ],
+       "to": [
+        210,
+        370
+       ]
+      },
+      {
+       "id": "b933",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        280,
+        285
+       ],
+       "to": [
+        350,
+        370
+       ]
+      },
+      {
+       "id": "b102",
+       "op": "line",
+       "startMs": 900,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        520,
+        285
+       ],
+       "to": [
+        460,
+        370
+       ]
+      },
+      {
+       "id": "b105",
+       "op": "line",
+       "startMs": 900,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        520,
+        285
+       ],
+       "to": [
+        580,
+        370
+       ]
+      },
+      {
+       "id": "t3a",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        210,
+        410
+       ],
+       "text": "3",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "t3b",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        350,
+        410
+       ],
+       "text": "3",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "t2",
+       "op": "text",
+       "startMs": 2800,
+       "endMs": 3400,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        460,
+        410
+       ],
+       "text": "2",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "t5",
+       "op": "text",
+       "startMs": 2800,
+       "endMs": 3400,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        580,
+        410
+       ],
+       "text": "5",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch05-t04-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 4430,
+     "ops": [
+      {
+       "id": "p3a",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        210,
+        410
+       ],
+       "r": 28
+      },
+      {
+       "id": "p3b",
+       "op": "circle",
+       "startMs": 500,
+       "endMs": 1100,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        350,
+        410
+       ],
+       "r": 28
+      },
+      {
+       "id": "p2",
+       "op": "circle",
+       "startMs": 1000,
+       "endMs": 1600,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        460,
+        410
+       ],
+       "r": 28
+      },
+      {
+       "id": "p5",
+       "op": "circle",
+       "startMs": 1500,
+       "endMs": 2100,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        580,
+        410
+       ],
+       "r": 28
+      },
+      {
+       "id": "stop",
+       "op": "text",
+       "startMs": 2600,
+       "endMs": 3400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        475
+       ],
+       "text": "stop",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch05-t04-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "eq",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        85,
+        75
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "90",
+         "=",
+         "2",
+         "×",
+         "3",
+         "×",
+         "3",
+         "×",
+         "5"
+        ]
+       ]
+      },
+      {
+       "id": "check",
+       "op": "numwork",
+       "startMs": 2700,
+       "endMs": 4900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        120,
+        220
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "2",
+         "×",
+         "9",
+         "×",
+         "5",
+         "=",
+         "90"
+        ]
+       ]
+      },
+      {
+       "id": "arrowCheck",
+       "op": "arrow",
+       "startMs": 5000,
+       "endMs": 5800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        270
+       ],
+       "to": [
+        400,
+        355
+       ]
+      },
+      {
+       "id": "verified",
+       "op": "text",
+       "startMs": 6100,
+       "endMs": 6900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        455
+       ],
+       "text": "90",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch05-t04-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "other",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "different tree",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "root",
+       "op": "text",
+       "startMs": 1200,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        125
+       ],
+       "text": "90",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "ob1",
+       "op": "line",
+       "startMs": 1800,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        400,
+        145
+       ],
+       "to": [
+        300,
+        220
+       ]
+      },
+      {
+       "id": "ob2",
+       "op": "line",
+       "startMs": 1800,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        400,
+        145
+       ],
+       "to": [
+        500,
+        220
+       ]
+      },
+      {
+       "id": "a12",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        300,
+        255
+       ],
+       "text": "2",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "a45",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        500,
+        255
+       ],
+       "text": "45",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "ob3",
+       "op": "line",
+       "startMs": 3100,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        500,
+        275
+       ],
+       "to": [
+        440,
+        350
+       ]
+      },
+      {
+       "id": "ob4",
+       "op": "line",
+       "startMs": 3100,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        500,
+        275
+       ],
+       "to": [
+        560,
+        350
+       ]
+      },
+      {
+       "id": "a9",
+       "op": "text",
+       "startMs": 3800,
+       "endMs": 4300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        440,
+        385
+       ],
+       "text": "9",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "a5",
+       "op": "text",
+       "startMs": 3800,
+       "endMs": 4300,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        560,
+        385
+       ],
+       "text": "5",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 17 prime?"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 25 prime?"
+  },
+  {
+   "itemId": "r1:2",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 29 prime?"
+  },
+  {
+   "itemId": "r1:3",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 37 prime?"
+  },
+  {
+   "itemId": "r1:4",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 2 prime?"
+  },
+  {
+   "itemId": "r1:5",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 23 prime?"
+  },
+  {
+   "itemId": "r1:6",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 30 prime?"
+  },
+  {
+   "itemId": "r1:7",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 34 prime?"
+  },
+  {
+   "itemId": "r1:8",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 29 prime?"
+  },
+  {
+   "itemId": "r1:9",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 31 prime?"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 34 composite?"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 55 composite?"
+  },
+  {
+   "itemId": "r2:2",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 3 composite?"
+  },
+  {
+   "itemId": "r2:3",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 8 composite?"
+  },
+  {
+   "itemId": "r2:4",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 43 composite?"
+  },
+  {
+   "itemId": "r2:5",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 32 composite?"
+  },
+  {
+   "itemId": "r2:6",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 59 composite?"
+  },
+  {
+   "itemId": "r2:7",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 2 composite?"
+  },
+  {
+   "itemId": "r2:8",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 51 composite?"
+  },
+  {
+   "itemId": "r2:9",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 37 composite?"
+  },
+  {
+   "itemId": "r2:10",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 11 composite?"
+  },
+  {
+   "itemId": "r2:11",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 25 composite?"
+  },
+  {
+   "itemId": "r2:12",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 60 composite?"
+  },
+  {
+   "itemId": "r2:13",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 41 composite?"
+  },
+  {
+   "itemId": "r3:0",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 12 prime?"
+  },
+  {
+   "itemId": "r3:1",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 31 prime?"
+  },
+  {
+   "itemId": "r3:2",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 83 prime?"
+  },
+  {
+   "itemId": "r3:3",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 54 prime?"
+  },
+  {
+   "itemId": "r3:4",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 2 prime?"
+  },
+  {
+   "itemId": "r3:5",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 49 prime?"
+  },
+  {
+   "itemId": "r3:6",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 65 prime?"
+  },
+  {
+   "itemId": "r3:7",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 33 prime?"
+  },
+  {
+   "itemId": "r3:8",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 73 prime?"
+  },
+  {
+   "itemId": "r3:9",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 52 prime?"
+  },
+  {
+   "itemId": "r3:10",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 87 prime?"
+  },
+  {
+   "itemId": "r3:11",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 89 prime?"
+  },
+  {
+   "itemId": "r3:12",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 88 prime?"
+  },
+  {
+   "itemId": "r3:13",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 81 prime?"
+  },
+  {
+   "itemId": "r3:14",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 63 prime?"
+  },
+  {
+   "itemId": "r3:15",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 82 prime?"
+  },
+  {
+   "itemId": "r3:16",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 95 prime?"
+  },
+  {
+   "itemId": "r3:17",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 46 prime?"
+  },
+  {
+   "itemId": "r3:18",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 61 prime?"
+  },
+  {
+   "itemId": "r3:19",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 28 prime?"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

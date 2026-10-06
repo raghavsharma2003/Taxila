@@ -1,0 +1,33 @@
+diff --git a/server/worker.mjs b/server/worker.mjs
+--- a/server/worker.mjs
++++ b/server/worker.mjs
+@@ -21,6 +21,8 @@
+ import { unappliedMigrations } from "./conductor/migrations.js";
+ import { onChildClock } from "./conductor/offsets.js";
+ import "./conductor/handlers.js";
++// ship5 p3-voicesig: the consent backstop for stored answering-pace rows (server/voicesig/lesson.js sweep).
++import { sweep as voicesigSweep } from "./voicesig/lesson.js";
+ 
+ const ONCE = process.argv.includes("--once");
+ const ID = `${process.env.CONTAINER_APP_REPLICA_NAME || hostname()}:${process.pid}`;
+@@ -103,10 +105,20 @@
+     return false;
+   }
+ }
++const VS_SWEEP_MS = 6 * 3600_000;
++let vsSweptAt = 0;
+ async function tickOnce() {
+   if (!(await ensureLeader())) return 0;
+   const fired = await fireDue({ limit: 500 });
+   if (fired.length) log("wakeups fired", { n: fired.length });
++  // ship5 p3-voicesig: leader only, every VS_SWEEP_MS (and on --once): delete stored answering-pace rows whose child's
++  // latest voice_pace_memory consent is not a grant (withdrawal is already synchronous; this catches a failed delete).
++  // Never throws; -1 = could not run (logged inside), retried next time.
++  if (Date.now() - vsSweptAt >= VS_SWEEP_MS) {
++    vsSweptAt = Date.now();
++    const n = await voicesigSweep(q);
++    if (n > 0) log("voicesig consent sweep", { deleted: n });
++  }
+   return fired.length;
+ }
+ async function tickerLoop() {

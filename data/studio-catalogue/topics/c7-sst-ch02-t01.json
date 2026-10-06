@@ -1,0 +1,2253 @@
+{
+ "topicId": "c7-sst-ch02-t01",
+ "title": "Understanding the Weather",
+ "chapter": "Understanding the Weather",
+ "subject": "sst",
+ "class": 7,
+ "topicType": "T3",
+ "plan": {
+  "game": "land-lab@1",
+  "hint": "rain mode (monsoon winds, Western Ghats) with wet/dry places"
+ },
+ "game": {
+  "archetype": "land-lab@1",
+  "spec": {
+   "archetype": "land-lab@1",
+   "skills": [
+    "c7-sst-ch02-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "done": "right",
+    "wind": "wind",
+    "sea": "sea",
+    "rain": "RAIN",
+    "storm": "STORM",
+    "lock": "LOCK",
+    "wet": "wet",
+    "dry": "dry",
+    "trees": "plant trees",
+    "spring": "spring",
+    "trace": "Tap cells from the spring to the sea",
+    "runDone": "Lab closed",
+    "level": "flood level",
+    "safe": "SAFE",
+    "flooded": "FLOODED",
+    "mm": "mm of rain",
+    "high": "high",
+    "low": "low",
+    "reset": "clear"
+   },
+   "title": "Land & Water Lab",
+   "rounds": [
+    {
+     "mode": "rain",
+     "title": "Sea breeze and hills",
+     "sub": "Warm land air rises; sea air moves in",
+     "coast": 0.18,
+     "hills": [
+      {
+       "x": 0.5,
+       "h": 0.98,
+       "w": 0.16
+      }
+     ],
+     "asks": [
+      {
+       "label": "coast home",
+       "glyph": "house",
+       "need": "wet"
+      },
+      {
+       "label": "hill farm",
+       "glyph": "wheat",
+       "need": "dry"
+      }
+     ],
+     "targets": "c7-sst-ch02-t01-m2"
+    },
+    {
+     "mode": "river",
+     "title": "Trace the river",
+     "sub": "Start at the spring; move downhill",
+     "w": 9,
+     "h": 6,
+     "peaks": [
+      {
+       "x": 2,
+       "y": 1,
+       "h": 3.4,
+       "r": 2
+      },
+      {
+       "x": 7,
+       "y": 2,
+       "h": 2.6,
+       "r": 1.6
+      }
+     ],
+     "spring": [
+      4,
+      0
+     ]
+    },
+    {
+     "mode": "flood",
+     "title": "Storm-ready school",
+     "sub": "Choose a valley slope and trees",
+     "profile": [
+      9,
+      7.5,
+      5.5,
+      3.5,
+      2.2,
+      1.4,
+      0.6,
+      0,
+      0.7,
+      1.8,
+      3.1,
+      5,
+      7.2,
+      9
+     ],
+     "rain": 180,
+     "label": "school",
+     "glyph": "school"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-sst-ch02-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "How weather changes",
+   "accent": "sci",
+   "targets": "c7-sst-ch02-t01-m2",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "How weather changes"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Trees make the wind"
+      },
+      {
+       "id": "sun",
+       "type": "glyph",
+       "name": "sun",
+       "x": 160,
+       "y": 250,
+       "size": 120,
+       "color": "sun"
+      },
+      {
+       "id": "land",
+       "type": "node",
+       "text": "Land",
+       "sub": "heats faster",
+       "glyph": "mountain",
+       "x": 380,
+       "y": 390,
+       "color": "amber"
+      },
+      {
+       "id": "sea",
+       "type": "node",
+       "text": "Sea",
+       "sub": "heats slower",
+       "glyph": "wave",
+       "x": 700,
+       "y": 390,
+       "color": "ion"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "warm",
+       "type": "node",
+       "text": "Warm air",
+       "sub": "rises",
+       "glyph": "wind",
+       "x": 220,
+       "y": 300,
+       "color": "amber"
+      },
+      {
+       "id": "low",
+       "type": "node",
+       "text": "Low pressure",
+       "sub": "over land",
+       "glyph": "thermometer",
+       "x": 500,
+       "y": 300,
+       "color": "amber"
+      },
+      {
+       "id": "cool",
+       "type": "node",
+       "text": "Cool air",
+       "sub": "moves in",
+       "glyph": "wind",
+       "x": 780,
+       "y": 300,
+       "color": "ion"
+      },
+      {
+       "id": "rise",
+       "type": "arrow",
+       "from": "warm",
+       "to": "low",
+       "text": "rises"
+      },
+      {
+       "id": "move",
+       "type": "arrow",
+       "from": "cool",
+       "to": "low",
+       "text": "wind"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "high",
+       "type": "node",
+       "text": "High pressure",
+       "sub": "over sea",
+       "x": 180,
+       "y": 300,
+       "color": "ion"
+      },
+      {
+       "id": "low2",
+       "type": "node",
+       "text": "Low pressure",
+       "sub": "over land",
+       "x": 500,
+       "y": 300,
+       "color": "amber"
+      },
+      {
+       "id": "breeze",
+       "type": "node",
+       "text": "Sea breeze",
+       "sub": "sea to land",
+       "glyph": "wind",
+       "x": 800,
+       "y": 300,
+       "color": "mint"
+      },
+      {
+       "id": "flow",
+       "type": "arrow",
+       "from": "high",
+       "to": "low2",
+       "text": "air moves"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "weather",
+       "type": "node",
+       "text": "Weather",
+       "sub": "hours or days",
+       "glyph": "cloud",
+       "x": 250,
+       "y": 280,
+       "color": "sci"
+      },
+      {
+       "id": "climate",
+       "type": "node",
+       "text": "Climate",
+       "sub": "30 years or more",
+       "glyph": "globe",
+       "x": 700,
+       "y": 280,
+       "color": "mint"
+      },
+      {
+       "id": "short",
+       "type": "label",
+       "text": "short time",
+       "x": 180,
+       "y": 430,
+       "color": "amber"
+      },
+      {
+       "id": "long",
+       "type": "label",
+       "text": "long time",
+       "x": 650,
+       "y": 430,
+       "color": "ion"
+      }
+     ]
+    },
+    {
+     "id": "s5",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "temp",
+       "type": "node",
+       "text": "Temperature",
+       "sub": "thermometer",
+       "glyph": "thermometer",
+       "x": 180,
+       "y": 260,
+       "color": "amber"
+      },
+      {
+       "id": "pressure",
+       "type": "node",
+       "text": "Pressure",
+       "sub": "barometer",
+       "x": 500,
+       "y": 260,
+       "color": "ion"
+      },
+      {
+       "id": "rain",
+       "type": "node",
+       "text": "Rainfall",
+       "sub": "rain gauge",
+       "glyph": "rain",
+       "x": 820,
+       "y": 260,
+       "color": "sci"
+      },
+      {
+       "id": "humidity",
+       "type": "node",
+       "text": "Humidity",
+       "sub": "hygrometer",
+       "glyph": "drop",
+       "x": 340,
+       "y": 460,
+       "color": "mint"
+      },
+      {
+       "id": "speed",
+       "type": "node",
+       "text": "Wind speed",
+       "sub": "anemometer",
+       "glyph": "wind",
+       "x": 680,
+       "y": 460,
+       "color": "ion"
+      }
+     ]
+    },
+    {
+     "id": "s6",
+     "layout": "row",
+     "els": [
+      {
+       "id": "checkTitle",
+       "type": "title",
+       "text": "Check your understanding"
+      },
+      {
+       "id": "sun2",
+       "type": "glyph",
+       "name": "sun",
+       "x": 180,
+       "y": 340,
+       "size": 100,
+       "color": "sun"
+      },
+      {
+       "id": "land2",
+       "type": "node",
+       "text": "Land heats",
+       "sub": "first",
+       "glyph": "mountain",
+       "x": 430,
+       "y": 340,
+       "color": "amber"
+      },
+      {
+       "id": "air2",
+       "type": "node",
+       "text": "Air rises",
+       "sub": "low pressure",
+       "glyph": "wind",
+       "x": 680,
+       "y": 340,
+       "color": "ion"
+      },
+      {
+       "id": "sea2",
+       "type": "node",
+       "text": "Sea air moves",
+       "sub": "sea breeze",
+       "glyph": "wave",
+       "x": 900,
+       "y": 340,
+       "color": "mint"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Weather is the condition of the air at a place for a short time, such as hours or days.",
+    "L2": "Climate is the average weather pattern of a place over a long time, about 30 years or more.",
+    "L3": "The Sun heats land and sea unevenly. Land heats faster than water.",
+    "L4": "Warm air over the land rises, making lower pressure. Cooler air over the sea has higher pressure.",
+    "L5": "Air moves from high pressure to low pressure. This movement is wind, not trees waving their branches.",
+    "L6": "Weather has several elements, including temperature, pressure, wind, humidity, rainfall and clouds.",
+    "L7": "Each element can be measured: a thermometer measures temperature, and a barometer measures air pressure.",
+    "L8": "A rain gauge measures rainfall, while an anemometer measures wind speed and a hygrometer measures humidity.",
+    "L9": "At the beach, this process makes a cool sea breeze during the afternoon. At night, the breeze reverses.",
+    "L10": "Now put the steps of the afternoon sea breeze in the correct order."
+   },
+   "narration": {
+    "L1": {
+     "text": "Weather is the condition of the air at a place for a short time, such as hours or days.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "Climate is the average weather pattern of a place over a long time, about 30 years or more.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "The Sun heats land and sea unevenly. Land heats faster than water.",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "Warm air over the land rises, making lower pressure. Cooler air over the sea has higher pressure.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "Air moves from high pressure to low pressure. This movement is wind, not trees waving their branches.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Weather has several elements, including temperature, pressure, wind, humidity, rainfall and clouds.",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Each element can be measured: a thermometer measures temperature, and a barometer measures air pressure.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "A rain gauge measures rainfall, while an anemometer measures wind speed and a hygrometer measures humidity.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L9": {
+     "text": "At the beach, this process makes a cool sea breeze during the afternoon. At night, the breeze reverses.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L10": {
+     "text": "Now put the steps of the afternoon sea breeze in the correct order.",
+     "dur": 2,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.3,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "weather"
+      },
+      {
+       "at": 0.4,
+       "do": "highlight",
+       "dur": 1,
+       "target": "short"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.3,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "climate"
+      },
+      {
+       "at": 0.4,
+       "do": "highlight",
+       "dur": 1,
+       "target": "long"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.3,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.5,
+       "target": "sun"
+      },
+      {
+       "at": 0.4,
+       "do": "highlight",
+       "dur": 1,
+       "target": "land"
+      },
+      {
+       "at": 1.2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "sea"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.5,
+       "target": "warm"
+      },
+      {
+       "at": 0.4,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "rise",
+       "to": 1
+      },
+      {
+       "at": 1.1,
+       "do": "show",
+       "dur": 0.6,
+       "target": "low"
+      },
+      {
+       "at": 1.8,
+       "do": "show",
+       "dur": 0.6,
+       "target": "cool"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.3,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.5,
+       "target": "myth"
+      },
+      {
+       "at": 0.7,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      },
+      {
+       "at": 1.2,
+       "do": "show",
+       "dur": 0.5,
+       "target": "sun"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.3,
+     "scene": "s5",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "temp",
+        "pressure",
+        "rain",
+        "humidity",
+        "speed"
+       ]
+      },
+      {
+       "at": 1.2,
+       "do": "camera",
+       "dur": 1,
+       "zoom": 1.05
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.3,
+     "scene": "s5",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "temp"
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 1,
+       "target": "pressure"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0.3,
+     "scene": "s5",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "rain"
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "speed"
+      },
+      {
+       "at": 1.6,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "humidity"
+      }
+     ]
+    },
+    {
+     "line": "L9",
+     "gap": 0.3,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.5,
+       "target": "high"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.5,
+       "target": "low2"
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 1,
+       "target": "flow",
+       "to": 1
+      },
+      {
+       "at": 2,
+       "do": "show",
+       "dur": 0.6,
+       "target": "breeze"
+      }
+     ]
+    },
+    {
+     "line": "L10",
+     "gap": 0,
+     "scene": "s6",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.5,
+       "target": "checkTitle"
+      },
+      {
+       "at": "end",
+       "do": "interactive"
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "order",
+    "prompt": "Tap the afternoon sea-breeze steps in order.",
+    "items": [
+     "land2",
+     "air2",
+     "sea2"
+    ],
+    "src": "c7-sst-ch02-t01-i05"
+   }
+  },
+  "repairs": [
+   "glyph",
+   "glyph",
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 41
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch02-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "weatherBox",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        70,
+        120
+       ],
+       "w": 300,
+       "h": 180,
+       "round": 12
+      },
+      {
+       "id": "weatherLabel",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        220,
+        160
+       ],
+       "text": "Weather",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "shortTime",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        220,
+        245
+       ],
+       "text": "hours or days",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "placeLabel",
+       "op": "text",
+       "startMs": 2800,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        220,
+        345
+       ],
+       "text": "a place",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "clock",
+       "op": "circle",
+       "startMs": 3900,
+       "endMs": 4700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        570,
+        205
+       ],
+       "r": 70
+      },
+      {
+       "id": "clockHand",
+       "op": "line",
+       "startMs": 4700,
+       "endMs": 5200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        570,
+        205
+       ],
+       "to": [
+        570,
+        160
+       ]
+      },
+      {
+       "id": "dayMark",
+       "op": "text",
+       "startMs": 5500,
+       "endMs": 6200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        570,
+        315
+       ],
+       "text": "short time",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch02-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "climateBox",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        430,
+        100
+       ],
+       "w": 300,
+       "h": 210,
+       "round": 12
+      },
+      {
+       "id": "climateLabel",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        580,
+        145
+       ],
+       "text": "Climate",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "averageLabel",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        580,
+        220
+       ],
+       "text": "average weather",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "longTime",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        580,
+        275
+       ],
+       "text": "30 years or more",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "compareArrow",
+       "op": "arrow",
+       "startMs": 4300,
+       "endMs": 5000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        375,
+        205
+       ],
+       "to": [
+        425,
+        205
+       ]
+      },
+      {
+       "id": "contrast",
+       "op": "text",
+       "startMs": 5500,
+       "endMs": 6500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        370
+       ],
+       "text": "short time / long time",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch02-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "sunL3",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        75
+       ],
+       "r": 38,
+       "fill": "accent"
+      },
+      {
+       "id": "landL3",
+       "op": "rect",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        80,
+        350
+       ],
+       "w": 260,
+       "h": 55,
+       "fill": "soft"
+      },
+      {
+       "id": "seaL3",
+       "op": "ellipse",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        620,
+        378
+       ],
+       "rx": 125,
+       "ry": 35,
+       "fill": "soft"
+      },
+      {
+       "id": "landLabelL3",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        210,
+        440
+       ],
+       "text": "Land",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "seaLabelL3",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        620,
+        440
+       ],
+       "text": "sea",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "landHeat",
+       "op": "arrow",
+       "startMs": 2700,
+       "endMs": 3600,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        210,
+        345
+       ],
+       "to": [
+        250,
+        180
+       ]
+      },
+      {
+       "id": "waterHeat",
+       "op": "arrow",
+       "startMs": 3000,
+       "endMs": 3900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        620,
+        345
+       ],
+       "to": [
+        620,
+        250
+       ]
+      },
+      {
+       "id": "faster",
+       "op": "text",
+       "startMs": 4100,
+       "endMs": 5000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        470
+       ],
+       "text": "Land heats faster",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch02-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "landL4",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        80,
+        350
+       ],
+       "w": 260,
+       "h": 55
+      },
+      {
+       "id": "seaL4",
+       "op": "ellipse",
+       "startMs": 200,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        620,
+        378
+       ],
+       "rx": 125,
+       "ry": 35
+      },
+      {
+       "id": "warmAir",
+       "op": "arrow",
+       "startMs": 900,
+       "endMs": 1800,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        210,
+        340
+       ],
+       "to": [
+        210,
+        145
+       ]
+      },
+      {
+       "id": "warmLabel",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        210,
+        120
+       ],
+       "text": "warm air",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "lowPressure",
+       "op": "text",
+       "startMs": 2600,
+       "endMs": 3400,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        210,
+        215
+       ],
+       "text": "lower pressure",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "coolLabel",
+       "op": "text",
+       "startMs": 3800,
+       "endMs": 4500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        620,
+        230
+       ],
+       "text": "cooler air",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "highPressure",
+       "op": "text",
+       "startMs": 4600,
+       "endMs": 5500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        620,
+        285
+       ],
+       "text": "higher pressure",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "pressureCompare",
+       "op": "line",
+       "startMs": 5900,
+       "endMs": 6800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        340,
+        215
+       ],
+       "to": [
+        480,
+        285
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch02-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "highBox",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        80,
+        100
+       ],
+       "w": 250,
+       "h": 120,
+       "round": 10
+      },
+      {
+       "id": "lowBox",
+       "op": "rect",
+       "startMs": 300,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        470,
+        300
+       ],
+       "w": 250,
+       "h": 120,
+       "round": 10
+      },
+      {
+       "id": "highText",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        205,
+        160
+       ],
+       "text": "high pressure",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "lowText",
+       "op": "text",
+       "startMs": 1100,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        595,
+        360
+       ],
+       "text": "low pressure",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "windArrow",
+       "op": "arrow",
+       "startMs": 2200,
+       "endMs": 3400,
+       "ink": "accent",
+       "weight": 3,
+       "from": [
+        330,
+        190
+       ],
+       "to": [
+        470,
+        330
+       ]
+      },
+      {
+       "id": "windText",
+       "op": "text",
+       "startMs": 3600,
+       "endMs": 4200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        270
+       ],
+       "text": "wind",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "notTrees",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 6100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        460
+       ],
+       "text": "not trees waving",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch02-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "elementsTitle",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        65
+       ],
+       "text": "Weather elements",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "elementList",
+       "op": "numwork",
+       "startMs": 700,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        100,
+        120
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "temper",
+         "pressu"
+        ],
+        [
+         "wind",
+         "humidi"
+        ],
+        [
+         "rainfa",
+         "clouds"
+        ]
+       ]
+      },
+      {
+       "id": "elementCircle",
+       "op": "circle",
+       "startMs": 3200,
+       "endMs": 4100,
+       "ink": "mark",
+       "weight": 2,
+       "c": [
+        400,
+        280
+       ],
+       "r": 105
+      },
+      {
+       "id": "linkedText",
+       "op": "text",
+       "startMs": 3800,
+       "endMs": 4500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        280
+       ],
+       "text": "weather",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch02-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "measureTitle",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        65
+       ],
+       "text": "Measured elements",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "thermo",
+       "op": "rect",
+       "startMs": 600,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        130,
+        140
+       ],
+       "w": 55,
+       "h": 190,
+       "round": 25
+      },
+      {
+       "id": "thermoLabel",
+       "op": "label",
+       "startMs": 1300,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        220,
+        205
+       ],
+       "text": "thermometer",
+       "to": [
+        185,
+        205
+       ]
+      },
+      {
+       "id": "baro",
+       "op": "circle",
+       "startMs": 1800,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        570,
+        230
+       ],
+       "r": 85
+      },
+      {
+       "id": "tempLabel",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 2900,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        150,
+        380
+       ],
+       "text": "temperature",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "baroLabel",
+       "op": "label",
+       "startMs": 2700,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        680,
+        150
+       ],
+       "text": "barometer",
+       "to": [
+        620,
+        180
+       ]
+      },
+      {
+       "id": "pressureLabel",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4300,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        570,
+        380
+       ],
+       "text": "air pressure",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch02-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "rainGauge",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        150
+       ],
+       "w": 80,
+       "h": 170
+      },
+      {
+       "id": "rainLabel",
+       "op": "label",
+       "startMs": 800,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        210,
+        180
+       ],
+       "text": "rain gauge",
+       "to": [
+        170,
+        200
+       ]
+      },
+      {
+       "id": "rainfallLabel",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        130,
+        370
+       ],
+       "text": "rainfall",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "anemo",
+       "op": "circle",
+       "startMs": 1800,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        220
+       ],
+       "r": 65
+      },
+      {
+       "id": "anemoArrow",
+       "op": "arrow",
+       "startMs": 2500,
+       "endMs": 3100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        220
+       ],
+       "to": [
+        465,
+        220
+       ]
+      },
+      {
+       "id": "anemoLabel",
+       "op": "label",
+       "startMs": 3100,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        120
+       ],
+       "text": "anemometer",
+       "to": [
+        400,
+        155
+       ]
+      },
+      {
+       "id": "windSpeed",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4600,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        370
+       ],
+       "text": "wind speed",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "hygro",
+       "op": "ellipse",
+       "startMs": 4300,
+       "endMs": 5000,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        650,
+        220
+       ],
+       "rx": 75,
+       "ry": 55
+      },
+      {
+       "id": "hygroLabel",
+       "op": "label",
+       "startMs": 5000,
+       "endMs": 5800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        650,
+        120
+       ],
+       "text": "hygrometer",
+       "to": [
+        650,
+        165
+       ]
+      },
+      {
+       "id": "humidity",
+       "op": "text",
+       "startMs": 5800,
+       "endMs": 6500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        650,
+        370
+       ],
+       "text": "humidity",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L9",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch02-t01-wb-L9",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "beachLand",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        60,
+        350
+       ],
+       "w": 300,
+       "h": 55,
+       "fill": "soft"
+      },
+      {
+       "id": "beachSea",
+       "op": "ellipse",
+       "startMs": 200,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        620,
+        380
+       ],
+       "rx": 150,
+       "ry": 42,
+       "fill": "soft"
+      },
+      {
+       "id": "afternoonText",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1600,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        210,
+        300
+       ],
+       "text": "afternoon",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "seaBreeze",
+       "op": "arrow",
+       "startMs": 1800,
+       "endMs": 3000,
+       "ink": "accent",
+       "weight": 3,
+       "from": [
+        600,
+        330
+       ],
+       "to": [
+        320,
+        330
+       ]
+      },
+      {
+       "id": "breezeText",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        460,
+        285
+       ],
+       "text": "sea breeze",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "nightText",
+       "op": "text",
+       "startMs": 4200,
+       "endMs": 4800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        600,
+        180
+       ],
+       "text": "night",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "reverseBreeze",
+       "op": "arrow",
+       "startMs": 5000,
+       "endMs": 6200,
+       "ink": "mark",
+       "weight": 3,
+       "from": [
+        320,
+        250
+       ],
+       "to": [
+        600,
+        250
+       ]
+      },
+      {
+       "id": "reverseText",
+       "op": "text",
+       "startMs": 6300,
+       "endMs": 7400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        460,
+        205
+       ],
+       "text": "breeze reverses",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L10",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch02-t01-wb-L10",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "stepsTitle",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        65
+       ],
+       "text": "Afternoon sea breeze",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "step1",
+       "op": "circle",
+       "startMs": 700,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        120,
+        180
+       ],
+       "r": 42
+      },
+      {
+       "id": "step1Text",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        120,
+        180
+       ],
+       "text": "1",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "step2",
+       "op": "circle",
+       "startMs": 1300,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        280,
+        180
+       ],
+       "r": 42
+      },
+      {
+       "id": "step2Text",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 1900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        280,
+        180
+       ],
+       "text": "2",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "step3",
+       "op": "circle",
+       "startMs": 1900,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        440,
+        180
+       ],
+       "r": 42
+      },
+      {
+       "id": "step3Text",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 2500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        440,
+        180
+       ],
+       "text": "3",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "step4",
+       "op": "circle",
+       "startMs": 2500,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        600,
+        180
+       ],
+       "r": 42
+      },
+      {
+       "id": "step4Text",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        600,
+        180
+       ],
+       "text": "4",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "orderArrow1",
+       "op": "arrow",
+       "startMs": 3300,
+       "endMs": 3700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        165,
+        180
+       ],
+       "to": [
+        235,
+        180
+       ]
+      },
+      {
+       "id": "orderArrow2",
+       "op": "arrow",
+       "startMs": 3700,
+       "endMs": 4100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        325,
+        180
+       ],
+       "to": [
+        395,
+        180
+       ]
+      },
+      {
+       "id": "orderArrow3",
+       "op": "arrow",
+       "startMs": 4100,
+       "endMs": 4500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        485,
+        180
+       ],
+       "to": [
+        555,
+        180
+       ]
+      },
+      {
+       "id": "correctOrder",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        350
+       ],
+       "text": "correct order",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "wet: 0.25–0.46",
+   "prompt": "coast home"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "dry: 0.50–1.00",
+   "prompt": "hill farm"
+  },
+  {
+   "itemId": "r2",
+   "key": "4,0 → 5,0 → 5,1 → 5,2 → 5,3 → 5,4 → 5,5",
+   "prompt": "trace the river"
+  },
+  {
+   "itemId": "r3",
+   "key": "above 4.0 m (2.4 m with trees)",
+   "prompt": "school"
+  }
+ ],
+ "check": {
+  "issues": [
+   {
+    "where": "explainer",
+    "what": "The explainer lists 'pressure' as measured by a barometer, but does not mention a wind vane for wind direction as in the kit.",
+    "severity": "low"
+   },
+   {
+    "where": "explainer",
+    "what": "The explainer says 'Weather has several elements, including temperature, pressure, wind, humidity, rainfall and clouds' but omits wind direction and air pressure (implied but not explicitly listed as an element).",
+    "severity": "low"
+   }
+  ],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ },
+ "firstCheck": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "round 1 incorrectly targets misconception c7-sst-ch02-t01-m2 ('Wind is made by trees waving their branches') but presents a purely geographic rainfall-shadow puzzle with no connection to wind cause or sea/land breeze; the scenario does not engage the target misconception.",
+    "severity": "high"
+   },
+   {
+    "where": "game",
+    "what": "round 1 labels the second ask as 'far farm' with need 'dry', but the computed key shows that location also gets wet (0.44–1.00), creating a contradiction between the stated need and the actual computed outcome.",
+    "severity": "high"
+   },
+   {
+    "where": "explainer",
+    "what": "Scene s6 task items are 'land2', 'air2', 'sea2' but the correct order for an afternoon sea breeze is land heats first (land2), then air rises over land (air2), then sea air moves in (sea2); however the computed order from the provided items is not validated, and the scene's own glyph layout (sun2, land2, air2, sea2) suggests a different sequence, posing risk of confusion for the learner.",
+    "severity": "low"
+   }
+  ],
+  "verdict": "fail",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

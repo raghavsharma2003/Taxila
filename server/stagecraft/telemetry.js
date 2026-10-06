@@ -33,6 +33,9 @@ export function foldLesson(rows, { lessonMs, extras = {} }) {
   return {
     n: served.length,
     readyWhenNeeded: served.map((r) => (r.readyWhenNeeded ? 1 : 0)),
+    // ship5 p4-content: a checked, on-topic PIECE (reviewed / authored catalogue default, library, personal spec, live)
+    // was ready at the point, as opposed to the board twin (the strict metric above wants a personal spec or better)
+    pieceReady: served.map((r) => (r.servedRung && r.servedRung !== "board" ? 1 : 0)),
     readyByTrigger: byTrigger,
     timeToReadyMs: ttr,
     launched, wastedBuilds: wastedN,
@@ -56,7 +59,7 @@ export function foldArm(lessons) {
   const mean = (xs) => (xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : null);
   const trig = {};
   for (const l of lessons) for (const [k, v] of Object.entries(l.readyByTrigger)) (trig[k] ??= []).push(...v);
-  const per25 = (k) => mean(lessons.map((l) => (l[k] * 25 * 60_000) / l.lessonMs));
+  const per25 = (k) => mean(lessons.map((l) => ((l[k] ?? 0) * 25 * 60_000) / l.lessonMs));
   const ttr = {};
   for (const t of ["spec", "image", "live"]) { const xs = lessons.flatMap((l) => l.timeToReadyMs[t]); ttr[t] = { n: xs.length, p50: q(xs, 0.5), p90: q(xs, 0.9) }; }
   const sum = (k) => lessons.reduce((a, l) => a + (l[k] ?? 0), 0);
@@ -64,6 +67,7 @@ export function foldArm(lessons) {
     lessons: lessons.length,
     points: all("readyWhenNeeded").length,
     readyWhenNeededRate: mean(all("readyWhenNeeded")),
+    pieceReadyRate: mean(all("pieceReady")),
     readyWhenNeededByTrigger: Object.fromEntries(Object.entries(trig).map(([k, v]) => [k, { n: v.length, rate: mean(v) }])),
     timeToReadyMs: ttr,
     requestToFirstFrameMs: { n: all("requestFirstFrameMs").length, p50: q(all("requestFirstFrameMs"), 0.5), p95: q(all("requestFirstFrameMs"), 0.95) },
@@ -75,6 +79,9 @@ export function foldArm(lessons) {
     stageActiveShare: mean(lessons.map((l) => l.stageActiveShare)), medianGapBetweenPiecesMs: q(all("gapsMs"), 0.5),
     childInitiatedShare: sum("childInitiated") / Math.max(1, sum("stageMoments")),
     quota429: sum("quota429"), failovers: sum("failovers"), mountFailures: sum("mountFailures"), staleStageTurns: sum("staleStageTurns"),
+    // ship5 p4-content (sim extras; absent = 0): the 3-minute visual floor and the rest rule's retires
+    visualWindowCoverage: sum("visualWindows") ? sum("visualWindowsCovered") / sum("visualWindows") : null, visualWindows: sum("visualWindows"), visualWindowsFlowExempt: sum("visualWindowsFlowExempt"),
+    restRetires: sum("restRetires"), whiteboardsPer25: per25("boards"),
     held: lessons.reduce((m, l) => { for (const [k, v] of Object.entries(l.held)) m[k] = (m[k] ?? 0) + v; return m; }, {}),
   };
 }

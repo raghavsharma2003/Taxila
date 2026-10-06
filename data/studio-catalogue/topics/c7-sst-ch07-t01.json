@@ -1,0 +1,1842 @@
+{
+ "topicId": "c7-sst-ch07-t01",
+ "title": "The Gupta Era: An Age of Tireless Creativity",
+ "chapter": "The Gupta Era: An Age of Tireless Creativity",
+ "subject": "sst",
+ "class": 7,
+ "topicType": "T3",
+ "plan": {
+  "game": "era-drop@1",
+  "hint": "place / century / order modes with BCE and CE dates from the kit"
+ },
+ "game": {
+  "archetype": "era-drop@1",
+  "spec": {
+   "archetype": "era-drop@1",
+   "skills": [
+    "c7-sst-ch07-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "landed": "landed",
+    "precision": "precision",
+    "coach": "Drag the dock along the timeline",
+    "first": "Which came first?",
+    "runDone": "Timeline complete",
+    "offBy": "off by",
+    "years": "years",
+    "exact": "SPOT ON",
+    "century": "century",
+    "bce": "BCE",
+    "ce": "CE",
+    "earlier": "EARLIER"
+   },
+   "title": "Gupta Time Dock",
+   "axis": {
+    "min": 300,
+    "max": 550
+   },
+   "rounds": [
+    {
+     "mode": "place",
+     "title": "Place the Gupta events",
+     "sub": "Drop each event on its year",
+     "ticks": 40,
+     "speed": 0.8,
+     "tol": 8,
+     "items": [
+      {
+       "text": "Gupta dynasty rises",
+       "value": 320,
+       "src": "c7-sst-ch07-t01-i01"
+      },
+      {
+       "text": "Samudragupta expands",
+       "value": 335,
+       "src": "c7-sst-ch07-t01-i12"
+      },
+      {
+       "text": "Faxian visits India",
+       "value": 400,
+       "src": "c7-sst-ch07-t01-i12"
+      },
+      {
+       "text": "Aryabhatiya is written",
+       "value": 499,
+       "src": "c7-sst-ch07-t01-i04"
+      }
+     ]
+    },
+    {
+     "mode": "century",
+     "title": "Find the century",
+     "sub": "Use the year to choose a century",
+     "ticks": 25,
+     "speed": 1,
+     "tol": 12,
+     "items": [
+      {
+       "text": "Gupta dynasty rises",
+       "value": 320,
+       "src": "c7-sst-ch07-t01-i01"
+      },
+      {
+       "text": "Samudragupta expands",
+       "value": 335,
+       "src": "c7-sst-ch07-t01-i12"
+      },
+      {
+       "text": "Faxian visits India",
+       "value": 400,
+       "src": "c7-sst-ch07-t01-i12"
+      }
+     ],
+     "targets": "c7-sst-ch07-t01-m2"
+    },
+    {
+     "mode": "order",
+     "title": "Which came first?",
+     "sub": "Put the events in time order",
+     "ticks": 0,
+     "speed": 1.2,
+     "tol": 3,
+     "items": [
+      {
+       "text": "Aryabhatiya is written",
+       "value": 499,
+       "src": "c7-sst-ch07-t01-i04"
+      },
+      {
+       "text": "Gupta dynasty rises",
+       "value": 320,
+       "src": "c7-sst-ch07-t01-i01"
+      },
+      {
+       "text": "Faxian visits India",
+       "value": 400,
+       "src": "c7-sst-ch07-t01-i12"
+      },
+      {
+       "text": "Samudragupta expands",
+       "value": 335,
+       "src": "c7-sst-ch07-t01-i12"
+      }
+     ]
+    }
+   ]
+  },
+  "repairs": [
+   "string:item.text"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-sst-ch07-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Gupta Creativity: Many Threads",
+   "accent": "amber",
+   "targets": "c7-sst-ch07-t01-m3",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "The Gupta Era"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "A golden age made everyone rich and happy"
+      },
+      {
+       "id": "rise",
+       "type": "node",
+       "text": "Gupta rise",
+       "sub": "around 320 CE",
+       "glyph": "crown",
+       "color": "amber"
+      },
+      {
+       "id": "patron",
+       "type": "node",
+       "text": "Patronage",
+       "sub": "royal support",
+       "glyph": "bank",
+       "color": "sun"
+      },
+      {
+       "id": "wealth",
+       "type": "node",
+       "text": "Wealth",
+       "sub": "farming and trade",
+       "glyph": "wheat",
+       "color": "mint"
+      },
+      {
+       "id": "peace",
+       "type": "node",
+       "text": "Relative peace",
+       "sub": "core regions",
+       "glyph": "shield",
+       "color": "ion"
+      },
+      {
+       "id": "learn",
+       "type": "node",
+       "text": "Learning",
+       "sub": "centres",
+       "glyph": "book",
+       "color": "sci"
+      },
+      {
+       "id": "p1",
+       "type": "arrow",
+       "from": "patron",
+       "to": "learn",
+       "text": "supports"
+      },
+      {
+       "id": "p2",
+       "type": "arrow",
+       "from": "wealth",
+       "to": "learn",
+       "text": "supports"
+      },
+      {
+       "id": "p3",
+       "type": "arrow",
+       "from": "peace",
+       "to": "learn",
+       "text": "helps"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "science",
+       "type": "node",
+       "text": "Science",
+       "sub": "Aryabhata",
+       "glyph": "beaker",
+       "color": "sci"
+      },
+      {
+       "id": "maths",
+       "type": "node",
+       "text": "Mathematics",
+       "sub": "place value, pi",
+       "glyph": "ruler",
+       "color": "ion"
+      },
+      {
+       "id": "art",
+       "type": "node",
+       "text": "Art",
+       "sub": "Ajanta paintings",
+       "glyph": "flower",
+       "color": "amber"
+      },
+      {
+       "id": "lit",
+       "type": "node",
+       "text": "Literature",
+       "sub": "Kalidasa",
+       "glyph": "scroll",
+       "color": "sun"
+      },
+      {
+       "id": "metal",
+       "type": "node",
+       "text": "Metal work",
+       "sub": "iron pillar",
+       "glyph": "pillar",
+       "color": "mint"
+      },
+      {
+       "id": "temple",
+       "type": "node",
+       "text": "Temples",
+       "sub": "Deogarh",
+       "glyph": "temple",
+       "color": "volt"
+      },
+      {
+       "id": "e1",
+       "type": "arrow",
+       "from": "science",
+       "to": "maths",
+       "text": "ideas"
+      },
+      {
+       "id": "e2",
+       "type": "arrow",
+       "from": "art",
+       "to": "lit",
+       "text": "creativity"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "rtitle",
+       "type": "title",
+       "text": "Gupta rulers"
+      },
+      {
+       "id": "r1",
+       "type": "node",
+       "text": "Chandragupta I",
+       "sub": "around 320 CE",
+       "glyph": "crown",
+       "color": "amber"
+      },
+      {
+       "id": "r2",
+       "type": "node",
+       "text": "Samudragupta",
+       "sub": "followed",
+       "glyph": "shield",
+       "color": "sun"
+      },
+      {
+       "id": "r3",
+       "type": "node",
+       "text": "Chandragupta II",
+       "sub": "followed",
+       "glyph": "crown",
+       "color": "mint"
+      },
+      {
+       "id": "r4",
+       "type": "node",
+       "text": "Kumaragupta",
+       "sub": "followed",
+       "glyph": "crown",
+       "color": "ion"
+      },
+      {
+       "id": "ra1",
+       "type": "arrow",
+       "from": "r1",
+       "to": "r2"
+      },
+      {
+       "id": "ra2",
+       "type": "arrow",
+       "from": "r2",
+       "to": "r3"
+      },
+      {
+       "id": "ra3",
+       "type": "arrow",
+       "from": "r3",
+       "to": "r4"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "The Gupta dynasty rose in the Ganga plains around 320 CE under Chandragupta I.",
+    "L2": "Creativity grew through royal patronage, wealth from farming and trade, relative peace, and centres of learning.",
+    "L3": "Aryabhata wrote the Aryabhatiya in 499 CE and explained the Earth's spin, eclipses by shadows, place value, and pi.",
+    "L4": "Metal-workers made the iron pillar at Mehrauli, which has hardly rusted in about 1,600 years.",
+    "L5": "Kalidasa wrote Sanskrit plays and poems, while Ajanta paintings and early stone temples showed artistic skill.",
+    "L6": "An eclipse is not the Sun or Moon being switched off; shadows explain what we see.",
+    "L7": "Calling this a golden age needs care: court poets and farmers might have described very different lives.",
+    "L8": "Now put four Gupta rulers in the order of the dynasty's rise."
+   },
+   "narration": {},
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "rtitle"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.7,
+       "target": "r1"
+      },
+      {
+       "at": 1.2,
+       "do": "flow",
+       "dur": 0.5,
+       "target": "ra1",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "patron",
+        "wealth",
+        "peace",
+        "learn"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 0.8,
+       "target": [
+        "p1",
+        "p2",
+        "p3"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "science",
+        "maths"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 1,
+       "target": "science"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "metal"
+      },
+      {
+       "at": 0.8,
+       "do": "focus",
+       "dur": 1,
+       "target": "metal"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "art",
+        "lit",
+        "temple"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 1,
+       "target": "lit"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "myth"
+      },
+      {
+       "at": 0.7,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "myth"
+      },
+      {
+       "at": 0.8,
+       "do": "unfocus",
+       "dur": 0.5
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "r2",
+        "r3",
+        "r4"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "interactive"
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "order",
+    "prompt": "Tap the Gupta rulers in order, beginning with the ruler who began the rise.",
+    "items": [
+     "r1",
+     "r2",
+     "r3",
+     "r4"
+    ],
+    "src": "c7-sst-ch07-t01-i02"
+   }
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg",
+  "seconds": 60
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch07-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "plains",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        260,
+        260
+       ],
+       "rx": 210,
+       "ry": 110
+      },
+      {
+       "id": "ganga",
+       "op": "label",
+       "startMs": 700,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        190,
+        245
+       ],
+       "text": "Ganga plains",
+       "to": [
+        260,
+        260
+       ]
+      },
+      {
+       "id": "year",
+       "op": "text",
+       "startMs": 1300,
+       "endMs": 2000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        550,
+        130
+       ],
+       "text": "320 CE",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "rise",
+       "op": "arrow",
+       "startMs": 1900,
+       "endMs": 2900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        260,
+        390
+       ],
+       "to": [
+        260,
+        180
+       ]
+      },
+      {
+       "id": "gupta",
+       "op": "text",
+       "startMs": 2800,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        260,
+        150
+       ],
+       "text": "Gupta dynasty",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "ruler",
+       "op": "circle",
+       "startMs": 3600,
+       "endMs": 4300,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        570,
+        280
+       ],
+       "r": 42
+      },
+      {
+       "id": "chandra",
+       "op": "label",
+       "startMs": 4300,
+       "endMs": 5400,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        570,
+        355
+       ],
+       "text": "Chandragupta I",
+       "target": "ruler"
+      },
+      {
+       "id": "under",
+       "op": "line",
+       "startMs": 5200,
+       "endMs": 6000,
+       "ink": "accent",
+       "weight": 1,
+       "from": [
+        470,
+        390
+       ],
+       "to": [
+        680,
+        390
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch07-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "royal",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        150,
+        100
+       ],
+       "text": "royal patronage",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "farm",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        390,
+        100
+       ],
+       "text": "farming",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "trade",
+       "op": "text",
+       "startMs": 1100,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        620,
+        100
+       ],
+       "text": "trade",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "wealth",
+       "op": "arrow",
+       "startMs": 1600,
+       "endMs": 2300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        390,
+        140
+       ],
+       "to": [
+        390,
+        230
+       ]
+      },
+      {
+       "id": "peace",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        200,
+        300
+       ],
+       "text": "relative peace",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "learning",
+       "op": "text",
+       "startMs": 2900,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        580,
+        300
+       ],
+       "text": "centres of learning",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "creative",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 5200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        390,
+        430
+       ],
+       "text": "creativity",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "a1",
+       "op": "arrow",
+       "startMs": 5100,
+       "endMs": 5900,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        150,
+        130
+       ],
+       "to": [
+        330,
+        390
+       ]
+      },
+      {
+       "id": "a2",
+       "op": "arrow",
+       "startMs": 5500,
+       "endMs": 6300,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        620,
+        130
+       ],
+       "to": [
+        450,
+        390
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch07-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "arya",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        170,
+        80
+       ],
+       "text": "Aryabhata",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "book",
+       "op": "text",
+       "startMs": 800,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        170,
+        140
+       ],
+       "text": "Aryabhatiya",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "date",
+       "op": "text",
+       "startMs": 1300,
+       "endMs": 2000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        620,
+        80
+       ],
+       "text": "499 CE",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "earth",
+       "op": "circle",
+       "startMs": 1900,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        270
+       ],
+       "r": 65
+      },
+      {
+       "id": "spin",
+       "op": "arrow",
+       "startMs": 2600,
+       "endMs": 3500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        330,
+        270
+       ],
+       "to": [
+        470,
+        270
+       ],
+       "bend": 1
+      },
+      {
+       "id": "earthlabel",
+       "op": "label",
+       "startMs": 3400,
+       "endMs": 4000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        370
+       ],
+       "text": "Earth",
+       "target": "earth"
+      },
+      {
+       "id": "eclipse",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 5100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        140,
+        440
+       ],
+       "text": "eclipses by shadows",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "place",
+       "op": "text",
+       "startMs": 4800,
+       "endMs": 5700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        440
+       ],
+       "text": "place value",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "pi",
+       "op": "text",
+       "startMs": 5500,
+       "endMs": 6200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        650,
+        440
+       ],
+       "text": "pi",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "orbit",
+       "op": "ellipse",
+       "startMs": 6200,
+       "endMs": 7300,
+       "ink": "soft",
+       "weight": 1,
+       "c": [
+        400,
+        270
+       ],
+       "rx": 125,
+       "ry": 85
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch07-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "pillar",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        350,
+        100
+       ],
+       "w": 70,
+       "h": 280,
+       "round": 8
+      },
+      {
+       "id": "top",
+       "op": "circle",
+       "startMs": 800,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        385,
+        100
+       ],
+       "r": 35
+      },
+      {
+       "id": "iron",
+       "op": "label",
+       "startMs": 1300,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        475,
+        220
+       ],
+       "text": "iron pillar",
+       "to": [
+        420,
+        220
+       ]
+      },
+      {
+       "id": "mehrauli",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        385,
+        430
+       ],
+       "text": "Mehrauli",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "rust",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 4100,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        180,
+        150
+       ],
+       "text": "hardly rusted",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "years",
+       "op": "text",
+       "startMs": 3800,
+       "endMs": 4800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        620,
+        150
+       ],
+       "text": "1,600 years",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "shield",
+       "op": "circle",
+       "startMs": 4700,
+       "endMs": 5800,
+       "ink": "good",
+       "weight": 1,
+       "c": [
+        385,
+        240
+       ],
+       "r": 105
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch07-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "kalidasa",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        170,
+        80
+       ],
+       "text": "Kalidasa",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "plays",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        170,
+        145
+       ],
+       "text": "Sanskrit plays",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "poems",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 2000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        170,
+        210
+       ],
+       "text": "poems",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "ajanta",
+       "op": "rect",
+       "startMs": 1900,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        430,
+        100
+       ],
+       "w": 220,
+       "h": 145,
+       "round": 12
+      },
+      {
+       "id": "paint",
+       "op": "circle",
+       "startMs": 2700,
+       "endMs": 3400,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        500,
+        170
+       ],
+       "r": 30,
+       "fill": "accent"
+      },
+      {
+       "id": "paintlabel",
+       "op": "label",
+       "startMs": 3300,
+       "endMs": 4400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        540,
+        280
+       ],
+       "text": "Ajanta paintings",
+       "to": [
+        540,
+        245
+       ]
+      },
+      {
+       "id": "temple",
+       "op": "polygon",
+       "startMs": 4200,
+       "endMs": 5300,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         150,
+         400
+        ],
+        [
+         270,
+         400
+        ],
+        [
+         250,
+         310
+        ],
+        [
+         170,
+         310
+        ]
+       ]
+      },
+      {
+       "id": "stone",
+       "op": "label",
+       "startMs": 5200,
+       "endMs": 6500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        210,
+        455
+       ],
+       "text": "early stone temples",
+       "to": [
+        210,
+        400
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch07-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "sun",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        130,
+        230
+       ],
+       "r": 48,
+       "fill": "accent"
+      },
+      {
+       "id": "earth",
+       "op": "circle",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        230
+       ],
+       "r": 38
+      },
+      {
+       "id": "moon",
+       "op": "circle",
+       "startMs": 1200,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        650,
+        230
+       ],
+       "r": 28
+      },
+      {
+       "id": "light",
+       "op": "line",
+       "startMs": 1800,
+       "endMs": 2500,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        180,
+        230
+       ],
+       "to": [
+        360,
+        230
+       ]
+      },
+      {
+       "id": "shadow",
+       "op": "polygon",
+       "startMs": 2500,
+       "endMs": 3500,
+       "ink": "soft",
+       "weight": 2,
+       "points": [
+        [
+         438,
+         210
+        ],
+        [
+         650,
+         190
+        ],
+        [
+         650,
+         270
+        ],
+        [
+         438,
+         250
+        ]
+       ],
+       "fill": "soft"
+      },
+      {
+       "id": "label",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        100
+       ],
+       "text": "shadows",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "eclipse",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        400
+       ],
+       "text": "eclipse",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "off",
+       "op": "text",
+       "startMs": 5400,
+       "endMs": 6600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        130,
+        340
+       ],
+       "text": "not switched off",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch07-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "golden",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        75
+       ],
+       "text": "golden age",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "care",
+       "op": "text",
+       "startMs": 800,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        135
+       ],
+       "text": "needs care",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "court",
+       "op": "rect",
+       "startMs": 1600,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        230
+       ],
+       "w": 250,
+       "h": 150,
+       "round": 10
+      },
+      {
+       "id": "poets",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3400,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        225,
+        300
+       ],
+       "text": "court poets",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "farmers",
+       "op": "rect",
+       "startMs": 2800,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        450,
+        230
+       ],
+       "w": 250,
+       "h": 150,
+       "round": 10
+      },
+      {
+       "id": "farm",
+       "op": "text",
+       "startMs": 3700,
+       "endMs": 4400,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        575,
+        300
+       ],
+       "text": "farmers",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "different",
+       "op": "text",
+       "startMs": 4600,
+       "endMs": 5700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        450
+       ],
+       "text": "different lives",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "split",
+       "op": "line",
+       "startMs": 5700,
+       "endMs": 6500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        180
+       ],
+       "to": [
+        400,
+        400
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch07-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "title",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "Gupta rulers",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "timeline",
+       "op": "line",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        100,
+        250
+       ],
+       "to": [
+        700,
+        250
+       ]
+      },
+      {
+       "id": "one",
+       "op": "circle",
+       "startMs": 1300,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        150,
+        250
+       ],
+       "r": 30
+      },
+      {
+       "id": "two",
+       "op": "circle",
+       "startMs": 1700,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        330,
+        250
+       ],
+       "r": 30
+      },
+      {
+       "id": "three",
+       "op": "circle",
+       "startMs": 2100,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        510,
+        250
+       ],
+       "r": 30
+      },
+      {
+       "id": "four",
+       "op": "circle",
+       "startMs": 2500,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        690,
+        250
+       ],
+       "r": 30
+      },
+      {
+       "id": "names",
+       "op": "numwork",
+       "startMs": 3000,
+       "endMs": 4500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        90,
+        330
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "Chandr",
+         "→",
+         "Samudr",
+         "→",
+         "Chandr"
+        ]
+       ]
+      },
+      {
+       "id": "last",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        450
+       ],
+       "text": "Kumaragupta",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "320 CE",
+   "prompt": "Gupta dynasty rises",
+   "src": "c7-sst-ch07-t01-i01"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "335 CE",
+   "prompt": "Samudragupta expands",
+   "src": "c7-sst-ch07-t01-i12"
+  },
+  {
+   "itemId": "r1:2",
+   "key": "400 CE",
+   "prompt": "Faxian visits India",
+   "src": "c7-sst-ch07-t01-i12"
+  },
+  {
+   "itemId": "r1:3",
+   "key": "499 CE",
+   "prompt": "Aryabhatiya is written",
+   "src": "c7-sst-ch07-t01-i04"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "4th century CE",
+   "prompt": "Gupta dynasty rises",
+   "src": "c7-sst-ch07-t01-i01"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "4th century CE",
+   "prompt": "Samudragupta expands",
+   "src": "c7-sst-ch07-t01-i12"
+  },
+  {
+   "itemId": "r2:2",
+   "key": "4th century CE",
+   "prompt": "Faxian visits India",
+   "src": "c7-sst-ch07-t01-i12"
+  },
+  {
+   "itemId": "r3:0",
+   "key": "Gupta dynasty rises",
+   "prompt": "earlier: Aryabhatiya is written (499 CE) vs Gupta dynasty rises (320 CE)"
+  },
+  {
+   "itemId": "r3:1",
+   "key": "Samudragupta expands",
+   "prompt": "earlier: Faxian visits India (400 CE) vs Samudragupta expands (335 CE)"
+  }
+ ],
+ "check": {
+  "issues": [
+   {
+    "where": "game (round 'Find the century')",
+    "what": "Round named 'Find the century' has a 'targets' field set to 'c7-sst-ch07-t01-m2', which is a misconception about eclipses, not about centuries. This is likely a copy-paste error and makes the round's target irrelevant.",
+    "severity": "low"
+   },
+   {
+    "where": "game (round 'Find the century')",
+    "what": "The century for 400 CE is the 5th century (since it is 401–500), but the computed key says it is the 4th century. That contradicts standard century naming: years 301–400 are 4th century, 401–500 are 5th. Here, Faxian's visit (400 CE) is in the 4th century (300s), so 4th century is correct. No issue.",
+    "severity": "none"
+   }
+  ],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

@@ -1,0 +1,1821 @@
+{
+ "topicId": "c6-sst-ch14-t01",
+ "title": "Economic Activities Around Us",
+ "chapter": "Economic Activities Around Us",
+ "subject": "sst",
+ "class": 6,
+ "topicType": "T4",
+ "plan": {
+  "game": "town-lab@1",
+  "hint": "market mode (value of work, earning) and barter round"
+ },
+ "game": {
+  "archetype": "town-lab@1",
+  "spec": {
+   "archetype": "town-lab@1",
+   "skills": [
+    "c6-sst-ch14-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "done": "right",
+    "have": "you have",
+    "need": "you need",
+    "has": "has",
+    "wants": "wants",
+    "trades": "trades",
+    "market": "market",
+    "coins": "coins",
+    "open": "OPEN",
+    "price": "price",
+    "cost": "cost",
+    "profit": "profit",
+    "sold": "sold",
+    "target": "target",
+    "stock": "stock",
+    "lock": "LOCK",
+    "run": "RUN",
+    "perMonth": "per month",
+    "years": "years",
+    "goal": "goal",
+    "saved": "saved",
+    "interest": "interest",
+    "budget": "budget",
+    "left": "left",
+    "families": "families helped",
+    "runDone": "Town closed",
+    "noDeal": "no deal",
+    "reset": "start again",
+    "rupee": "₹"
+   },
+   "title": "Economic Activities Town",
+   "rounds": [
+    {
+     "mode": "barter",
+     "title": "Cotton to shirt",
+     "sub": "trade through the town",
+     "start": "cotton",
+     "goal": "shirt",
+     "traders": [
+      {
+       "name": "Spinner",
+       "glyph": "person",
+       "has": "yarn",
+       "wants": "cotton"
+      },
+      {
+       "name": "Weaver",
+       "glyph": "person",
+       "has": "cloth",
+       "wants": "yarn"
+      },
+      {
+       "name": "Tailor",
+       "glyph": "person",
+       "has": "shirt",
+       "wants": "cloth"
+      }
+     ],
+     "money": false,
+     "targets": "c6-sst-ch14-t01-m3"
+    },
+    {
+     "mode": "market",
+     "title": "Cloth stall",
+     "sub": "choose a price for buyers",
+     "good": "cloth",
+     "glyph": "shop",
+     "cost": 20,
+     "stock": 8,
+     "buyers": [
+      25,
+      30,
+      35,
+      40,
+      45,
+      50,
+      55,
+      60
+     ],
+     "target": 60
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c6-sst-ch14-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Three sectors, one chain",
+   "accent": "mint",
+   "targets": "c6-sst-ch14-t01-m3",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "row",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Three sectors, one chain"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "The sectors work separately"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "primary",
+       "type": "node",
+       "text": "Primary",
+       "sub": "from nature",
+       "glyph": "wheat",
+       "color": "mint"
+      },
+      {
+       "id": "secondary",
+       "type": "node",
+       "text": "Secondary",
+       "sub": "makes goods",
+       "glyph": "factory",
+       "color": "amber"
+      },
+      {
+       "id": "tertiary",
+       "type": "node",
+       "text": "Tertiary",
+       "sub": "provides services",
+       "color": "ion"
+      },
+      {
+       "id": "p1",
+       "type": "arrow",
+       "from": "primary",
+       "to": "secondary",
+       "text": "raw material"
+      },
+      {
+       "id": "p2",
+       "type": "arrow",
+       "from": "secondary",
+       "to": "tertiary",
+       "text": "goods"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "farm",
+       "type": "node",
+       "text": "Cotton farm",
+       "sub": "primary",
+       "glyph": "wheat",
+       "color": "mint"
+      },
+      {
+       "id": "mill",
+       "type": "node",
+       "text": "Textile mill",
+       "sub": "secondary",
+       "glyph": "factory",
+       "color": "amber"
+      },
+      {
+       "id": "shop",
+       "type": "node",
+       "text": "Shop",
+       "sub": "tertiary",
+       "glyph": "shop",
+       "color": "ion"
+      },
+      {
+       "id": "cot1",
+       "type": "arrow",
+       "from": "farm",
+       "to": "mill",
+       "text": "cotton"
+      },
+      {
+       "id": "cot2",
+       "type": "arrow",
+       "from": "mill",
+       "to": "shop",
+       "text": "cloth"
+      },
+      {
+       "id": "cot3",
+       "type": "arrow",
+       "from": "shop",
+       "to": "farm",
+       "text": "depends"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "row",
+     "els": [
+      {
+       "id": "fish",
+       "type": "node",
+       "text": "Fishing",
+       "sub": "primary",
+       "glyph": "fish",
+       "color": "mint"
+      },
+      {
+       "id": "bake",
+       "type": "node",
+       "text": "Bakery",
+       "sub": "secondary",
+       "color": "amber"
+      },
+      {
+       "id": "bank",
+       "type": "node",
+       "text": "Bank clerk",
+       "sub": "tertiary",
+       "glyph": "bank",
+       "color": "ion"
+      },
+      {
+       "id": "myth2",
+       "type": "myth",
+       "text": "Machines make mining secondary"
+      }
+     ]
+    },
+    {
+     "id": "s5",
+     "layout": "row",
+     "els": [
+      {
+       "id": "q",
+       "type": "node",
+       "text": "Fisherman",
+       "glyph": "fish",
+       "color": "mint"
+      },
+      {
+       "id": "o1",
+       "type": "label",
+       "text": "Primary",
+       "color": "mint"
+      },
+      {
+       "id": "o2",
+       "type": "label",
+       "text": "Secondary",
+       "color": "amber"
+      },
+      {
+       "id": "o3",
+       "type": "label",
+       "text": "Tertiary",
+       "color": "ion"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Economic activities are grouped into three sectors: primary, secondary and tertiary.",
+    "L2": "Primary activities take things directly from nature, such as farming, fishing and mining.",
+    "L3": "Secondary activities turn raw materials into goods, such as bread, cloth or furniture.",
+    "L4": "Tertiary activities provide services, such as transport, shops, banking and teaching.",
+    "L5": "See how cotton moves through the sectors: a farm grows it, a mill makes cloth, and a shop sells it.",
+    "L6": "The sectors depend on one another. If a harvest is poor, mills have less raw material and shops may have costlier goods.",
+    "L7": "Here is a common myth: using machines makes mining a secondary activity.",
+    "L8": "That is not true. Mining is primary because it takes minerals directly from nature; machines do not change its sector.",
+    "L9": "Now classify this example: a fisherman."
+   },
+   "narration": {
+    "L1": {
+     "text": "Economic activities are grouped into three sectors: primary, secondary and tertiary.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "Primary activities take things directly from nature, such as farming, fishing and mining.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "Secondary activities turn raw materials into goods, such as bread, cloth or furniture.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "Tertiary activities provide services, such as transport, shops, banking and teaching.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "See how cotton moves through the sectors: a farm grows it, a mill makes cloth, and a shop sells it.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "The sectors depend on one another. If a harvest is poor, mills have less raw material and shops may have costlier goods.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Here is a common myth: using machines makes mining a secondary activity.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "That is not true. Mining is primary because it takes minerals directly from nature; machines do not change its sector.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L9": {
+     "text": "Now classify this example: a fisherman.",
+     "dur": 2,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.3,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "primary"
+      },
+      {
+       "at": 0.4,
+       "do": "highlight",
+       "dur": 1,
+       "target": "primary"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "secondary"
+      },
+      {
+       "at": 0.5,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "p1",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "tertiary"
+      },
+      {
+       "at": 0.5,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "p2",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.3,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "farm",
+        "mill",
+        "shop"
+       ]
+      },
+      {
+       "at": 0.7,
+       "do": "flow",
+       "dur": 1,
+       "target": [
+        "cot1",
+        "cot2"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.3,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "cot3",
+       "to": 1
+      },
+      {
+       "at": 0.5,
+       "do": "highlight",
+       "dur": 1,
+       "target": "shop"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.3,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "myth2"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0.3,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth2"
+      },
+      {
+       "at": 0.5,
+       "do": "highlight",
+       "dur": 1,
+       "target": "fish"
+      }
+     ]
+    },
+    {
+     "line": "L9",
+     "gap": 0,
+     "scene": "s5",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "q",
+        "o1",
+        "o2",
+        "o3"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which sector is a fisherman's activity?",
+    "options": [
+     "o1",
+     "o2",
+     "o3"
+    ],
+    "answer": "o1",
+    "src": "c6-sst-ch14-t01-i01"
+   }
+  },
+  "repairs": [
+   "glyph",
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 32
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch14-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "title",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        45
+       ],
+       "text": "Economic activities",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "pbox",
+       "op": "rect",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        55,
+        120
+       ],
+       "w": 210,
+       "h": 230
+      },
+      {
+       "id": "sbox",
+       "op": "rect",
+       "startMs": 1100,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        295,
+        120
+       ],
+       "w": 210,
+       "h": 230
+      },
+      {
+       "id": "tbox",
+       "op": "rect",
+       "startMs": 1500,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        535,
+        120
+       ],
+       "w": 210,
+       "h": 230
+      },
+      {
+       "id": "pname",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 2500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        160,
+        165
+       ],
+       "text": "primary",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "sname",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 2700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        165
+       ],
+       "text": "secondary",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "tname",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 2900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        640,
+        165
+       ],
+       "text": "tertiary",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "a1",
+       "op": "arrow",
+       "startMs": 3200,
+       "endMs": 3700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        265,
+        235
+       ],
+       "to": [
+        295,
+        235
+       ]
+      },
+      {
+       "id": "a2",
+       "op": "arrow",
+       "startMs": 3700,
+       "endMs": 4200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        505,
+        235
+       ],
+       "to": [
+        535,
+        235
+       ]
+      },
+      {
+       "id": "group",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 4800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        405
+       ],
+       "text": "three sectors",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch14-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "farm",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        85,
+        220
+       ],
+       "text": "farming",
+       "size": "m"
+      },
+      {
+       "id": "fish",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        85,
+        270
+       ],
+       "text": "fishing",
+       "size": "m"
+      },
+      {
+       "id": "mine",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        85,
+        320
+       ],
+       "text": "mining",
+       "size": "m"
+      },
+      {
+       "id": "nature",
+       "op": "circle",
+       "startMs": 2500,
+       "endMs": 3100,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        160,
+        420
+       ],
+       "r": 45
+      },
+      {
+       "id": "naturetxt",
+       "op": "text",
+       "startMs": 3100,
+       "endMs": 3600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        160,
+        425
+       ],
+       "text": "nature",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "take",
+       "op": "arrow",
+       "startMs": 3700,
+       "endMs": 4300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        160,
+        350
+       ],
+       "to": [
+        160,
+        375
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch14-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "bread",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 650,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        325,
+        220
+       ],
+       "text": "bread",
+       "size": "m"
+      },
+      {
+       "id": "cloth",
+       "op": "text",
+       "startMs": 650,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        325,
+        270
+       ],
+       "text": "cloth",
+       "size": "m"
+      },
+      {
+       "id": "furn",
+       "op": "text",
+       "startMs": 1300,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        325,
+        320
+       ],
+       "text": "furniture",
+       "size": "m"
+      },
+      {
+       "id": "raw",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        315,
+        420
+       ],
+       "text": "raw materials",
+       "size": "s"
+      },
+      {
+       "id": "goods",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 3900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        465,
+        420
+       ],
+       "text": "goods",
+       "size": "m"
+      },
+      {
+       "id": "turn",
+       "op": "arrow",
+       "startMs": 4000,
+       "endMs": 4700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        385
+       ],
+       "to": [
+        400,
+        345
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch14-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "transport",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        565,
+        220
+       ],
+       "text": "transport",
+       "size": "m"
+      },
+      {
+       "id": "shops",
+       "op": "text",
+       "startMs": 800,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        565,
+        270
+       ],
+       "text": "shops",
+       "size": "m"
+      },
+      {
+       "id": "bank",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        565,
+        320
+       ],
+       "text": "banking",
+       "size": "m"
+      },
+      {
+       "id": "teach",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        565,
+        370
+       ],
+       "text": "teaching",
+       "size": "m"
+      },
+      {
+       "id": "service",
+       "op": "ellipse",
+       "startMs": 3200,
+       "endMs": 3900,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        640,
+        425
+       ],
+       "rx": 105,
+       "ry": 32
+      },
+      {
+       "id": "servicetxt",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        640,
+        430
+       ],
+       "text": "services",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch14-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9111,
+     "ops": [
+      {
+       "id": "cotton",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        105,
+        90
+       ],
+       "text": "cotton",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "farm2",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        105,
+        150
+       ],
+       "text": "farm",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "psector",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 1900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        105,
+        270
+       ],
+       "text": "primary",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "mill",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        90
+       ],
+       "text": "cloth",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "mill2",
+       "op": "text",
+       "startMs": 2800,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        150
+       ],
+       "text": "mill",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "ssector",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        270
+       ],
+       "text": "secondary",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "shop",
+       "op": "text",
+       "startMs": 4200,
+       "endMs": 4900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        680,
+        90
+       ],
+       "text": "shop",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "sell",
+       "op": "text",
+       "startMs": 4900,
+       "endMs": 5400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        680,
+        150
+       ],
+       "text": "sells",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "tsector",
+       "op": "text",
+       "startMs": 5600,
+       "endMs": 6100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        680,
+        270
+       ],
+       "text": "tertiary",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "pa",
+       "op": "arrow",
+       "startMs": 6200,
+       "endMs": 7000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        170,
+        115
+       ],
+       "to": [
+        330,
+        115
+       ]
+      },
+      {
+       "id": "sa",
+       "op": "arrow",
+       "startMs": 7000,
+       "endMs": 7800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        470,
+        115
+       ],
+       "to": [
+        610,
+        115
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch14-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 9962,
+     "ops": [
+      {
+       "id": "depend",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        350
+       ],
+       "text": "depend",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "dep1",
+       "op": "arrow",
+       "startMs": 1000,
+       "endMs": 1800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        105,
+        270
+       ],
+       "to": [
+        330,
+        335
+       ]
+      },
+      {
+       "id": "dep2",
+       "op": "arrow",
+       "startMs": 1800,
+       "endMs": 2400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        270
+       ],
+       "to": [
+        400,
+        320
+       ]
+      },
+      {
+       "id": "dep3",
+       "op": "arrow",
+       "startMs": 2400,
+       "endMs": 3200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        680,
+        270
+       ],
+       "to": [
+        470,
+        335
+       ]
+      },
+      {
+       "id": "harvest",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 4600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        85,
+        430
+       ],
+       "text": "harvest",
+       "size": "m"
+      },
+      {
+       "id": "poor",
+       "op": "text",
+       "startMs": 4600,
+       "endMs": 5100,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        185,
+        430
+       ],
+       "text": "poor",
+       "size": "m"
+      },
+      {
+       "id": "less",
+       "op": "text",
+       "startMs": 5700,
+       "endMs": 6500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        330,
+        430
+       ],
+       "text": "less raw material",
+       "size": "s"
+      },
+      {
+       "id": "costlier",
+       "op": "text",
+       "startMs": 7000,
+       "endMs": 7800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        590,
+        430
+       ],
+       "text": "costlier goods",
+       "size": "s"
+      },
+      {
+       "id": "warn",
+       "op": "arrow",
+       "startMs": 8000,
+       "endMs": 8600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        235,
+        430
+       ],
+       "to": [
+        315,
+        430
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch14-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "myth",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "common myth",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "mine3",
+       "op": "text",
+       "startMs": 1000,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        170,
+        190
+       ],
+       "text": "mining",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "machine",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        190
+       ],
+       "text": "machines",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "secondary3",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        650,
+        190
+       ],
+       "text": "secondary",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "mytharrow",
+       "op": "arrow",
+       "startMs": 3400,
+       "endMs": 4000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        255,
+        190
+       ],
+       "to": [
+        350,
+        190
+       ]
+      },
+      {
+       "id": "mytharrow2",
+       "op": "arrow",
+       "startMs": 4000,
+       "endMs": 4500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        535,
+        190
+       ],
+       "to": [
+        600,
+        190
+       ]
+      },
+      {
+       "id": "question",
+       "op": "text",
+       "startMs": 4600,
+       "endMs": 5100,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        400,
+        330
+       ],
+       "text": "?",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch14-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 9111,
+     "ops": [
+      {
+       "id": "nottrue",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "not true",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "cross",
+       "op": "line",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "good",
+       "weight": 3,
+       "from": [
+        330,
+        180
+       ],
+       "to": [
+        470,
+        280
+       ]
+      },
+      {
+       "id": "cross2",
+       "op": "line",
+       "startMs": 1500,
+       "endMs": 2100,
+       "ink": "good",
+       "weight": 3,
+       "from": [
+        470,
+        180
+       ],
+       "to": [
+        330,
+        280
+       ]
+      },
+      {
+       "id": "naturemine",
+       "op": "text",
+       "startMs": 2600,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        170,
+        350
+       ],
+       "text": "minerals",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "direct",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 4200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        350
+       ],
+       "text": "directly from nature",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "primary8",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        650,
+        350
+       ],
+       "text": "primary",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "cause",
+       "op": "arrow",
+       "startMs": 5400,
+       "endMs": 6000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        245,
+        350
+       ],
+       "to": [
+        315,
+        350
+       ]
+      },
+      {
+       "id": "cause2",
+       "op": "arrow",
+       "startMs": 6000,
+       "endMs": 6600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        510,
+        350
+       ],
+       "to": [
+        575,
+        350
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L9",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch14-t01-wb-L9",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 3153,
+     "ops": [
+      {
+       "id": "classify",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "classify",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "fishman",
+       "op": "circle",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        210
+       ],
+       "r": 65
+      },
+      {
+       "id": "fisherman",
+       "op": "text",
+       "startMs": 1300,
+       "endMs": 2000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        220
+       ],
+       "text": "fisherman",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "answer",
+       "op": "arrow",
+       "startMs": 2100,
+       "endMs": 2700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        280
+       ],
+       "to": [
+        400,
+        345
+       ]
+      },
+      {
+       "id": "primary9",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 2900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        370
+       ],
+       "text": "primary",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1",
+   "key": "3 trades",
+   "prompt": "trade through the town"
+  },
+  {
+   "itemId": "r2",
+   "key": "₹40 → profit 100 (target 60)",
+   "prompt": "choose a price for buyers"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

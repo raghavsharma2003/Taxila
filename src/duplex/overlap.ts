@@ -78,6 +78,15 @@ export function classifyOverlap(f: OverlapFeatures, s: { voicing: boolean; f0Slo
   if (ended && f.durMs <= 400 && !rising && !f.herAskedYesNo) { z -= 1.6; codes.push("short_burst"); }
   if (f.levelOverEchoDb !== null && f.levelOverEchoDb < 3) z -= 1.0;
   const pB = sig(z);
+  // p1-duplex (2026-10-06, AMI real adult speech, dev meeting IS1008b): an acoustic-only YIELD while the burst is still
+  // voicing and shorter than the sustain fired on real continuers: "yeah" / "mm-hmm" over her often start mid-clause with a
+  // raised onset (z = -0.5 + 0.6 + 1.2 → p 0.79 at 150 ms), 6 of 8 continuer yields. The hush (OVERLAP.hushMs) already takes
+  // her voice down at ~120 ms, so waiting for the burst to end or sustain costs no audible overlap. Her yes/no question is
+  // the exception: a "haan" there is the answer, and she takes it at once.
+  if (pB >= OVERLAP.yieldP && s.voicing && f.durMs < OVERLAP.sustainedMs && !f.herAskedYesNo && OVERLAP.waitForSustain) {
+    codes.push("short_burst");
+    return out(null, pB, false, false, null, "too_short");
+  }
   if (pB >= OVERLAP.yieldP) {
     const why: YieldReason = f.herAskedYesNo ? "answer_to_her_question" : rising && ended ? "repair_request" : "barge_in";
     return out("barge_in", pB, true, false, why, null);

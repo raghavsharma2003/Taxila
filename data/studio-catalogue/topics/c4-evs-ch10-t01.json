@@ -1,0 +1,1191 @@
+{
+ "topicId": "c4-evs-ch10-t01",
+ "title": "The Sun and shadows during the day",
+ "chapter": "Our Sky",
+ "subject": "evs",
+ "class": 4,
+ "topicType": "T3",
+ "plan": {
+  "game": "shadow-play@1",
+  "hint": "Shadow Play: luminous/opaque/translucent and shadow formation"
+ },
+ "game": {
+  "archetype": "shadow-play@1",
+  "spec": {
+   "archetype": "shadow-play@1",
+   "skills": [
+    "c4-evs-ch10-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "step": "Step",
+    "torch": "Move the torch",
+    "tall": "TALL",
+    "times": "times the object",
+    "hold": "Hold it",
+    "got": "Locked",
+    "band": "Keep the shadow top in the band",
+    "opaque": "Opaque",
+    "translucent": "Translucent",
+    "transparent": "Transparent",
+    "sort": "Place each item in the light and sort it",
+    "done": "Light done",
+    "shadowColour": "shadow colour"
+   },
+   "steps": [
+    {
+     "kind": "size",
+     "factor": 2
+    },
+    {
+     "kind": "catch",
+     "lo": 1.4,
+     "hi": 2.2,
+     "seconds": 4,
+     "targets": "c4-evs-ch10-t01-m1"
+    },
+    {
+     "kind": "materials",
+     "items": [
+      "card",
+      "tracing",
+      "glass",
+      "wood",
+      "frosted"
+     ],
+     "targets": "c4-evs-ch10-t01-m2"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c4-evs-ch10-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "How shadows change",
+   "accent": "sun",
+   "targets": "c4-evs-ch10-t01-m4",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "row",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "How shadows change"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "A shadow is longest at noon"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "sun",
+       "type": "node",
+       "text": "Light",
+       "sub": "Sun or torch",
+       "glyph": "sun",
+       "color": "sun"
+      },
+      {
+       "id": "stick",
+       "type": "node",
+       "text": "Object",
+       "sub": "blocks light",
+       "glyph": "pillar",
+       "color": "amber"
+      },
+      {
+       "id": "dark",
+       "type": "node",
+       "text": "Shadow",
+       "sub": "dark outline",
+       "glyph": "question",
+       "color": "ion"
+      },
+      {
+       "id": "lightArrow",
+       "type": "arrow",
+       "from": "sun",
+       "to": "stick",
+       "text": "light"
+      },
+      {
+       "id": "shadowArrow",
+       "type": "arrow",
+       "from": "stick",
+       "to": "dark"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "morning",
+       "type": "node",
+       "text": "Morning",
+       "sub": "long, west",
+       "glyph": "sun",
+       "color": "amber"
+      },
+      {
+       "id": "noon",
+       "type": "node",
+       "text": "Noon",
+       "sub": "shortest",
+       "glyph": "sun",
+       "color": "sun"
+      },
+      {
+       "id": "evening",
+       "type": "node",
+       "text": "Evening",
+       "sub": "long, east",
+       "glyph": "sun",
+       "color": "amber"
+      },
+      {
+       "id": "m1",
+       "type": "arrow",
+       "from": "morning",
+       "to": "noon",
+       "text": "gets shorter"
+      },
+      {
+       "id": "m2",
+       "type": "arrow",
+       "from": "noon",
+       "to": "evening",
+       "text": "gets longer"
+      },
+      {
+       "id": "earthSpin",
+       "type": "node",
+       "text": "Earth spins",
+       "sub": "Sun seems to move",
+       "glyph": "globe",
+       "color": "sci"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "A shadow forms when an object blocks light. It is the dark area where the light cannot reach.",
+    "L2": "Here is a common idea: a shadow is longest at noon. That is not true.",
+    "L3": "In the morning, the Sun is low in the east, so a shadow is long and points west.",
+    "L4": "Around noon, the Sun is high. The shadow is shortest then.",
+    "L5": "In the evening, the Sun is low in the west, so the shadow gets long again and points east.",
+    "L6": "The Sun only seems to move across the sky because the Earth is spinning. Never look straight at the Sun.",
+    "L7": "Now tap the time when the shadow mark is closest to the stick."
+   },
+   "narration": {
+    "L1": {
+     "text": "A shadow forms when an object blocks light. It is the dark area where the light cannot reach.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L2": {
+     "text": "Here is a common idea: a shadow is longest at noon. That is not true.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L3": {
+     "text": "In the morning, the Sun is low in the east, so a shadow is long and points west.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L4": {
+     "text": "Around noon, the Sun is high. The shadow is shortest then.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L5": {
+     "text": "In the evening, the Sun is low in the west, so the shadow gets long again and points east.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L6": {
+     "text": "The Sun only seems to move across the sky because the Earth is spinning. Never look straight at the Sun.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Now tap the time when the shadow mark is closest to the stick.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      },
+      {
+       "at": 0.8,
+       "do": "hide",
+       "dur": 0.4,
+       "target": "title"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      },
+      {
+       "at": 2,
+       "do": "bust",
+       "dur": 1.2,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.5,
+       "target": "sun"
+      },
+      {
+       "at": 0.3,
+       "do": "show",
+       "dur": 0.5,
+       "target": "stick"
+      },
+      {
+       "at": 0.7,
+       "do": "show",
+       "dur": 0.5,
+       "target": "dark"
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "lightArrow",
+       "to": 1
+      },
+      {
+       "at": 1.5,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "shadowArrow",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "noon"
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 1,
+       "target": "noon"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.5,
+       "target": "morning"
+      },
+      {
+       "at": 0.4,
+       "do": "show",
+       "dur": 0.5,
+       "target": "evening"
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "m1",
+       "to": 1
+      },
+      {
+       "at": 1.5,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "m2",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.5,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "earthSpin"
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 1,
+       "target": "earthSpin"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which time's shadow mark will be closest to the stick?",
+    "options": [
+     "morning",
+     "noon",
+     "evening"
+    ],
+    "answer": "noon",
+    "src": "c4-evs-ch10-t01-i04"
+   }
+  },
+  "repairs": [
+   "string:shadowArrow.text",
+   "cue:target",
+   "cue:target",
+   "cue:target"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 35
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-evs-ch10-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "sun-L1",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        100,
+        150
+       ],
+       "r": 42,
+       "fill": "accent"
+      },
+      {
+       "id": "light-L1",
+       "op": "arrow",
+       "startMs": 700,
+       "endMs": 1500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        145,
+        150
+       ],
+       "to": [
+        310,
+        150
+       ]
+      },
+      {
+       "id": "object-L1",
+       "op": "rect",
+       "startMs": 1200,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        310,
+        105
+       ],
+       "w": 55,
+       "h": 150
+      },
+      {
+       "id": "sun-label-L1",
+       "op": "label",
+       "startMs": 3000,
+       "endMs": 3600,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        80,
+        220
+       ],
+       "text": "light",
+       "to": [
+        100,
+        190
+       ]
+      },
+      {
+       "id": "object-label-L1",
+       "op": "label",
+       "startMs": 3600,
+       "endMs": 4300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        285,
+        85
+       ],
+       "text": "object",
+       "to": [
+        335,
+        105
+       ]
+      },
+      {
+       "id": "shadow-label-L1",
+       "op": "label",
+       "startMs": 4300,
+       "endMs": 5100,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        505,
+        320
+       ],
+       "text": "shadow",
+       "to": [
+        505,
+        180
+       ]
+      },
+      {
+       "id": "blocked-L1",
+       "op": "text",
+       "startMs": 5100,
+       "endMs": 6000,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        500,
+        380
+       ],
+       "text": "light cannot reach",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-evs-ch10-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "claim-L2",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        80
+       ],
+       "text": "shadow longest at noon",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "claim-mark-L2",
+       "op": "highlight",
+       "startMs": 1300,
+       "endMs": 2100,
+       "ink": "mark",
+       "weight": 2,
+       "target": "claim-L2",
+       "style": "underline"
+      },
+      {
+       "id": "not-L2",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 3400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        180
+       ],
+       "text": "not true",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "not-mark-L2",
+       "op": "highlight",
+       "startMs": 3400,
+       "endMs": 4300,
+       "ink": "accent",
+       "weight": 2,
+       "target": "not-L2",
+       "style": "circle"
+      },
+      {
+       "id": "noon-L2",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        290
+       ],
+       "text": "noon",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "short-L2",
+       "op": "text",
+       "startMs": 5100,
+       "endMs": 5900,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        360
+       ],
+       "text": "shortest",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-evs-ch10-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "east-L3",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        100,
+        80
+       ],
+       "text": "east",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "sun-L3",
+       "op": "circle",
+       "startMs": 500,
+       "endMs": 1000,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        120,
+        150
+       ],
+       "r": 35,
+       "fill": "accent"
+      },
+      {
+       "id": "stick-L3",
+       "op": "line",
+       "startMs": 1200,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        400,
+        170
+       ],
+       "to": [
+        400,
+        350
+       ]
+      },
+      {
+       "id": "light-L3",
+       "op": "arrow",
+       "startMs": 1900,
+       "endMs": 2800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        160,
+        155
+       ],
+       "to": [
+        390,
+        210
+       ]
+      },
+      {
+       "id": "west-L3",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 4500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        690,
+        390
+       ],
+       "text": "west",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "long-L3",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5100,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        570,
+        430
+       ],
+       "text": "long",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-evs-ch10-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "sun-L4",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        75
+       ],
+       "r": 38,
+       "fill": "accent"
+      },
+      {
+       "id": "high-L4",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1200,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        145
+       ],
+       "text": "high",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "stick-L4",
+       "op": "line",
+       "startMs": 1300,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        400,
+        220
+       ],
+       "to": [
+        400,
+        370
+       ]
+      },
+      {
+       "id": "shortest-L4",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3700,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        430
+       ],
+       "text": "shortest",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-evs-ch10-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "sun-L5",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        680,
+        150
+       ],
+       "r": 38,
+       "fill": "accent"
+      },
+      {
+       "id": "west-L5",
+       "op": "text",
+       "startMs": 600,
+       "endMs": 1100,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        680,
+        85
+       ],
+       "text": "west",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "stick-L5",
+       "op": "line",
+       "startMs": 1100,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        400,
+        170
+       ],
+       "to": [
+        400,
+        350
+       ]
+      },
+      {
+       "id": "light-L5",
+       "op": "arrow",
+       "startMs": 1800,
+       "endMs": 2800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        640,
+        155
+       ],
+       "to": [
+        415,
+        210
+       ]
+      },
+      {
+       "id": "east-L5",
+       "op": "text",
+       "startMs": 4100,
+       "endMs": 4600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        105,
+        390
+       ],
+       "text": "east",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "long-L5",
+       "op": "text",
+       "startMs": 4600,
+       "endMs": 5400,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        240,
+        430
+       ],
+       "text": "long again",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 2,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-evs-ch10-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9111,
+     "ops": [
+      {
+       "id": "earth-L6",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        260
+       ],
+       "r": 105,
+       "fill": "soft"
+      },
+      {
+       "id": "spin-L6",
+       "op": "arrow",
+       "startMs": 1000,
+       "endMs": 2200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        330,
+        180
+       ],
+       "to": [
+        475,
+        210
+       ],
+       "bend": 1
+      },
+      {
+       "id": "spin-label-L6",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        130
+       ],
+       "text": "Earth spinning",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "sun-L6",
+       "op": "circle",
+       "startMs": 3000,
+       "endMs": 3600,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        115,
+        260
+       ],
+       "r": 40,
+       "fill": "accent"
+      },
+      {
+       "id": "move-arrow-L6",
+       "op": "arrow",
+       "startMs": 3600,
+       "endMs": 4700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        155,
+        260
+       ],
+       "to": [
+        300,
+        260
+       ]
+      },
+      {
+       "id": "seems-L6",
+       "op": "text",
+       "startMs": 4800,
+       "endMs": 5600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        400
+       ],
+       "text": "seems to move",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 3,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-evs-ch10-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "stick-L7",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        400,
+        120
+       ],
+       "to": [
+        400,
+        350
+       ]
+      },
+      {
+       "id": "tap-L7",
+       "op": "circle",
+       "startMs": 3500,
+       "endMs": 4100,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        455,
+        365
+       ],
+       "r": 22
+      },
+      {
+       "id": "closest-L7",
+       "op": "text",
+       "startMs": 4100,
+       "endMs": 4800,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        455,
+        420
+       ],
+       "text": "closest",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [],
+ "check": {
+  "issues": [
+   {
+    "where": "explainer",
+    "what": "In scene s2, one node has subtext 'dark outline' and uses a question-mark glyph; the kit says a shadow is dark and shows only outline, not a reflection — this is correct. But another node shows 'Light / Sun or torch' with a sun glyph; that is fine. No factual mistake.",
+    "severity": "low"
+   },
+   {
+    "where": "explainer",
+    "what": "The explainer's misconception target is m4 ('A shadow is longest at noon'). The text says 'Here is a common idea: a shadow is longest at noon. That is not true.' This matches the kit's misconception. However, the explainer then says 'In the morning … long …; Around noon … shortest …; In the evening … long again.' That is correct. The task asks 'Which time's shadow mark will be closest to the stick?' and answer is 'noon'. That matches kit item i04. No issues."
+   }
+  ],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

@@ -1,0 +1,1286 @@
+{
+ "topicId": "c4-maths-ch08-t01",
+ "title": "Grams and kilograms",
+ "chapter": "Weigh it, Pour it",
+ "subject": "maths",
+ "class": 4,
+ "topicType": "T3",
+ "plan": {
+  "game": "instrument@1",
+  "hint": "weigh mode (g and kg)"
+ },
+ "game": {
+  "archetype": "instrument@1",
+  "spec": {
+   "archetype": "instrument@1",
+   "skills": [
+    "c4-maths-ch08-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "measured": "measured",
+    "precision": "precision",
+    "hold": "Hold to pour",
+    "release": "Release",
+    "cut": "Tap to cut",
+    "set": "Set",
+    "am": "a.m.",
+    "pm": "p.m.",
+    "tapAt": "Tap when it reads",
+    "runDone": "Bench clear",
+    "offBy": "off by",
+    "exact": "EXACT",
+    "after": "after",
+    "minutes": "min",
+    "balanced": "BALANCED",
+    "heavy": "parcel heavier",
+    "light": "weights heavier"
+   },
+   "title": "Instrument Bench",
+   "rounds": [
+    {
+     "mode": "weigh",
+     "title": "Read the balance",
+     "sub": "measure the parcel in kilograms",
+     "items": [
+      {
+       "target": 1000,
+       "show": "kg"
+      }
+     ],
+     "scaleMax": 5000,
+     "minor": 10,
+     "tol": 0,
+     "speed": 1
+    },
+    {
+     "mode": "weigh",
+     "title": "Build the right weight",
+     "sub": "use grams and kilograms together",
+     "items": [
+      {
+       "target": 2500,
+       "show": "kg+g"
+      },
+      {
+       "target": 3250,
+       "show": "kg+g"
+      }
+     ],
+     "scaleMax": 5000,
+     "minor": 10,
+     "tol": 0,
+     "speed": 0.9,
+     "targets": "c4-maths-ch08-t01-m-kg-is-100g"
+    },
+    {
+     "mode": "weigh",
+     "title": "Compare carefully",
+     "sub": "weigh each parcel before choosing",
+     "items": [
+      {
+       "target": 1300,
+       "show": "kg+g"
+      },
+      {
+       "target": 1250,
+       "show": "g"
+      }
+     ],
+     "scaleMax": 5000,
+     "minor": 10,
+     "tol": 0,
+     "speed": 0.8,
+     "targets": "c4-maths-ch08-t01-m-number-only"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c4-maths-ch08-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Grams and kilograms",
+   "accent": "amber",
+   "targets": "c4-maths-ch08-t01-m-bigger-is-heavier",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Grams and kilograms"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "A bigger object is always heavier"
+      },
+      {
+       "id": "scale",
+       "type": "glyph",
+       "name": "balance",
+       "size": 140,
+       "color": "amber"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "kg",
+       "type": "node",
+       "text": "1 kilogram",
+       "sub": "kg",
+       "color": "amber"
+      },
+      {
+       "id": "g",
+       "type": "node",
+       "text": "1000 grams",
+       "sub": "g",
+       "glyph": "ruler",
+       "color": "sun"
+      },
+      {
+       "id": "convert",
+       "type": "arrow",
+       "from": "kg",
+       "to": "g",
+       "text": "change unit"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "ex",
+       "type": "title",
+       "text": "Worked example"
+      },
+      {
+       "id": "flour",
+       "type": "node",
+       "text": "Flour",
+       "sub": "1 kg 300 g",
+       "glyph": "wheat",
+       "color": "amber"
+      },
+      {
+       "id": "sugar",
+       "type": "node",
+       "text": "Sugar",
+       "sub": "1250 g",
+       "glyph": "pot",
+       "color": "sun"
+      },
+      {
+       "id": "bars",
+       "type": "bars",
+       "values": [
+        1300,
+        1250
+       ],
+       "labels": [
+        "flour",
+        "sugar"
+       ],
+       "unit": "g"
+      },
+      {
+       "id": "more",
+       "type": "label",
+       "text": "1300 g is more",
+       "x": 500,
+       "y": 500,
+       "color": "mint"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "row",
+     "els": [
+      {
+       "id": "prompt",
+       "type": "title",
+       "text": "Your turn"
+      },
+      {
+       "id": "optf",
+       "type": "label",
+       "text": "flour",
+       "x": 230,
+       "y": 360,
+       "color": "amber"
+      },
+      {
+       "id": "opts",
+       "type": "label",
+       "text": "sugar",
+       "x": 650,
+       "y": 360,
+       "color": "sun"
+      },
+      {
+       "id": "tap",
+       "type": "glyph",
+       "name": "tap",
+       "size": 110,
+       "color": "mint"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Today we will compare weights using grams and kilograms.",
+    "L2": "A bigger-looking object is not always heavier. Only weighing and comparing tells us.",
+    "L3": "Here is the key fact: 1 kilogram is 1000 grams.",
+    "L4": "To compare weights, first change them to the same unit.",
+    "L5": "For example, change 1 kilogram 300 grams into grams.",
+    "L6": "That is 1000 grams plus 300 grams, or 1300 grams.",
+    "L7": "Now compare 1300 grams with 1250 grams. The flour is heavier by 50 grams.",
+    "L8": "Your turn: tap the heavier weight in the example."
+   },
+   "narration": {
+    "L1": {
+     "text": "Today we will compare weights using grams and kilograms.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L2": {
+     "text": "A bigger-looking object is not always heavier. Only weighing and comparing tells us.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L3": {
+     "text": "Here is the key fact: 1 kilogram is 1000 grams.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L4": {
+     "text": "To compare weights, first change them to the same unit.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L5": {
+     "text": "For example, change 1 kilogram 300 grams into grams.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L6": {
+     "text": "That is 1000 grams plus 300 grams, or 1300 grams.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Now compare 1300 grams with 1250 grams. The flour is heavier by 50 grams.",
+     "dur": 9,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Your turn: tap the heavier weight in the example.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "title"
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 1,
+       "target": "scale"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "myth"
+      },
+      {
+       "at": 3,
+       "do": "bust",
+       "dur": 1.5,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "kg"
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.8,
+       "target": "g"
+      },
+      {
+       "at": 2,
+       "do": "flow",
+       "dur": 1,
+       "target": "convert",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "convert"
+      },
+      {
+       "at": 2,
+       "do": "focus",
+       "dur": 1,
+       "target": "g"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "ex"
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.8,
+       "target": "flour"
+      },
+      {
+       "at": 2,
+       "do": "show",
+       "dur": 0.8,
+       "target": "sugar"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "bars"
+      },
+      {
+       "at": 1,
+       "do": "count",
+       "dur": 1,
+       "target": "bars",
+       "to": 1
+      },
+      {
+       "at": 2.5,
+       "do": "highlight",
+       "dur": 1,
+       "target": "more"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "flour"
+      },
+      {
+       "at": 1.5,
+       "do": "highlight",
+       "dur": 1.2,
+       "target": "more"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "prompt",
+        "optf",
+        "opts"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive"
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which is heavier in the worked example?",
+    "options": [
+     "optf",
+     "opts"
+    ],
+    "answer": "optf",
+    "src": "c4-maths-ch08-t01-i05"
+   }
+  },
+  "repairs": [
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 58
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch08-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4430,
+     "ops": [
+      {
+       "id": "gramCircle",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        220,
+        220
+       ],
+       "r": 70
+      },
+      {
+       "id": "kgCircle",
+       "op": "circle",
+       "startMs": 500,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        580,
+        220
+       ],
+       "r": 105
+      },
+      {
+       "id": "gramLabel",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        220,
+        330
+       ],
+       "text": "grams",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "kgLabel",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2300,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        580,
+        350
+       ],
+       "text": "kilograms",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "compareArrow",
+       "op": "arrow",
+       "startMs": 2500,
+       "endMs": 3400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        310,
+        220
+       ],
+       "to": [
+        480,
+        220
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch08-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "objectA",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        150
+       ],
+       "w": 180,
+       "h": 150
+      },
+      {
+       "id": "objectB",
+       "op": "rect",
+       "startMs": 500,
+       "endMs": 1300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        500,
+        190
+       ],
+       "w": 180,
+       "h": 100
+      },
+      {
+       "id": "weighA",
+       "op": "arrow",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        190,
+        310
+       ],
+       "to": [
+        190,
+        380
+       ]
+      },
+      {
+       "id": "weighB",
+       "op": "arrow",
+       "startMs": 1800,
+       "endMs": 2500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        590,
+        300
+       ],
+       "to": [
+        590,
+        380
+       ]
+      },
+      {
+       "id": "weighLabel",
+       "op": "text",
+       "startMs": 2800,
+       "endMs": 3500,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        430
+       ],
+       "text": "weighing",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "compareLabel",
+       "op": "text",
+       "startMs": 3700,
+       "endMs": 4400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        80
+       ],
+       "text": "comparing",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch08-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "factBox",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        120,
+        130
+       ],
+       "w": 560,
+       "h": 180
+      },
+      {
+       "id": "factEquation",
+       "op": "numwork",
+       "startMs": 900,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        190,
+        195
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "1",
+         "kilogr",
+         "=",
+         "1000",
+         "grams"
+        ]
+       ]
+      },
+      {
+       "id": "factHighlight",
+       "op": "highlight",
+       "startMs": 2700,
+       "endMs": 3500,
+       "ink": "good",
+       "weight": 2,
+       "target": "factEquation",
+       "style": "underline"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch08-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "unitA",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        220,
+        220
+       ],
+       "r": 75
+      },
+      {
+       "id": "unitB",
+       "op": "circle",
+       "startMs": 500,
+       "endMs": 1300,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        580,
+        220
+       ],
+       "r": 75
+      },
+      {
+       "id": "sameArrowA",
+       "op": "arrow",
+       "startMs": 1500,
+       "endMs": 2300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        300,
+        220
+       ],
+       "to": [
+        480,
+        220
+       ]
+      },
+      {
+       "id": "sameLabel",
+       "op": "text",
+       "startMs": 2400,
+       "endMs": 3100,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        120
+       ],
+       "text": "same unit",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "compareLabel2",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        350
+       ],
+       "text": "compare",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch08-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4430,
+     "ops": [
+      {
+       "id": "given",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        150,
+        150
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "1",
+         "kilogr",
+         "300",
+         "grams"
+        ]
+       ]
+      },
+      {
+       "id": "changeArrow",
+       "op": "arrow",
+       "startMs": 1700,
+       "endMs": 2500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        205
+       ],
+       "to": [
+        400,
+        300
+       ]
+      },
+      {
+       "id": "target",
+       "op": "numwork",
+       "startMs": 2700,
+       "endMs": 3900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        230,
+        325
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "?",
+         "grams"
+        ]
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch08-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "conversion",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        130
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "1000",
+         "grams",
+         "+",
+         "300",
+         "grams",
+         "=",
+         "1300",
+         "grams"
+        ]
+       ]
+      },
+      {
+       "id": "sumUnderline",
+       "op": "highlight",
+       "startMs": 2500,
+       "endMs": 3400,
+       "ink": "good",
+       "weight": 2,
+       "target": "conversion",
+       "style": "underline"
+      },
+      {
+       "id": "resultCircle",
+       "op": "circle",
+       "startMs": 3500,
+       "endMs": 4300,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        620,
+        155
+       ],
+       "r": 62
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch08-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "flour",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        130
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "flour",
+         "=",
+         "1300",
+         "grams"
+        ]
+       ]
+      },
+      {
+       "id": "sugar",
+       "op": "numwork",
+       "startMs": 1000,
+       "endMs": 2700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        100,
+        230
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "sugar",
+         "=",
+         "1250",
+         "grams"
+        ]
+       ]
+      },
+      {
+       "id": "difference",
+       "op": "numwork",
+       "startMs": 4600,
+       "endMs": 5900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        430,
+        345
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "1300",
+         "-",
+         "1250",
+         "=",
+         "50",
+         "grams"
+        ]
+       ]
+      },
+      {
+       "id": "heavierLabel",
+       "op": "text",
+       "startMs": 5100,
+       "endMs": 5800,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        610,
+        250
+       ],
+       "text": "flour",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch08-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4430,
+     "ops": [
+      {
+       "id": "choiceA",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        170
+       ],
+       "w": 250,
+       "h": 130
+      },
+      {
+       "id": "choiceB",
+       "op": "rect",
+       "startMs": 500,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        450,
+        170
+       ],
+       "w": 250,
+       "h": 130
+      },
+      {
+       "id": "choiceAValue",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        225,
+        235
+       ],
+       "text": "1250 grams",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "choiceBValue",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2400,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        575,
+        235
+       ],
+       "text": "1300 grams",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "tapArrow",
+       "op": "arrow",
+       "startMs": 2800,
+       "endMs": 3700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        575,
+        350
+       ],
+       "to": [
+        575,
+        305
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "1000 g",
+   "prompt": "weigh: 1 kg"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "2500 g",
+   "prompt": "weigh: 2 kg 500 g"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "3250 g",
+   "prompt": "weigh: 3 kg 250 g"
+  },
+  {
+   "itemId": "r3:0",
+   "key": "1300 g",
+   "prompt": "weigh: 1 kg 300 g"
+  },
+  {
+   "itemId": "r3:1",
+   "key": "1250 g",
+   "prompt": "weigh: 1250 g"
+  }
+ ],
+ "check": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "Round 1 asks the player to measure a parcel in kilograms with target 1000 and show 'kg', but the weigh mode with scaleMax 5000 and minor 10 expects an answer in g or kg+g. The kit item c4-maths-ch08-t01-i01 asks 'How many grams make 1 kg?' with answer 1000. The round's title 'Read the balance' and sub 'measure the parcel in kilograms' is ambiguous for a class 4 child; however, no factual contradiction with the kit exists because 1 kg = 1000 g is correct.",
+    "severity": "low"
+   }
+  ],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

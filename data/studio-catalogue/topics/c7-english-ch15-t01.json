@@ -1,0 +1,1826 @@
+{
+ "topicId": "c7-english-ch15-t01",
+ "title": "Rani Abbakka",
+ "chapter": "Rani Abbakka",
+ "subject": "english",
+ "class": 7,
+ "topicType": "T3",
+ "plan": {
+  "game": "story-rail@1",
+  "hint": "sequence, cause and who modes from the lesson's events and speakers"
+ },
+ "game": {
+  "archetype": "story-rail@1",
+  "spec": {
+   "archetype": "story-rail@1",
+   "skills": [
+    "c7-english-ch15-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "picked": "coupled",
+    "streak": "streak",
+    "next": "What happens next?",
+    "effect": "What does this lead to?",
+    "who": "Who said this?",
+    "runDone": "Line complete",
+    "order": "your train",
+    "right": "Coupled",
+    "wrong": "Not this one",
+    "coach": "Tap a wagon before the train reaches the fork"
+   },
+   "title": "Rani Abbakka",
+   "rounds": [
+    {
+     "mode": "sequence",
+     "title": "Her brave stand",
+     "sub": "couple the events in order",
+     "cards": [
+      {
+       "id": "e1",
+       "text": "Abbakka rules Ullal",
+       "glyph": "crown",
+       "src": "c7-english-ch15-t01-i01"
+      },
+      {
+       "id": "e2",
+       "text": "Portuguese demand tax",
+       "glyph": "coin"
+      },
+      {
+       "id": "e3",
+       "text": "She refuses to pay",
+       "glyph": "shield",
+       "src": "c7-english-ch15-t01-i03"
+      },
+      {
+       "id": "e4",
+       "text": "She joins nearby rulers",
+       "glyph": "group",
+       "src": "c7-english-ch15-t01-i03"
+      },
+      {
+       "id": "e5",
+       "text": "They fight for many years",
+       "glyph": "shield",
+       "src": "c7-english-ch15-t01-i03"
+      }
+     ],
+     "speed": 0.9
+    },
+    {
+     "mode": "cause",
+     "title": "Cause and effect",
+     "sub": "match each cause to its result",
+     "pairs": [
+      {
+       "cause": {
+        "id": "c1",
+        "text": "She loved freedom"
+       },
+       "effect": {
+        "id": "f1",
+        "text": "She refused foreign tax",
+        "glyph": "coin",
+        "src": "c7-english-ch15-t01-i02"
+       }
+      },
+      {
+       "cause": {
+        "id": "c2",
+        "text": "Portuguese demanded tax",
+        "glyph": "coin"
+       },
+       "effect": {
+        "id": "f2",
+        "text": "She refused to pay",
+        "glyph": "shield",
+        "src": "c7-english-ch15-t01-i03"
+       }
+      },
+      {
+       "cause": {
+        "id": "c3",
+        "text": "She needed shared strength",
+        "glyph": "group"
+       },
+       "effect": {
+        "id": "f3",
+        "text": "She joined nearby rulers",
+        "glyph": "group",
+        "src": "c7-english-ch15-t01-i03"
+       }
+      },
+      {
+       "cause": {
+        "id": "c4",
+        "text": "The queen is a person",
+        "glyph": "person"
+       },
+       "effect": {
+        "id": "f4",
+        "text": "Use who, not which",
+        "glyph": "pen",
+        "src": "c7-english-ch15-t01-i04"
+       }
+      }
+     ],
+     "speed": 0.85,
+     "targets": "c7-english-ch15-t01-m-which-for-people"
+    },
+    {
+     "mode": "who",
+     "title": "Who or what?",
+     "sub": "send each line to its speaker",
+     "speakers": [
+      {
+       "id": "rani",
+       "name": "Rani Abbakka",
+       "glyph": "crown"
+      },
+      {
+       "id": "narrator",
+       "name": "Narrator",
+       "glyph": "book"
+      }
+     ],
+     "lines": [
+      {
+       "id": "w1",
+       "text": "I refused to pay the tax.",
+       "speaker": "rani",
+       "src": "c7-english-ch15-t01-i03"
+      },
+      {
+       "id": "w2",
+       "text": "She ruled Ullal in the 1500s.",
+       "speaker": "narrator",
+       "src": "c7-english-ch15-t01-i01"
+      },
+      {
+       "id": "w3",
+       "text": "She fought for many years.",
+       "speaker": "narrator",
+       "src": "c7-english-ch15-t01-i03"
+      }
+     ],
+     "speed": 0.8
+    }
+   ]
+  },
+  "repairs": [
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-english-ch15-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Rani Abbakka: brave and free",
+   "accent": "amber",
+   "targets": "c7-english-ch15-t01-m-which-for-people",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Rani Abbakka"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Use which for a person"
+      },
+      {
+       "id": "queen",
+       "type": "node",
+       "text": "Rani Abbakka",
+       "sub": "queen",
+       "glyph": "crown",
+       "color": "amber"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "ullal",
+       "type": "node",
+       "text": "Ullal",
+       "sub": "port town",
+       "glyph": "boat",
+       "color": "sci"
+      },
+      {
+       "id": "tax",
+       "type": "node",
+       "text": "Portuguese tax",
+       "sub": "demand",
+       "glyph": "coin",
+       "color": "volt"
+      },
+      {
+       "id": "refuse",
+       "type": "node",
+       "text": "She refused",
+       "sub": "no tax",
+       "glyph": "shield",
+       "color": "amber"
+      },
+      {
+       "id": "allies",
+       "type": "node",
+       "text": "Nearby rulers",
+       "sub": "unity",
+       "glyph": "group",
+       "color": "mint"
+      },
+      {
+       "id": "fight",
+       "type": "node",
+       "text": "Fought years",
+       "sub": "freedom",
+       "color": "sun"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "ullal",
+       "to": "tax",
+       "text": "demand"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "tax",
+       "to": "refuse",
+       "text": "refused"
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "refuse",
+       "to": "allies",
+       "text": "joined"
+      },
+      {
+       "id": "a4",
+       "type": "arrow",
+       "from": "allies",
+       "to": "fight",
+       "text": "fought"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "person",
+       "type": "node",
+       "text": "Rani Abbakka",
+       "sub": "person",
+       "glyph": "person",
+       "color": "amber"
+      },
+      {
+       "id": "who",
+       "type": "label",
+       "text": "who",
+       "x": 300,
+       "y": 300,
+       "color": "mint"
+      },
+      {
+       "id": "thing",
+       "type": "node",
+       "text": "navy",
+       "sub": "thing",
+       "glyph": "ship",
+       "color": "sci"
+      },
+      {
+       "id": "which",
+       "type": "label",
+       "text": "which",
+       "x": 700,
+       "y": 300,
+       "color": "sci"
+      },
+      {
+       "id": "ex1",
+       "type": "label",
+       "text": "queen who fought",
+       "x": 120,
+       "y": 470,
+       "color": "mint"
+      },
+      {
+       "id": "ex2",
+       "type": "label",
+       "text": "navy which attacked",
+       "x": 560,
+       "y": 470,
+       "color": "sci"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Rani Abbakka ruled Ullal, a port town on the Karnataka coast, in the 1500s.",
+    "L2": "She refused to pay tax to the Portuguese and fought them for many years.",
+    "L3": "Her courage and love of freedom guided her. She also showed leadership and unity.",
+    "L4": "She joined hands with nearby rulers, bringing people together to defend their land.",
+    "L5": "Here is a grammar rule: use she for Rani Abbakka, not he.",
+    "L6": "Use who for a person, and which for a thing.",
+    "L7": "So we say, “Rani Abbakka was a queen who fought the Portuguese.”",
+    "L8": "For a thing, we say, “Rani Abbakka had a navy which attacked Portuguese ships.”"
+   },
+   "narration": {
+    "L1": {
+     "text": "Rani Abbakka ruled Ullal, a port town on the Karnataka coast, in the 1500s.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "She refused to pay tax to the Portuguese and fought them for many years.",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "Her courage and love of freedom guided her. She also showed leadership and unity.",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "She joined hands with nearby rulers, bringing people together to defend their land.",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "Here is a grammar rule: use she for Rani Abbakka, not he.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Use who for a person, and which for a thing.",
+     "dur": 2.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "So we say, “Rani Abbakka was a queen who fought the Portuguese.”",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "For a thing, we say, “Rani Abbakka had a navy which attacked Portuguese ships.”",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      },
+      {
+       "at": 0.4,
+       "do": "show",
+       "dur": 0.8,
+       "target": "queen"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.5,
+       "target": "ullal"
+      },
+      {
+       "at": 0.3,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "tax",
+        "a1"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "a1",
+       "to": 1
+      },
+      {
+       "at": 1.8,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "refuse",
+        "a2"
+       ]
+      },
+      {
+       "at": 2.4,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "a2",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "refuse"
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.7,
+       "target": "fight"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "allies",
+        "a3"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "a3",
+       "to": 1
+      },
+      {
+       "at": 1.7,
+       "do": "show",
+       "dur": 0.6,
+       "target": "a4"
+      },
+      {
+       "at": 2.2,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "a4",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "person"
+      },
+      {
+       "at": 0.5,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "person"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "who",
+        "which"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 0.7,
+       "target": "who"
+      },
+      {
+       "at": 1.6,
+       "do": "highlight",
+       "dur": 0.7,
+       "target": "which"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "ex1"
+      },
+      {
+       "at": 0.8,
+       "do": "focus",
+       "dur": 0.8,
+       "target": "who"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "ex2"
+      },
+      {
+       "at": 0.8,
+       "do": "focus",
+       "dur": 0.8,
+       "target": "which"
+      },
+      {
+       "at": "end",
+       "do": "interactive"
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Choose the word that joins “Rani Abbakka was a queen ___ fought the Portuguese.”",
+    "options": [
+     "who",
+     "which"
+    ],
+    "answer": "who",
+    "src": "c7-english-ch15-t01-i04"
+   }
+  },
+  "repairs": [
+   "glyph",
+   "cue:target",
+   "cue:target"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 31
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch15-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "coast",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        120,
+        360
+       ],
+       "to": [
+        680,
+        360
+       ]
+      },
+      {
+       "id": "sea",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        650,
+        395
+       ],
+       "text": "coast",
+       "size": "s"
+      },
+      {
+       "id": "town",
+       "op": "rect",
+       "startMs": 1100,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        290,
+        250
+       ],
+       "w": 180,
+       "h": 110,
+       "fill": "soft"
+      },
+      {
+       "id": "ullal",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        380,
+        305
+       ],
+       "text": "Ullal",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "port",
+       "op": "label",
+       "startMs": 2400,
+       "endMs": 3100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        510,
+        270
+       ],
+       "text": "port town",
+       "to": [
+        470,
+        285
+       ]
+      },
+      {
+       "id": "rani",
+       "op": "text",
+       "startMs": 3200,
+       "endMs": 4000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        180,
+        160
+       ],
+       "text": "Rani Abbakka",
+       "size": "l"
+      },
+      {
+       "id": "rule",
+       "op": "arrow",
+       "startMs": 3900,
+       "endMs": 4600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        280,
+        180
+       ],
+       "to": [
+        350,
+        245
+       ]
+      },
+      {
+       "id": "year",
+       "op": "numwork",
+       "startMs": 4500,
+       "endMs": 5200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        530,
+        120
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "1500s"
+        ]
+       ]
+      },
+      {
+       "id": "karnataka",
+       "op": "text",
+       "startMs": 5100,
+       "endMs": 5800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        430
+       ],
+       "text": "Karnataka",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch15-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "tax",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        115,
+        120
+       ],
+       "text": "tax",
+       "size": "l"
+      },
+      {
+       "id": "refuse",
+       "op": "line",
+       "startMs": 500,
+       "endMs": 1000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        100,
+        145
+       ],
+       "to": [
+        180,
+        145
+       ]
+      },
+      {
+       "id": "portuguese",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        260,
+        120
+       ],
+       "text": "Portuguese",
+       "size": "m"
+      },
+      {
+       "id": "fight",
+       "op": "arrow",
+       "startMs": 1700,
+       "endMs": 2600,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        310,
+        190
+       ],
+       "to": [
+        500,
+        190
+       ]
+      },
+      {
+       "id": "sword1",
+       "op": "line",
+       "startMs": 2400,
+       "endMs": 3000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        370,
+        230
+       ],
+       "to": [
+        440,
+        150
+       ]
+      },
+      {
+       "id": "sword2",
+       "op": "line",
+       "startMs": 2800,
+       "endMs": 3400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        440,
+        230
+       ],
+       "to": [
+        370,
+        150
+       ]
+      },
+      {
+       "id": "years",
+       "op": "numwork",
+       "startMs": 3600,
+       "endMs": 4700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        250,
+        320
+       ],
+       "layout": "number_line",
+       "rows": [
+        [
+         "many",
+         "years"
+        ]
+       ],
+       "range": [
+        220,
+        520
+       ]
+      },
+      {
+       "id": "battle",
+       "op": "label",
+       "startMs": 4700,
+       "endMs": 5500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        520,
+        180
+       ],
+       "text": "fought",
+       "to": [
+        500,
+        190
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch15-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "courage",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        110,
+        100
+       ],
+       "text": "courage",
+       "size": "m"
+      },
+      {
+       "id": "freedom",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        110,
+        155
+       ],
+       "text": "freedom",
+       "size": "m"
+      },
+      {
+       "id": "leadership",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        110,
+        210
+       ],
+       "text": "leadership",
+       "size": "m"
+      },
+      {
+       "id": "unity",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        110,
+        265
+       ],
+       "text": "unity",
+       "size": "m"
+      },
+      {
+       "id": "guide",
+       "op": "arrow",
+       "startMs": 3000,
+       "endMs": 3900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        330,
+        190
+       ],
+       "to": [
+        470,
+        190
+       ]
+      },
+      {
+       "id": "values",
+       "op": "circle",
+       "startMs": 3900,
+       "endMs": 4800,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        230,
+        190
+       ],
+       "r": 125
+      },
+      {
+       "id": "rani3",
+       "op": "label",
+       "startMs": 4800,
+       "endMs": 5700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        475,
+        180
+       ],
+       "text": "Rani Abbakka",
+       "to": [
+        470,
+        190
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch15-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "ruler1",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        180,
+        170
+       ],
+       "r": 38
+      },
+      {
+       "id": "ruler2",
+       "op": "circle",
+       "startMs": 500,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        170
+       ],
+       "r": 38
+      },
+      {
+       "id": "ruler3",
+       "op": "circle",
+       "startMs": 1000,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        620,
+        170
+       ],
+       "r": 38
+      },
+      {
+       "id": "hands1",
+       "op": "line",
+       "startMs": 1400,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        218,
+        170
+       ],
+       "to": [
+        362,
+        170
+       ]
+      },
+      {
+       "id": "hands2",
+       "op": "line",
+       "startMs": 1900,
+       "endMs": 2700,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        438,
+        170
+       ],
+       "to": [
+        582,
+        170
+       ]
+      },
+      {
+       "id": "people",
+       "op": "text",
+       "startMs": 2800,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        280
+       ],
+       "text": "people",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "land",
+       "op": "rect",
+       "startMs": 3500,
+       "endMs": 4300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        230,
+        330
+       ],
+       "w": 340,
+       "h": 70,
+       "fill": "soft"
+      },
+      {
+       "id": "defend",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 5200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        372
+       ],
+       "text": "defend land",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch15-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "grammar",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "grammar rule",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "person",
+       "op": "circle",
+       "startMs": 800,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        180,
+        210
+       ],
+       "r": 55
+      },
+      {
+       "id": "rani5",
+       "op": "text",
+       "startMs": 1300,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        180,
+        300
+       ],
+       "text": "Rani Abbakka",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "she",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 2900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        210
+       ],
+       "text": "she",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "arrow5",
+       "op": "arrow",
+       "startMs": 2900,
+       "endMs": 3700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        240,
+        210
+       ],
+       "to": [
+        350,
+        210
+       ]
+      },
+      {
+       "id": "nothe",
+       "op": "text",
+       "startMs": 3700,
+       "endMs": 4500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        600,
+        210
+       ],
+       "text": "not he",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "check5",
+       "op": "highlight",
+       "startMs": 4500,
+       "endMs": 5400,
+       "ink": "good",
+       "weight": 2,
+       "target": "she",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch15-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "person6",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        180,
+        180
+       ],
+       "r": 45
+      },
+      {
+       "id": "personword",
+       "op": "text",
+       "startMs": 500,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        270
+       ],
+       "text": "person",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "who",
+       "op": "text",
+       "startMs": 1100,
+       "endMs": 1800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        300,
+        180
+       ],
+       "text": "who",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "thing6",
+       "op": "rect",
+       "startMs": 1800,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        500,
+        145
+       ],
+       "w": 100,
+       "h": 70
+      },
+      {
+       "id": "thingword",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        550,
+        270
+       ],
+       "text": "thing",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "which",
+       "op": "text",
+       "startMs": 2900,
+       "endMs": 3700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        670,
+        180
+       ],
+       "text": "which",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "rule6",
+       "op": "line",
+       "startMs": 3800,
+       "endMs": 4500,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        250,
+        330
+       ],
+       "to": [
+        690,
+        330
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch15-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "queen7",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        110
+       ],
+       "text": "queen",
+       "size": "m"
+      },
+      {
+       "id": "who7",
+       "op": "text",
+       "startMs": 600,
+       "endMs": 1200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        300,
+        110
+       ],
+       "text": "who",
+       "size": "l"
+      },
+      {
+       "id": "fight7",
+       "op": "text",
+       "startMs": 1200,
+       "endMs": 1900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        470,
+        110
+       ],
+       "text": "fought",
+       "size": "m"
+      },
+      {
+       "id": "rani7",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        240
+       ],
+       "text": "Rani Abbakka",
+       "size": "m"
+      },
+      {
+       "id": "was",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        330,
+        240
+       ],
+       "text": "was",
+       "size": "m"
+      },
+      {
+       "id": "port7",
+       "op": "text",
+       "startMs": 2900,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        470,
+        240
+       ],
+       "text": "Portuguese",
+       "size": "m"
+      },
+      {
+       "id": "join7",
+       "op": "arrow",
+       "startMs": 3700,
+       "endMs": 4700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        180,
+        150
+       ],
+       "to": [
+        300,
+        220
+       ]
+      },
+      {
+       "id": "underline7",
+       "op": "highlight",
+       "startMs": 4700,
+       "endMs": 5500,
+       "ink": "good",
+       "weight": 2,
+       "target": "who7",
+       "style": "underline"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch15-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "rani8",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        90
+       ],
+       "text": "Rani Abbakka",
+       "size": "m"
+      },
+      {
+       "id": "navy8",
+       "op": "rect",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        115,
+        170
+       ],
+       "w": 150,
+       "h": 75
+      },
+      {
+       "id": "navyword8",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 2100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        190,
+        215
+       ],
+       "text": "navy",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "which8",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 2800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        330,
+        210
+       ],
+       "text": "which",
+       "size": "l"
+      },
+      {
+       "id": "shipsword",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        550,
+        250
+       ],
+       "text": "ships",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "attack8",
+       "op": "arrow",
+       "startMs": 4200,
+       "endMs": 5000,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        430,
+        215
+       ],
+       "to": [
+        490,
+        215
+       ]
+      },
+      {
+       "id": "port8",
+       "op": "text",
+       "startMs": 4900,
+       "endMs": 5700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        650,
+        215
+       ],
+       "text": "Portuguese",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "whichmark8",
+       "op": "highlight",
+       "startMs": 5700,
+       "endMs": 6400,
+       "ink": "good",
+       "weight": 2,
+       "target": "which8",
+       "style": "circle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "Portuguese demand tax",
+   "prompt": "sequence: after/for \"Abbakka rules Ullal\""
+  },
+  {
+   "itemId": "r1:1",
+   "key": "She refuses to pay",
+   "prompt": "sequence: after/for \"Portuguese demand tax\"",
+   "src": "c7-english-ch15-t01-i03"
+  },
+  {
+   "itemId": "r1:2",
+   "key": "She joins nearby rulers",
+   "prompt": "sequence: after/for \"She refuses to pay\"",
+   "src": "c7-english-ch15-t01-i03"
+  },
+  {
+   "itemId": "r1:3",
+   "key": "They fight for many years",
+   "prompt": "sequence: after/for \"She joins nearby rulers\"",
+   "src": "c7-english-ch15-t01-i03"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "She refused foreign tax",
+   "prompt": "cause: after/for \"She loved freedom\"",
+   "src": "c7-english-ch15-t01-i02"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "She refused to pay",
+   "prompt": "cause: after/for \"Portuguese demanded tax\"",
+   "src": "c7-english-ch15-t01-i03"
+  },
+  {
+   "itemId": "r2:2",
+   "key": "She joined nearby rulers",
+   "prompt": "cause: after/for \"She needed shared strength\"",
+   "src": "c7-english-ch15-t01-i03"
+  },
+  {
+   "itemId": "r2:3",
+   "key": "Use who, not which",
+   "prompt": "cause: after/for \"The queen is a person\"",
+   "src": "c7-english-ch15-t01-i04"
+  },
+  {
+   "itemId": "r3:0",
+   "key": "Rani Abbakka",
+   "prompt": "who: after/for \"I refused to pay the tax.\"",
+   "src": "c7-english-ch15-t01-i03"
+  },
+  {
+   "itemId": "r3:1",
+   "key": "Narrator",
+   "prompt": "who: after/for \"She ruled Ullal in the 1500s.\"",
+   "src": "c7-english-ch15-t01-i01"
+  },
+  {
+   "itemId": "r3:2",
+   "key": "Narrator",
+   "prompt": "who: after/for \"She fought for many years.\"",
+   "src": "c7-english-ch15-t01-i03"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

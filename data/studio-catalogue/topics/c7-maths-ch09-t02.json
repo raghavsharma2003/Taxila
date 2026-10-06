@@ -1,0 +1,2115 @@
+{
+ "topicId": "c7-maths-ch09-t02",
+ "title": "Congruence criteria for triangles",
+ "chapter": "Geometric Twins",
+ "subject": "maths",
+ "class": 7,
+ "topicType": "T3",
+ "plan": {
+  "game": "geo-forge@1",
+  "hint": "sticks challenges (can three sticks close a triangle?) and triangle builds"
+ },
+ "game": {
+  "archetype": "geo-forge@1",
+  "spec": {
+   "archetype": "geo-forge@1",
+   "skills": [
+    "c7-maths-ch09-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "built": "built",
+    "check": "CHECK",
+    "undo": "UNDO",
+    "coach": "Tap pins to place corners; tap the first pin to close",
+    "runDone": "Blueprints done",
+    "perimeter": "perimeter",
+    "area": "area",
+    "units": "units",
+    "sq": "sq units",
+    "polygon": "sides",
+    "sticks": "Pick three sticks",
+    "rigid": "Brace it: it must not wobble",
+    "parallel": "Through the dot, parallel to the line",
+    "perpendicular": "Through the dot, at right angles",
+    "equidistant": "Place a pin the same distance from each dot",
+    "angle": "Make an angle of",
+    "right": "right-angled triangle",
+    "isosceles": "isosceles triangle",
+    "scalene": "scalene triangle",
+    "obtuse": "obtuse-angled triangle",
+    "acute": "acute-angled triangle",
+    "square": "square",
+    "rectangle": "rectangle",
+    "parallelogram": "parallelogram",
+    "rhombus": "rhombus",
+    "trapezium": "trapezium",
+    "kite": "kite",
+    "any": "shape",
+    "triangle": "triangle",
+    "make": "Make a",
+    "withArea": "with area",
+    "withPerim": "with perimeter",
+    "noTriangle": "Pick three that CANNOT close",
+    "wobbles": "WOBBLES",
+    "holds": "HOLDS",
+    "closes": "CLOSES",
+    "gap": "GAP",
+    "time": "time"
+   },
+   "title": "Triangle Workshop",
+   "rounds": [
+    {
+     "title": "Close the frame",
+     "sub": "Can the sticks make a triangle?",
+     "time": 45,
+     "challenges": [
+      {
+       "kind": "sticks",
+       "sticks": [
+        3,
+        4,
+        5
+       ],
+       "want": "triangle"
+      },
+      {
+       "kind": "sticks",
+       "sticks": [
+        2,
+        3,
+        6
+       ],
+       "want": "no-triangle"
+      }
+     ]
+    },
+    {
+     "title": "Build triangles",
+     "sub": "Make each triangle match the blueprint",
+     "time": 60,
+     "challenges": [
+      {
+       "kind": "triangle",
+       "type": "right"
+      },
+      {
+       "kind": "triangle",
+       "type": "isosceles"
+      },
+      {
+       "kind": "triangle",
+       "type": "scalene"
+      },
+      {
+       "kind": "angle",
+       "deg": 60,
+       "tol": 5
+      }
+     ],
+     "targets": "c7-maths-ch09-t02-m-aaa"
+    },
+    {
+     "title": "Make it rigid",
+     "sub": "Brace the frame so it holds its shape",
+     "time": 55,
+     "challenges": [
+      {
+       "kind": "rigid",
+       "frame": [
+        [
+         2,
+         1
+        ],
+        [
+         9,
+         1
+        ],
+        [
+         9,
+         5
+        ],
+        [
+         2,
+         5
+        ]
+       ]
+      },
+      {
+       "kind": "rigid",
+       "frame": [
+        [
+         1,
+         1
+        ],
+        [
+         6,
+         1
+        ],
+        [
+         8,
+         5
+        ],
+        [
+         3,
+         5
+        ]
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-maths-ch09-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Triangle congruence tests",
+   "accent": "ion",
+   "targets": "c7-maths-ch09-t02-m-aaa",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Triangle congruence"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "AAA always proves congruence"
+      },
+      {
+       "id": "same",
+       "type": "label",
+       "text": "Same shape"
+      },
+      {
+       "id": "size",
+       "type": "label",
+       "text": "Different size"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "sss",
+       "type": "node",
+       "text": "SSS",
+       "sub": "3 sides"
+      },
+      {
+       "id": "sas",
+       "type": "node",
+       "text": "SAS",
+       "sub": "included angle"
+      },
+      {
+       "id": "asa",
+       "type": "node",
+       "text": "ASA"
+      },
+      {
+       "id": "rhs",
+       "type": "node",
+       "text": "RHS",
+       "sub": "right angle"
+      },
+      {
+       "id": "rules",
+       "type": "label",
+       "text": "Congruence rules"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "split",
+     "els": [
+      {
+       "id": "pqr",
+       "type": "node",
+       "text": "ΔPQR",
+       "sub": "5, 7, 60°"
+      },
+      {
+       "id": "xyz",
+       "type": "node",
+       "text": "ΔXYZ",
+       "sub": "5, 7, 60°"
+      },
+      {
+       "id": "worked",
+       "type": "label",
+       "text": "Included angle matches"
+      },
+      {
+       "id": "result",
+       "type": "label",
+       "text": "SAS"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "row",
+     "els": [
+      {
+       "id": "aaa",
+       "type": "node",
+       "text": "AAA",
+       "sub": "shape only"
+      },
+      {
+       "id": "ssa",
+       "type": "node",
+       "text": "SSA",
+       "sub": "two outcomes"
+      },
+      {
+       "id": "no",
+       "type": "label",
+       "text": "Not enough"
+      }
+     ]
+    },
+    {
+     "id": "s5",
+     "layout": "split",
+     "els": [
+      {
+       "id": "abc",
+       "type": "node",
+       "text": "ΔABC",
+       "sub": "A-B-C"
+      },
+      {
+       "id": "qrp",
+       "type": "node",
+       "text": "ΔQRP",
+       "sub": "Q-R-P"
+      },
+      {
+       "id": "match",
+       "type": "label",
+       "text": "A↔Q, B↔R, C↔P"
+      },
+      {
+       "id": "statement",
+       "type": "label",
+       "text": "ΔABC ≅ ΔQRP"
+      }
+     ]
+    },
+    {
+     "id": "s6",
+     "layout": "row",
+     "els": [
+      {
+       "id": "tap",
+       "type": "label",
+       "text": "Choose the rule"
+      },
+      {
+       "id": "opt1",
+       "type": "label",
+       "text": "SSS"
+      },
+      {
+       "id": "opt2",
+       "type": "label",
+       "text": "SAS"
+      },
+      {
+       "id": "opt3",
+       "type": "label",
+       "text": "AAA"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Congruent triangles have the same shape and the same size.",
+    "L2": "AAA is a myth: equal angles fix the shape, but not the size.",
+    "L3": "The four useful tests are SSS, SAS, ASA and RHS.",
+    "L4": "SSS uses three equal sides. SAS uses two sides and the angle between them.",
+    "L5": "ASA uses two angles and the side between them. RHS uses a right angle, the hypotenuse and one other side.",
+    "L6": "In the worked example, the two sides and the included 60-degree angle match, so the triangles are congruent by SAS.",
+    "L7": "SSA fails because the angle is not between the sides, and two different triangles can be made.",
+    "L8": "Matching vertices must stay in order: if A matches Q, B matches R and C matches P, write ΔABC ≅ ΔQRP.",
+    "L9": "Now choose the rule for the worked example."
+   },
+   "narration": {
+    "L1": {
+     "text": "Congruent triangles have the same shape and the same size.",
+     "dur": 2.5,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L2": {
+     "text": "AAA is a myth: equal angles fix the shape, but not the size.",
+     "dur": 2.7,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L3": {
+     "text": "The four useful tests are SSS, SAS, ASA and RHS.",
+     "dur": 2.4,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L4": {
+     "text": "SSS uses three equal sides. SAS uses two sides and the angle between them.",
+     "dur": 3.2,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L5": {
+     "text": "ASA uses two angles and the side between them. RHS uses a right angle, the hypotenuse and one other side.",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L6": {
+     "text": "In the worked example, the two sides and the included 60-degree angle match, so the triangles are congruent by SAS.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L7": {
+     "text": "SSA fails because the angle is not between the sides, and two different triangles can be made.",
+     "dur": 3.2,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Matching vertices must stay in order: if A matches Q, B matches R and C matches P, write ΔABC ≅ ΔQRP.",
+     "dur": 3.8,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L9": {
+     "text": "Now choose the rule for the worked example.",
+     "dur": 1.8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.3,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "same",
+        "size"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.3,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      },
+      {
+       "at": 1,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "rules"
+      },
+      {
+       "at": 0.4,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "sss",
+        "sas",
+        "asa",
+        "rhs"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "sss"
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "sas"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "asa"
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "rhs"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.3,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "pqr",
+        "xyz",
+        "worked"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 1,
+       "target": "result"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.3,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "aaa",
+        "ssa",
+        "no"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 1,
+       "target": "ssa"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0.3,
+     "scene": "s5",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "abc",
+        "qrp",
+        "match"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 1,
+       "target": "statement"
+      }
+     ]
+    },
+    {
+     "line": "L9",
+     "gap": 0,
+     "scene": "s6",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "tap",
+        "opt1",
+        "opt2",
+        "opt3"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which rule proves the worked example?",
+    "options": [
+     "opt1",
+     "opt2",
+     "opt3"
+    ],
+    "answer": "opt2",
+    "src": "c7-maths-ch09-t02-i02"
+   }
+  },
+  "repairs": [
+   "string:asa.sub"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 30
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch09-t02-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "t1",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        55
+       ],
+       "text": "Congruent",
+       "size": "l"
+      },
+      {
+       "id": "tri1",
+       "op": "polygon",
+       "startMs": 700,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         120,
+         390
+        ],
+        [
+         250,
+         120
+        ],
+        [
+         370,
+         390
+        ]
+       ]
+      },
+      {
+       "id": "tri2",
+       "op": "polygon",
+       "startMs": 1500,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         470,
+         390
+        ],
+        [
+         600,
+         120
+        ],
+        [
+         720,
+         390
+        ]
+       ]
+      },
+      {
+       "id": "s1",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 3000,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        245,
+        430
+       ],
+       "text": "same shape",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "s2",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3700,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        600,
+        430
+       ],
+       "text": "same size",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "eq1",
+       "op": "numwork",
+       "startMs": 3700,
+       "endMs": 4500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        300,
+        55
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "Δ",
+         "≅",
+         "Δ"
+        ]
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch09-t02-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "aaa",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        90,
+        60
+       ],
+       "text": "AAA",
+       "size": "l"
+      },
+      {
+       "id": "a1",
+       "op": "text",
+       "startMs": 600,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        90,
+        125
+       ],
+       "text": "equal angles",
+       "size": "m"
+      },
+      {
+       "id": "triA",
+       "op": "polygon",
+       "startMs": 1300,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         100,
+         390
+        ],
+        [
+         220,
+         170
+        ],
+        [
+         340,
+         390
+        ]
+       ]
+      },
+      {
+       "id": "triB",
+       "op": "polygon",
+       "startMs": 2100,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         500,
+         390
+        ],
+        [
+         590,
+         250
+        ],
+        [
+         680,
+         390
+        ]
+       ]
+      },
+      {
+       "id": "sh",
+       "op": "text",
+       "startMs": 2900,
+       "endMs": 3600,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        120
+       ],
+       "text": "same shape",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "not",
+       "op": "text",
+       "startMs": 3600,
+       "endMs": 4500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        455
+       ],
+       "text": "not same size",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "cross",
+       "op": "line",
+       "startMs": 4500,
+       "endMs": 5000,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        365,
+        430
+       ],
+       "to": [
+        435,
+        430
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch09-t02-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "head",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        60
+       ],
+       "text": "four tests",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "sss",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        130,
+        180
+       ],
+       "text": "SSS",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "sas",
+       "op": "text",
+       "startMs": 1300,
+       "endMs": 1900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        330,
+        180
+       ],
+       "text": "SAS",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "asa",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        530,
+        180
+       ],
+       "text": "ASA",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "rhs",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        680,
+        180
+       ],
+       "text": "RHS",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "frame",
+       "op": "polygon",
+       "startMs": 3100,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         100,
+         350
+        ],
+        [
+         400,
+         350
+        ],
+        [
+         250,
+         250
+        ]
+       ]
+      },
+      {
+       "id": "right",
+       "op": "rect",
+       "startMs": 3100,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        570,
+        290
+       ],
+       "w": 70,
+       "h": 70
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch09-t02-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "sss",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        120,
+        65
+       ],
+       "text": "SSS",
+       "size": "l"
+      },
+      {
+       "id": "sides3",
+       "op": "text",
+       "startMs": 600,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        120,
+        125
+       ],
+       "text": "three equal sides",
+       "size": "m"
+      },
+      {
+       "id": "tri",
+       "op": "polygon",
+       "startMs": 1300,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         90,
+         390
+        ],
+        [
+         220,
+         180
+        ],
+        [
+         350,
+         390
+        ]
+       ]
+      },
+      {
+       "id": "marks",
+       "op": "line",
+       "startMs": 2100,
+       "endMs": 2400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        145,
+        300
+       ],
+       "to": [
+        160,
+        308
+       ]
+      },
+      {
+       "id": "marks2",
+       "op": "line",
+       "startMs": 2400,
+       "endMs": 2700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        275,
+        300
+       ],
+       "to": [
+        290,
+        308
+       ]
+      },
+      {
+       "id": "sas",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        520,
+        65
+       ],
+       "text": "SAS",
+       "size": "l"
+      },
+      {
+       "id": "sides2",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 3800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        520,
+        125
+       ],
+       "text": "two sides",
+       "size": "m"
+      },
+      {
+       "id": "ang",
+       "op": "text",
+       "startMs": 3800,
+       "endMs": 4500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        520,
+        175
+       ],
+       "text": "angle between",
+       "size": "m"
+      },
+      {
+       "id": "tri2",
+       "op": "polygon",
+       "startMs": 4500,
+       "endMs": 5500,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         470,
+         390
+        ],
+        [
+         600,
+         180
+        ],
+        [
+         730,
+         390
+        ]
+       ]
+      },
+      {
+       "id": "arc",
+       "op": "sector",
+       "startMs": 5500,
+       "endMs": 6200,
+       "ink": "mark",
+       "weight": 2,
+       "c": [
+        600,
+        390
+       ],
+       "r": 35,
+       "fromDeg": 240,
+       "toDeg": 300
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch09-t02-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9111,
+     "ops": [
+      {
+       "id": "asa",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        120,
+        55
+       ],
+       "text": "ASA",
+       "size": "l"
+      },
+      {
+       "id": "angles",
+       "op": "text",
+       "startMs": 600,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        120,
+        115
+       ],
+       "text": "two angles",
+       "size": "m"
+      },
+      {
+       "id": "between",
+       "op": "text",
+       "startMs": 1200,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        120,
+        165
+       ],
+       "text": "side between",
+       "size": "m"
+      },
+      {
+       "id": "triA",
+       "op": "polygon",
+       "startMs": 1900,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         80,
+         390
+        ],
+        [
+         220,
+         180
+        ],
+        [
+         350,
+         390
+        ]
+       ]
+      },
+      {
+       "id": "ang1",
+       "op": "sector",
+       "startMs": 2800,
+       "endMs": 3300,
+       "ink": "mark",
+       "weight": 1,
+       "c": [
+        80,
+        390
+       ],
+       "r": 30,
+       "fromDeg": 290,
+       "toDeg": 330
+      },
+      {
+       "id": "ang2",
+       "op": "sector",
+       "startMs": 3300,
+       "endMs": 3800,
+       "ink": "mark",
+       "weight": 1,
+       "c": [
+        350,
+        390
+       ],
+       "r": 30,
+       "fromDeg": 210,
+       "toDeg": 250
+      },
+      {
+       "id": "rhs",
+       "op": "text",
+       "startMs": 3800,
+       "endMs": 4400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        540,
+        55
+       ],
+       "text": "RHS",
+       "size": "l"
+      },
+      {
+       "id": "right",
+       "op": "text",
+       "startMs": 4400,
+       "endMs": 5000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        540,
+        115
+       ],
+       "text": "right angle",
+       "size": "m"
+      },
+      {
+       "id": "hyp",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 5600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        540,
+        165
+       ],
+       "text": "hypotenuse",
+       "size": "m"
+      },
+      {
+       "id": "other",
+       "op": "text",
+       "startMs": 5600,
+       "endMs": 6300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        540,
+        215
+       ],
+       "text": "one other side",
+       "size": "m"
+      },
+      {
+       "id": "triR",
+       "op": "polygon",
+       "startMs": 6300,
+       "endMs": 7500,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         470,
+         390
+        ],
+        [
+         470,
+         200
+        ],
+        [
+         700,
+         390
+        ]
+       ]
+      },
+      {
+       "id": "sq",
+       "op": "rect",
+       "startMs": 7500,
+       "endMs": 8100,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        470,
+        355
+       ],
+       "w": 35,
+       "h": 35
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch09-t02-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9111,
+     "ops": [
+      {
+       "id": "pqr",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        55
+       ],
+       "text": "ΔPQR",
+       "size": "l"
+      },
+      {
+       "id": "xyz",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        590,
+        55
+       ],
+       "text": "ΔXYZ",
+       "size": "l"
+      },
+      {
+       "id": "left",
+       "op": "polygon",
+       "startMs": 600,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         80,
+         390
+        ],
+        [
+         220,
+         170
+        ],
+        [
+         360,
+         390
+        ]
+       ]
+      },
+      {
+       "id": "right",
+       "op": "polygon",
+       "startMs": 600,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         440,
+         390
+        ],
+        [
+         580,
+         170
+        ],
+        [
+         720,
+         390
+        ]
+       ]
+      },
+      {
+       "id": "vals",
+       "op": "numwork",
+       "startMs": 1500,
+       "endMs": 3500,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        150,
+        210
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "PQ",
+         "=",
+         "XY",
+         "5 cm"
+        ],
+        [
+         "QR",
+         "=",
+         "YZ",
+         "7 cm"
+        ],
+        [
+         "Q",
+         "=",
+         "Y",
+         "60°"
+        ]
+       ]
+      },
+      {
+       "id": "arc1",
+       "op": "sector",
+       "startMs": 3500,
+       "endMs": 4200,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        220,
+        170
+       ],
+       "r": 35,
+       "fromDeg": 240,
+       "toDeg": 300
+      },
+      {
+       "id": "arc2",
+       "op": "sector",
+       "startMs": 4200,
+       "endMs": 4900,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        580,
+        170
+       ],
+       "r": 35,
+       "fromDeg": 240,
+       "toDeg": 300
+      },
+      {
+       "id": "sas",
+       "op": "text",
+       "startMs": 4900,
+       "endMs": 5500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        455
+       ],
+       "text": "SAS",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "cong",
+       "op": "numwork",
+       "startMs": 5500,
+       "endMs": 7000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        255,
+        85
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "ΔPQR",
+         "≅",
+         "ΔXYZ"
+        ]
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch09-t02-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "ssa",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "SSA",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "notbetween",
+       "op": "text",
+       "startMs": 600,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        115
+       ],
+       "text": "angle not between",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "tri1",
+       "op": "polygon",
+       "startMs": 1400,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         100,
+         390
+        ],
+        [
+         270,
+         390
+        ],
+        [
+         220,
+         180
+        ]
+       ]
+      },
+      {
+       "id": "tri2",
+       "op": "polygon",
+       "startMs": 2400,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         500,
+         390
+        ],
+        [
+         670,
+         390
+        ],
+        [
+         590,
+         250
+        ]
+       ]
+      },
+      {
+       "id": "a1",
+       "op": "sector",
+       "startMs": 3400,
+       "endMs": 3900,
+       "ink": "mark",
+       "weight": 1,
+       "c": [
+        100,
+        390
+       ],
+       "r": 32,
+       "fromDeg": 0,
+       "toDeg": 45
+      },
+      {
+       "id": "a2",
+       "op": "sector",
+       "startMs": 3900,
+       "endMs": 4400,
+       "ink": "mark",
+       "weight": 1,
+       "c": [
+        500,
+        390
+       ],
+       "r": 32,
+       "fromDeg": 0,
+       "toDeg": 30
+      },
+      {
+       "id": "two",
+       "op": "text",
+       "startMs": 4400,
+       "endMs": 5200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        455
+       ],
+       "text": "two triangles",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "fail",
+       "op": "text",
+       "startMs": 5200,
+       "endMs": 5900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        85
+       ],
+       "text": "not a test",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch09-t02-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9536,
+     "ops": [
+      {
+       "id": "order",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        50
+       ],
+       "text": "matching order",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "a",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        100,
+        150
+       ],
+       "text": "A ↔ Q",
+       "size": "m"
+      },
+      {
+       "id": "b",
+       "op": "text",
+       "startMs": 1300,
+       "endMs": 1900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        100,
+        220
+       ],
+       "text": "B ↔ R",
+       "size": "m"
+      },
+      {
+       "id": "c",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        100,
+        290
+       ],
+       "text": "C ↔ P",
+       "size": "m"
+      },
+      {
+       "id": "arrow1",
+       "op": "arrow",
+       "startMs": 2500,
+       "endMs": 3000,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        220,
+        155
+       ],
+       "to": [
+        500,
+        155
+       ]
+      },
+      {
+       "id": "arrow2",
+       "op": "arrow",
+       "startMs": 3000,
+       "endMs": 3500,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        220,
+        225
+       ],
+       "to": [
+        500,
+        225
+       ]
+      },
+      {
+       "id": "arrow3",
+       "op": "arrow",
+       "startMs": 3500,
+       "endMs": 4000,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        220,
+        295
+       ],
+       "to": [
+        500,
+        295
+       ]
+      },
+      {
+       "id": "eq",
+       "op": "numwork",
+       "startMs": 4000,
+       "endMs": 5600,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        280,
+        370
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "ΔABC",
+         "≅",
+         "ΔQRP"
+        ]
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L9",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch09-t02-wb-L9",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4004,
+     "ops": [
+      {
+       "id": "prompt",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        65
+       ],
+       "text": "choose the rule",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "tri",
+       "op": "polygon",
+       "startMs": 800,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         120,
+         390
+        ],
+        [
+         250,
+         170
+        ],
+        [
+         380,
+         390
+        ]
+       ]
+      },
+      {
+       "id": "side1",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2200,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        160,
+        300
+       ],
+       "text": "5 cm",
+       "size": "m"
+      },
+      {
+       "id": "side2",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 2700,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        300,
+        300
+       ],
+       "text": "7 cm",
+       "size": "m"
+      },
+      {
+       "id": "angle",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3200,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        250,
+        230
+       ],
+       "text": "60°",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "rule",
+       "op": "text",
+       "startMs": 3200,
+       "endMs": 3800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        600,
+        300
+       ],
+       "text": "SAS",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "{\"kind\":\"sticks\",\"sticks\":[3,4,5],\"want\":\"triangle\"}",
+   "prompt": "sticks"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "{\"kind\":\"sticks\",\"sticks\":[2,3,6],\"want\":\"no-triangle\"}",
+   "prompt": "sticks"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "{\"kind\":\"triangle\",\"type\":\"right\"}",
+   "prompt": "triangle"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "{\"kind\":\"triangle\",\"type\":\"isosceles\"}",
+   "prompt": "triangle"
+  },
+  {
+   "itemId": "r2:2",
+   "key": "{\"kind\":\"triangle\",\"type\":\"scalene\"}",
+   "prompt": "triangle"
+  },
+  {
+   "itemId": "r2:3",
+   "key": "{\"kind\":\"angle\",\"deg\":60,\"tol\":5}",
+   "prompt": "angle"
+  },
+  {
+   "itemId": "r3:0",
+   "key": "{\"kind\":\"rigid\",\"frame\":[[2,1],[9,1],[9,5],[2,5]]}",
+   "prompt": "rigid"
+  },
+  {
+   "itemId": "r3:1",
+   "key": "{\"kind\":\"rigid\",\"frame\":[[1,1],[6,1],[8,5],[3,5]]}",
+   "prompt": "rigid"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

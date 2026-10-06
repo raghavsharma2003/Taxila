@@ -1,0 +1,1752 @@
+{
+ "topicId": "c6-maths-ch10-t03",
+ "title": "Adding and subtracting integers (token model)",
+ "chapter": "The Other Side of Zero",
+ "subject": "maths",
+ "class": 6,
+ "topicType": "T4",
+ "plan": {
+  "game": "zero-pair@1",
+  "hint": "make and subtract modes (token model)"
+ },
+ "game": {
+  "archetype": "zero-pair@1",
+  "spec": {
+   "archetype": "zero-pair@1",
+   "skills": [
+    "c6-maths-ch10-t03"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "done": "right",
+    "lock": "LOCK",
+    "zero": "+ zero pair",
+    "take": "take",
+    "groups": "groups of",
+    "share": "share into",
+    "runDone": "Lab closed",
+    "coach": "Grab tokens from the moving belt",
+    "value": "tray"
+   },
+   "title": "Zero Pair Lab",
+   "rounds": [
+    {
+     "mode": "make",
+     "title": "Build a tray",
+     "sub": "use at least 7 tokens",
+     "target": -3,
+     "minTokens": 7,
+     "speed": 0.9
+    },
+    {
+     "mode": "subtract",
+     "title": "Take away a debt",
+     "sub": "add zero pairs if needed",
+     "start": 3,
+     "take": -2,
+     "targets": "c6-maths-ch10-t03-m-subtract-smaller"
+    },
+    {
+     "mode": "make",
+     "title": "Show two negatives",
+     "sub": "use at least 7 tokens",
+     "target": -7,
+     "minTokens": 7,
+     "speed": 1.1,
+     "targets": "c6-maths-ch10-t03-m-two-neg-positive"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c6-maths-ch10-t03"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Integers with tokens",
+   "accent": "ion",
+   "targets": "c6-maths-ch10-t03-m-two-neg-positive",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Adding and subtracting integers"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Two negatives make a positive"
+      },
+      {
+       "id": "plus",
+       "type": "node",
+       "text": "+",
+       "sub": "positive token",
+       "glyph": "coin",
+       "color": "mint"
+      },
+      {
+       "id": "minus",
+       "type": "node",
+       "text": "−",
+       "sub": "negative token",
+       "glyph": "coin",
+       "color": "amber"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "p5",
+       "type": "node",
+       "text": "5 positives",
+       "sub": "5 tokens",
+       "glyph": "coin",
+       "color": "mint"
+      },
+      {
+       "id": "n3",
+       "type": "node",
+       "text": "3 negatives",
+       "sub": "3 tokens",
+       "glyph": "coin",
+       "color": "amber"
+      },
+      {
+       "id": "pair",
+       "type": "node",
+       "text": "zero pair",
+       "sub": "+ and −",
+       "glyph": "balance",
+       "color": "ion"
+      },
+      {
+       "id": "r2",
+       "type": "node",
+       "text": "2",
+       "sub": "tokens left",
+       "glyph": "spark",
+       "color": "sun"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "p5",
+       "to": "pair",
+       "text": "pair"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "n3",
+       "to": "pair",
+       "text": "pair"
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "pair",
+       "to": "r2",
+       "text": "cancel"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "work",
+       "type": "title",
+       "text": "Worked example: (−2) − 3"
+      },
+      {
+       "id": "start",
+       "type": "node",
+       "text": "−2",
+       "sub": "2 negatives",
+       "glyph": "coin",
+       "color": "amber"
+      },
+      {
+       "id": "pairs",
+       "type": "node",
+       "text": "3 pairs",
+       "sub": "still −2",
+       "glyph": "balance",
+       "color": "ion"
+      },
+      {
+       "id": "remove",
+       "type": "node",
+       "text": "remove 3 +",
+       "sub": "take away",
+       "glyph": "tap",
+       "color": "sun"
+      },
+      {
+       "id": "ans5",
+       "type": "node",
+       "text": "−5",
+       "sub": "5 negatives",
+       "glyph": "spark",
+       "color": "amber"
+      },
+      {
+       "id": "ans1",
+       "type": "node",
+       "text": "1",
+       "sub": "choice",
+       "glyph": "spark",
+       "color": "mint"
+      },
+      {
+       "id": "ans3",
+       "type": "node",
+       "text": "−3",
+       "sub": "choice",
+       "glyph": "spark",
+       "color": "ion"
+      },
+      {
+       "id": "ans7",
+       "type": "node",
+       "text": "7",
+       "sub": "choice",
+       "glyph": "spark",
+       "color": "sun"
+      },
+      {
+       "id": "b1",
+       "type": "arrow",
+       "from": "start",
+       "to": "pairs",
+       "text": "add pairs"
+      },
+      {
+       "id": "b2",
+       "type": "arrow",
+       "from": "pairs",
+       "to": "remove",
+       "text": "take away"
+      },
+      {
+       "id": "b3",
+       "type": "arrow",
+       "from": "remove",
+       "to": "ans5",
+       "text": "left"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Positive and negative tokens help us see integer operations.",
+    "L2": "Here is a myth: two negatives always make a positive. That is not true for addition.",
+    "L3": "A positive token and a negative token make a zero pair, so they cancel.",
+    "L4": "For 5 plus negative 3, remove three zero pairs and two positive tokens remain.",
+    "L5": "For subtraction, take tokens away. If there are not enough, add zero pairs first.",
+    "L6": "Start with negative 2 and subtract 3. Add three zero pairs, then remove the three positives.",
+    "L7": "Five negative tokens remain, so the answer is negative 5.",
+    "L8": "On a number line, adding a positive moves right and adding a negative moves left. Now check the worked example."
+   },
+   "narration": {
+    "L1": {
+     "text": "Positive and negative tokens help us see integer operations.",
+     "dur": 6.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L2": {
+     "text": "Here is a myth: two negatives always make a positive. That is not true for addition.",
+     "dur": 7.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L3": {
+     "text": "A positive token and a negative token make a zero pair, so they cancel.",
+     "dur": 6.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L4": {
+     "text": "For 5 plus negative 3, remove three zero pairs and two positive tokens remain.",
+     "dur": 7.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L5": {
+     "text": "For subtraction, take tokens away. If there are not enough, add zero pairs first.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Start with negative 2 and subtract 3. Add three zero pairs, then remove the three positives.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Five negative tokens remain, so the answer is negative 5.",
+     "dur": 5.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L8": {
+     "text": "On a number line, adding a positive moves right and adding a negative moves left. Now check the worked example.",
+     "dur": 9,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "title"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "plus",
+        "minus"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      },
+      {
+       "at": 2,
+       "do": "bust",
+       "dur": 1.2,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "p5",
+        "n3",
+        "pair"
+       ]
+      },
+      {
+       "at": 2,
+       "do": "flow",
+       "dur": 1,
+       "target": [
+        "a1",
+        "a2"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "r2"
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 1,
+       "target": "a3",
+       "to": 1
+      },
+      {
+       "at": 2.5,
+       "do": "highlight",
+       "dur": 1,
+       "target": "r2"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "start",
+        "pairs"
+       ]
+      },
+      {
+       "at": 2,
+       "do": "show",
+       "dur": 0.8,
+       "target": "b1"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "b1",
+       "to": 1
+      },
+      {
+       "at": 1.5,
+       "do": "show",
+       "dur": 0.7,
+       "target": "remove"
+      },
+      {
+       "at": 2.5,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "b2",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "ans5"
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 1,
+       "target": "ans5"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "camera",
+       "dur": 2,
+       "zoom": 1.05
+      },
+      {
+       "at": 2,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "ans1",
+        "ans3",
+        "ans7"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive"
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Tap the result of (−2) − 3.",
+    "options": [
+     "ans1",
+     "ans3",
+     "ans5",
+     "ans7"
+    ],
+    "answer": "ans5",
+    "src": "c6-maths-ch10-t03-i04"
+   }
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg",
+  "passes": 2,
+  "seconds": 61
+ },
+ "keys": [
+  {
+   "itemId": "r1",
+   "key": "-3",
+   "prompt": "make -3"
+  },
+  {
+   "itemId": "r2",
+   "key": "5",
+   "prompt": "3 − (-2)"
+  },
+  {
+   "itemId": "r3",
+   "key": "-7",
+   "prompt": "make -7"
+  }
+ ],
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch10-t03-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4430,
+     "ops": [
+      {
+       "id": "pos",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        250,
+        220
+       ],
+       "r": 34,
+       "fill": "accent"
+      },
+      {
+       "id": "neg",
+       "op": "circle",
+       "startMs": 500,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        550,
+        220
+       ],
+       "r": 34,
+       "fill": "soft"
+      },
+      {
+       "id": "pl",
+       "op": "text",
+       "startMs": 1100,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        250,
+        290
+       ],
+       "text": "positive",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "nl",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 2000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        550,
+        290
+       ],
+       "text": "negative",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "op",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        220
+       ],
+       "text": "integer operations",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch10-t03-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "myth",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "myth",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "n1",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        300,
+        220
+       ],
+       "r": 36,
+       "fill": "soft"
+      },
+      {
+       "id": "n2",
+       "op": "circle",
+       "startMs": 1200,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        410,
+        220
+       ],
+       "r": 36,
+       "fill": "soft"
+      },
+      {
+       "id": "minus1",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        300,
+        230
+       ],
+       "text": "−",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "minus2",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        410,
+        230
+       ],
+       "text": "−",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "cross",
+       "op": "line",
+       "startMs": 3000,
+       "endMs": 3800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        260,
+        170
+       ],
+       "to": [
+        450,
+        270
+       ]
+      },
+      {
+       "id": "not",
+       "op": "text",
+       "startMs": 4100,
+       "endMs": 5600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        360
+       ],
+       "text": "not true for addition",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch10-t03-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "p",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        300,
+        210
+       ],
+       "r": 38,
+       "fill": "accent"
+      },
+      {
+       "id": "n",
+       "op": "circle",
+       "startMs": 500,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        210
+       ],
+       "r": 38,
+       "fill": "soft"
+      },
+      {
+       "id": "plus",
+       "op": "text",
+       "startMs": 1100,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        300,
+        220
+       ],
+       "text": "+",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "minus",
+       "op": "text",
+       "startMs": 1300,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        220
+       ],
+       "text": "−",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "zero",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 3300,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        350,
+        330
+       ],
+       "text": "zero pair",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "cancel",
+       "op": "line",
+       "startMs": 3500,
+       "endMs": 4500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        270,
+        160
+       ],
+       "to": [
+        430,
+        260
+       ]
+      },
+      {
+       "id": "zero2",
+       "op": "text",
+       "startMs": 4600,
+       "endMs": 5200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        350,
+        390
+       ],
+       "text": "0",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch10-t03-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "sum",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        250,
+        55
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "5",
+         "+",
+         "negati",
+         "3"
+        ]
+       ]
+      },
+      {
+       "id": "p1",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1300,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        220,
+        210
+       ],
+       "r": 25,
+       "fill": "accent"
+      },
+      {
+       "id": "p2",
+       "op": "circle",
+       "startMs": 1100,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        280,
+        210
+       ],
+       "r": 25,
+       "fill": "accent"
+      },
+      {
+       "id": "p3",
+       "op": "circle",
+       "startMs": 1300,
+       "endMs": 1700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        340,
+        210
+       ],
+       "r": 25,
+       "fill": "accent"
+      },
+      {
+       "id": "p4",
+       "op": "circle",
+       "startMs": 1500,
+       "endMs": 1900,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        210
+       ],
+       "r": 25,
+       "fill": "accent"
+      },
+      {
+       "id": "p5",
+       "op": "circle",
+       "startMs": 1700,
+       "endMs": 2100,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        460,
+        210
+       ],
+       "r": 25,
+       "fill": "accent"
+      },
+      {
+       "id": "n1",
+       "op": "circle",
+       "startMs": 2200,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        220,
+        320
+       ],
+       "r": 25,
+       "fill": "soft"
+      },
+      {
+       "id": "n2",
+       "op": "circle",
+       "startMs": 2400,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        280,
+        320
+       ],
+       "r": 25,
+       "fill": "soft"
+      },
+      {
+       "id": "n3",
+       "op": "circle",
+       "startMs": 2600,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        340,
+        320
+       ],
+       "r": 25,
+       "fill": "soft"
+      },
+      {
+       "id": "r1",
+       "op": "line",
+       "startMs": 3300,
+       "endMs": 3700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        195,
+        185
+       ],
+       "to": [
+        245,
+        235
+       ]
+      },
+      {
+       "id": "r2",
+       "op": "line",
+       "startMs": 3500,
+       "endMs": 3900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        255,
+        185
+       ],
+       "to": [
+        305,
+        235
+       ]
+      },
+      {
+       "id": "r3",
+       "op": "line",
+       "startMs": 3700,
+       "endMs": 4100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        315,
+        185
+       ],
+       "to": [
+        365,
+        235
+       ]
+      },
+      {
+       "id": "answer",
+       "op": "numwork",
+       "startMs": 4700,
+       "endMs": 5500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        300,
+        410
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "2"
+        ]
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch10-t03-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "sub",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        65
+       ],
+       "text": "subtraction",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "take",
+       "op": "arrow",
+       "startMs": 1000,
+       "endMs": 1800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        470,
+        180
+       ],
+       "to": [
+        570,
+        180
+       ]
+      },
+      {
+       "id": "away",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        600,
+        180
+       ],
+       "text": "away",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "pairp",
+       "op": "circle",
+       "startMs": 2500,
+       "endMs": 3000,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        280,
+        320
+       ],
+       "r": 27,
+       "fill": "accent"
+      },
+      {
+       "id": "pairn",
+       "op": "circle",
+       "startMs": 2700,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        350,
+        320
+       ],
+       "r": 27,
+       "fill": "soft"
+      },
+      {
+       "id": "addpairs",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 5000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        410
+       ],
+       "text": "add zero pairs first",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch10-t03-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "eq",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        220,
+        45
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "negati",
+         "2",
+         "−",
+         "3"
+        ]
+       ]
+      },
+      {
+       "id": "base1",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        270,
+        180
+       ],
+       "r": 27,
+       "fill": "soft"
+      },
+      {
+       "id": "base2",
+       "op": "circle",
+       "startMs": 1100,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        340,
+        180
+       ],
+       "r": 27,
+       "fill": "soft"
+      },
+      {
+       "id": "zp1",
+       "op": "circle",
+       "startMs": 1900,
+       "endMs": 2300,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        240,
+        290
+       ],
+       "r": 24,
+       "fill": "accent"
+      },
+      {
+       "id": "zn1",
+       "op": "circle",
+       "startMs": 2000,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        295,
+        290
+       ],
+       "r": 24,
+       "fill": "soft"
+      },
+      {
+       "id": "zp2",
+       "op": "circle",
+       "startMs": 2200,
+       "endMs": 2600,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        350,
+        290
+       ],
+       "r": 24,
+       "fill": "accent"
+      },
+      {
+       "id": "zn2",
+       "op": "circle",
+       "startMs": 2300,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        405,
+        290
+       ],
+       "r": 24,
+       "fill": "soft"
+      },
+      {
+       "id": "zp3",
+       "op": "circle",
+       "startMs": 2400,
+       "endMs": 2800,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        460,
+        290
+       ],
+       "r": 24,
+       "fill": "accent"
+      },
+      {
+       "id": "zn3",
+       "op": "circle",
+       "startMs": 2500,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        515,
+        290
+       ],
+       "r": 24,
+       "fill": "soft"
+      },
+      {
+       "id": "remove1",
+       "op": "line",
+       "startMs": 3500,
+       "endMs": 3900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        215,
+        265
+       ],
+       "to": [
+        265,
+        315
+       ]
+      },
+      {
+       "id": "remove2",
+       "op": "line",
+       "startMs": 3700,
+       "endMs": 4100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        325,
+        265
+       ],
+       "to": [
+        375,
+        315
+       ]
+      },
+      {
+       "id": "remove3",
+       "op": "line",
+       "startMs": 3900,
+       "endMs": 4300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        435,
+        265
+       ],
+       "to": [
+        485,
+        315
+       ]
+      },
+      {
+       "id": "result",
+       "op": "numwork",
+       "startMs": 5200,
+       "endMs": 6500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        290,
+        410
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "negati",
+         "5"
+        ]
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch10-t03-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "n1",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        220,
+        190
+       ],
+       "r": 27,
+       "fill": "soft"
+      },
+      {
+       "id": "n2",
+       "op": "circle",
+       "startMs": 250,
+       "endMs": 750,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        285,
+        190
+       ],
+       "r": 27,
+       "fill": "soft"
+      },
+      {
+       "id": "n3",
+       "op": "circle",
+       "startMs": 500,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        350,
+        190
+       ],
+       "r": 27,
+       "fill": "soft"
+      },
+      {
+       "id": "n4",
+       "op": "circle",
+       "startMs": 750,
+       "endMs": 1250,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        415,
+        190
+       ],
+       "r": 27,
+       "fill": "soft"
+      },
+      {
+       "id": "n5",
+       "op": "circle",
+       "startMs": 1000,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        480,
+        190
+       ],
+       "r": 27,
+       "fill": "soft"
+      },
+      {
+       "id": "remain",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        350,
+        310
+       ],
+       "text": "5 negative tokens remain",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "answer",
+       "op": "numwork",
+       "startMs": 3500,
+       "endMs": 4500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        300,
+        400
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "negati",
+         "5"
+        ]
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch10-t03-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9111,
+     "ops": [
+      {
+       "id": "nl",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        220
+       ],
+       "layout": "number_line",
+       "rows": [
+        [
+         "negati",
+         "5",
+         "negati",
+         "4",
+         "negati",
+         "3",
+         "negati",
+         "2",
+         "negati",
+         "1",
+         "0",
+         "1"
+        ]
+       ],
+       "range": [
+        -5,
+        5
+       ]
+      },
+      {
+       "id": "right",
+       "op": "arrow",
+       "startMs": 2800,
+       "endMs": 3900,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        330,
+        180
+       ],
+       "to": [
+        470,
+        180
+       ]
+      },
+      {
+       "id": "rightlabel",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 5200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        130
+       ],
+       "text": "adding a positive",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "left",
+       "op": "arrow",
+       "startMs": 4500,
+       "endMs": 5600,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        470,
+        300
+       ],
+       "to": [
+        330,
+        300
+       ]
+      },
+      {
+       "id": "leftlabel",
+       "op": "text",
+       "startMs": 5600,
+       "endMs": 6900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        350
+       ],
+       "text": "adding a negative",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "check",
+       "op": "text",
+       "startMs": 7300,
+       "endMs": 8400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        440
+       ],
+       "text": "worked example",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "check": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "Round 2 starts at 3 and takes -2, so formula is 3 − (−2) = 5; the task says 'take away a debt' but the 'targets' setting points to misconception 'subtract always makes smaller' which is correct. No issue."
+   },
+   {
+    "where": "explainer",
+    "what": "The worked example (s3) shows (−2) − 3 = −5, but the task prompt says 'Tap the result of (−2) − 3' with answer ans5 (−5). That is correct and matches kit. No issue."
+   },
+   {
+    "where": "explainer",
+    "what": "In scene s2, text L4 says 'For 5 plus negative 3, remove three zero pairs and two positive tokens remain' which is correct (5 + (−3) = 2). No issue."
+   }
+  ],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

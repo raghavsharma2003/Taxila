@@ -1,0 +1,16 @@
+diff --git a/server/index.js b/server/index.js
+index 1650ba1..b3a1eaa 100644
+--- a/server/index.js
++++ b/server/index.js
+@@ -20,8 +20,10 @@ import { routes as lane } from "./voice/realtimeSession.js";
+ import { routes as studio } from "./routes/studio.js";
+ // ship5 p2-face: the face's runtime kill switches (GET /api/face/config). One-line seam; the route lives in p2-face's module.
+ import { routes as face } from "./face-puppet/config.js";
++// ship5 p1-duplex: the hands-free duplex kill switch (GET /api/duplex/config). One-line seam; the route lives in server/duplex.
++import { duplexConfigRoutes as duplex } from "./duplex/config.js";
+ // ship5 p3-voicesig: the client kill switch and the status page's per-state table (GET /api/voicesig/config|status).
+ import { routes as voicesig } from "./voicesig/routes.js";
+ 
+-register({ ...lesson, ...tts, ...parent, ...modules, ...voice, ...tutor, ...forge, ...child, ...testClock, ...studio, ...voicesig, ...lane, ...face });
++register({ ...lesson, ...tts, ...parent, ...modules, ...voice, ...tutor, ...forge, ...child, ...testClock, ...studio, ...voicesig, ...duplex, ...lane, ...face });
+ export { handle, register };

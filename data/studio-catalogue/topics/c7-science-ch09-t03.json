@@ -1,0 +1,1991 @@
+{
+ "topicId": "c7-science-ch09-t03",
+ "title": "Respiration in animals",
+ "chapter": "Life Processes in Animals",
+ "subject": "science",
+ "class": 7,
+ "topicType": "T3",
+ "plan": {
+  "game": "life-lab@1",
+  "hint": "breath mode (rest, walk, run)"
+ },
+ "game": {
+  "archetype": "life-lab@1",
+  "spec": {
+   "archetype": "life-lab@1",
+   "skills": [
+    "c7-science-ch09-t03"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "done": "right",
+    "sugar": "sugar",
+    "water": "water",
+    "light": "light",
+    "co2": "CO2",
+    "stomata": "stomata",
+    "open": "open",
+    "closed": "closed",
+    "wilted": "WILTED",
+    "oxygen": "oxygen",
+    "pull": "Pull the diaphragm down",
+    "perMin": "per min",
+    "rest": "resting",
+    "walk": "walking",
+    "run": "running",
+    "mouth": "mouth",
+    "stomach": "stomach",
+    "small": "small intestine",
+    "large": "large intestine",
+    "saliva": "saliva",
+    "gastric": "gastric",
+    "bile": "bile",
+    "pancreatic": "pancreatic",
+    "absorbed": "absorbed",
+    "starch": "starch",
+    "protein": "protein",
+    "fat": "fat",
+    "runDone": "Lab closed",
+    "xylem": "xylem",
+    "phloem": "phloem",
+    "drops": "drops left"
+   },
+   "title": "Breathe and Respire",
+   "rounds": [
+    {
+     "mode": "breath",
+     "title": "Quiet breathing",
+     "sub": "keep oxygen steady while resting",
+     "activity": "rest",
+     "dur": 10
+    },
+    {
+     "mode": "breath",
+     "title": "Walk and breathe",
+     "sub": "match your breathing to a walk",
+     "activity": "walk",
+     "dur": 15
+    },
+    {
+     "mode": "breath",
+     "title": "Run the lab",
+     "sub": "breathe faster and deeper while running",
+     "activity": "run",
+     "dur": 20,
+     "targets": "c7-science-ch09-t03-m1"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-science-ch09-t03"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Breathing and respiration",
+   "accent": "sci",
+   "targets": "c7-science-ch09-t03-m1",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Breathing and respiration"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Breathing and respiration are the same"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "airin",
+       "type": "node",
+       "text": "Air in",
+       "sub": "lungs",
+       "glyph": "wind",
+       "color": "ion"
+      },
+      {
+       "id": "chest",
+       "type": "node",
+       "text": "Chest expands",
+       "sub": "diaphragm down",
+       "glyph": "lungs",
+       "color": "mint"
+      },
+      {
+       "id": "airout",
+       "type": "node",
+       "text": "Air out",
+       "sub": "lungs",
+       "glyph": "wind",
+       "color": "amber"
+      },
+      {
+       "id": "rest",
+       "type": "node",
+       "text": "Chest returns",
+       "sub": "air pushed out",
+       "glyph": "lungs",
+       "color": "sci"
+      },
+      {
+       "id": "b1",
+       "type": "arrow",
+       "from": "airin",
+       "to": "chest",
+       "text": "breathing in"
+      },
+      {
+       "id": "b2",
+       "type": "arrow",
+       "from": "chest",
+       "to": "airout",
+       "text": "air enters"
+      },
+      {
+       "id": "b3",
+       "type": "arrow",
+       "from": "airout",
+       "to": "rest",
+       "text": "breathing out"
+      },
+      {
+       "id": "b4",
+       "type": "arrow",
+       "from": "rest",
+       "to": "airin",
+       "text": "cycle"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "food",
+       "type": "node",
+       "text": "Glucose",
+       "sub": "food",
+       "glyph": "apple",
+       "color": "amber"
+      },
+      {
+       "id": "oxygen",
+       "type": "node",
+       "text": "Oxygen",
+       "sub": "from air",
+       "glyph": "wind",
+       "color": "ion"
+      },
+      {
+       "id": "cell",
+       "type": "node",
+       "text": "Cell",
+       "sub": "respiration",
+       "glyph": "atom",
+       "color": "mint"
+      },
+      {
+       "id": "energy",
+       "type": "node",
+       "text": "Energy",
+       "sub": "released",
+       "glyph": "lightning",
+       "color": "sun"
+      },
+      {
+       "id": "co2",
+       "type": "node",
+       "text": "Carbon dioxide",
+       "sub": "and water",
+       "glyph": "cloud",
+       "color": "sci"
+      },
+      {
+       "id": "r1",
+       "type": "arrow",
+       "from": "food",
+       "to": "cell",
+       "text": "broken down"
+      },
+      {
+       "id": "r2",
+       "type": "arrow",
+       "from": "oxygen",
+       "to": "cell",
+       "text": "used"
+      },
+      {
+       "id": "r3",
+       "type": "arrow",
+       "from": "cell",
+       "to": "energy",
+       "text": "releases"
+      },
+      {
+       "id": "r4",
+       "type": "arrow",
+       "from": "cell",
+       "to": "co2",
+       "text": "produces"
+      },
+      {
+       "id": "gases",
+       "type": "bars",
+       "values": [
+        21,
+        16,
+        0.04,
+        4
+       ],
+       "labels": [
+        "O2 in",
+        "O2 out",
+        "CO2 in",
+        "CO2 out"
+       ],
+       "unit": "percent"
+      },
+      {
+       "id": "exercise",
+       "type": "node",
+       "text": "Exercise",
+       "sub": "more energy",
+       "glyph": "person",
+       "color": "volt"
+      },
+      {
+       "id": "fast",
+       "type": "node",
+       "text": "Faster breaths",
+       "sub": "more oxygen",
+       "glyph": "lungs",
+       "color": "sun"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "fish",
+       "type": "node",
+       "text": "Fish",
+       "sub": "gills",
+       "glyph": "fish",
+       "color": "ion"
+      },
+      {
+       "id": "worm",
+       "type": "node",
+       "text": "Earthworm",
+       "sub": "moist skin",
+       "glyph": "insect",
+       "color": "mint"
+      },
+      {
+       "id": "insect",
+       "type": "node",
+       "text": "Cockroach",
+       "sub": "spiracles",
+       "glyph": "insect",
+       "color": "amber"
+      },
+      {
+       "id": "frog",
+       "type": "node",
+       "text": "Frog",
+       "sub": "lungs and skin",
+       "color": "sci"
+      },
+      {
+       "id": "watero2",
+       "type": "label",
+       "text": "oxygen in water"
+      },
+      {
+       "id": "animalair",
+       "type": "label",
+       "text": "different pathways"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Breathing and respiration are connected, but they are not the same thing.",
+    "L2": "Breathing moves air into and out of the lungs. Respiration happens in every cell.",
+    "L3": "When we breathe in, the chest expands, the diaphragm moves down, and air enters the lungs.",
+    "L4": "When we breathe out, the chest returns and air is pushed out.",
+    "L5": "In respiration, cells break down glucose, usually using oxygen, to release energy. Carbon dioxide and water are produced.",
+    "L6": "Exhaled air still contains mostly nitrogen, but it has less oxygen, more carbon dioxide, and more water vapour than inhaled air.",
+    "L7": "During exercise, muscles need more energy, so cells respire faster. We breathe faster and deeper to supply oxygen and remove carbon dioxide.",
+    "L8": "Animals use different ways to take in oxygen: fish use gills, earthworms use moist skin, insects use spiracles, and frogs use lungs and skin."
+   },
+   "narration": {
+    "L1": {
+     "text": "Breathing and respiration are connected, but they are not the same thing.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L2": {
+     "text": "Breathing moves air into and out of the lungs. Respiration happens in every cell.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L3": {
+     "text": "When we breathe in, the chest expands, the diaphragm moves down, and air enters the lungs.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L4": {
+     "text": "When we breathe out, the chest returns and air is pushed out.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L5": {
+     "text": "In respiration, cells break down glucose, usually using oxygen, to release energy. Carbon dioxide and water are produced.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Exhaled air still contains mostly nitrogen, but it has less oxygen, more carbon dioxide, and more water vapour than inhaled air.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L7": {
+     "text": "During exercise, muscles need more energy, so cells respire faster. We breathe faster and deeper to supply oxygen and remove carbon dioxide.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Animals use different ways to take in oxygen: fish use gills, earthworms use moist skin, insects use spiracles, and frogs use lungs and skin.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      },
+      {
+       "at": 2.4,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "airin",
+        "airout",
+        "b1",
+        "b3"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 1,
+       "target": "airin"
+      },
+      {
+       "at": 2.2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "airout"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "chest",
+        "b2"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "b1",
+       "to": 1
+      },
+      {
+       "at": 2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "chest"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "rest",
+        "b3"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "b3",
+       "to": 1
+      },
+      {
+       "at": 2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "rest"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "food",
+        "oxygen",
+        "cell",
+        "r1",
+        "r2"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 0.8,
+       "target": [
+        "r1",
+        "r2"
+       ],
+       "to": 1
+      },
+      {
+       "at": 2.2,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "energy",
+        "co2",
+        "r3",
+        "r4"
+       ]
+      },
+      {
+       "at": 3.2,
+       "do": "flow",
+       "dur": 0.8,
+       "target": [
+        "r3",
+        "r4"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "gases"
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 1.5,
+       "target": "gases"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "exercise",
+        "fast"
+       ]
+      },
+      {
+       "at": 2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "fast"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "fish",
+        "worm",
+        "insect",
+        "frog"
+       ]
+      },
+      {
+       "at": 1.2,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "fish"
+      },
+      {
+       "at": 2,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "worm"
+      },
+      {
+       "at": 2.8,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "insect"
+      },
+      {
+       "at": 3.6,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "frog"
+      },
+      {
+       "at": "end",
+       "do": "interactive"
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which animal takes oxygen from water using gills?",
+    "options": [
+     "fish",
+     "worm",
+     "insect",
+     "frog"
+    ],
+    "answer": "fish",
+    "src": "c7-science-ch09-t03-i10"
+   }
+  },
+  "repairs": [
+   "glyph",
+   "cue:target"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 47
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch09-t03-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "breath",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        220,
+        230
+       ],
+       "r": 100
+      },
+      {
+       "id": "resp",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        580,
+        230
+       ],
+       "r": 100
+      },
+      {
+       "id": "btext",
+       "op": "text",
+       "startMs": 1000,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        220,
+        230
+       ],
+       "text": "breathing",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "rtext",
+       "op": "text",
+       "startMs": 1000,
+       "endMs": 1800,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        580,
+        230
+       ],
+       "text": "respiration",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "link",
+       "op": "line",
+       "startMs": 2200,
+       "endMs": 2800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        320,
+        230
+       ],
+       "to": [
+        480,
+        230
+       ]
+      },
+      {
+       "id": "not",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3900,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        400,
+        190
+       ],
+       "text": "not the same",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "both",
+       "op": "text",
+       "startMs": 4100,
+       "endMs": 5000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        330
+       ],
+       "text": "connected",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch09-t03-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "lungs",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        210,
+        250
+       ],
+       "rx": 80,
+       "ry": 125
+      },
+      {
+       "id": "airin",
+       "op": "arrow",
+       "startMs": 800,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        80,
+        250
+       ],
+       "to": [
+        150,
+        250
+       ]
+      },
+      {
+       "id": "airout",
+       "op": "arrow",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        275,
+        250
+       ],
+       "to": [
+        345,
+        250
+       ]
+      },
+      {
+       "id": "lunglabel",
+       "op": "label",
+       "startMs": 2300,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        210,
+        410
+       ],
+       "text": "lungs",
+       "target": "lungs"
+      },
+      {
+       "id": "cell",
+       "op": "circle",
+       "startMs": 3000,
+       "endMs": 3700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        580,
+        250
+       ],
+       "r": 90
+      },
+      {
+       "id": "celllabel",
+       "op": "label",
+       "startMs": 3800,
+       "endMs": 4600,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        580,
+        390
+       ],
+       "text": "every cell",
+       "target": "cell"
+      },
+      {
+       "id": "respword",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        580,
+        250
+       ],
+       "text": "respiration",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch09-t03-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "chest",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        220
+       ],
+       "rx": 170,
+       "ry": 150
+      },
+      {
+       "id": "leftlung",
+       "op": "ellipse",
+       "startMs": 800,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        345,
+        230
+       ],
+       "rx": 45,
+       "ry": 85
+      },
+      {
+       "id": "rightlung",
+       "op": "ellipse",
+       "startMs": 800,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        455,
+        230
+       ],
+       "rx": 45,
+       "ry": 85
+      },
+      {
+       "id": "expand",
+       "op": "arrow",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        260,
+        220
+       ],
+       "to": [
+        200,
+        220
+       ]
+      },
+      {
+       "id": "expand2",
+       "op": "arrow",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        540,
+        220
+       ],
+       "to": [
+        600,
+        220
+       ]
+      },
+      {
+       "id": "diaphragm",
+       "op": "line",
+       "startMs": 2300,
+       "endMs": 2800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        300,
+        330
+       ],
+       "to": [
+        500,
+        330
+       ]
+      },
+      {
+       "id": "down",
+       "op": "arrow",
+       "startMs": 2800,
+       "endMs": 3500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        330
+       ],
+       "to": [
+        400,
+        410
+       ]
+      },
+      {
+       "id": "dlabel",
+       "op": "label",
+       "startMs": 3500,
+       "endMs": 4300,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        515,
+        350
+       ],
+       "text": "diaphragm",
+       "to": [
+        470,
+        330
+       ]
+      },
+      {
+       "id": "air",
+       "op": "arrow",
+       "startMs": 4400,
+       "endMs": 5100,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        400,
+        70
+       ],
+       "to": [
+        400,
+        155
+       ]
+      },
+      {
+       "id": "enters",
+       "op": "text",
+       "startMs": 5200,
+       "endMs": 5900,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        55
+       ],
+       "text": "air enters",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch09-t03-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "chestreturn",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        220
+       ],
+       "rx": 130,
+       "ry": 120
+      },
+      {
+       "id": "returnarrow",
+       "op": "arrow",
+       "startMs": 900,
+       "endMs": 1600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        245,
+        220
+       ],
+       "to": [
+        300,
+        220
+       ]
+      },
+      {
+       "id": "returnarrow2",
+       "op": "arrow",
+       "startMs": 900,
+       "endMs": 1600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        555,
+        220
+       ],
+       "to": [
+        500,
+        220
+       ]
+      },
+      {
+       "id": "push",
+       "op": "arrow",
+       "startMs": 1900,
+       "endMs": 2700,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        400,
+        300
+       ],
+       "to": [
+        400,
+        150
+       ]
+      },
+      {
+       "id": "out",
+       "op": "arrow",
+       "startMs": 2800,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        400,
+        150
+       ],
+       "to": [
+        400,
+        70
+       ]
+      },
+      {
+       "id": "outlabel",
+       "op": "text",
+       "startMs": 3600,
+       "endMs": 4200,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        470,
+        90
+       ],
+       "text": "air out",
+       "size": "m"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch09-t03-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "cell",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        180,
+        240
+       ],
+       "r": 95
+      },
+      {
+       "id": "glucose",
+       "op": "text",
+       "startMs": 800,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        225
+       ],
+       "text": "glucose",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "oxygen",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 2000,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        180,
+        275
+       ],
+       "text": "oxygen",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "break",
+       "op": "arrow",
+       "startMs": 2100,
+       "endMs": 2900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        290,
+        240
+       ],
+       "to": [
+        390,
+        240
+       ]
+      },
+      {
+       "id": "energy",
+       "op": "circle",
+       "startMs": 3000,
+       "endMs": 3700,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        540,
+        170
+       ],
+       "r": 65
+      },
+      {
+       "id": "carbon",
+       "op": "circle",
+       "startMs": 3000,
+       "endMs": 3700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        540,
+        310
+       ],
+       "r": 65
+      },
+      {
+       "id": "energylabel",
+       "op": "text",
+       "startMs": 3700,
+       "endMs": 4300,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        540,
+        170
+       ],
+       "text": "energy",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "carbonlabel",
+       "op": "text",
+       "startMs": 3700,
+       "endMs": 4500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        540,
+        310
+       ],
+       "text": "carbon dioxide",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "water",
+       "op": "circle",
+       "startMs": 4500,
+       "endMs": 5100,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        690,
+        240
+       ],
+       "r": 55
+      },
+      {
+       "id": "waterlabel",
+       "op": "text",
+       "startMs": 5100,
+       "endMs": 5700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        690,
+        240
+       ],
+       "text": "water",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "usually",
+       "op": "text",
+       "startMs": 5900,
+       "endMs": 6800,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        180,
+        370
+       ],
+       "text": "usually using oxygen",
+       "size": "s",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch09-t03-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9536,
+     "ops": [
+      {
+       "id": "inhaled",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        70,
+        100
+       ],
+       "w": 300,
+       "h": 280
+      },
+      {
+       "id": "exhaled",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        430,
+        100
+       ],
+       "w": 300,
+       "h": 280
+      },
+      {
+       "id": "inlabel",
+       "op": "text",
+       "startMs": 800,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        220,
+        70
+       ],
+       "text": "inhaled air",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "exlabel",
+       "op": "text",
+       "startMs": 800,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        580,
+        70
+       ],
+       "text": "exhaled air",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "nit1",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        220,
+        160
+       ],
+       "text": "mostly nitrogen",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "nit2",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2400,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        580,
+        160
+       ],
+       "text": "mostly nitrogen",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "less",
+       "op": "text",
+       "startMs": 2800,
+       "endMs": 3500,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        580,
+        220
+       ],
+       "text": "less oxygen",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "moreco2",
+       "op": "text",
+       "startMs": 3600,
+       "endMs": 4400,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        580,
+        270
+       ],
+       "text": "more carbon dioxide",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "morewater",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5300,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        580,
+        325
+       ],
+       "text": "more water vapour",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "compare",
+       "op": "arrow",
+       "startMs": 5700,
+       "endMs": 6400,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        370,
+        410
+       ],
+       "to": [
+        430,
+        410
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch09-t03-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9962,
+     "ops": [
+      {
+       "id": "muscle",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        180,
+        250
+       ],
+       "rx": 120,
+       "ry": 90
+      },
+      {
+       "id": "exercise",
+       "op": "text",
+       "startMs": 800,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        250
+       ],
+       "text": "exercise",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "energyneed",
+       "op": "arrow",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        300,
+        250
+       ],
+       "to": [
+        390,
+        250
+       ]
+      },
+      {
+       "id": "faster",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 3100,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        180,
+        370
+       ],
+       "text": "respire faster",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "lungs",
+       "op": "ellipse",
+       "startMs": 3200,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        590,
+        230
+       ],
+       "rx": 100,
+       "ry": 130
+      },
+      {
+       "id": "fastbreath",
+       "op": "arrow",
+       "startMs": 4000,
+       "endMs": 4500,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        500,
+        120
+       ],
+       "to": [
+        500,
+        70
+       ]
+      },
+      {
+       "id": "fastbreath2",
+       "op": "arrow",
+       "startMs": 4000,
+       "endMs": 4500,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        680,
+        70
+       ],
+       "to": [
+        680,
+        120
+       ]
+      },
+      {
+       "id": "deeper",
+       "op": "text",
+       "startMs": 4600,
+       "endMs": 5400,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        590,
+        370
+       ],
+       "text": "faster and deeper",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "oxygen",
+       "op": "text",
+       "startMs": 5600,
+       "endMs": 6300,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        590,
+        420
+       ],
+       "text": "supply oxygen",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "remove",
+       "op": "text",
+       "startMs": 6400,
+       "endMs": 7300,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        590,
+        455
+       ],
+       "text": "remove carbon dioxide",
+       "size": "s",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch09-t03-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 10813,
+     "ops": [
+      {
+       "id": "fish",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        120,
+        130
+       ],
+       "r": 55
+      },
+      {
+       "id": "fishlabel",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        120,
+        210
+       ],
+       "text": "fish",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "gills",
+       "op": "text",
+       "startMs": 1100,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        120,
+        270
+       ],
+       "text": "gills",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "worm",
+       "op": "ellipse",
+       "startMs": 1700,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        330,
+        130
+       ],
+       "rx": 80,
+       "ry": 45
+      },
+      {
+       "id": "wormlabel",
+       "op": "text",
+       "startMs": 2400,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        330,
+        210
+       ],
+       "text": "earthworms",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "skin",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        330,
+        270
+       ],
+       "text": "moist skin",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "insect",
+       "op": "circle",
+       "startMs": 3700,
+       "endMs": 4300,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        540,
+        130
+       ],
+       "r": 55
+      },
+      {
+       "id": "insectlabel",
+       "op": "text",
+       "startMs": 4400,
+       "endMs": 4900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        540,
+        210
+       ],
+       "text": "insects",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "spiracles",
+       "op": "text",
+       "startMs": 4900,
+       "endMs": 5500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        540,
+        270
+       ],
+       "text": "spiracles",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "frog",
+       "op": "circle",
+       "startMs": 5700,
+       "endMs": 6300,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        700,
+        130
+       ],
+       "r": 55
+      },
+      {
+       "id": "froglabel",
+       "op": "text",
+       "startMs": 6400,
+       "endMs": 6900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        700,
+        210
+       ],
+       "text": "frogs",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "frogways",
+       "op": "text",
+       "startMs": 6900,
+       "endMs": 7600,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        700,
+        270
+       ],
+       "text": "lungs and skin",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "oxygen",
+       "op": "text",
+       "startMs": 8000,
+       "endMs": 8800,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        400
+       ],
+       "text": "oxygen",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1",
+   "key": "≥ 9.2 full breaths per min",
+   "prompt": "rest"
+  },
+  {
+   "itemId": "r2",
+   "key": "≥ 16.2 full breaths per min",
+   "prompt": "walk"
+  },
+  {
+   "itemId": "r3",
+   "key": "≥ 27.7 full breaths per min",
+   "prompt": "run"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

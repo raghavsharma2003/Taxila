@@ -1,0 +1,1763 @@
+{
+ "topicId": "c6-maths-ch03-t01",
+ "title": "Numbers that tell us things",
+ "chapter": "Number Play",
+ "subject": "maths",
+ "class": 6,
+ "topicType": "T5",
+ "plan": {
+  "game": "rule-machine@1",
+  "hint": "explore mode (Collatz / reverse-and-add) plus a seq round"
+ },
+ "game": {
+  "archetype": "rule-machine@1",
+  "spec": {
+   "archetype": "rule-machine@1",
+   "skills": [
+    "c6-maths-ch03-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "built": "machines",
+    "run": "RUN",
+    "want": "order",
+    "got": "made",
+    "coach": "Tap tiles to build a rule, then RUN",
+    "runDone": "Factory closed",
+    "step": "step",
+    "predict": "step",
+    "inverse": "run it backwards",
+    "target": "target",
+    "steps": "steps",
+    "pick": "Pick a start",
+    "works": "WORKS",
+    "fix": "not for every input"
+   },
+   "title": "Supercell Challenge",
+   "rounds": [
+    {
+     "mode": "build",
+     "title": "Neighbour clues",
+     "sub": "check each number against its neighbours",
+     "rule": [
+      "+1"
+     ],
+     "inputs": [
+      23,
+      48,
+      15,
+      62,
+      41
+     ],
+     "tiles": [
+      "+1",
+      "-1",
+      "×2"
+     ],
+     "targets": "c6-maths-ch03-t01-m-supercell-biggest"
+    },
+    {
+     "mode": "seq",
+     "title": "Row peaks",
+     "sub": "spot local peaks in a growing row",
+     "pattern": "sticks-squares",
+     "rule": [
+      "×3",
+      "+1"
+     ],
+     "tiles": [
+      "×3",
+      "+1",
+      "×2",
+      "-1"
+     ],
+     "ask": 6,
+     "targets": "c6-maths-ch03-t01-m-one-answer"
+    },
+    {
+     "mode": "explore",
+     "title": "Line ends",
+     "sub": "explore rows with one end neighbour",
+     "machine": "reverse",
+     "lo": 1,
+     "hi": 20,
+     "minSteps": 2,
+     "targets": "c6-maths-ch03-t01-m-ends-two"
+    },
+    {
+     "mode": "inverse",
+     "title": "Peak reasoning",
+     "sub": "work backwards from a neighbour clue",
+     "rule": [
+      "×2",
+      "+3"
+     ],
+     "secret": 7,
+     "tiles": [
+      "-3",
+      "÷2",
+      "+3",
+      "×2"
+     ],
+     "targets": "c6-maths-ch03-t01-m-one-answer"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 2,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c6-maths-ch03-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Find the supercells",
+   "accent": "ion",
+   "targets": "c6-maths-ch03-t01-m-supercell-biggest",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Find the supercells"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "A supercell is the biggest overall"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "n140",
+       "type": "node",
+       "text": "140",
+       "glyph": "person",
+       "color": "ion"
+      },
+      {
+       "id": "n152",
+       "type": "node",
+       "text": "152",
+       "glyph": "person",
+       "color": "sun"
+      },
+      {
+       "id": "n135",
+       "type": "node",
+       "text": "135",
+       "glyph": "person",
+       "color": "mint"
+      },
+      {
+       "id": "n148",
+       "type": "node",
+       "text": "148",
+       "glyph": "person",
+       "color": "amber"
+      },
+      {
+       "id": "n150",
+       "type": "node",
+       "text": "150",
+       "glyph": "person",
+       "color": "sci"
+      },
+      {
+       "id": "r1",
+       "type": "arrow",
+       "from": "n140",
+       "to": "n152",
+       "text": "taller"
+      },
+      {
+       "id": "r2",
+       "type": "arrow",
+       "from": "n135",
+       "to": "n152",
+       "text": "taller"
+      },
+      {
+       "id": "r3",
+       "type": "arrow",
+       "from": "n135",
+       "to": "n148",
+       "text": "taller"
+      },
+      {
+       "id": "c135",
+       "type": "label",
+       "text": "135 says 2",
+       "x": 420,
+       "y": 520
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "w12",
+       "type": "node",
+       "text": "12",
+       "glyph": "note",
+       "color": "ion"
+      },
+      {
+       "id": "w30",
+       "type": "node",
+       "text": "30",
+       "glyph": "star",
+       "color": "sun"
+      },
+      {
+       "id": "w25",
+       "type": "node",
+       "text": "25",
+       "glyph": "note",
+       "color": "mint"
+      },
+      {
+       "id": "w26",
+       "type": "node",
+       "text": "26",
+       "glyph": "note",
+       "color": "amber"
+      },
+      {
+       "id": "w40",
+       "type": "node",
+       "text": "40",
+       "glyph": "star",
+       "color": "sci"
+      },
+      {
+       "id": "w8",
+       "type": "node",
+       "text": "8",
+       "glyph": "note",
+       "color": "ion"
+      },
+      {
+       "id": "wa1",
+       "type": "arrow",
+       "from": "w30",
+       "to": "w12",
+       "text": "beats"
+      },
+      {
+       "id": "wa2",
+       "type": "arrow",
+       "from": "w30",
+       "to": "w25",
+       "text": "beats"
+      },
+      {
+       "id": "wa3",
+       "type": "arrow",
+       "from": "w40",
+       "to": "w26",
+       "text": "beats"
+      },
+      {
+       "id": "wa4",
+       "type": "arrow",
+       "from": "w40",
+       "to": "w8",
+       "text": "beats"
+      },
+      {
+       "id": "super",
+       "type": "label",
+       "text": "30 and 40",
+       "x": 400,
+       "y": 520
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "row",
+     "els": [
+      {
+       "id": "rowlabel",
+       "type": "title",
+       "text": "Try this row"
+      },
+      {
+       "id": "b23",
+       "type": "node",
+       "text": "23",
+       "glyph": "note",
+       "color": "ion"
+      },
+      {
+       "id": "b48",
+       "type": "node",
+       "text": "48",
+       "glyph": "star",
+       "color": "sun"
+      },
+      {
+       "id": "b15",
+       "type": "node",
+       "text": "15",
+       "glyph": "note",
+       "color": "mint"
+      },
+      {
+       "id": "b62",
+       "type": "node",
+       "text": "62",
+       "glyph": "star",
+       "color": "sci"
+      },
+      {
+       "id": "b41",
+       "type": "node",
+       "text": "41",
+       "glyph": "note",
+       "color": "amber"
+      },
+      {
+       "id": "local",
+       "type": "label",
+       "text": "Beat your neighbours",
+       "x": 390,
+       "y": 520
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "A supercell is a number bigger than every neighbour it touches.",
+    "L2": "It does not have to be the biggest number in the whole row. It only needs to beat its own neighbours.",
+    "L3": "In a line, each child checks only the children standing right next to them.",
+    "L4": "For the 135 centimetre child, both neighbours are taller, so the child says 2.",
+    "L5": "Now use the same local rule on 12, 30, 25, 26, 40 and 8.",
+    "L6": "30 beats 12 and 25, and 40 beats 26 and 8. Those are the supercells.",
+    "L7": "Notice that an end cell has only one neighbour. Also, two neighbouring cells cannot both be supercells.",
+    "L8": "A puzzle may have many answers or none. Showing why an arrangement is impossible is also solving it."
+   },
+   "narration": {
+    "L1": {
+     "text": "A supercell is a number bigger than every neighbour it touches.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "It does not have to be the biggest number in the whole row. It only needs to beat its own neighbours.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "In a line, each child checks only the children standing right next to them.",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "For the 135 centimetre child, both neighbours are taller, so the child says 2.",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "Now use the same local rule on 12, 30, 25, 26, 40 and 8.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "30 beats 12 and 25, and 40 beats 26 and 8. Those are the supercells.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Notice that an end cell has only one neighbour. Also, two neighbouring cells cannot both be supercells.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "A puzzle may have many answers or none. Showing why an arrangement is impossible is also solving it.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "bust",
+       "dur": 1.2,
+       "target": "myth"
+      },
+      {
+       "at": 1.2,
+       "do": "hide",
+       "dur": 0.5,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "n140",
+        "n152",
+        "n135",
+        "n148",
+        "n150"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "r1",
+        "r2",
+        "r3"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "n135"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": "c135"
+      },
+      {
+       "at": 1.2,
+       "do": "flow",
+       "dur": 0.7,
+       "target": [
+        "r2",
+        "r3"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "w12",
+        "w30",
+        "w25",
+        "w26",
+        "w40",
+        "w8"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "wa1",
+        "wa2",
+        "wa3",
+        "wa4"
+       ]
+      },
+      {
+       "at": 0.7,
+       "do": "highlight",
+       "dur": 1,
+       "target": [
+        "w30",
+        "w40"
+       ]
+      },
+      {
+       "at": 1.4,
+       "do": "show",
+       "dur": 0.8,
+       "target": "super"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "focus",
+       "dur": 0.8,
+       "target": [
+        "w12",
+        "w8"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "unfocus",
+       "dur": 0.4
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "rowlabel",
+        "b23",
+        "b48",
+        "b15",
+        "b62",
+        "b41"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive",
+       "dur": 0.5
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "In this row, which number is a supercell besides 62?",
+    "options": [
+     "b23",
+     "b48",
+     "b15",
+     "b41"
+    ],
+    "answer": "b48",
+    "src": "c6-maths-ch03-t01-i06"
+   }
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg",
+  "seconds": 33
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch03-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "c1",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        230
+       ],
+       "r": 58
+      },
+      {
+       "id": "n1",
+       "op": "circle",
+       "startMs": 500,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        220,
+        230
+       ],
+       "r": 48
+      },
+      {
+       "id": "n2",
+       "op": "circle",
+       "startMs": 700,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        580,
+        230
+       ],
+       "r": 48
+      },
+      {
+       "id": "t1",
+       "op": "text",
+       "startMs": 1200,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        235
+       ],
+       "text": "number",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "t2",
+       "op": "label",
+       "startMs": 1900,
+       "endMs": 2700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        140
+       ],
+       "text": "supercell",
+       "to": [
+        400,
+        175
+       ]
+      },
+      {
+       "id": "t3",
+       "op": "label",
+       "startMs": 2700,
+       "endMs": 3600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        220,
+        315
+       ],
+       "text": "neighbour",
+       "to": [
+        220,
+        278
+       ]
+      },
+      {
+       "id": "t4",
+       "op": "label",
+       "startMs": 3500,
+       "endMs": 4400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        580,
+        315
+       ],
+       "text": "neighbour",
+       "to": [
+        580,
+        278
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch03-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 9536,
+     "ops": [
+      {
+       "id": "r1",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        120,
+        250
+       ],
+       "to": [
+        680,
+        250
+       ]
+      },
+      {
+       "id": "r2",
+       "op": "circle",
+       "startMs": 600,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        220,
+        250
+       ],
+       "r": 35
+      },
+      {
+       "id": "r3",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        250
+       ],
+       "r": 48
+      },
+      {
+       "id": "r4",
+       "op": "circle",
+       "startMs": 1200,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        580,
+        250
+       ],
+       "r": 35
+      },
+      {
+       "id": "r5",
+       "op": "label",
+       "startMs": 1800,
+       "endMs": 2800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        145
+       ],
+       "text": "own neighbours",
+       "to": [
+        400,
+        200
+       ]
+      },
+      {
+       "id": "r6",
+       "op": "arrow",
+       "startMs": 3000,
+       "endMs": 3700,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        275,
+        250
+       ],
+       "to": [
+        345,
+        250
+       ]
+      },
+      {
+       "id": "r7",
+       "op": "arrow",
+       "startMs": 3700,
+       "endMs": 4400,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        525,
+        250
+       ],
+       "to": [
+        455,
+        250
+       ]
+      },
+      {
+       "id": "r8",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 6200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        370
+       ],
+       "text": "not whole row",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch03-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "l1",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        180,
+        250
+       ],
+       "r": 35
+      },
+      {
+       "id": "l2",
+       "op": "circle",
+       "startMs": 400,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        320,
+        250
+       ],
+       "r": 35
+      },
+      {
+       "id": "l3",
+       "op": "circle",
+       "startMs": 800,
+       "endMs": 1300,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        480,
+        250
+       ],
+       "r": 35
+      },
+      {
+       "id": "l4",
+       "op": "circle",
+       "startMs": 1200,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        620,
+        250
+       ],
+       "r": 35
+      },
+      {
+       "id": "a1",
+       "op": "arrow",
+       "startMs": 1900,
+       "endMs": 2500,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        215,
+        250
+       ],
+       "to": [
+        285,
+        250
+       ]
+      },
+      {
+       "id": "a2",
+       "op": "arrow",
+       "startMs": 2500,
+       "endMs": 3100,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        355,
+        250
+       ],
+       "to": [
+        445,
+        250
+       ]
+      },
+      {
+       "id": "a3",
+       "op": "arrow",
+       "startMs": 3100,
+       "endMs": 3700,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        515,
+        250
+       ],
+       "to": [
+        585,
+        250
+       ]
+      },
+      {
+       "id": "tx",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        120
+       ],
+       "text": "right next to",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "lb",
+       "op": "label",
+       "startMs": 4900,
+       "endMs": 5700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        480,
+        335
+       ],
+       "text": "child",
+       "to": [
+        480,
+        288
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch03-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "c135",
+       "op": "circle",
+       "startMs": 1700,
+       "endMs": 2300,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        300
+       ],
+       "r": 48
+      },
+      {
+       "id": "lab135",
+       "op": "label",
+       "startMs": 2300,
+       "endMs": 2900,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        300
+       ],
+       "text": "135",
+       "to": [
+        400,
+        300
+       ]
+      },
+      {
+       "id": "ar1",
+       "op": "arrow",
+       "startMs": 2900,
+       "endMs": 3500,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        350,
+        270
+       ],
+       "to": [
+        300,
+        230
+       ]
+      },
+      {
+       "id": "ar2",
+       "op": "arrow",
+       "startMs": 3500,
+       "endMs": 4100,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        450,
+        270
+       ],
+       "to": [
+        500,
+        230
+       ]
+      },
+      {
+       "id": "ans",
+       "op": "numwork",
+       "startMs": 4400,
+       "endMs": 5600,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        370,
+        390
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "135",
+         "says",
+         "2"
+        ]
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch03-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "row",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        210
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "12",
+         "30",
+         "25",
+         "26",
+         "40",
+         "8"
+        ]
+       ]
+      },
+      {
+       "id": "b1",
+       "op": "line",
+       "startMs": 2300,
+       "endMs": 2800,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        150,
+        260
+       ],
+       "to": [
+        150,
+        310
+       ]
+      },
+      {
+       "id": "b2",
+       "op": "line",
+       "startMs": 2800,
+       "endMs": 3300,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        270,
+        260
+       ],
+       "to": [
+        270,
+        310
+       ]
+      },
+      {
+       "id": "b3",
+       "op": "line",
+       "startMs": 3300,
+       "endMs": 3800,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        390,
+        260
+       ],
+       "to": [
+        390,
+        310
+       ]
+      },
+      {
+       "id": "b4",
+       "op": "line",
+       "startMs": 3800,
+       "endMs": 4300,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        510,
+        260
+       ],
+       "to": [
+        510,
+        310
+       ]
+      },
+      {
+       "id": "b5",
+       "op": "line",
+       "startMs": 4300,
+       "endMs": 4800,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        630,
+        260
+       ],
+       "to": [
+        630,
+        310
+       ]
+      },
+      {
+       "id": "rule",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 5900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        120
+       ],
+       "text": "local rule",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch03-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "vals",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        80,
+        180
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "12",
+         "30",
+         "25",
+         "26",
+         "40",
+         "8"
+        ]
+       ]
+      },
+      {
+       "id": "hi30",
+       "op": "highlight",
+       "startMs": 1900,
+       "endMs": 2900,
+       "ink": "accent",
+       "weight": 2,
+       "target": "vals",
+       "style": "circle"
+      },
+      {
+       "id": "hi40",
+       "op": "highlight",
+       "startMs": 3000,
+       "endMs": 4000,
+       "ink": "accent",
+       "weight": 2,
+       "target": "vals",
+       "style": "circle"
+      },
+      {
+       "id": "e30",
+       "op": "arrow",
+       "startMs": 4100,
+       "endMs": 4700,
+       "ink": "good",
+       "weight": 1,
+       "from": [
+        250,
+        250
+       ],
+       "to": [
+        180,
+        315
+       ]
+      },
+      {
+       "id": "e40",
+       "op": "arrow",
+       "startMs": 4700,
+       "endMs": 5300,
+       "ink": "good",
+       "weight": 1,
+       "from": [
+        490,
+        250
+       ],
+       "to": [
+        580,
+        315
+       ]
+      },
+      {
+       "id": "ans2",
+       "op": "numwork",
+       "startMs": 5400,
+       "endMs": 6600,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        280,
+        390
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "superc",
+         "=",
+         "30",
+         "and",
+         "40"
+        ]
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch03-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "endrow",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        160,
+        190
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "end",
+         "—",
+         "cell",
+         "—",
+         "end"
+        ]
+       ]
+      },
+      {
+       "id": "one",
+       "op": "text",
+       "startMs": 1600,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        160,
+        310
+       ],
+       "text": "one",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "onea",
+       "op": "arrow",
+       "startMs": 2200,
+       "endMs": 2800,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        180,
+        270
+       ],
+       "to": [
+        180,
+        325
+       ]
+      },
+      {
+       "id": "two",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        370
+       ],
+       "text": "two",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "cross",
+       "op": "line",
+       "startMs": 3700,
+       "endMs": 4300,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        350,
+        340
+       ],
+       "to": [
+        450,
+        400
+       ]
+      },
+      {
+       "id": "cross2",
+       "op": "line",
+       "startMs": 4300,
+       "endMs": 4900,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        450,
+        340
+       ],
+       "to": [
+        350,
+        400
+       ]
+      },
+      {
+       "id": "note",
+       "op": "text",
+       "startMs": 5200,
+       "endMs": 6400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        120
+       ],
+       "text": "neighbouring cells",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch03-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "many",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        220,
+        220
+       ],
+       "r": 60
+      },
+      {
+       "id": "manyt",
+       "op": "text",
+       "startMs": 600,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        220,
+        220
+       ],
+       "text": "many answers",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "none",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        580,
+        220
+       ],
+       "r": 60
+      },
+      {
+       "id": "nonet",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        580,
+        220
+       ],
+       "text": "none",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "arr",
+       "op": "arrow",
+       "startMs": 2500,
+       "endMs": 3200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        330
+       ],
+       "to": [
+        400,
+        250
+       ]
+      },
+      {
+       "id": "im",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 4300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        180
+       ],
+       "text": "impossible",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "check",
+       "op": "circle",
+       "startMs": 4500,
+       "endMs": 5100,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        400,
+        350
+       ],
+       "r": 42
+      },
+      {
+       "id": "solve",
+       "op": "text",
+       "startMs": 5100,
+       "endMs": 5900,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        355
+       ],
+       "text": "solving",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1",
+   "key": "+1",
+   "prompt": "inputs 23,48,15,62,41 → 24,49,16,63,42"
+  },
+  {
+   "itemId": "r2",
+   "key": "×3 then +1",
+   "prompt": "sticks-squares: 4,7,10"
+  },
+  {
+   "itemId": "r3",
+   "key": "start with ≥ 2 steps",
+   "prompt": "reverse 1-20"
+  },
+  {
+   "itemId": "r4",
+   "key": "7",
+   "prompt": "×2 then +3 gave 17"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ },
+ "firstCheck": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "round 1 uses rule [+3, ×2] with inputs 1,4,6,10 and tiles that match the rule, but the kit's skill is about supercells and neighbour comparisons; this round is about function machines and does not address the skill, making it off-topic and unsuitable content for this lesson.",
+    "severity": "high"
+   },
+   {
+    "where": "game",
+    "what": "round 2 uses a sticks-squares pattern with rule ×3+1, which is about linear sequences and not about supercells or neighbour comparisons; off-topic for the kit's skill.",
+    "severity": "high"
+   },
+   {
+    "where": "game",
+    "what": "round 3 uses Collatz machine from 7 to 20, which is number theory and not related to supercells or neighbour comparisons; off-topic.",
+    "severity": "high"
+   },
+   {
+    "where": "game",
+    "what": "round 4 uses brackets to reach a target with 3+4×5=35, which is about order of operations and not about supercells or neighbour comparisons; off-topic.",
+    "severity": "high"
+   }
+  ],
+  "verdict": "fail",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

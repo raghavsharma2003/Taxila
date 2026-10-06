@@ -1,0 +1,1794 @@
+{
+ "topicId": "c5-maths-ch06-t01",
+ "title": "Multiplying larger numbers",
+ "chapter": "The Dairy Farm",
+ "subject": "maths",
+ "class": 5,
+ "topicType": "T4",
+ "plan": {
+  "game": "dukaan@1",
+  "hint": "pay mode with quantity x price (multiplication by 10s and larger numbers)"
+ },
+ "game": {
+  "archetype": "dukaan@1",
+  "spec": {
+   "archetype": "dukaan@1",
+   "skills": [
+    "c5-maths-ch06-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "served": "served",
+    "patience": "patience",
+    "bill": "Bill",
+    "pays": "Pays",
+    "change": "Change",
+    "pack": "Pack",
+    "crates": "crates",
+    "left": "left over",
+    "enough": "Enough",
+    "notEnough": "Not enough",
+    "budget": "Has",
+    "coach": "Tap notes and coins to put them on the counter",
+    "runDone": "Shop closed",
+    "exact": "EXACT",
+    "short": "short by",
+    "over": "over by",
+    "carry": "carry them all",
+    "full": "full crates to sell",
+    "each": "each",
+    "inLast": "in the last"
+   },
+   "title": "Dukaan Rush",
+   "rounds": [
+    {
+     "mode": "pay",
+     "title": "Fill the exact bill",
+     "sub": "Use place value to multiply",
+     "customers": [
+      {
+       "items": [
+        {
+         "name": "Milk cans",
+         "price": 4000,
+         "qty": 23
+        }
+       ]
+      },
+      {
+       "items": [
+        {
+         "name": "Curd tubs",
+         "price": 12500,
+         "qty": 32
+        }
+       ]
+      }
+     ],
+     "coins": true,
+     "speed": 0.85
+    },
+    {
+     "mode": "pay",
+     "title": "Build the bill",
+     "sub": "Use all the area parts",
+     "customers": [
+      {
+       "items": [
+        {
+         "name": "Milk packets",
+         "price": 23400,
+         "qty": 26
+        }
+       ]
+      },
+      {
+       "items": [
+        {
+         "name": "School books",
+         "price": 14300,
+         "qty": 24
+        }
+       ]
+      }
+     ],
+     "coins": true,
+     "speed": 0.95,
+     "targets": "c5-maths-ch06-t01-m-shift-error"
+    }
+   ]
+  },
+  "repairs": [
+   "num:budget",
+   "budget:too-close-to-call",
+   "num:budget",
+   "budget:too-close-to-call",
+   "num:budget",
+   "budget:too-close-to-call",
+   "round:customers"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c5-maths-ch06-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Right",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "BUSTED",
+    "order": "Tap in order"
+   },
+   "title": "Multiply by place value",
+   "accent": "ion",
+   "targets": "c5-maths-ch06-t01-m-shift-error",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Multiply larger numbers"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "34 × 21 = 102"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "whole1",
+       "type": "node",
+       "text": "34",
+       "sub": "34",
+       "glyph": "ruler",
+       "color": "ion"
+      },
+      {
+       "id": "whole2",
+       "type": "node",
+       "text": "21",
+       "sub": "21",
+       "glyph": "ruler",
+       "color": "ion"
+      },
+      {
+       "id": "tens1",
+       "type": "label",
+       "text": "30",
+       "x": 180,
+       "y": 240,
+       "color": "mint"
+      },
+      {
+       "id": "ones1",
+       "type": "label",
+       "text": "4",
+       "x": 180,
+       "y": 340,
+       "color": "mint"
+      },
+      {
+       "id": "tens2",
+       "type": "label",
+       "text": "20",
+       "x": 520,
+       "y": 240,
+       "color": "amber"
+      },
+      {
+       "id": "ones2",
+       "type": "label",
+       "text": "1",
+       "x": 520,
+       "y": 340,
+       "color": "amber"
+      },
+      {
+       "id": "p1",
+       "type": "label",
+       "text": "600",
+       "x": 700,
+       "y": 240,
+       "color": "sun"
+      },
+      {
+       "id": "p2",
+       "type": "label",
+       "text": "30",
+       "x": 700,
+       "y": 300,
+       "color": "sun"
+      },
+      {
+       "id": "p3",
+       "type": "label",
+       "text": "80",
+       "x": 700,
+       "y": 360,
+       "color": "sun"
+      },
+      {
+       "id": "p4",
+       "type": "label",
+       "text": "4",
+       "x": 700,
+       "y": 420,
+       "color": "sun"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "tens1",
+       "to": "p1",
+       "text": "30×20"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "tens1",
+       "to": "p2",
+       "text": "30×1"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "num",
+       "type": "label",
+       "text": "34 × 21",
+       "x": 120,
+       "y": 300,
+       "color": "ion"
+      },
+      {
+       "id": "part1",
+       "type": "label",
+       "text": "680",
+       "x": 360,
+       "y": 300,
+       "color": "mint"
+      },
+      {
+       "id": "part2",
+       "type": "label",
+       "text": "34",
+       "x": 500,
+       "y": 300,
+       "color": "amber"
+      },
+      {
+       "id": "sum",
+       "type": "label",
+       "text": "714",
+       "x": 700,
+       "y": 300,
+       "color": "sun"
+      },
+      {
+       "id": "arr1",
+       "type": "arrow",
+       "from": "num",
+       "to": "part1",
+       "text": "×20"
+      },
+      {
+       "id": "arr2",
+       "type": "arrow",
+       "from": "num",
+       "to": "part2",
+       "text": "×1"
+      },
+      {
+       "id": "arr3",
+       "type": "arrow",
+       "from": "part1",
+       "to": "sum",
+       "text": "add"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "row",
+     "els": [
+      {
+       "id": "estimate",
+       "type": "label",
+       "text": "143 × 24",
+       "x": 140,
+       "y": 300,
+       "color": "ion"
+      },
+      {
+       "id": "near",
+       "type": "label",
+       "text": "140 × 25",
+       "x": 400,
+       "y": 300,
+       "color": "mint"
+      },
+      {
+       "id": "checknum",
+       "type": "label",
+       "text": "3,432",
+       "x": 700,
+       "y": 300,
+       "color": "sun"
+      },
+      {
+       "id": "checkest",
+       "type": "label",
+       "text": "about 3,500",
+       "x": 700,
+       "y": 380,
+       "color": "amber"
+      }
+     ]
+    },
+    {
+     "id": "s5",
+     "layout": "row",
+     "els": [
+      {
+       "id": "q",
+       "type": "title",
+       "text": "Check your thinking"
+      },
+      {
+       "id": "o1",
+       "type": "label",
+       "text": "64",
+       "x": 180,
+       "y": 320,
+       "color": "amber"
+      },
+      {
+       "id": "o2",
+       "type": "label",
+       "text": "714",
+       "x": 500,
+       "y": 320,
+       "color": "mint"
+      },
+      {
+       "id": "o3",
+       "type": "label",
+       "text": "102",
+       "x": 780,
+       "y": 320,
+       "color": "volt"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "To multiply larger numbers, split each number by place value.",
+    "L2": "For 34 × 21, split 34 into 30 and 4, and 21 into 20 and 1.",
+    "L3": "Every part multiplies every part: 600, 30, 80 and 4.",
+    "L4": "The tens digit means tens. So 34 × 20 is 680, with a zero showing tens.",
+    "L5": "Add the partial products: 600 + 30 + 80 + 4 = 714.",
+    "L6": "For 143 × 24, the parts are 572 and 2,860, giving 3,432.",
+    "L7": "Estimate with 140 × 25, or about 3,500, to check that the answer is sensible."
+   },
+   "narration": {},
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.3,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "title"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.5,
+       "target": "whole1"
+      },
+      {
+       "at": 0.2,
+       "do": "show",
+       "dur": 0.5,
+       "target": "whole2"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "tens1",
+        "ones1",
+        "tens2",
+        "ones2"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "p1",
+        "p2",
+        "p3",
+        "p4"
+       ]
+      },
+      {
+       "at": 0.4,
+       "do": "flow",
+       "dur": 0.8,
+       "target": [
+        "a1",
+        "a2"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.3,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "num",
+        "part1",
+        "part2"
+       ]
+      },
+      {
+       "at": 0.5,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "part1"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.3,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "sum"
+      },
+      {
+       "at": 0.4,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "arr3",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.3,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "myth"
+      },
+      {
+       "at": 0.7,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.3,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "estimate",
+        "near",
+        "checknum",
+        "checkest"
+       ]
+      },
+      {
+       "at": 0.6,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "checkest"
+      },
+      {
+       "at": "end",
+       "do": "interactive"
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which answer uses all four parts of the area model for 34 × 21?",
+    "options": [
+     "o1",
+     "o2",
+     "o3"
+    ],
+    "answer": "o2",
+    "src": "c5-maths-ch06-t01-i06"
+   }
+  },
+  "repairs": [
+   "line:L8",
+   "beat:interactive-added"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 45
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch06-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "title",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "place value",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "split",
+       "op": "arrow",
+       "startMs": 800,
+       "endMs": 1400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        90
+       ],
+       "to": [
+        400,
+        180
+       ]
+      },
+      {
+       "id": "parts",
+       "op": "numwork",
+       "startMs": 1300,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        130,
+        205
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "larger",
+         "number",
+         "→",
+         "parts"
+        ]
+       ]
+      },
+      {
+       "id": "pv1",
+       "op": "rect",
+       "startMs": 2500,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        115,
+        290
+       ],
+       "w": 250,
+       "h": 90,
+       "round": 10
+      },
+      {
+       "id": "pv2",
+       "op": "rect",
+       "startMs": 3000,
+       "endMs": 3800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        435,
+        290
+       ],
+       "w": 250,
+       "h": 90,
+       "round": 10
+      },
+      {
+       "id": "lab1",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 4000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        240,
+        345
+       ],
+       "text": "number",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "lab2",
+       "op": "text",
+       "startMs": 3800,
+       "endMs": 4700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        560,
+        345
+       ],
+       "text": "place value",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch06-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "eq34",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        70
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "34",
+         "×",
+         "21"
+        ]
+       ]
+      },
+      {
+       "id": "split34",
+       "op": "arrow",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        180,
+        115
+       ],
+       "to": [
+        150,
+        180
+       ]
+      },
+      {
+       "id": "split21",
+       "op": "arrow",
+       "startMs": 1200,
+       "endMs": 1800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        260,
+        115
+       ],
+       "to": [
+        500,
+        180
+       ]
+      },
+      {
+       "id": "parts34",
+       "op": "numwork",
+       "startMs": 1400,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        75,
+        190
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "34",
+         "=",
+         "30",
+         "+",
+         "4"
+        ]
+       ]
+      },
+      {
+       "id": "parts21",
+       "op": "numwork",
+       "startMs": 1700,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        430,
+        190
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "21",
+         "=",
+         "20",
+         "+",
+         "1"
+        ]
+       ]
+      },
+      {
+       "id": "box34",
+       "op": "rect",
+       "startMs": 3000,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        65,
+        300
+       ],
+       "w": 270,
+       "h": 100,
+       "round": 10
+      },
+      {
+       "id": "box21",
+       "op": "rect",
+       "startMs": 3300,
+       "endMs": 4200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        415,
+        300
+       ],
+       "w": 270,
+       "h": 100,
+       "round": 10
+      },
+      {
+       "id": "lab30",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        200,
+        350
+       ],
+       "text": "30",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "lab20",
+       "op": "text",
+       "startMs": 4200,
+       "endMs": 4800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        545,
+        350
+       ],
+       "text": "20",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "lab4",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 4700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        270,
+        350
+       ],
+       "text": "4",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "lab1",
+       "op": "text",
+       "startMs": 4600,
+       "endMs": 5000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        625,
+        350
+       ],
+       "text": "1",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "times",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 5600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        375,
+        350
+       ],
+       "text": "×",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "highlight34",
+       "op": "highlight",
+       "startMs": 6000,
+       "endMs": 6800,
+       "ink": "mark",
+       "weight": 2,
+       "target": "parts34",
+       "style": "circle"
+      },
+      {
+       "id": "highlight21",
+       "op": "highlight",
+       "startMs": 6500,
+       "endMs": 7300,
+       "ink": "mark",
+       "weight": 2,
+       "target": "parts21",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch06-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "grid",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        95,
+        70
+       ],
+       "w": 610,
+       "h": 300,
+       "round": 8
+      },
+      {
+       "id": "vline",
+       "op": "line",
+       "startMs": 700,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        400,
+        70
+       ],
+       "to": [
+        400,
+        370
+       ]
+      },
+      {
+       "id": "hline",
+       "op": "line",
+       "startMs": 900,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        95,
+        220
+       ],
+       "to": [
+        705,
+        220
+       ]
+      },
+      {
+       "id": "p600",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 2100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        245,
+        155
+       ],
+       "text": "600",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "p30",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        555,
+        155
+       ],
+       "text": "30",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "p80",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 2800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        245,
+        300
+       ],
+       "text": "80",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "p4",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        555,
+        300
+       ],
+       "text": "4",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "every",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        430
+       ],
+       "text": "every part",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "pulse",
+       "op": "highlight",
+       "startMs": 4000,
+       "endMs": 4800,
+       "ink": "mark",
+       "weight": 2,
+       "target": "grid",
+       "style": "pulse"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch06-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "tens",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        65
+       ],
+       "text": "tens",
+       "size": "l"
+      },
+      {
+       "id": "digit",
+       "op": "numwork",
+       "startMs": 600,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        105,
+        110
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "2",
+         "tens"
+        ]
+       ]
+      },
+      {
+       "id": "multiply",
+       "op": "numwork",
+       "startMs": 1300,
+       "endMs": 3000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        105,
+        190
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "34",
+         "×",
+         "20",
+         "=",
+         "680"
+        ]
+       ]
+      },
+      {
+       "id": "zero",
+       "op": "circle",
+       "startMs": 3000,
+       "endMs": 3900,
+       "ink": "mark",
+       "weight": 2,
+       "c": [
+        350,
+        230
+       ],
+       "r": 25
+      },
+      {
+       "id": "zeroLabel",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        350,
+        315
+       ],
+       "text": "0",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "tensArrow",
+       "op": "arrow",
+       "startMs": 4500,
+       "endMs": 5300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        350,
+        340
+       ],
+       "to": [
+        350,
+        265
+       ]
+      },
+      {
+       "id": "show",
+       "op": "text",
+       "startMs": 5300,
+       "endMs": 6000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        470,
+        315
+       ],
+       "text": "tens",
+       "size": "m"
+      },
+      {
+       "id": "check680",
+       "op": "highlight",
+       "startMs": 6200,
+       "endMs": 7100,
+       "ink": "good",
+       "weight": 2,
+       "target": "multiply",
+       "style": "underline"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch06-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "sum",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        75
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "600",
+         "+",
+         "30",
+         "+",
+         "80",
+         "+",
+         "4",
+         "=",
+         "714"
+        ]
+       ]
+      },
+      {
+       "id": "line600",
+       "op": "line",
+       "startMs": 1000,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        120,
+        150
+       ],
+       "to": [
+        210,
+        150
+       ]
+      },
+      {
+       "id": "line30",
+       "op": "line",
+       "startMs": 1400,
+       "endMs": 1900,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        270,
+        150
+       ],
+       "to": [
+        340,
+        150
+       ]
+      },
+      {
+       "id": "line80",
+       "op": "line",
+       "startMs": 1800,
+       "endMs": 2300,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        390,
+        150
+       ],
+       "to": [
+        460,
+        150
+       ]
+      },
+      {
+       "id": "line4",
+       "op": "line",
+       "startMs": 2200,
+       "endMs": 2700,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        510,
+        150
+       ],
+       "to": [
+        550,
+        150
+       ]
+      },
+      {
+       "id": "result",
+       "op": "rect",
+       "startMs": 3000,
+       "endMs": 3900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        570,
+        185
+       ],
+       "w": 125,
+       "h": 70,
+       "round": 8
+      },
+      {
+       "id": "resultText",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4600,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        632,
+        230
+       ],
+       "text": "714",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "addArrow",
+       "op": "arrow",
+       "startMs": 4500,
+       "endMs": 5300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        280
+       ],
+       "to": [
+        400,
+        190
+       ]
+      },
+      {
+       "id": "final",
+       "op": "highlight",
+       "startMs": 5300,
+       "endMs": 6100,
+       "ink": "good",
+       "weight": 2,
+       "target": "result",
+       "style": "pulse"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch06-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "problem",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        75,
+        65
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "143",
+         "×",
+         "24"
+        ]
+       ]
+      },
+      {
+       "id": "ones",
+       "op": "numwork",
+       "startMs": 900,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        75,
+        150
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "143",
+         "×",
+         "4",
+         "=",
+         "572"
+        ]
+       ]
+      },
+      {
+       "id": "tens",
+       "op": "numwork",
+       "startMs": 1900,
+       "endMs": 3400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        75,
+        245
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "143",
+         "×",
+         "20",
+         "=",
+         "2,860"
+        ]
+       ]
+      },
+      {
+       "id": "parts",
+       "op": "numwork",
+       "startMs": 3100,
+       "endMs": 4700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        75,
+        350
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "572",
+         "+",
+         "2,860",
+         "=",
+         "3,432"
+        ]
+       ]
+      },
+      {
+       "id": "ans",
+       "op": "rect",
+       "startMs": 4000,
+       "endMs": 4800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        575,
+        335
+       ],
+       "w": 150,
+       "h": 75,
+       "round": 10
+      },
+      {
+       "id": "ansText",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5300,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        650,
+        385
+       ],
+       "text": "3,432",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "ansPulse",
+       "op": "highlight",
+       "startMs": 5000,
+       "endMs": 5700,
+       "ink": "good",
+       "weight": 2,
+       "target": "ans",
+       "style": "pulse"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch06-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "exact",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        80,
+        65
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "143",
+         "×",
+         "24",
+         "=",
+         "3,432"
+        ]
+       ]
+      },
+      {
+       "id": "estimate",
+       "op": "numwork",
+       "startMs": 1100,
+       "endMs": 2500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        80,
+        165
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "140",
+         "×",
+         "25",
+         "=",
+         "3,500"
+        ]
+       ]
+      },
+      {
+       "id": "about",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        285
+       ],
+       "text": "about 3,500",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "compare",
+       "op": "arrow",
+       "startMs": 3500,
+       "endMs": 4300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        330,
+        205
+       ],
+       "to": [
+        330,
+        350
+       ]
+      },
+      {
+       "id": "answer",
+       "op": "arrow",
+       "startMs": 3900,
+       "endMs": 4700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        470,
+        105
+       ],
+       "to": [
+        470,
+        350
+       ]
+      },
+      {
+       "id": "sensible",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        425
+       ],
+       "text": "sensible",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "check1",
+       "op": "highlight",
+       "startMs": 5500,
+       "endMs": 6300,
+       "ink": "good",
+       "weight": 2,
+       "target": "estimate",
+       "style": "circle"
+      },
+      {
+       "id": "check2",
+       "op": "highlight",
+       "startMs": 6100,
+       "endMs": 6900,
+       "ink": "good",
+       "weight": 2,
+       "target": "exact",
+       "style": "circle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "₹920",
+   "prompt": "pay: 23×Milk cans@₹40"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "₹4,000",
+   "prompt": "pay: 32×Curd tubs@₹125"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "₹6,084",
+   "prompt": "pay: 26×Milk packets@₹234"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "₹3,432",
+   "prompt": "pay: 24×School books@₹143"
+  }
+ ],
+ "check": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "Round 1 item 'Curd tubs' has price 12,500 paise? The item is price 12500 but the answer from computed keys is ₹4,000 for 32×125? Actually price is 12500 (paise?) For class 5, using 12500 as paise (₹125) is okay, no issue. But check: 'Curd tubs' price 12500, qty 32, computed answer 4,000 (which is 32×125). That means 12500 is paise, fine. No contradiction.",
+    "severity": "low"
+   }
+  ],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ },
+ "firstCheck": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "Round 1 customer 0 uses price ₹4,000 for 'Milk cans' but the kit item (c5-maths-ch06-t01-i01) uses price ₹40 per can. ₹4,000/litre (for a can?) is unrealistic for a class 5 context and contradicts the kit's scenario.",
+    "severity": "high"
+   },
+   {
+    "where": "game",
+    "what": "Round 1 customer 1 uses price ₹12,500 for 'Curd tubs' but the kit item (c5-maths-ch06-t01-i03) uses ₹125 per litre. ₹12,500 is unrealistic for a tub of curd and contradicts the kit scenario.",
+    "severity": "high"
+   },
+   {
+    "where": "game",
+    "what": "Round 2 customer 0 uses price ₹23,400 for 'Milk packets' but the kit item (c5-maths-ch06-t01-i04) uses 234. ₹23,400 per packet is unrealistic and contradicts the kit.",
+    "severity": "high"
+   },
+   {
+    "where": "game",
+    "what": "Round 2 customer 1 uses price ₹14,300 for 'School books' but the kit item (c5-maths-ch06-t01-rl-o1) uses ₹30 per notebook. ₹14,300 per book is unrealistic and not in the kit.",
+    "severity": "high"
+   },
+   {
+    "where": "explainer",
+    "what": "Scene s2 shows labels with absolute pixel positions (x:180, y:240, etc.) but no corresponding elements are placed in the content – these appear to be leftover positioning data that may confuse a child or cause rendering issues.",
+    "severity": "low"
+   }
+  ],
+  "verdict": "fail",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

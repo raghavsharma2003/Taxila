@@ -1,0 +1,1666 @@
+{
+ "topicId": "c6-sst-ch13-t01",
+ "title": "The Value of Work",
+ "chapter": "The Value of Work",
+ "subject": "sst",
+ "class": 6,
+ "topicType": "T3",
+ "plan": {
+  "game": "town-lab@1",
+  "hint": "market mode (value of work, earning) and barter round"
+ },
+ "game": {
+  "archetype": "town-lab@1",
+  "spec": {
+   "archetype": "town-lab@1",
+   "skills": [
+    "c6-sst-ch13-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "done": "right",
+    "have": "you have",
+    "need": "you need",
+    "has": "has",
+    "wants": "wants",
+    "trades": "trades",
+    "market": "market",
+    "coins": "coins",
+    "open": "OPEN",
+    "price": "price",
+    "cost": "cost",
+    "profit": "profit",
+    "sold": "sold",
+    "target": "target",
+    "stock": "stock",
+    "lock": "LOCK",
+    "run": "RUN",
+    "perMonth": "per month",
+    "years": "years",
+    "goal": "goal",
+    "saved": "saved",
+    "interest": "interest",
+    "budget": "budget",
+    "left": "left",
+    "families": "families helped",
+    "runDone": "Town closed",
+    "noDeal": "no deal",
+    "reset": "start again",
+    "rupee": "₹"
+   },
+   "title": "The Value of Work",
+   "rounds": [
+    {
+     "mode": "barter",
+     "title": "Barter chain",
+     "sub": "trade grain for a pot",
+     "start": "grain",
+     "goal": "pot",
+     "traders": [
+      {
+       "name": "Weaver",
+       "glyph": "person",
+       "has": "cloth",
+       "wants": "grain"
+      },
+      {
+       "name": "Potter",
+       "glyph": "pot",
+       "has": "pot",
+       "wants": "cloth"
+      },
+      {
+       "name": "Farmer",
+       "glyph": "wheat",
+       "has": "grain",
+       "wants": "water"
+      }
+     ],
+     "money": false,
+     "targets": "c6-sst-ch13-t01-m2"
+    },
+    {
+     "mode": "market",
+     "title": "Run a small stall",
+     "sub": "earn by selling useful goods",
+     "good": "cloth bag",
+     "glyph": "shop",
+     "cost": 20,
+     "stock": 6,
+     "buyers": [
+      30,
+      40,
+      25,
+      50,
+      35,
+      45,
+      28,
+      55
+     ],
+     "target": 60
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 2,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c6-sst-ch13-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "The Value of Work",
+   "accent": "mint",
+   "targets": "c6-sst-ch13-t01-m1",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "The Value of Work"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Unpaid home work is not real work"
+      },
+      {
+       "id": "home",
+       "type": "node",
+       "text": "Home work",
+       "sub": "cooking, care",
+       "glyph": "house",
+       "color": "mint"
+      },
+      {
+       "id": "value",
+       "type": "node",
+       "text": "Great value",
+       "sub": "families need it",
+       "glyph": "balance",
+       "color": "sun"
+      },
+      {
+       "id": "ha",
+       "type": "arrow",
+       "from": "home",
+       "to": "value",
+       "text": "supports"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "pay",
+       "type": "node",
+       "text": "Payment",
+       "sub": "money or kind",
+       "glyph": "coin",
+       "color": "amber"
+      },
+      {
+       "id": "econ",
+       "type": "node",
+       "text": "Economic",
+       "sub": "goods or services",
+       "glyph": "shop",
+       "color": "amber"
+      },
+      {
+       "id": "noPay",
+       "type": "node",
+       "text": "No payment",
+       "sub": "care or service",
+       "glyph": "hand",
+       "color": "mint"
+      },
+      {
+       "id": "nonecon",
+       "type": "node",
+       "text": "Non-economic",
+       "sub": "love, duty, joy",
+       "color": "mint"
+      },
+      {
+       "id": "ea",
+       "type": "arrow",
+       "from": "pay",
+       "to": "econ",
+       "text": "means"
+      },
+      {
+       "id": "na",
+       "type": "arrow",
+       "from": "noPay",
+       "to": "nonecon",
+       "text": "means"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "column",
+     "els": [
+      {
+       "id": "teach",
+       "type": "node",
+       "text": "Teaching",
+       "sub": "same skill",
+       "glyph": "book",
+       "color": "ion"
+      },
+      {
+       "id": "school",
+       "type": "node",
+       "text": "School",
+       "sub": "salary",
+       "glyph": "school",
+       "color": "amber"
+      },
+      {
+       "id": "son",
+       "type": "node",
+       "text": "Own child",
+       "sub": "care",
+       "glyph": "person",
+       "color": "mint"
+      },
+      {
+       "id": "se",
+       "type": "arrow",
+       "from": "teach",
+       "to": "school",
+       "text": "paid"
+      },
+      {
+       "id": "sn",
+       "type": "arrow",
+       "from": "teach",
+       "to": "son",
+       "text": "unpaid"
+      },
+      {
+       "id": "economic",
+       "type": "label",
+       "text": "Economic",
+       "color": "amber"
+      },
+      {
+       "id": "nonEconomic",
+       "type": "label",
+       "text": "Non-economic",
+       "color": "mint"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Work can be economic or non-economic. The key question is whether payment is involved.",
+    "L2": "Economic activities earn money or payment in kind and produce goods or services.",
+    "L3": "Non-economic activities are done without payment, out of love, care, duty, service or joy.",
+    "L4": "Unpaid work at home is real work. Cooking, cleaning and caring help families function and must be respected.",
+    "L5": "The same activity can be either kind of work, depending on its purpose and payment.",
+    "L6": "Teaching in a school for a salary is economic. Helping your own child with homework is non-economic.",
+    "L7": "All honest work has dignity, and people depend on each other's work every day."
+   },
+   "narration": {
+    "L1": {
+     "text": "Work can be economic or non-economic. The key question is whether payment is involved.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "Economic activities earn money or payment in kind and produce goods or services.",
+     "dur": 4.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "Non-economic activities are done without payment, out of love, care, duty, service or joy.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "Unpaid work at home is real work. Cooking, cleaning and caring help families function and must be respected.",
+     "dur": 5.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "The same activity can be either kind of work, depending on its purpose and payment.",
+     "dur": 4.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Teaching in a school for a salary is economic. Helping your own child with homework is non-economic.",
+     "dur": 5.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "All honest work has dignity, and people depend on each other's work every day.",
+     "dur": 4.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "pay",
+        "econ",
+        "ea"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "ea",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "noPay",
+        "nonecon",
+        "na"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "na",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "home",
+        "value",
+        "ha"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      },
+      {
+       "at": 2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "value"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "teach"
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.9,
+       "target": [
+        "school",
+        "son",
+        "se",
+        "sn"
+       ]
+      },
+      {
+       "at": 1.8,
+       "do": "flow",
+       "dur": 0.7,
+       "target": [
+        "se",
+        "sn"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 0.9,
+       "target": "school"
+      },
+      {
+       "at": 1.4,
+       "do": "highlight",
+       "dur": 0.9,
+       "target": "son"
+      },
+      {
+       "at": 2.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "economic",
+        "nonEconomic"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "camera",
+       "dur": 2,
+       "zoom": 1.05
+      },
+      {
+       "at": "end",
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which activity is economic work?",
+    "options": [
+     "school",
+     "son"
+    ],
+    "answer": "school",
+    "src": "c6-sst-ch13-t01-i02"
+   }
+  },
+  "repairs": [
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 38
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch13-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "title",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "Work",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "econbox",
+       "op": "rect",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        75,
+        130
+       ],
+       "w": 270,
+       "h": 190
+      },
+      {
+       "id": "noneconbox",
+       "op": "rect",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        455,
+        130
+       ],
+       "w": 270,
+       "h": 190
+      },
+      {
+       "id": "econ",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 1900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        210,
+        175
+       ],
+       "text": "economic",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "nonecon",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 2000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        590,
+        175
+       ],
+       "text": "non-economic",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "pay1",
+       "op": "text",
+       "startMs": 2400,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        210,
+        245
+       ],
+       "text": "payment",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "pay2",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        590,
+        245
+       ],
+       "text": "without payment",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "question",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 5100,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        400,
+        410
+       ],
+       "text": "payment involved?",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "qline",
+       "op": "arrow",
+       "startMs": 5100,
+       "endMs": 5700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        370
+       ],
+       "to": [
+        400,
+        325
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch13-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "earn",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        150,
+        85
+       ],
+       "text": "earn money",
+       "size": "m"
+      },
+      {
+       "id": "kind",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        85
+       ],
+       "text": "payment in kind",
+       "size": "m"
+      },
+      {
+       "id": "goods",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        170,
+        210
+       ],
+       "text": "goods",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "service",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        620,
+        210
+       ],
+       "text": "services",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "goodarrow",
+       "op": "arrow",
+       "startMs": 2500,
+       "endMs": 3100,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        260,
+        210
+       ],
+       "to": [
+        370,
+        210
+       ]
+      },
+      {
+       "id": "servicearrow",
+       "op": "arrow",
+       "startMs": 2500,
+       "endMs": 3100,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        530,
+        210
+       ],
+       "to": [
+        420,
+        210
+       ]
+      },
+      {
+       "id": "produce",
+       "op": "text",
+       "startMs": 3600,
+       "endMs": 4200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        350
+       ],
+       "text": "produce",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "outarrow",
+       "op": "arrow",
+       "startMs": 4300,
+       "endMs": 4900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        285
+       ],
+       "to": [
+        400,
+        325
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch13-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "love",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        125,
+        90
+       ],
+       "text": "love",
+       "size": "m"
+      },
+      {
+       "id": "care",
+       "op": "text",
+       "startMs": 500,
+       "endMs": 950,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        280,
+        90
+       ],
+       "text": "care",
+       "size": "m"
+      },
+      {
+       "id": "duty",
+       "op": "text",
+       "startMs": 950,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        420,
+        90
+       ],
+       "text": "duty",
+       "size": "m"
+      },
+      {
+       "id": "service",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 1950,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        575,
+        90
+       ],
+       "text": "service",
+       "size": "m"
+      },
+      {
+       "id": "joy",
+       "op": "text",
+       "startMs": 1950,
+       "endMs": 2350,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        700,
+        90
+       ],
+       "text": "joy",
+       "size": "m"
+      },
+      {
+       "id": "heart",
+       "op": "circle",
+       "startMs": 2700,
+       "endMs": 3400,
+       "ink": "mark",
+       "weight": 2,
+       "c": [
+        400,
+        260
+       ],
+       "r": 65
+      },
+      {
+       "id": "without",
+       "op": "text",
+       "startMs": 3700,
+       "endMs": 4500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        380
+       ],
+       "text": "without payment",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "carearrow",
+       "op": "arrow",
+       "startMs": 4500,
+       "endMs": 5000,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        400,
+        195
+       ],
+       "to": [
+        400,
+        215
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch13-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "home",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        80,
+        95
+       ],
+       "w": 640,
+       "h": 285
+      },
+      {
+       "id": "unpaid",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        135
+       ],
+       "text": "unpaid work at home",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "cook",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        190,
+        250
+       ],
+       "text": "cooking",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "clean",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        250
+       ],
+       "text": "cleaning",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "caring",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 3800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        610,
+        250
+       ],
+       "text": "caring",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "help",
+       "op": "arrow",
+       "startMs": 4200,
+       "endMs": 4700,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        190,
+        280
+       ],
+       "to": [
+        400,
+        345
+       ]
+      },
+      {
+       "id": "help2",
+       "op": "arrow",
+       "startMs": 4700,
+       "endMs": 5200,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        400,
+        280
+       ],
+       "to": [
+        400,
+        345
+       ]
+      },
+      {
+       "id": "help3",
+       "op": "arrow",
+       "startMs": 5200,
+       "endMs": 5700,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        610,
+        280
+       ],
+       "to": [
+        400,
+        345
+       ]
+      },
+      {
+       "id": "families",
+       "op": "text",
+       "startMs": 5900,
+       "endMs": 6800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        350
+       ],
+       "text": "families function",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "respect",
+       "op": "text",
+       "startMs": 7000,
+       "endMs": 7600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        440
+       ],
+       "text": "respected",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch13-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "same",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "same activity",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "split",
+       "op": "line",
+       "startMs": 900,
+       "endMs": 1400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        110
+       ],
+       "to": [
+        400,
+        390
+       ]
+      },
+      {
+       "id": "purpose",
+       "op": "text",
+       "startMs": 1600,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        205,
+        160
+       ],
+       "text": "purpose",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "payment",
+       "op": "text",
+       "startMs": 1600,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        595,
+        160
+       ],
+       "text": "payment",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "economic",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3400,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        205,
+        300
+       ],
+       "text": "economic",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "noneconomic",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        595,
+        300
+       ],
+       "text": "non-economic",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "purposearrow",
+       "op": "arrow",
+       "startMs": 3700,
+       "endMs": 4200,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        205,
+        195
+       ],
+       "to": [
+        205,
+        270
+       ]
+      },
+      {
+       "id": "paymentarrow",
+       "op": "arrow",
+       "startMs": 4200,
+       "endMs": 4700,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        595,
+        195
+       ],
+       "to": [
+        595,
+        270
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch13-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "school",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        70,
+        90
+       ],
+       "w": 300,
+       "h": 285
+      },
+      {
+       "id": "homework",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        430,
+        90
+       ],
+       "w": 300,
+       "h": 285
+      },
+      {
+       "id": "teach1",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        220,
+        145
+       ],
+       "text": "teaching",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "schoollabel",
+       "op": "text",
+       "startMs": 1600,
+       "endMs": 2100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        220,
+        205
+       ],
+       "text": "school",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "salary",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 2700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        220,
+        275
+       ],
+       "text": "salary",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "econlabel",
+       "op": "text",
+       "startMs": 2900,
+       "endMs": 3600,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        220,
+        340
+       ],
+       "text": "economic",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "teach2",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        580,
+        145
+       ],
+       "text": "homework",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "child",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        580,
+        205
+       ],
+       "text": "own child",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "carelabel",
+       "op": "text",
+       "startMs": 5400,
+       "endMs": 5800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        580,
+        275
+       ],
+       "text": "care",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "noneconlabel",
+       "op": "text",
+       "startMs": 5900,
+       "endMs": 6800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        580,
+        340
+       ],
+       "text": "non-economic",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch13-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "dignity",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        80
+       ],
+       "text": "dignity",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "honest",
+       "op": "text",
+       "startMs": 1000,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        145
+       ],
+       "text": "honest work",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "people",
+       "op": "circle",
+       "startMs": 2100,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        275
+       ],
+       "r": 55
+      },
+      {
+       "id": "peoplelabel",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        280
+       ],
+       "text": "people",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "workleft",
+       "op": "arrow",
+       "startMs": 3400,
+       "endMs": 4000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        340,
+        275
+       ],
+       "to": [
+        180,
+        205
+       ]
+      },
+      {
+       "id": "workright",
+       "op": "arrow",
+       "startMs": 3400,
+       "endMs": 4000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        460,
+        275
+       ],
+       "to": [
+        620,
+        205
+       ]
+      },
+      {
+       "id": "workdown",
+       "op": "arrow",
+       "startMs": 4000,
+       "endMs": 4600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        330
+       ],
+       "to": [
+        400,
+        415
+       ]
+      },
+      {
+       "id": "work1",
+       "op": "text",
+       "startMs": 4600,
+       "endMs": 5000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        180,
+        180
+       ],
+       "text": "work",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "work2",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 5400,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        620,
+        180
+       ],
+       "text": "work",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "work3",
+       "op": "text",
+       "startMs": 5400,
+       "endMs": 5800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        445
+       ],
+       "text": "work",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1",
+   "key": "2 trades",
+   "prompt": "trade grain for a pot"
+  },
+  {
+   "itemId": "r2",
+   "key": "₹40 → profit 80 (target 60)",
+   "prompt": "earn by selling useful goods"
+  }
+ ],
+ "check": {
+  "issues": [
+   {
+    "where": "explainer",
+    "what": "The explainer's task question 'Which activity is economic work?' asks the learner to choose between 'school' and 'son', but the kit item i02 asks 'What is the main difference between economic and non-economic activities?'. The task answer 'school' is correct on its own (paid teaching is economic), but it does not match the kit item it claims as source ('src':'c6-sst-ch13-t01-i02'), which asks for a definition, not a classification. This is a mismatch between the round's claimed source and what the kit actually says.",
+    "severity": "low"
+   }
+  ],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

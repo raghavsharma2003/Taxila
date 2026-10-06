@@ -1,0 +1,1618 @@
+{
+ "topicId": "c4-maths-ch10-t02",
+ "title": "Comparing counts in real data",
+ "chapter": "Elephants, Tigers, and Leopards",
+ "subject": "maths",
+ "class": 4,
+ "topicType": "T5",
+ "plan": {
+  "game": "pictograph@1",
+  "hint": "claims mode on real counts (comparing)"
+ },
+ "game": {
+  "archetype": "pictograph@1",
+  "spec": {
+   "archetype": "pictograph@1",
+   "skills": [
+    "c4-maths-ch10-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "right": "right",
+    "coach": "Watch the data and compare counts",
+    "runDone": "Data done",
+    "key": "each symbol =",
+    "half": "½",
+    "check": "CHECK",
+    "trueW": "TRUE",
+    "falseW": "FALSE",
+    "total": "Total"
+   },
+   "title": "Count and Compare",
+   "rounds": [
+    {
+     "mode": "picto",
+     "title": "Make a picture",
+     "sub": "draw rows using the key",
+     "cats": [
+      {
+       "label": "Elephants",
+       "count": 12
+      },
+      {
+       "label": "Tigers",
+       "count": 6
+      },
+      {
+       "label": "Leopards",
+       "count": 18
+      }
+     ],
+     "scale": 4,
+     "axisStart": 0,
+     "claims": [],
+     "seed": 34,
+     "speed": 0.9,
+     "targets": "c4-maths-ch10-t02-m-more-means-add"
+    },
+    {
+     "mode": "claims",
+     "title": "Check the chart",
+     "sub": "compare counts on this chart",
+     "cats": [
+      {
+       "label": "Elephants",
+       "count": 135
+      },
+      {
+       "label": "Leopards",
+       "count": 92
+      },
+      {
+       "label": "Tigers",
+       "count": 120
+      }
+     ],
+     "scale": 14,
+     "axisStart": 90,
+     "claims": [
+      {
+       "kind": "more",
+       "a": 0,
+       "b": 1
+      },
+      {
+       "kind": "diff",
+       "a": 0,
+       "b": 1,
+       "value": 43
+      },
+      {
+       "kind": "total",
+       "a": 0,
+       "b": 1,
+       "value": 227
+      },
+      {
+       "kind": "total",
+       "a": 0,
+       "b": 1,
+       "value": 230
+      }
+     ],
+     "seed": 57,
+     "speed": 0.8,
+     "targets": "c4-maths-ch10-t02-m-first-digit-compare"
+    }
+   ]
+  },
+  "repairs": [
+   "tally:too-long",
+   "bars:scale-raised"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c4-maths-ch10-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "How many more?",
+   "accent": "amber",
+   "targets": "c4-maths-ch10-t02-m-wrong-order",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "row",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "How many more?"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Take the bigger digit from the smaller"
+      },
+      {
+       "id": "gap",
+       "type": "label",
+       "text": "Find the gap",
+       "x": 420,
+       "y": 330,
+       "color": "amber"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "split",
+     "els": [
+      {
+       "id": "mp",
+       "type": "node",
+       "text": "Madhya Pradesh",
+       "sub": "785 tigers",
+       "color": "amber"
+      },
+      {
+       "id": "ka",
+       "type": "node",
+       "text": "Karnataka",
+       "sub": "563 tigers",
+       "color": "sci"
+      },
+      {
+       "id": "less",
+       "type": "label",
+       "text": "smaller",
+       "x": 260,
+       "y": 420,
+       "color": "sci"
+      },
+      {
+       "id": "more",
+       "type": "label",
+       "text": "bigger",
+       "x": 700,
+       "y": 420,
+       "color": "amber"
+      },
+      {
+       "id": "take",
+       "type": "arrow",
+       "from": "ka",
+       "to": "mp",
+       "text": "gap"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "column",
+     "els": [
+      {
+       "id": "problem",
+       "type": "title",
+       "text": "1308 − 976"
+      },
+      {
+       "id": "a1308",
+       "type": "label",
+       "text": "Saturday 1308",
+       "x": 220,
+       "y": 300,
+       "color": "amber"
+      },
+      {
+       "id": "a976",
+       "type": "label",
+       "text": "Sunday 976",
+       "x": 620,
+       "y": 300,
+       "color": "sci"
+      },
+      {
+       "id": "diff",
+       "type": "bar",
+       "parts": 10,
+       "shaded": 3,
+       "x": 200,
+       "y": 400,
+       "w": 600,
+       "text": "332 more"
+      },
+      {
+       "id": "check",
+       "type": "label",
+       "text": "976 + 332 = 1308",
+       "x": 360,
+       "y": 500,
+       "color": "mint"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "row",
+     "els": [
+      {
+       "id": "try",
+       "type": "title",
+       "text": "Try one"
+      },
+      {
+       "id": "opt1",
+       "type": "label",
+       "text": "1123",
+       "x": 180,
+       "y": 360,
+       "color": "sci"
+      },
+      {
+       "id": "opt2",
+       "type": "label",
+       "text": "222",
+       "x": 360,
+       "y": 360,
+       "color": "mint"
+      },
+      {
+       "id": "opt3",
+       "type": "label",
+       "text": "250",
+       "x": 540,
+       "y": 360,
+       "color": "amber"
+      },
+      {
+       "id": "opt4",
+       "type": "label",
+       "text": "116",
+       "x": 720,
+       "y": 360,
+       "color": "volt"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "A table gives two counts. How many more asks for the gap between them.",
+    "L2": "Do not subtract digits in the wrong order. Picture the two whole amounts first.",
+    "L3": "For 785 and 563, 785 is bigger, so take the smaller count from the bigger count.",
+    "L4": "Write the counts in columns and subtract: 785 minus 563 equals 222.",
+    "L5": "If a column needs help, borrow from the next column. Do not simply take the smaller digit from the bigger digit.",
+    "L6": "Check a difference by adding it back to the smaller count. 563 plus 222 equals 785.",
+    "L7": "The same idea works for larger counts. In the worked example, 1308 minus 976 equals 332.",
+    "L8": "Now choose the gap for 785 and 563."
+   },
+   "narration": {
+    "L1": {
+     "text": "A table gives two counts. How many more asks for the gap between them.",
+     "dur": 4.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L2": {
+     "text": "Do not subtract digits in the wrong order. Picture the two whole amounts first.",
+     "dur": 4.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L3": {
+     "text": "For 785 and 563, 785 is bigger, so take the smaller count from the bigger count.",
+     "dur": 5.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L4": {
+     "text": "Write the counts in columns and subtract: 785 minus 563 equals 222.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L5": {
+     "text": "If a column needs help, borrow from the next column. Do not simply take the smaller digit from the bigger digit.",
+     "dur": 5.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Check a difference by adding it back to the smaller count. 563 plus 222 equals 785.",
+     "dur": 5.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L7": {
+     "text": "The same idea works for larger counts. In the worked example, 1308 minus 976 equals 332.",
+     "dur": 5.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Now choose the gap for 785 and 563.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.6,
+       "target": "gap"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      },
+      {
+       "at": 1,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "mp",
+        "ka"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "mp"
+      },
+      {
+       "at": 1.6,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "take",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "take"
+      },
+      {
+       "at": 0.7,
+       "do": "show",
+       "dur": 0.5,
+       "target": "less"
+      },
+      {
+       "at": 1.3,
+       "do": "show",
+       "dur": 0.5,
+       "target": "more"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "problem",
+        "a1308",
+        "a976"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "problem"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "diff"
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.8,
+       "target": "check"
+      },
+      {
+       "at": 1.8,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "check"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "focus",
+       "dur": 0.8,
+       "target": "problem"
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "diff"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "try",
+        "opt1",
+        "opt2",
+        "opt3",
+        "opt4"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive"
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "How many more tigers does Madhya Pradesh have than Karnataka?",
+    "options": [
+     "opt1",
+     "opt2",
+     "opt3",
+     "opt4"
+    ],
+    "answer": "opt2",
+    "src": "c4-maths-ch10-t02-i02"
+   }
+  },
+  "repairs": [
+   "glyph",
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 43
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch10-t02-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "t1",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        70
+       ],
+       "text": "two counts",
+       "size": "l"
+      },
+      {
+       "id": "box1",
+       "op": "rect",
+       "startMs": 800,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        110,
+        150
+       ],
+       "w": 180,
+       "h": 100,
+       "round": 8
+      },
+      {
+       "id": "box2",
+       "op": "rect",
+       "startMs": 1100,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        510,
+        150
+       ],
+       "w": 180,
+       "h": 100,
+       "round": 8
+      },
+      {
+       "id": "c1",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        200,
+        210
+       ],
+       "text": "count",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "c2",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        600,
+        210
+       ],
+       "text": "count",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "gap",
+       "op": "arrow",
+       "startMs": 3000,
+       "endMs": 4000,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        300,
+        300
+       ],
+       "to": [
+        500,
+        300
+       ]
+      },
+      {
+       "id": "gaplabel",
+       "op": "label",
+       "startMs": 4000,
+       "endMs": 4700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        335
+       ],
+       "text": "gap",
+       "to": [
+        400,
+        300
+       ]
+      },
+      {
+       "id": "more",
+       "op": "text",
+       "startMs": 4900,
+       "endMs": 5700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        420
+       ],
+       "text": "how many more",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch10-t02-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "whole1",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        230,
+        190
+       ],
+       "r": 70
+      },
+      {
+       "id": "whole2",
+       "op": "circle",
+       "startMs": 500,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        570,
+        190
+       ],
+       "r": 50
+      },
+      {
+       "id": "amount1",
+       "op": "text",
+       "startMs": 1200,
+       "endMs": 2000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        230,
+        310
+       ],
+       "text": "whole amount",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "amount2",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        570,
+        310
+       ],
+       "text": "whole amount",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "wrong",
+       "op": "line",
+       "startMs": 2600,
+       "endMs": 3300,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        330,
+        190
+       ],
+       "to": [
+        470,
+        190
+       ]
+      },
+      {
+       "id": "order",
+       "op": "text",
+       "startMs": 3700,
+       "endMs": 4700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        410
+       ],
+       "text": "picture first",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch10-t02-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "n785",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        180,
+        170
+       ],
+       "text": "785",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "n563",
+       "op": "text",
+       "startMs": 400,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        620,
+        170
+       ],
+       "text": "563",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "bigger",
+       "op": "circle",
+       "startMs": 1300,
+       "endMs": 2000,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        180,
+        160
+       ],
+       "r": 65
+      },
+      {
+       "id": "smallarrow",
+       "op": "arrow",
+       "startMs": 2200,
+       "endMs": 3100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        620,
+        240
+       ],
+       "to": [
+        480,
+        320
+       ]
+      },
+      {
+       "id": "smalllabel",
+       "op": "label",
+       "startMs": 3100,
+       "endMs": 4000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        620,
+        350
+       ],
+       "text": "smaller count",
+       "to": [
+        560,
+        250
+       ]
+      },
+      {
+       "id": "bigarrow",
+       "op": "arrow",
+       "startMs": 4000,
+       "endMs": 4900,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        180,
+        240
+       ],
+       "to": [
+        320,
+        320
+       ]
+      },
+      {
+       "id": "biglabel",
+       "op": "label",
+       "startMs": 4900,
+       "endMs": 5900,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        150,
+        350
+       ],
+       "text": "bigger count",
+       "to": [
+        220,
+        250
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch10-t02-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "sub",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        245,
+        95
+       ],
+       "layout": "column_sub",
+       "rows": [
+        [
+         "7",
+         "8",
+         "5"
+        ],
+        [
+         "5",
+         "6",
+         "3"
+        ],
+        [
+         "2",
+         "2",
+         "2"
+        ]
+       ]
+      },
+      {
+       "id": "minus",
+       "op": "text",
+       "startMs": 400,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        210,
+        150
+       ],
+       "text": "−",
+       "size": "l"
+      },
+      {
+       "id": "equals",
+       "op": "text",
+       "startMs": 2900,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        450,
+        360
+       ],
+       "text": "=",
+       "size": "l"
+      },
+      {
+       "id": "result",
+       "op": "text",
+       "startMs": 3400,
+       "endMs": 4300,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        550,
+        360
+       ],
+       "text": "222",
+       "size": "l"
+      },
+      {
+       "id": "columns",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        440
+       ],
+       "text": "columns",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch10-t02-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 9536,
+     "ops": [
+      {
+       "id": "borrowcol",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        245,
+        75
+       ],
+       "layout": "column_sub",
+       "rows": [
+        [
+         "7",
+         "8",
+         "5"
+        ],
+        [
+         "5",
+         "6",
+         "3"
+        ],
+        [
+         "2",
+         "2",
+         "2"
+        ]
+       ]
+      },
+      {
+       "id": "borrowarrow1",
+       "op": "arrow",
+       "startMs": 1900,
+       "endMs": 2800,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        390,
+        135
+       ],
+       "to": [
+        330,
+        105
+       ],
+       "bend": -1
+      },
+      {
+       "id": "borrowarrow2",
+       "op": "arrow",
+       "startMs": 2900,
+       "endMs": 3800,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        330,
+        105
+       ],
+       "to": [
+        270,
+        105
+       ],
+       "bend": 1
+      },
+      {
+       "id": "borrowlabel1",
+       "op": "label",
+       "startMs": 4000,
+       "endMs": 5000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        470,
+        105
+       ],
+       "text": "borrow",
+       "to": [
+        390,
+        135
+       ]
+      },
+      {
+       "id": "borrowlabel2",
+       "op": "label",
+       "startMs": 5100,
+       "endMs": 6200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        170,
+        105
+       ],
+       "text": "next column",
+       "to": [
+        270,
+        105
+       ]
+      },
+      {
+       "id": "wrongdigits",
+       "op": "text",
+       "startMs": 6600,
+       "endMs": 7500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        300
+       ],
+       "text": "smaller digit",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "notrule",
+       "op": "line",
+       "startMs": 7500,
+       "endMs": 8200,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        275,
+        280
+       ],
+       "to": [
+        525,
+        280
+       ]
+      },
+      {
+       "id": "help",
+       "op": "text",
+       "startMs": 8300,
+       "endMs": 9200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        410
+       ],
+       "text": "borrow for help",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch10-t02-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "checkeq",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        160,
+        100
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "563",
+         "+",
+         "222",
+         "=",
+         "785"
+        ]
+       ]
+      },
+      {
+       "id": "smallcheck",
+       "op": "highlight",
+       "startMs": 2700,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 2,
+       "target": "checkeq",
+       "style": "circle"
+      },
+      {
+       "id": "backarrow",
+       "op": "arrow",
+       "startMs": 3800,
+       "endMs": 4700,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        580,
+        180
+       ],
+       "to": [
+        580,
+        300
+       ]
+      },
+      {
+       "id": "backlabel",
+       "op": "label",
+       "startMs": 4700,
+       "endMs": 5700,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        600,
+        330
+       ],
+       "text": "add it back",
+       "to": [
+        580,
+        270
+       ]
+      },
+      {
+       "id": "difference",
+       "op": "text",
+       "startMs": 5900,
+       "endMs": 6900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        430
+       ],
+       "text": "check a difference",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch10-t02-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "large",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        65
+       ],
+       "text": "larger counts",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "largeeq",
+       "op": "numwork",
+       "startMs": 1000,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        180,
+        135
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "1308",
+         "−",
+         "976",
+         "=",
+         "332"
+        ]
+       ]
+      },
+      {
+       "id": "thousands",
+       "op": "text",
+       "startMs": 2900,
+       "endMs": 3800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        170,
+        260
+       ],
+       "text": "thousands",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "hundreds",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 4200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        300,
+        260
+       ],
+       "text": "hundreds",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "tens",
+       "op": "text",
+       "startMs": 3700,
+       "endMs": 4400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        430,
+        260
+       ],
+       "text": "tens",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "ones",
+       "op": "text",
+       "startMs": 4100,
+       "endMs": 4800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        560,
+        260
+       ],
+       "text": "ones",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "answer",
+       "op": "highlight",
+       "startMs": 5200,
+       "endMs": 6200,
+       "ink": "good",
+       "weight": 2,
+       "target": "largeeq",
+       "style": "underline"
+      },
+      {
+       "id": "more",
+       "op": "text",
+       "startMs": 6300,
+       "endMs": 7100,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        440
+       ],
+       "text": "332 more",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch10-t02-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 4004,
+     "ops": [
+      {
+       "id": "chooseeq",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        160,
+        100
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "785",
+         "−",
+         "563",
+         "=",
+         "222"
+        ]
+       ]
+      },
+      {
+       "id": "gapanswer",
+       "op": "highlight",
+       "startMs": 2100,
+       "endMs": 3000,
+       "ink": "good",
+       "weight": 2,
+       "target": "chooseeq",
+       "style": "circle"
+      },
+      {
+       "id": "gapword",
+       "op": "text",
+       "startMs": 3100,
+       "endMs": 3800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        390
+       ],
+       "text": "gap",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "3 symbols",
+   "prompt": "picto: Elephants"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "1.5 symbols",
+   "prompt": "picto: Tigers"
+  },
+  {
+   "itemId": "r1:2",
+   "key": "4.5 symbols",
+   "prompt": "picto: Leopards"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "true",
+   "prompt": "Elephants > Leopards"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "true",
+   "prompt": "Elephants − Leopards = 43"
+  },
+  {
+   "itemId": "r2:2",
+   "key": "false",
+   "prompt": "Total = 227"
+  },
+  {
+   "itemId": "r2:3",
+   "key": "false",
+   "prompt": "Total = 230"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ },
+ "firstCheck": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "Claim 'Total = 227' is marked as false (computed key says false), but the claim value 227 is actually the correct total of Elephants (135) + Leopards (92) = 227, making the claim true. The key computation appears to misunderstand the 'total' claim (it should sum the two categories, not compare to a target). This is a factual mismatch between the round's own data and the expected answer.",
+    "severity": "high"
+   },
+   {
+    "where": "explainer",
+    "what": "The explainer's task asks for the difference between 785 and 563 using a prompt with options (1123, 3, 250, 116) and answer 'opt2' (which shows '3' in the label). But 785 − 563 = 222, not 3. The task references kit item i02 (answer 222), but the presented options do not include 222, and '3' is unrelated. This is factually wrong for the given numbers.",
+    "severity": "high"
+   },
+   {
+    "where": "explainer",
+    "what": "In the 'Try one' scene, option labels are: 'opt1'=1123, 'opt2'=3, 'opt3'=250, 'opt4'=116. None matches the correct difference 222. The answer is set to 'opt2' (3), which is incorrect. This is a serious factual error.",
+    "severity": "high"
+   }
+  ],
+  "verdict": "fail",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

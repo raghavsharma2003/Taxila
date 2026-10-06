@@ -1,0 +1,1554 @@
+{
+ "topicId": "c4-english-ch04-t01",
+ "title": "One Thing at a Time",
+ "chapter": "One Thing at a Time",
+ "subject": "english",
+ "class": 4,
+ "topicType": "T1",
+ "plan": {
+  "game": "beat-line@1",
+  "hint": "beat and rhyme rounds (Hindi: matra round on a doha/chaupai line)"
+ },
+ "game": {
+  "archetype": "beat-line@1",
+  "spec": {
+   "archetype": "beat-line@1",
+   "skills": [
+    "c4-english-ch04-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "onBeat": "on beat",
+    "combo": "combo",
+    "tap": "Tap on the beat",
+    "catch": "Catch the rhyme",
+    "mark": "Short or long?",
+    "short": "। short",
+    "long": "ऽ long",
+    "practice": "PRACTICE LINE",
+    "runDone": "Poem played",
+    "perfect": "ON BEAT",
+    "early": "early",
+    "late": "late",
+    "meter": "मात्रा"
+   },
+   "title": "One Beat at a Time",
+   "bpm": 76,
+   "lines": [
+    {
+     "text": "One thing at a time, done with care,",
+     "beats": [
+      1,
+      4,
+      7
+     ],
+     "own": true
+    },
+    {
+     "text": "Is better than ten things here and there.",
+     "beats": [
+      1,
+      4,
+      7
+     ],
+     "own": true
+    },
+    {
+     "text": "When I read, I read my book,",
+     "beats": [
+      1,
+      4
+     ],
+     "own": true
+    },
+    {
+     "text": "I do not stop to stand and look.",
+     "beats": [
+      1,
+      4,
+      7
+     ],
+     "own": true
+    }
+   ],
+   "rounds": [
+    {
+     "mode": "beat",
+     "title": "Feel the beat",
+     "sub": "Tap the strong beats with care",
+     "lines": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "mode": "rhyme",
+     "title": "Rhyme catch",
+     "sub": "Listen to sounds, not spellings",
+     "items": [
+      {
+       "cue": "Say “care”. Which word rhymes with it?",
+       "options": [
+        "there",
+        "car",
+        "cure"
+       ],
+       "answer": "there",
+       "src": "c4-english-ch04-t01-i02"
+      },
+      {
+       "cue": "The word “book” rhymes with which word?",
+       "options": [
+        "look",
+        "see",
+        "sun"
+       ],
+       "answer": "look",
+       "src": "c4-english-ch04-t01-i01"
+      }
+     ],
+     "targets": "c4-english-ch04-t01-m-rhyme-spelling"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c4-english-ch04-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "BUSTED",
+    "order": "Tap them in order"
+   },
+   "title": "One Thing at a Time",
+   "accent": "ion",
+   "targets": "c4-english-ch04-t01-m-third-person-s",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "row",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "One Thing at a Time"
+      },
+      {
+       "id": "book",
+       "type": "glyph",
+       "name": "book",
+       "size": 150,
+       "color": "ion"
+      },
+      {
+       "id": "care",
+       "type": "label",
+       "text": "Do it with care",
+       "x": 390,
+       "y": 310,
+       "color": "mint"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "split",
+     "els": [
+      {
+       "id": "one",
+       "type": "node",
+       "text": "One thing",
+       "sub": "with care",
+       "color": "mint"
+      },
+      {
+       "id": "many",
+       "type": "node",
+       "text": "Ten things",
+       "sub": "here and there",
+       "glyph": "question",
+       "color": "amber"
+      },
+      {
+       "id": "better",
+       "type": "arrow",
+       "from": "one",
+       "to": "many",
+       "text": "is better",
+       "bend": 0
+      },
+      {
+       "id": "focus",
+       "type": "label",
+       "text": "Focus and finish",
+       "x": 350,
+       "y": 500,
+       "color": "ion"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "homework",
+       "type": "node",
+       "text": "Homework",
+       "sub": "one task",
+       "glyph": "book",
+       "color": "ion"
+      },
+      {
+       "id": "tv",
+       "type": "node",
+       "text": "TV",
+       "sub": "put away",
+       "glyph": "phone",
+       "color": "amber"
+      },
+      {
+       "id": "done",
+       "type": "node",
+       "text": "Done well",
+       "sub": "with care",
+       "glyph": "star",
+       "color": "mint"
+      },
+      {
+       "id": "work",
+       "type": "arrow",
+       "from": "homework",
+       "to": "done",
+       "text": "focus",
+       "bend": 0
+      },
+      {
+       "id": "avoid",
+       "type": "arrow",
+       "from": "tv",
+       "to": "homework",
+       "text": "distracts",
+       "bend": 0
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "column",
+     "els": [
+      {
+       "id": "rhyme",
+       "type": "label",
+       "text": "care / there",
+       "x": 330,
+       "y": 250,
+       "color": "ion"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "She play every day"
+      },
+      {
+       "id": "rule",
+       "type": "label",
+       "text": "She plays every day",
+       "x": 350,
+       "y": 390,
+       "color": "mint"
+      },
+      {
+       "id": "optA",
+       "type": "label",
+       "text": "She reads daily",
+       "x": 250,
+       "y": 470,
+       "color": "mint"
+      },
+      {
+       "id": "optB",
+       "type": "label",
+       "text": "She read daily",
+       "x": 520,
+       "y": 470,
+       "color": "amber"
+      },
+      {
+       "id": "optC",
+       "type": "label",
+       "text": "She reading daily",
+       "x": 250,
+       "y": 540,
+       "color": "amber"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "The poem is about focus: doing one thing at a time and doing it well.",
+    "L2": "It compares one careful thing with ten things done here and there.",
+    "L3": "The message is clear: one thing done with care is better.",
+    "L4": "For example, do your homework without TV, so you can focus and finish it well.",
+    "L5": "The poem also has rhyme. Care and there rhyme even though they are spelt differently.",
+    "L6": "When we describe a habit with he or she, add -s to the action word: She reads every day.",
+    "L7": "Here is a grammar myth: “She play every day.” It is wrong because he or she needs -s: “She plays every day.”",
+    "L8": "Now choose the habit sentence that follows the poem’s careful language rule."
+   },
+   "narration": {
+    "L1": {
+     "text": "The poem is about focus: doing one thing at a time and doing it well.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0.5,
+     "pauses": []
+    },
+    "L2": {
+     "text": "It compares one careful thing with ten things done here and there.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0.5,
+     "pauses": []
+    },
+    "L3": {
+     "text": "The message is clear: one thing done with care is better.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.5,
+     "pauses": []
+    },
+    "L4": {
+     "text": "For example, do your homework without TV, so you can focus and finish it well.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0.5,
+     "pauses": []
+    },
+    "L5": {
+     "text": "The poem also has rhyme. Care and there rhyme even though they are spelt differently.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0.5,
+     "pauses": []
+    },
+    "L6": {
+     "text": "When we describe a habit with he or she, add -s to the action word: She reads every day.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0.5,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Here is a grammar myth: “She play every day.” It is wrong because he or she needs -s: “She plays every day.”",
+     "dur": 10,
+     "lead": 0,
+     "tail": 0.5,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Now choose the habit sentence that follows the poem’s careful language rule.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.5,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "title"
+      },
+      {
+       "at": 0.4,
+       "do": "show",
+       "dur": 1,
+       "target": "book"
+      },
+      {
+       "at": 2,
+       "do": "show",
+       "dur": 1,
+       "target": "care"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "one",
+        "many"
+       ]
+      },
+      {
+       "at": 1.5,
+       "do": "show",
+       "dur": 1,
+       "target": "better"
+      },
+      {
+       "at": 3,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "better",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "one"
+      },
+      {
+       "at": 1.2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "focus"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "homework",
+        "tv"
+       ]
+      },
+      {
+       "at": 2,
+       "do": "hide",
+       "dur": 0.8,
+       "target": "tv"
+      },
+      {
+       "at": 3,
+       "do": "show",
+       "dur": 1,
+       "target": "done"
+      },
+      {
+       "at": 4.2,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "work",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "rhyme"
+      },
+      {
+       "at": 1.5,
+       "do": "highlight",
+       "dur": 1,
+       "target": "rhyme"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "rule"
+      },
+      {
+       "at": 2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "rule"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "myth"
+      },
+      {
+       "at": 2,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      },
+      {
+       "at": 3,
+       "do": "show",
+       "dur": 1,
+       "target": "rule"
+      },
+      {
+       "at": 4.5,
+       "do": "highlight",
+       "dur": 1,
+       "target": "rule"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "optA",
+        "optB",
+        "optC"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive",
+       "dur": 1
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which sentence shows a correct daily habit for she?",
+    "options": [
+     "optA",
+     "optB",
+     "optC"
+    ],
+    "answer": "optA",
+    "src": "c4-english-ch04-t01-i10"
+   }
+  },
+  "repairs": [
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 64
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-english-ch04-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "focus",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "focus",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "one",
+       "op": "circle",
+       "startMs": 700,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        250,
+        240
+       ],
+       "r": 75
+      },
+      {
+       "id": "oneText",
+       "op": "text",
+       "startMs": 1200,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        250,
+        245
+       ],
+       "text": "one thing",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "care",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2400,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        250,
+        360
+       ],
+       "text": "care",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "focusArrow",
+       "op": "arrow",
+       "startMs": 2500,
+       "endMs": 3300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        240
+       ],
+       "to": [
+        520,
+        240
+       ]
+      },
+      {
+       "id": "well",
+       "op": "text",
+       "startMs": 3200,
+       "endMs": 4000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        600,
+        245
+       ],
+       "text": "well",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "oneTime",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 5200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        430
+       ],
+       "text": "one thing at a time",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-english-ch04-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "careful",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        150,
+        90
+       ],
+       "text": "one careful thing",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "ten",
+       "op": "numwork",
+       "startMs": 700,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        500,
+        70
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "10",
+         "things"
+        ]
+       ]
+      },
+      {
+       "id": "here",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 2300,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        580,
+        180
+       ],
+       "text": "here and there",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "compare",
+       "op": "arrow",
+       "startMs": 2300,
+       "endMs": 3300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        260,
+        210
+       ],
+       "to": [
+        500,
+        210
+       ]
+      },
+      {
+       "id": "careMark",
+       "op": "highlight",
+       "startMs": 3300,
+       "endMs": 4000,
+       "ink": "good",
+       "weight": 2,
+       "target": "careful",
+       "style": "underline"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-english-ch04-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "message",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 850,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        90
+       ],
+       "text": "message",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "oneCare",
+       "op": "numwork",
+       "startMs": 800,
+       "endMs": 1900,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        120,
+        180
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "one",
+         "thing",
+         "with",
+         "care"
+        ]
+       ]
+      },
+      {
+       "id": "better",
+       "op": "arrow",
+       "startMs": 1900,
+       "endMs": 2900,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        380,
+        215
+       ],
+       "to": [
+        590,
+        215
+       ]
+      },
+      {
+       "id": "betterText",
+       "op": "text",
+       "startMs": 2800,
+       "endMs": 3700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        650,
+        215
+       ],
+       "text": "better",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "doing",
+       "op": "text",
+       "startMs": 3700,
+       "endMs": 4500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        370
+       ],
+       "text": "doing one thing",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-english-ch04-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "homework",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        110,
+        120
+       ],
+       "w": 260,
+       "h": 150
+      },
+      {
+       "id": "homeworkText",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        240,
+        200
+       ],
+       "text": "homework",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "tv",
+       "op": "rect",
+       "startMs": 1000,
+       "endMs": 1700,
+       "ink": "soft",
+       "weight": 2,
+       "at": [
+        500,
+        120
+       ],
+       "w": 190,
+       "h": 130
+      },
+      {
+       "id": "tvText",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2100,
+       "ink": "soft",
+       "weight": 2,
+       "at": [
+        595,
+        185
+       ],
+       "text": "TV",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "without",
+       "op": "line",
+       "startMs": 2200,
+       "endMs": 2900,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        485,
+        105
+       ],
+       "to": [
+        705,
+        265
+       ]
+      },
+      {
+       "id": "focus4",
+       "op": "arrow",
+       "startMs": 3000,
+       "endMs": 3900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        370,
+        195
+       ],
+       "to": [
+        500,
+        195
+       ]
+      },
+      {
+       "id": "finish",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 5000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        370
+       ],
+       "text": "focus and finish",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-english-ch04-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "rhyme",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "rhyme",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "careWord",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        220,
+        190
+       ],
+       "text": "care",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "thereWord",
+       "op": "text",
+       "startMs": 1100,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        580,
+        190
+       ],
+       "text": "there",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "rhymeArrow",
+       "op": "arrow",
+       "startMs": 1900,
+       "endMs": 2800,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        300,
+        190
+       ],
+       "to": [
+        500,
+        190
+       ]
+      },
+      {
+       "id": "sameSound",
+       "op": "text",
+       "startMs": 2900,
+       "endMs": 3700,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        310
+       ],
+       "text": "rhyme",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "different",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4900,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        400,
+        410
+       ],
+       "text": "spelt differently",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-english-ch04-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "habit",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        60
+       ],
+       "text": "habit",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "subject",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        160,
+        180
+       ],
+       "text": "she",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "action",
+       "op": "text",
+       "startMs": 1100,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        180
+       ],
+       "text": "read",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "suffix",
+       "op": "text",
+       "startMs": 1600,
+       "endMs": 2300,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        550,
+        180
+       ],
+       "text": "-s",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "reads",
+       "op": "numwork",
+       "startMs": 2600,
+       "endMs": 3900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        220,
+        290
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "She",
+         "reads",
+         "every",
+         "day"
+        ]
+       ]
+      },
+      {
+       "id": "ruleArrow",
+       "op": "arrow",
+       "startMs": 3900,
+       "endMs": 4700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        430,
+        205
+       ],
+       "to": [
+        430,
+        275
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-english-ch04-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 9962,
+     "ops": [
+      {
+       "id": "myth",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "grammar myth",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "wrong",
+       "op": "numwork",
+       "startMs": 900,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        130,
+        180
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "She",
+         "play",
+         "every",
+         "day"
+        ]
+       ]
+      },
+      {
+       "id": "wrongMark",
+       "op": "line",
+       "startMs": 2300,
+       "endMs": 2900,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        260,
+        150
+       ],
+       "to": [
+        260,
+        230
+       ]
+      },
+      {
+       "id": "wrongText",
+       "op": "text",
+       "startMs": 2900,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        260,
+        280
+       ],
+       "text": "wrong",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "right",
+       "op": "numwork",
+       "startMs": 3900,
+       "endMs": 5300,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        130,
+        360
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "She",
+         "plays",
+         "every",
+         "day"
+        ]
+       ]
+      },
+      {
+       "id": "sMark",
+       "op": "highlight",
+       "startMs": 5400,
+       "endMs": 6100,
+       "ink": "good",
+       "weight": 2,
+       "target": "right",
+       "style": "underline"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-english-ch04-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "choose",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "choose",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "sentence",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        155
+       ],
+       "text": "habit sentence",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "rule",
+       "op": "text",
+       "startMs": 1600,
+       "endMs": 2500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        250
+       ],
+       "text": "he or she + -s",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "carefulLanguage",
+       "op": "arrow",
+       "startMs": 2600,
+       "endMs": 3400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        285
+       ],
+       "to": [
+        400,
+        360
+       ]
+      },
+      {
+       "id": "choice",
+       "op": "numwork",
+       "startMs": 3500,
+       "endMs": 4800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        190,
+        370
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "She",
+         "plays",
+         "every",
+         "day"
+        ]
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "b0:*",
+   "key": "thing · time, · care,",
+   "prompt": "stressed words in: One thing at a time, done with care,"
+  },
+  {
+   "itemId": "b1:*",
+   "key": "better · things · there.",
+   "prompt": "stressed words in: Is better than ten things here and there."
+  },
+  {
+   "itemId": "b2:*",
+   "key": "I · read",
+   "prompt": "stressed words in: When I read, I read my book,"
+  },
+  {
+   "itemId": "b3:*",
+   "key": "do · to · look.",
+   "prompt": "stressed words in: I do not stop to stand and look."
+  },
+  {
+   "itemId": "r2:0",
+   "key": "there",
+   "prompt": "Say “care”. Which word rhymes with it? [there / car / cure]",
+   "src": "c4-english-ch04-t01-i02"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "look",
+   "prompt": "The word “book” rhymes with which word? [look / see / sun]",
+   "src": "c4-english-ch04-t01-i01"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

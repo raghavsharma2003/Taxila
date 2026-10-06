@@ -1,0 +1,1602 @@
+{
+ "topicId": "c6-english-ch08-t01",
+ "title": "What a Bird Thought",
+ "chapter": "What a Bird Thought",
+ "subject": "english",
+ "class": 6,
+ "topicType": "T3",
+ "plan": {
+  "game": "story-rail@1",
+  "hint": "sequence, cause and who modes from the lesson's events and speakers"
+ },
+ "game": {
+  "archetype": "story-rail@1",
+  "spec": {
+   "archetype": "story-rail@1",
+   "skills": [
+    "c6-english-ch08-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "picked": "coupled",
+    "streak": "streak",
+    "next": "What comes next?",
+    "effect": "What does this lead to?",
+    "who": "Who said this?",
+    "runDone": "Line complete",
+    "order": "your train",
+    "right": "Coupled",
+    "wrong": "Not this one",
+    "coach": "Tap a wagon before the train reaches the fork"
+   },
+   "title": "What a Bird Thought",
+   "rounds": [
+    {
+     "mode": "sequence",
+     "title": "Growing worlds",
+     "sub": "couple the four views in order",
+     "cards": [
+      {
+       "id": "e1",
+       "text": "World inside the eggshell",
+       "src": "c6-english-ch08-t01-i04"
+      },
+      {
+       "id": "e2",
+       "text": "World of the straw nest",
+       "src": "c6-english-ch08-t01-i05"
+      },
+      {
+       "id": "e3",
+       "text": "World among the leaves",
+       "glyph": "leaf",
+       "src": "c6-english-ch08-t01-i06"
+      },
+      {
+       "id": "e4",
+       "text": "Open world beyond the tree",
+       "glyph": "tree",
+       "src": "c6-english-ch08-t01-i07"
+      }
+     ],
+     "speed": 0.9
+    },
+    {
+     "mode": "cause",
+     "title": "Because",
+     "sub": "match each change to its new view",
+     "pairs": [
+      {
+       "cause": {
+        "id": "c1",
+        "text": "The bird grows in the egg",
+        "glyph": "seed",
+        "src": "c6-english-ch08-t01-i03"
+       },
+       "effect": {
+        "id": "f1",
+        "text": "It thinks the world is shell",
+        "glyph": "earth"
+       }
+      },
+      {
+       "cause": {
+        "id": "c2",
+        "text": "The bird lives in a nest",
+        "glyph": "bird",
+        "src": "c6-english-ch08-t01-i05"
+       },
+       "effect": {
+        "id": "f2",
+        "text": "It thinks the world is straw",
+        "glyph": "wheat"
+       }
+      },
+      {
+       "cause": {
+        "id": "c3",
+        "text": "The bird flutters out",
+        "glyph": "bird",
+        "src": "c6-english-ch08-t01-i06"
+       },
+       "effect": {
+        "id": "f3",
+        "text": "It sees leaves and feels blind",
+        "glyph": "leaf"
+       }
+      },
+      {
+       "cause": {
+        "id": "c4",
+        "text": "The bird sees the wider world",
+        "glyph": "globe",
+        "src": "c6-english-ch08-t01-i07"
+       },
+       "effect": {
+        "id": "f4",
+        "text": "It knows no one knows all",
+        "glyph": "question"
+       }
+      }
+     ],
+     "speed": 0.85,
+     "targets": "c6-english-ch08-t01-m-blind-literal"
+    },
+    {
+     "mode": "who",
+     "title": "Who says it?",
+     "sub": "send each line to its speaker",
+     "speakers": [
+      {
+       "id": "bird",
+       "name": "Bird",
+       "glyph": "bird"
+      },
+      {
+       "id": "poet",
+       "name": "Poet",
+       "glyph": "pen"
+      }
+     ],
+     "lines": [
+      {
+       "id": "w1",
+       "text": "I thought the world was shell",
+       "speaker": "bird",
+       "src": "c6-english-ch08-t01-i03"
+      },
+      {
+       "id": "w2",
+       "text": "I thought the world was straw",
+       "speaker": "bird",
+       "src": "c6-english-ch08-t01-i05"
+      },
+      {
+       "id": "w3",
+       "text": "The world is too big to know",
+       "speaker": "bird",
+       "src": "c6-english-ch08-t01-i07"
+      },
+      {
+       "id": "w4",
+       "text": "Our view grows as we grow",
+       "speaker": "poet",
+       "src": "c6-english-ch08-t01-i09"
+      }
+     ],
+     "speed": 0.8
+    }
+   ]
+  },
+  "repairs": [
+   "glyph",
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c6-english-ch08-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "How the Bird's World Grows",
+   "accent": "mint",
+   "targets": "c6-english-ch08-t01-m-blind-literal",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "row",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "How the Bird's World Grows"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Very blind means weak eyes"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "egg",
+       "type": "node",
+       "text": "Eggshell",
+       "sub": "first world",
+       "glyph": "bird",
+       "color": "sun"
+      },
+      {
+       "id": "nest",
+       "type": "node",
+       "text": "Straw nest",
+       "sub": "with mother",
+       "glyph": "house",
+       "color": "amber"
+      },
+      {
+       "id": "leaves",
+       "type": "node",
+       "text": "Leaves",
+       "sub": "outside nest",
+       "glyph": "leaf",
+       "color": "mint"
+      },
+      {
+       "id": "open",
+       "type": "node",
+       "text": "Open world",
+       "sub": "too big to know",
+       "glyph": "globe",
+       "color": "ion"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "egg",
+       "to": "nest",
+       "text": "grows"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "nest",
+       "to": "leaves",
+       "text": "flies out"
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "leaves",
+       "to": "open",
+       "text": "sees more"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "split",
+     "els": [
+      {
+       "id": "rhyme",
+       "type": "label",
+       "text": "Rhyme scheme: ABCB",
+       "x": 120,
+       "y": 260,
+       "color": "volt"
+      },
+      {
+       "id": "well",
+       "type": "node",
+       "text": "well",
+       "glyph": "note",
+       "color": "ion"
+      },
+      {
+       "id": "shell",
+       "type": "node",
+       "text": "shell",
+       "glyph": "note",
+       "color": "mint"
+      },
+      {
+       "id": "pair",
+       "type": "arrow",
+       "from": "well",
+       "to": "shell",
+       "text": "rhymes"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "The poem follows a bird as its idea of the world grows.",
+    "L2": "First, inside its eggshell, the bird thinks the world is small, round and pale blue.",
+    "L3": "Next, in a straw nest beside its mother, it thinks the world is made of straw.",
+    "L4": "Then it flies out and sees leaves. It says it has been very blind.",
+    "L5": "Very blind means it had not understood how much it had not seen, not that its eyes were weak.",
+    "L6": "At the end, the bird knows the world is too big for anyone to know fully.",
+    "L7": "The poem also reaches people: as a child grows and sees more, their idea of the world grows too.",
+    "L8": "In the first stanza, well and shell rhyme, so the pattern is ABCB."
+   },
+   "narration": {},
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "title"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "egg"
+      },
+      {
+       "at": 0.6,
+       "do": "highlight",
+       "dur": 1,
+       "target": "egg"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "nest"
+      },
+      {
+       "at": 0.5,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "a1",
+       "to": 1
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 1,
+       "target": "nest"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "leaves"
+      },
+      {
+       "at": 0.5,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "a2",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      },
+      {
+       "at": 0.8,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "open"
+      },
+      {
+       "at": 0.5,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "a3",
+       "to": 1
+      },
+      {
+       "at": 1.2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "open"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "focus",
+       "dur": 1.2,
+       "target": "open"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "rhyme",
+        "well",
+        "shell",
+        "pair"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive"
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which word rhymes with well?",
+    "options": [
+     "well",
+     "shell"
+    ],
+    "answer": "shell",
+    "src": "c6-english-ch08-t01-i01"
+   }
+  },
+  "repairs": [],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 59
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-english-ch08-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "title",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "bird",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "idea",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1200,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        120
+       ],
+       "text": "idea",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "w1",
+       "op": "circle",
+       "startMs": 1300,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        150,
+        280
+       ],
+       "r": 55
+      },
+      {
+       "id": "w2",
+       "op": "circle",
+       "startMs": 2000,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        330,
+        280
+       ],
+       "r": 75
+      },
+      {
+       "id": "w3",
+       "op": "circle",
+       "startMs": 2700,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        550,
+        280
+       ],
+       "r": 100
+      },
+      {
+       "id": "grow",
+       "op": "arrow",
+       "startMs": 3500,
+       "endMs": 4000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        210,
+        280
+       ],
+       "to": [
+        275,
+        280
+       ]
+      },
+      {
+       "id": "grow2",
+       "op": "arrow",
+       "startMs": 4000,
+       "endMs": 4500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        410,
+        280
+       ],
+       "to": [
+        450,
+        280
+       ]
+      },
+      {
+       "id": "world",
+       "op": "text",
+       "startMs": 4600,
+       "endMs": 5200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        440
+       ],
+       "text": "world",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-english-ch08-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "egg",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        260
+       ],
+       "rx": 150,
+       "ry": 110,
+       "fill": "soft"
+      },
+      {
+       "id": "round",
+       "op": "circle",
+       "startMs": 1000,
+       "endMs": 1600,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        260
+       ],
+       "r": 70
+      },
+      {
+       "id": "blue",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2400,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        270
+       ],
+       "text": "pale blue",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "small",
+       "op": "label",
+       "startMs": 2500,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        220,
+        180
+       ],
+       "text": "small",
+       "to": [
+        300,
+        210
+       ]
+      },
+      {
+       "id": "shell",
+       "op": "label",
+       "startMs": 3300,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        560,
+        180
+       ],
+       "text": "eggshell",
+       "to": [
+        500,
+        210
+       ]
+      },
+      {
+       "id": "bird",
+       "op": "text",
+       "startMs": 4400,
+       "endMs": 5000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        430
+       ],
+       "text": "bird",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-english-ch08-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "nest",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        330
+       ],
+       "rx": 180,
+       "ry": 55
+      },
+      {
+       "id": "straw1",
+       "op": "stroke",
+       "startMs": 900,
+       "endMs": 1700,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         240,
+         330
+        ],
+        [
+         300,
+         300
+        ],
+        [
+         360,
+         335
+        ],
+        [
+         420,
+         300
+        ],
+        [
+         480,
+         335
+        ],
+        [
+         540,
+         305
+        ]
+       ]
+      },
+      {
+       "id": "straw2",
+       "op": "stroke",
+       "startMs": 1700,
+       "endMs": 2400,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         260,
+         350
+        ],
+        [
+         330,
+         315
+        ],
+        [
+         400,
+         350
+        ],
+        [
+         470,
+         315
+        ],
+        [
+         530,
+         350
+        ]
+       ]
+      },
+      {
+       "id": "mother",
+       "op": "circle",
+       "startMs": 2500,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        185
+       ],
+       "r": 38
+      },
+      {
+       "id": "beside",
+       "op": "arrow",
+       "startMs": 3100,
+       "endMs": 3700,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        360,
+        205
+       ],
+       "to": [
+        325,
+        280
+       ]
+      },
+      {
+       "id": "straw",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        440
+       ],
+       "text": "straw",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-english-ch08-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "bird",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        170,
+        330
+       ],
+       "r": 28
+      },
+      {
+       "id": "wing",
+       "op": "stroke",
+       "startMs": 500,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         150,
+         330
+        ],
+        [
+         110,
+         300
+        ],
+        [
+         155,
+         310
+        ]
+       ]
+      },
+      {
+       "id": "flight",
+       "op": "arrow",
+       "startMs": 1100,
+       "endMs": 2300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        210,
+        320
+       ],
+       "to": [
+        570,
+        150
+       ]
+      },
+      {
+       "id": "leaves",
+       "op": "ellipse",
+       "startMs": 2400,
+       "endMs": 3200,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        600,
+        170
+       ],
+       "rx": 120,
+       "ry": 65,
+       "fill": "soft"
+      },
+      {
+       "id": "leafline",
+       "op": "stroke",
+       "startMs": 3200,
+       "endMs": 4000,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         510,
+         180
+        ],
+        [
+         560,
+         140
+        ],
+        [
+         610,
+         185
+        ],
+        [
+         660,
+         135
+        ],
+        [
+         710,
+         175
+        ]
+       ]
+      },
+      {
+       "id": "blind",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 5200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        410
+       ],
+       "text": "very blind",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-english-ch08-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "eyes",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        270,
+        210
+       ],
+       "r": 42
+      },
+      {
+       "id": "eye2",
+       "op": "circle",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        390,
+        210
+       ],
+       "r": 42
+      },
+      {
+       "id": "pupil1",
+       "op": "circle",
+       "startMs": 1300,
+       "endMs": 1700,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        270,
+        210
+       ],
+       "r": 10,
+       "fill": "accent"
+      },
+      {
+       "id": "pupil2",
+       "op": "circle",
+       "startMs": 1700,
+       "endMs": 2100,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        390,
+        210
+       ],
+       "r": 10,
+       "fill": "accent"
+      },
+      {
+       "id": "notseen",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        330
+       ],
+       "text": "not seen",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "understand",
+       "op": "arrow",
+       "startMs": 3500,
+       "endMs": 4200,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        330,
+        250
+       ],
+       "to": [
+        400,
+        310
+       ]
+      },
+      {
+       "id": "blind",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        430
+       ],
+       "text": "very blind",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-english-ch08-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "tree",
+       "op": "stroke",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         400,
+         400
+        ],
+        [
+         400,
+         160
+        ]
+       ]
+      },
+      {
+       "id": "branch",
+       "op": "stroke",
+       "startMs": 700,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         400,
+         260
+        ],
+        [
+         270,
+         170
+        ]
+       ]
+      },
+      {
+       "id": "leaf",
+       "op": "ellipse",
+       "startMs": 1200,
+       "endMs": 1800,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        235,
+        145
+       ],
+       "rx": 65,
+       "ry": 35,
+       "fill": "soft"
+      },
+      {
+       "id": "world",
+       "op": "circle",
+       "startMs": 1900,
+       "endMs": 2800,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        610,
+        220
+       ],
+       "r": 130
+      },
+      {
+       "id": "big",
+       "op": "label",
+       "startMs": 2900,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        600,
+        75
+       ],
+       "text": "too big",
+       "to": [
+        610,
+        90
+       ]
+      },
+      {
+       "id": "know",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 4900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        460
+       ],
+       "text": "know fully",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-english-ch08-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "child",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        150,
+        310
+       ],
+       "r": 35
+      },
+      {
+       "id": "smallworld",
+       "op": "circle",
+       "startMs": 600,
+       "endMs": 1200,
+       "ink": "soft",
+       "weight": 2,
+       "c": [
+        150,
+        190
+       ],
+       "r": 55
+      },
+      {
+       "id": "grow",
+       "op": "arrow",
+       "startMs": 1400,
+       "endMs": 2600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        205,
+        310
+       ],
+       "to": [
+        550,
+        190
+       ]
+      },
+      {
+       "id": "older",
+       "op": "circle",
+       "startMs": 2700,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        600,
+        310
+       ],
+       "r": 55
+      },
+      {
+       "id": "more",
+       "op": "circle",
+       "startMs": 3500,
+       "endMs": 4500,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        600,
+        150
+       ],
+       "r": 105
+      },
+      {
+       "id": "world",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        440
+       ],
+       "text": "world",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "idea",
+       "op": "text",
+       "startMs": 5600,
+       "endMs": 6200,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        75
+       ],
+       "text": "idea",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-english-ch08-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "stanza",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        80
+       ],
+       "w": 600,
+       "h": 300
+      },
+      {
+       "id": "well",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        150
+       ],
+       "text": "well",
+       "size": "l"
+      },
+      {
+       "id": "shell",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        560,
+        150
+       ],
+       "text": "shell",
+       "size": "l"
+      },
+      {
+       "id": "rhyme",
+       "op": "arrow",
+       "startMs": 2200,
+       "endMs": 3200,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        220,
+        180
+       ],
+       "to": [
+        550,
+        180
+       ]
+      },
+      {
+       "id": "pattern",
+       "op": "numwork",
+       "startMs": 3400,
+       "endMs": 4300,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        280,
+        285
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "A",
+         "B",
+         "C",
+         "B"
+        ]
+       ]
+      },
+      {
+       "id": "rhyming",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5400,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        450
+       ],
+       "text": "well / shell",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "World of the straw nest",
+   "prompt": "sequence: after/for \"World inside the eggshell\"",
+   "src": "c6-english-ch08-t01-i05"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "World among the leaves",
+   "prompt": "sequence: after/for \"World of the straw nest\"",
+   "src": "c6-english-ch08-t01-i06"
+  },
+  {
+   "itemId": "r1:2",
+   "key": "Open world beyond the tree",
+   "prompt": "sequence: after/for \"World among the leaves\"",
+   "src": "c6-english-ch08-t01-i07"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "It thinks the world is shell",
+   "prompt": "cause: after/for \"The bird grows in the egg\""
+  },
+  {
+   "itemId": "r2:1",
+   "key": "It thinks the world is straw",
+   "prompt": "cause: after/for \"The bird lives in a nest\""
+  },
+  {
+   "itemId": "r2:2",
+   "key": "It sees leaves and feels blind",
+   "prompt": "cause: after/for \"The bird flutters out\""
+  },
+  {
+   "itemId": "r2:3",
+   "key": "It knows no one knows all",
+   "prompt": "cause: after/for \"The bird sees the wider world\""
+  },
+  {
+   "itemId": "r3:0",
+   "key": "Bird",
+   "prompt": "who: after/for \"I thought the world was shell\"",
+   "src": "c6-english-ch08-t01-i03"
+  },
+  {
+   "itemId": "r3:1",
+   "key": "Bird",
+   "prompt": "who: after/for \"I thought the world was straw\"",
+   "src": "c6-english-ch08-t01-i05"
+  },
+  {
+   "itemId": "r3:2",
+   "key": "Bird",
+   "prompt": "who: after/for \"The world is too big to know\"",
+   "src": "c6-english-ch08-t01-i07"
+  },
+  {
+   "itemId": "r3:3",
+   "key": "Poet",
+   "prompt": "who: after/for \"Our view grows as we grow\"",
+   "src": "c6-english-ch08-t01-i09"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ },
+ "firstCheck": {
+  "issues": [
+   {
+    "where": "explainer",
+    "what": "The cycle layout incorrectly labels the fourth world as 'Open world' with subtitle 'too big to know', but the kit's fourth world is 'the open world beyond the tree'; the final understanding that the world is too big to know is the bird's realisation, not a separate world. However, the explainer's own text correctly says 'At the end, the bird knows the world is too big for anyone to know fully.' This is a minor wording discrepancy, not a factual error. No high-severity issue.",
+    "severity": "low"
+   },
+   {
+    "where": "game",
+    "what": "In the 'Who says it?' round, line w3 'The world is too big to know' is assigned to the Poet, but the kit item c6-english-ch08-t01-i07 refers to the bird saying it does not know how the world is made and neither do its neighbours – the line is a paraphrase of the bird's thought, not the poet's direct statement. However, in the poem the speaker is always the bird, so attributing this to the Poet is factually wrong.",
+    "severity": "high"
+   }
+  ],
+  "verdict": "fail",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

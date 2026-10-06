@@ -1,0 +1,30 @@
+diff --git a/src/lesson/runtime.ts b/src/lesson/runtime.ts
+index 25205ac..89050bc 100644
+--- a/src/lesson/runtime.ts
++++ b/src/lesson/runtime.ts
+@@ -195,6 +195,8 @@ interface ChildInput {
+   chipId?: string;
+   typed?: boolean;
+   voiceFeatures?: VoiceUtterance;
++  /** ship5 p1-duplex: the duplex engine's turn summary (hashes and codes, never words): TurnRequest.duplex. */
++  duplex?: TurnRequest["duplex"];
+ }
+ 
+ /**
+@@ -597,7 +599,7 @@ export class LessonRuntime {
+         else this.removeCaption(id);
+         // "" with confidence 0 = the child spoke and ASR failed: still worth a Director call (repair move).
+         if ((e.text || e.asrConfidence === 0) && this.state.phase === "live") {
+-          this.queueTurn({ childText: e.text, startedAt: e.startedAt, asrConfidence: e.asrConfidence, chipId: e.chipId, typed: e.typed, ...(voice ? { voiceFeatures: voice } : {}) });
++          this.queueTurn({ childText: e.text, startedAt: e.startedAt, asrConfidence: e.asrConfidence, chipId: e.chipId, typed: e.typed, ...(voice ? { voiceFeatures: voice } : {}), ...(e.duplex ? { duplex: e.duplex } : {}) });
+         }
+         return;
+       }
+@@ -729,6 +731,7 @@ export class LessonRuntime {
+       if (input.chipId) req.chipId = input.chipId;
+       if (input.typed) req.typed = true;
+       if (input.voiceFeatures) req.voiceFeatures = input.voiceFeatures;
++      if (input.duplex) req.duplex = input.duplex;
+     }
+     // A milestone call (no input) carries no teacher turn: those ride with the next child turn, whole.
+     if (batch.events.length) req.moduleEvents = batch.events;

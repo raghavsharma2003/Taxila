@@ -1,0 +1,524 @@
+{
+ "id": "p1-ami-r2-dev-FAST",
+ "date": "2026-10-06",
+ "lane": "FAST",
+ "meetings": [
+  "IS1008b"
+ ],
+ "label": "REAL RECORDED ADULT SPEECH (AMI Meeting Corpus, CC BY 4.0, English incl. Indian-L1 adults; real mic frames, real pauses / overlaps / continuers / interruptions, manual word times). SIMULATED: the STT stream (SttSim, D4 = production gpt-live-transcribe timing) and her playback (another participant replayed open loop). Not children, not Hindi.",
+ "seconds": 696,
+ "pairs": 28,
+ "continuer_keepTalking": {
+  "k": 30,
+  "n": 35,
+  "rate": 0.857,
+  "ci95": [
+   0.706,
+   0.937
+  ]
+ },
+ "continuer_failures": [
+  {
+   "ok": false,
+   "hushed": false,
+   "words": "yes",
+   "ms": 390,
+   "why": "sustained_voice+onset_mid_clause+onset_pitch_raised+lexical_horizon_unseen"
+  },
+  {
+   "ok": false,
+   "hushed": true,
+   "words": "mm-hmm",
+   "ms": 280,
+   "why": "onset_mid_clause+x_rising_burst+prosody_continue+lexical_horizon_unseen"
+  },
+  {
+   "ok": false,
+   "hushed": true,
+   "words": "yep",
+   "ms": 540,
+   "why": "sustained_voice+onset_mid_clause+lexical_horizon_unseen+child_voicing"
+  },
+  {
+   "ok": false,
+   "hushed": false,
+   "words": "oh okay",
+   "ms": 480,
+   "why": "repaired+short_burst+child_voicing"
+  },
+  {
+   "ok": false,
+   "hushed": false,
+   "words": "sure sure",
+   "ms": 950,
+   "why": "repaired+child_voicing"
+  }
+ ],
+ "continuer_hushed": {
+  "k": 9,
+  "n": 35,
+  "rate": 0.257,
+  "ci95": [
+   0.142,
+   0.421
+  ]
+ },
+ "bargeIn_stop": {
+  "n": 19,
+  "stopped": 14,
+  "early": 3,
+  "p50": 150,
+  "p90": 730,
+  "within200": 9
+ },
+ "bargeIn_yield": {
+  "n": 19,
+  "yielded": 13,
+  "p50": 640,
+  "p90": 1060,
+  "within1000": 10
+ },
+ "roomTalk_falseYield": {
+  "k": 0,
+  "n": 30,
+  "rate": 0,
+  "ci95": [
+   0,
+   0.114
+  ]
+ },
+ "roomTalk_hushed": {
+  "k": 4,
+  "n": 30,
+  "rate": 0.133,
+  "ci95": [
+   0.053,
+   0.297
+  ]
+ },
+ "echo_selfYield": {
+  "k": 5,
+  "n": 245,
+  "rate": 0.02
+ },
+ "turnEnd_missedByPhase": [
+  [
+   "child_turn->child_turn",
+   4
+  ],
+  [
+   "child_turn->child_turn+early",
+   3
+  ],
+  [
+   "committed->child_turn",
+   1
+  ],
+  [
+   "child_turn->hold_requested",
+   1
+  ]
+ ],
+ "turnEnd_decisionGap": {
+  "n": 166,
+  "decided": 157,
+  "p50": 960,
+  "p90": 5920,
+  "missed8s": 9,
+  "humanNextSpeakerP50": 210,
+  "within350": 14
+ },
+ "pause_cutoff": {
+  "k": 30,
+  "n": 76,
+  "rate": 0.395,
+  "ci95": [
+   0.292,
+   0.507
+  ],
+  "silence640": {
+   "k": 59,
+   "n": 76,
+   "rate": 0.776,
+   "ci95": [
+    0.671,
+    0.855
+   ]
+  },
+  "silence900": {
+   "k": 26,
+   "n": 76,
+   "rate": 0.342,
+   "ci95": [
+    0.245,
+    0.454
+   ]
+  }
+ },
+ "runs": [
+  {
+   "meeting": "IS1008b",
+   "mode": "overlap",
+   "child": "A",
+   "childL1": "Hindi",
+   "her": "B",
+   "commits": 146,
+   "yields": 78,
+   "hushes": 5,
+   "frames": 88418,
+   "errors": 0,
+   "fallback": null
+  },
+  {
+   "meeting": "IS1008b",
+   "mode": "room",
+   "child": "A",
+   "childL1": "Hindi",
+   "her": "B",
+   "commits": 73,
+   "yields": 65,
+   "hushes": 6,
+   "frames": 88418,
+   "errors": 0,
+   "fallback": null
+  },
+  {
+   "meeting": "IS1008b",
+   "mode": "overlap",
+   "child": "A",
+   "childL1": "Hindi",
+   "her": "C",
+   "commits": 119,
+   "yields": 61,
+   "hushes": 6,
+   "frames": 88418,
+   "errors": 0,
+   "fallback": null
+  },
+  {
+   "meeting": "IS1008b",
+   "mode": "room",
+   "child": "A",
+   "childL1": "Hindi",
+   "her": "C",
+   "commits": 78,
+   "yields": 63,
+   "hushes": 5,
+   "frames": 88418,
+   "errors": 0,
+   "fallback": null
+  },
+  {
+   "meeting": "IS1008b",
+   "mode": "overlap",
+   "child": "A",
+   "childL1": "Hindi",
+   "her": "D",
+   "commits": 173,
+   "yields": 74,
+   "hushes": 7,
+   "frames": 88418,
+   "errors": 0,
+   "fallback": null
+  },
+  {
+   "meeting": "IS1008b",
+   "mode": "room",
+   "child": "A",
+   "childL1": "Hindi",
+   "her": "D",
+   "commits": 72,
+   "yields": 67,
+   "hushes": 9,
+   "frames": 88418,
+   "errors": 0,
+   "fallback": null
+  },
+  {
+   "meeting": "IS1008b",
+   "mode": "turns",
+   "child": "A",
+   "childL1": "Hindi",
+   "her": null,
+   "commits": 241,
+   "yields": 82,
+   "hushes": 0,
+   "frames": 88418,
+   "errors": 0,
+   "fallback": null
+  },
+  {
+   "meeting": "IS1008b",
+   "mode": "overlap",
+   "child": "B",
+   "childL1": "English",
+   "her": "A",
+   "commits": 107,
+   "yields": 46,
+   "hushes": 6,
+   "frames": 88418,
+   "errors": 0,
+   "fallback": null
+  },
+  {
+   "meeting": "IS1008b",
+   "mode": "room",
+   "child": "B",
+   "childL1": "English",
+   "her": "A",
+   "commits": 57,
+   "yields": 46,
+   "hushes": 7,
+   "frames": 88418,
+   "errors": 0,
+   "fallback": null
+  },
+  {
+   "meeting": "IS1008b",
+   "mode": "overlap",
+   "child": "B",
+   "childL1": "English",
+   "her": "C",
+   "commits": 142,
+   "yields": 55,
+   "hushes": 10,
+   "frames": 88418,
+   "errors": 0,
+   "fallback": null
+  },
+  {
+   "meeting": "IS1008b",
+   "mode": "room",
+   "child": "B",
+   "childL1": "English",
+   "her": "C",
+   "commits": 66,
+   "yields": 52,
+   "hushes": 8,
+   "frames": 88418,
+   "errors": 0,
+   "fallback": null
+  },
+  {
+   "meeting": "IS1008b",
+   "mode": "overlap",
+   "child": "B",
+   "childL1": "English",
+   "her": "D",
+   "commits": 157,
+   "yields": 58,
+   "hushes": 4,
+   "frames": 88418,
+   "errors": 0,
+   "fallback": null
+  },
+  {
+   "meeting": "IS1008b",
+   "mode": "room",
+   "child": "B",
+   "childL1": "English",
+   "her": "D",
+   "commits": 75,
+   "yields": 51,
+   "hushes": 4,
+   "frames": 88418,
+   "errors": 0,
+   "fallback": null
+  },
+  {
+   "meeting": "IS1008b",
+   "mode": "turns",
+   "child": "B",
+   "childL1": "English",
+   "her": null,
+   "commits": 256,
+   "yields": 70,
+   "hushes": 0,
+   "frames": 88418,
+   "errors": 0,
+   "fallback": null
+  },
+  {
+   "meeting": "IS1008b",
+   "mode": "overlap",
+   "child": "C",
+   "childL1": "English",
+   "her": "A",
+   "commits": 110,
+   "yields": 51,
+   "hushes": 4,
+   "frames": 88418,
+   "errors": 0,
+   "fallback": null
+  },
+  {
+   "meeting": "IS1008b",
+   "mode": "room",
+   "child": "C",
+   "childL1": "English",
+   "her": "A",
+   "commits": 41,
+   "yields": 36,
+   "hushes": 5,
+   "frames": 88418,
+   "errors": 0,
+   "fallback": null
+  },
+  {
+   "meeting": "IS1008b",
+   "mode": "overlap",
+   "child": "C",
+   "childL1": "English",
+   "her": "B",
+   "commits": 104,
+   "yields": 53,
+   "hushes": 4,
+   "frames": 88418,
+   "errors": 0,
+   "fallback": null
+  },
+  {
+   "meeting": "IS1008b",
+   "mode": "room",
+   "child": "C",
+   "childL1": "English",
+   "her": "B",
+   "commits": 56,
+   "yields": 46,
+   "hushes": 4,
+   "frames": 88418,
+   "errors": 0,
+   "fallback": null
+  },
+  {
+   "meeting": "IS1008b",
+   "mode": "overlap",
+   "child": "C",
+   "childL1": "English",
+   "her": "D",
+   "commits": 145,
+   "yields": 54,
+   "hushes": 7,
+   "frames": 88418,
+   "errors": 0,
+   "fallback": null
+  },
+  {
+   "meeting": "IS1008b",
+   "mode": "room",
+   "child": "C",
+   "childL1": "English",
+   "her": "D",
+   "commits": 67,
+   "yields": 55,
+   "hushes": 10,
+   "frames": 88418,
+   "errors": 0,
+   "fallback": null
+  },
+  {
+   "meeting": "IS1008b",
+   "mode": "turns",
+   "child": "C",
+   "childL1": "English",
+   "her": null,
+   "commits": 223,
+   "yields": 73,
+   "hushes": 0,
+   "frames": 88418,
+   "errors": 0,
+   "fallback": null
+  },
+  {
+   "meeting": "IS1008b",
+   "mode": "overlap",
+   "child": "D",
+   "childL1": "English",
+   "her": "A",
+   "commits": 87,
+   "yields": 35,
+   "hushes": 9,
+   "frames": 88418,
+   "errors": 0,
+   "fallback": null
+  },
+  {
+   "meeting": "IS1008b",
+   "mode": "room",
+   "child": "D",
+   "childL1": "English",
+   "her": "A",
+   "commits": 36,
+   "yields": 34,
+   "hushes": 4,
+   "frames": 88418,
+   "errors": 0,
+   "fallback": null
+  },
+  {
+   "meeting": "IS1008b",
+   "mode": "overlap",
+   "child": "D",
+   "childL1": "English",
+   "her": "B",
+   "commits": 130,
+   "yields": 37,
+   "hushes": 5,
+   "frames": 88418,
+   "errors": 0,
+   "fallback": null
+  },
+  {
+   "meeting": "IS1008b",
+   "mode": "room",
+   "child": "D",
+   "childL1": "English",
+   "her": "B",
+   "commits": 42,
+   "yields": 30,
+   "hushes": 4,
+   "frames": 88418,
+   "errors": 0,
+   "fallback": null
+  },
+  {
+   "meeting": "IS1008b",
+   "mode": "overlap",
+   "child": "D",
+   "childL1": "English",
+   "her": "C",
+   "commits": 117,
+   "yields": 37,
+   "hushes": 4,
+   "frames": 88418,
+   "errors": 0,
+   "fallback": null
+  },
+  {
+   "meeting": "IS1008b",
+   "mode": "room",
+   "child": "D",
+   "childL1": "English",
+   "her": "C",
+   "commits": 50,
+   "yields": 38,
+   "hushes": 5,
+   "frames": 88418,
+   "errors": 0,
+   "fallback": null
+  },
+  {
+   "meeting": "IS1008b",
+   "mode": "turns",
+   "child": "D",
+   "childL1": "English",
+   "her": null,
+   "commits": 265,
+   "yields": 56,
+   "hushes": 0,
+   "frames": 88418,
+   "errors": 0,
+   "fallback": null
+  }
+ ]
+}

@@ -1,0 +1,1703 @@
+{
+ "topicId": "c7-science-ch07-t02",
+ "title": "Convection, land and sea breeze",
+ "chapter": "Heat Transfer in Nature",
+ "subject": "science",
+ "class": 7,
+ "topicType": "T3",
+ "plan": {
+  "game": "heat-lab@1",
+  "hint": "breeze mode (day and night hours)"
+ },
+ "game": {
+  "archetype": "heat-lab@1",
+  "spec": {
+   "archetype": "heat-lab@1",
+   "skills": [
+    "c7-science-ch07-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "done": "right",
+    "heat": "HEAT",
+    "lock": "LOCK",
+    "run": "RUN",
+    "first": "falls first",
+    "last": "last",
+    "land": "land",
+    "sea": "sea",
+    "hour": "time",
+    "seaBreeze": "sea breeze",
+    "landBreeze": "land breeze",
+    "keepCool": "keep it cool",
+    "keepWarm": "keep it warm",
+    "runDone": "Lab closed",
+    "caught": "caught",
+    "passed": "passed",
+    "keep": "keep which?",
+    "target": "get",
+    "steps": "steps",
+    "reset": "start again",
+    "black": "black",
+    "dark": "dark",
+    "white": "white",
+    "shiny": "shiny",
+    "copper": "copper",
+    "aluminium": "aluminium",
+    "iron": "iron",
+    "steel": "steel",
+    "glass": "glass",
+    "wood": "wood",
+    "plastic": "plastic",
+    "stones": "stones",
+    "rice": "rice",
+    "flour": "flour",
+    "husk": "husk",
+    "sand": "sand",
+    "salt": "salt",
+    "sugar": "sugar",
+    "sawdust": "sawdust",
+    "chalk": "chalk",
+    "handpick": "pick out",
+    "sieve": "sieve",
+    "winnow": "winnow",
+    "magnet": "magnet",
+    "water": "add water",
+    "filter": "filter",
+    "evaporate": "evaporate",
+    "wet": "in water"
+   },
+   "title": "Heat & Matter Lab",
+   "rounds": [
+    {
+     "mode": "breeze",
+     "title": "Sunny beach",
+     "sub": "set the breeze at 2 pm",
+     "asks": [
+      14
+     ],
+     "targets": "c7-science-ch07-t02-m2"
+    },
+    {
+     "mode": "breeze",
+     "title": "Night beach",
+     "sub": "set the breeze at night",
+     "asks": [
+      22,
+      3
+     ],
+     "targets": "c7-science-ch07-t02-m1"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-science-ch07-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "How a sea breeze forms",
+   "accent": "sci",
+   "targets": "c7-science-ch07-t02-m2",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "How a sea breeze forms"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Daytime breeze blows land to sea"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "land",
+       "type": "node",
+       "text": "Hot land",
+       "sub": "heats faster",
+       "glyph": "mountain",
+       "x": 180,
+       "y": 340,
+       "color": "amber"
+      },
+      {
+       "id": "sea",
+       "type": "node",
+       "text": "Cool sea",
+       "sub": "heats slower",
+       "glyph": "wave",
+       "x": 700,
+       "y": 340,
+       "color": "sci"
+      },
+      {
+       "id": "warmAir",
+       "type": "node",
+       "text": "Warm air",
+       "sub": "lighter; rises",
+       "glyph": "wind",
+       "x": 420,
+       "y": 210,
+       "color": "sun"
+      },
+      {
+       "id": "coolAir",
+       "type": "node",
+       "text": "Cool air",
+       "sub": "heavier; sinks",
+       "glyph": "wind",
+       "x": 520,
+       "y": 470,
+       "color": "ion"
+      },
+      {
+       "id": "sun",
+       "type": "glyph",
+       "name": "sun",
+       "x": 430,
+       "y": 120,
+       "size": 100,
+       "color": "sun"
+      },
+      {
+       "id": "up",
+       "type": "arrow",
+       "from": "land",
+       "to": "warmAir",
+       "text": "rises"
+      },
+      {
+       "id": "down",
+       "type": "arrow",
+       "from": "coolAir",
+       "to": "sea",
+       "text": "sinks"
+      },
+      {
+       "id": "in",
+       "type": "arrow",
+       "from": "sea",
+       "to": "land",
+       "text": "moves in"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "day",
+       "type": "node",
+       "text": "Day",
+       "sub": "sea breeze",
+       "glyph": "sun",
+       "x": 180,
+       "y": 300,
+       "color": "sun"
+      },
+      {
+       "id": "seaToLand",
+       "type": "label",
+       "text": "Sea to land",
+       "x": 400,
+       "y": 300,
+       "color": "sci"
+      },
+      {
+       "id": "night",
+       "type": "node",
+       "text": "Night",
+       "sub": "land breeze",
+       "glyph": "moon",
+       "x": 700,
+       "y": 300,
+       "color": "ion"
+      },
+      {
+       "id": "landToSea",
+       "type": "label",
+       "text": "Land to sea",
+       "x": 400,
+       "y": 440,
+       "color": "amber"
+      },
+      {
+       "id": "dayArrow",
+       "type": "arrow",
+       "from": "seaToLand",
+       "to": "day",
+       "text": "breeze"
+      },
+      {
+       "id": "nightArrow",
+       "type": "arrow",
+       "from": "landToSea",
+       "to": "night",
+       "text": "breeze"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "On a sunny day, the Sun heats both the land and the sea. Land heats up faster than water.",
+    "L2": "Air over the hot land warms, expands, becomes lighter, and rises.",
+    "L3": "Cooler, heavier air over the sea sinks and moves in to take its place.",
+    "L4": "That moving air is convection: warm air rises while cool air sinks, making a circulating current.",
+    "L5": "So the daytime sea breeze blows from the sea towards the land.",
+    "L6": "At night, land cools faster than the sea. Air over the warmer sea rises, and cooler air moves from land towards the sea.",
+    "L7": "Heat can also travel sideways through a spoon by conduction or from a heater by radiation. Heat does not only move upward.",
+    "L8": "Now check the direction of the daytime breeze."
+   },
+   "narration": {
+    "L1": {
+     "text": "On a sunny day, the Sun heats both the land and the sea. Land heats up faster than water.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "Air over the hot land warms, expands, becomes lighter, and rises.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "Cooler, heavier air over the sea sinks and moves in to take its place.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "That moving air is convection: warm air rises while cool air sinks, making a circulating current.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "So the daytime sea breeze blows from the sea towards the land.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "At night, land cools faster than the sea. Air over the warmer sea rises, and cooler air moves from land towards the sea.",
+     "dur": 9,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Heat can also travel sideways through a spoon by conduction or from a heater by radiation. Heat does not only move upward.",
+     "dur": 9,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Now check the direction of the daytime breeze.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "sun",
+        "land",
+        "sea"
+       ]
+      },
+      {
+       "at": 2,
+       "do": "highlight",
+       "dur": 2,
+       "target": "land"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "warmAir"
+      },
+      {
+       "at": 0.5,
+       "do": "flow",
+       "dur": 1,
+       "target": "up",
+       "to": 1
+      },
+      {
+       "at": 2,
+       "do": "highlight",
+       "dur": 1.5,
+       "target": "warmAir"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "coolAir",
+        "down"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 1,
+       "target": "down",
+       "to": 1
+      },
+      {
+       "at": 3,
+       "do": "flow",
+       "dur": 1,
+       "target": "in",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 2,
+       "target": [
+        "warmAir",
+        "coolAir"
+       ]
+      },
+      {
+       "at": 2.5,
+       "do": "camera",
+       "dur": 2,
+       "zoom": 1.06
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.5,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "day",
+        "seaToLand"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 1,
+       "target": "dayArrow",
+       "to": 1
+      },
+      {
+       "at": 3,
+       "do": "focus",
+       "dur": 1,
+       "target": "seaToLand"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "night",
+        "landToSea"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 1,
+       "target": "nightArrow",
+       "to": 1
+      },
+      {
+       "at": 3,
+       "do": "highlight",
+       "dur": 1.5,
+       "target": "night"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      },
+      {
+       "at": 2,
+       "do": "bust",
+       "dur": 1.2,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "camera",
+       "dur": 2,
+       "zoom": 1.04
+      },
+      {
+       "at": "end",
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "In the daytime, which way does the sea breeze blow?",
+    "options": [
+     "seaToLand",
+     "landToSea"
+    ],
+    "answer": "seaToLand",
+    "src": "c7-science-ch07-t02-i02"
+   }
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg",
+  "seconds": 59
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch07-t02-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "sun",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        120,
+        90
+       ],
+       "r": 42,
+       "fill": "accent"
+      },
+      {
+       "id": "sunlabel",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        120,
+        155
+       ],
+       "text": "Sun",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "land",
+       "op": "rect",
+       "startMs": 1000,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        430,
+        300
+       ],
+       "w": 300,
+       "h": 110,
+       "fill": "soft"
+      },
+      {
+       "id": "landlabel",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        580,
+        360
+       ],
+       "text": "land",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "sea",
+       "op": "ellipse",
+       "startMs": 2100,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        250,
+        370
+       ],
+       "rx": 130,
+       "ry": 55,
+       "fill": "soft"
+      },
+      {
+       "id": "sealable",
+       "op": "text",
+       "startMs": 2800,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        250,
+        375
+       ],
+       "text": "sea",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "heatland",
+       "op": "arrow",
+       "startMs": 3300,
+       "endMs": 4100,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        500,
+        290
+       ],
+       "to": [
+        500,
+        210
+       ]
+      },
+      {
+       "id": "heatsea",
+       "op": "arrow",
+       "startMs": 4100,
+       "endMs": 4900,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        250,
+        305
+       ],
+       "to": [
+        250,
+        245
+       ]
+      },
+      {
+       "id": "faster",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 5500,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        580,
+        260
+       ],
+       "text": "faster",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "water",
+       "op": "text",
+       "startMs": 5500,
+       "endMs": 5900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        250,
+        225
+       ],
+       "text": "water",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "compare",
+       "op": "numwork",
+       "startMs": 6200,
+       "endMs": 7800,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        400,
+        440
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "land",
+         "heats",
+         "faster",
+         "than",
+         "water"
+        ]
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch07-t02-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "airland",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        580,
+        250
+       ],
+       "rx": 95,
+       "ry": 48,
+       "fill": "soft"
+      },
+      {
+       "id": "airlabel",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1050,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        580,
+        255
+       ],
+       "text": "air",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "warm",
+       "op": "text",
+       "startMs": 1050,
+       "endMs": 1450,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        580,
+        180
+       ],
+       "text": "warm",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "expand",
+       "op": "arrow",
+       "startMs": 1500,
+       "endMs": 2500,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        580,
+        220
+       ],
+       "to": [
+        580,
+        120
+       ]
+      },
+      {
+       "id": "rise",
+       "op": "label",
+       "startMs": 2500,
+       "endMs": 2950,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        650,
+        155
+       ],
+       "text": "rises",
+       "to": [
+        590,
+        155
+       ]
+      },
+      {
+       "id": "lighter",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3400,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        580,
+        90
+       ],
+       "text": "lighter",
+       "size": "s",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch07-t02-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "airsea",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        250,
+        240
+       ],
+       "rx": 85,
+       "ry": 45,
+       "fill": "soft"
+      },
+      {
+       "id": "cool",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1150,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        250,
+        175
+       ],
+       "text": "cooler",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "heavy",
+       "op": "text",
+       "startMs": 1150,
+       "endMs": 1600,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        250,
+        310
+       ],
+       "text": "heavier",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "sink",
+       "op": "arrow",
+       "startMs": 1700,
+       "endMs": 2700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        250,
+        290
+       ],
+       "to": [
+        250,
+        390
+       ]
+      },
+      {
+       "id": "movein",
+       "op": "arrow",
+       "startMs": 2800,
+       "endMs": 4000,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        300,
+        390
+       ],
+       "to": [
+        470,
+        390
+       ]
+      },
+      {
+       "id": "place",
+       "op": "text",
+       "startMs": 4100,
+       "endMs": 4700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        430
+       ],
+       "text": "take its place",
+       "size": "s",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch07-t02-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "warmrise",
+       "op": "arrow",
+       "startMs": 0,
+       "endMs": 1700,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        570,
+        360
+       ],
+       "to": [
+        570,
+        170
+       ]
+      },
+      {
+       "id": "cooldown",
+       "op": "arrow",
+       "startMs": 1700,
+       "endMs": 3400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        250,
+        170
+       ],
+       "to": [
+        250,
+        360
+       ]
+      },
+      {
+       "id": "current",
+       "op": "arrow",
+       "startMs": 3400,
+       "endMs": 4700,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        250,
+        360
+       ],
+       "to": [
+        570,
+        360
+       ]
+      },
+      {
+       "id": "convection",
+       "op": "text",
+       "startMs": 4800,
+       "endMs": 5500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        90
+       ],
+       "text": "convection",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "warm",
+       "op": "label",
+       "startMs": 5500,
+       "endMs": 6250,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        620,
+        210
+       ],
+       "text": "warm air rises",
+       "to": [
+        575,
+        210
+       ]
+      },
+      {
+       "id": "cool",
+       "op": "label",
+       "startMs": 6250,
+       "endMs": 7000,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        130,
+        300
+       ],
+       "text": "cool air sinks",
+       "to": [
+        245,
+        300
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch07-t02-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "seatext",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        150,
+        250
+       ],
+       "text": "sea",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "landtext",
+       "op": "text",
+       "startMs": 500,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        650,
+        250
+       ],
+       "text": "land",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "breeze",
+       "op": "arrow",
+       "startMs": 1100,
+       "endMs": 2500,
+       "ink": "accent",
+       "weight": 3,
+       "from": [
+        260,
+        300
+       ],
+       "to": [
+        540,
+        300
+       ]
+      },
+      {
+       "id": "day",
+       "op": "text",
+       "startMs": 2600,
+       "endMs": 3100,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        400,
+        180
+       ],
+       "text": "daytime",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "direction",
+       "op": "label",
+       "startMs": 3200,
+       "endMs": 4000,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        350
+       ],
+       "text": "sea to land",
+       "to": [
+        400,
+        300
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch07-t02-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 10387,
+     "ops": [
+      {
+       "id": "night",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "night",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "landnight",
+       "op": "rect",
+       "startMs": 600,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        450,
+        290
+       ],
+       "w": 280,
+       "h": 100,
+       "fill": "soft"
+      },
+      {
+       "id": "landlabel",
+       "op": "text",
+       "startMs": 1200,
+       "endMs": 1550,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        590,
+        345
+       ],
+       "text": "land",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "seanight",
+       "op": "ellipse",
+       "startMs": 1550,
+       "endMs": 2150,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        230,
+        340
+       ],
+       "rx": 125,
+       "ry": 48,
+       "fill": "soft"
+      },
+      {
+       "id": "seawarm",
+       "op": "text",
+       "startMs": 2150,
+       "endMs": 2700,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        230,
+        340
+       ],
+       "text": "warmer sea",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "rise",
+       "op": "arrow",
+       "startMs": 2800,
+       "endMs": 4000,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        230,
+        290
+       ],
+       "to": [
+        230,
+        140
+       ]
+      },
+      {
+       "id": "coolair",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 4500,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        590,
+        240
+       ],
+       "text": "cooler air",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "landsea",
+       "op": "arrow",
+       "startMs": 4600,
+       "endMs": 5900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        440,
+        340
+       ],
+       "to": [
+        300,
+        340
+       ]
+      },
+      {
+       "id": "toward",
+       "op": "text",
+       "startMs": 6000,
+       "endMs": 6600,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        380,
+        410
+       ],
+       "text": "land to sea",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "breeze",
+       "op": "text",
+       "startMs": 7000,
+       "endMs": 7700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        465
+       ],
+       "text": "land breeze",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch07-t02-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9962,
+     "ops": [
+      {
+       "id": "spoon",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 3,
+       "from": [
+        120,
+        300
+       ],
+       "to": [
+        420,
+        300
+       ]
+      },
+      {
+       "id": "handle",
+       "op": "line",
+       "startMs": 800,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        100,
+        300
+       ],
+       "to": [
+        120,
+        300
+       ]
+      },
+      {
+       "id": "heatspoon",
+       "op": "arrow",
+       "startMs": 1200,
+       "endMs": 2500,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        150,
+        300
+       ],
+       "to": [
+        390,
+        300
+       ]
+      },
+      {
+       "id": "conduction",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        270,
+        250
+       ],
+       "text": "conduction",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "heater",
+       "op": "rect",
+       "startMs": 3300,
+       "endMs": 3900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        570,
+        260
+       ],
+       "w": 80,
+       "h": 100,
+       "fill": "accent"
+      },
+      {
+       "id": "heaterlabel",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        610,
+        390
+       ],
+       "text": "heater",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "radiation",
+       "op": "arrow",
+       "startMs": 4500,
+       "endMs": 5600,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        570,
+        300
+       ],
+       "to": [
+        730,
+        300
+       ]
+      },
+      {
+       "id": "radiate",
+       "op": "text",
+       "startMs": 5600,
+       "endMs": 6300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        650,
+        245
+       ],
+       "text": "radiation",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "sideways",
+       "op": "text",
+       "startMs": 6500,
+       "endMs": 7100,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        400,
+        450
+       ],
+       "text": "sideways",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "notup",
+       "op": "text",
+       "startMs": 7300,
+       "endMs": 8100,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        400,
+        90
+       ],
+       "text": "not only upward",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch07-t02-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4004,
+     "ops": [
+      {
+       "id": "sea",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        180,
+        300
+       ],
+       "rx": 110,
+       "ry": 55,
+       "fill": "soft"
+      },
+      {
+       "id": "sealable",
+       "op": "text",
+       "startMs": 500,
+       "endMs": 850,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        300
+       ],
+       "text": "sea",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "land",
+       "op": "rect",
+       "startMs": 850,
+       "endMs": 1350,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        500,
+        250
+       ],
+       "w": 180,
+       "h": 100,
+       "fill": "soft"
+      },
+      {
+       "id": "landlabel",
+       "op": "text",
+       "startMs": 1350,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        590,
+        305
+       ],
+       "text": "land",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "checkbreeze",
+       "op": "arrow",
+       "startMs": 1800,
+       "endMs": 3000,
+       "ink": "accent",
+       "weight": 3,
+       "from": [
+        300,
+        300
+       ],
+       "to": [
+        500,
+        300
+       ]
+      },
+      {
+       "id": "checklabel",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3700,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        400,
+        220
+       ],
+       "text": "daytime breeze",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "sea → land",
+   "prompt": "14:00"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "land → sea",
+   "prompt": "22:00"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "land → sea",
+   "prompt": "3:00"
+  }
+ ],
+ "check": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "Round 1 ('Sunny beach') targets 'c7-science-ch07-t02-m2' (misconception 'daytime breeze blows from hot land to cool sea') but sets the time at '2 pm', which matches the kit's sea breeze direction. However, the game asks [14] which likely expects the user to set or identify the breeze direction; the kit states that during the day the breeze blows from sea to land. The target is correctly set, but the label 'Sunny beach' and 'set the breeze at 2 pm' may imply the user must select 'sea to land' to correct the misconception. No fact error — not an issue.",
+    "severity": "low"
+   },
+   {
+    "where": "game",
+    "what": "Round 2 ('Night beach') targets 'c7-science-ch07-t02-m1' (misconception 'Heat only moves upward'). The kit's misconception m1 is about heat moving only upward, not about night breeze. Round 2 asks about breeze at night (22:00 and 3:00) which in the kit is a land breeze (land to sea). Targeting m1 here is a category mismatch: the round's topic is night breeze (related to land/sea breeze) but the misconception it claims to address is about heat direction. This may confuse learners expecting a connection between the breeze direction and the misconception. However, the kit's item i11 and text do address that heat also moves in other ways, but the night breeze itself is not about heat moving only upward. The target is factually not wrong but pedagogically misaligned.",
+    "severity": "low"
+   }
+  ],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

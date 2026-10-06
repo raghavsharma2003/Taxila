@@ -128,8 +128,10 @@ export interface DuplexLiveOptions {
 
 const MS_PER_CHAR = 70;
 const EXPLAINING_BEATS = new Set(["teachback", "explain", "worked_example", "contrast", "explore_question", "reflect"]);
-const YES_NO_LEAD = /^(?:क्या|kya|is|are|do|does|did|can|will|would|should|have|has)\b/iu;
-const YES_NO_TAIL = /(?:\bna|ना|\bhai na|है ना|\bright|\bnaa|सही|theek hai|ठीक है)\s*[?？]\s*$/iu;
+// word edges that work for Devanagari too (JS \b is ASCII-only: "क्या\b" never matched, so no Hindi yes/no lead was read)
+const YES_NO_LEAD = /^(?:क्या|kya|is|are|do|does|did|can|will|would|should|have|has)(?![\p{L}\p{M}])/iu;
+const YES_NO_TAIL = /(?:(?<![\p{L}\p{M}])na|(?<![\p{L}\p{M}])ना|hai na|है ना|(?<![\p{L}\p{M}])right|(?<![\p{L}\p{M}])naa|सही|theek hai|ठीक है)\s*[?？]\s*$/iu;
+const WH_WORD = /(?<![\p{L}\p{M}])(?:kitne|kitna|kaun|kya hai|कितने|कितना|कौन|क्यों|कैसे|what|which|how|why)(?![\p{L}\p{M}])/iu;
 
 /** Her act from her own line (the Director's text; never the answer). */
 export function herActOf(text: string, ui: TurnUi): HerAct {
@@ -138,7 +140,7 @@ export function herActOf(text: string, ui: TurnUi): HerAct {
   if (ui.answerForm === "choice" || ui.handover === "choice") return "asked_choice";
   if (!q && !ui.answerForm) return "explaining";
   const last = t.split(/(?<=[.!?？।])\s+/).filter(Boolean).pop() ?? t;
-  if (YES_NO_TAIL.test(last) || (YES_NO_LEAD.test(last) && !/\b(?:kitne|kitna|kaun|kya hai|कितने|कितना|कौन|क्यों|कैसे|what|which|how|why)\b/iu.test(last))) return "asked_yes_no";
+  if (YES_NO_TAIL.test(last) || (YES_NO_LEAD.test(last) && !WH_WORD.test(last))) return "asked_yes_no";
   if (ui.answerForm === "number" || ui.answerForm === "words") return "asked_closed";
   return "asked_open";
 }
@@ -186,7 +188,12 @@ export function handsOverOf(text: string, ui: TurnUi): boolean {
  */
 export class EchoCoupling {
   private d: number[] = [];
-  constructor(private readonly prior = -30, private readonly window = 250) {}
+  private readonly prior: number;
+  private readonly window: number;
+  constructor(prior = -30, window = 250) {
+    this.prior = prior;
+    this.window = window;
+  }
   push(micDb: number, outDb: number | null): void {
     if (outDb === null || outDb < -60) return;
     this.d.push(Math.max(-70, Math.min(10, micDb - outDb)));
@@ -276,7 +283,6 @@ export class DuplexLive {
   /** The turn the engine committed last, until her reply to it starts (a revoke drops that reply). */
   private pendingTurn: number | null = null;
   private ui: TurnUi = {};
-  private voicing = false;
   private overlapOnsetAt: number | null = null;
   private lastItemId: string | undefined;
   private phase: FloorPhase = "idle";
@@ -338,12 +344,13 @@ export class DuplexLive {
     this.stats.frames++;
     const micDb = rms > 0 ? 20 * Math.log10(rms) : -100;
     const herSounding = !!this.her && herOutDb !== null && herOutDb > -60;
-    // the coupling learns only from frames where the child is not voicing over her (else the child's voice biases it up)
-    if (herSounding && !this.voicing) this.echo.push(micDb, herOutDb);
+    // the coupling learns from EVERY frame she is audible in: the 30th percentile already ignores the minority of frames a
+    // child talks over her. p1-duplex 2026-10-06 (AMI real speech, headset bleed -10..-22 dB): gating it on "the child is
+    // not voicing" never learned a strong echo path, because her own echo above the -30 dB prior read as the child voicing
+    if (herSounding) this.echo.push(micDb, herOutDb);
     this.guard(() => {
       if (this.her) this.host.herEvent({ kind: "level", t, db: herOutDb === null ? null : herOutDb + this.echo.db });
       this.host.frame(t, rms, f0);
-      this.voicing = this.host.childVoicing;
     });
   }
 

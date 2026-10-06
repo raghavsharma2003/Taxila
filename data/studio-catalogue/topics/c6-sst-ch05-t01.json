@@ -1,0 +1,1758 @@
+{
+ "topicId": "c6-sst-ch05-t01",
+ "title": "India, That Is Bharat",
+ "chapter": "India, That Is Bharat",
+ "subject": "sst",
+ "class": 6,
+ "topicType": "T3",
+ "plan": {
+  "game": "era-drop@1",
+  "hint": "place / century / order modes with BCE and CE dates from the kit"
+ },
+ "game": {
+  "archetype": "era-drop@1",
+  "spec": {
+   "archetype": "era-drop@1",
+   "skills": [
+    "c6-sst-ch05-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "landed": "landed",
+    "precision": "precision",
+    "coach": "Drag the dock along the timeline",
+    "first": "Which came first?",
+    "runDone": "Timeline complete",
+    "offBy": "off by",
+    "years": "years",
+    "exact": "SPOT ON",
+    "century": "century",
+    "bce": "BCE",
+    "ce": "CE",
+    "earlier": "EARLIER"
+   },
+   "title": "Names of India",
+   "axis": {
+    "min": -10,
+    "max": 2000
+   },
+   "rounds": [
+    {
+     "mode": "place",
+     "title": "Place the name steps",
+     "sub": "Follow the river-name chain",
+     "ticks": 0,
+     "speed": 0.8,
+     "tol": 17,
+     "items": [
+      {
+       "text": "Sindhu",
+       "value": -4,
+       "src": "c6-sst-ch05-t01-i08"
+      },
+      {
+       "text": "Hindu",
+       "value": -3,
+       "src": "c6-sst-ch05-t01-i08"
+      },
+      {
+       "text": "Indos",
+       "value": -2,
+       "src": "c6-sst-ch05-t01-i08"
+      },
+      {
+       "text": "India",
+       "value": -1,
+       "src": "c6-sst-ch05-t01-i08"
+      }
+     ]
+    },
+    {
+     "mode": "century",
+     "title": "Find the century",
+     "sub": "Spot when Article 1 took effect",
+     "ticks": 0,
+     "speed": 0.9,
+     "tol": 30,
+     "items": [
+      {
+       "text": "Article 1 in force",
+       "value": 1950,
+       "src": "c6-sst-ch05-t01-i05"
+      },
+      {
+       "text": "India, that is Bharat",
+       "value": 1950,
+       "src": "c6-sst-ch05-t01-i05"
+      }
+     ]
+    },
+    {
+     "mode": "order",
+     "title": "Which came first?",
+     "sub": "Put the word chain in order",
+     "ticks": 0,
+     "speed": 1,
+     "tol": 17,
+     "items": [
+      {
+       "text": "India",
+       "value": -1
+      },
+      {
+       "text": "Sindhu",
+       "value": -4
+      },
+      {
+       "text": "Indos",
+       "value": -2
+      },
+      {
+       "text": "Hindu",
+       "value": -3
+      }
+     ],
+     "targets": "c6-sst-ch05-t01-m1"
+    }
+   ]
+  },
+  "repairs": [
+   "ticks:dense",
+   "ticks:dense",
+   "ticks:dense"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c6-sst-ch05-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "India, That Is Bharat",
+   "accent": "amber",
+   "targets": "c6-sst-ch05-t01-m1",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "India, That Is Bharat"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "India was invented by the British"
+      },
+      {
+       "id": "bharat",
+       "type": "node",
+       "text": "Bharata",
+       "sub": "used within",
+       "glyph": "book",
+       "color": "amber"
+      },
+      {
+       "id": "jambu",
+       "type": "node",
+       "text": "Jambudvipa",
+       "sub": "jambu tree land",
+       "glyph": "tree",
+       "color": "mint"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "sindhu",
+       "type": "node",
+       "text": "Sindhu",
+       "sub": "river name",
+       "glyph": "river",
+       "color": "sci"
+      },
+      {
+       "id": "hindu",
+       "type": "node",
+       "text": "Hindu",
+       "sub": "Persians",
+       "glyph": "map",
+       "color": "amber"
+      },
+      {
+       "id": "indos",
+       "type": "node",
+       "text": "Indos",
+       "sub": "Greeks",
+       "glyph": "ship",
+       "color": "ion"
+      },
+      {
+       "id": "india",
+       "type": "node",
+       "text": "India",
+       "sub": "later usage",
+       "glyph": "globe",
+       "color": "sun"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "sindhu",
+       "to": "hindu",
+       "text": "s to h"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "hindu",
+       "to": "indos",
+       "text": "borrowed"
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "indos",
+       "to": "india",
+       "text": "became"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "column",
+     "els": [
+      {
+       "id": "article",
+       "type": "quote",
+       "text": "India, that is Bharat",
+       "hi": [
+        0,
+        1,
+        2,
+        3
+       ],
+       "hi2": []
+      },
+      {
+       "id": "union",
+       "type": "label",
+       "text": "Union of States",
+       "x": 400,
+       "y": 300,
+       "color": "amber"
+      },
+      {
+       "id": "optIndia",
+       "type": "label",
+       "text": "India",
+       "x": 180,
+       "y": 450,
+       "color": "ion"
+      },
+      {
+       "id": "optBharat",
+       "type": "label",
+       "text": "Bharat",
+       "x": 500,
+       "y": 450,
+       "color": "mint"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Our land has had many names over time, and those names tell us about its past.",
+    "L2": "Bharata was used by people of the land and is linked to the Bharata clan in the Rig Veda.",
+    "L3": "Jambudvipa means the land of the jambu, or jamun, tree. It appears in old texts and an inscription of Ashoka.",
+    "L4": "Now watch the word chain from the river Sindhu to the name India.",
+    "L5": "Persians pronounced the s in Sindhu as h, saying Hindu. Greeks changed this to Indos, and Indos led to India.",
+    "L6": "So India was not invented recently by the British; it is a name shaped through older languages and travellers.",
+    "L7": "The Constitution gives both names: India, that is Bharat, shall be a Union of States.",
+    "L8": "India and Bharat are two official names for the same country. Now choose the correct statement."
+   },
+   "narration": {
+    "L1": {
+     "text": "Our land has had many names over time, and those names tell us about its past.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "Bharata was used by people of the land and is linked to the Bharata clan in the Rig Veda.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "Jambudvipa means the land of the jambu, or jamun, tree. It appears in old texts and an inscription of Ashoka.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "Now watch the word chain from the river Sindhu to the name India.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "Persians pronounced the s in Sindhu as h, saying Hindu. Greeks changed this to Indos, and Indos led to India.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "So India was not invented recently by the British; it is a name shaped through older languages and travellers.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "The Constitution gives both names: India, that is Bharat, shall be a Union of States.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "India and Bharat are two official names for the same country. Now choose the correct statement.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "bharat",
+        "jambu"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1.2,
+       "target": "bharat"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1.2,
+       "target": "jambu"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "sindhu"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "hindu",
+        "a1"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "a1",
+       "to": 1
+      },
+      {
+       "at": 1.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "indos",
+        "a2"
+       ]
+      },
+      {
+       "at": 2.3,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "a2",
+       "to": 1
+      },
+      {
+       "at": 3,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "india",
+        "a3"
+       ]
+      },
+      {
+       "at": 3.8,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "a3",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "myth"
+      },
+      {
+       "at": 0.8,
+       "do": "bust",
+       "dur": 1.2,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "article"
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 1.2,
+       "target": "article"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "optIndia",
+        "optBharat"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which statement matches Article 1 of the Constitution?",
+    "options": [
+     "optIndia",
+     "optBharat"
+    ],
+    "answer": "optBharat",
+    "src": "c6-sst-ch05-t01-i05"
+   }
+  },
+  "repairs": [],
+  "attempts": 2,
+  "model": "taxila-fast-bg",
+  "seconds": 41
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch05-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "title",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        65
+       ],
+       "text": "names over time",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "timeline",
+       "op": "line",
+       "startMs": 1000,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        100,
+        250
+       ],
+       "to": [
+        700,
+        250
+       ]
+      },
+      {
+       "id": "past",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2300,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        100,
+        220
+       ],
+       "text": "past",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "now",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2300,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        700,
+        220
+       ],
+       "text": "now",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "n1",
+       "op": "circle",
+       "startMs": 2400,
+       "endMs": 2900,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        220,
+        250
+       ],
+       "r": 18
+      },
+      {
+       "id": "n2",
+       "op": "circle",
+       "startMs": 3000,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        390,
+        250
+       ],
+       "r": 18
+      },
+      {
+       "id": "n3",
+       "op": "circle",
+       "startMs": 3600,
+       "endMs": 4100,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        560,
+        250
+       ],
+       "r": 18
+      },
+      {
+       "id": "lab1",
+       "op": "label",
+       "startMs": 4200,
+       "endMs": 4900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        220,
+        310
+       ],
+       "text": "Bharata",
+       "target": "n1"
+      },
+      {
+       "id": "lab2",
+       "op": "label",
+       "startMs": 4900,
+       "endMs": 5700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        390,
+        310
+       ],
+       "text": "Jambudvipa",
+       "target": "n2"
+      },
+      {
+       "id": "lab3",
+       "op": "label",
+       "startMs": 5700,
+       "endMs": 6400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        560,
+        310
+       ],
+       "text": "India",
+       "target": "n3"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch05-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "bharata",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        80
+       ],
+       "text": "Bharata",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "clan",
+       "op": "ellipse",
+       "startMs": 1100,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        220
+       ],
+       "rx": 150,
+       "ry": 55
+      },
+      {
+       "id": "clantext",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        220
+       ],
+       "text": "Bharata clan",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "rig",
+       "op": "rect",
+       "startMs": 2800,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        280,
+        330
+       ],
+       "w": 240,
+       "h": 70,
+       "round": 12
+      },
+      {
+       "id": "rigtext",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        365
+       ],
+       "text": "Rig Veda",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "link",
+       "op": "arrow",
+       "startMs": 4400,
+       "endMs": 5200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        275
+       ],
+       "to": [
+        400,
+        330
+       ]
+      },
+      {
+       "id": "past",
+       "op": "text",
+       "startMs": 6000,
+       "endMs": 6900,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        400,
+        455
+       ],
+       "text": "land and past",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch05-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9111,
+     "ops": [
+      {
+       "id": "jambu",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        65
+       ],
+       "text": "Jambudvipa",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "tree",
+       "op": "line",
+       "startMs": 1100,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        400,
+        350
+       ],
+       "to": [
+        400,
+        180
+       ]
+      },
+      {
+       "id": "branch1",
+       "op": "line",
+       "startMs": 1500,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 1,
+       "from": [
+        400,
+        220
+       ],
+       "to": [
+        320,
+        170
+       ]
+      },
+      {
+       "id": "branch2",
+       "op": "line",
+       "startMs": 1700,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 1,
+       "from": [
+        400,
+        230
+       ],
+       "to": [
+        480,
+        170
+       ]
+      },
+      {
+       "id": "crown",
+       "op": "circle",
+       "startMs": 2200,
+       "endMs": 2900,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        400,
+        145
+       ],
+       "r": 55
+      },
+      {
+       "id": "jamun",
+       "op": "label",
+       "startMs": 3000,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        420
+       ],
+       "text": "jambu / jamun",
+       "target": "tree"
+      },
+      {
+       "id": "texts",
+       "op": "rect",
+       "startMs": 4300,
+       "endMs": 4900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        120,
+        100
+       ],
+       "w": 170,
+       "h": 60,
+       "round": 10
+      },
+      {
+       "id": "old",
+       "op": "text",
+       "startMs": 4900,
+       "endMs": 5600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        205,
+        130
+       ],
+       "text": "old texts",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "ins",
+       "op": "rect",
+       "startMs": 5700,
+       "endMs": 6300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        510,
+        100
+       ],
+       "w": 170,
+       "h": 60,
+       "round": 10
+      },
+      {
+       "id": "ashoka",
+       "op": "text",
+       "startMs": 6300,
+       "endMs": 7000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        595,
+        130
+       ],
+       "text": "Ashoka",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "toins",
+       "op": "arrow",
+       "startMs": 7000,
+       "endMs": 7800,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        510,
+        160
+       ],
+       "to": [
+        455,
+        180
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch05-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "chain",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        65
+       ],
+       "text": "word chain",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "sindhu",
+       "op": "rect",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        55,
+        190
+       ],
+       "w": 150,
+       "h": 70,
+       "round": 10
+      },
+      {
+       "id": "sindt",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        130,
+        225
+       ],
+       "text": "Sindhu",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "a1",
+       "op": "arrow",
+       "startMs": 2200,
+       "endMs": 2800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        205,
+        225
+       ],
+       "to": [
+        300,
+        225
+       ]
+      },
+      {
+       "id": "hindu",
+       "op": "rect",
+       "startMs": 2800,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        300,
+        190
+       ],
+       "w": 150,
+       "h": 70,
+       "round": 10
+      },
+      {
+       "id": "hindut",
+       "op": "text",
+       "startMs": 3400,
+       "endMs": 4000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        375,
+        225
+       ],
+       "text": "Hindu",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "a2",
+       "op": "arrow",
+       "startMs": 4000,
+       "endMs": 4600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        450,
+        225
+       ],
+       "to": [
+        545,
+        225
+       ]
+      },
+      {
+       "id": "india",
+       "op": "rect",
+       "startMs": 4600,
+       "endMs": 5200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        545,
+        190
+       ],
+       "w": 180,
+       "h": 70,
+       "round": 10
+      },
+      {
+       "id": "indiat",
+       "op": "text",
+       "startMs": 5200,
+       "endMs": 5900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        635,
+        225
+       ],
+       "text": "India",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch05-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 9111,
+     "ops": [
+      {
+       "id": "persian",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        120,
+        90
+       ],
+       "text": "Persians",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "schange",
+       "op": "numwork",
+       "startMs": 800,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        55,
+        135
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "Sindhu",
+         "→",
+         "Hindu"
+        ]
+       ]
+      },
+      {
+       "id": "greek",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        90
+       ],
+       "text": "Greeks",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "gchange",
+       "op": "numwork",
+       "startMs": 2700,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        300,
+        135
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "Hindu",
+         "→",
+         "Indos"
+        ]
+       ]
+      },
+      {
+       "id": "final",
+       "op": "numwork",
+       "startMs": 4000,
+       "endMs": 5000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        245,
+        310
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "Indos",
+         "→",
+         "India"
+        ]
+       ]
+      },
+      {
+       "id": "a1",
+       "op": "arrow",
+       "startMs": 5100,
+       "endMs": 5700,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        180,
+        190
+       ],
+       "to": [
+        300,
+        190
+       ]
+      },
+      {
+       "id": "a2",
+       "op": "arrow",
+       "startMs": 5800,
+       "endMs": 6500,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        470,
+        190
+       ],
+       "to": [
+        470,
+        310
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch05-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "notrecent",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        75
+       ],
+       "text": "not recent",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "older",
+       "op": "ellipse",
+       "startMs": 1200,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        220
+       ],
+       "rx": 210,
+       "ry": 65
+      },
+      {
+       "id": "languages",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        220
+       ],
+       "text": "older languages",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "travellers",
+       "op": "ellipse",
+       "startMs": 2900,
+       "endMs": 3600,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        350
+       ],
+       "rx": 210,
+       "ry": 65
+      },
+      {
+       "id": "traveltext",
+       "op": "text",
+       "startMs": 3600,
+       "endMs": 4300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        350
+       ],
+       "text": "travellers",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "down",
+       "op": "arrow",
+       "startMs": 4400,
+       "endMs": 5000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        285
+       ],
+       "to": [
+        400,
+        315
+       ]
+      },
+      {
+       "id": "indiaword",
+       "op": "text",
+       "startMs": 5500,
+       "endMs": 6300,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        455
+       ],
+       "text": "India",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch05-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "article",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        65
+       ],
+       "text": "Article 1",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "eq",
+       "op": "numwork",
+       "startMs": 1000,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        105,
+        170
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "India",
+         ",",
+         "that i",
+         "Bharat"
+        ]
+       ]
+      },
+      {
+       "id": "union",
+       "op": "rect",
+       "startMs": 2600,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        250,
+        300
+       ],
+       "w": 300,
+       "h": 75,
+       "round": 12
+      },
+      {
+       "id": "uniontext",
+       "op": "text",
+       "startMs": 3400,
+       "endMs": 4300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        337
+       ],
+       "text": "Union of States",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "join",
+       "op": "arrow",
+       "startMs": 4400,
+       "endMs": 5200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        245
+       ],
+       "to": [
+        400,
+        300
+       ]
+      },
+      {
+       "id": "constitution",
+       "op": "text",
+       "startMs": 5500,
+       "endMs": 6300,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        400,
+        440
+       ],
+       "text": "Constitution",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch05-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "same",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        235
+       ],
+       "r": 105
+      },
+      {
+       "id": "india",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        205
+       ],
+       "text": "India",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "bharat",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        270
+       ],
+       "text": "Bharat",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "official",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        380
+       ],
+       "text": "official names",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "choice",
+       "op": "rect",
+       "startMs": 4000,
+       "endMs": 4700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        190,
+        425
+       ],
+       "w": 420,
+       "h": 45,
+       "round": 8
+      },
+      {
+       "id": "correct",
+       "op": "text",
+       "startMs": 4800,
+       "endMs": 5600,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        447
+       ],
+       "text": "same country",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "check",
+       "op": "highlight",
+       "startMs": 5800,
+       "endMs": 6600,
+       "ink": "good",
+       "weight": 2,
+       "target": "same",
+       "style": "circle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "4 BCE",
+   "prompt": "Sindhu",
+   "src": "c6-sst-ch05-t01-i08"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "3 BCE",
+   "prompt": "Hindu",
+   "src": "c6-sst-ch05-t01-i08"
+  },
+  {
+   "itemId": "r1:2",
+   "key": "2 BCE",
+   "prompt": "Indos",
+   "src": "c6-sst-ch05-t01-i08"
+  },
+  {
+   "itemId": "r1:3",
+   "key": "1 BCE",
+   "prompt": "India",
+   "src": "c6-sst-ch05-t01-i08"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "20th century CE",
+   "prompt": "Article 1 in force",
+   "src": "c6-sst-ch05-t01-i05"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "20th century CE",
+   "prompt": "India, that is Bharat",
+   "src": "c6-sst-ch05-t01-i05"
+  },
+  {
+   "itemId": "r3:0",
+   "key": "Sindhu",
+   "prompt": "earlier: India (1 BCE) vs Sindhu (4 BCE)"
+  },
+  {
+   "itemId": "r3:1",
+   "key": "Hindu",
+   "prompt": "earlier: Indos (2 BCE) vs Hindu (3 BCE)"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

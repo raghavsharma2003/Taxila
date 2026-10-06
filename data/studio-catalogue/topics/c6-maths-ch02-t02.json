@@ -1,0 +1,1434 @@
+{
+ "topicId": "c6-maths-ch02-t02",
+ "title": "Angles and comparing angles",
+ "chapter": "Lines and Angles",
+ "subject": "maths",
+ "class": 6,
+ "topicType": "T3",
+ "plan": {
+  "game": "angle-cannon@1",
+  "hint": "turret angles: turns, types, measuring"
+ },
+ "game": {
+  "archetype": "angle-cannon@1",
+  "spec": {
+   "archetype": "angle-cannon@1",
+   "skills": [
+    "c6-maths-ch02-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "coach": "Drag to turn the turret · release to fire",
+    "wave": "Wave",
+    "threat": "THREAT AT",
+    "copy": "COPY THIS TURN",
+    "only": "HIT ONLY",
+    "hit": "DIRECT HIT",
+    "close": "CLOSE",
+    "offBy": "off by",
+    "runDone": "Sector clear",
+    "accuracy": "accuracy",
+    "hits": "hits",
+    "acute": "ACUTE",
+    "right": "RIGHT",
+    "obtuse": "OBTUSE",
+    "reflex": "REFLEX"
+   },
+   "waves": [
+    {
+     "title": "Small turns",
+     "sub": "turn from the starting arm to each target",
+     "mode": "call",
+     "items": [
+      45,
+      90,
+      30,
+      120
+     ],
+     "range": 180,
+     "scaffold": "tens",
+     "speed": 0.75
+    },
+    {
+     "title": "Match the turn",
+     "sub": "match each turn; arm length does not matter",
+     "mode": "copy",
+     "items": [
+      60,
+      135,
+      25,
+      150
+     ],
+     "range": 180,
+     "scaffold": "protractor",
+     "speed": 0.9
+    },
+    {
+     "title": "Compare the turns",
+     "sub": "hit only angles wider than a right angle",
+     "mode": "classify",
+     "items": [
+      40,
+      110,
+      90,
+      135,
+      70,
+      150
+     ],
+     "kind": "obtuse",
+     "range": 180,
+     "scaffold": "none",
+     "speed": 1.05
+    },
+    {
+     "title": "Around the point",
+     "sub": "choose the larger turn from the starting arm",
+     "mode": "call",
+     "items": [
+      180,
+      270,
+      225,
+      315
+     ],
+     "range": 360,
+     "scaffold": "none",
+     "speed": 1.15
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c6-maths-ch02-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Angles and amount of turn",
+   "accent": "ion",
+   "targets": "c6-maths-ch02-t02-m-longer-arms",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Angles and amount of turn"
+      },
+      {
+       "id": "v",
+       "type": "node",
+       "text": "Vertex",
+       "sub": "common point",
+       "glyph": "spark",
+       "color": "ion"
+      },
+      {
+       "id": "arm1",
+       "type": "arrow",
+       "from": "v",
+       "to": "arm2",
+       "text": "arm",
+       "bend": 0
+      },
+      {
+       "id": "arm2",
+       "type": "node",
+       "text": "Ray",
+       "sub": "first arm",
+       "glyph": "ruler",
+       "color": "mint"
+      },
+      {
+       "id": "arm3",
+       "type": "node",
+       "text": "Ray",
+       "sub": "second arm",
+       "glyph": "ruler",
+       "color": "mint"
+      },
+      {
+       "id": "turn",
+       "type": "angle",
+       "deg": 60,
+       "rot": 0,
+       "x": 420,
+       "y": 350,
+       "r": 100
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Longer arms make a bigger angle"
+      },
+      {
+       "id": "bust",
+       "type": "label",
+       "text": "Only the turn matters",
+       "x": 520,
+       "y": 300,
+       "color": "sun"
+      },
+      {
+       "id": "short",
+       "type": "angle",
+       "deg": 60,
+       "rot": 0,
+       "x": 250,
+       "y": 390,
+       "r": 80
+      },
+      {
+       "id": "long",
+       "type": "angle",
+       "deg": 60,
+       "rot": 0,
+       "x": 700,
+       "y": 390,
+       "r": 150
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "shared",
+       "type": "node",
+       "text": "Shared arm",
+       "sub": "start",
+       "glyph": "compass",
+       "color": "ion"
+      },
+      {
+       "id": "two",
+       "type": "node",
+       "text": "2 o'clock",
+       "sub": "2 spaces",
+       "glyph": "clock",
+       "color": "mint"
+      },
+      {
+       "id": "four",
+       "type": "node",
+       "text": "4 o'clock",
+       "sub": "4 spaces",
+       "glyph": "clock",
+       "color": "amber"
+      },
+      {
+       "id": "p1",
+       "type": "arrow",
+       "from": "shared",
+       "to": "two",
+       "text": "turn",
+       "bend": 0
+      },
+      {
+       "id": "p2",
+       "type": "arrow",
+       "from": "shared",
+       "to": "four",
+       "text": "turn",
+       "bend": 0
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "An angle is the amount of turn between two rays that start at the same point.",
+    "L2": "That common point is the vertex, and the two rays are the arms.",
+    "L3": "The size of an angle depends on the turn, not on the length of its arms.",
+    "L4": "Here is a common mistake: longer arms make a bigger angle. That is not true because extending an arm does not change its direction or the turn.",
+    "L5": "To compare angles, put their vertices together and place one arm on top of the other.",
+    "L6": "Then compare where the second arms point. The one turned further out makes the bigger angle.",
+    "L7": "In the worked example, both angles share the 12 hand; compare how many hour-spaces the other hand has turned."
+   },
+   "narration": {},
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "title"
+      },
+      {
+       "at": 0.4,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "v",
+        "arm2",
+        "arm3",
+        "turn"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "v"
+      },
+      {
+       "at": 0.7,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": [
+        "arm2",
+        "arm3"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "short",
+        "long"
+       ]
+      },
+      {
+       "at": 0.6,
+       "do": "highlight",
+       "dur": 1,
+       "target": [
+        "short",
+        "long"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.5,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "myth"
+      },
+      {
+       "at": 0.8,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      },
+      {
+       "at": 1.8,
+       "do": "show",
+       "dur": 0.7,
+       "target": "bust"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "shared"
+      },
+      {
+       "at": 0.5,
+       "do": "focus",
+       "dur": 0.8,
+       "target": "shared"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "two",
+        "four",
+        "p1",
+        "p2"
+       ]
+      },
+      {
+       "at": 0.7,
+       "do": "flow",
+       "dur": 0.8,
+       "target": [
+        "p1",
+        "p2"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": [
+        "shared",
+        "two",
+        "four"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "order",
+    "prompt": "Arrange these by increasing turn from the shared arm.",
+    "items": [
+     "shared",
+     "two",
+     "four"
+    ],
+    "src": "c6-maths-ch02-t02-i02"
+   }
+  },
+  "repairs": [],
+  "attempts": 2,
+  "model": "taxila-fast-bg",
+  "seconds": 58
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch02-t02-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "v1",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        260,
+        270
+       ],
+       "r": 7
+      },
+      {
+       "id": "r1",
+       "op": "line",
+       "startMs": 500,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        260,
+        270
+       ],
+       "to": [
+        120,
+        180
+       ]
+      },
+      {
+       "id": "r2",
+       "op": "line",
+       "startMs": 1400,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        260,
+        270
+       ],
+       "to": [
+        470,
+        150
+       ]
+      },
+      {
+       "id": "arc1",
+       "op": "sector",
+       "startMs": 2400,
+       "endMs": 3700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        260,
+        270
+       ],
+       "r": 105,
+       "fromDeg": -147,
+       "toDeg": -27
+      },
+      {
+       "id": "t1",
+       "op": "label",
+       "startMs": 3900,
+       "endMs": 4700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        285,
+        310
+       ],
+       "text": "angle",
+       "to": [
+        315,
+        245
+       ]
+      },
+      {
+       "id": "t2",
+       "op": "label",
+       "startMs": 4700,
+       "endMs": 5500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        95,
+        165
+       ],
+       "text": "ray",
+       "to": [
+        135,
+        190
+       ]
+      },
+      {
+       "id": "t3",
+       "op": "label",
+       "startMs": 5500,
+       "endMs": 6300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        480,
+        135
+       ],
+       "text": "ray",
+       "to": [
+        455,
+        160
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 4,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch02-t02-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "vlabel",
+       "op": "label",
+       "startMs": 0,
+       "endMs": 1100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        275,
+        335
+       ],
+       "text": "vertex"
+      },
+      {
+       "id": "alabel1",
+       "op": "label",
+       "startMs": 1300,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        85,
+        145
+       ],
+       "text": "arm"
+      },
+      {
+       "id": "alabel2",
+       "op": "label",
+       "startMs": 2400,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        490,
+        115
+       ],
+       "text": "arm"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch02-t02-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "v3",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 400,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        250,
+        280
+       ],
+       "r": 6
+      },
+      {
+       "id": "short1",
+       "op": "line",
+       "startMs": 400,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        250,
+        280
+       ],
+       "to": [
+        145,
+        215
+       ]
+      },
+      {
+       "id": "short2",
+       "op": "line",
+       "startMs": 1100,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        250,
+        280
+       ],
+       "to": [
+        390,
+        190
+       ]
+      },
+      {
+       "id": "long1",
+       "op": "line",
+       "startMs": 2100,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        250,
+        280
+       ],
+       "to": [
+        80,
+        175
+       ]
+      },
+      {
+       "id": "long2",
+       "op": "line",
+       "startMs": 3000,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        250,
+        280
+       ],
+       "to": [
+        570,
+        75
+       ]
+      },
+      {
+       "id": "arc3",
+       "op": "sector",
+       "startMs": 4100,
+       "endMs": 5000,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        250,
+        280
+       ],
+       "r": 75,
+       "fromDeg": -149,
+       "toDeg": -32
+      },
+      {
+       "id": "turn",
+       "op": "label",
+       "startMs": 5200,
+       "endMs": 6000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        285,
+        325
+       ],
+       "text": "turn",
+       "to": [
+        315,
+        245
+       ]
+      },
+      {
+       "id": "h3",
+       "op": "highlight",
+       "startMs": 6200,
+       "endMs": 7200,
+       "ink": "accent",
+       "weight": 2,
+       "target": "arc3",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch02-t02-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 12089,
+     "ops": [
+      {
+       "id": "v4a",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 400,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        190,
+        290
+       ],
+       "r": 6
+      },
+      {
+       "id": "a4a",
+       "op": "line",
+       "startMs": 400,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        190,
+        290
+       ],
+       "to": [
+        95,
+        220
+       ]
+      },
+      {
+       "id": "a4b",
+       "op": "line",
+       "startMs": 1000,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        190,
+        290
+       ],
+       "to": [
+        330,
+        185
+       ]
+      },
+      {
+       "id": "v4b",
+       "op": "circle",
+       "startMs": 2000,
+       "endMs": 2400,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        570,
+        290
+       ],
+       "r": 6
+      },
+      {
+       "id": "b4a",
+       "op": "line",
+       "startMs": 2400,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        570,
+        290
+       ],
+       "to": [
+        475,
+        220
+       ]
+      },
+      {
+       "id": "b4b",
+       "op": "line",
+       "startMs": 3000,
+       "endMs": 4000,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        570,
+        290
+       ],
+       "to": [
+        745,
+        165
+       ]
+      },
+      {
+       "id": "mistake",
+       "op": "label",
+       "startMs": 4300,
+       "endMs": 5400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        105,
+        120
+       ],
+       "text": "longer arms",
+       "to": [
+        545,
+        230
+       ]
+      },
+      {
+       "id": "wrong",
+       "op": "label",
+       "startMs": 5500,
+       "endMs": 6800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        470,
+        345
+       ],
+       "text": "bigger angle",
+       "to": [
+        650,
+        225
+       ]
+      },
+      {
+       "id": "direction",
+       "op": "label",
+       "startMs": 7000,
+       "endMs": 8300,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        285,
+        155
+       ],
+       "text": "same direction",
+       "to": [
+        330,
+        185
+       ]
+      },
+      {
+       "id": "nottrue",
+       "op": "label",
+       "startMs": 8500,
+       "endMs": 9500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        470,
+        400
+       ],
+       "text": "not true",
+       "to": [
+        570,
+        290
+       ]
+      },
+      {
+       "id": "turn4",
+       "op": "label",
+       "startMs": 9700,
+       "endMs": 10800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        315,
+        315
+       ],
+       "text": "same turn",
+       "to": [
+        270,
+        240
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch02-t02-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "v5",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 400,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        300,
+        300
+       ],
+       "r": 7
+      },
+      {
+       "id": "base5",
+       "op": "line",
+       "startMs": 400,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        300,
+        300
+       ],
+       "to": [
+        150,
+        300
+       ]
+      },
+      {
+       "id": "top5",
+       "op": "line",
+       "startMs": 1200,
+       "endMs": 2000,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        300,
+        300
+       ],
+       "to": [
+        420,
+        190
+       ]
+      },
+      {
+       "id": "v5label",
+       "op": "label",
+       "startMs": 2200,
+       "endMs": 3200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        275,
+        340
+       ],
+       "text": "vertices",
+       "target": "v5"
+      },
+      {
+       "id": "overlay",
+       "op": "label",
+       "startMs": 3400,
+       "endMs": 4400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        160,
+        275
+       ],
+       "text": "one arm",
+       "target": "base5"
+      },
+      {
+       "id": "compare5",
+       "op": "label",
+       "startMs": 4600,
+       "endMs": 5800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        445,
+        180
+       ],
+       "text": "second arms",
+       "target": "top5"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch02-t02-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "second6",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 1200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        300,
+        300
+       ],
+       "to": [
+        500,
+        125
+       ]
+      },
+      {
+       "id": "far6",
+       "op": "line",
+       "startMs": 1300,
+       "endMs": 2600,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        300,
+        300
+       ],
+       "to": [
+        610,
+        55
+       ]
+      },
+      {
+       "id": "out6",
+       "op": "label",
+       "startMs": 2900,
+       "endMs": 4100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        615,
+        55
+       ],
+       "text": "further out",
+       "to": [
+        590,
+        75
+       ]
+      },
+      {
+       "id": "bigger6",
+       "op": "label",
+       "startMs": 4400,
+       "endMs": 5400,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        470,
+        350
+       ],
+       "text": "bigger",
+       "to": [
+        445,
+        180
+       ]
+      },
+      {
+       "id": "h6",
+       "op": "highlight",
+       "startMs": 5700,
+       "endMs": 7000,
+       "ink": "accent",
+       "weight": 2,
+       "target": "far6",
+       "style": "pulse"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch02-t02-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "clock1",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        250,
+        255
+       ],
+       "r": 105
+      },
+      {
+       "id": "clock2",
+       "op": "circle",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        550,
+        255
+       ],
+       "r": 105
+      },
+      {
+       "id": "h12a",
+       "op": "line",
+       "startMs": 1500,
+       "endMs": 2100,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        250,
+        255
+       ],
+       "to": [
+        250,
+        165
+       ]
+      },
+      {
+       "id": "h2",
+       "op": "line",
+       "startMs": 2100,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        250,
+        255
+       ],
+       "to": [
+        315,
+        205
+       ]
+      },
+      {
+       "id": "h12b",
+       "op": "line",
+       "startMs": 2800,
+       "endMs": 3400,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        550,
+        255
+       ],
+       "to": [
+        550,
+        165
+       ]
+      },
+      {
+       "id": "h4",
+       "op": "line",
+       "startMs": 3400,
+       "endMs": 4200,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        550,
+        255
+       ],
+       "to": [
+        610,
+        315
+       ]
+      },
+      {
+       "id": "n12a",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 4700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        250,
+        145
+       ],
+       "text": "12",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "n2",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        330,
+        195
+       ],
+       "text": "2",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "n12b",
+       "op": "text",
+       "startMs": 5100,
+       "endMs": 5500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        550,
+        145
+       ],
+       "text": "12",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "n4",
+       "op": "text",
+       "startMs": 5500,
+       "endMs": 5900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        625,
+        325
+       ],
+       "text": "4",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "spaces2",
+       "op": "label",
+       "startMs": 6000,
+       "endMs": 7000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        155,
+        390
+       ],
+       "text": "2 hour-spaces",
+       "to": [
+        285,
+        220
+       ]
+      },
+      {
+       "id": "spaces4",
+       "op": "label",
+       "startMs": 7000,
+       "endMs": 8200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        500,
+        405
+       ],
+       "text": "4 hour-spaces",
+       "to": [
+        585,
+        285
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [],
+ "check": {
+  "issues": [
+   {
+    "where": "explainer",
+    "what": "The task's src claims it links to kit item i02, but its content (ordering items 'shared', 'two', 'four') is not from i02; i02 is about opening a door.",
+    "severity": "low"
+   }
+  ],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ },
+ "firstCheck": {
+  "issues": [
+   {
+    "where": "explainer",
+    "what": "The task says 'What makes an angle bigger?' and the options include 'Longer arms' and 'Bigger arc' which are explicitly covered in the explainer as myths. However, the answer is given away in the prompt: the scene BEFORE the task states 'MYTH: longer arms make a bigger angle. Not true', and the whole explainer targets the 'longer arms' misconception, so a child can simply pick the only non-myth option without understanding why. This violates the rule 'an answer given away in a prompt' because the preceding text directly contradicts the two wrong options, leaving only 'More turn' as the plausible answer.",
+    "severity": "high"
+   }
+  ],
+  "verdict": "fail",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

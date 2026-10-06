@@ -1,0 +1,1493 @@
+{
+ "topicId": "c7-maths-ch04-t01",
+ "title": "Letters standing for numbers",
+ "chapter": "Expressions using Letter-Numbers",
+ "subject": "maths",
+ "class": 7,
+ "topicType": "T3",
+ "plan": {
+  "game": "rule-machine@1",
+  "hint": "build mode with letter rules (x → 3x + 2), evaluate at inputs; inverse round"
+ },
+ "game": {
+  "archetype": "rule-machine@1",
+  "spec": {
+   "archetype": "rule-machine@1",
+   "skills": [
+    "c7-maths-ch04-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "built": "machines",
+    "run": "RUN",
+    "want": "order",
+    "got": "made",
+    "coach": "Tap tiles to build the rule, then RUN",
+    "runDone": "All orders filled",
+    "step": "step",
+    "predict": "predict",
+    "inverse": "run it backwards",
+    "target": "target",
+    "steps": "steps",
+    "pick": "Pick a start",
+    "works": "WORKS",
+    "fix": "Try a different rule"
+   },
+   "title": "Rule Machine",
+   "rounds": [
+    {
+     "mode": "build",
+     "title": "Fill the orders",
+     "sub": "x is a number in every order",
+     "rule": [
+      "×3",
+      "+2"
+     ],
+     "inputs": [
+      1,
+      4,
+      6,
+      10
+     ],
+     "tiles": [
+      "×3",
+      "+2",
+      "+3",
+      "×2"
+     ],
+     "targets": "c7-maths-ch04-t01-m-letter-object"
+    },
+    {
+     "mode": "inverse",
+     "title": "Think backwards",
+     "sub": "Use the rule from the end",
+     "rule": [
+      "×3",
+      "+2"
+     ],
+     "secret": 7,
+     "tiles": [
+      "-2",
+      "÷3",
+      "+2",
+      "×3"
+     ],
+     "targets": "c7-maths-ch04-t01-m-alphabet-value"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-maths-ch04-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Letters standing for numbers",
+   "accent": "ion",
+   "targets": "c7-maths-ch04-t01-m-alphabet-value",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Letters standing for numbers"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "A letter's value comes from its alphabet place"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "pencils",
+       "type": "node",
+       "text": "n pencils",
+       "sub": "number",
+       "glyph": "pen",
+       "color": "ion"
+      },
+      {
+       "id": "five",
+       "type": "node",
+       "text": "₹5 each",
+       "sub": "cost",
+       "glyph": "coin",
+       "color": "amber"
+      },
+      {
+       "id": "cost",
+       "type": "node",
+       "text": "5n",
+       "sub": "total cost",
+       "glyph": "balance",
+       "color": "mint"
+      },
+      {
+       "id": "mul",
+       "type": "arrow",
+       "from": "pencils",
+       "to": "cost",
+       "text": "multiply by 5"
+      },
+      {
+       "id": "price",
+       "type": "arrow",
+       "from": "five",
+       "to": "cost",
+       "text": "each"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "times",
+       "type": "label",
+       "text": "5n means 5 × n",
+       "x": 150,
+       "y": 280,
+       "color": "ion"
+      },
+      {
+       "id": "add",
+       "type": "label",
+       "text": "n + 5 means 5 more",
+       "x": 500,
+       "y": 280,
+       "color": "amber"
+      },
+      {
+       "id": "n1",
+       "type": "node",
+       "text": "n = 1",
+       "sub": "test value",
+       "glyph": "question",
+       "color": "mint"
+      },
+      {
+       "id": "n2",
+       "type": "node",
+       "text": "n = 2",
+       "sub": "test value",
+       "glyph": "question",
+       "color": "mint"
+      },
+      {
+       "id": "bar1",
+       "type": "bars",
+       "values": [
+        3,
+        4
+       ],
+       "labels": [
+        "n + 3",
+        "3n"
+       ],
+       "unit": "value"
+      },
+      {
+       "id": "bar2",
+       "type": "bars",
+       "values": [
+        5,
+        6
+       ],
+       "labels": [
+        "n + 3",
+        "3n"
+       ],
+       "unit": "value"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "samosa",
+       "type": "node",
+       "text": "n samosas",
+       "sub": "₹12 each",
+       "color": "amber"
+      },
+      {
+       "id": "chai",
+       "type": "node",
+       "text": "one chai",
+       "sub": "₹10",
+       "glyph": "jug",
+       "color": "sci"
+      },
+      {
+       "id": "expr",
+       "type": "node",
+       "text": "12n + 10",
+       "sub": "total cost",
+       "glyph": "coin",
+       "color": "mint"
+      },
+      {
+       "id": "four",
+       "type": "label",
+       "text": "n = 4",
+       "x": 400,
+       "y": 300,
+       "color": "ion"
+      },
+      {
+       "id": "step1",
+       "type": "arrow",
+       "from": "samosa",
+       "to": "expr",
+       "text": "12n"
+      },
+      {
+       "id": "step2",
+       "type": "arrow",
+       "from": "chai",
+       "to": "expr",
+       "text": "+ 10"
+      }
+     ]
+    },
+    {
+     "id": "s5",
+     "layout": "row",
+     "els": [
+      {
+       "id": "flex",
+       "type": "node",
+       "text": "c = 7 here",
+       "sub": "one value here",
+       "glyph": "letter",
+       "color": "ion"
+      },
+      {
+       "id": "same",
+       "type": "node",
+       "text": "x = 5, y = 5",
+       "sub": "same value works",
+       "glyph": "balance",
+       "color": "mint"
+      },
+      {
+       "id": "opt12n",
+       "type": "node",
+       "text": "12n",
+       "sub": "option",
+       "glyph": "coin",
+       "color": "mint"
+      },
+      {
+       "id": "optn12",
+       "type": "node",
+       "text": "n + 12",
+       "sub": "option",
+       "glyph": "coin",
+       "color": "amber"
+      },
+      {
+       "id": "opt1210",
+       "type": "node",
+       "text": "12 + 10",
+       "sub": "option",
+       "glyph": "coin",
+       "color": "sci"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "A letter in an expression stands for a number, or amount.",
+    "L2": "A common myth says a letter gets its value from its place in the alphabet. That is not true.",
+    "L3": "For example, n can mean the number of pencils. It does not mean one pencil as an object.",
+    "L4": "If each pencil costs five rupees, the cost of n pencils is 5n, which means 5 times n.",
+    "L5": "Be careful: 5n multiplies by five, while n plus 5 adds five. They do not mean the same thing.",
+    "L6": "For n samosas at twelve rupees each and one ten-rupee chai, write 12n plus 10. When n is 4, the cost is 58 rupees.",
+    "L7": "A letter can have a different value in another question, and different letters can share a value. The expression still uses one value for each repeated letter.",
+    "L8": "Your turn: choose the expression for n samosas at twelve rupees each and one ten-rupee chai."
+   },
+   "narration": {
+    "L1": {
+     "text": "A letter in an expression stands for a number, or amount.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L2": {
+     "text": "A common myth says a letter gets its value from its place in the alphabet. That is not true.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L3": {
+     "text": "For example, n can mean the number of pencils. It does not mean one pencil as an object.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L4": {
+     "text": "If each pencil costs five rupees, the cost of n pencils is 5n, which means 5 times n.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L5": {
+     "text": "Be careful: 5n multiplies by five, while n plus 5 adds five. They do not mean the same thing.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L6": {
+     "text": "For n samosas at twelve rupees each and one ten-rupee chai, write 12n plus 10. When n is 4, the cost is 58 rupees.",
+     "dur": 10,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L7": {
+     "text": "A letter can have a different value in another question, and different letters can share a value. The expression still uses one value for each repeated letter.",
+     "dur": 10,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Your turn: choose the expression for n samosas at twelve rupees each and one ten-rupee chai.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "title"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      },
+      {
+       "at": 2,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "pencils",
+        "five"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 1,
+       "target": "pencils"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "cost"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.7,
+       "target": "mul"
+      },
+      {
+       "at": 1.2,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "mul",
+       "to": 1
+      },
+      {
+       "at": 2,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "price",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "times",
+        "add"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "n1",
+        "bar1"
+       ]
+      },
+      {
+       "at": 3,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "n2",
+        "bar2"
+       ]
+      },
+      {
+       "at": 4,
+       "do": "highlight",
+       "dur": 1,
+       "target": "bar2"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.5,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "samosa",
+        "chai"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.8,
+       "target": "expr"
+      },
+      {
+       "at": 2,
+       "do": "flow",
+       "dur": 0.8,
+       "target": [
+        "step1",
+        "step2"
+       ],
+       "to": 1
+      },
+      {
+       "at": 4,
+       "do": "show",
+       "dur": 0.6,
+       "target": "four"
+      },
+      {
+       "at": 5,
+       "do": "highlight",
+       "dur": 1,
+       "target": "expr"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s5",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "flex",
+        "same"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 1,
+       "target": "flex"
+      },
+      {
+       "at": 3,
+       "do": "highlight",
+       "dur": 1,
+       "target": "same"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s5",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "opt12n",
+        "optn12",
+        "opt1210"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which expression gives the cost for n samosas at ₹12 each and one ₹10 chai?",
+    "options": [
+     "opt12n",
+     "optn12",
+     "opt1210"
+    ],
+    "answer": "opt12n",
+    "src": "c7-maths-ch04-t01-i01"
+   }
+  },
+  "repairs": [
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 64
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch04-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "expr",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        150
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "a",
+         "=",
+         "number"
+        ]
+       ]
+      },
+      {
+       "id": "amount",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        150
+       ],
+       "text": "amount",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "arr",
+       "op": "arrow",
+       "startMs": 2800,
+       "endMs": 3700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        250,
+        150
+       ],
+       "to": [
+        365,
+        150
+       ]
+      },
+      {
+       "id": "circle",
+       "op": "circle",
+       "startMs": 3700,
+       "endMs": 4600,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        245,
+        150
+       ],
+       "r": 38
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch04-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "myth",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        150,
+        90
+       ],
+       "text": "alphabet",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "abc",
+       "op": "text",
+       "startMs": 1300,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        150,
+        150
+       ],
+       "text": "a b c",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "cross",
+       "op": "line",
+       "startMs": 2300,
+       "endMs": 3100,
+       "ink": "accent",
+       "weight": 3,
+       "from": [
+        95,
+        120
+       ],
+       "to": [
+        205,
+        180
+       ]
+      },
+      {
+       "id": "cross2",
+       "op": "line",
+       "startMs": 2300,
+       "endMs": 3100,
+       "ink": "accent",
+       "weight": 3,
+       "from": [
+        205,
+        120
+       ],
+       "to": [
+        95,
+        180
+       ]
+      },
+      {
+       "id": "not",
+       "op": "text",
+       "startMs": 3400,
+       "endMs": 4700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        350,
+        150
+       ],
+       "text": "not true",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch04-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "n",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        150,
+        250
+       ],
+       "text": "n",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "pencils",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        300,
+        250
+       ],
+       "text": "pencils",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "count",
+       "op": "numwork",
+       "startMs": 2100,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        340
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "n",
+         "=",
+         "number",
+         "of",
+         "pencil"
+        ]
+       ]
+      },
+      {
+       "id": "object",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 5200,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        520,
+        340
+       ],
+       "text": "not object",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch04-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "cost",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        100
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "5n",
+         "=",
+         "5",
+         "times",
+         "n"
+        ]
+       ]
+      },
+      {
+       "id": "pencilcost",
+       "op": "text",
+       "startMs": 2400,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        220
+       ],
+       "text": "5 rupees",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "times",
+       "op": "arrow",
+       "startMs": 3400,
+       "endMs": 4500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        280,
+        130
+       ],
+       "to": [
+        420,
+        130
+       ]
+      },
+      {
+       "id": "repeat",
+       "op": "text",
+       "startMs": 4600,
+       "endMs": 5700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        500,
+        220
+       ],
+       "text": "n pencils",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch04-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "multiply",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        100
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "5n",
+         "=",
+         "5",
+         "times",
+         "n"
+        ]
+       ]
+      },
+      {
+       "id": "add",
+       "op": "numwork",
+       "startMs": 1800,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        220
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "n",
+         "+",
+         "5"
+        ]
+       ]
+      },
+      {
+       "id": "marr",
+       "op": "arrow",
+       "startMs": 3300,
+       "endMs": 4200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        250,
+        115
+       ],
+       "to": [
+        250,
+        205
+       ]
+      },
+      {
+       "id": "different",
+       "op": "text",
+       "startMs": 4400,
+       "endMs": 5500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        430,
+        165
+       ],
+       "text": "different",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "underline",
+       "op": "highlight",
+       "startMs": 5600,
+       "endMs": 6500,
+       "ink": "good",
+       "weight": 2,
+       "target": "multiply",
+       "style": "underline"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch04-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 10813,
+     "ops": [
+      {
+       "id": "expr12",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        90
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "12n",
+         "+",
+         "10"
+        ]
+       ]
+      },
+      {
+       "id": "samosa",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        150,
+        180
+       ],
+       "text": "12 rupees",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "chai",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        390,
+        180
+       ],
+       "text": "10 rupees",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "sub",
+       "op": "numwork",
+       "startMs": 4000,
+       "endMs": 5000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        280
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "n",
+         "=",
+         "4"
+        ]
+       ]
+      },
+      {
+       "id": "calc",
+       "op": "numwork",
+       "startMs": 5200,
+       "endMs": 7500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        100,
+        360
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "12",
+         "times",
+         "4",
+         "+",
+         "10",
+         "=",
+         "58"
+        ]
+       ]
+      },
+      {
+       "id": "rupees",
+       "op": "text",
+       "startMs": 7600,
+       "endMs": 8500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        600,
+        410
+       ],
+       "text": "rupees",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch04-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 12089,
+     "ops": [
+      {
+       "id": "letters",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        100
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "a",
+         "=",
+         "3"
+        ],
+        [
+         "b",
+         "=",
+         "3"
+        ],
+        [
+         "c",
+         "=",
+         "7"
+        ]
+       ]
+      },
+      {
+       "id": "same",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 3500,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        390,
+        120
+       ],
+       "text": "same value",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "diff",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        390,
+        220
+       ],
+       "text": "different value",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "repeat",
+       "op": "numwork",
+       "startMs": 5200,
+       "endMs": 6800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        330
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "5n",
+         "+",
+         "n"
+        ]
+       ]
+      },
+      {
+       "id": "one",
+       "op": "text",
+       "startMs": 6900,
+       "endMs": 8000,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        450,
+        330
+       ],
+       "text": "one value",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch04-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "prompt",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        80
+       ],
+       "text": "choose expression",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "choice1",
+       "op": "numwork",
+       "startMs": 1500,
+       "endMs": 2800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        130,
+        190
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "12n",
+         "+",
+         "10"
+        ]
+       ]
+      },
+      {
+       "id": "choice2",
+       "op": "numwork",
+       "startMs": 2900,
+       "endMs": 4300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        130,
+        290
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "12",
+         "+",
+         "n",
+         "+",
+         "10"
+        ]
+       ]
+      },
+      {
+       "id": "arrow1",
+       "op": "arrow",
+       "startMs": 4500,
+       "endMs": 5400,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        430,
+        220
+       ],
+       "to": [
+        620,
+        220
+       ]
+      },
+      {
+       "id": "mark",
+       "op": "circle",
+       "startMs": 5500,
+       "endMs": 6500,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        230,
+        215
+       ],
+       "r": 55
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1",
+   "key": "×3 then +2",
+   "prompt": "inputs 1,4,6,10 → 5,14,20,32"
+  },
+  {
+   "itemId": "r2",
+   "key": "7",
+   "prompt": "×3 then +2 gave 23"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

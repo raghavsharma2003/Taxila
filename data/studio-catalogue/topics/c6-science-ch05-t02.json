@@ -1,0 +1,1868 @@
+{
+ "topicId": "c6-science-ch05-t02",
+ "title": "Measuring curved lines",
+ "chapter": "Measurement of Length and Motion",
+ "subject": "science",
+ "class": 6,
+ "topicType": "T4",
+ "plan": {
+  "game": "map-route@1",
+  "hint": "thread mode: lay a thread along winding roads/rivers and convert with the scale (measuring curved lines)"
+ },
+ "game": {
+  "archetype": "map-route@1",
+  "spec": {
+   "archetype": "map-route@1",
+   "skills": [
+    "c6-science-ch05-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "thread": "Lay the thread along the road",
+    "round": "Round",
+    "done": "done",
+    "go": "GO",
+    "undo": "UNDO",
+    "coach": "Follow the curve, then straighten the thread",
+    "runDone": "Map room closed",
+    "fwd": "forward",
+    "left": "left",
+    "right": "right",
+    "km": "km",
+    "scale": "1 square =",
+    "measure": "Measure the route, then set its distance",
+    "lat": "latitude",
+    "lon": "longitude",
+    "drop": "Drop the pin",
+    "fly": "FLY",
+    "set": "SET",
+    "N": "N",
+    "S": "S",
+    "E": "E",
+    "W": "W",
+    "blocked": "BLOCKED",
+    "arrived": "ARRIVED"
+   },
+   "title": "Map Room",
+   "rounds": [
+    {
+     "mode": "thread",
+     "title": "Winding road",
+     "sub": "lay a thread along the curved route",
+     "w": 10,
+     "h": 6,
+     "curve": [
+      [
+       1,
+       3
+      ],
+      [
+       2,
+       2
+      ],
+      [
+       3,
+       4
+      ],
+      [
+       4,
+       2
+      ],
+      [
+       5,
+       3
+      ],
+      [
+       6,
+       1
+      ],
+      [
+       7,
+       3
+      ],
+      [
+       8,
+       2
+      ]
+     ],
+     "kmPerSquare": 10,
+     "tolPct": 10,
+     "targets": "c6-science-ch05-t02-m1"
+    },
+    {
+     "mode": "scale",
+     "title": "Map distance",
+     "sub": "measure the route between two places",
+     "w": 10,
+     "h": 6,
+     "places": [
+      {
+       "at": [
+        1,
+        1
+       ],
+       "label": "Village",
+       "glyph": "house"
+      },
+      {
+       "at": [
+        7,
+        4
+       ],
+       "label": "School",
+       "glyph": "school"
+      }
+     ],
+     "from": 0,
+     "to": 1,
+     "kmPerSquare": 10,
+     "tol": 3,
+     "targets": "c6-science-ch05-t02-m2"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c6-science-ch05-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Measuring curved lines",
+   "accent": "sci",
+   "targets": "c6-science-ch05-t02-m1",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Measuring curved lines"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Curved lines cannot be measured."
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "curve",
+       "type": "node",
+       "text": "Curved line",
+       "sub": "bends",
+       "glyph": "wave",
+       "color": "sci"
+      },
+      {
+       "id": "straight",
+       "type": "node",
+       "text": "Straight line",
+       "sub": "between ends",
+       "glyph": "ruler",
+       "color": "ion"
+      },
+      {
+       "id": "compare",
+       "type": "arrow",
+       "from": "curve",
+       "to": "straight",
+       "text": "compare",
+       "bend": 0.2
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "thread",
+       "type": "node",
+       "text": "Thread",
+       "sub": "doesn't stretch",
+       "glyph": "leaf",
+       "color": "mint"
+      },
+      {
+       "id": "start",
+       "type": "node",
+       "text": "Start",
+       "sub": "first end",
+       "color": "amber"
+      },
+      {
+       "id": "finish",
+       "type": "node",
+       "text": "Finish",
+       "sub": "second end",
+       "color": "amber"
+      },
+      {
+       "id": "lay",
+       "type": "arrow",
+       "from": "start",
+       "to": "finish",
+       "text": "follow curve",
+       "bend": 0.4
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "row",
+     "els": [
+      {
+       "id": "marked",
+       "type": "node",
+       "text": "Marked thread",
+       "sub": "curve length",
+       "color": "mint"
+      },
+      {
+       "id": "scale",
+       "type": "axis",
+       "min": 0,
+       "max": 15,
+       "step": 1,
+       "unit": "cm",
+       "scale": "linear",
+       "y": 420
+      },
+      {
+       "id": "mark",
+       "type": "mark",
+       "axis": "scale",
+       "value": 12,
+       "text": "12 cm",
+       "color": "sun"
+      }
+     ]
+    },
+    {
+     "id": "s5",
+     "layout": "row",
+     "els": [
+      {
+       "id": "tape",
+       "type": "node",
+       "text": "Flexible tape",
+       "sub": "wraps around",
+       "glyph": "ruler",
+       "color": "volt"
+      },
+      {
+       "id": "bottle",
+       "type": "node",
+       "text": "Bottle",
+       "sub": "round object",
+       "glyph": "jug",
+       "color": "sci"
+      },
+      {
+       "id": "wrap",
+       "type": "arrow",
+       "from": "tape",
+       "to": "bottle",
+       "text": "measure around",
+       "bend": 0.2
+      },
+      {
+       "id": "map",
+       "type": "node",
+       "text": "Map route",
+       "sub": "use scale",
+       "glyph": "map",
+       "color": "ion"
+      }
+     ]
+    },
+    {
+     "id": "s6",
+     "layout": "column",
+     "els": [
+      {
+       "id": "step1",
+       "type": "node",
+       "text": "Lay thread",
+       "sub": "along curve",
+       "glyph": "hand",
+       "color": "mint"
+      },
+      {
+       "id": "step2",
+       "type": "node",
+       "text": "Mark end",
+       "sub": "on thread",
+       "glyph": "pen",
+       "color": "amber"
+      },
+      {
+       "id": "step3",
+       "type": "node",
+       "text": "Straighten",
+       "sub": "beside scale",
+       "glyph": "ruler",
+       "color": "sci"
+      },
+      {
+       "id": "step4",
+       "type": "node",
+       "text": "Read length",
+       "sub": "on scale",
+       "glyph": "eye",
+       "color": "sun"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "A curved line cannot be measured directly with a straight scale. But its length can still be measured.",
+    "L2": "A curved path between two points is longer than the straight line between them.",
+    "L3": "Use a thread that does not stretch. Lay it carefully from the start along every bend to the end.",
+    "L4": "Mark the thread where the curve ends. Then straighten the thread beside a scale and read the marked length.",
+    "L5": "A flexible tape can wrap around a bottle, a waist or a tree trunk. A snug thread can work too.",
+    "L6": "On a map, measure a winding route with thread. Multiply its centimetres by the map scale to find the real distance.",
+    "L7": "The thread must follow the curve closely and have no gaps. Stretchy or loose material can give an unreliable reading.",
+    "L8": "Now put the measuring steps in order."
+   },
+   "narration": {
+    "L1": {
+     "text": "A curved line cannot be measured directly with a straight scale. But its length can still be measured.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L2": {
+     "text": "A curved path between two points is longer than the straight line between them.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L3": {
+     "text": "Use a thread that does not stretch. Lay it carefully from the start along every bend to the end.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L4": {
+     "text": "Mark the thread where the curve ends. Then straighten the thread beside a scale and read the marked length.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L5": {
+     "text": "A flexible tape can wrap around a bottle, a waist or a tree trunk. A snug thread can work too.",
+     "dur": 4.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L6": {
+     "text": "On a map, measure a winding route with thread. Multiply its centimetres by the map scale to find the real distance.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L7": {
+     "text": "The thread must follow the curve closely and have no gaps. Stretchy or loose material can give an unreliable reading.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Now put the measuring steps in order.",
+     "dur": 2,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "curve",
+        "straight"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "curve"
+      },
+      {
+       "at": 1.8,
+       "do": "show",
+       "dur": 0.7,
+       "target": "compare"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "thread",
+        "start"
+       ]
+      },
+      {
+       "at": 1.6,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "finish",
+        "lay"
+       ]
+      },
+      {
+       "at": 2.5,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "lay",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "marked"
+      },
+      {
+       "at": 1.6,
+       "do": "show",
+       "dur": 0.8,
+       "target": "scale"
+      },
+      {
+       "at": 2.4,
+       "do": "show",
+       "dur": 0.7,
+       "target": "mark"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s5",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "bottle"
+      },
+      {
+       "at": 0.7,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "tape",
+        "wrap"
+       ]
+      },
+      {
+       "at": 1.8,
+       "do": "show",
+       "dur": 0.7,
+       "target": "map"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s5",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1.2,
+       "target": "map"
+      },
+      {
+       "at": 1.4,
+       "do": "focus",
+       "dur": 0.8,
+       "target": "wrap"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 0.9,
+       "target": "thread"
+      },
+      {
+       "at": 1,
+       "do": "focus",
+       "dur": 0.8,
+       "target": "lay"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s6",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "step1",
+        "step2",
+        "step3",
+        "step4"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "order",
+    "prompt": "Arrange the steps for measuring a curved line with a thread.",
+    "items": [
+     "step1",
+     "step2",
+     "step3",
+     "step4"
+    ],
+    "src": "c6-science-ch05-t02-i01"
+   }
+  },
+  "repairs": [
+   "glyph",
+   "glyph",
+   "glyph",
+   "arrow:dangling",
+   "cue:target",
+   "cue:target"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 39
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch05-t02-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "curve",
+       "op": "stroke",
+       "startMs": 0,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         110,
+         300
+        ],
+        [
+         150,
+         240
+        ],
+        [
+         210,
+         190
+        ],
+        [
+         280,
+         170
+        ],
+        [
+         350,
+         210
+        ],
+        [
+         420,
+         280
+        ],
+        [
+         500,
+         320
+        ]
+       ]
+      },
+      {
+       "id": "scale",
+       "op": "line",
+       "startMs": 500,
+       "endMs": 1600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        100,
+        390
+       ],
+       "to": [
+        520,
+        390
+       ]
+      },
+      {
+       "id": "tick0",
+       "op": "line",
+       "startMs": 700,
+       "endMs": 1000,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        100,
+        380
+       ],
+       "to": [
+        100,
+        400
+       ]
+      },
+      {
+       "id": "tick1",
+       "op": "line",
+       "startMs": 700,
+       "endMs": 1000,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        520,
+        380
+       ],
+       "to": [
+        520,
+        400
+       ]
+      },
+      {
+       "id": "curved",
+       "op": "label",
+       "startMs": 2300,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        550,
+        255
+       ],
+       "text": "curved line",
+       "to": [
+        430,
+        295
+       ]
+      },
+      {
+       "id": "straight",
+       "op": "label",
+       "startMs": 3300,
+       "endMs": 4500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        530,
+        385
+       ],
+       "text": "straight scale",
+       "to": [
+        450,
+        390
+       ]
+      },
+      {
+       "id": "question",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 6000,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        390,
+        100
+       ],
+       "text": "measure length",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "arrow",
+       "op": "arrow",
+       "startMs": 6200,
+       "endMs": 7300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        520,
+        320
+       ],
+       "to": [
+        610,
+        210
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch05-t02-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "points",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        120,
+        280
+       ],
+       "r": 8
+      },
+      {
+       "id": "pointt",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        600,
+        280
+       ],
+       "r": 8
+      },
+      {
+       "id": "direct",
+       "op": "line",
+       "startMs": 600,
+       "endMs": 1800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        120,
+        280
+       ],
+       "to": [
+        600,
+        280
+       ]
+      },
+      {
+       "id": "path",
+       "op": "stroke",
+       "startMs": 1900,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         120,
+         280
+        ],
+        [
+         190,
+         210
+        ],
+        [
+         270,
+         330
+        ],
+        [
+         350,
+         190
+        ],
+        [
+         430,
+         340
+        ],
+        [
+         510,
+         220
+        ],
+        [
+         600,
+         280
+        ]
+       ]
+      },
+      {
+       "id": "straightLabel",
+       "op": "label",
+       "startMs": 3600,
+       "endMs": 4500,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        350,
+        310
+       ],
+       "text": "straight line",
+       "to": [
+        350,
+        280
+       ]
+      },
+      {
+       "id": "curveLabel",
+       "op": "label",
+       "startMs": 4500,
+       "endMs": 5500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        430,
+        160
+       ],
+       "text": "curved path",
+       "to": [
+        430,
+        205
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch05-t02-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "thread",
+       "op": "stroke",
+       "startMs": 0,
+       "endMs": 2300,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         110,
+         300
+        ],
+        [
+         170,
+         240
+        ],
+        [
+         230,
+         190
+        ],
+        [
+         300,
+         230
+        ],
+        [
+         350,
+         300
+        ],
+        [
+         420,
+         250
+        ],
+        [
+         500,
+         180
+        ],
+        [
+         570,
+         230
+        ]
+       ]
+      },
+      {
+       "id": "start",
+       "op": "circle",
+       "startMs": 2500,
+       "endMs": 3000,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        110,
+        300
+       ],
+       "r": 9
+      },
+      {
+       "id": "end",
+       "op": "circle",
+       "startMs": 2500,
+       "endMs": 3000,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        570,
+        230
+       ],
+       "r": 9
+      },
+      {
+       "id": "threadLabel",
+       "op": "label",
+       "startMs": 3200,
+       "endMs": 4000,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        270,
+        140
+       ],
+       "text": "thread",
+       "to": [
+        300,
+        230
+       ]
+      },
+      {
+       "id": "startLabel",
+       "op": "label",
+       "startMs": 4100,
+       "endMs": 4900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        80,
+        340
+       ],
+       "text": "start",
+       "to": [
+        110,
+        300
+       ]
+      },
+      {
+       "id": "endLabel",
+       "op": "label",
+       "startMs": 5000,
+       "endMs": 5700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        590,
+        190
+       ],
+       "text": "end",
+       "to": [
+        570,
+        230
+       ]
+      },
+      {
+       "id": "bend1",
+       "op": "highlight",
+       "startMs": 5900,
+       "endMs": 7000,
+       "ink": "good",
+       "weight": 1,
+       "target": "thread",
+       "style": "pulse"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch05-t02-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "mark",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        570,
+        215
+       ],
+       "to": [
+        570,
+        245
+       ]
+      },
+      {
+       "id": "straightThread",
+       "op": "line",
+       "startMs": 900,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        120,
+        330
+       ],
+       "to": [
+        570,
+        330
+       ]
+      },
+      {
+       "id": "scale2",
+       "op": "line",
+       "startMs": 2300,
+       "endMs": 3400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        120,
+        390
+       ],
+       "to": [
+        570,
+        390
+       ]
+      },
+      {
+       "id": "zero",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        120,
+        420
+       ],
+       "text": "0",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "length",
+       "op": "label",
+       "startMs": 4000,
+       "endMs": 5100,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        570,
+        300
+       ],
+       "text": "marked length",
+       "to": [
+        570,
+        330
+       ]
+      },
+      {
+       "id": "read",
+       "op": "label",
+       "startMs": 5300,
+       "endMs": 6000,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        580,
+        390
+       ],
+       "text": "read",
+       "to": [
+        520,
+        390
+       ]
+      },
+      {
+       "id": "markHighlight",
+       "op": "highlight",
+       "startMs": 6200,
+       "endMs": 7400,
+       "ink": "good",
+       "weight": 1,
+       "target": "mark",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch05-t02-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 9111,
+     "ops": [
+      {
+       "id": "bottle",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        180,
+        270
+       ],
+       "rx": 65,
+       "ry": 115
+      },
+      {
+       "id": "tapeBottle",
+       "op": "ellipse",
+       "startMs": 1300,
+       "endMs": 2400,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        180,
+        270
+       ],
+       "rx": 75,
+       "ry": 125
+      },
+      {
+       "id": "waist",
+       "op": "ellipse",
+       "startMs": 2600,
+       "endMs": 3800,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        270
+       ],
+       "rx": 115,
+       "ry": 75
+      },
+      {
+       "id": "tapeWaist",
+       "op": "ellipse",
+       "startMs": 3900,
+       "endMs": 5000,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        270
+       ],
+       "rx": 125,
+       "ry": 85
+      },
+      {
+       "id": "tree",
+       "op": "rect",
+       "startMs": 5100,
+       "endMs": 6100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        610,
+        170
+       ],
+       "w": 80,
+       "h": 210,
+       "round": 12
+      },
+      {
+       "id": "tapeTree",
+       "op": "ellipse",
+       "startMs": 6200,
+       "endMs": 7300,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        650,
+        275
+       ],
+       "rx": 58,
+       "ry": 105
+      },
+      {
+       "id": "flexible",
+       "op": "text",
+       "startMs": 7400,
+       "endMs": 8500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        90
+       ],
+       "text": "flexible tape",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch05-t02-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9536,
+     "ops": [
+      {
+       "id": "map",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        70,
+        90
+       ],
+       "w": 660,
+       "h": 300,
+       "round": 8
+      },
+      {
+       "id": "route",
+       "op": "stroke",
+       "startMs": 1100,
+       "endMs": 3000,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         110,
+         340
+        ],
+        [
+         180,
+         290
+        ],
+        [
+         160,
+         220
+        ],
+        [
+         250,
+         170
+        ],
+        [
+         340,
+         210
+        ],
+        [
+         400,
+         130
+        ],
+        [
+         490,
+         160
+        ],
+        [
+         550,
+         110
+        ],
+        [
+         680,
+         140
+        ]
+       ]
+      },
+      {
+       "id": "routeLabel6",
+       "op": "label",
+       "startMs": 3100,
+       "endMs": 4100,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        110,
+        120
+       ],
+       "text": "winding route",
+       "to": [
+        250,
+        180
+       ]
+      },
+      {
+       "id": "threadLabel6",
+       "op": "label",
+       "startMs": 4200,
+       "endMs": 5000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        570,
+        250
+       ],
+       "text": "thread",
+       "to": [
+        490,
+        160
+       ]
+      },
+      {
+       "id": "scaleFact",
+       "op": "numwork",
+       "startMs": 5100,
+       "endMs": 6500,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        110,
+        420
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "1",
+         "cm",
+         "=",
+         "10",
+         "km"
+        ]
+       ]
+      },
+      {
+       "id": "multiply6",
+       "op": "numwork",
+       "startMs": 6600,
+       "endMs": 7900,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        460,
+        420
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "cm",
+         "×",
+         "map",
+         "scale"
+        ]
+       ]
+      },
+      {
+       "id": "realLabel6",
+       "op": "label",
+       "startMs": 8000,
+       "endMs": 9000,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        580,
+        80
+       ],
+       "text": "real distance",
+       "to": [
+        570,
+        140
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch05-t02-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 9111,
+     "ops": [
+      {
+       "id": "goodCurve",
+       "op": "stroke",
+       "startMs": 0,
+       "endMs": 1800,
+       "ink": "good",
+       "weight": 2,
+       "points": [
+        [
+         100,
+         300
+        ],
+        [
+         170,
+         240
+        ],
+        [
+         240,
+         260
+        ],
+        [
+         310,
+         190
+        ],
+        [
+         390,
+         230
+        ],
+        [
+         470,
+         170
+        ],
+        [
+         560,
+         210
+        ]
+       ]
+      },
+      {
+       "id": "badCurve",
+       "op": "stroke",
+       "startMs": 1900,
+       "endMs": 3700,
+       "ink": "soft",
+       "weight": 2,
+       "points": [
+        [
+         100,
+         390
+        ],
+        [
+         175,
+         330
+        ],
+        [
+         245,
+         380
+        ],
+        [
+         320,
+         300
+        ],
+        [
+         400,
+         360
+        ],
+        [
+         480,
+         290
+        ],
+        [
+         560,
+         340
+        ]
+       ]
+      },
+      {
+       "id": "noGaps",
+       "op": "label",
+       "startMs": 3900,
+       "endMs": 4700,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        260,
+        130
+       ],
+       "text": "no gaps",
+       "to": [
+        310,
+        195
+       ]
+      },
+      {
+       "id": "close",
+       "op": "label",
+       "startMs": 4800,
+       "endMs": 5600,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        590,
+        210
+       ],
+       "text": "closely",
+       "to": [
+        540,
+        205
+       ]
+      },
+      {
+       "id": "stretchy",
+       "op": "label",
+       "startMs": 5700,
+       "endMs": 6600,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        180,
+        440
+       ],
+       "text": "stretchy",
+       "to": [
+        245,
+        375
+       ]
+      },
+      {
+       "id": "loose",
+       "op": "label",
+       "startMs": 6700,
+       "endMs": 7500,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        400,
+        440
+       ],
+       "text": "loose",
+       "to": [
+        400,
+        355
+       ]
+      },
+      {
+       "id": "unreliable",
+       "op": "text",
+       "startMs": 7600,
+       "endMs": 8500,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        600,
+        440
+       ],
+       "text": "unreliable",
+       "size": "s",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch05-t02-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 3579,
+     "ops": [
+      {
+       "id": "step1",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        90,
+        120
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "1",
+         "mark",
+         "start"
+        ]
+       ]
+      },
+      {
+       "id": "step2",
+       "op": "numwork",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        90,
+        210
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "2",
+         "lay",
+         "thread"
+        ]
+       ]
+      },
+      {
+       "id": "step3",
+       "op": "numwork",
+       "startMs": 1400,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        90,
+        300
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "3",
+         "mark",
+         "end"
+        ]
+       ]
+      },
+      {
+       "id": "step4",
+       "op": "numwork",
+       "startMs": 2100,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        430,
+        120
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "4",
+         "straig"
+        ]
+       ]
+      },
+      {
+       "id": "step5",
+       "op": "numwork",
+       "startMs": 2800,
+       "endMs": 3500,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        430,
+        210
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "5",
+         "read",
+         "length"
+        ]
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "136.1 km",
+   "prompt": "road length at 10 km/square"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "67.1 km",
+   "prompt": "Village→School at 10 km/square"
+  }
+ ],
+ "check": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "Round 2 answer has a different unit (km) than typically expected for a map scale problem, but the computed key gives 67.1 km, which is fine. No issue."
+   }
+  ],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ },
+ "firstCheck": {
+  "issues": [
+   {
+    "where": "game (map-route@1), round 1",
+    "what": "The round shows a grid route of 8 steps with kmPerSquare=10. The computed key says 136.1 km, but a bendy path of 8 segments on a grid of side 1 square (10 km) can be at most 80 km (if each segment is a diagonal ≈14.1 km, 8 would be ~113 km, but the segments here are orthogonal or diagonal? The given curve coordinates: [1,3]->[2,2] is diagonal (~14.1 km); [2,2]->[3,4] diagonal (~14.1); [3,4]->[4,2] diagonal (~14.1); [4,2]->[5,3] diagonal (~14.1); [5,3]->[6,1] diagonal (~14.1); [6,1]->[7,3] diagonal (~14.1); [7,3]->[8,2] diagonal (~14.1). That's 7 segments, each ~14.1 km → ~98.7 km. Adding start to first point or last? The path is 7 segments, not 8. So 136.1 km is physically unrealistic for a 7‑segment path on a 8‑wide grid. Therefore the round’s own numbers and the computed key are inconsistent with reality.",
+    "severity": "high"
+   },
+   {
+    "where": "game (map-route@1), round 2",
+    "what": "The round says Village at (1,1) and School at (7,4), kmPerSquare=10. The computed key is 67.1 km. The Manhattan distance is (|7-1|+|4-1|)*10 = 90 km; the straight‑line Euclidean distance is sqrt((6*10)^2+(3*10)^2) = sqrt(3600+900) = sqrt(4500) ≈ 67.08 km. But the round targets c6-science-ch05-t02-m2 (misconception: the straight distance equals the curve length). The question asks to 'measure the route between two places' (presumably the curved road, not the straight line). However, the computed key (67.1 km) is exactly the straight‑line distance, not the road distance. The kit items (e.g., i03, i07, i12) consistently teach that a curved path is longer than the straight line. So the round gives a key that contradicts the kit's teaching: it presents the shorter straight‑line distance as the answer for a 'route' (which should be longer). This is a factually wrong answer.",
+    "severity": "high"
+   }
+  ],
+  "verdict": "fail",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

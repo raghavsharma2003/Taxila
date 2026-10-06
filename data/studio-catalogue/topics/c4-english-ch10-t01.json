@@ -1,0 +1,1582 @@
+{
+ "topicId": "c4-english-ch10-t01",
+ "title": "The Swing",
+ "chapter": "The Swing",
+ "subject": "english",
+ "class": 4,
+ "topicType": "T1",
+ "plan": {
+  "game": "beat-line@1",
+  "hint": "beat and rhyme rounds (Hindi: matra round on a doha/chaupai line)"
+ },
+ "game": {
+  "archetype": "beat-line@1",
+  "spec": {
+   "archetype": "beat-line@1",
+   "skills": [
+    "c4-english-ch10-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "onBeat": "on beat",
+    "combo": "combo",
+    "tap": "Tap on the beat",
+    "catch": "Catch the rhyme",
+    "mark": "Short or long?",
+    "short": "। short",
+    "long": "ऽ long",
+    "practice": "PRACTICE LINE",
+    "runDone": "Poem played",
+    "perfect": "ON BEAT",
+    "early": "early",
+    "late": "late",
+    "meter": "मात्रा"
+   },
+   "title": "The Swing",
+   "bpm": 80,
+   "lines": [
+    {
+     "text": "Up I go, up to the sky",
+     "beats": [
+      1,
+      3,
+      6
+     ],
+     "own": true
+    },
+    {
+     "text": "Higher than the birds can fly",
+     "beats": [
+      1,
+      3
+     ],
+     "own": true
+    },
+    {
+     "text": "Back and forth, I sway all day",
+     "beats": [
+      1,
+      3,
+      5
+     ],
+     "own": true
+    },
+    {
+     "text": "The wind rushes past me fast",
+     "beats": [
+      1,
+      3
+     ],
+     "own": true
+    },
+    {
+     "text": "ऊँचा झूलूँ, हवा बहती",
+     "beats": [
+      1,
+      3
+     ],
+     "own": true
+    }
+   ],
+   "rounds": [
+    {
+     "mode": "beat",
+     "title": "Feel the swing",
+     "sub": "Tap the strong beats as you recite",
+     "lines": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "mode": "rhyme",
+     "title": "Catch the rhyme",
+     "sub": "Listen for matching end sounds",
+     "items": [
+      {
+       "cue": "Higher than the birds can ___!",
+       "options": [
+        "fly",
+        "sway",
+        "day"
+       ],
+       "answer": "fly",
+       "src": "c4-english-ch10-t01-i01"
+      },
+      {
+       "cue": "Which word rhymes with “sway”?",
+       "options": [
+        "day",
+        "wind",
+        "fast"
+       ],
+       "answer": "day",
+       "src": "c4-english-ch10-t01-i02"
+      },
+      {
+       "cue": "Which word rhymes with “high”?",
+       "options": [
+        "fly",
+        "back",
+        "wind"
+       ],
+       "answer": "fly"
+      },
+      {
+       "cue": "Which word rhymes with “fast”?",
+       "options": [
+        "last",
+        "sway",
+        "sky"
+       ],
+       "answer": "last"
+      }
+     ],
+     "targets": "c4-english-ch10-t01-m-exaggeration-literal"
+    },
+    {
+     "mode": "matra",
+     "title": "Mark the matra",
+     "sub": "Mark each Hindi syllable short or long",
+     "lines": [
+      4
+     ]
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c4-english-ch10-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "The Swing",
+   "accent": "mint",
+   "targets": "c4-english-ch10-t01-m-exaggeration-literal",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "The Swing"
+      },
+      {
+       "id": "joy",
+       "type": "node",
+       "text": "Joy",
+       "sub": "feeling",
+       "glyph": "spark",
+       "color": "sun"
+      },
+      {
+       "id": "swing",
+       "type": "glyph",
+       "name": "person",
+       "x": 500,
+       "y": 350,
+       "size": 160,
+       "color": "mint"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "The child really goes higher than birds"
+      },
+      {
+       "id": "high",
+       "type": "label",
+       "text": "Higher than the birds",
+       "x": 430,
+       "y": 190,
+       "color": "ion"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "up",
+       "type": "node",
+       "text": "Up",
+       "sub": "rise",
+       "color": "mint"
+      },
+      {
+       "id": "down",
+       "type": "node",
+       "text": "Down",
+       "sub": "fall",
+       "color": "sci"
+      },
+      {
+       "id": "back",
+       "type": "node",
+       "text": "Back",
+       "sub": "return",
+       "glyph": "road",
+       "color": "amber"
+      },
+      {
+       "id": "forth",
+       "type": "node",
+       "text": "Forth",
+       "sub": "forward",
+       "glyph": "road",
+       "color": "sun"
+      },
+      {
+       "id": "wind",
+       "type": "node",
+       "text": "Wind",
+       "sub": "rushes past",
+       "glyph": "wind",
+       "color": "ion"
+      },
+      {
+       "id": "sway",
+       "type": "node",
+       "text": "Sway",
+       "sub": "side to side",
+       "glyph": "wave",
+       "color": "mint"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "up",
+       "to": "down",
+       "text": "then"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "back",
+       "to": "forth",
+       "text": "and"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "check",
+       "type": "title",
+       "text": "Choose the right word"
+      },
+      {
+       "id": "than",
+       "type": "node",
+       "text": "than",
+       "sub": "comparison",
+       "glyph": "balance",
+       "color": "mint"
+      },
+      {
+       "id": "from",
+       "type": "node",
+       "text": "from",
+       "sub": "not here",
+       "glyph": "road",
+       "color": "amber"
+      },
+      {
+       "id": "morehigher",
+       "type": "node",
+       "text": "more higher",
+       "sub": "not needed",
+       "glyph": "question",
+       "color": "sci"
+      },
+      {
+       "id": "compare",
+       "type": "label",
+       "text": "Swing higher ___ slide",
+       "x": 360,
+       "y": 360,
+       "color": "sun"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "The poem The Swing is full of joy, movement, and a swinging beat.",
+    "L2": "The child goes up and down, then back and forth, while the wind rushes past.",
+    "L3": "Sway means to move gently from side to side.",
+    "L4": "The words sway and day rhyme, and sky and fly rhyme.",
+    "L5": "Higher than the birds is playful exaggeration, not an exact measurement.",
+    "L6": "It shows that swinging feels very high, fast, and free, like flying.",
+    "L7": "For two things, add -er and use than: The swing goes higher than the slide.",
+    "L8": "Use one comparison word, not more higher or higher from."
+   },
+   "narration": {
+    "L1": {
+     "text": "The poem The Swing is full of joy, movement, and a swinging beat.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L2": {
+     "text": "The child goes up and down, then back and forth, while the wind rushes past.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L3": {
+     "text": "Sway means to move gently from side to side.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L4": {
+     "text": "The words sway and day rhyme, and sky and fly rhyme.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L5": {
+     "text": "Higher than the birds is playful exaggeration, not an exact measurement.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L6": {
+     "text": "It shows that swinging feels very high, fast, and free, like flying.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L7": {
+     "text": "For two things, add -er and use than: The swing goes higher than the slide.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Use one comparison word, not more higher or higher from.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      },
+      {
+       "at": 0.6,
+       "do": "show",
+       "dur": 0.7,
+       "target": "joy"
+      },
+      {
+       "at": 1.2,
+       "do": "scale",
+       "dur": 2,
+       "target": "swing",
+       "to": 1.1
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "up",
+        "down",
+        "back",
+        "forth"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 1,
+       "target": [
+        "a1",
+        "a2"
+       ],
+       "to": 1
+      },
+      {
+       "at": 1.4,
+       "do": "show",
+       "dur": 0.8,
+       "target": "wind"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "sway"
+      },
+      {
+       "at": 0.6,
+       "do": "highlight",
+       "dur": 1.2,
+       "target": "sway"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": [
+        "up",
+        "forth"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 1,
+       "target": [
+        "back",
+        "down"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      },
+      {
+       "at": 1,
+       "do": "bust",
+       "dur": 1.4,
+       "target": "myth"
+      },
+      {
+       "at": 1.2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "high"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "joy"
+      },
+      {
+       "at": 0.8,
+       "do": "scale",
+       "dur": 1.5,
+       "target": "swing",
+       "to": 1.15
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "compare"
+      },
+      {
+       "at": 0.6,
+       "do": "show",
+       "dur": 0.8,
+       "target": "than"
+      },
+      {
+       "at": 1.2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "than"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "from",
+        "morehigher"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "unfocus",
+       "dur": 0.8
+      },
+      {
+       "at": 1.5,
+       "do": "interactive",
+       "dur": 0.5
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Tap the word that completes: The swing goes higher ___ the slide.",
+    "options": [
+     "than",
+     "from",
+     "morehigher"
+    ],
+    "answer": "than",
+    "src": "c4-english-ch10-t01-i09"
+   }
+  },
+  "repairs": [
+   "glyph",
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "passes": 2,
+  "seconds": 54
+ },
+ "keys": [
+  {
+   "itemId": "b0:*",
+   "key": "I · up · sky",
+   "prompt": "stressed words in: Up I go, up to the sky"
+  },
+  {
+   "itemId": "b1:*",
+   "key": "than · birds",
+   "prompt": "stressed words in: Higher than the birds can fly"
+  },
+  {
+   "itemId": "b2:*",
+   "key": "and · I · all",
+   "prompt": "stressed words in: Back and forth, I sway all day"
+  },
+  {
+   "itemId": "b3:*",
+   "key": "wind · past",
+   "prompt": "stressed words in: The wind rushes past me fast"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "fly",
+   "prompt": "Higher than the birds can ___! [fly / sway / day]",
+   "src": "c4-english-ch10-t01-i01"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "day",
+   "prompt": "Which word rhymes with “sway”? [day / wind / fast]",
+   "src": "c4-english-ch10-t01-i02"
+  },
+  {
+   "itemId": "r2:2",
+   "key": "fly",
+   "prompt": "Which word rhymes with “high”? [fly / back / wind]"
+  },
+  {
+   "itemId": "r2:3",
+   "key": "last",
+   "prompt": "Which word rhymes with “fast”? [last / sway / sky]"
+  },
+  {
+   "itemId": "m4:*",
+   "key": "222212112",
+   "prompt": "मात्रा: ऊँचा झूलूँ, हवा बहती"
+  }
+ ],
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-english-ch10-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "joy",
+       "op": "text",
+       "startMs": 300,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        120,
+        90
+       ],
+       "text": "joy",
+       "size": "l"
+      },
+      {
+       "id": "move",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        650,
+        90
+       ],
+       "text": "movement",
+       "size": "m"
+      },
+      {
+       "id": "beat",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2300,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        400,
+        430
+       ],
+       "text": "swinging beat",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "arc1",
+       "op": "arrow",
+       "startMs": 2400,
+       "endMs": 3600,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        250,
+        360
+       ],
+       "to": [
+        400,
+        150
+       ],
+       "bend": 1
+      },
+      {
+       "id": "arc2",
+       "op": "arrow",
+       "startMs": 3600,
+       "endMs": 4800,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        400,
+        150
+       ],
+       "to": [
+        550,
+        360
+       ],
+       "bend": 1
+      },
+      {
+       "id": "swing",
+       "op": "line",
+       "startMs": 4800,
+       "endMs": 5200,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        400,
+        150
+       ],
+       "to": [
+        400,
+        280
+       ]
+      },
+      {
+       "id": "seat",
+       "op": "ellipse",
+       "startMs": 5200,
+       "endMs": 5700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        300
+       ],
+       "rx": 55,
+       "ry": 12
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-english-ch10-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "up",
+       "op": "arrow",
+       "startMs": 200,
+       "endMs": 1200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        190,
+        360
+       ],
+       "to": [
+        300,
+        150
+       ],
+       "bend": 1
+      },
+      {
+       "id": "down",
+       "op": "arrow",
+       "startMs": 1200,
+       "endMs": 2200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        300,
+        150
+       ],
+       "to": [
+        410,
+        360
+       ],
+       "bend": 1
+      },
+      {
+       "id": "back",
+       "op": "arrow",
+       "startMs": 2300,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        410,
+        360
+       ],
+       "to": [
+        520,
+        240
+       ],
+       "bend": -1
+      },
+      {
+       "id": "forth",
+       "op": "arrow",
+       "startMs": 3200,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        520,
+        240
+       ],
+       "to": [
+        650,
+        300
+       ],
+       "bend": 1
+      },
+      {
+       "id": "wind",
+       "op": "arrow",
+       "startMs": 4300,
+       "endMs": 5200,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        700,
+        130
+       ],
+       "to": [
+        540,
+        130
+       ]
+      },
+      {
+       "id": "windlabel",
+       "op": "text",
+       "startMs": 5200,
+       "endMs": 5700,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        625,
+        105
+       ],
+       "text": "wind",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-english-ch10-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4430,
+     "ops": [
+      {
+       "id": "swayword",
+       "op": "text",
+       "startMs": 200,
+       "endMs": 800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        90
+       ],
+       "text": "sway",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "left",
+       "op": "arrow",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        400,
+        230
+       ],
+       "to": [
+        250,
+        230
+       ],
+       "bend": -1
+      },
+      {
+       "id": "right",
+       "op": "arrow",
+       "startMs": 1500,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        250,
+        230
+       ],
+       "to": [
+        550,
+        230
+       ],
+       "bend": 1
+      },
+      {
+       "id": "side",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3300,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        400,
+        350
+       ],
+       "text": "side to side",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-english-ch10-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "sway",
+       "op": "text",
+       "startMs": 200,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        120
+       ],
+       "text": "sway",
+       "size": "l"
+      },
+      {
+       "id": "day",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        600,
+        120
+       ],
+       "text": "day",
+       "size": "l"
+      },
+      {
+       "id": "rhyme1",
+       "op": "line",
+       "startMs": 1300,
+       "endMs": 1900,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        170,
+        155
+       ],
+       "to": [
+        625,
+        155
+       ]
+      },
+      {
+       "id": "sky",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        310
+       ],
+       "text": "sky",
+       "size": "l"
+      },
+      {
+       "id": "fly",
+       "op": "text",
+       "startMs": 2600,
+       "endMs": 3100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        600,
+        310
+       ],
+       "text": "fly",
+       "size": "l"
+      },
+      {
+       "id": "rhyme2",
+       "op": "line",
+       "startMs": 3200,
+       "endMs": 3800,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        170,
+        345
+       ],
+       "to": [
+        625,
+        345
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-english-ch10-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "higher",
+       "op": "text",
+       "startMs": 200,
+       "endMs": 800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        80
+       ],
+       "text": "higher",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "birds",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        390
+       ],
+       "text": "birds",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "higharrow",
+       "op": "arrow",
+       "startMs": 1600,
+       "endMs": 2400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        330
+       ],
+       "to": [
+        400,
+        150
+       ]
+      },
+      {
+       "id": "exaggeration",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        250
+       ],
+       "text": "exaggeration",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "notexact",
+       "op": "text",
+       "startMs": 3800,
+       "endMs": 4400,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        400,
+        460
+       ],
+       "text": "not exact",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-english-ch10-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "fast",
+       "op": "text",
+       "startMs": 200,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        130,
+        100
+       ],
+       "text": "fast",
+       "size": "m"
+      },
+      {
+       "id": "free",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        670,
+        100
+       ],
+       "text": "free",
+       "size": "m"
+      },
+      {
+       "id": "fly",
+       "op": "text",
+       "startMs": 1300,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        410
+       ],
+       "text": "flying",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "flight",
+       "op": "arrow",
+       "startMs": 2000,
+       "endMs": 3000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        350
+       ],
+       "to": [
+        400,
+        160
+       ]
+      },
+      {
+       "id": "wind2",
+       "op": "arrow",
+       "startMs": 3100,
+       "endMs": 4000,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        700,
+        230
+       ],
+       "to": [
+        510,
+        230
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-english-ch10-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "two",
+       "op": "text",
+       "startMs": 200,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        70
+       ],
+       "text": "two things",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "rule",
+       "op": "numwork",
+       "startMs": 900,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        170,
+        130
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "high",
+         "+",
+         "-er",
+         "=",
+         "higher"
+        ],
+        [
+         "higher",
+         "+",
+         "than"
+        ]
+       ]
+      },
+      {
+       "id": "swingword",
+       "op": "text",
+       "startMs": 2400,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        150,
+        300
+       ],
+       "text": "swing",
+       "size": "m"
+      },
+      {
+       "id": "higherword",
+       "op": "text",
+       "startMs": 2900,
+       "endMs": 3400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        300
+       ],
+       "text": "higher",
+       "size": "m"
+      },
+      {
+       "id": "thanword",
+       "op": "text",
+       "startMs": 3400,
+       "endMs": 3800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        560,
+        300
+       ],
+       "text": "than",
+       "size": "m"
+      },
+      {
+       "id": "slideword",
+       "op": "text",
+       "startMs": 3800,
+       "endMs": 4300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        680,
+        300
+       ],
+       "text": "slide",
+       "size": "m"
+      },
+      {
+       "id": "compare",
+       "op": "arrow",
+       "startMs": 4500,
+       "endMs": 5600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        220,
+        350
+       ],
+       "to": [
+        650,
+        350
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-english-ch10-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "correct",
+       "op": "text",
+       "startMs": 200,
+       "endMs": 900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        80
+       ],
+       "text": "higher than",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "wrong1",
+       "op": "text",
+       "startMs": 1100,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        230,
+        230
+       ],
+       "text": "more higher",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "cross1",
+       "op": "line",
+       "startMs": 1800,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        130,
+        200
+       ],
+       "to": [
+        330,
+        260
+       ]
+      },
+      {
+       "id": "wrong2",
+       "op": "text",
+       "startMs": 2400,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        590,
+        230
+       ],
+       "text": "higher from",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "cross2",
+       "op": "line",
+       "startMs": 3100,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        500,
+        200
+       ],
+       "to": [
+        700,
+        260
+       ]
+      },
+      {
+       "id": "one",
+       "op": "text",
+       "startMs": 3700,
+       "endMs": 4500,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        400,
+        410
+       ],
+       "text": "one comparison word",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "check": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "Line 5 of beat-line game has Hindi text 'ऊँचा झूलूँ, हवा बहती' which is not in the English poem and not in the kit. This introduces content in a different language (Hindi) that is not part of the verified source.",
+    "severity": "low"
+   }
+  ],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

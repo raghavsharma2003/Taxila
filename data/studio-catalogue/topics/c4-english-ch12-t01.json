@@ -1,0 +1,1854 @@
+{
+ "topicId": "c4-english-ch12-t01",
+ "title": "Maheshwar",
+ "chapter": "Maheshwar",
+ "subject": "english",
+ "class": 4,
+ "topicType": "T2",
+ "plan": {
+  "game": "story-rail@1",
+  "hint": "sequence, cause and who modes from the lesson's events and speakers"
+ },
+ "game": {
+  "archetype": "story-rail@1",
+  "spec": {
+   "archetype": "story-rail@1",
+   "skills": [
+    "c4-english-ch12-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "picked": "coupled",
+    "streak": "streak",
+    "next": "What happens next?",
+    "effect": "What does this lead to?",
+    "who": "Who said this?",
+    "runDone": "Line complete",
+    "order": "your train",
+    "right": "Coupled",
+    "wrong": "Not this one",
+    "coach": "Tap a wagon before the train reaches the fork"
+   },
+   "title": "A Visit to Maheshwar",
+   "rounds": [
+    {
+     "mode": "sequence",
+     "title": "The visit",
+     "sub": "couple the events in order",
+     "cards": [
+      {
+       "id": "e1",
+       "text": "Sahil asks about the visit",
+       "glyph": "person",
+       "src": "c4-english-ch12-t01-i10"
+      },
+      {
+       "id": "e2",
+       "text": "The guide says, “Let’s go!”",
+       "glyph": "person",
+       "src": "c4-english-ch12-t01-i11"
+      },
+      {
+       "id": "e3",
+       "text": "They take a boat ride",
+       "glyph": "boat",
+       "src": "c4-english-ch12-t01-i11"
+      }
+     ],
+     "speed": 0.95
+    },
+    {
+     "mode": "cause",
+     "title": "Because",
+     "sub": "match each cause to its effect",
+     "pairs": [
+      {
+       "cause": {
+        "id": "c1",
+        "text": "The words mention a river",
+        "glyph": "river",
+        "src": "c4-english-ch12-t01-i05"
+       },
+       "effect": {
+        "id": "f1",
+        "text": "Bank means land beside it",
+        "glyph": "earth",
+        "src": "c4-english-ch12-t01-i05"
+       }
+      },
+      {
+       "cause": {
+        "id": "c2",
+        "text": "You ask about a person",
+        "glyph": "person",
+        "src": "c4-english-ch12-t01-i08"
+       },
+       "effect": {
+        "id": "f2",
+        "text": "Use the person question word",
+        "glyph": "question",
+        "src": "c4-english-ch12-t01-i08"
+       }
+      },
+      {
+       "cause": {
+        "id": "c3",
+        "text": "You ask about a past action",
+        "glyph": "clock",
+        "src": "c4-english-ch12-t01-i09"
+       },
+       "effect": {
+        "id": "f3",
+        "text": "Use a past-question helper",
+        "glyph": "question",
+        "src": "c4-english-ch12-t01-i09"
+       }
+      }
+     ],
+     "speed": 0.85,
+     "targets": "c4-english-ch12-t01-m-bank-one-meaning"
+    },
+    {
+     "mode": "who",
+     "title": "Who said it?",
+     "sub": "send each line to its speaker",
+     "speakers": [
+      {
+       "id": "riya",
+       "name": "Riya",
+       "glyph": "person"
+      },
+      {
+       "id": "sahil",
+       "name": "Sahil",
+       "glyph": "person"
+      },
+      {
+       "id": "guide",
+       "name": "Guide",
+       "glyph": "compass"
+      }
+     ],
+     "lines": [
+      {
+       "id": "w1",
+       "text": "What is that wooden machine?",
+       "speaker": "riya",
+       "src": "c4-english-ch12-t01-i06"
+      },
+      {
+       "id": "w2",
+       "text": "Where lived in the fort?",
+       "speaker": "sahil",
+       "src": "c4-english-ch12-t01-i08"
+      },
+      {
+       "id": "w3",
+       "text": "Let’s go!",
+       "speaker": "guide",
+       "src": "c4-english-ch12-t01-i11"
+      }
+     ],
+     "speed": 0.8
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c4-english-ch12-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Explore Maheshwar",
+   "accent": "amber",
+   "targets": "c4-english-ch12-t01-m-bank-one-meaning",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Explore Maheshwar"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Bank always means money place"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "town",
+       "type": "node",
+       "text": "Maheshwar",
+       "sub": "heritage town",
+       "glyph": "temple",
+       "color": "amber"
+      },
+      {
+       "id": "river",
+       "type": "node",
+       "text": "Narmada",
+       "sub": "river",
+       "glyph": "river",
+       "color": "sci"
+      },
+      {
+       "id": "ghats",
+       "type": "node",
+       "text": "Ghats",
+       "sub": "wide steps",
+       "glyph": "mountain",
+       "color": "ion"
+      },
+      {
+       "id": "fort",
+       "type": "node",
+       "text": "Fort",
+       "sub": "queen ruled",
+       "color": "sun"
+      },
+      {
+       "id": "loom",
+       "type": "node",
+       "text": "Loom",
+       "sub": "machine",
+       "glyph": "gear",
+       "color": "mint"
+      },
+      {
+       "id": "weaver",
+       "type": "node",
+       "text": "Weaver",
+       "sub": "person",
+       "glyph": "person",
+       "color": "volt"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "town",
+       "to": "river",
+       "text": "on"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "river",
+       "to": "ghats",
+       "text": "has"
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "town",
+       "to": "fort",
+       "text": "has"
+      },
+      {
+       "id": "a4",
+       "type": "arrow",
+       "from": "loom",
+       "to": "weaver",
+       "text": "used by"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "checktitle",
+       "type": "title",
+       "text": "Choose the question word"
+      },
+      {
+       "id": "who",
+       "type": "label",
+       "text": "Who",
+       "x": 180,
+       "y": 350,
+       "color": "amber"
+      },
+      {
+       "id": "where",
+       "type": "label",
+       "text": "Where",
+       "x": 450,
+       "y": 350,
+       "color": "sci"
+      },
+      {
+       "id": "why",
+       "type": "label",
+       "text": "Why",
+       "x": 720,
+       "y": 350,
+       "color": "mint"
+      },
+      {
+       "id": "person",
+       "type": "glyph",
+       "name": "person",
+       "x": 180,
+       "y": 240,
+       "size": 100,
+       "color": "amber"
+      },
+      {
+       "id": "place",
+       "type": "glyph",
+       "name": "map",
+       "x": 450,
+       "y": 240,
+       "size": 100,
+       "color": "sci"
+      },
+      {
+       "id": "reason",
+       "type": "glyph",
+       "name": "question",
+       "x": 720,
+       "y": 240,
+       "size": 100,
+       "color": "mint"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Maheshwar is a heritage town on the Narmada. Let us explore its special places.",
+    "L2": "Here, the word bank does not mean a money bank. It means the land beside a river.",
+    "L3": "Maheshwar has ghats and a fort. Ghats are wide steps going down into a river.",
+    "L4": "Queen Ahilyabai Holkar lived and ruled in Maheshwar more than two hundred years ago.",
+    "L5": "Weavers make Maheshwari sarees on looms. A loom is the machine, and a weaver is the person.",
+    "L6": "Choose question words carefully. Who asks about a person, and where asks about a place.",
+    "L7": "For a past question, use did with the action word. Say, Why did you come to Maheshwar?",
+    "L8": "Now tap the question word that asks about a person. The host will check your answer."
+   },
+   "narration": {
+    "L1": {
+     "text": "Maheshwar is a heritage town on the Narmada. Let us explore its special places.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L2": {
+     "text": "Here, the word bank does not mean a money bank. It means the land beside a river.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L3": {
+     "text": "Maheshwar has ghats and a fort. Ghats are wide steps going down into a river.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L4": {
+     "text": "Queen Ahilyabai Holkar lived and ruled in Maheshwar more than two hundred years ago.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L5": {
+     "text": "Weavers make Maheshwari sarees on looms. A loom is the machine, and a weaver is the person.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Choose question words carefully. Who asks about a person, and where asks about a place.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L7": {
+     "text": "For a past question, use did with the action word. Say, Why did you come to Maheshwar?",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Now tap the question word that asks about a person. The host will check your answer.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "title"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "myth"
+      },
+      {
+       "at": 3,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "river"
+      },
+      {
+       "at": 0.4,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "town",
+        "ghats",
+        "fort"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 1,
+       "target": [
+        "a1",
+        "a2",
+        "a3"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1.2,
+       "target": "fort"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "loom",
+        "weaver",
+        "a4"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "a4",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "who",
+        "where",
+        "why"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 1,
+       "target": [
+        "who",
+        "person"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "why"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "interactive",
+       "dur": 1
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Tap the question word that asks about a person.",
+    "options": [
+     "who",
+     "where",
+     "why"
+    ],
+    "answer": "who",
+    "src": "c4-english-ch12-t01-i08"
+   }
+  },
+  "repairs": [
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "passes": 2,
+  "seconds": 60
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "The guide says, “Let’s go!”",
+   "prompt": "sequence: after/for \"Sahil asks about the visit\"",
+   "src": "c4-english-ch12-t01-i11"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "They take a boat ride",
+   "prompt": "sequence: after/for \"The guide says, “Let’s go!”\"",
+   "src": "c4-english-ch12-t01-i11"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "Bank means land beside it",
+   "prompt": "cause: after/for \"The words mention a river\"",
+   "src": "c4-english-ch12-t01-i05"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "Use the person question word",
+   "prompt": "cause: after/for \"You ask about a person\"",
+   "src": "c4-english-ch12-t01-i08"
+  },
+  {
+   "itemId": "r2:2",
+   "key": "Use a past-question helper",
+   "prompt": "cause: after/for \"You ask about a past action\"",
+   "src": "c4-english-ch12-t01-i09"
+  },
+  {
+   "itemId": "r3:0",
+   "key": "Riya",
+   "prompt": "who: after/for \"What is that wooden machine?\"",
+   "src": "c4-english-ch12-t01-i06"
+  },
+  {
+   "itemId": "r3:1",
+   "key": "Sahil",
+   "prompt": "who: after/for \"Where lived in the fort?\"",
+   "src": "c4-english-ch12-t01-i08"
+  },
+  {
+   "itemId": "r3:2",
+   "key": "Guide",
+   "prompt": "who: after/for \"Let’s go!\"",
+   "src": "c4-english-ch12-t01-i11"
+  }
+ ],
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-english-ch12-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "title",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "Maheshwar",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "river",
+       "op": "stroke",
+       "startMs": 900,
+       "endMs": 1800,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         80,
+         350
+        ],
+        [
+         180,
+         330
+        ],
+        [
+         290,
+         345
+        ],
+        [
+         400,
+         320
+        ],
+        [
+         520,
+         340
+        ],
+        [
+         650,
+         315
+        ],
+        [
+         730,
+         330
+        ]
+       ]
+      },
+      {
+       "id": "narmada",
+       "op": "label",
+       "startMs": 1800,
+       "endMs": 2600,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        650,
+        370
+       ],
+       "text": "Narmada",
+       "to": [
+        610,
+        325
+       ]
+      },
+      {
+       "id": "town",
+       "op": "rect",
+       "startMs": 2600,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        270,
+        180
+       ],
+       "w": 260,
+       "h": 110
+      },
+      {
+       "id": "heritage",
+       "op": "label",
+       "startMs": 3500,
+       "endMs": 4300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        155
+       ],
+       "text": "heritage",
+       "to": [
+        400,
+        180
+       ]
+      },
+      {
+       "id": "special",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5500,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        400,
+        440
+       ],
+       "text": "special places",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-english-ch12-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "bankword",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        60
+       ],
+       "text": "bank",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "money",
+       "op": "rect",
+       "startMs": 900,
+       "endMs": 1700,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        100,
+        150
+       ],
+       "w": 220,
+       "h": 100
+      },
+      {
+       "id": "moneylabel",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2600,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        210,
+        205
+       ],
+       "text": "money bank",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "river",
+       "op": "stroke",
+       "startMs": 2900,
+       "endMs": 3800,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         400,
+         350
+        ],
+        [
+         500,
+         330
+        ],
+        [
+         600,
+         345
+        ],
+        [
+         700,
+         325
+        ]
+       ]
+      },
+      {
+       "id": "land",
+       "op": "polygon",
+       "startMs": 3800,
+       "endMs": 4800,
+       "ink": "chalk",
+       "weight": 1,
+       "points": [
+        [
+         390,
+         300
+        ],
+        [
+         470,
+         290
+        ],
+        [
+         560,
+         300
+        ],
+        [
+         650,
+         285
+        ],
+        [
+         720,
+         300
+        ],
+        [
+         700,
+         390
+        ],
+        [
+         600,
+         380
+        ],
+        [
+         500,
+         395
+        ],
+        [
+         410,
+         380
+        ]
+       ],
+       "fill": "soft"
+      },
+      {
+       "id": "beside",
+       "op": "label",
+       "startMs": 4800,
+       "endMs": 5500,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        520,
+        270
+       ],
+       "text": "beside",
+       "to": [
+        520,
+        300
+       ]
+      },
+      {
+       "id": "riverlabel",
+       "op": "label",
+       "startMs": 5500,
+       "endMs": 6200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        650,
+        430
+       ],
+       "text": "river",
+       "to": [
+        650,
+        340
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-english-ch12-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "ghats",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        180,
+        60
+       ],
+       "text": "ghats",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "step1",
+       "op": "line",
+       "startMs": 900,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        90,
+        180
+       ],
+       "to": [
+        270,
+        180
+       ]
+      },
+      {
+       "id": "step2",
+       "op": "line",
+       "startMs": 1300,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        110,
+        220
+       ],
+       "to": [
+        290,
+        220
+       ]
+      },
+      {
+       "id": "step3",
+       "op": "line",
+       "startMs": 1700,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        130,
+        260
+       ],
+       "to": [
+        310,
+        260
+       ]
+      },
+      {
+       "id": "down",
+       "op": "arrow",
+       "startMs": 2200,
+       "endMs": 2900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        200,
+        140
+       ],
+       "to": [
+        200,
+        300
+       ]
+      },
+      {
+       "id": "river",
+       "op": "stroke",
+       "startMs": 3000,
+       "endMs": 3900,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         80,
+         390
+        ],
+        [
+         180,
+         375
+        ],
+        [
+         280,
+         390
+        ],
+        [
+         380,
+         375
+        ],
+        [
+         480,
+         390
+        ],
+        [
+         580,
+         375
+        ],
+        [
+         700,
+         390
+        ]
+       ]
+      },
+      {
+       "id": "fort",
+       "op": "rect",
+       "startMs": 4000,
+       "endMs": 5000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        500,
+        130
+       ],
+       "w": 170,
+       "h": 150
+      },
+      {
+       "id": "fortlabel",
+       "op": "label",
+       "startMs": 5000,
+       "endMs": 5700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        585,
+        105
+       ],
+       "text": "fort",
+       "to": [
+        585,
+        130
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-english-ch12-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "queen",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "Queen Ahilyabai Holkar",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "person",
+       "op": "circle",
+       "startMs": 1300,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        180
+       ],
+       "r": 45
+      },
+      {
+       "id": "body",
+       "op": "stroke",
+       "startMs": 1900,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         400,
+         225
+        ],
+        [
+         400,
+         350
+        ]
+       ]
+      },
+      {
+       "id": "rule",
+       "op": "line",
+       "startMs": 2400,
+       "endMs": 2900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        330,
+        270
+       ],
+       "to": [
+        470,
+        270
+       ]
+      },
+      {
+       "id": "lived",
+       "op": "label",
+       "startMs": 3000,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        285,
+        180
+       ],
+       "text": "lived",
+       "to": [
+        355,
+        180
+       ]
+      },
+      {
+       "id": "ruled",
+       "op": "label",
+       "startMs": 3700,
+       "endMs": 4400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        515,
+        270
+       ],
+       "text": "ruled",
+       "to": [
+        470,
+        270
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-english-ch12-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "sarees",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "Maheshwari sarees",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "loom",
+       "op": "rect",
+       "startMs": 1200,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        150,
+        150
+       ],
+       "w": 250,
+       "h": 180
+      },
+      {
+       "id": "thread1",
+       "op": "line",
+       "startMs": 2200,
+       "endMs": 2600,
+       "ink": "accent",
+       "weight": 1,
+       "from": [
+        170,
+        180
+       ],
+       "to": [
+        380,
+        180
+       ]
+      },
+      {
+       "id": "thread2",
+       "op": "line",
+       "startMs": 2600,
+       "endMs": 3000,
+       "ink": "accent",
+       "weight": 1,
+       "from": [
+        170,
+        220
+       ],
+       "to": [
+        380,
+        220
+       ]
+      },
+      {
+       "id": "thread3",
+       "op": "line",
+       "startMs": 3000,
+       "endMs": 3400,
+       "ink": "accent",
+       "weight": 1,
+       "from": [
+        170,
+        260
+       ],
+       "to": [
+        380,
+        260
+       ]
+      },
+      {
+       "id": "loomlabel",
+       "op": "label",
+       "startMs": 3400,
+       "endMs": 4000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        275,
+        370
+       ],
+       "text": "loom",
+       "to": [
+        275,
+        330
+       ]
+      },
+      {
+       "id": "weaver",
+       "op": "circle",
+       "startMs": 4100,
+       "endMs": 4600,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        590,
+        190
+       ],
+       "r": 35
+      },
+      {
+       "id": "weaverbody",
+       "op": "stroke",
+       "startMs": 4600,
+       "endMs": 5200,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         590,
+         225
+        ],
+        [
+         590,
+         330
+        ],
+        [
+         545,
+         380
+        ],
+        [
+         635,
+         380
+        ]
+       ]
+      },
+      {
+       "id": "weaverlabel",
+       "op": "label",
+       "startMs": 5200,
+       "endMs": 5900,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        590,
+        430
+       ],
+       "text": "weaver",
+       "to": [
+        590,
+        330
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-english-ch12-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "words",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "question words",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "who",
+       "op": "circle",
+       "startMs": 1000,
+       "endMs": 1700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        220,
+        210
+       ],
+       "r": 75
+      },
+      {
+       "id": "wholabel",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        220,
+        220
+       ],
+       "text": "Who",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "person",
+       "op": "text",
+       "startMs": 2400,
+       "endMs": 3100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        220,
+        330
+       ],
+       "text": "person",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "where",
+       "op": "circle",
+       "startMs": 3200,
+       "endMs": 3900,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        580,
+        210
+       ],
+       "r": 75
+      },
+      {
+       "id": "wherelabel",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        580,
+        220
+       ],
+       "text": "where",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "place",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        580,
+        330
+       ],
+       "text": "place",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "join",
+       "op": "arrow",
+       "startMs": 5500,
+       "endMs": 6200,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        295,
+        210
+       ],
+       "to": [
+        505,
+        210
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-english-ch12-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "past",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "past question",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "did",
+       "op": "circle",
+       "startMs": 1000,
+       "endMs": 1600,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        150,
+        190
+       ],
+       "r": 55
+      },
+      {
+       "id": "didlabel",
+       "op": "text",
+       "startMs": 1600,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        150,
+        200
+       ],
+       "text": "did",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "action",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        150,
+        300
+       ],
+       "text": "action word",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "equation",
+       "op": "numwork",
+       "startMs": 3000,
+       "endMs": 4300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        280,
+        170
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "Why",
+         "did",
+         "you",
+         "come"
+        ]
+       ]
+      },
+      {
+       "id": "maheshwar",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 5100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        520,
+        245
+       ],
+       "text": "Maheshwar",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "questionmark",
+       "op": "text",
+       "startMs": 5100,
+       "endMs": 5700,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        650,
+        245
+       ],
+       "text": "?",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "why",
+       "op": "text",
+       "startMs": 5800,
+       "endMs": 6500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        315,
+        115
+       ],
+       "text": "Why",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-english-ch12-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "question",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "question word",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "who",
+       "op": "circle",
+       "startMs": 1100,
+       "endMs": 1800,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        260,
+        220
+       ],
+       "r": 85
+      },
+      {
+       "id": "wholabel",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        260,
+        230
+       ],
+       "text": "Who",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "person",
+       "op": "label",
+       "startMs": 2500,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        260,
+        350
+       ],
+       "text": "person",
+       "to": [
+        260,
+        305
+       ]
+      },
+      {
+       "id": "host",
+       "op": "circle",
+       "startMs": 3400,
+       "endMs": 4000,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        590,
+        210
+       ],
+       "r": 45
+      },
+      {
+       "id": "hostlabel",
+       "op": "label",
+       "startMs": 4000,
+       "endMs": 4700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        590,
+        300
+       ],
+       "text": "host",
+       "to": [
+        590,
+        255
+       ]
+      },
+      {
+       "id": "check",
+       "op": "arrow",
+       "startMs": 4800,
+       "endMs": 5600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        350,
+        220
+       ],
+       "to": [
+        520,
+        220
+       ]
+      },
+      {
+       "id": "answer",
+       "op": "text",
+       "startMs": 5800,
+       "endMs": 6500,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        440
+       ],
+       "text": "answer",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

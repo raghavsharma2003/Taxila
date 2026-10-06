@@ -1,0 +1,1848 @@
+{
+ "topicId": "c6-maths-ch05-t05",
+ "title": "Divisibility tests",
+ "chapter": "Prime Time",
+ "subject": "maths",
+ "class": 6,
+ "topicType": "T4",
+ "plan": {
+  "game": "sieve-storm@1",
+  "hint": "rule divisible (divisibility by 2, 3, 4, 5, 9, 10)"
+ },
+ "game": {
+  "archetype": "sieve-storm@1",
+  "spec": {
+   "archetype": "sieve-storm@1",
+   "skills": [
+    "c6-maths-ch05-t05"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "slashed": "right calls",
+    "combo": "combo",
+    "coach": "Swipe numbers that fit the rule",
+    "runDone": "Storm over",
+    "prime": "prime",
+    "composite": "composite",
+    "even": "even",
+    "odd": "odd",
+    "multipleOf": "multiples of",
+    "commonOf": "common multiples of",
+    "factorOf": "factors of",
+    "cfactorOf": "common factors of",
+    "divisibleBy": "divisible by",
+    "coprimeWith": "co-prime with",
+    "square": "square numbers",
+    "palindrome": "palindromes",
+    "slipped": "slipped",
+    "wrongCut": "not this one",
+    "and": "and"
+   },
+   "title": "Sieve Storm: Divisibility",
+   "rounds": [
+    {
+     "rule": "divisible",
+     "a": 2,
+     "title": "Catch the even ones",
+     "sub": "Use the last digit",
+     "lo": 10,
+     "hi": 999,
+     "count": 14,
+     "hitRate": 0.5,
+     "seed": 214,
+     "speed": 0.8
+    },
+    {
+     "rule": "divisible",
+     "a": 4,
+     "title": "Check the last two",
+     "sub": "Look closely before you swipe",
+     "lo": 10,
+     "hi": 999,
+     "count": 16,
+     "hitRate": 0.45,
+     "seed": 431,
+     "speed": 0.95,
+     "targets": "c6-maths-ch05-t05-m-four-last-digit"
+    },
+    {
+     "rule": "divisible",
+     "a": 3,
+     "title": "Add the digits",
+     "sub": "Use the digit-sum test",
+     "lo": 10,
+     "hi": 9999,
+     "count": 18,
+     "hitRate": 0.4,
+     "seed": 763,
+     "speed": 1.1,
+     "targets": "c6-maths-ch05-t05-m-three-last-digit"
+    },
+    {
+     "rule": "divisible",
+     "a": 9,
+     "title": "The final challenge",
+     "sub": "Check the digit sum carefully",
+     "lo": 10,
+     "hi": 9999,
+     "count": 20,
+     "hitRate": 0.35,
+     "seed": 982,
+     "speed": 1.3,
+     "targets": "c6-maths-ch05-t05-m-nine-implies"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c6-maths-ch05-t05"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Right",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "BUSTED",
+    "order": "Tap them in order"
+   },
+   "title": "Divisibility tests",
+   "accent": "ion",
+   "targets": "c6-maths-ch05-t05-m-four-last-digit",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Divisibility tests"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Last digit 4 means divisible by 4"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "n2352",
+       "type": "node",
+       "text": "2352",
+       "sub": "number",
+       "color": "ion"
+      },
+      {
+       "id": "d2",
+       "type": "node",
+       "text": "2",
+       "sub": "last digit",
+       "glyph": "ruler",
+       "color": "mint"
+      },
+      {
+       "id": "sum12",
+       "type": "node",
+       "text": "12",
+       "sub": "digit sum",
+       "color": "amber"
+      },
+      {
+       "id": "last52",
+       "type": "node",
+       "text": "52",
+       "sub": "last two",
+       "glyph": "ruler",
+       "color": "sci"
+      },
+      {
+       "id": "last352",
+       "type": "node",
+       "text": "352",
+       "sub": "last three",
+       "glyph": "ruler",
+       "color": "volt"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "n2352",
+       "to": "d2",
+       "text": "even"
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "n2352",
+       "to": "sum12",
+       "text": "add digits"
+      },
+      {
+       "id": "a4",
+       "type": "arrow",
+       "from": "n2352",
+       "to": "last52",
+       "text": "last two"
+      },
+      {
+       "id": "a8",
+       "type": "arrow",
+       "from": "n2352",
+       "to": "last352",
+       "text": "last three"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "column",
+     "els": [
+      {
+       "id": "bar2",
+       "type": "bar",
+       "parts": 2,
+       "shaded": 2,
+       "x": 120,
+       "y": 260,
+       "w": 300,
+       "text": "2: yes"
+      },
+      {
+       "id": "bar3",
+       "type": "bar",
+       "parts": 3,
+       "shaded": 3,
+       "x": 120,
+       "y": 340,
+       "w": 300,
+       "text": "3: yes"
+      },
+      {
+       "id": "bar4",
+       "type": "bar",
+       "parts": 4,
+       "shaded": 4,
+       "x": 120,
+       "y": 420,
+       "w": 300,
+       "text": "4: yes"
+      },
+      {
+       "id": "bar8",
+       "type": "bar",
+       "parts": 8,
+       "shaded": 8,
+       "x": 560,
+       "y": 260,
+       "w": 300,
+       "text": "8: yes"
+      },
+      {
+       "id": "bar9",
+       "type": "bar",
+       "parts": 9,
+       "shaded": 0,
+       "x": 560,
+       "y": 340,
+       "w": 300,
+       "text": "9: no"
+      },
+      {
+       "id": "why4",
+       "type": "node",
+       "text": "100",
+       "sub": "4 × 25",
+       "glyph": "balance",
+       "color": "sci"
+      },
+      {
+       "id": "why9",
+       "type": "node",
+       "text": "10 = 9 + 1",
+       "sub": "same remainder",
+       "glyph": "balance",
+       "color": "amber"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "row",
+     "els": [
+      {
+       "id": "end2",
+       "type": "label",
+       "text": "2: even last digit",
+       "x": 100,
+       "y": 250,
+       "color": "mint"
+      },
+      {
+       "id": "sum3",
+       "type": "label",
+       "text": "3: digit sum",
+       "x": 100,
+       "y": 320,
+       "color": "amber"
+      },
+      {
+       "id": "two4",
+       "type": "label",
+       "text": "4: last two digits",
+       "x": 100,
+       "y": 390,
+       "color": "sci"
+      },
+      {
+       "id": "end5",
+       "type": "label",
+       "text": "5: ends 0 or 5",
+       "x": 100,
+       "y": 460,
+       "color": "volt"
+      },
+      {
+       "id": "end10",
+       "type": "label",
+       "text": "10: ends 0",
+       "x": 560,
+       "y": 250,
+       "color": "ion"
+      },
+      {
+       "id": "end8",
+       "type": "label",
+       "text": "8: last three digits",
+       "x": 560,
+       "y": 320,
+       "color": "sun"
+      },
+      {
+       "id": "sum9",
+       "type": "label",
+       "text": "9: digit sum",
+       "x": 560,
+       "y": 390,
+       "color": "amber"
+      }
+     ]
+    },
+    {
+     "id": "s5",
+     "layout": "row",
+     "els": [
+      {
+       "id": "q1",
+       "type": "node",
+       "text": "2 only",
+       "glyph": "question",
+       "color": "ion"
+      },
+      {
+       "id": "q2",
+       "type": "node",
+       "text": "5 only",
+       "glyph": "question",
+       "color": "mint"
+      },
+      {
+       "id": "q3",
+       "type": "node",
+       "text": "both",
+       "glyph": "question",
+       "color": "amber"
+      },
+      {
+       "id": "q4",
+       "type": "node",
+       "text": "neither",
+       "glyph": "question",
+       "color": "sci"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Divisibility means a number can be divided with no remainder. We can test without doing the full division.",
+    "L2": "For 2352, the last digit is 2, so it is divisible by 2.",
+    "L3": "Its digit sum is 2 plus 3 plus 5 plus 2, which is 12. So it is divisible by 3, but not by 9.",
+    "L4": "For 4, check the last two digits: 52 is divisible by 4. For 8, check the last three digits: 352 is divisible by 8.",
+    "L5": "The last digit 4 alone is not a test for 4. Hundreds are divisible by 4, so only the last two digits can change the remainder.",
+    "L6": "For 5, the last digit is 0 or 5. For 10, it is 0. Digit sums test 3 and 9.",
+    "L7": "Now check 765. Can the coins be shared equally among 2 players or among 5 players?"
+   },
+   "narration": {},
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      },
+      {
+       "at": 0.4,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "n2352"
+      },
+      {
+       "at": 0.4,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "d2",
+        "a2"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 0.5,
+       "target": "a2",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "sum12",
+        "a3"
+       ]
+      },
+      {
+       "at": 0.5,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "sum12"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "last52",
+        "a4",
+        "last352",
+        "a8"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 0.6,
+       "target": [
+        "a4",
+        "a8"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 1.2,
+       "do": "show",
+       "dur": 0.8,
+       "target": "why4"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "end2",
+        "sum3",
+        "two4",
+        "end5",
+        "end10",
+        "end8",
+        "sum9"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 0.7,
+       "target": [
+        "end5",
+        "end10"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0,
+     "scene": "s5",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "q1",
+        "q2",
+        "q3",
+        "q4"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "interactive",
+       "dur": 1
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "For 765 coins, which sharing choice works with no coins left over?",
+    "options": [
+     "q1",
+     "q2",
+     "q3",
+     "q4"
+    ],
+    "answer": "q2"
+   }
+  },
+  "repairs": [
+   "glyph",
+   "glyph",
+   "cue:target",
+   "cue:target",
+   "src"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 66
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch05-t05-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "l1t",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "Divisibility",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "l1eq",
+       "op": "numwork",
+       "startMs": 1100,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        170,
+        170
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "number",
+         "÷",
+         "number",
+         "=",
+         "no rem"
+        ]
+       ]
+      },
+      {
+       "id": "l1box",
+       "op": "rect",
+       "startMs": 2900,
+       "endMs": 3900,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        120,
+        130
+       ],
+       "w": 560,
+       "h": 110,
+       "round": 10
+      },
+      {
+       "id": "l1a",
+       "op": "arrow",
+       "startMs": 4100,
+       "endMs": 4900,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        400,
+        270
+       ],
+       "to": [
+        400,
+        350
+       ]
+      },
+      {
+       "id": "l1full",
+       "op": "text",
+       "startMs": 5100,
+       "endMs": 6100,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        400,
+        390
+       ],
+       "text": "full division",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "l1test",
+       "op": "text",
+       "startMs": 6400,
+       "endMs": 7200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        450
+       ],
+       "text": "test",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "l1h",
+       "op": "highlight",
+       "startMs": 7300,
+       "endMs": 8260,
+       "ink": "good",
+       "weight": 2,
+       "target": "l1test",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch05-t05-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "l2num",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        180,
+        120
+       ],
+       "text": "2352",
+       "size": "l"
+      },
+      {
+       "id": "l2last",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        490,
+        120
+       ],
+       "text": "2",
+       "size": "l"
+      },
+      {
+       "id": "l2line",
+       "op": "line",
+       "startMs": 1600,
+       "endMs": 2100,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        470,
+        140
+       ],
+       "to": [
+        515,
+        140
+       ]
+      },
+      {
+       "id": "l2eq",
+       "op": "numwork",
+       "startMs": 2300,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        170,
+        230
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "last d",
+         "=",
+         "2"
+        ]
+       ]
+      },
+      {
+       "id": "l2div",
+       "op": "text",
+       "startMs": 3700,
+       "endMs": 5000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        340
+       ],
+       "text": "divisible by 2",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "l2h",
+       "op": "highlight",
+       "startMs": 5100,
+       "endMs": 6132,
+       "ink": "good",
+       "weight": 2,
+       "target": "l2last",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch05-t05-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 10813,
+     "ops": [
+      {
+       "id": "l3sum",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        100
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "2",
+         "+",
+         "3",
+         "+",
+         "5",
+         "+",
+         "2",
+         "=",
+         "12"
+        ]
+       ]
+      },
+      {
+       "id": "l3three",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        170,
+        230
+       ],
+       "text": "divisible by 3",
+       "size": "m"
+      },
+      {
+       "id": "l3nine",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 5400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        500,
+        230
+       ],
+       "text": "not by 9",
+       "size": "m"
+      },
+      {
+       "id": "l3circle",
+       "op": "highlight",
+       "startMs": 5700,
+       "endMs": 7000,
+       "ink": "mark",
+       "weight": 1,
+       "target": "l3sum",
+       "style": "circle"
+      },
+      {
+       "id": "l3arrow",
+       "op": "arrow",
+       "startMs": 7200,
+       "endMs": 8000,
+       "ink": "good",
+       "weight": 1,
+       "from": [
+        300,
+        190
+       ],
+       "to": [
+        230,
+        220
+       ]
+      },
+      {
+       "id": "l3arrow2",
+       "op": "arrow",
+       "startMs": 8100,
+       "endMs": 8900,
+       "ink": "accent",
+       "weight": 1,
+       "from": [
+        420,
+        190
+       ],
+       "to": [
+        520,
+        220
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch05-t05-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 10813,
+     "ops": [
+      {
+       "id": "l4four",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        160,
+        100
+       ],
+       "text": "4",
+       "size": "l"
+      },
+      {
+       "id": "l4two",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        300,
+        100
+       ],
+       "text": "52",
+       "size": "l"
+      },
+      {
+       "id": "l4eq",
+       "op": "numwork",
+       "startMs": 1400,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        160,
+        180
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "52",
+         "=",
+         "4",
+         "×",
+         "13"
+        ]
+       ]
+      },
+      {
+       "id": "l4eight",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        160,
+        310
+       ],
+       "text": "8",
+       "size": "l"
+      },
+      {
+       "id": "l4three",
+       "op": "text",
+       "startMs": 3700,
+       "endMs": 4300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        300,
+        310
+       ],
+       "text": "352",
+       "size": "l"
+      },
+      {
+       "id": "l4eq2",
+       "op": "numwork",
+       "startMs": 4500,
+       "endMs": 5900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        160,
+        390
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "352",
+         "=",
+         "8",
+         "×",
+         "44"
+        ]
+       ]
+      },
+      {
+       "id": "l4h1",
+       "op": "highlight",
+       "startMs": 6200,
+       "endMs": 7000,
+       "ink": "good",
+       "weight": 2,
+       "target": "l4two",
+       "style": "underline"
+      },
+      {
+       "id": "l4h2",
+       "op": "highlight",
+       "startMs": 7400,
+       "endMs": 8200,
+       "ink": "good",
+       "weight": 2,
+       "target": "l4three",
+       "style": "underline"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch05-t05-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 11664,
+     "ops": [
+      {
+       "id": "l5four",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        130,
+        100
+       ],
+       "text": "4",
+       "size": "l"
+      },
+      {
+       "id": "l5digit",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        250,
+        100
+       ],
+       "text": "4",
+       "size": "l"
+      },
+      {
+       "id": "l5not",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 2400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        370,
+        100
+       ],
+       "text": "not a test",
+       "size": "m"
+      },
+      {
+       "id": "l5hund",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        150,
+        220
+       ],
+       "text": "hundreds",
+       "size": "m"
+      },
+      {
+       "id": "l5div",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 5200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        430,
+        220
+       ],
+       "text": "divisible by 4",
+       "size": "m"
+      },
+      {
+       "id": "l5arrow",
+       "op": "arrow",
+       "startMs": 5500,
+       "endMs": 6400,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        300,
+        260
+       ],
+       "to": [
+        300,
+        350
+       ]
+      },
+      {
+       "id": "l5lasttwo",
+       "op": "text",
+       "startMs": 6700,
+       "endMs": 8000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        300,
+        390
+       ],
+       "text": "last two digits",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "l5h",
+       "op": "highlight",
+       "startMs": 8500,
+       "endMs": 9500,
+       "ink": "good",
+       "weight": 2,
+       "target": "l5lasttwo",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch05-t05-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9111,
+     "ops": [
+      {
+       "id": "l6five",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        150,
+        100
+       ],
+       "text": "5",
+       "size": "l"
+      },
+      {
+       "id": "l6digits",
+       "op": "numwork",
+       "startMs": 700,
+       "endMs": 2000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        280,
+        80
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "last d",
+         "=",
+         "0",
+         "or",
+         "5"
+        ]
+       ]
+      },
+      {
+       "id": "l6ten",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        150,
+        220
+       ],
+       "text": "10",
+       "size": "l"
+      },
+      {
+       "id": "l6zero",
+       "op": "numwork",
+       "startMs": 3000,
+       "endMs": 4100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        280,
+        200
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "last d",
+         "=",
+         "0"
+        ]
+       ]
+      },
+      {
+       "id": "l6sum",
+       "op": "text",
+       "startMs": 4400,
+       "endMs": 5200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        150,
+        350
+       ],
+       "text": "digit sums",
+       "size": "m"
+      },
+      {
+       "id": "l6tests",
+       "op": "text",
+       "startMs": 5400,
+       "endMs": 6200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        350
+       ],
+       "text": "3 and 9",
+       "size": "m"
+      },
+      {
+       "id": "l6arrow",
+       "op": "arrow",
+       "startMs": 6500,
+       "endMs": 7300,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        310,
+        370
+       ],
+       "to": [
+        390,
+        370
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch05-t05-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "l7num",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        80
+       ],
+       "text": "765",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "l7coin1",
+       "op": "circle",
+       "startMs": 1000,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        250,
+        230
+       ],
+       "r": 42
+      },
+      {
+       "id": "l7coin2",
+       "op": "circle",
+       "startMs": 1600,
+       "endMs": 2100,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        230
+       ],
+       "r": 42
+      },
+      {
+       "id": "l7players",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        320
+       ],
+       "text": "2 players",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "l7or",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        380
+       ],
+       "text": "or",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "l7five",
+       "op": "text",
+       "startMs": 4200,
+       "endMs": 5200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        450
+       ],
+       "text": "5 players",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "l7arrow1",
+       "op": "arrow",
+       "startMs": 5400,
+       "endMs": 6100,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        320,
+        230
+       ],
+       "to": [
+        350,
+        230
+       ]
+      },
+      {
+       "id": "l7arrow2",
+       "op": "arrow",
+       "startMs": 6200,
+       "endMs": 6900,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        480,
+        230
+       ],
+       "to": [
+        520,
+        230
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 601 divisible 2?"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 505 divisible 2?"
+  },
+  {
+   "itemId": "r1:2",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 564 divisible 2?"
+  },
+  {
+   "itemId": "r1:3",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 166 divisible 2?"
+  },
+  {
+   "itemId": "r1:4",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 793 divisible 2?"
+  },
+  {
+   "itemId": "r1:5",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 66 divisible 2?"
+  },
+  {
+   "itemId": "r1:6",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 779 divisible 2?"
+  },
+  {
+   "itemId": "r1:7",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 368 divisible 2?"
+  },
+  {
+   "itemId": "r1:8",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 662 divisible 2?"
+  },
+  {
+   "itemId": "r1:9",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 593 divisible 2?"
+  },
+  {
+   "itemId": "r1:10",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 187 divisible 2?"
+  },
+  {
+   "itemId": "r1:11",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 628 divisible 2?"
+  },
+  {
+   "itemId": "r1:12",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 825 divisible 2?"
+  },
+  {
+   "itemId": "r1:13",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 937 divisible 2?"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 42 divisible 4?"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 280 divisible 4?"
+  },
+  {
+   "itemId": "r2:2",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 120 divisible 4?"
+  },
+  {
+   "itemId": "r2:3",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 484 divisible 4?"
+  },
+  {
+   "itemId": "r2:4",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 608 divisible 4?"
+  },
+  {
+   "itemId": "r2:5",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 49 divisible 4?"
+  },
+  {
+   "itemId": "r2:6",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 81 divisible 4?"
+  },
+  {
+   "itemId": "r2:7",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 124 divisible 4?"
+  },
+  {
+   "itemId": "r2:8",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 232 divisible 4?"
+  },
+  {
+   "itemId": "r2:9",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 989 divisible 4?"
+  },
+  {
+   "itemId": "r2:10",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 205 divisible 4?"
+  },
+  {
+   "itemId": "r2:11",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 739 divisible 4?"
+  },
+  {
+   "itemId": "r2:12",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 165 divisible 4?"
+  },
+  {
+   "itemId": "r2:13",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 569 divisible 4?"
+  },
+  {
+   "itemId": "r2:14",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 672 divisible 4?"
+  },
+  {
+   "itemId": "r2:15",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 334 divisible 4?"
+  },
+  {
+   "itemId": "r3:0",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 1454 divisible 3?"
+  },
+  {
+   "itemId": "r3:1",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 1787 divisible 3?"
+  },
+  {
+   "itemId": "r3:2",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 533 divisible 3?"
+  },
+  {
+   "itemId": "r3:3",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 3763 divisible 3?"
+  },
+  {
+   "itemId": "r3:4",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 3745 divisible 3?"
+  },
+  {
+   "itemId": "r3:5",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 2025 divisible 3?"
+  },
+  {
+   "itemId": "r3:6",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 3039 divisible 3?"
+  },
+  {
+   "itemId": "r3:7",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 2633 divisible 3?"
+  },
+  {
+   "itemId": "r3:8",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 1163 divisible 3?"
+  },
+  {
+   "itemId": "r3:9",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 1293 divisible 3?"
+  },
+  {
+   "itemId": "r3:10",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 1832 divisible 3?"
+  },
+  {
+   "itemId": "r3:11",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 3706 divisible 3?"
+  },
+  {
+   "itemId": "r3:12",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 2087 divisible 3?"
+  },
+  {
+   "itemId": "r3:13",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 2916 divisible 3?"
+  },
+  {
+   "itemId": "r3:14",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 3691 divisible 3?"
+  },
+  {
+   "itemId": "r3:15",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 2950 divisible 3?"
+  },
+  {
+   "itemId": "r3:16",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 1351 divisible 3?"
+  },
+  {
+   "itemId": "r3:17",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 3072 divisible 3?"
+  },
+  {
+   "itemId": "r4:0",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 1467 divisible 9?"
+  },
+  {
+   "itemId": "r4:1",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 1947 divisible 9?"
+  },
+  {
+   "itemId": "r4:2",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 3719 divisible 9?"
+  },
+  {
+   "itemId": "r4:3",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 1170 divisible 9?"
+  },
+  {
+   "itemId": "r4:4",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 2471 divisible 9?"
+  },
+  {
+   "itemId": "r4:5",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 2179 divisible 9?"
+  },
+  {
+   "itemId": "r4:6",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 3766 divisible 9?"
+  },
+  {
+   "itemId": "r4:7",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 1713 divisible 9?"
+  },
+  {
+   "itemId": "r4:8",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 2393 divisible 9?"
+  },
+  {
+   "itemId": "r4:9",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 2223 divisible 9?"
+  },
+  {
+   "itemId": "r4:10",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 2240 divisible 9?"
+  },
+  {
+   "itemId": "r4:11",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 3087 divisible 9?"
+  },
+  {
+   "itemId": "r4:12",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 1036 divisible 9?"
+  },
+  {
+   "itemId": "r4:13",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 1173 divisible 9?"
+  },
+  {
+   "itemId": "r4:14",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 1575 divisible 9?"
+  },
+  {
+   "itemId": "r4:15",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 1240 divisible 9?"
+  },
+  {
+   "itemId": "r4:16",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 476 divisible 9?"
+  },
+  {
+   "itemId": "r4:17",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 1807 divisible 9?"
+  },
+  {
+   "itemId": "r4:18",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 2540 divisible 9?"
+  },
+  {
+   "itemId": "r4:19",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 3019 divisible 9?"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

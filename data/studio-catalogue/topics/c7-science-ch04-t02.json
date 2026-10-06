@@ -1,0 +1,1841 @@
+{
+ "topicId": "c7-science-ch04-t02",
+ "title": "Effect of air and water on metals",
+ "chapter": "The World of Metals and Non-metals",
+ "subject": "science",
+ "class": 7,
+ "topicType": "T3",
+ "plan": {
+  "game": "fair-test@1",
+  "hint": "rusting model: design (air, water) and conclude"
+ },
+ "game": {
+  "archetype": "fair-test@1",
+  "spec": {
+   "archetype": "fair-test@1",
+   "skills": [
+    "c7-science-ch04-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "run": "RUN",
+    "day": "day",
+    "predict": "Tap every setup that will show it",
+    "design": "Make it a fair test",
+    "conclude": "Which factor does NOT matter?",
+    "notMatter": "Which factor does NOT matter?",
+    "fair": "FAIR TEST",
+    "unfair": "NOT FAIR",
+    "runDone": "Lab closed",
+    "correct": "right calls",
+    "drip": "Hold to add drops; stop when it turns",
+    "drops": "drops",
+    "neutral": "NEUTRAL",
+    "hint": "change only one thing"
+   },
+   "title": "What makes iron rust?",
+   "model": "rusting",
+   "rounds": [
+    {
+     "mode": "predict",
+     "title": "Predict",
+     "sub": "which nails will rust?",
+     "setups": [
+      {
+       "water": "yes",
+       "air": "yes",
+       "coat": "none",
+       "salt": "no"
+      },
+      {
+       "water": "no",
+       "air": "yes",
+       "coat": "none",
+       "salt": "no"
+      },
+      {
+       "water": "yes",
+       "air": "no",
+       "coat": "none",
+       "salt": "no"
+      },
+      {
+       "water": "yes",
+       "air": "yes",
+       "coat": "paint",
+       "salt": "no"
+      }
+     ],
+     "src": "c7-science-ch04-t02-i03",
+     "targets": "c7-science-ch04-t02-m2"
+    },
+    {
+     "mode": "design",
+     "title": "Make it fair",
+     "sub": "test air and water",
+     "vary": "air",
+     "start": [
+      {
+       "water": "yes",
+       "air": "yes",
+       "coat": "none",
+       "salt": "no"
+      },
+      {
+       "water": "yes",
+       "air": "no",
+       "coat": "none",
+       "salt": "no"
+      }
+     ],
+     "targets": "c7-science-ch04-t02-m2"
+    },
+    {
+     "mode": "conclude",
+     "title": "Conclude",
+     "sub": "choose the factor that does not matter",
+     "ask": "not",
+     "options": [
+      "water",
+      "air",
+      "coat",
+      "salt"
+     ],
+     "src": "c7-science-ch04-t02-i01",
+     "targets": "c7-science-ch04-t02-m2"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-science-ch04-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Why iron rusts",
+   "accent": "sci",
+   "targets": "c7-science-ch04-t02-m1",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Why iron rusts"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Rust is just dirt"
+      },
+      {
+       "id": "iron",
+       "type": "node",
+       "text": "Iron",
+       "sub": "gate",
+       "glyph": "gear",
+       "color": "sci"
+      },
+      {
+       "id": "rust",
+       "type": "node",
+       "text": "Rust",
+       "sub": "new substance",
+       "glyph": "spark",
+       "color": "amber"
+      },
+      {
+       "id": "bad",
+       "type": "arrow",
+       "from": "iron",
+       "to": "rust",
+       "text": "reacts",
+       "bend": 0.1
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "air",
+       "type": "node",
+       "text": "Oxygen",
+       "sub": "from air",
+       "glyph": "wind",
+       "color": "ion"
+      },
+      {
+       "id": "water",
+       "type": "node",
+       "text": "Water",
+       "sub": "moisture",
+       "glyph": "drop",
+       "color": "sci"
+      },
+      {
+       "id": "iron2",
+       "type": "node",
+       "text": "Iron",
+       "sub": "fresh surface",
+       "glyph": "gear",
+       "color": "sci"
+      },
+      {
+       "id": "rust2",
+       "type": "node",
+       "text": "Rust",
+       "sub": "reddish-brown",
+       "glyph": "spark",
+       "color": "amber"
+      },
+      {
+       "id": "aair",
+       "type": "arrow",
+       "from": "air",
+       "to": "rust2",
+       "text": "needed",
+       "bend": 0.1
+      },
+      {
+       "id": "awater",
+       "type": "arrow",
+       "from": "water",
+       "to": "rust2",
+       "text": "needed",
+       "bend": -0.1
+      },
+      {
+       "id": "aresult",
+       "type": "arrow",
+       "from": "iron2",
+       "to": "rust2",
+       "text": "forms",
+       "bend": 0
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "paint",
+       "type": "node",
+       "text": "Paint",
+       "sub": "barrier",
+       "glyph": "shield",
+       "color": "mint"
+      },
+      {
+       "id": "oil",
+       "type": "node",
+       "text": "Oil",
+       "sub": "barrier",
+       "glyph": "drop",
+       "color": "mint"
+      },
+      {
+       "id": "zinc",
+       "type": "node",
+       "text": "Zinc coat",
+       "sub": "galvanising",
+       "glyph": "shield",
+       "color": "mint"
+      },
+      {
+       "id": "safe",
+       "type": "node",
+       "text": "Iron protected",
+       "sub": "air and water away",
+       "glyph": "gear",
+       "color": "sci"
+      },
+      {
+       "id": "p1",
+       "type": "arrow",
+       "from": "paint",
+       "to": "safe",
+       "text": "blocks",
+       "bend": 0
+      },
+      {
+       "id": "p2",
+       "type": "arrow",
+       "from": "oil",
+       "to": "safe",
+       "text": "blocks",
+       "bend": 0
+      },
+      {
+       "id": "p3",
+       "type": "arrow",
+       "from": "zinc",
+       "to": "safe",
+       "text": "blocks",
+       "bend": 0
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "row",
+     "els": [
+      {
+       "id": "both",
+       "type": "node",
+       "text": "Air + water",
+       "sub": "both needed",
+       "glyph": "balance",
+       "color": "amber"
+      },
+      {
+       "id": "dry",
+       "type": "node",
+       "text": "Dry air",
+       "sub": "hardly rusts",
+       "glyph": "wind",
+       "color": "ion"
+      },
+      {
+       "id": "noair",
+       "type": "node",
+       "text": "Water, no air",
+       "sub": "hardly rusts",
+       "glyph": "drop",
+       "color": "sci"
+      },
+      {
+       "id": "coast",
+       "type": "node",
+       "text": "Coastal air",
+       "sub": "faster rusting",
+       "glyph": "wave",
+       "color": "amber"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Rust on iron is not dirt stuck to the surface. Rust is a new substance called iron oxide.",
+    "L2": "Iron rusts when it reacts with oxygen from the air and water, or moisture.",
+    "L3": "Both are needed. Iron in dry air, or in water with no air, hardly rusts.",
+    "L4": "The reddish-brown rust is flaky, so it falls away and exposes fresh iron underneath.",
+    "L5": "That is why the iron is slowly eaten away and becomes weak.",
+    "L6": "Rusting is faster in humid coastal air and during the monsoon, especially when salt is present.",
+    "L7": "Paint, oil, grease, zinc or chromium coatings keep air and water away from iron.",
+    "L8": "Now choose the two surroundings that iron needs in order to rust."
+   },
+   "narration": {
+    "L1": {
+     "text": "Rust on iron is not dirt stuck to the surface. Rust is a new substance called iron oxide.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L2": {
+     "text": "Iron rusts when it reacts with oxygen from the air and water, or moisture.",
+     "dur": 5.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L3": {
+     "text": "Both are needed. Iron in dry air, or in water with no air, hardly rusts.",
+     "dur": 5.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L4": {
+     "text": "The reddish-brown rust is flaky, so it falls away and exposes fresh iron underneath.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L5": {
+     "text": "That is why the iron is slowly eaten away and becomes weak.",
+     "dur": 4.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Rusting is faster in humid coastal air and during the monsoon, especially when salt is present.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Paint, oil, grease, zinc or chromium coatings keep air and water away from iron.",
+     "dur": 5.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Now choose the two surroundings that iron needs in order to rust.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      },
+      {
+       "at": 2,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      },
+      {
+       "at": 3,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "iron",
+        "rust",
+        "bad"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "iron2",
+        "air",
+        "water"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "aair",
+        "awater"
+       ]
+      },
+      {
+       "at": 2,
+       "do": "flow",
+       "dur": 0.8,
+       "target": [
+        "aair",
+        "awater"
+       ],
+       "to": 1
+      },
+      {
+       "at": 3,
+       "do": "show",
+       "dur": 0.8,
+       "target": "rust2"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "both"
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "dry",
+        "noair"
+       ]
+      },
+      {
+       "at": 2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "both"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "rust2"
+      },
+      {
+       "at": 1.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": "aresult"
+      },
+      {
+       "at": 2.5,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "aresult",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "focus",
+       "dur": 1,
+       "target": "iron2"
+      },
+      {
+       "at": 1.2,
+       "do": "show",
+       "dur": 0.8,
+       "target": "rust2"
+      },
+      {
+       "at": 2.2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "iron2"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "coast"
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 1.2,
+       "target": "coast"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "paint",
+        "oil",
+        "zinc"
+       ]
+      },
+      {
+       "at": 1.2,
+       "do": "show",
+       "dur": 0.8,
+       "target": "safe"
+      },
+      {
+       "at": 2,
+       "do": "flow",
+       "dur": 0.8,
+       "target": [
+        "p1",
+        "p2",
+        "p3"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which pair from the surroundings does iron need to rust?",
+    "options": [
+     "both",
+     "dry",
+     "noair",
+     "coast"
+    ],
+    "answer": "both",
+    "src": "c7-science-ch04-t02-i01"
+   }
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg",
+  "seconds": 47
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch04-t02-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "iron",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        190
+       ],
+       "w": 220,
+       "h": 100,
+       "fill": "soft",
+       "round": 12
+      },
+      {
+       "id": "ironLabel",
+       "op": "label",
+       "startMs": 1200,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        200,
+        330
+       ],
+       "text": "iron",
+       "to": [
+        200,
+        290
+       ]
+      },
+      {
+       "id": "oxide",
+       "op": "circle",
+       "startMs": 2500,
+       "endMs": 3600,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        570,
+        240
+       ],
+       "r": 75,
+       "fill": "accent"
+      },
+      {
+       "id": "oxideLabel",
+       "op": "label",
+       "startMs": 3600,
+       "endMs": 4500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        570,
+        350
+       ],
+       "text": "iron oxide",
+       "to": [
+        570,
+        315
+       ]
+      },
+      {
+       "id": "reactArrow",
+       "op": "arrow",
+       "startMs": 4700,
+       "endMs": 5800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        320,
+        240
+       ],
+       "to": [
+        485,
+        240
+       ]
+      },
+      {
+       "id": "rustColor",
+       "op": "stroke",
+       "startMs": 5900,
+       "endMs": 7000,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         530,
+         200
+        ],
+        [
+         555,
+         220
+        ],
+        [
+         585,
+         205
+        ],
+        [
+         610,
+         235
+        ],
+        [
+         590,
+         265
+        ],
+        [
+         550,
+         275
+        ],
+        [
+         525,
+         250
+        ]
+       ]
+      },
+      {
+       "id": "newLabel",
+       "op": "text",
+       "startMs": 7100,
+       "endMs": 7900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        570,
+        420
+       ],
+       "text": "new substance",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch04-t02-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "oxygen",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        150,
+        100
+       ],
+       "r": 42,
+       "fill": "soft"
+      },
+      {
+       "id": "oxygenLabel",
+       "op": "label",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        150,
+        160
+       ],
+       "text": "oxygen",
+       "to": [
+        150,
+        142
+       ]
+      },
+      {
+       "id": "water",
+       "op": "ellipse",
+       "startMs": 1300,
+       "endMs": 2000,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        390,
+        100
+       ],
+       "rx": 65,
+       "ry": 38,
+       "fill": "soft"
+      },
+      {
+       "id": "waterLabel",
+       "op": "label",
+       "startMs": 2000,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        390,
+        160
+       ],
+       "text": "water",
+       "to": [
+        390,
+        138
+       ]
+      },
+      {
+       "id": "react2",
+       "op": "arrow",
+       "startMs": 2700,
+       "endMs": 3500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        195,
+        105
+       ],
+       "to": [
+        320,
+        105
+       ]
+      },
+      {
+       "id": "react3",
+       "op": "arrow",
+       "startMs": 3500,
+       "endMs": 4300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        455,
+        105
+       ],
+       "to": [
+        520,
+        205
+       ]
+      },
+      {
+       "id": "moisture",
+       "op": "label",
+       "startMs": 4400,
+       "endMs": 5100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        390,
+        205
+       ],
+       "text": "moisture",
+       "to": [
+        390,
+        138
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch04-t02-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "both",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        80,
+        80
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "oxygen",
+         "+",
+         "water",
+         "=",
+         "rust"
+        ]
+       ]
+      },
+      {
+       "id": "dryAir",
+       "op": "rect",
+       "startMs": 1900,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        80,
+        210
+       ],
+       "w": 230,
+       "h": 130,
+       "fill": "soft",
+       "round": 10
+      },
+      {
+       "id": "dryLabel",
+       "op": "label",
+       "startMs": 2800,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        195,
+        380
+       ],
+       "text": "dry air",
+       "to": [
+        195,
+        340
+       ]
+      },
+      {
+       "id": "noAir",
+       "op": "rect",
+       "startMs": 3500,
+       "endMs": 4400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        470,
+        210
+       ],
+       "w": 230,
+       "h": 130,
+       "fill": "soft",
+       "round": 10
+      },
+      {
+       "id": "noAirLabel",
+       "op": "label",
+       "startMs": 4400,
+       "endMs": 5000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        585,
+        380
+       ],
+       "text": "no air",
+       "to": [
+        585,
+        340
+       ]
+      },
+      {
+       "id": "hardly",
+       "op": "text",
+       "startMs": 5300,
+       "endMs": 6400,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        400,
+        455
+       ],
+       "text": "hardly rusts",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch04-t02-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "rustLayer",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        260,
+        150
+       ],
+       "w": 280,
+       "h": 90,
+       "fill": "accent",
+       "round": 8
+      },
+      {
+       "id": "flaky",
+       "op": "stroke",
+       "startMs": 1200,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         285,
+         165
+        ],
+        [
+         330,
+         190
+        ],
+        [
+         370,
+         160
+        ],
+        [
+         415,
+         200
+        ],
+        [
+         460,
+         170
+        ],
+        [
+         510,
+         205
+        ]
+       ]
+      },
+      {
+       "id": "flake1",
+       "op": "polygon",
+       "startMs": 2400,
+       "endMs": 3200,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         330,
+         255
+        ],
+        [
+         370,
+         245
+        ],
+        [
+         390,
+         275
+        ],
+        [
+         350,
+         295
+        ]
+       ],
+       "fill": "accent"
+      },
+      {
+       "id": "flake2",
+       "op": "polygon",
+       "startMs": 3200,
+       "endMs": 4000,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         450,
+         255
+        ],
+        [
+         490,
+         245
+        ],
+        [
+         505,
+         280
+        ],
+        [
+         465,
+         295
+        ]
+       ],
+       "fill": "accent"
+      },
+      {
+       "id": "fallArrow",
+       "op": "arrow",
+       "startMs": 4000,
+       "endMs": 4700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        365,
+        235
+       ],
+       "to": [
+        365,
+        330
+       ]
+      },
+      {
+       "id": "freshIron",
+       "op": "rect",
+       "startMs": 4700,
+       "endMs": 5500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        260,
+        315
+       ],
+       "w": 280,
+       "h": 70,
+       "fill": "soft",
+       "round": 6
+      },
+      {
+       "id": "freshLabel",
+       "op": "label",
+       "startMs": 5500,
+       "endMs": 6300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        570,
+        350
+       ],
+       "text": "fresh iron",
+       "to": [
+        540,
+        350
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch04-t02-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "gate",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        170,
+        120
+       ],
+       "w": 460,
+       "h": 260,
+       "round": 8
+      },
+      {
+       "id": "eaten",
+       "op": "stroke",
+       "startMs": 1300,
+       "endMs": 2500,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         230,
+         170
+        ],
+        [
+         280,
+         190
+        ],
+        [
+         330,
+         170
+        ],
+        [
+         380,
+         195
+        ],
+        [
+         430,
+         175
+        ],
+        [
+         480,
+         195
+        ],
+        [
+         530,
+         175
+        ],
+        [
+         580,
+         190
+        ]
+       ]
+      },
+      {
+       "id": "downArrow",
+       "op": "arrow",
+       "startMs": 2700,
+       "endMs": 3900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        210
+       ],
+       "to": [
+        400,
+        330
+       ]
+      },
+      {
+       "id": "weak",
+       "op": "text",
+       "startMs": 4100,
+       "endMs": 5000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        440
+       ],
+       "text": "weak",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch04-t02-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "coast",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        180,
+        300
+       ],
+       "rx": 120,
+       "ry": 70,
+       "fill": "soft"
+      },
+      {
+       "id": "coastLabel",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        395
+       ],
+       "text": "coastal",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "humidity",
+       "op": "ellipse",
+       "startMs": 1700,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        500,
+        140
+       ],
+       "rx": 120,
+       "ry": 55,
+       "fill": "soft"
+      },
+      {
+       "id": "humidityLabel",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        500,
+        220
+       ],
+       "text": "humid",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "salt1",
+       "op": "circle",
+       "startMs": 3300,
+       "endMs": 3800,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        120,
+        180
+       ],
+       "r": 10,
+       "fill": "accent"
+      },
+      {
+       "id": "salt2",
+       "op": "circle",
+       "startMs": 3800,
+       "endMs": 4300,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        210,
+        170
+       ],
+       "r": 10,
+       "fill": "accent"
+      },
+      {
+       "id": "saltLabel",
+       "op": "label",
+       "startMs": 4300,
+       "endMs": 4900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        120,
+        145
+       ],
+       "text": "salt",
+       "to": [
+        120,
+        180
+       ]
+      },
+      {
+       "id": "fast",
+       "op": "arrow",
+       "startMs": 5000,
+       "endMs": 6100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        300,
+        300
+       ],
+       "to": [
+        620,
+        300
+       ]
+      },
+      {
+       "id": "monsoon",
+       "op": "text",
+       "startMs": 6200,
+       "endMs": 7000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        500,
+        400
+       ],
+       "text": "monsoon",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch04-t02-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "ironCore",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        285,
+        175
+       ],
+       "w": 230,
+       "h": 120,
+       "fill": "soft",
+       "round": 8
+      },
+      {
+       "id": "paint",
+       "op": "rect",
+       "startMs": 1000,
+       "endMs": 1700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        250,
+        140
+       ],
+       "w": 300,
+       "h": 25,
+       "fill": "accent",
+       "round": 8
+      },
+      {
+       "id": "paintLabel",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        110
+       ],
+       "text": "paint",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "oil",
+       "op": "stroke",
+       "startMs": 2300,
+       "endMs": 3000,
+       "ink": "mark",
+       "weight": 2,
+       "points": [
+        [
+         270,
+         330
+        ],
+        [
+         330,
+         315
+        ],
+        [
+         390,
+         330
+        ],
+        [
+         450,
+         315
+        ],
+        [
+         520,
+         330
+        ]
+       ]
+      },
+      {
+       "id": "oilLabel",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        370
+       ],
+       "text": "oil grease",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "zinc",
+       "op": "rect",
+       "startMs": 3800,
+       "endMs": 4400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        120,
+        210
+       ],
+       "w": 80,
+       "h": 70,
+       "fill": "soft",
+       "round": 5
+      },
+      {
+       "id": "zincLabel",
+       "op": "text",
+       "startMs": 4400,
+       "endMs": 4900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        160,
+        310
+       ],
+       "text": "zinc",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "chromium",
+       "op": "rect",
+       "startMs": 4900,
+       "endMs": 5500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        600,
+        210
+       ],
+       "w": 80,
+       "h": 70,
+       "fill": "soft",
+       "round": 5
+      },
+      {
+       "id": "chromiumLabel",
+       "op": "text",
+       "startMs": 5500,
+       "endMs": 6300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        640,
+        310
+       ],
+       "text": "chromium",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch04-t02-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "question",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        80
+       ],
+       "text": "choose two",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "surroundA",
+       "op": "rect",
+       "startMs": 1200,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        180
+       ],
+       "w": 260,
+       "h": 110,
+       "round": 10
+      },
+      {
+       "id": "airOption",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        220,
+        245
+       ],
+       "text": "oxygen",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "surroundB",
+       "op": "rect",
+       "startMs": 2800,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        450,
+        180
+       ],
+       "w": 260,
+       "h": 110,
+       "round": 10
+      },
+      {
+       "id": "waterOption",
+       "op": "text",
+       "startMs": 3700,
+       "endMs": 4400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        580,
+        245
+       ],
+       "text": "water",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "checkA",
+       "op": "highlight",
+       "startMs": 4500,
+       "endMs": 5300,
+       "ink": "good",
+       "weight": 2,
+       "target": "surroundA",
+       "style": "circle"
+      },
+      {
+       "id": "checkB",
+       "op": "highlight",
+       "startMs": 4500,
+       "endMs": 5300,
+       "ink": "good",
+       "weight": 2,
+       "target": "surroundB",
+       "style": "circle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1",
+   "key": "1:rusts 2:no 3:no 4:no",
+   "prompt": "rusting: {\"water\":\"yes\",\"air\":\"yes\",\"coat\":\"none\",\"salt\":\"no\"} | {\"water\":\"no\",\"air\":\"yes\",\"coat\":\"none\",\"salt\":\"no\"} | {\"water\":\"yes\",\"air\":\"no\",\"coat\":\"none\",\"salt\":\"no\"} | {\"water\":\"yes\",\"air\":\"yes\",\"coat\":\"paint\",\"salt\":\"no\"}",
+   "src": "c7-science-ch04-t02-i03"
+  },
+  {
+   "itemId": "r2",
+   "key": "vary only air",
+   "prompt": "fair test for air"
+  },
+  {
+   "itemId": "r3",
+   "key": "salt",
+   "prompt": "which does not matter for rusts: water, air, coat, salt",
+   "src": "c7-science-ch04-t02-i01"
+  }
+ ],
+ "check": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "Round 2 'Make it fair' starts with two setups: both have salt='no', but the kit's three-nail experiment (i03) does not include salt as a factor; the kit states 'rusting is faster in humid and coastal places (salty air)' but the experiment in i03 uses plain water and dry air without controlling salt. Starting with both setups having salt='no' is not contradicted by the kit, and varying only air is consistent with the kit's explanation that both air and water are needed. No issue.",
+    "severity": "low"
+   }
+  ],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

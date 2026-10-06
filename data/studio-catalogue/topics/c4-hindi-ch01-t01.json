@@ -1,0 +1,1820 @@
+{
+ "topicId": "c4-hindi-ch01-t01",
+ "title": "चिड़िया का गीत",
+ "chapter": "चिड़िया का गीत",
+ "subject": "hindi",
+ "class": 4,
+ "topicType": "T1",
+ "plan": {
+  "game": "beat-line@1",
+  "hint": "beat and rhyme rounds (Hindi: matra round on a doha/chaupai line)"
+ },
+ "game": {
+  "archetype": "beat-line@1",
+  "spec": {
+   "archetype": "beat-line@1",
+   "skills": [
+    "c4-hindi-ch01-t01"
+   ],
+   "lang": "hi",
+   "strings": {
+    "round": "दौर",
+    "onBeat": "ताल पर",
+    "combo": "लगातार ताल",
+    "tap": "ताल पर थपकी दो",
+    "catch": "तुक पकड़ो",
+    "mark": "छोटी या बड़ी?",
+    "short": "ह्रस्व",
+    "long": "दीर्घ",
+    "practice": "अभ्यास पंक्ति",
+    "runDone": "कविता पूरी हुई",
+    "perfect": "बिलकुल ताल पर",
+    "early": "जल्दी",
+    "late": "देर से",
+    "meter": "मात्रा"
+   },
+   "title": "चिड़िया का गीत",
+   "bpm": 76,
+   "lines": [
+    {
+     "text": "अंडे जैसा छोटा घर",
+     "beats": [
+      0,
+      2
+     ]
+    },
+    {
+     "text": "सूखे तिनकों का घोंसला",
+     "beats": [
+      0,
+      3
+     ]
+    },
+    {
+     "text": "खुला आसमान बहुत बड़ा",
+     "beats": [
+      0,
+      2
+     ]
+    }
+   ],
+   "rounds": [
+    {
+     "mode": "beat",
+     "title": "ताल पर गाओ",
+     "sub": "हर पंक्ति के ठहराव पर थपकी दो",
+     "lines": [
+      0,
+      1
+     ]
+    },
+    {
+     "mode": "rhyme",
+     "title": "तुक पकड़ो",
+     "sub": "शब्दों के अंत की ध्वनि सुनो",
+     "items": [
+      {
+       "cue": "आकार से तुक मिलाने वाला शब्द चुनो",
+       "options": [
+        "संसार",
+        "चिड़िया",
+        "तिनका"
+       ],
+       "answer": "संसार",
+       "src": "c4-hindi-ch01-t01-i05"
+      },
+      {
+       "cue": "तैयार से तुक मिलाने वाला शब्द चुनो",
+       "options": [
+        "संसार",
+        "घोंसला",
+        "आसमान"
+       ],
+       "answer": "संसार",
+       "src": "c4-hindi-ch01-t01-i05"
+      },
+      {
+       "cue": "संसार से तुक मिलाने वाला नया शब्द चुनो",
+       "options": [
+        "बाज़ार",
+        "शाखें",
+        "अंडा"
+       ],
+       "answer": "बाज़ार",
+       "src": "c4-hindi-ch01-t01-i06"
+      }
+     ]
+    },
+    {
+     "mode": "matra",
+     "title": "मात्रा पहचानो",
+     "sub": "हर अक्षर की मात्रा छोटी या बड़ी बताओ",
+     "lines": [
+      0,
+      1
+     ]
+    }
+   ]
+  },
+  "repairs": [
+   "line:beats",
+   "targets"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c4-hindi-ch01-t01"
+   ],
+   "lang": "hi",
+   "strings": {
+    "again": "फिर दिखाएँ",
+    "yourTurn": "अब आपकी बारी",
+    "check": "जाँचें",
+    "right": "सही",
+    "look": "फिर देखें",
+    "myth": "भ्रम",
+    "busted": "गलत",
+    "order": "क्रम में लगाएँ"
+   },
+   "title": "चिड़िया का बढ़ता संसार",
+   "accent": "mint",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "row",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "चिड़िया का गीत"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "संसार हर बार बड़ा होता गया"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "egg",
+       "type": "node",
+       "text": "अंडा",
+       "sub": "पहला घर",
+       "color": "amber"
+      },
+      {
+       "id": "nest",
+       "type": "node",
+       "text": "घोंसला",
+       "sub": "सूखे तिनके",
+       "glyph": "house",
+       "color": "sun"
+      },
+      {
+       "id": "branch",
+       "type": "node",
+       "text": "शाखें",
+       "sub": "हरी-भरी",
+       "glyph": "leaf",
+       "color": "mint"
+      },
+      {
+       "id": "sky",
+       "type": "node",
+       "text": "आसमान",
+       "sub": "खुला आकाश",
+       "glyph": "wind",
+       "color": "ion"
+      },
+      {
+       "id": "e1",
+       "type": "arrow",
+       "from": "egg",
+       "to": "nest",
+       "text": "फिर"
+      },
+      {
+       "id": "e2",
+       "type": "arrow",
+       "from": "nest",
+       "to": "branch",
+       "text": "फिर"
+      },
+      {
+       "id": "e3",
+       "type": "arrow",
+       "from": "branch",
+       "to": "sky",
+       "text": "आख़िर"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "small",
+       "type": "label",
+       "text": "इतना-सा",
+       "x": 180,
+       "y": 320,
+       "color": "amber"
+      },
+      {
+       "id": "large",
+       "type": "label",
+       "text": "बहुत बड़ा",
+       "x": 700,
+       "y": 320,
+       "color": "ion"
+      },
+      {
+       "id": "arrow4",
+       "type": "arrow",
+       "from": "small",
+       "to": "large",
+       "text": "दूर तक उड़ान"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "row",
+     "els": [
+      {
+       "id": "r1",
+       "type": "label",
+       "text": "आकार",
+       "x": 100,
+       "y": 300,
+       "color": "mint"
+      },
+      {
+       "id": "r2",
+       "type": "label",
+       "text": "तैयार",
+       "x": 330,
+       "y": 300,
+       "color": "mint"
+      },
+      {
+       "id": "r3",
+       "type": "label",
+       "text": "सुकुमार",
+       "x": 560,
+       "y": 300,
+       "color": "mint"
+      },
+      {
+       "id": "r4",
+       "type": "label",
+       "text": "संसार",
+       "x": 790,
+       "y": 300,
+       "color": "ion"
+      }
+     ]
+    },
+    {
+     "id": "s5",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "wrong",
+       "type": "myth",
+       "text": "चिड़िया और उड़ी"
+      },
+      {
+       "id": "right",
+       "type": "label",
+       "text": "चिड़िया और उड़ी",
+       "x": 330,
+       "y": 300,
+       "color": "mint"
+      },
+      {
+       "id": "dot",
+       "type": "label",
+       "text": "ड़ में नीचे बिंदु",
+       "x": 350,
+       "y": 360,
+       "color": "amber"
+      }
+     ]
+    },
+    {
+     "id": "s6",
+     "layout": "row",
+     "els": [
+      {
+       "id": "checkTitle",
+       "type": "title",
+       "text": "अब सही क्रम चुनो"
+      },
+      {
+       "id": "qegg",
+       "type": "label",
+       "text": "अंडा",
+       "x": 100,
+       "y": 330,
+       "color": "amber"
+      },
+      {
+       "id": "qnest",
+       "type": "label",
+       "text": "घोंसला",
+       "x": 300,
+       "y": 330,
+       "color": "sun"
+      },
+      {
+       "id": "qbranch",
+       "type": "label",
+       "text": "शाखें",
+       "x": 500,
+       "y": 330,
+       "color": "mint"
+      },
+      {
+       "id": "qsky",
+       "type": "label",
+       "text": "आसमान",
+       "x": 700,
+       "y": 330,
+       "color": "ion"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "चिड़िया का पहला घर अंडे जैसा था। उसे लगा, संसार इतना-सा है।",
+    "L2": "फिर उसका घर सूखे तिनकों का घोंसला बना, फिर हरी-भरी कोमल शाखें आईं।",
+    "L3": "हर नए घर में चिड़िया को संसार फिर इतना-सा ही लगा।",
+    "L4": "वह दूर तक उड़कर खुले आसमान में पहुँची और समझी कि संसार बहुत बड़ा है।",
+    "L5": "संसार खुद बड़ा नहीं हुआ; चिड़िया बड़ी होती गई और अधिक दूर तक देख पाई।",
+    "L6": "आकार, तैयार और सुकुमार—इनका अंत संसार से तुक मिलाता है।",
+    "L7": "एक सही वर्तनी भी याद रखें: चिड़िया और उड़ी में नीचे बिंदु वाला ड़ आता है।",
+    "L8": "अब घरों और आसमान का सही क्रम लगाकर दिखाओ।"
+   },
+   "narration": {
+    "L1": {
+     "text": "चिड़िया का पहला घर अंडे जैसा था। उसे लगा, संसार इतना-सा है।",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L2": {
+     "text": "फिर उसका घर सूखे तिनकों का घोंसला बना, फिर हरी-भरी कोमल शाखें आईं।",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L3": {
+     "text": "हर नए घर में चिड़िया को संसार फिर इतना-सा ही लगा।",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L4": {
+     "text": "वह दूर तक उड़कर खुले आसमान में पहुँची और समझी कि संसार बहुत बड़ा है।",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L5": {
+     "text": "संसार खुद बड़ा नहीं हुआ; चिड़िया बड़ी होती गई और अधिक दूर तक देख पाई।",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L6": {
+     "text": "आकार, तैयार और सुकुमार—इनका अंत संसार से तुक मिलाता है।",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L7": {
+     "text": "एक सही वर्तनी भी याद रखें: चिड़िया और उड़ी में नीचे बिंदु वाला ड़ आता है।",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L8": {
+     "text": "अब घरों और आसमान का सही क्रम लगाकर दिखाओ।",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.3,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "title"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.6,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.5,
+       "target": "egg"
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "e1",
+        "nest"
+       ]
+      },
+      {
+       "at": 1.8,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "e2",
+        "branch"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.3,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "small"
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "small"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "e3",
+        "sky"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "e3",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.3,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "large"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.3,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "r1",
+        "r2",
+        "r3",
+        "r4"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "r4"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.3,
+     "scene": "s5",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.5,
+       "target": "wrong"
+      },
+      {
+       "at": 0.8,
+       "do": "bust",
+       "dur": 0.8,
+       "target": "wrong"
+      },
+      {
+       "at": 1.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "right",
+        "dot"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s6",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.5,
+       "target": "checkTitle"
+      },
+      {
+       "at": 0.6,
+       "do": "interactive",
+       "dur": 0.5
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "order",
+    "prompt": "चिड़िया की दुनिया का सही क्रम लगाओ।",
+    "items": [
+     "qegg",
+     "qnest",
+     "qbranch",
+     "qsky"
+    ],
+    "src": "c4-hindi-ch01-t01-i08"
+   }
+  },
+  "repairs": [
+   "glyph",
+   "cue:target",
+   "targets"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 32
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-hindi-ch01-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "egg",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        250,
+        220
+       ],
+       "rx": 105,
+       "ry": 135,
+       "fill": "soft"
+      },
+      {
+       "id": "egglabel",
+       "op": "label",
+       "startMs": 1100,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        250,
+        390
+       ],
+       "text": "अंडे",
+       "to": [
+        250,
+        350
+       ]
+      },
+      {
+       "id": "smallworld",
+       "op": "circle",
+       "startMs": 1900,
+       "endMs": 2800,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        570,
+        220
+       ],
+       "r": 75
+      },
+      {
+       "id": "smalllabel",
+       "op": "label",
+       "startMs": 2800,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        570,
+        330
+       ],
+       "text": "इतना-सा",
+       "to": [
+        570,
+        295
+       ]
+      },
+      {
+       "id": "link",
+       "op": "arrow",
+       "startMs": 3700,
+       "endMs": 4500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        365,
+        220
+       ],
+       "to": [
+        490,
+        220
+       ]
+      },
+      {
+       "id": "wonder",
+       "op": "highlight",
+       "startMs": 4500,
+       "endMs": 5400,
+       "ink": "good",
+       "weight": 2,
+       "target": "smallworld",
+       "style": "pulse"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-hindi-ch01-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "nest",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        220,
+        260
+       ],
+       "rx": 125,
+       "ry": 65
+      },
+      {
+       "id": "straw1",
+       "op": "stroke",
+       "startMs": 500,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         120,
+         260
+        ],
+        [
+         180,
+         220
+        ],
+        [
+         250,
+         275
+        ],
+        [
+         320,
+         225
+        ]
+       ]
+      },
+      {
+       "id": "straw2",
+       "op": "stroke",
+       "startMs": 800,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         130,
+         290
+        ],
+        [
+         205,
+         235
+        ],
+        [
+         275,
+         295
+        ],
+        [
+         315,
+         250
+        ]
+       ]
+      },
+      {
+       "id": "nestlabel",
+       "op": "label",
+       "startMs": 1400,
+       "endMs": 2000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        220,
+        365
+       ],
+       "text": "घोंसला",
+       "to": [
+        220,
+        325
+       ]
+      },
+      {
+       "id": "branch",
+       "op": "stroke",
+       "startMs": 2400,
+       "endMs": 3500,
+       "ink": "good",
+       "weight": 3,
+       "points": [
+        [
+         430,
+         380
+        ],
+        [
+         470,
+         280
+        ],
+        [
+         540,
+         210
+        ],
+        [
+         650,
+         150
+        ]
+       ]
+      },
+      {
+       "id": "leaf1",
+       "op": "ellipse",
+       "startMs": 3000,
+       "endMs": 3500,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        520,
+        250
+       ],
+       "rx": 24,
+       "ry": 11
+      },
+      {
+       "id": "leaf2",
+       "op": "ellipse",
+       "startMs": 3300,
+       "endMs": 3800,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        580,
+        195
+       ],
+       "rx": 24,
+       "ry": 11
+      },
+      {
+       "id": "branchlabel",
+       "op": "label",
+       "startMs": 4000,
+       "endMs": 4700,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        600,
+        330
+       ],
+       "text": "हरी-भरी",
+       "to": [
+        540,
+        240
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-hindi-ch01-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "home1",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        160,
+        190
+       ],
+       "rx": 65,
+       "ry": 85
+      },
+      {
+       "id": "home2",
+       "op": "ellipse",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        190
+       ],
+       "rx": 85,
+       "ry": 55
+      },
+      {
+       "id": "home3",
+       "op": "stroke",
+       "startMs": 1400,
+       "endMs": 2200,
+       "ink": "good",
+       "weight": 2,
+       "points": [
+        [
+         600,
+         300
+        ],
+        [
+         630,
+         220
+        ],
+        [
+         690,
+         170
+        ]
+       ]
+      },
+      {
+       "id": "small1",
+       "op": "circle",
+       "startMs": 2300,
+       "endMs": 2900,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        160,
+        370
+       ],
+       "r": 40
+      },
+      {
+       "id": "small2",
+       "op": "circle",
+       "startMs": 2900,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        370
+       ],
+       "r": 40
+      },
+      {
+       "id": "small3",
+       "op": "circle",
+       "startMs": 3500,
+       "endMs": 4100,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        650,
+        370
+       ],
+       "r": 40
+      },
+      {
+       "id": "same",
+       "op": "label",
+       "startMs": 4200,
+       "endMs": 5000,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        470
+       ],
+       "text": "इतना-सा",
+       "to": [
+        400,
+        410
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-hindi-ch01-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "ground",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        80,
+        410
+       ],
+       "to": [
+        720,
+        410
+       ]
+      },
+      {
+       "id": "bird",
+       "op": "ellipse",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        180,
+        330
+       ],
+       "rx": 38,
+       "ry": 24
+      },
+      {
+       "id": "wing",
+       "op": "ellipse",
+       "startMs": 1100,
+       "endMs": 1600,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        185,
+        325
+       ],
+       "rx": 18,
+       "ry": 10
+      },
+      {
+       "id": "flight",
+       "op": "arrow",
+       "startMs": 1800,
+       "endMs": 3300,
+       "ink": "mark",
+       "weight": 3,
+       "from": [
+        220,
+        310
+       ],
+       "to": [
+        620,
+        120
+       ]
+      },
+      {
+       "id": "sky",
+       "op": "rect",
+       "startMs": 3500,
+       "endMs": 4500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        550,
+        70
+       ],
+       "w": 170,
+       "h": 100,
+       "fill": "soft",
+       "round": 20
+      },
+      {
+       "id": "skylabel",
+       "op": "label",
+       "startMs": 4500,
+       "endMs": 5500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        635,
+        215
+       ],
+       "text": "खुले आसमान",
+       "to": [
+        635,
+        170
+       ]
+      },
+      {
+       "id": "big",
+       "op": "label",
+       "startMs": 5600,
+       "endMs": 6500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        635,
+        285
+       ],
+       "text": "बहुत बड़ा",
+       "to": [
+        635,
+        220
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-hindi-ch01-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "world",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        250
+       ],
+       "r": 115
+      },
+      {
+       "id": "worldlabel",
+       "op": "label",
+       "startMs": 1000,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        405
+       ],
+       "text": "संसार",
+       "to": [
+        400,
+        365
+       ]
+      },
+      {
+       "id": "birdsmall",
+       "op": "ellipse",
+       "startMs": 1700,
+       "endMs": 2300,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        220,
+        330
+       ],
+       "rx": 30,
+       "ry": 18
+      },
+      {
+       "id": "birdlarge",
+       "op": "ellipse",
+       "startMs": 2400,
+       "endMs": 3100,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        600,
+        130
+       ],
+       "rx": 50,
+       "ry": 30
+      },
+      {
+       "id": "grow",
+       "op": "arrow",
+       "startMs": 3200,
+       "endMs": 4400,
+       "ink": "mark",
+       "weight": 3,
+       "from": [
+        260,
+        320
+       ],
+       "to": [
+        540,
+        155
+       ]
+      },
+      {
+       "id": "see",
+       "op": "line",
+       "startMs": 4500,
+       "endMs": 5100,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        650,
+        130
+       ],
+       "to": [
+        730,
+        80
+       ]
+      },
+      {
+       "id": "more",
+       "op": "label",
+       "startMs": 5300,
+       "endMs": 5900,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        650,
+        240
+       ],
+       "text": "दूर",
+       "to": [
+        625,
+        160
+       ]
+      },
+      {
+       "id": "growlabel",
+       "op": "label",
+       "startMs": 6000,
+       "endMs": 6700,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        470
+       ],
+       "text": "बड़ी",
+       "to": [
+        400,
+        300
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-hindi-ch01-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "rh",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        110,
+        100
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "आकार",
+         "=",
+         "आकार"
+        ]
+       ]
+      },
+      {
+       "id": "rh2",
+       "op": "numwork",
+       "startMs": 800,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        110,
+        180
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "तैयार",
+         "=",
+         "संसार"
+        ]
+       ]
+      },
+      {
+       "id": "rh3",
+       "op": "numwork",
+       "startMs": 1600,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        110,
+        260
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "सुकुमा",
+         "=",
+         "संसार"
+        ]
+       ]
+      },
+      {
+       "id": "rh4",
+       "op": "numwork",
+       "startMs": 2400,
+       "endMs": 3100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        110,
+        340
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "पसार",
+         "=",
+         "संसार"
+        ]
+       ]
+      },
+      {
+       "id": "family",
+       "op": "label",
+       "startMs": 3300,
+       "endMs": 3900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        590,
+        230
+       ],
+       "text": "संसार",
+       "to": [
+        500,
+        230
+       ]
+      },
+      {
+       "id": "underline",
+       "op": "highlight",
+       "startMs": 3900,
+       "endMs": 4600,
+       "ink": "good",
+       "weight": 2,
+       "target": "family",
+       "style": "underline"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-hindi-ch01-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "word",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        120
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "चि",
+         "＋",
+         "ड़ि",
+         "＋",
+         "या",
+         "=",
+         "चिड़िय"
+        ]
+       ]
+      },
+      {
+       "id": "dot",
+       "op": "circle",
+       "startMs": 1600,
+       "endMs": 2100,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        250,
+        170
+       ],
+       "r": 7,
+       "fill": "accent"
+      },
+      {
+       "id": "dotlabel",
+       "op": "label",
+       "startMs": 2100,
+       "endMs": 2800,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        300,
+        170
+       ],
+       "text": "ड़",
+       "to": [
+        250,
+        170
+       ]
+      },
+      {
+       "id": "word2",
+       "op": "numwork",
+       "startMs": 3000,
+       "endMs": 4200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        270
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "उ",
+         "＋",
+         "ड़ी",
+         "=",
+         "उड़ी"
+        ]
+       ]
+      },
+      {
+       "id": "dot2",
+       "op": "circle",
+       "startMs": 4300,
+       "endMs": 4800,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        250,
+        320
+       ],
+       "r": 7,
+       "fill": "accent"
+      },
+      {
+       "id": "dotlabel2",
+       "op": "label",
+       "startMs": 4800,
+       "endMs": 5500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        300,
+        320
+       ],
+       "text": "ड़",
+       "to": [
+        250,
+        320
+       ]
+      },
+      {
+       "id": "right",
+       "op": "highlight",
+       "startMs": 5700,
+       "endMs": 6400,
+       "ink": "good",
+       "weight": 2,
+       "target": "dot",
+       "style": "circle"
+      },
+      {
+       "id": "right2",
+       "op": "highlight",
+       "startMs": 6400,
+       "endMs": 7100,
+       "ink": "good",
+       "weight": 2,
+       "target": "dot2",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-hindi-ch01-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4430,
+     "ops": [
+      {
+       "id": "slot1",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        180
+       ],
+       "w": 130,
+       "h": 70,
+       "round": 12
+      },
+      {
+       "id": "slot2",
+       "op": "rect",
+       "startMs": 500,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        270,
+        180
+       ],
+       "w": 130,
+       "h": 70,
+       "round": 12
+      },
+      {
+       "id": "slot3",
+       "op": "rect",
+       "startMs": 1000,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        450,
+        180
+       ],
+       "w": 130,
+       "h": 70,
+       "round": 12
+      },
+      {
+       "id": "slot4",
+       "op": "rect",
+       "startMs": 1500,
+       "endMs": 2000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        630,
+        180
+       ],
+       "w": 130,
+       "h": 70,
+       "round": 12
+      },
+      {
+       "id": "l1",
+       "op": "label",
+       "startMs": 2100,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        155,
+        220
+       ],
+       "text": "अंडे",
+       "to": [
+        155,
+        180
+       ]
+      },
+      {
+       "id": "l2",
+       "op": "label",
+       "startMs": 2500,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        335,
+        220
+       ],
+       "text": "घोंसला",
+       "to": [
+        335,
+        180
+       ]
+      },
+      {
+       "id": "l3",
+       "op": "label",
+       "startMs": 2900,
+       "endMs": 3300,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        515,
+        220
+       ],
+       "text": "शाखें",
+       "to": [
+        515,
+        180
+       ]
+      },
+      {
+       "id": "l4",
+       "op": "label",
+       "startMs": 3300,
+       "endMs": 3700,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        695,
+        220
+       ],
+       "text": "आसमान",
+       "to": [
+        695,
+        180
+       ]
+      },
+      {
+       "id": "order",
+       "op": "arrow",
+       "startMs": 3800,
+       "endMs": 4300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        120,
+        300
+       ],
+       "to": [
+        680,
+        300
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "b0:*",
+   "key": "अंडे · छोटा",
+   "prompt": "stressed words in: अंडे जैसा छोटा घर"
+  },
+  {
+   "itemId": "b1:*",
+   "key": "सूखे · घोंसला",
+   "prompt": "stressed words in: सूखे तिनकों का घोंसला"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "संसार",
+   "prompt": "आकार से तुक मिलाने वाला शब्द चुनो [संसार / चिड़िया / तिनका]",
+   "src": "c4-hindi-ch01-t01-i05"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "संसार",
+   "prompt": "तैयार से तुक मिलाने वाला शब्द चुनो [संसार / घोंसला / आसमान]",
+   "src": "c4-hindi-ch01-t01-i05"
+  },
+  {
+   "itemId": "r2:2",
+   "key": "बाज़ार",
+   "prompt": "संसार से तुक मिलाने वाला नया शब्द चुनो [बाज़ार / शाखें / अंडा]",
+   "src": "c4-hindi-ch01-t01-i06"
+  },
+  {
+   "itemId": "m0:*",
+   "key": "22222211",
+   "prompt": "मात्रा: अंडे जैसा छोटा घर"
+  },
+  {
+   "itemId": "m1:*",
+   "key": "221122212",
+   "prompt": "मात्रा: सूखे तिनकों का घोंसला"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

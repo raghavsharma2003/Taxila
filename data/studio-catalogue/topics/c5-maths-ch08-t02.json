@@ -1,0 +1,1767 @@
+{
+ "topicId": "c5-maths-ch08-t02",
+ "title": "Converting l and ml",
+ "chapter": "Weight and Capacity",
+ "subject": "maths",
+ "class": 5,
+ "topicType": "T4",
+ "plan": {
+  "game": "instrument@1",
+  "hint": "pour mode (ml and l)"
+ },
+ "game": {
+  "archetype": "instrument@1",
+  "spec": {
+   "archetype": "instrument@1",
+   "skills": [
+    "c5-maths-ch08-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "measured": "measured",
+    "precision": "precision",
+    "hold": "Hold to pour",
+    "release": "Release",
+    "cut": "Tap to cut",
+    "set": "Set",
+    "am": "a.m.",
+    "pm": "p.m.",
+    "tapAt": "Tap when it reads",
+    "runDone": "Bench clear",
+    "offBy": "off by",
+    "exact": "EXACT",
+    "after": "after",
+    "minutes": "min",
+    "balanced": "BALANCED",
+    "heavy": "parcel heavier",
+    "light": "weights heavier"
+   },
+   "title": "Instrument Bench",
+   "rounds": [
+    {
+     "mode": "pour",
+     "title": "Fill the lassi jug",
+     "sub": "read the jug in ml",
+     "items": [
+      {
+       "target": 1250,
+       "show": "l"
+      },
+      {
+       "target": 2000,
+       "show": "l"
+      }
+     ],
+     "scaleMax": 2500,
+     "minor": 100,
+     "tol": 25,
+     "speed": 1
+    },
+    {
+     "mode": "pour",
+     "title": "Careful small marks",
+     "sub": "use ml marks, not height",
+     "items": [
+      {
+       "target": 2005,
+       "show": "l+ml"
+      },
+      {
+       "target": 1500,
+       "show": "l"
+      }
+     ],
+     "scaleMax": 3000,
+     "minor": 100,
+     "tol": 25,
+     "speed": 0.9,
+     "targets": "c5-maths-ch08-t02-m-mixed-concat"
+    },
+    {
+     "mode": "pour",
+     "title": "Compare the containers",
+     "sub": "measure each capacity",
+     "items": [
+      {
+       "target": 3000,
+       "show": "l"
+      },
+      {
+       "target": 4000,
+       "show": "l"
+      }
+     ],
+     "scaleMax": 5000,
+     "minor": 100,
+     "tol": 25,
+     "speed": 0.8,
+     "targets": "c5-maths-ch08-t02-m-tall-holds-more"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 2,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c5-maths-ch08-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Converting l and ml",
+   "accent": "mint",
+   "targets": "c5-maths-ch08-t02-m-big-unit-label",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Converting l and ml"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "1 l 250 ml = 1,250 l"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "litre",
+       "type": "node",
+       "text": "1 l",
+       "sub": "one litre",
+       "glyph": "jug",
+       "color": "mint"
+      },
+      {
+       "id": "arrow1",
+       "type": "arrow",
+       "from": "litre",
+       "to": "millilitre",
+       "text": "equals"
+      },
+      {
+       "id": "millilitre",
+       "type": "node",
+       "text": "1,000 ml",
+       "sub": "one thousand",
+       "glyph": "drop",
+       "color": "ion"
+      },
+      {
+       "id": "bar1000",
+       "type": "bar",
+       "parts": 4,
+       "shaded": 4,
+       "x": 180,
+       "y": 430,
+       "w": 600,
+       "text": "1,000 ml"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "mixed",
+       "type": "node",
+       "text": "1 l 250 ml",
+       "sub": "mixed units",
+       "glyph": "jug",
+       "color": "amber"
+      },
+      {
+       "id": "arrow2",
+       "type": "arrow",
+       "from": "mixed",
+       "to": "total",
+       "text": "change l"
+      },
+      {
+       "id": "total",
+       "type": "node",
+       "text": "1,250 ml",
+       "sub": "all in ml",
+       "glyph": "drop",
+       "color": "mint"
+      },
+      {
+       "id": "zero",
+       "type": "label",
+       "text": "Keep place zeros",
+       "x": 350,
+       "y": 500,
+       "color": "sun"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "column",
+     "els": [
+      {
+       "id": "lassi",
+       "type": "node",
+       "text": "1,500 ml",
+       "sub": "lassi",
+       "glyph": "jug",
+       "color": "sci"
+      },
+      {
+       "id": "glasses",
+       "type": "bar",
+       "parts": 6,
+       "shaded": 6,
+       "x": 120,
+       "y": 300,
+       "w": 760,
+       "text": "6 glasses"
+      },
+      {
+       "id": "glass",
+       "type": "node",
+       "text": "250 ml",
+       "sub": "one glass",
+       "color": "mint"
+      },
+      {
+       "id": "sum",
+       "type": "label",
+       "text": "4 + 2 = 6",
+       "x": 390,
+       "y": 520,
+       "color": "volt"
+      }
+     ]
+    },
+    {
+     "id": "s5",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "checktitle",
+       "type": "title",
+       "text": "Your turn"
+      },
+      {
+       "id": "o1",
+       "type": "label",
+       "text": "125 l",
+       "x": 120,
+       "y": 300,
+       "color": "amber"
+      },
+      {
+       "id": "o2",
+       "type": "label",
+       "text": "1,250 ml",
+       "x": 420,
+       "y": 300,
+       "color": "mint"
+      },
+      {
+       "id": "o3",
+       "type": "label",
+       "text": "1,025 ml",
+       "x": 720,
+       "y": 300,
+       "color": "ion"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Capacity tells us how much a container can hold. We can measure it in litres or millilitres.",
+    "L2": "One litre equals 1,000 millilitres. So we can replace every litre with 1,000 millilitres.",
+    "L3": "For mixed units, change the litres to millilitres and add the remaining millilitres.",
+    "L4": "That makes 1 litre 250 millilitres equal to 1,250 millilitres, not 1,250 litres. The unit must match the answer.",
+    "L5": "Zeros hold empty places. For example, 2 litres 5 millilitres becomes 2,005 millilitres.",
+    "L6": "Now use the worked example: 1 litre 500 millilitres becomes 1,500 millilitres.",
+    "L7": "Four 250 millilitre glasses make 1,000 millilitres. Two more glasses make the other 500 millilitres.",
+    "L8": "So 1 litre 500 millilitres fills 6 glasses of 250 millilitres.",
+    "L9": "To compare capacities, write them in the same unit. Now choose the correct conversion."
+   },
+   "narration": {
+    "L1": {
+     "text": "Capacity tells us how much a container can hold. We can measure it in litres or millilitres.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L2": {
+     "text": "One litre equals 1,000 millilitres. So we can replace every litre with 1,000 millilitres.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L3": {
+     "text": "For mixed units, change the litres to millilitres and add the remaining millilitres.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L4": {
+     "text": "That makes 1 litre 250 millilitres equal to 1,250 millilitres, not 1,250 litres. The unit must match the answer.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L5": {
+     "text": "Zeros hold empty places. For example, 2 litres 5 millilitres becomes 2,005 millilitres.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Now use the worked example: 1 litre 500 millilitres becomes 1,500 millilitres.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Four 250 millilitre glasses make 1,000 millilitres. Two more glasses make the other 500 millilitres.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L8": {
+     "text": "So 1 litre 500 millilitres fills 6 glasses of 250 millilitres.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L9": {
+     "text": "To compare capacities, write them in the same unit. Now choose the correct conversion.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "title"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "litre",
+        "millilitre"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.6,
+       "target": "arrow1"
+      },
+      {
+       "at": 1.4,
+       "do": "shade",
+       "dur": 1,
+       "target": "bar1000",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "mixed"
+      },
+      {
+       "at": 0.7,
+       "do": "show",
+       "dur": 0.6,
+       "target": "arrow2"
+      },
+      {
+       "at": 1.3,
+       "do": "show",
+       "dur": 0.8,
+       "target": "total"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "myth"
+      },
+      {
+       "at": 1,
+       "do": "bust",
+       "dur": 1.2,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "zero"
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 1,
+       "target": "total"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "lassi"
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "lassi"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "glass",
+        "glasses"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "count",
+       "dur": 1.2,
+       "target": "glasses",
+       "to": 1
+      },
+      {
+       "at": 2.2,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "sum"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "focus",
+       "dur": 1,
+       "target": "glasses"
+      }
+     ]
+    },
+    {
+     "line": "L9",
+     "gap": 0,
+     "scene": "s5",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "checktitle",
+        "o1",
+        "o2",
+        "o3"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Tap the correct conversion for 1 l 250 ml.",
+    "options": [
+     "o1",
+     "o2",
+     "o3"
+    ],
+    "answer": "o2",
+    "src": "c5-maths-ch08-t02-i03"
+   }
+  },
+  "repairs": [
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 63
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch08-t02-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "c1",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        150
+       ],
+       "w": 180,
+       "h": 220,
+       "round": 12
+      },
+      {
+       "id": "c2",
+       "op": "ellipse",
+       "startMs": 700,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        180,
+        150
+       ],
+       "rx": 90,
+       "ry": 18
+      },
+      {
+       "id": "c3",
+       "op": "text",
+       "startMs": 1000,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        410
+       ],
+       "text": "container",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "c4",
+       "op": "line",
+       "startMs": 1600,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        180,
+        330
+       ],
+       "to": [
+        180,
+        210
+       ]
+      },
+      {
+       "id": "c5",
+       "op": "arrow",
+       "startMs": 2100,
+       "endMs": 2500,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        180,
+        210
+       ],
+       "to": [
+        180,
+        170
+       ]
+      },
+      {
+       "id": "c6",
+       "op": "label",
+       "startMs": 2500,
+       "endMs": 3300,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        300,
+        260
+       ],
+       "text": "capacity",
+       "to": [
+        230,
+        260
+       ]
+      },
+      {
+       "id": "c7",
+       "op": "text",
+       "startMs": 3600,
+       "endMs": 4200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        450,
+        210
+       ],
+       "text": "litres",
+       "size": "m"
+      },
+      {
+       "id": "c8",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 5100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        450,
+        300
+       ],
+       "text": "millilitres",
+       "size": "m"
+      },
+      {
+       "id": "c9",
+       "op": "arrow",
+       "startMs": 5200,
+       "endMs": 5600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        230
+       ],
+       "to": [
+        400,
+        270
+       ]
+      },
+      {
+       "id": "c10",
+       "op": "highlight",
+       "startMs": 6000,
+       "endMs": 6800,
+       "ink": "accent",
+       "weight": 1,
+       "target": "c7",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch08-t02-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "e1",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        180,
+        170
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "1",
+         "l",
+         "=",
+         "1,000",
+         "ml"
+        ]
+       ]
+      },
+      {
+       "id": "e2",
+       "op": "rect",
+       "startMs": 2100,
+       "endMs": 2800,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        130,
+        260
+       ],
+       "w": 150,
+       "h": 70,
+       "round": 8
+      },
+      {
+       "id": "e3",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        205,
+        305
+       ],
+       "text": "1 l",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "e4",
+       "op": "arrow",
+       "startMs": 3300,
+       "endMs": 3900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        300,
+        295
+       ],
+       "to": [
+        390,
+        295
+       ]
+      },
+      {
+       "id": "e5",
+       "op": "rect",
+       "startMs": 3900,
+       "endMs": 4600,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        410,
+        260
+       ],
+       "w": 180,
+       "h": 70,
+       "round": 8
+      },
+      {
+       "id": "e6",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        500,
+        305
+       ],
+       "text": "1,000 ml",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "e7",
+       "op": "highlight",
+       "startMs": 5500,
+       "endMs": 6300,
+       "ink": "good",
+       "weight": 1,
+       "target": "e1",
+       "style": "underline"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch08-t02-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "m1",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        150
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "1",
+         "l",
+         "250",
+         "ml"
+        ]
+       ]
+      },
+      {
+       "id": "m2",
+       "op": "arrow",
+       "startMs": 1400,
+       "endMs": 2000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        330,
+        185
+       ],
+       "to": [
+        430,
+        185
+       ]
+      },
+      {
+       "id": "m3",
+       "op": "numwork",
+       "startMs": 2000,
+       "endMs": 3600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        460,
+        150
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "1,000",
+         "ml",
+         "+",
+         "250",
+         "ml"
+        ]
+       ]
+      },
+      {
+       "id": "m4",
+       "op": "line",
+       "startMs": 3700,
+       "endMs": 4300,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        465,
+        230
+       ],
+       "to": [
+        680,
+        230
+       ]
+      },
+      {
+       "id": "m5",
+       "op": "label",
+       "startMs": 4300,
+       "endMs": 5100,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        500,
+        275
+       ],
+       "text": "litres to ml",
+       "to": [
+        500,
+        230
+       ]
+      },
+      {
+       "id": "m6",
+       "op": "label",
+       "startMs": 5000,
+       "endMs": 5700,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        610,
+        275
+       ],
+       "text": "add",
+       "to": [
+        610,
+        230
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch08-t02-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "q1",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        140
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "1",
+         "l",
+         "250",
+         "ml",
+         "=",
+         "1,250",
+         "ml"
+        ]
+       ]
+      },
+      {
+       "id": "q2",
+       "op": "numwork",
+       "startMs": 2300,
+       "endMs": 4500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        230
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "1",
+         "l",
+         "250",
+         "ml",
+         "≠",
+         "1,250",
+         "l"
+        ]
+       ]
+      },
+      {
+       "id": "q3",
+       "op": "highlight",
+       "startMs": 4700,
+       "endMs": 5700,
+       "ink": "good",
+       "weight": 1,
+       "target": "q1",
+       "style": "circle"
+      },
+      {
+       "id": "q4",
+       "op": "highlight",
+       "startMs": 5700,
+       "endMs": 6600,
+       "ink": "accent",
+       "weight": 1,
+       "target": "q2",
+       "style": "underline"
+      },
+      {
+       "id": "q5",
+       "op": "label",
+       "startMs": 6800,
+       "endMs": 7800,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        520,
+        340
+       ],
+       "text": "unit match",
+       "to": [
+        520,
+        230
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch08-t02-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "z1",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        140
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "2",
+         "l",
+         "5",
+         "ml",
+         "=",
+         "2,005",
+         "ml"
+        ]
+       ]
+      },
+      {
+       "id": "z2",
+       "op": "text",
+       "startMs": 2400,
+       "endMs": 3200,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        150,
+        240
+       ],
+       "text": "2,005",
+       "size": "l"
+      },
+      {
+       "id": "z3",
+       "op": "line",
+       "startMs": 3200,
+       "endMs": 3700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        210,
+        250
+       ],
+       "to": [
+        210,
+        285
+       ]
+      },
+      {
+       "id": "z4",
+       "op": "label",
+       "startMs": 3800,
+       "endMs": 4800,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        250,
+        320
+       ],
+       "text": "empty place",
+       "to": [
+        210,
+        285
+       ]
+      },
+      {
+       "id": "z5",
+       "op": "highlight",
+       "startMs": 5000,
+       "endMs": 5800,
+       "ink": "good",
+       "weight": 1,
+       "target": "z2",
+       "style": "underline"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch08-t02-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "w1",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        120
+       ],
+       "text": "1 l 500 ml",
+       "size": "l"
+      },
+      {
+       "id": "w2",
+       "op": "arrow",
+       "startMs": 1300,
+       "endMs": 1900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        300,
+        145
+       ],
+       "to": [
+        390,
+        145
+       ]
+      },
+      {
+       "id": "w3",
+       "op": "numwork",
+       "startMs": 1900,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        420,
+        110
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "1,500",
+         "ml"
+        ]
+       ]
+      },
+      {
+       "id": "w4",
+       "op": "rect",
+       "startMs": 3400,
+       "endMs": 4200,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        150,
+        250
+       ],
+       "w": 400,
+       "h": 90,
+       "round": 10
+      },
+      {
+       "id": "w5",
+       "op": "text",
+       "startMs": 4200,
+       "endMs": 5100,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        350,
+        310
+       ],
+       "text": "1,500 ml",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch08-t02-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "g1",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        120,
+        180
+       ],
+       "r": 45
+      },
+      {
+       "id": "g2",
+       "op": "circle",
+       "startMs": 400,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        230,
+        180
+       ],
+       "r": 45
+      },
+      {
+       "id": "g3",
+       "op": "circle",
+       "startMs": 800,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        340,
+        180
+       ],
+       "r": 45
+      },
+      {
+       "id": "g4",
+       "op": "circle",
+       "startMs": 1200,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        450,
+        180
+       ],
+       "r": 45
+      },
+      {
+       "id": "g6",
+       "op": "numwork",
+       "startMs": 2200,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        290
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "4",
+         "×",
+         "250",
+         "ml",
+         "=",
+         "1,000",
+         "ml"
+        ]
+       ]
+      },
+      {
+       "id": "g7",
+       "op": "circle",
+       "startMs": 4100,
+       "endMs": 4700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        560,
+        180
+       ],
+       "r": 45
+      },
+      {
+       "id": "g8",
+       "op": "circle",
+       "startMs": 4500,
+       "endMs": 5100,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        670,
+        180
+       ],
+       "r": 45
+      },
+      {
+       "id": "g9",
+       "op": "numwork",
+       "startMs": 5200,
+       "endMs": 6600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        150,
+        390
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "2",
+         "×",
+         "250",
+         "ml",
+         "=",
+         "500",
+         "ml"
+        ]
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch08-t02-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "h1",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        130
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "1,500",
+         "ml",
+         "÷",
+         "250",
+         "ml",
+         "=",
+         "6"
+        ]
+       ]
+      },
+      {
+       "id": "h2",
+       "op": "text",
+       "startMs": 2400,
+       "endMs": 3100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        190,
+        250
+       ],
+       "text": "250 ml",
+       "size": "m"
+      },
+      {
+       "id": "h3",
+       "op": "rect",
+       "startMs": 3000,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        150,
+        300
+       ],
+       "w": 100,
+       "h": 90,
+       "round": 10
+      },
+      {
+       "id": "h4",
+       "op": "text",
+       "startMs": 3600,
+       "endMs": 4200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        200,
+        350
+       ],
+       "text": "6",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "h5",
+       "op": "label",
+       "startMs": 4200,
+       "endMs": 5000,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        280,
+        350
+       ],
+       "text": "glasses",
+       "to": [
+        250,
+        350
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L9",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch08-t02-wb-L9",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "p1",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        100
+       ],
+       "text": "compare",
+       "size": "l"
+      },
+      {
+       "id": "p2",
+       "op": "numwork",
+       "startMs": 1100,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        170
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "1",
+         "l",
+         "250",
+         "ml",
+         "=",
+         "1,250",
+         "ml"
+        ]
+       ]
+      },
+      {
+       "id": "p3",
+       "op": "numwork",
+       "startMs": 2800,
+       "endMs": 4400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        260
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "2",
+         "l",
+         "5",
+         "ml",
+         "=",
+         "2,005",
+         "ml"
+        ]
+       ]
+      },
+      {
+       "id": "p4",
+       "op": "arrow",
+       "startMs": 4500,
+       "endMs": 5100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        500,
+        210
+       ],
+       "to": [
+        610,
+        210
+       ]
+      },
+      {
+       "id": "p5",
+       "op": "label",
+       "startMs": 5100,
+       "endMs": 5900,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        500,
+        330
+       ],
+       "text": "same unit",
+       "to": [
+        550,
+        260
+       ]
+      },
+      {
+       "id": "p6",
+       "op": "highlight",
+       "startMs": 5900,
+       "endMs": 6500,
+       "ink": "accent",
+       "weight": 1,
+       "target": "p2",
+       "style": "underline"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "1250 ml",
+   "prompt": "pour: 1.25 l"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "2000 ml",
+   "prompt": "pour: 2 l"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "2005 ml",
+   "prompt": "pour: 2 l 5 ml"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "1500 ml",
+   "prompt": "pour: 1.5 l"
+  },
+  {
+   "itemId": "r3:0",
+   "key": "3000 ml",
+   "prompt": "pour: 3 l"
+  },
+  {
+   "itemId": "r3:1",
+   "key": "4000 ml",
+   "prompt": "pour: 4 l"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ },
+ "firstCheck": {
+  "issues": [
+   {
+    "where": "round",
+    "what": "First round (r1) loads target 1250 with show 'l', which is ambiguous and could suggest 1250 l, reinforcing the misconception '1 l 250 ml = 1,250 l' (c5-maths-ch08-t02-m-big-unit-label). For a class 5 student, showing only 'l' on a 1250 mark is confusing and factually misleading.",
+    "severity": "high"
+   }
+  ],
+  "verdict": "fail",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

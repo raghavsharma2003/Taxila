@@ -1,0 +1,1783 @@
+{
+ "topicId": "c5-english-ch05-t01",
+ "title": "The Frog",
+ "chapter": "The Frog",
+ "subject": "english",
+ "class": 5,
+ "topicType": "T1",
+ "plan": {
+  "game": "beat-line@1",
+  "hint": "beat and rhyme rounds (Hindi: matra round on a doha/chaupai line)"
+ },
+ "game": {
+  "archetype": "beat-line@1",
+  "spec": {
+   "archetype": "beat-line@1",
+   "skills": [
+    "c5-english-ch05-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "onBeat": "on beat",
+    "combo": "combo",
+    "tap": "Tap on the beat",
+    "catch": "Catch the rhyme",
+    "mark": "Short or long?",
+    "short": "। short",
+    "long": "ऽ long",
+    "practice": "PRACTICE LINE",
+    "runDone": "Poem played",
+    "perfect": "ON BEAT",
+    "early": "early",
+    "late": "late",
+    "meter": "मात्रा"
+   },
+   "title": "The Frog",
+   "bpm": 76,
+   "lines": [
+    {
+     "text": "Down in the pond the tadpoles wiggle",
+     "beats": [
+      1,
+      3,
+      5
+     ],
+     "own": true
+    },
+    {
+     "text": "With tiny tails that swish and jiggle",
+     "beats": [
+      1,
+      3,
+      5
+     ],
+     "own": true
+    },
+    {
+     "text": "Then legs pop out, the tails grow small",
+     "beats": [
+      1,
+      3,
+      6
+     ],
+     "own": true
+    },
+    {
+     "text": "Croak! goes Frog when the rain comes down",
+     "beats": [
+      1,
+      3,
+      6
+     ],
+     "own": true
+    }
+   ],
+   "rounds": [
+    {
+     "mode": "beat",
+     "title": "Feel the frog beat",
+     "sub": "Tap the strong beats in each line",
+     "lines": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "mode": "rhyme",
+     "title": "Catch the rhyme",
+     "sub": "Listen for the matching end sound",
+     "items": [
+      {
+       "cue": "Tadpoles wiggle with tails that swish and ____",
+       "options": [
+        "jiggle",
+        "jump",
+        "croak"
+       ],
+       "answer": "jiggle",
+       "src": "c5-english-ch05-t01-i03"
+      },
+      {
+       "cue": "Then legs pop out, the tails grow ____",
+       "options": [
+        "small",
+        "sing",
+        "swim"
+       ],
+       "answer": "small",
+       "src": "c5-english-ch05-t01-i07"
+      },
+      {
+       "cue": "Croak! goes Frog when the rain comes ____",
+       "options": [
+        "down",
+        "green",
+        "hop"
+       ],
+       "answer": "down",
+       "src": "c5-english-ch05-t01-i08"
+      }
+     ],
+     "targets": "c5-english-ch05-t01-m-third-s"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 2,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c5-english-ch05-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Right",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "BUSTED",
+    "order": "Tap them in order"
+   },
+   "title": "The Life of a Frog",
+   "accent": "mint",
+   "targets": "c5-english-ch05-t01-m-tadpole-fish",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "The Life of a Frog"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "A tadpole is a baby fish"
+      },
+      {
+       "id": "pond",
+       "type": "glyph",
+       "name": "drop",
+       "x": 700,
+       "y": 350,
+       "size": 150,
+       "color": "sci"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "eggs",
+       "type": "node",
+       "text": "Eggs",
+       "sub": "in water",
+       "glyph": "spark",
+       "x": 120,
+       "y": 310,
+       "color": "sun"
+      },
+      {
+       "id": "tad",
+       "type": "node",
+       "text": "Tadpole",
+       "sub": "tail",
+       "glyph": "fish",
+       "x": 350,
+       "y": 310,
+       "color": "ion"
+      },
+      {
+       "id": "legs",
+       "type": "node",
+       "text": "Legs grow",
+       "sub": "tail shrinks",
+       "glyph": "hand",
+       "x": 590,
+       "y": 310,
+       "color": "mint"
+      },
+      {
+       "id": "frog",
+       "type": "node",
+       "text": "Frog",
+       "sub": "hops",
+       "glyph": "insect",
+       "x": 830,
+       "y": 310,
+       "color": "amber"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "eggs",
+       "to": "tad",
+       "text": "hatches"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "tad",
+       "to": "legs",
+       "text": "changes"
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "legs",
+       "to": "frog",
+       "text": "becomes"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "o1",
+       "type": "node",
+       "text": "Eggs",
+       "sub": "first",
+       "glyph": "spark",
+       "x": 120,
+       "y": 300,
+       "color": "sun"
+      },
+      {
+       "id": "o2",
+       "type": "node",
+       "text": "Tadpole",
+       "sub": "tail",
+       "glyph": "fish",
+       "x": 350,
+       "y": 300,
+       "color": "ion"
+      },
+      {
+       "id": "o3",
+       "type": "node",
+       "text": "Legs grow",
+       "sub": "tail shrinks",
+       "glyph": "hand",
+       "x": 590,
+       "y": 300,
+       "color": "mint"
+      },
+      {
+       "id": "o4",
+       "type": "node",
+       "text": "Frog",
+       "sub": "hops",
+       "glyph": "insect",
+       "x": 830,
+       "y": 300,
+       "color": "amber"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "A frog has a life story that begins in water.",
+    "L2": "First come eggs, and then a baby frog called a tadpole hatches.",
+    "L3": "A tadpole has a tail, but it is not a baby fish.",
+    "L4": "Next, legs grow while the tail gets smaller.",
+    "L5": "Finally, the tail goes and the tadpole becomes a frog.",
+    "L6": "The frog hops on the wall, but the frogs hop together.",
+    "L7": "The poem uses rhyming pairs such as wiggle and jiggle.",
+    "L8": "Now put the frog's life stages in the order they happen."
+   },
+   "narration": {
+    "L1": {
+     "text": "A frog has a life story that begins in water.",
+     "dur": 2,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "First come eggs, and then a baby frog called a tadpole hatches.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "A tadpole has a tail, but it is not a baby fish.",
+     "dur": 2.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "Next, legs grow while the tail gets smaller.",
+     "dur": 2,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "Finally, the tail goes and the tadpole becomes a frog.",
+     "dur": 2.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "The frog hops on the wall, but the frogs hop together.",
+     "dur": 2.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "The poem uses rhyming pairs such as wiggle and jiggle.",
+     "dur": 2.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Now put the frog's life stages in the order they happen.",
+     "dur": 2,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      },
+      {
+       "at": 0.4,
+       "do": "show",
+       "dur": 0.8,
+       "target": "pond"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "eggs"
+      },
+      {
+       "at": 0.6,
+       "do": "show",
+       "dur": 0.7,
+       "target": "tad"
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "a1",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "myth"
+      },
+      {
+       "at": 1,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "legs"
+      },
+      {
+       "at": 0.5,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "a2",
+       "to": 1
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "legs"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "frog"
+      },
+      {
+       "at": 0.5,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "a3",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "frog"
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "legs"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "focus",
+       "dur": 0.8,
+       "target": "tad"
+      },
+      {
+       "at": 0.8,
+       "do": "focus",
+       "dur": 0.8,
+       "target": "eggs"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "o1",
+        "o2",
+        "o3",
+        "o4"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "order",
+    "prompt": "Tap the frog's life stages in the order they happen.",
+    "items": [
+     "o1",
+     "o2",
+     "o3",
+     "o4"
+    ],
+    "src": "c5-english-ch05-t01-i02"
+   }
+  },
+  "repairs": [],
+  "attempts": 2,
+  "model": "taxila-fast-bg",
+  "passes": 2,
+  "seconds": 23
+ },
+ "keys": [
+  {
+   "itemId": "b0:*",
+   "key": "in · pond · tadpoles",
+   "prompt": "stressed words in: Down in the pond the tadpoles wiggle"
+  },
+  {
+   "itemId": "b1:*",
+   "key": "tiny · that · and",
+   "prompt": "stressed words in: With tiny tails that swish and jiggle"
+  },
+  {
+   "itemId": "b2:*",
+   "key": "legs · out, · grow",
+   "prompt": "stressed words in: Then legs pop out, the tails grow small"
+  },
+  {
+   "itemId": "b3:*",
+   "key": "goes · when · comes",
+   "prompt": "stressed words in: Croak! goes Frog when the rain comes down"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "jiggle",
+   "prompt": "Tadpoles wiggle with tails that swish and ____ [jiggle / jump / croak]",
+   "src": "c5-english-ch05-t01-i03"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "small",
+   "prompt": "Then legs pop out, the tails grow ____ [small / sing / swim]",
+   "src": "c5-english-ch05-t01-i07"
+  },
+  {
+   "itemId": "r2:2",
+   "key": "down",
+   "prompt": "Croak! goes Frog when the rain comes ____ [down / green / hop]",
+   "src": "c5-english-ch05-t01-i08"
+  }
+ ],
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-english-ch05-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "water",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        410
+       ],
+       "rx": 300,
+       "ry": 55,
+       "fill": "soft"
+      },
+      {
+       "id": "eggs",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        300,
+        370
+       ],
+       "r": 18,
+       "fill": "accent"
+      },
+      {
+       "id": "eggs2",
+       "op": "circle",
+       "startMs": 1100,
+       "endMs": 1600,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        350,
+        380
+       ],
+       "r": 18,
+       "fill": "accent"
+      },
+      {
+       "id": "frog",
+       "op": "circle",
+       "startMs": 1900,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        550,
+        220
+       ],
+       "r": 35,
+       "fill": "good"
+      },
+      {
+       "id": "leg1",
+       "op": "line",
+       "startMs": 2400,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        530,
+        245
+       ],
+       "to": [
+        510,
+        285
+       ]
+      },
+      {
+       "id": "leg2",
+       "op": "line",
+       "startMs": 2500,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        570,
+        245
+       ],
+       "to": [
+        590,
+        285
+       ]
+      },
+      {
+       "id": "story",
+       "op": "arrow",
+       "startMs": 3100,
+       "endMs": 4000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        410,
+        370
+       ],
+       "to": [
+        520,
+        250
+       ]
+      },
+      {
+       "id": "life",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 4855,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        90
+       ],
+       "text": "life story",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-english-ch05-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "eggrow",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        180,
+        360
+       ],
+       "r": 35,
+       "fill": "accent"
+      },
+      {
+       "id": "eggrow2",
+       "op": "circle",
+       "startMs": 300,
+       "endMs": 1200,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        245,
+        360
+       ],
+       "r": 35,
+       "fill": "accent"
+      },
+      {
+       "id": "eggrow3",
+       "op": "circle",
+       "startMs": 600,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        310,
+        360
+       ],
+       "r": 35,
+       "fill": "accent"
+      },
+      {
+       "id": "hatch",
+       "op": "arrow",
+       "startMs": 1700,
+       "endMs": 2600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        350,
+        350
+       ],
+       "to": [
+        470,
+        300
+       ]
+      },
+      {
+       "id": "tadbody",
+       "op": "ellipse",
+       "startMs": 2500,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        520,
+        300
+       ],
+       "rx": 65,
+       "ry": 35
+      },
+      {
+       "id": "tadtail",
+       "op": "polygon",
+       "startMs": 2900,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         460,
+         300
+        ],
+        [
+         390,
+         270
+        ],
+        [
+         410,
+         315
+        ]
+       ]
+      },
+      {
+       "id": "tadpole",
+       "op": "label",
+       "startMs": 3900,
+       "endMs": 4700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        510,
+        230
+       ],
+       "text": "tadpole",
+       "to": [
+        520,
+        270
+       ]
+      },
+      {
+       "id": "stages",
+       "op": "arrow",
+       "startMs": 4700,
+       "endMs": 5706,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        140,
+        360
+       ],
+       "to": [
+        390,
+        300
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-english-ch05-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "taildraw",
+       "op": "stroke",
+       "startMs": 0,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         470,
+         300
+        ],
+        [
+         420,
+         275
+        ],
+        [
+         380,
+         300
+        ],
+        [
+         340,
+         280
+        ]
+       ]
+      },
+      {
+       "id": "taillabel",
+       "op": "label",
+       "startMs": 1100,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        300,
+        250
+       ],
+       "text": "tail",
+       "to": [
+        390,
+        290
+       ]
+      },
+      {
+       "id": "fishbody",
+       "op": "ellipse",
+       "startMs": 1900,
+       "endMs": 2800,
+       "ink": "soft",
+       "weight": 2,
+       "c": [
+        620,
+        330
+       ],
+       "rx": 70,
+       "ry": 35
+      },
+      {
+       "id": "fishfin",
+       "op": "polygon",
+       "startMs": 2100,
+       "endMs": 2900,
+       "ink": "soft",
+       "weight": 2,
+       "points": [
+        [
+         550,
+         330
+        ],
+        [
+         510,
+         295
+        ],
+        [
+         510,
+         365
+        ]
+       ]
+      },
+      {
+       "id": "not",
+       "op": "line",
+       "startMs": 3000,
+       "endMs": 3900,
+       "ink": "accent",
+       "weight": 3,
+       "from": [
+        500,
+        250
+       ],
+       "to": [
+        690,
+        390
+       ]
+      },
+      {
+       "id": "fishmark",
+       "op": "highlight",
+       "startMs": 4700,
+       "endMs": 5706,
+       "ink": "accent",
+       "weight": 2,
+       "target": "fishbody",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-english-ch05-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 4004,
+     "ops": [
+      {
+       "id": "legnew1",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        490,
+        325
+       ],
+       "to": [
+        455,
+        385
+       ]
+      },
+      {
+       "id": "legnew2",
+       "op": "line",
+       "startMs": 300,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        550,
+        325
+       ],
+       "to": [
+        585,
+        385
+       ]
+      },
+      {
+       "id": "tailsmall",
+       "op": "polygon",
+       "startMs": 1100,
+       "endMs": 2000,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         460,
+         300
+        ],
+        [
+         415,
+         285
+        ],
+        [
+         430,
+         310
+        ]
+       ]
+      },
+      {
+       "id": "grow",
+       "op": "arrow",
+       "startMs": 2000,
+       "endMs": 2800,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        520,
+        320
+       ],
+       "to": [
+        520,
+        380
+       ]
+      },
+      {
+       "id": "shrink",
+       "op": "arrow",
+       "startMs": 2200,
+       "endMs": 3000,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        410,
+        275
+       ],
+       "to": [
+        430,
+        305
+       ]
+      },
+      {
+       "id": "legslabel",
+       "op": "label",
+       "startMs": 3000,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        600,
+        380
+       ],
+       "text": "legs",
+       "to": [
+        570,
+        370
+       ]
+      },
+      {
+       "id": "taillabel2",
+       "op": "label",
+       "startMs": 3500,
+       "endMs": 4004,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        330,
+        245
+       ],
+       "text": "tail",
+       "to": [
+        420,
+        295
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 2,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-english-ch05-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "frogbody",
+       "op": "circle",
+       "startMs": 1200,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        500,
+        260
+       ],
+       "r": 55,
+       "fill": "good"
+      },
+      {
+       "id": "frogleg1",
+       "op": "line",
+       "startMs": 1500,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        475,
+        300
+       ],
+       "to": [
+        430,
+        365
+       ]
+      },
+      {
+       "id": "frogleg2",
+       "op": "line",
+       "startMs": 1700,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        525,
+        300
+       ],
+       "to": [
+        570,
+        365
+       ]
+      },
+      {
+       "id": "froglabel",
+       "op": "label",
+       "startMs": 2600,
+       "endMs": 3200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        500,
+        170
+       ],
+       "text": "frog",
+       "to": [
+        500,
+        205
+       ]
+      },
+      {
+       "id": "becomes",
+       "op": "arrow",
+       "startMs": 3200,
+       "endMs": 4100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        380,
+        350
+       ],
+       "to": [
+        450,
+        290
+       ]
+      },
+      {
+       "id": "gone",
+       "op": "text",
+       "startMs": 4100,
+       "endMs": 4855,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        300,
+        430
+       ],
+       "text": "tail goes",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-english-ch05-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "wall",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        570,
+        80
+       ],
+       "w": 150,
+       "h": 330,
+       "fill": "soft"
+      },
+      {
+       "id": "frogone",
+       "op": "circle",
+       "startMs": 700,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        300
+       ],
+       "r": 38,
+       "fill": "good"
+      },
+      {
+       "id": "hop1",
+       "op": "arrow",
+       "startMs": 1500,
+       "endMs": 2400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        410,
+        270
+       ],
+       "to": [
+        500,
+        180
+       ]
+      },
+      {
+       "id": "frogwall",
+       "op": "circle",
+       "startMs": 2400,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        590,
+        145
+       ],
+       "r": 32,
+       "fill": "good"
+      },
+      {
+       "id": "frogA",
+       "op": "circle",
+       "startMs": 3000,
+       "endMs": 3800,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        250,
+        330
+       ],
+       "r": 30,
+       "fill": "good"
+      },
+      {
+       "id": "frogB",
+       "op": "circle",
+       "startMs": 3200,
+       "endMs": 4000,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        330,
+        380
+       ],
+       "r": 30,
+       "fill": "good"
+      },
+      {
+       "id": "together",
+       "op": "arrow",
+       "startMs": 3900,
+       "endMs": 4800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        290,
+        320
+       ],
+       "to": [
+        450,
+        250
+       ]
+      },
+      {
+       "id": "hops",
+       "op": "text",
+       "startMs": 4800,
+       "endMs": 5281,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        300,
+        90
+       ],
+       "text": "hops",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-english-ch05-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "wiggle",
+       "op": "stroke",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         120,
+         210
+        ],
+        [
+         145,
+         180
+        ],
+        [
+         170,
+         220
+        ],
+        [
+         195,
+         180
+        ],
+        [
+         220,
+         220
+        ]
+       ]
+      },
+      {
+       "id": "jiggle",
+       "op": "stroke",
+       "startMs": 900,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         120,
+         330
+        ],
+        [
+         145,
+         300
+        ],
+        [
+         170,
+         340
+        ],
+        [
+         195,
+         300
+        ],
+        [
+         220,
+         340
+        ]
+       ]
+      },
+      {
+       "id": "wiggleword",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        170,
+        150
+       ],
+       "text": "wiggle",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "jiggleword",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        170,
+        390
+       ],
+       "text": "jiggle",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "pairline",
+       "op": "line",
+       "startMs": 2700,
+       "endMs": 3300,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        260,
+        210
+       ],
+       "to": [
+        260,
+        330
+       ]
+      },
+      {
+       "id": "rhyme",
+       "op": "label",
+       "startMs": 3300,
+       "endMs": 4200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        330,
+        270
+       ],
+       "text": "rhyming pairs",
+       "to": [
+        260,
+        270
+       ]
+      },
+      {
+       "id": "pairmark",
+       "op": "highlight",
+       "startMs": 4200,
+       "endMs": 4855,
+       "ink": "accent",
+       "weight": 2,
+       "target": "pairline",
+       "style": "pulse"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-english-ch05-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "one",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        120,
+        250
+       ],
+       "r": 45
+      },
+      {
+       "id": "two",
+       "op": "circle",
+       "startMs": 400,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        320,
+        250
+       ],
+       "r": 45
+      },
+      {
+       "id": "three",
+       "op": "circle",
+       "startMs": 800,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        520,
+        250
+       ],
+       "r": 45
+      },
+      {
+       "id": "four",
+       "op": "circle",
+       "startMs": 1200,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        680,
+        250
+       ],
+       "r": 45
+      },
+      {
+       "id": "order1",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        250
+       ],
+       "text": "eggs",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "order2",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        320,
+        250
+       ],
+       "text": "tadpole",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "order3",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        520,
+        250
+       ],
+       "text": "legs",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "order4",
+       "op": "text",
+       "startMs": 2800,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        680,
+        250
+       ],
+       "text": "frog",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "arrow1",
+       "op": "arrow",
+       "startMs": 3400,
+       "endMs": 3800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        170,
+        250
+       ],
+       "to": [
+        270,
+        250
+       ]
+      },
+      {
+       "id": "arrow2",
+       "op": "arrow",
+       "startMs": 3600,
+       "endMs": 4000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        370,
+        250
+       ],
+       "to": [
+        470,
+        250
+       ]
+      },
+      {
+       "id": "arrow3",
+       "op": "arrow",
+       "startMs": 3800,
+       "endMs": 4200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        570,
+        250
+       ],
+       "to": [
+        630,
+        250
+       ]
+      },
+      {
+       "id": "orderlabel",
+       "op": "text",
+       "startMs": 4200,
+       "endMs": 5281,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        100
+       ],
+       "text": "order",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "check": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "Rhyme round line b0 key shows stressed words 'in pond tadpoles', but line 0 ends with 'wiggle' and should not include 'tadpoles' as stressed; the computed key for line 0 is factually wrong about stress placement, but this is a minor mismatch in the key computation, not a contradiction between content and kit. Also note that the key's stressed words for b1 ('tiny that and') and b2 ('legs out, grow') and b3 ('goes when comes') are unrealistic; for example, 'that' and 'and' are not typically stressed. This could mislead learners about rhythm, making the game's beat-round unsound for the intended age. However, the kit does not specify which words are stressed, so this is not a kit contradiction but a pedagogical error in the computed keys. Since the kit only expects learners to 'say the poem with its beat' and identify rhyming pairs, the beat-round's computed keys are a separate issue. The content (game) itself does not present these keys to the user; they are used internally. The primary content (lines, rhyme items) matches the kit. No issues with explainer: it correctly shows tadpole life cycle and addresses the misconception, and the ordering task matches kit item i02. No unsuitable content. Verdict: pass due to no high-severity content-vs-kit contradiction."
+   }
+  ],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

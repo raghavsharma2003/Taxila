@@ -1,0 +1,1956 @@
+{
+ "topicId": "c4-hindi-ch07-t01",
+ "title": "नकली हीरे",
+ "chapter": "नकली हीरे",
+ "subject": "hindi",
+ "class": 4,
+ "topicType": "T3",
+ "plan": {
+  "game": "story-rail@1",
+  "hint": "sequence, cause and who modes from the lesson's events and speakers"
+ },
+ "game": {
+  "archetype": "story-rail@1",
+  "spec": {
+   "archetype": "story-rail@1",
+   "skills": [
+    "c4-hindi-ch07-t01"
+   ],
+   "lang": "hi",
+   "strings": {
+    "round": "दौर",
+    "picked": "जुड़ा",
+    "streak": "लगातार सही",
+    "next": "अगला क्या हुआ?",
+    "effect": "इसका असर क्या हुआ?",
+    "who": "यह किसने कहा?",
+    "runDone": "कहानी पूरी हुई",
+    "order": "तुम्हारी रेल",
+    "right": "सही जोड़ा",
+    "wrong": "यह नहीं",
+    "coach": "मोड़ से पहले एक डिब्बा चुनो"
+   },
+   "title": "नकली हीरे",
+   "rounds": [
+    {
+     "mode": "sequence",
+     "title": "कहानी का क्रम",
+     "sub": "घटनाओं को सही क्रम में जोड़ो",
+     "cards": [
+      {
+       "id": "e1",
+       "text": "राजा को सलाहकार चाहिए था",
+       "glyph": "crown",
+       "src": "c4-hindi-ch07-t01-i02"
+      },
+      {
+       "id": "e2",
+       "text": "राजा ने दरबारियों से पूछा",
+       "glyph": "question",
+       "src": "c4-hindi-ch07-t01-i03"
+      },
+      {
+       "id": "e3",
+       "text": "सबने राजा की तारीफ़ की",
+       "glyph": "person",
+       "src": "c4-hindi-ch07-t01-i04"
+      },
+      {
+       "id": "e4",
+       "text": "एक दरबारी ने सच कहा",
+       "glyph": "person",
+       "src": "c4-hindi-ch07-t01-i04"
+      },
+      {
+       "id": "e5",
+       "text": "जौहरी ने हीरों की जाँच की",
+       "glyph": "eye",
+       "src": "c4-hindi-ch07-t01-i06"
+      }
+     ],
+     "speed": 0.95
+    },
+    {
+     "mode": "cause",
+     "title": "कारण और असर",
+     "sub": "हर कारण का सही असर जोड़ो",
+     "pairs": [
+      {
+       "cause": {
+        "id": "c1",
+        "text": "राजा को सलाहकार चाहिए था",
+        "glyph": "crown",
+        "src": "c4-hindi-ch07-t01-i02"
+       },
+       "effect": {
+        "id": "f1",
+        "text": "उसने दरबारियों से सवाल पूछा",
+        "glyph": "question",
+        "src": "c4-hindi-ch07-t01-i03"
+       }
+      },
+      {
+       "cause": {
+        "id": "c2",
+        "text": "दरबारियों ने झूठी तारीफ़ की",
+        "glyph": "person",
+        "src": "c4-hindi-ch07-t01-i05"
+       },
+       "effect": {
+        "id": "f2",
+        "text": "उन्हें नकली हीरे मिले",
+        "glyph": "spark",
+        "src": "c4-hindi-ch07-t01-i05"
+       }
+      },
+      {
+       "cause": {
+        "id": "c3",
+        "text": "जौहरी ने हीरों की जाँच की",
+        "glyph": "eye",
+        "src": "c4-hindi-ch07-t01-i06"
+       },
+       "effect": {
+        "id": "f3",
+        "text": "नकली हीरे पहचान में आए",
+        "glyph": "spark",
+        "src": "c4-hindi-ch07-t01-i06"
+       }
+      },
+      {
+       "cause": {
+        "id": "c4",
+        "text": "दरबारी ने सच कहा",
+        "glyph": "person",
+        "src": "c4-hindi-ch07-t01-i04"
+       },
+       "effect": {
+        "id": "f4",
+        "text": "उसे असली हीरा मिला",
+        "src": "c4-hindi-ch07-t01-i07"
+       }
+      }
+     ],
+     "speed": 0.85
+    }
+   ]
+  },
+  "repairs": [
+   "string:card.text",
+   "targets",
+   "glyph",
+   "string:card.text",
+   "string:card.text",
+   "round:who"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c4-hindi-ch07-t01"
+   ],
+   "lang": "hi",
+   "strings": {
+    "again": "फिर से दिखाएँ",
+    "yourTurn": "अब आपकी बारी",
+    "check": "जाँचें",
+    "right": "सही",
+    "look": "फिर देखें",
+    "myth": "भ्रम",
+    "busted": "गलत बात",
+    "order": "क्रम में लगाएँ"
+   },
+   "title": "नकली हीरे",
+   "accent": "amber",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "row",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "नकली हीरे"
+      },
+      {
+       "id": "king",
+       "type": "node",
+       "text": "बूढ़ा राजा",
+       "sub": "बुद्धिमान",
+       "glyph": "crown",
+       "color": "amber"
+      },
+      {
+       "id": "son",
+       "type": "node",
+       "text": "एक बेटा",
+       "sub": "राजकुमार",
+       "glyph": "person",
+       "color": "ion"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "राजा को ख़ुश करना ही सही उत्तर है"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "ask",
+       "type": "node",
+       "text": "राजा का सवाल",
+       "sub": "सच बताओ",
+       "glyph": "question",
+       "color": "amber"
+      },
+      {
+       "id": "flatter",
+       "type": "node",
+       "text": "तारीफ़",
+       "sub": "झूठा उत्तर",
+       "glyph": "group",
+       "color": "volt"
+      },
+      {
+       "id": "honest",
+       "type": "node",
+       "text": "सच बोलने वाला",
+       "sub": "ईमानदार दरबारी",
+       "glyph": "person",
+       "color": "mint"
+      },
+      {
+       "id": "jewel",
+       "type": "node",
+       "text": "जौहरी",
+       "sub": "हीरों की जाँच",
+       "glyph": "shop",
+       "color": "sci"
+      },
+      {
+       "id": "real",
+       "type": "node",
+       "text": "असली हीरा",
+       "sub": "सच का फल",
+       "glyph": "spark",
+       "color": "mint"
+      },
+      {
+       "id": "fake",
+       "type": "node",
+       "text": "नकली हीरे",
+       "sub": "झूठ का फल",
+       "glyph": "spark",
+       "color": "volt"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "ask",
+       "to": "flatter",
+       "text": "तारीफ़"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "ask",
+       "to": "honest",
+       "text": "सच"
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "flatter",
+       "to": "fake",
+       "text": "नकली"
+      },
+      {
+       "id": "a4",
+       "type": "arrow",
+       "from": "honest",
+       "to": "real",
+       "text": "असली"
+      },
+      {
+       "id": "a5",
+       "type": "arrow",
+       "from": "fake",
+       "to": "jewel",
+       "text": "जाँच"
+      },
+      {
+       "id": "a6",
+       "type": "arrow",
+       "from": "real",
+       "to": "jewel",
+       "text": "जाँच"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "split",
+     "els": [
+      {
+       "id": "lesson",
+       "type": "title",
+       "text": "सीख: ईमानदारी ज़रूरी है"
+      },
+      {
+       "id": "truth",
+       "type": "node",
+       "text": "सच",
+       "sub": "राजा प्रसन्न",
+       "glyph": "shield",
+       "color": "mint"
+      },
+      {
+       "id": "opt1",
+       "type": "node",
+       "text": "तारीफ़",
+       "sub": "बिना सच",
+       "glyph": "group",
+       "color": "volt"
+      },
+      {
+       "id": "opt2",
+       "type": "node",
+       "text": "सच",
+       "sub": "ईमानदार उत्तर",
+       "glyph": "shield",
+       "color": "mint"
+      },
+      {
+       "id": "opt3",
+       "type": "node",
+       "text": "चुप रहना",
+       "sub": "उत्तर नहीं",
+       "glyph": "person",
+       "color": "amber"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "काननपुर का बूढ़ा और बुद्धिमान राजा अपने इकलौते बेटे के लिए एक सलाहकार चाहता था।",
+    "L2": "उसने दरबारियों से पूछा, “क्या मैं बुद्धिमान और ईमानदार राजा हूँ?”",
+    "L3": "सब दरबारियों ने राजा को ख़ुश करने वाली तारीफ़ की, पर एक चुप दरबारी ने सच कहा।",
+    "L4": "उसने कहा, “राजा अच्छे हैं, पर पहले उनसे भी बढ़कर राजा हुए हैं।”",
+    "L5": "राजा सच सुनकर प्रसन्न हुआ और उस दरबारी को असली हीरा दिया।",
+    "L6": "बाक़ी दरबारियों को नकली हीरे मिले, क्योंकि उन्होंने झूठा उत्तर दिया था।",
+    "L7": "हीरे चमकते तो एक जैसे थे, पर जौहरी की जाँच से असली और नकली का पता चला।",
+    "L8": "इसलिए सीख है: ईमानदारी, किसी को ख़ुश करने वाली झूठी बात से अधिक महत्वपूर्ण है।"
+   },
+   "narration": {
+    "L1": {
+     "text": "काननपुर का बूढ़ा और बुद्धिमान राजा अपने इकलौते बेटे के लिए एक सलाहकार चाहता था।",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "उसने दरबारियों से पूछा, “क्या मैं बुद्धिमान और ईमानदार राजा हूँ?”",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "सब दरबारियों ने राजा को ख़ुश करने वाली तारीफ़ की, पर एक चुप दरबारी ने सच कहा।",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "उसने कहा, “राजा अच्छे हैं, पर पहले उनसे भी बढ़कर राजा हुए हैं।”",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "राजा सच सुनकर प्रसन्न हुआ और उस दरबारी को असली हीरा दिया।",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "बाक़ी दरबारियों को नकली हीरे मिले, क्योंकि उन्होंने झूठा उत्तर दिया था।",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "हीरे चमकते तो एक जैसे थे, पर जौहरी की जाँच से असली और नकली का पता चला।",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "इसलिए सीख है: ईमानदारी, किसी को ख़ुश करने वाली झूठी बात से अधिक महत्वपूर्ण है।",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "king",
+        "son"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "ask"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      },
+      {
+       "at": 1,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "flatter",
+        "honest",
+        "a1",
+        "a2"
+       ]
+      },
+      {
+       "at": 1.2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "honest"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "real",
+        "a4"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "a4",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "fake",
+        "a3"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "a3",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.9,
+       "target": [
+        "jewel",
+        "a5",
+        "a6"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 1,
+       "target": "jewel"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "lesson",
+        "truth"
+       ]
+      },
+      {
+       "at": 2,
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "राजा ने किस उत्तर को सही माना?",
+    "options": [
+     "opt1",
+     "opt2",
+     "opt3"
+    ],
+    "answer": "opt2",
+    "src": "c4-hindi-ch07-t01-i04"
+   }
+  },
+  "repairs": [
+   "string:pleasing.text",
+   "targets"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 62
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-hindi-ch07-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "king",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        150,
+        150
+       ],
+       "r": 55
+      },
+      {
+       "id": "crown",
+       "op": "polygon",
+       "startMs": 500,
+       "endMs": 1100,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         110,
+         105
+        ],
+        [
+         125,
+         75
+        ],
+        [
+         150,
+         105
+        ],
+        [
+         175,
+         75
+        ],
+        [
+         190,
+         105
+        ]
+       ]
+      },
+      {
+       "id": "son",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        320,
+        180
+       ],
+       "r": 35
+      },
+      {
+       "id": "advisor",
+       "op": "circle",
+       "startMs": 1400,
+       "endMs": 2000,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        530,
+        180
+       ],
+       "r": 35
+      },
+      {
+       "id": "a1",
+       "op": "arrow",
+       "startMs": 2100,
+       "endMs": 2800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        205,
+        150
+       ],
+       "to": [
+        280,
+        175
+       ]
+      },
+      {
+       "id": "a2",
+       "op": "arrow",
+       "startMs": 2900,
+       "endMs": 3600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        355,
+        180
+       ],
+       "to": [
+        480,
+        180
+       ]
+      },
+      {
+       "id": "t1",
+       "op": "label",
+       "startMs": 3600,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        110,
+        245
+       ],
+       "text": "राजा",
+       "to": [
+        150,
+        205
+       ]
+      },
+      {
+       "id": "t2",
+       "op": "label",
+       "startMs": 4100,
+       "endMs": 4600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        270,
+        245
+       ],
+       "text": "बेटे",
+       "to": [
+        320,
+        215
+       ]
+      },
+      {
+       "id": "t3",
+       "op": "label",
+       "startMs": 4600,
+       "endMs": 5300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        475,
+        245
+       ],
+       "text": "सलाहकार",
+       "to": [
+        530,
+        215
+       ]
+      },
+      {
+       "id": "t4",
+       "op": "text",
+       "startMs": 5300,
+       "endMs": 5900,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        390
+       ],
+       "text": "बुद्धिमान",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "t5",
+       "op": "text",
+       "startMs": 5900,
+       "endMs": 6500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        440
+       ],
+       "text": "काननपुर",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-hindi-ch07-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "court",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        100
+       ],
+       "w": 560,
+       "h": 250
+      },
+      {
+       "id": "king2",
+       "op": "circle",
+       "startMs": 500,
+       "endMs": 1000,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        160
+       ],
+       "r": 45
+      },
+      {
+       "id": "q",
+       "op": "text",
+       "startMs": 1200,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        285
+       ],
+       "text": "क्या मैं राजा हूँ?",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "wise",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3200,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        250,
+        410
+       ],
+       "text": "बुद्धिमान",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "honest",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 4100,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        550,
+        410
+       ],
+       "text": "ईमानदार",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "ask",
+       "op": "arrow",
+       "startMs": 4200,
+       "endMs": 4900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        215
+       ],
+       "to": [
+        400,
+        270
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-hindi-ch07-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "c1",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 400,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        180,
+        180
+       ],
+       "r": 28
+      },
+      {
+       "id": "c2",
+       "op": "circle",
+       "startMs": 300,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        280,
+        180
+       ],
+       "r": 28
+      },
+      {
+       "id": "c3",
+       "op": "circle",
+       "startMs": 600,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        380,
+        180
+       ],
+       "r": 28
+      },
+      {
+       "id": "c4",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        480,
+        180
+       ],
+       "r": 28
+      },
+      {
+       "id": "p1",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        330,
+        280
+       ],
+       "text": "तारीफ़",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "quiet",
+       "op": "circle",
+       "startMs": 2200,
+       "endMs": 2700,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        600,
+        180
+       ],
+       "r": 28
+      },
+      {
+       "id": "truth",
+       "op": "text",
+       "startMs": 2900,
+       "endMs": 3500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        600,
+        280
+       ],
+       "text": "सच",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "a1",
+       "op": "arrow",
+       "startMs": 3600,
+       "endMs": 4300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        480,
+        180
+       ],
+       "to": [
+        570,
+        180
+       ]
+      },
+      {
+       "id": "q1",
+       "op": "label",
+       "startMs": 4400,
+       "endMs": 5000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        560,
+        125
+       ],
+       "text": "चुप",
+       "to": [
+        600,
+        150
+       ]
+      },
+      {
+       "id": "q2",
+       "op": "label",
+       "startMs": 5100,
+       "endMs": 5900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        540,
+        330
+       ],
+       "text": "दरबारी",
+       "to": [
+        600,
+        210
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-hindi-ch07-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "king3",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        180,
+        170
+       ],
+       "r": 45
+      },
+      {
+       "id": "courtier",
+       "op": "circle",
+       "startMs": 500,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        350,
+        170
+       ],
+       "r": 32
+      },
+      {
+       "id": "arrow1",
+       "op": "arrow",
+       "startMs": 1000,
+       "endMs": 1700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        382,
+        170
+       ],
+       "to": [
+        500,
+        170
+       ]
+      },
+      {
+       "id": "old",
+       "op": "circle",
+       "startMs": 1500,
+       "endMs": 2000,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        600,
+        170
+       ],
+       "r": 38
+      },
+      {
+       "id": "text1",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        280
+       ],
+       "text": "राजा अच्छे",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "text2",
+       "op": "text",
+       "startMs": 2900,
+       "endMs": 3800,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        600,
+        280
+       ],
+       "text": "बढ़कर राजा",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "truth2",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 4500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        400
+       ],
+       "text": "सच",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "line1",
+       "op": "line",
+       "startMs": 4600,
+       "endMs": 5200,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        520,
+        330
+       ],
+       "to": [
+        680,
+        330
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-hindi-ch07-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "diamond",
+       "op": "polygon",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         240,
+         150
+        ],
+        [
+         285,
+         110
+        ],
+        [
+         330,
+         150
+        ],
+        [
+         285,
+         205
+        ]
+       ]
+      },
+      {
+       "id": "shine1",
+       "op": "line",
+       "startMs": 500,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 1,
+       "from": [
+        270,
+        140
+       ],
+       "to": [
+        300,
+        170
+       ]
+      },
+      {
+       "id": "king4",
+       "op": "circle",
+       "startMs": 800,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        500,
+        160
+       ],
+       "r": 42
+      },
+      {
+       "id": "give",
+       "op": "arrow",
+       "startMs": 1400,
+       "endMs": 2200,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        330,
+        155
+       ],
+       "to": [
+        455,
+        160
+       ]
+      },
+      {
+       "id": "real",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 3200,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        285,
+        270
+       ],
+       "text": "असली हीरा",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "happy",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 4000,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        500,
+        270
+       ],
+       "text": "प्रसन्न",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "courtier2",
+       "op": "circle",
+       "startMs": 4100,
+       "endMs": 4600,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        400,
+        390
+       ],
+       "r": 28
+      },
+      {
+       "id": "give2",
+       "op": "arrow",
+       "startMs": 4600,
+       "endMs": 5400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        455,
+        190
+       ],
+       "to": [
+        420,
+        360
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-hindi-ch07-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "d1",
+       "op": "polygon",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "soft",
+       "weight": 2,
+       "points": [
+        [
+         150,
+         150
+        ],
+        [
+         185,
+         120
+        ],
+        [
+         220,
+         150
+        ],
+        [
+         185,
+         185
+        ]
+       ]
+      },
+      {
+       "id": "d2",
+       "op": "polygon",
+       "startMs": 400,
+       "endMs": 900,
+       "ink": "soft",
+       "weight": 2,
+       "points": [
+        [
+         300,
+         150
+        ],
+        [
+         335,
+         120
+        ],
+        [
+         370,
+         150
+        ],
+        [
+         335,
+         185
+        ]
+       ]
+      },
+      {
+       "id": "d3",
+       "op": "polygon",
+       "startMs": 800,
+       "endMs": 1300,
+       "ink": "soft",
+       "weight": 2,
+       "points": [
+        [
+         450,
+         150
+        ],
+        [
+         485,
+         120
+        ],
+        [
+         520,
+         150
+        ],
+        [
+         485,
+         185
+        ]
+       ]
+      },
+      {
+       "id": "d4",
+       "op": "polygon",
+       "startMs": 1200,
+       "endMs": 1700,
+       "ink": "soft",
+       "weight": 2,
+       "points": [
+        [
+         600,
+         150
+        ],
+        [
+         635,
+         120
+        ],
+        [
+         670,
+         150
+        ],
+        [
+         635,
+         185
+        ]
+       ]
+      },
+      {
+       "id": "fake1",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2800,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        335,
+        250
+       ],
+       "text": "नकली हीरे",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "lie",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3900,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        400,
+        350
+       ],
+       "text": "झूठा उत्तर",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "cross1",
+       "op": "line",
+       "startMs": 4000,
+       "endMs": 4700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        260,
+        110
+       ],
+       "to": [
+        560,
+        190
+       ]
+      },
+      {
+       "id": "cross2",
+       "op": "line",
+       "startMs": 4700,
+       "endMs": 5400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        560,
+        110
+       ],
+       "to": [
+        260,
+        190
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-hindi-ch07-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "jewel1",
+       "op": "polygon",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         150,
+         150
+        ],
+        [
+         190,
+         110
+        ],
+        [
+         230,
+         150
+        ],
+        [
+         190,
+         195
+        ]
+       ]
+      },
+      {
+       "id": "jewel2",
+       "op": "polygon",
+       "startMs": 400,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         330,
+         150
+        ],
+        [
+         370,
+         110
+        ],
+        [
+         410,
+         150
+        ],
+        [
+         370,
+         195
+        ]
+       ]
+      },
+      {
+       "id": "same",
+       "op": "text",
+       "startMs": 1000,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        280,
+        270
+       ],
+       "text": "एक जैसे",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "jeweller",
+       "op": "circle",
+       "startMs": 1500,
+       "endMs": 2000,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        590,
+        155
+       ],
+       "r": 38
+      },
+      {
+       "id": "inspect",
+       "op": "arrow",
+       "startMs": 2100,
+       "endMs": 2900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        550,
+        180
+       ],
+       "to": [
+        410,
+        180
+       ]
+      },
+      {
+       "id": "check",
+       "op": "circle",
+       "startMs": 3000,
+       "endMs": 3800,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        370,
+        150
+       ],
+       "r": 52
+      },
+      {
+       "id": "real2",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4500,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        190,
+        280
+       ],
+       "text": "असली",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "fake2",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5200,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        370,
+        280
+       ],
+       "text": "नकली",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "result",
+       "op": "text",
+       "startMs": 5400,
+       "endMs": 6200,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        500,
+        390
+       ],
+       "text": "पता चला",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-hindi-ch07-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "truth3",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        220,
+        170
+       ],
+       "r": 60
+      },
+      {
+       "id": "honesty",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1700,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        220,
+        275
+       ],
+       "text": "ईमानदारी",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "pleasing",
+       "op": "polygon",
+       "startMs": 1200,
+       "endMs": 1900,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         500,
+         120
+        ],
+        [
+         560,
+         180
+        ],
+        [
+         500,
+         240
+        ],
+        [
+         440,
+         180
+        ]
+       ]
+      },
+      {
+       "id": "false",
+       "op": "text",
+       "startMs": 2000,
+       "endMs": 2900,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        500,
+        285
+       ],
+       "text": "झूठी बात",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "more",
+       "op": "arrow",
+       "startMs": 3000,
+       "endMs": 3700,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        290,
+        170
+       ],
+       "to": [
+        420,
+        180
+       ]
+      },
+      {
+       "id": "important",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 5000,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        390
+       ],
+       "text": "अधिक महत्वपूर्ण",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "truthline",
+       "op": "line",
+       "startMs": 5100,
+       "endMs": 5700,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        160,
+        350
+       ],
+       "to": [
+        280,
+        350
+       ]
+      },
+      {
+       "id": "lesson",
+       "op": "text",
+       "startMs": 5700,
+       "endMs": 6400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        450
+       ],
+       "text": "सीख",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "राजा ने दरबारियों से पूछा",
+   "prompt": "sequence: after/for \"राजा को सलाहकार चाहिए था\"",
+   "src": "c4-hindi-ch07-t01-i03"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "सबने राजा की तारीफ़ की",
+   "prompt": "sequence: after/for \"राजा ने दरबारियों से पूछा\"",
+   "src": "c4-hindi-ch07-t01-i04"
+  },
+  {
+   "itemId": "r1:2",
+   "key": "एक दरबारी ने सच कहा",
+   "prompt": "sequence: after/for \"सबने राजा की तारीफ़ की\"",
+   "src": "c4-hindi-ch07-t01-i04"
+  },
+  {
+   "itemId": "r1:3",
+   "key": "जौहरी ने हीरों की जाँच की",
+   "prompt": "sequence: after/for \"एक दरबारी ने सच कहा\"",
+   "src": "c4-hindi-ch07-t01-i06"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "उसने दरबारियों से सवाल पूछा",
+   "prompt": "cause: after/for \"राजा को सलाहकार चाहिए था\"",
+   "src": "c4-hindi-ch07-t01-i03"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "उन्हें नकली हीरे मिले",
+   "prompt": "cause: after/for \"दरबारियों ने झूठी तारीफ़ की\"",
+   "src": "c4-hindi-ch07-t01-i05"
+  },
+  {
+   "itemId": "r2:2",
+   "key": "नकली हीरे पहचान में आए",
+   "prompt": "cause: after/for \"जौहरी ने हीरों की जाँच की\"",
+   "src": "c4-hindi-ch07-t01-i06"
+  },
+  {
+   "itemId": "r2:3",
+   "key": "उसे असली हीरा मिला",
+   "prompt": "cause: after/for \"दरबारी ने सच कहा\"",
+   "src": "c4-hindi-ch07-t01-i07"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

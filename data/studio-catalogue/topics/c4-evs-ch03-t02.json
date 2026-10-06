@@ -1,0 +1,1624 @@
+{
+ "topicId": "c4-evs-ch03-t02",
+ "title": "Who eats what",
+ "chapter": "Nature Trail",
+ "subject": "evs",
+ "class": 4,
+ "topicType": "T3",
+ "plan": {
+  "game": "food-web@1",
+  "hint": "Balance the Forest: habitats and who eats whom; remove a species and watch"
+ },
+ "game": {
+  "archetype": "food-web@1",
+  "spec": {
+   "archetype": "food-web@1",
+   "skills": [
+    "c4-evs-ch03-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "step": "Step",
+    "predict": "First, predict",
+    "up": "Goes up",
+    "down": "Goes down",
+    "same": "About the same",
+    "remove": "Remove",
+    "add": "Bring in",
+    "relocate": "Relocate",
+    "day": "DAY",
+    "alive": "all alive",
+    "lost": "lost",
+    "drought": "DROUGHT",
+    "arrows": "Drag from the food to the one that eats it",
+    "done": "Forest steady",
+    "watch": "watch"
+   },
+   "species": [
+    "grass",
+    "insects",
+    "deer",
+    "frog",
+    "snake",
+    "tiger"
+   ],
+   "steps": [
+    {
+     "kind": "arrows",
+     "targets": "c4-evs-ch03-t02-m3"
+    },
+    {
+     "kind": "predict-remove",
+     "remove": "snake",
+     "watch": "insects",
+     "days": 70,
+     "targets": "c4-evs-ch03-t02-m4"
+    },
+    {
+     "kind": "predict-remove",
+     "remove": "insects",
+     "watch": "frog",
+     "days": 60,
+     "targets": "c4-evs-ch03-t02-m1"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c4-evs-ch03-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Right",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "BUSTED",
+    "order": "Tap them in order"
+   },
+   "title": "Who eats what?",
+   "accent": "mint",
+   "targets": "c4-evs-ch03-t02-m3",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "row",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Who eats what?"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "The arrow means eats"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "plant",
+       "type": "node",
+       "text": "Plant",
+       "sub": "makes food",
+       "glyph": "leaf",
+       "color": "mint"
+      },
+      {
+       "id": "light",
+       "type": "node",
+       "text": "Sunlight",
+       "sub": "helps leaves",
+       "glyph": "sun",
+       "color": "sun"
+      },
+      {
+       "id": "water",
+       "type": "node",
+       "text": "Water",
+       "sub": "from soil",
+       "glyph": "drop",
+       "color": "ion"
+      },
+      {
+       "id": "air",
+       "type": "node",
+       "text": "Air",
+       "sub": "helps leaves",
+       "glyph": "wind",
+       "color": "sci"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "light",
+       "to": "plant",
+       "text": "helps"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "water",
+       "to": "plant",
+       "text": "helps"
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "air",
+       "to": "plant",
+       "text": "helps"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "g",
+       "type": "node",
+       "text": "Grass",
+       "glyph": "wheat",
+       "color": "mint"
+      },
+      {
+       "id": "gh",
+       "type": "node",
+       "text": "Grasshopper",
+       "glyph": "insect",
+       "color": "amber"
+      },
+      {
+       "id": "f",
+       "type": "node",
+       "text": "Frog",
+       "color": "sci"
+      },
+      {
+       "id": "s",
+       "type": "node",
+       "text": "Snake",
+       "color": "ion"
+      },
+      {
+       "id": "e1",
+       "type": "arrow",
+       "from": "g",
+       "to": "gh",
+       "text": "is eaten by"
+      },
+      {
+       "id": "e2",
+       "type": "arrow",
+       "from": "gh",
+       "to": "f",
+       "text": "is eaten by"
+      },
+      {
+       "id": "e3",
+       "type": "arrow",
+       "from": "f",
+       "to": "s",
+       "text": "is eaten by"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Plants make their own food in their leaves using sunlight, water and air.",
+    "L2": "Animals cannot make food, so they eat plants or other animals.",
+    "L3": "A food chain shows who is eaten by whom.",
+    "L4": "The arrow points from the food to the one who eats it.",
+    "L5": "So grass is eaten by the grasshopper, and the grasshopper is eaten by the frog.",
+    "L6": "The frog is eaten by the snake, so every living thing in this chain matters.",
+    "L7": "If frogs disappear, grasshoppers increase and snakes have less food.",
+    "L8": "Now put the chain in the correct order."
+   },
+   "narration": {},
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "plant"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "light",
+        "water",
+        "air"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "plant"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "g",
+        "gh",
+        "f",
+        "s"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "myth"
+      },
+      {
+       "at": 0.6,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "e1",
+       "to": 1
+      },
+      {
+       "at": 0.5,
+       "do": "highlight",
+       "dur": 0.7,
+       "target": "gh"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "flow",
+       "dur": 0.8,
+       "target": [
+        "e2",
+        "e3"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": [
+        "f",
+        "s"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "interactive",
+       "dur": 0.5
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "order",
+    "prompt": "Tap the food chain from food to eater.",
+    "items": [
+     "g",
+     "gh",
+     "f",
+     "s"
+    ],
+    "src": "c4-evs-ch03-t02-i02"
+   }
+  },
+  "repairs": [
+   "glyph",
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "passes": 2,
+  "seconds": 46
+ },
+ "keys": [],
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-evs-ch03-t02-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "plant",
+       "op": "stroke",
+       "startMs": 0,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         400,
+         390
+        ],
+        [
+         400,
+         300
+        ],
+        [
+         370,
+         250
+        ],
+        [
+         400,
+         300
+        ],
+        [
+         430,
+         250
+        ],
+        [
+         400,
+         300
+        ],
+        [
+         350,
+         280
+        ],
+        [
+         400,
+         320
+        ],
+        [
+         450,
+         280
+        ]
+       ]
+      },
+      {
+       "id": "leaves",
+       "op": "ellipse",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        350,
+        280
+       ],
+       "rx": 55,
+       "ry": 25
+      },
+      {
+       "id": "leaf2",
+       "op": "ellipse",
+       "startMs": 1100,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        450,
+        280
+       ],
+       "rx": 55,
+       "ry": 25
+      },
+      {
+       "id": "sun",
+       "op": "circle",
+       "startMs": 1700,
+       "endMs": 2300,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        130,
+        100
+       ],
+       "r": 42,
+       "fill": "accent"
+      },
+      {
+       "id": "sunlight",
+       "op": "arrow",
+       "startMs": 2200,
+       "endMs": 3100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        170,
+        125
+       ],
+       "to": [
+        335,
+        260
+       ]
+      },
+      {
+       "id": "lsun",
+       "op": "label",
+       "startMs": 2300,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        90,
+        165
+       ],
+       "text": "sunlight",
+       "to": [
+        170,
+        125
+       ]
+      },
+      {
+       "id": "water",
+       "op": "arrow",
+       "startMs": 3000,
+       "endMs": 3900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        650,
+        420
+       ],
+       "to": [
+        420,
+        340
+       ]
+      },
+      {
+       "id": "air",
+       "op": "arrow",
+       "startMs": 3700,
+       "endMs": 4600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        650,
+        150
+       ],
+       "to": [
+        470,
+        260
+       ]
+      },
+      {
+       "id": "lwater",
+       "op": "label",
+       "startMs": 3900,
+       "endMs": 4400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        650,
+        450
+       ],
+       "text": "water",
+       "to": [
+        650,
+        420
+       ]
+      },
+      {
+       "id": "lair",
+       "op": "label",
+       "startMs": 4400,
+       "endMs": 4800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        670,
+        140
+       ],
+       "text": "air",
+       "to": [
+        650,
+        150
+       ]
+      },
+      {
+       "id": "lplant",
+       "op": "label",
+       "startMs": 4800,
+       "endMs": 5300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        365,
+        430
+       ],
+       "text": "plant",
+       "to": [
+        400,
+        390
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-evs-ch03-t02-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "animal",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        235
+       ],
+       "r": 58
+      },
+      {
+       "id": "ears",
+       "op": "stroke",
+       "startMs": 500,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         360,
+         195
+        ],
+        [
+         345,
+         165
+        ],
+        [
+         375,
+         180
+        ],
+        [
+         425,
+         180
+        ],
+        [
+         455,
+         165
+        ],
+        [
+         440,
+         195
+        ]
+       ]
+      },
+      {
+       "id": "mouth",
+       "op": "stroke",
+       "startMs": 1000,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 1,
+       "points": [
+        [
+         380,
+         265
+        ],
+        [
+         400,
+         275
+        ],
+        [
+         420,
+         265
+        ]
+       ]
+      },
+      {
+       "id": "plantfood",
+       "op": "ellipse",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        180,
+        390
+       ],
+       "rx": 70,
+       "ry": 30
+      },
+      {
+       "id": "other",
+       "op": "ellipse",
+       "startMs": 2200,
+       "endMs": 2900,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        620,
+        390
+       ],
+       "rx": 85,
+       "ry": 30
+      },
+      {
+       "id": "eat1",
+       "op": "arrow",
+       "startMs": 2900,
+       "endMs": 3800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        250,
+        380
+       ],
+       "to": [
+        335,
+        275
+       ]
+      },
+      {
+       "id": "eat2",
+       "op": "arrow",
+       "startMs": 3500,
+       "endMs": 4400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        530,
+        380
+       ],
+       "to": [
+        465,
+        275
+       ]
+      },
+      {
+       "id": "lplantfood",
+       "op": "label",
+       "startMs": 3800,
+       "endMs": 4300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        130,
+        440
+       ],
+       "text": "plants",
+       "to": [
+        180,
+        390
+       ]
+      },
+      {
+       "id": "lother",
+       "op": "label",
+       "startMs": 4300,
+       "endMs": 5000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        580,
+        440
+       ],
+       "text": "other animals",
+       "to": [
+        620,
+        390
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-evs-ch03-t02-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4430,
+     "ops": [
+      {
+       "id": "grass",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        115,
+        300
+       ],
+       "rx": 70,
+       "ry": 28
+      },
+      {
+       "id": "hopper",
+       "op": "circle",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        300,
+        300
+       ],
+       "r": 32
+      },
+      {
+       "id": "frog",
+       "op": "circle",
+       "startMs": 1300,
+       "endMs": 2000,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        490,
+        300
+       ],
+       "r": 38
+      },
+      {
+       "id": "snake",
+       "op": "stroke",
+       "startMs": 2000,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         640,
+         330
+        ],
+        [
+         680,
+         290
+        ],
+        [
+         640,
+         250
+        ],
+        [
+         700,
+         220
+        ]
+       ]
+      },
+      {
+       "id": "a1",
+       "op": "arrow",
+       "startMs": 2400,
+       "endMs": 3000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        190,
+        300
+       ],
+       "to": [
+        265,
+        300
+       ]
+      },
+      {
+       "id": "a2",
+       "op": "arrow",
+       "startMs": 2800,
+       "endMs": 3400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        335,
+        300
+       ],
+       "to": [
+        445,
+        300
+       ]
+      },
+      {
+       "id": "a3",
+       "op": "arrow",
+       "startMs": 3200,
+       "endMs": 3900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        530,
+        300
+       ],
+       "to": [
+        625,
+        260
+       ]
+      },
+      {
+       "id": "chain",
+       "op": "label",
+       "startMs": 3800,
+       "endMs": 4300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        350,
+        120
+       ],
+       "text": "food chain",
+       "to": [
+        400,
+        250
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-evs-ch03-t02-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "food",
+       "op": "label",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        90,
+        390
+       ],
+       "text": "food",
+       "to": [
+        115,
+        300
+       ]
+      },
+      {
+       "id": "eater",
+       "op": "label",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        600,
+        390
+       ],
+       "text": "eater",
+       "to": [
+        640,
+        260
+       ]
+      },
+      {
+       "id": "direct",
+       "op": "arrow",
+       "startMs": 1500,
+       "endMs": 2700,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        180,
+        220
+       ],
+       "to": [
+        590,
+        220
+       ]
+      },
+      {
+       "id": "arrowrule",
+       "op": "label",
+       "startMs": 2700,
+       "endMs": 3600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        320,
+        180
+       ],
+       "text": "food to eater",
+       "to": [
+        400,
+        220
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-evs-ch03-t02-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "grass2",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        100,
+        270
+       ],
+       "rx": 62,
+       "ry": 25
+      },
+      {
+       "id": "gh",
+       "op": "circle",
+       "startMs": 600,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        290,
+        270
+       ],
+       "r": 30
+      },
+      {
+       "id": "fr",
+       "op": "circle",
+       "startMs": 1200,
+       "endMs": 1900,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        480,
+        270
+       ],
+       "r": 35
+      },
+      {
+       "id": "ar1",
+       "op": "arrow",
+       "startMs": 1900,
+       "endMs": 2700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        165,
+        270
+       ],
+       "to": [
+        255,
+        270
+       ]
+      },
+      {
+       "id": "ar2",
+       "op": "arrow",
+       "startMs": 2700,
+       "endMs": 3500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        325,
+        270
+       ],
+       "to": [
+        430,
+        270
+       ]
+      },
+      {
+       "id": "glabel",
+       "op": "label",
+       "startMs": 3500,
+       "endMs": 4000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        70,
+        335
+       ],
+       "text": "grass",
+       "to": [
+        100,
+        270
+       ]
+      },
+      {
+       "id": "hlabel",
+       "op": "label",
+       "startMs": 4000,
+       "endMs": 4600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        250,
+        335
+       ],
+       "text": "grasshopper",
+       "to": [
+        290,
+        270
+       ]
+      },
+      {
+       "id": "flabel",
+       "op": "label",
+       "startMs": 4600,
+       "endMs": 5100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        450,
+        335
+       ],
+       "text": "frog",
+       "to": [
+        480,
+        270
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-evs-ch03-t02-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "sn",
+       "op": "stroke",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         610,
+         290
+        ],
+        [
+         650,
+         250
+        ],
+        [
+         620,
+         210
+        ],
+        [
+         690,
+         180
+        ]
+       ]
+      },
+      {
+       "id": "ar3",
+       "op": "arrow",
+       "startMs": 900,
+       "endMs": 1800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        520,
+        270
+       ],
+       "to": [
+        610,
+        230
+       ]
+      },
+      {
+       "id": "slabel",
+       "op": "label",
+       "startMs": 1800,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        650,
+        145
+       ],
+       "text": "snake",
+       "to": [
+        650,
+        210
+       ]
+      },
+      {
+       "id": "living",
+       "op": "label",
+       "startMs": 2600,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        280,
+        440
+       ],
+       "text": "living thing",
+       "to": [
+        400,
+        270
+       ]
+      },
+      {
+       "id": "ring",
+       "op": "highlight",
+       "startMs": 3800,
+       "endMs": 5200,
+       "ink": "accent",
+       "weight": 2,
+       "target": "living",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-evs-ch03-t02-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "frog7",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        180,
+        220
+       ],
+       "r": 40
+      },
+      {
+       "id": "grasshopper7",
+       "op": "circle",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        220
+       ],
+       "r": 32
+      },
+      {
+       "id": "snake7",
+       "op": "stroke",
+       "startMs": 1300,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         590,
+         250
+        ],
+        [
+         650,
+         210
+        ],
+        [
+         610,
+         175
+        ],
+        [
+         690,
+         140
+        ]
+       ]
+      },
+      {
+       "id": "remove",
+       "op": "erase",
+       "startMs": 2100,
+       "endMs": 2900,
+       "ink": "soft",
+       "weight": 2,
+       "target": "frog7"
+      },
+      {
+       "id": "increase",
+       "op": "arrow",
+       "startMs": 2900,
+       "endMs": 3700,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        400,
+        280
+       ],
+       "to": [
+        400,
+        110
+       ]
+      },
+      {
+       "id": "lessfood",
+       "op": "arrow",
+       "startMs": 3500,
+       "endMs": 4300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        590,
+        280
+       ],
+       "to": [
+        590,
+        350
+       ]
+      },
+      {
+       "id": "more",
+       "op": "label",
+       "startMs": 3700,
+       "endMs": 4200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        420,
+        95
+       ],
+       "text": "increase",
+       "to": [
+        400,
+        110
+       ]
+      },
+      {
+       "id": "less",
+       "op": "label",
+       "startMs": 4200,
+       "endMs": 4800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        600,
+        380
+       ],
+       "text": "less food",
+       "to": [
+        590,
+        350
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-evs-ch03-t02-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4004,
+     "ops": [
+      {
+       "id": "box1",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        70,
+        180
+       ],
+       "w": 130,
+       "h": 70,
+       "round": 12
+      },
+      {
+       "id": "box2",
+       "op": "rect",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        250,
+        180
+       ],
+       "w": 150,
+       "h": 70,
+       "round": 12
+      },
+      {
+       "id": "box3",
+       "op": "rect",
+       "startMs": 1400,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        430,
+        180
+       ],
+       "w": 110,
+       "h": 70,
+       "round": 12
+      },
+      {
+       "id": "box4",
+       "op": "rect",
+       "startMs": 2100,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        590,
+        180
+       ],
+       "w": 120,
+       "h": 70,
+       "round": 12
+      },
+      {
+       "id": "t1",
+       "op": "text",
+       "startMs": 2800,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        135,
+        220
+       ],
+       "text": "grass",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "t2",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        325,
+        220
+       ],
+       "text": "grasshopper",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "t3",
+       "op": "text",
+       "startMs": 3200,
+       "endMs": 3600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        485,
+        220
+       ],
+       "text": "frog",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "t4",
+       "op": "text",
+       "startMs": 3400,
+       "endMs": 3800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        650,
+        220
+       ],
+       "text": "snake",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ },
+ "firstCheck": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "The round 'predict-remove' removes insects and watches grass, but the kit's misconception 'c4-evs-ch03-t02-m1' is about only big animals being important; the content targets this misconception with a round about insects vs grass, which is appropriate and not an issue. However, the round removes 'snake' and watches 'insects' for 80 days, targeting 'c4-evs-ch03-t02-m4' (removing snakes only affects snakes, or nature improves without dangerous animals). In the kit, removing snakes leads to an increase in rats (not insects), and the kit does not mention snakes eating insects. This is factually wrong: snakes do not typically eat insects (the kit's food chains show snakes eating frogs and rats), so predicting an increase in insects due to snake removal is incorrect for this context. This is a high-severity factual error.",
+    "severity": "high"
+   },
+   {
+    "where": "explainer",
+    "what": "The explainer's scene s3 shows a food chain: grass → grasshopper → frog → snake, and correctly explains the arrows. The task asks to order the chain, using items ['g','gh','f','s'] and references kit item i02. This is correct and no issues."
+   }
+  ],
+  "verdict": "fail",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

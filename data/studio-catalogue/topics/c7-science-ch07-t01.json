@@ -1,0 +1,1867 @@
+{
+ "topicId": "c7-science-ch07-t01",
+ "title": "Conduction",
+ "chapter": "Heat Transfer in Nature",
+ "subject": "science",
+ "class": 7,
+ "topicType": "T3",
+ "plan": {
+  "game": "heat-lab@1",
+  "hint": "conduct mode (wax-pin race), then a radiate round"
+ },
+ "game": {
+  "archetype": "heat-lab@1",
+  "spec": {
+   "archetype": "heat-lab@1",
+   "skills": [
+    "c7-science-ch07-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "done": "right",
+    "heat": "HEAT",
+    "lock": "LOCK",
+    "run": "RUN",
+    "first": "falls first",
+    "last": "last",
+    "land": "land",
+    "sea": "sea",
+    "hour": "time",
+    "seaBreeze": "→ to land",
+    "landBreeze": "← to sea",
+    "keepCool": "keep it cool",
+    "keepWarm": "keep it warm",
+    "runDone": "Lab closed",
+    "caught": "caught",
+    "passed": "passed",
+    "keep": "keep which?",
+    "target": "get",
+    "steps": "steps",
+    "reset": "start again",
+    "black": "black",
+    "dark": "dark",
+    "white": "white",
+    "shiny": "shiny",
+    "copper": "copper",
+    "aluminium": "aluminium",
+    "iron": "iron",
+    "steel": "steel",
+    "glass": "glass",
+    "wood": "wood",
+    "plastic": "plastic",
+    "stones": "stones",
+    "rice": "rice",
+    "flour": "flour",
+    "husk": "husk",
+    "sand": "sand",
+    "salt": "salt",
+    "sugar": "sugar",
+    "sawdust": "sawdust",
+    "chalk": "chalk",
+    "handpick": "pick out",
+    "sieve": "sieve",
+    "winnow": "winnow",
+    "magnet": "magnet",
+    "water": "add water",
+    "filter": "filter",
+    "evaporate": "evaporate",
+    "wet": "in water"
+   },
+   "title": "Heat & Matter Lab",
+   "rounds": [
+    {
+     "mode": "conduct",
+     "title": "Wax pin race",
+     "sub": "which pin falls first?",
+     "rods": [
+      "copper",
+      "aluminium",
+      "iron"
+     ]
+    },
+    {
+     "mode": "breeze",
+     "title": "Coast breeze",
+     "sub": "set the breeze for each time",
+     "asks": [
+      14,
+      3
+     ],
+     "targets": "c7-science-ch07-t01-m3"
+    },
+    {
+     "mode": "radiate",
+     "title": "Tank finish",
+     "sub": "choose a finish for the tank",
+     "options": [
+      "black",
+      "dark",
+      "white",
+      "shiny"
+     ],
+     "goal": "cool"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-science-ch07-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "How heat travels",
+   "accent": "sci",
+   "targets": "c7-science-ch07-t01-m2",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "How heat travels"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Metal is colder in the same room"
+      },
+      {
+       "id": "steel",
+       "type": "node",
+       "text": "Steel",
+       "sub": "same room",
+       "glyph": "ruler",
+       "x": 260,
+       "y": 330,
+       "color": "sci"
+      },
+      {
+       "id": "wood",
+       "type": "node",
+       "text": "Wood",
+       "sub": "same room",
+       "glyph": "tree",
+       "x": 730,
+       "y": 330,
+       "color": "mint"
+      },
+      {
+       "id": "hand",
+       "type": "glyph",
+       "name": "hand",
+       "x": 500,
+       "y": 190,
+       "size": 110,
+       "color": "amber"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "hot",
+       "type": "node",
+       "text": "Hot end",
+       "sub": "hotter",
+       "glyph": "fire",
+       "x": 140,
+       "y": 330,
+       "color": "amber"
+      },
+      {
+       "id": "p1",
+       "type": "node",
+       "text": "Particle 1",
+       "sub": "in place",
+       "glyph": "spark",
+       "x": 350,
+       "y": 330,
+       "color": "sun"
+      },
+      {
+       "id": "p2",
+       "type": "node",
+       "text": "Particle 2",
+       "sub": "in place",
+       "glyph": "spark",
+       "x": 560,
+       "y": 330,
+       "color": "sun"
+      },
+      {
+       "id": "cold",
+       "type": "node",
+       "text": "Cold end",
+       "sub": "colder",
+       "x": 770,
+       "y": 330,
+       "color": "ion"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "hot",
+       "to": "p1",
+       "text": "heat"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "p1",
+       "to": "p2",
+       "text": "passes on"
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "p2",
+       "to": "cold",
+       "text": "towards cold"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "split",
+     "els": [
+      {
+       "id": "pot",
+       "type": "node",
+       "text": "Metal pot",
+       "sub": "good conductor",
+       "glyph": "pot",
+       "x": 220,
+       "y": 300,
+       "color": "sci"
+      },
+      {
+       "id": "food",
+       "type": "node",
+       "text": "Food",
+       "sub": "heat travels in",
+       "glyph": "plate",
+       "x": 500,
+       "y": 300,
+       "color": "amber"
+      },
+      {
+       "id": "handle",
+       "type": "node",
+       "text": "Wood handle",
+       "sub": "poor conductor",
+       "glyph": "hand",
+       "x": 790,
+       "y": 300,
+       "color": "mint"
+      },
+      {
+       "id": "a4",
+       "type": "arrow",
+       "from": "pot",
+       "to": "food",
+       "text": "heat"
+      },
+      {
+       "id": "a5",
+       "type": "arrow",
+       "from": "pot",
+       "to": "handle",
+       "text": "slows"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "row",
+     "els": [
+      {
+       "id": "q",
+       "type": "title",
+       "text": "Check the direction"
+      },
+      {
+       "id": "hotOpt",
+       "type": "label",
+       "text": "Hot to cold",
+       "x": 160,
+       "y": 360,
+       "color": "amber"
+      },
+      {
+       "id": "coldOpt",
+       "type": "label",
+       "text": "Cold to hot",
+       "x": 650,
+       "y": 360,
+       "color": "ion"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Heat moves from a hotter object to a colder object.",
+    "L2": "A metal may feel colder than wood in the same room, but that does not mean it is colder.",
+    "L3": "Metal conducts heat away from your hand faster, so your hand loses heat quickly.",
+    "L4": "In a solid, heat is passed from particle to particle, from the hot end towards the cold end.",
+    "L5": "The particles pass heat on, but the material itself stays in place.",
+    "L6": "Metals such as steel, aluminium, copper and iron are good conductors of heat.",
+    "L7": "Wood, plastic, clay, cloth, wool and air are poor conductors, so they slow heat flow.",
+    "L8": "That is why a metal cooking pot can have a wood or plastic handle.",
+    "L9": "Remember the direction: heat travels from hot to cold until both reach the same temperature."
+   },
+   "narration": {
+    "L1": {
+     "text": "Heat moves from a hotter object to a colder object.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L2": {
+     "text": "A metal may feel colder than wood in the same room, but that does not mean it is colder.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L3": {
+     "text": "Metal conducts heat away from your hand faster, so your hand loses heat quickly.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L4": {
+     "text": "In a solid, heat is passed from particle to particle, from the hot end towards the cold end.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L5": {
+     "text": "The particles pass heat on, but the material itself stays in place.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Metals such as steel, aluminium, copper and iron are good conductors of heat.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Wood, plastic, clay, cloth, wool and air are poor conductors, so they slow heat flow.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L8": {
+     "text": "That is why a metal cooking pot can have a wood or plastic handle.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L9": {
+     "text": "Remember the direction: heat travels from hot to cold until both reach the same temperature.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      },
+      {
+       "at": 0.7,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "steel",
+        "wood",
+        "hand"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      },
+      {
+       "at": 1,
+       "do": "bust",
+       "dur": 1.2,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "steel"
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "hand",
+       "to": 1
+      },
+      {
+       "at": 2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "wood"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "hot",
+        "p1",
+        "p2",
+        "cold"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "a1",
+        "a2",
+        "a3"
+       ]
+      },
+      {
+       "at": 1.5,
+       "do": "flow",
+       "dur": 1.2,
+       "target": [
+        "a1",
+        "a2",
+        "a3"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1.2,
+       "target": [
+        "p1",
+        "p2"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "pot",
+        "food"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 1,
+       "target": "pot"
+      },
+      {
+       "at": 1.5,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "a4",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "handle"
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 1,
+       "target": "handle"
+      },
+      {
+       "at": 1.6,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "a5",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "focus",
+       "dur": 1.2,
+       "target": [
+        "pot",
+        "handle"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L9",
+     "gap": 0,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "q",
+        "hotOpt",
+        "coldOpt"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "interactive",
+       "dur": 1
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Tap the statement that shows the direction of heat flow.",
+    "options": [
+     "hotOpt",
+     "coldOpt"
+    ],
+    "answer": "hotOpt",
+    "src": "c7-science-ch07-t01-i01"
+   }
+  },
+  "repairs": [
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 52
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch07-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "hot",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        180,
+        240
+       ],
+       "r": 65,
+       "fill": "accent"
+      },
+      {
+       "id": "cold",
+       "op": "circle",
+       "startMs": 500,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        620,
+        240
+       ],
+       "r": 65,
+       "fill": "soft"
+      },
+      {
+       "id": "hotlabel",
+       "op": "label",
+       "startMs": 900,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        335
+       ],
+       "text": "hotter"
+      },
+      {
+       "id": "coldlabel",
+       "op": "label",
+       "startMs": 1200,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        620,
+        335
+       ],
+       "text": "colder"
+      },
+      {
+       "id": "flow",
+       "op": "arrow",
+       "startMs": 1900,
+       "endMs": 3300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        260,
+        240
+       ],
+       "to": [
+        540,
+        240
+       ]
+      },
+      {
+       "id": "heatlabel",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        205
+       ],
+       "text": "heat",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch07-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "metal",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        180
+       ],
+       "w": 180,
+       "h": 100,
+       "fill": "soft"
+      },
+      {
+       "id": "wood",
+       "op": "rect",
+       "startMs": 500,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        500,
+        180
+       ],
+       "w": 180,
+       "h": 100,
+       "fill": "soft"
+      },
+      {
+       "id": "metaltext",
+       "op": "label",
+       "startMs": 1200,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        210,
+        330
+       ],
+       "text": "metal"
+      },
+      {
+       "id": "woodtext",
+       "op": "label",
+       "startMs": 1500,
+       "endMs": 2000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        590,
+        330
+       ],
+       "text": "wood"
+      },
+      {
+       "id": "room",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        100
+       ],
+       "text": "same room",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "same",
+       "op": "arrow",
+       "startMs": 3000,
+       "endMs": 3900,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        300,
+        230
+       ],
+       "to": [
+        500,
+        230
+       ]
+      },
+      {
+       "id": "notcold",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 5900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        405
+       ],
+       "text": "not colder",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "markmetal",
+       "op": "highlight",
+       "startMs": 6200,
+       "endMs": 7000,
+       "ink": "accent",
+       "weight": 1,
+       "target": "metal",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch07-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "hand",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        160,
+        260
+       ],
+       "rx": 75,
+       "ry": 45,
+       "fill": "soft"
+      },
+      {
+       "id": "metalbar",
+       "op": "rect",
+       "startMs": 500,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        300,
+        220
+       ],
+       "w": 300,
+       "h": 80,
+       "fill": "soft"
+      },
+      {
+       "id": "contact",
+       "op": "line",
+       "startMs": 1100,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 1,
+       "from": [
+        235,
+        260
+       ],
+       "to": [
+        300,
+        260
+       ]
+      },
+      {
+       "id": "away",
+       "op": "arrow",
+       "startMs": 1700,
+       "endMs": 3000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        300,
+        260
+       ],
+       "to": [
+        590,
+        260
+       ]
+      },
+      {
+       "id": "faster",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3600,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        445,
+        185
+       ],
+       "text": "faster",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "heatlabel3",
+       "op": "label",
+       "startMs": 3800,
+       "endMs": 4300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        155,
+        350
+       ],
+       "text": "hand"
+      },
+      {
+       "id": "metallabel3",
+       "op": "label",
+       "startMs": 4300,
+       "endMs": 4800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        450,
+        335
+       ],
+       "text": "metal"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch07-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "solid",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        170
+       ],
+       "w": 600,
+       "h": 150
+      },
+      {
+       "id": "p1",
+       "op": "circle",
+       "startMs": 700,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        160,
+        245
+       ],
+       "r": 18
+      },
+      {
+       "id": "p2",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        280,
+        245
+       ],
+       "r": 18
+      },
+      {
+       "id": "p3",
+       "op": "circle",
+       "startMs": 1100,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        400,
+        245
+       ],
+       "r": 18
+      },
+      {
+       "id": "p4",
+       "op": "circle",
+       "startMs": 1300,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        520,
+        245
+       ],
+       "r": 18
+      },
+      {
+       "id": "p5",
+       "op": "circle",
+       "startMs": 1500,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        640,
+        245
+       ],
+       "r": 18
+      },
+      {
+       "id": "hotend",
+       "op": "label",
+       "startMs": 2000,
+       "endMs": 2500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        120,
+        130
+       ],
+       "text": "hot end"
+      },
+      {
+       "id": "coldend",
+       "op": "label",
+       "startMs": 2400,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        640,
+        370
+       ],
+       "text": "cold end"
+      },
+      {
+       "id": "pass1",
+       "op": "arrow",
+       "startMs": 3000,
+       "endMs": 3500,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        185,
+        245
+       ],
+       "to": [
+        255,
+        245
+       ]
+      },
+      {
+       "id": "pass2",
+       "op": "arrow",
+       "startMs": 3500,
+       "endMs": 4000,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        305,
+        245
+       ],
+       "to": [
+        375,
+        245
+       ]
+      },
+      {
+       "id": "pass3",
+       "op": "arrow",
+       "startMs": 4000,
+       "endMs": 4500,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        425,
+        245
+       ],
+       "to": [
+        495,
+        245
+       ]
+      },
+      {
+       "id": "pass4",
+       "op": "arrow",
+       "startMs": 4500,
+       "endMs": 5000,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        545,
+        245
+       ],
+       "to": [
+        615,
+        245
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch07-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "particlearrow",
+       "op": "arrow",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        185,
+        245
+       ],
+       "to": [
+        255,
+        245
+       ]
+      },
+      {
+       "id": "particlearrow2",
+       "op": "arrow",
+       "startMs": 700,
+       "endMs": 1500,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        305,
+        245
+       ],
+       "to": [
+        375,
+        245
+       ]
+      },
+      {
+       "id": "particlearrow3",
+       "op": "arrow",
+       "startMs": 1400,
+       "endMs": 2200,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        425,
+        245
+       ],
+       "to": [
+        495,
+        245
+       ]
+      },
+      {
+       "id": "stay",
+       "op": "text",
+       "startMs": 2800,
+       "endMs": 3900,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        390
+       ],
+       "text": "material stays in place",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch07-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "conducttitle",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "good conductors",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "steel",
+       "op": "text",
+       "startMs": 1100,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        150,
+        180
+       ],
+       "text": "steel",
+       "size": "m"
+      },
+      {
+       "id": "aluminium",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        350,
+        180
+       ],
+       "text": "aluminium",
+       "size": "m"
+      },
+      {
+       "id": "copper",
+       "op": "text",
+       "startMs": 2000,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        300
+       ],
+       "text": "copper",
+       "size": "m"
+      },
+      {
+       "id": "iron",
+       "op": "text",
+       "startMs": 2400,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        500,
+        300
+       ],
+       "text": "iron",
+       "size": "m"
+      },
+      {
+       "id": "heatflow",
+       "op": "arrow",
+       "startMs": 3500,
+       "endMs": 5000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        120,
+        420
+       ],
+       "to": [
+        680,
+        420
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch07-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "poortitle",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "poor conductors",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "wood7",
+       "op": "text",
+       "startMs": 1000,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        100,
+        170
+       ],
+       "text": "wood",
+       "size": "m"
+      },
+      {
+       "id": "plastic7",
+       "op": "text",
+       "startMs": 1300,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        250,
+        170
+       ],
+       "text": "plastic",
+       "size": "m"
+      },
+      {
+       "id": "clay7",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        410,
+        170
+       ],
+       "text": "clay",
+       "size": "m"
+      },
+      {
+       "id": "cloth7",
+       "op": "text",
+       "startMs": 2000,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        540,
+        170
+       ],
+       "text": "cloth",
+       "size": "m"
+      },
+      {
+       "id": "wool7",
+       "op": "text",
+       "startMs": 2400,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        210,
+        290
+       ],
+       "text": "wool",
+       "size": "m"
+      },
+      {
+       "id": "air7",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        450,
+        290
+       ],
+       "text": "air",
+       "size": "m"
+      },
+      {
+       "id": "slowflow",
+       "op": "arrow",
+       "startMs": 3600,
+       "endMs": 5000,
+       "ink": "soft",
+       "weight": 2,
+       "from": [
+        120,
+        420
+       ],
+       "to": [
+        680,
+        420
+       ]
+      },
+      {
+       "id": "slow",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 5900,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        375
+       ],
+       "text": "slow heat flow",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch07-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "pot",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        130,
+        150
+       ],
+       "w": 430,
+       "h": 170
+      },
+      {
+       "id": "potlabel",
+       "op": "label",
+       "startMs": 1000,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        345,
+        350
+       ],
+       "text": "metal pot"
+      },
+      {
+       "id": "handle",
+       "op": "rect",
+       "startMs": 1300,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        560,
+        200
+       ],
+       "w": 150,
+       "h": 70,
+       "fill": "soft"
+      },
+      {
+       "id": "handlelabel",
+       "op": "label",
+       "startMs": 2200,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        635,
+        330
+       ],
+       "text": "wood handle"
+      },
+      {
+       "id": "plastic",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        635,
+        390
+       ],
+       "text": "plastic",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "hotpot",
+       "op": "arrow",
+       "startMs": 3700,
+       "endMs": 4300,
+       "ink": "accent",
+       "weight": 1,
+       "from": [
+        220,
+        120
+       ],
+       "to": [
+        220,
+        150
+       ]
+      },
+      {
+       "id": "safe",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5400,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        440
+       ],
+       "text": "slow heat flow",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L9",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch07-t01-wb-L9",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "hot9",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        150,
+        230
+       ],
+       "r": 60,
+       "fill": "accent"
+      },
+      {
+       "id": "cold9",
+       "op": "circle",
+       "startMs": 400,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        650,
+        230
+       ],
+       "r": 60,
+       "fill": "soft"
+      },
+      {
+       "id": "hottext9",
+       "op": "label",
+       "startMs": 900,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        150,
+        320
+       ],
+       "text": "hot"
+      },
+      {
+       "id": "coldtext9",
+       "op": "label",
+       "startMs": 1100,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        650,
+        320
+       ],
+       "text": "cold"
+      },
+      {
+       "id": "direction9",
+       "op": "arrow",
+       "startMs": 1700,
+       "endMs": 3000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        225,
+        230
+       ],
+       "to": [
+        575,
+        230
+       ]
+      },
+      {
+       "id": "same9",
+       "op": "text",
+       "startMs": 3600,
+       "endMs": 4500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        120
+       ],
+       "text": "same temperature",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "equal9",
+       "op": "line",
+       "startMs": 4800,
+       "endMs": 5400,
+       "ink": "chalk",
+       "weight": 1,
+       "from": [
+        260,
+        390
+       ],
+       "to": [
+        540,
+        390
+       ]
+      },
+      {
+       "id": "until9",
+       "op": "text",
+       "startMs": 5400,
+       "endMs": 6300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        440
+       ],
+       "text": "until both reach",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1",
+   "key": "copper > aluminium > iron",
+   "prompt": "copper, aluminium, iron"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "sea → land",
+   "prompt": "14:00"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "land → sea",
+   "prompt": "3:00"
+  },
+  {
+   "itemId": "r3",
+   "key": "shiny",
+   "prompt": "cool: black/dark/white/shiny"
+  }
+ ],
+ "check": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "Round 'Coast breeze' targets misconception m3 ('Cold flows from cold things into warm things'), which contradicts the kit's correct statement that heat always flows from hot to cold. However, the question itself does not state the misconception—it asks the child to set breeze direction. The round name and target do not change facts or give an answer away; they merely label the skill.  No high-severity issue.",
+    "severity": "low"
+   },
+   {
+    "where": "explainer",
+    "what": "The explainer targets m2 ('Metals feel cold because they are colder than other things in the same room') and correctly teaches the counter.  No error.",
+    "severity": "low"
+   }
+  ],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ },
+ "firstCheck": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "In round 1, targets 'c7-science-ch07-t01-m3' is a misconception that 'Cold flows from cold things into warm things.' That is not debunked by a pip race; the round just ranks conductors, which is fine in itself but the target is mismatched.",
+    "severity": "high"
+   },
+   {
+    "where": "game",
+    "what": "In round 2, the computed key says aluminium > steel, but the kit lists steel as a good conductor (like aluminium) and does not rank them; more importantly wood is listed as a poor conductor but is included in the ranking. The mismatch is not a factual error but the key contradicts typical real-world ranking (steel conducts better than aluminium).",
+    "severity": "low"
+   }
+  ],
+  "verdict": "fail",
+  "model": "DeepSeek-V4-Flash"
+ },
+ "regens": 2
+}

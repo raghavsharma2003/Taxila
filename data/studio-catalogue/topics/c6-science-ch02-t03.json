@@ -1,0 +1,1880 @@
+{
+ "topicId": "c6-science-ch02-t03",
+ "title": "Plants and animals in different habitats",
+ "chapter": "Diversity in the Living World",
+ "subject": "science",
+ "class": 6,
+ "topicType": "T3",
+ "plan": {
+  "game": "food-web@1",
+  "hint": "Balance the Forest: habitats and who eats whom; remove a species and watch"
+ },
+ "game": {
+  "archetype": "food-web@1",
+  "spec": {
+   "archetype": "food-web@1",
+   "skills": [
+    "c6-science-ch02-t03"
+   ],
+   "lang": "en",
+   "strings": {
+    "step": "Step",
+    "predict": "First, predict",
+    "up": "Goes up",
+    "down": "Goes down",
+    "same": "About the same",
+    "remove": "Remove",
+    "add": "Bring in",
+    "relocate": "Relocate",
+    "day": "DAY",
+    "alive": "all alive",
+    "lost": "lost",
+    "drought": "DROUGHT",
+    "arrows": "Drag from the food to the one that eats it",
+    "done": "Forest steady",
+    "watch": "watch"
+   },
+   "species": [
+    "grass",
+    "insects",
+    "deer",
+    "frog",
+    "snake",
+    "tiger"
+   ],
+   "steps": [
+    {
+     "kind": "arrows"
+    },
+    {
+     "kind": "predict-remove",
+     "remove": "frog",
+     "watch": "insects",
+     "days": 50
+    },
+    {
+     "kind": "predict-remove",
+     "remove": "snake",
+     "watch": "frog",
+     "days": 80
+    },
+    {
+     "kind": "keep-alive",
+     "days": 100,
+     "droughtFrom": 30,
+     "droughtDays": 15
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c6-science-ch02-t03"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Features fit habitats",
+   "accent": "sci",
+   "targets": "c6-science-ch02-t03-m1",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "row",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Features fit habitats"
+      },
+      {
+       "id": "hab",
+       "type": "label",
+       "text": "Habitat: place to live",
+       "x": 120,
+       "y": 330,
+       "color": "sci"
+      },
+      {
+       "id": "food",
+       "type": "node",
+       "text": "Food",
+       "sub": "needs",
+       "glyph": "apple",
+       "x": 400,
+       "y": 240,
+       "color": "mint"
+      },
+      {
+       "id": "water",
+       "type": "node",
+       "text": "Water",
+       "sub": "needs",
+       "glyph": "drop",
+       "x": 600,
+       "y": 240,
+       "color": "ion"
+      },
+      {
+       "id": "shelter",
+       "type": "node",
+       "text": "Shelter",
+       "sub": "needs",
+       "glyph": "house",
+       "x": 800,
+       "y": 240,
+       "color": "amber"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "split",
+     "els": [
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Animals choose new body features"
+      },
+      {
+       "id": "time",
+       "type": "node",
+       "text": "Many generations",
+       "sub": "very long time",
+       "glyph": "clock",
+       "x": 700,
+       "y": 330,
+       "color": "sci"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "camel",
+       "type": "node",
+       "text": "Camel",
+       "sub": "hot desert",
+       "glyph": "cow",
+       "x": 170,
+       "y": 320,
+       "color": "amber"
+      },
+      {
+       "id": "legs",
+       "type": "label",
+       "text": "Long legs",
+       "x": 400,
+       "y": 220,
+       "color": "sun"
+      },
+      {
+       "id": "feet",
+       "type": "label",
+       "text": "Padded feet",
+       "x": 400,
+       "y": 390,
+       "color": "sun"
+      },
+      {
+       "id": "sand",
+       "type": "node",
+       "text": "Hot sand",
+       "sub": "challenge",
+       "glyph": "sun",
+       "x": 760,
+       "y": 320,
+       "color": "sci"
+      },
+      {
+       "id": "ca1",
+       "type": "arrow",
+       "from": "camel",
+       "to": "legs",
+       "text": "feature"
+      },
+      {
+       "id": "ca2",
+       "type": "arrow",
+       "from": "camel",
+       "to": "feet",
+       "text": "feature"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "column",
+     "els": [
+      {
+       "id": "cactus",
+       "type": "node",
+       "text": "Cactus",
+       "sub": "desert plant",
+       "glyph": "leaf",
+       "x": 170,
+       "y": 330,
+       "color": "mint"
+      },
+      {
+       "id": "spines",
+       "type": "label",
+       "text": "Spines: less loss",
+       "x": 500,
+       "y": 220,
+       "color": "sci"
+      },
+      {
+       "id": "stem",
+       "type": "label",
+       "text": "Fleshy stem: stores water",
+       "x": 500,
+       "y": 330,
+       "color": "ion"
+      },
+      {
+       "id": "coat",
+       "type": "label",
+       "text": "Waxy coat: less loss",
+       "x": 500,
+       "y": 440,
+       "color": "amber"
+      },
+      {
+       "id": "cs1",
+       "type": "arrow",
+       "from": "cactus",
+       "to": "spines",
+       "text": "feature"
+      },
+      {
+       "id": "cs2",
+       "type": "arrow",
+       "from": "cactus",
+       "to": "stem",
+       "text": "feature"
+      },
+      {
+       "id": "cs3",
+       "type": "arrow",
+       "from": "cactus",
+       "to": "coat",
+       "text": "feature"
+      }
+     ]
+    },
+    {
+     "id": "s5",
+     "layout": "row",
+     "els": [
+      {
+       "id": "yak",
+       "type": "node",
+       "text": "Yak",
+       "sub": "cold mountains",
+       "glyph": "cow",
+       "x": 150,
+       "y": 320,
+       "color": "sci"
+      },
+      {
+       "id": "hair",
+       "type": "label",
+       "text": "Long thick hair",
+       "x": 420,
+       "y": 320,
+       "color": "ion"
+      },
+      {
+       "id": "fish",
+       "type": "node",
+       "text": "Fish",
+       "sub": "water",
+       "glyph": "fish",
+       "x": 700,
+       "y": 320,
+       "color": "sci"
+      },
+      {
+       "id": "gills",
+       "type": "label",
+       "text": "Gills and fins",
+       "x": 900,
+       "y": 320,
+       "color": "mint"
+      },
+      {
+       "id": "ya",
+       "type": "arrow",
+       "from": "yak",
+       "to": "hair",
+       "text": "keeps warm"
+      },
+      {
+       "id": "fi",
+       "type": "arrow",
+       "from": "fish",
+       "to": "gills",
+       "text": "water feature"
+      }
+     ]
+    },
+    {
+     "id": "s6",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "checkTitle",
+       "type": "title",
+       "text": "Check the idea"
+      },
+      {
+       "id": "q",
+       "type": "label",
+       "text": "Which cactus feature saves water?",
+       "x": 180,
+       "y": 240,
+       "color": "sci"
+      },
+      {
+       "id": "op1",
+       "type": "node",
+       "text": "Spines",
+       "sub": "less water loss",
+       "glyph": "leaf",
+       "x": 250,
+       "y": 410,
+       "color": "mint"
+      },
+      {
+       "id": "op2",
+       "type": "node",
+       "text": "Broad leaves",
+       "sub": "more surface",
+       "glyph": "leaf",
+       "x": 500,
+       "y": 410,
+       "color": "amber"
+      },
+      {
+       "id": "op3",
+       "type": "node",
+       "text": "Thin stem",
+       "sub": "little storage",
+       "glyph": "tree",
+       "x": 750,
+       "y": 410,
+       "color": "ion"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "A habitat is the place where a living thing lives and gets food, water, shelter and suitable conditions.",
+    "L2": "A feature that helps an organism survive in its habitat is called an adaptation.",
+    "L3": "Here is a myth: an animal changes its body on purpose to fit a place.",
+    "L4": "That is not true. Adaptations develop over a very long time, across many generations.",
+    "L5": "In a hot desert, a camel's long legs keep its body away from hot sand, and padded feet do not sink into sand.",
+    "L6": "A cactus has spines instead of broad leaves, a thick fleshy stem that stores water, and a waxy coat that reduces water loss.",
+    "L7": "Different habitats need different features: a yak has long thick hair for cold mountains, while a fish has gills, fins and a streamlined body for water.",
+    "L8": "Now choose the cactus feature that helps reduce water loss."
+   },
+   "narration": {
+    "L1": {
+     "text": "A habitat is the place where a living thing lives and gets food, water, shelter and suitable conditions.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L2": {
+     "text": "A feature that helps an organism survive in its habitat is called an adaptation.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L3": {
+     "text": "Here is a myth: an animal changes its body on purpose to fit a place.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L4": {
+     "text": "That is not true. Adaptations develop over a very long time, across many generations.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L5": {
+     "text": "In a hot desert, a camel's long legs keep its body away from hot sand, and padded feet do not sink into sand.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L6": {
+     "text": "A cactus has spines instead of broad leaves, a thick fleshy stem that stores water, and a waxy coat that reduces water loss.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Different habitats need different features: a yak has long thick hair for cold mountains, while a fish has gills, fins and a streamlined body for water.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Now choose the cactus feature that helps reduce water loss.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "title"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "hab",
+        "food",
+        "water",
+        "shelter"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1.2,
+       "target": "hab"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": "time"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "camel",
+        "sand"
+       ]
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "legs",
+        "feet",
+        "ca1",
+        "ca2"
+       ]
+      },
+      {
+       "at": 1.2,
+       "do": "flow",
+       "dur": 0.6,
+       "target": [
+        "ca1",
+        "ca2"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "cactus"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "spines",
+        "stem",
+        "coat",
+        "cs1",
+        "cs2",
+        "cs3"
+       ]
+      },
+      {
+       "at": 1.5,
+       "do": "highlight",
+       "dur": 1,
+       "target": [
+        "spines",
+        "stem",
+        "coat"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s5",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "yak",
+        "hair",
+        "fish",
+        "gills",
+        "ya",
+        "fi"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 0.7,
+       "target": [
+        "ya",
+        "fi"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s6",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "checkTitle",
+        "q",
+        "op1",
+        "op2",
+        "op3"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive"
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which cactus feature helps reduce water loss?",
+    "options": [
+     "op1",
+     "op2",
+     "op3"
+    ],
+    "answer": "op1",
+    "src": "c6-science-ch02-t03-i03"
+   }
+  },
+  "repairs": [
+   "string:truth.text",
+   "arrow:dangling",
+   "cue:target"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 43
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch02-t03-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "habitat",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        240
+       ],
+       "rx": 250,
+       "ry": 150
+      },
+      {
+       "id": "living",
+       "op": "circle",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        220
+       ],
+       "r": 35
+      },
+      {
+       "id": "hab",
+       "op": "text",
+       "startMs": 1100,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        80
+       ],
+       "text": "habitat",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "food",
+       "op": "label",
+       "startMs": 1900,
+       "endMs": 2600,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        170,
+        180
+       ],
+       "text": "food",
+       "to": [
+        300,
+        210
+       ]
+      },
+      {
+       "id": "water",
+       "op": "label",
+       "startMs": 2800,
+       "endMs": 3500,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        610,
+        180
+       ],
+       "text": "water",
+       "to": [
+        500,
+        210
+       ]
+      },
+      {
+       "id": "shelter",
+       "op": "label",
+       "startMs": 3700,
+       "endMs": 4500,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        160,
+        350
+       ],
+       "text": "shelter",
+       "to": [
+        300,
+        270
+       ]
+      },
+      {
+       "id": "conditions",
+       "op": "label",
+       "startMs": 4700,
+       "endMs": 5700,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        600,
+        350
+       ],
+       "text": "suitable conditions",
+       "to": [
+        500,
+        270
+       ]
+      },
+      {
+       "id": "live",
+       "op": "text",
+       "startMs": 6100,
+       "endMs": 7200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        430
+       ],
+       "text": "living thing lives",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch02-t03-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "organism",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        180,
+        240
+       ],
+       "r": 55
+      },
+      {
+       "id": "feature",
+       "op": "arrow",
+       "startMs": 700,
+       "endMs": 1500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        240,
+        240
+       ],
+       "to": [
+        390,
+        240
+       ]
+      },
+      {
+       "id": "adaptation",
+       "op": "rect",
+       "startMs": 1400,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        410,
+        195
+       ],
+       "w": 250,
+       "h": 90,
+       "round": 12
+      },
+      {
+       "id": "adapt",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        535,
+        250
+       ],
+       "text": "adaptation",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "survive",
+       "op": "label",
+       "startMs": 3500,
+       "endMs": 4300,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        350
+       ],
+       "text": "survive",
+       "to": [
+        535,
+        285
+       ]
+      },
+      {
+       "id": "featureword",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        340
+       ],
+       "text": "feature",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch02-t03-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "myth",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        80
+       ],
+       "text": "myth",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "animal",
+       "op": "circle",
+       "startMs": 800,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        220,
+        260
+       ],
+       "r": 55
+      },
+      {
+       "id": "place",
+       "op": "polygon",
+       "startMs": 1200,
+       "endMs": 2000,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         520,
+         310
+        ],
+        [
+         620,
+         180
+        ],
+        [
+         720,
+         310
+        ]
+       ]
+      },
+      {
+       "id": "changes",
+       "op": "arrow",
+       "startMs": 2100,
+       "endMs": 2900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        280,
+        260
+       ],
+       "to": [
+        500,
+        260
+       ]
+      },
+      {
+       "id": "body",
+       "op": "label",
+       "startMs": 3000,
+       "endMs": 3600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        350,
+        210
+       ],
+       "text": "body",
+       "to": [
+        310,
+        245
+       ]
+      },
+      {
+       "id": "purpose",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        390
+       ],
+       "text": "on purpose",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "fit",
+       "op": "label",
+       "startMs": 5000,
+       "endMs": 5900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        600,
+        350
+       ],
+       "text": "fit a place",
+       "to": [
+        590,
+        305
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch02-t03-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "nottrue",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        90
+       ],
+       "text": "not true",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "cross",
+       "op": "line",
+       "startMs": 800,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        300,
+        120
+       ],
+       "to": [
+        500,
+        330
+       ]
+      },
+      {
+       "id": "time",
+       "op": "arrow",
+       "startMs": 1700,
+       "endMs": 2700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        160,
+        390
+       ],
+       "to": [
+        650,
+        390
+       ]
+      },
+      {
+       "id": "long",
+       "op": "label",
+       "startMs": 2800,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        290,
+        350
+       ],
+       "text": "very long time",
+       "to": [
+        290,
+        390
+       ]
+      },
+      {
+       "id": "generations",
+       "op": "label",
+       "startMs": 4000,
+       "endMs": 5300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        570,
+        350
+       ],
+       "text": "many generations",
+       "to": [
+        570,
+        390
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch02-t03-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 10387,
+     "ops": [
+      {
+       "id": "desert",
+       "op": "polygon",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         40,
+         390
+        ],
+        [
+         180,
+         300
+        ],
+        [
+         330,
+         390
+        ],
+        [
+         500,
+         310
+        ],
+        [
+         760,
+         390
+        ],
+        [
+         760,
+         450
+        ],
+        [
+         40,
+         450
+        ]
+       ]
+      },
+      {
+       "id": "camel",
+       "op": "ellipse",
+       "startMs": 800,
+       "endMs": 1600,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        380,
+        250
+       ],
+       "rx": 100,
+       "ry": 45
+      },
+      {
+       "id": "leg1",
+       "op": "line",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        330,
+        280
+       ],
+       "to": [
+        310,
+        380
+       ]
+      },
+      {
+       "id": "leg2",
+       "op": "line",
+       "startMs": 1900,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        430,
+        280
+       ],
+       "to": [
+        450,
+        380
+       ]
+      },
+      {
+       "id": "longlegs",
+       "op": "label",
+       "startMs": 2700,
+       "endMs": 3700,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        150,
+        220
+       ],
+       "text": "long legs",
+       "to": [
+        315,
+        300
+       ]
+      },
+      {
+       "id": "sand",
+       "op": "label",
+       "startMs": 3800,
+       "endMs": 4700,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        600,
+        300
+       ],
+       "text": "hot sand",
+       "to": [
+        560,
+        360
+       ]
+      },
+      {
+       "id": "feet",
+       "op": "ellipse",
+       "startMs": 4700,
+       "endMs": 5400,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        310,
+        385
+       ],
+       "rx": 35,
+       "ry": 10
+      },
+      {
+       "id": "padded",
+       "op": "label",
+       "startMs": 5500,
+       "endMs": 6600,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        120,
+        420
+       ],
+       "text": "padded feet",
+       "to": [
+        280,
+        385
+       ]
+      },
+      {
+       "id": "sink",
+       "op": "arrow",
+       "startMs": 6800,
+       "endMs": 7500,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        310,
+        385
+       ],
+       "to": [
+        310,
+        430
+       ]
+      },
+      {
+       "id": "nosink",
+       "op": "text",
+       "startMs": 7600,
+       "endMs": 8600,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        500,
+        425
+       ],
+       "text": "do not sink",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch02-t03-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 10387,
+     "ops": [
+      {
+       "id": "cactus",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        400,
+        280
+       ],
+       "rx": 85,
+       "ry": 135
+      },
+      {
+       "id": "spine1",
+       "op": "line",
+       "startMs": 700,
+       "endMs": 1200,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        330,
+        210
+       ],
+       "to": [
+        285,
+        180
+       ]
+      },
+      {
+       "id": "spine2",
+       "op": "line",
+       "startMs": 1100,
+       "endMs": 1600,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        470,
+        250
+       ],
+       "to": [
+        520,
+        220
+       ]
+      },
+      {
+       "id": "spines",
+       "op": "label",
+       "startMs": 1700,
+       "endMs": 2600,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        150,
+        150
+       ],
+       "text": "spines",
+       "to": [
+        320,
+        215
+       ]
+      },
+      {
+       "id": "stem",
+       "op": "label",
+       "startMs": 2700,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        575,
+        280
+       ],
+       "text": "thick fleshy stem",
+       "to": [
+        485,
+        280
+       ]
+      },
+      {
+       "id": "stores",
+       "op": "label",
+       "startMs": 4000,
+       "endMs": 5000,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        570,
+        350
+       ],
+       "text": "stores water",
+       "to": [
+        470,
+        350
+       ]
+      },
+      {
+       "id": "coat",
+       "op": "ellipse",
+       "startMs": 5100,
+       "endMs": 6000,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        280
+       ],
+       "rx": 105,
+       "ry": 155
+      },
+      {
+       "id": "waxy",
+       "op": "label",
+       "startMs": 6100,
+       "endMs": 7100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        150,
+        390
+       ],
+       "text": "waxy coat",
+       "to": [
+        310,
+        385
+       ]
+      },
+      {
+       "id": "loss",
+       "op": "arrow",
+       "startMs": 7200,
+       "endMs": 7900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        120
+       ],
+       "to": [
+        400,
+        60
+       ]
+      },
+      {
+       "id": "waterloss",
+       "op": "text",
+       "startMs": 8000,
+       "endMs": 9300,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        570,
+        75
+       ],
+       "text": "reduces water loss",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch02-t03-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 11664,
+     "ops": [
+      {
+       "id": "mountain",
+       "op": "polygon",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         40,
+         400
+        ],
+        [
+         180,
+         180
+        ],
+        [
+         300,
+         400
+        ]
+       ]
+      },
+      {
+       "id": "yak",
+       "op": "ellipse",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        190,
+        280
+       ],
+       "rx": 85,
+       "ry": 50
+      },
+      {
+       "id": "hair",
+       "op": "label",
+       "startMs": 1500,
+       "endMs": 2700,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        80,
+        130
+       ],
+       "text": "long thick hair",
+       "to": [
+        175,
+        240
+       ]
+      },
+      {
+       "id": "cold",
+       "op": "label",
+       "startMs": 2800,
+       "endMs": 3900,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        100,
+        440
+       ],
+       "text": "cold mountains",
+       "to": [
+        170,
+        370
+       ]
+      },
+      {
+       "id": "water",
+       "op": "ellipse",
+       "startMs": 3300,
+       "endMs": 4200,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        600,
+        350
+       ],
+       "rx": 170,
+       "ry": 70
+      },
+      {
+       "id": "fish",
+       "op": "ellipse",
+       "startMs": 4100,
+       "endMs": 4900,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        600,
+        300
+       ],
+       "rx": 90,
+       "ry": 38
+      },
+      {
+       "id": "gills",
+       "op": "label",
+       "startMs": 5000,
+       "endMs": 5800,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        500,
+        210
+       ],
+       "text": "gills",
+       "to": [
+        550,
+        280
+       ]
+      },
+      {
+       "id": "fins",
+       "op": "label",
+       "startMs": 5900,
+       "endMs": 6700,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        690,
+        230
+       ],
+       "text": "fins",
+       "to": [
+        665,
+        285
+       ]
+      },
+      {
+       "id": "stream",
+       "op": "label",
+       "startMs": 6800,
+       "endMs": 8000,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        600,
+        440
+       ],
+       "text": "streamlined body",
+       "to": [
+        600,
+        340
+       ]
+      },
+      {
+       "id": "different",
+       "op": "text",
+       "startMs": 8300,
+       "endMs": 9500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        100
+       ],
+       "text": "different habitats",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch02-t03-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "cactus",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        400,
+        260
+       ],
+       "rx": 90,
+       "ry": 140
+      },
+      {
+       "id": "spines",
+       "op": "line",
+       "startMs": 600,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        330,
+        190
+       ],
+       "to": [
+        280,
+        150
+       ]
+      },
+      {
+       "id": "stem",
+       "op": "ellipse",
+       "startMs": 1000,
+       "endMs": 1700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        260
+       ],
+       "rx": 105,
+       "ry": 155
+      },
+      {
+       "id": "coat",
+       "op": "ellipse",
+       "startMs": 1700,
+       "endMs": 2400,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        260
+       ],
+       "rx": 110,
+       "ry": 165
+      },
+      {
+       "id": "waxy",
+       "op": "label",
+       "startMs": 2500,
+       "endMs": 3400,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        160,
+        390
+       ],
+       "text": "waxy coat",
+       "to": [
+        310,
+        390
+       ]
+      },
+      {
+       "id": "highlight",
+       "op": "highlight",
+       "startMs": 3500,
+       "endMs": 4400,
+       "ink": "good",
+       "weight": 2,
+       "target": "coat",
+       "style": "circle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ },
+ "firstCheck": {
+  "issues": [
+   {
+    "where": "explainer",
+    "what": "The explainer task mentions 'optcamel' as a tap option, but the question is about saving and storing water; the camel's hump stores fat, not water. This could reinforce the misconception that the camel stores water, which is a known misconception in the kit (misconception id m2: 'A camel stores water in its hump').",
+    "severity": "high"
+   }
+  ],
+  "verdict": "fail",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

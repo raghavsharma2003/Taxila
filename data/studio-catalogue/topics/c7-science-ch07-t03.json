@@ -1,0 +1,1626 @@
+{
+ "topicId": "c7-science-ch07-t03",
+ "title": "Radiation",
+ "chapter": "Heat Transfer in Nature",
+ "subject": "science",
+ "class": 7,
+ "topicType": "T3",
+ "plan": {
+  "game": "heat-lab@1",
+  "hint": "radiate mode (keep cool / keep warm)"
+ },
+ "game": {
+  "archetype": "heat-lab@1",
+  "spec": {
+   "archetype": "heat-lab@1",
+   "skills": [
+    "c7-science-ch07-t03"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "done": "right",
+    "heat": "HEAT",
+    "lock": "LOCK",
+    "run": "RUN",
+    "first": "falls first",
+    "last": "last",
+    "land": "land",
+    "sea": "sea",
+    "hour": "time",
+    "seaBreeze": "to land",
+    "landBreeze": "to sea",
+    "keepCool": "keep it cool",
+    "keepWarm": "keep it warm",
+    "runDone": "Lab closed",
+    "caught": "caught",
+    "passed": "passed",
+    "keep": "keep which?",
+    "target": "get",
+    "steps": "steps",
+    "reset": "start again",
+    "black": "black",
+    "dark": "dark",
+    "white": "white",
+    "shiny": "shiny",
+    "copper": "copper",
+    "aluminium": "aluminium",
+    "iron": "iron",
+    "steel": "steel",
+    "glass": "glass",
+    "wood": "wood",
+    "plastic": "plastic",
+    "stones": "stones",
+    "rice": "rice",
+    "flour": "flour",
+    "husk": "husk",
+    "sand": "sand",
+    "salt": "salt",
+    "sugar": "sugar",
+    "sawdust": "sawdust",
+    "chalk": "chalk",
+    "handpick": "pick out",
+    "sieve": "sieve",
+    "winnow": "winnow",
+    "magnet": "magnet",
+    "water": "add water",
+    "filter": "filter",
+    "evaporate": "evaporate",
+    "wet": "in water"
+   },
+   "title": "Heat & Matter Lab",
+   "rounds": [
+    {
+     "mode": "radiate",
+     "title": "Rooftop tank",
+     "sub": "choose a finish for summer",
+     "options": [
+      "black",
+      "white"
+     ],
+     "goal": "cool",
+     "targets": "c7-science-ch07-t03-m2"
+    },
+    {
+     "mode": "radiate",
+     "title": "Sunny winter",
+     "sub": "choose clothes to stay warm",
+     "options": [
+      "white",
+      "black"
+     ],
+     "goal": "warm",
+     "targets": "c7-science-ch07-t03-m2"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-science-ch07-t03"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "How heat travels by radiation",
+   "accent": "sci",
+   "targets": "c7-science-ch07-t03-m1",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Radiation"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Heat cannot cross empty space"
+      },
+      {
+       "id": "sun",
+       "type": "glyph",
+       "name": "sun",
+       "x": 180,
+       "y": 320,
+       "size": 150,
+       "color": "sun"
+      },
+      {
+       "id": "earth",
+       "type": "glyph",
+       "name": "earth",
+       "x": 820,
+       "y": 320,
+       "size": 130,
+       "color": "sci"
+      },
+      {
+       "id": "space",
+       "type": "label",
+       "text": "empty space",
+       "x": 430,
+       "y": 220,
+       "color": "ion"
+      },
+      {
+       "id": "ray",
+       "type": "arrow",
+       "from": "sun",
+       "to": "earth",
+       "text": "radiation"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "heater",
+       "type": "node",
+       "text": "Hot heater",
+       "sub": "gives out heat",
+       "glyph": "fire",
+       "x": 170,
+       "y": 330,
+       "color": "amber"
+      },
+      {
+       "id": "side",
+       "type": "node",
+       "text": "Warm side",
+       "sub": "no touching",
+       "glyph": "person",
+       "x": 500,
+       "y": 330,
+       "color": "sun"
+      },
+      {
+       "id": "hotter",
+       "type": "node",
+       "text": "Hotter object",
+       "sub": "more radiation",
+       "glyph": "thermometer",
+       "x": 830,
+       "y": 330,
+       "color": "volt"
+      },
+      {
+       "id": "r1",
+       "type": "arrow",
+       "from": "heater",
+       "to": "side",
+       "text": "radiation"
+      },
+      {
+       "id": "r2",
+       "type": "arrow",
+       "from": "hotter",
+       "to": "side",
+       "text": "more heat"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "split",
+     "els": [
+      {
+       "id": "light",
+       "type": "node",
+       "text": "Light surface",
+       "sub": "reflects more",
+       "glyph": "spark",
+       "x": 190,
+       "y": 320,
+       "color": "mint"
+      },
+      {
+       "id": "dark",
+       "type": "node",
+       "text": "Dark surface",
+       "sub": "absorbs more",
+       "glyph": "sun",
+       "x": 500,
+       "y": 320,
+       "color": "sci"
+      },
+      {
+       "id": "summer",
+       "type": "node",
+       "text": "Summer clothes",
+       "sub": "stay cooler",
+       "glyph": "person",
+       "x": 820,
+       "y": 320,
+       "color": "ion"
+      },
+      {
+       "id": "l1",
+       "type": "arrow",
+       "from": "light",
+       "to": "summer",
+       "text": "less absorbed"
+      },
+      {
+       "id": "l2",
+       "type": "arrow",
+       "from": "dark",
+       "to": "summer",
+       "text": "more absorbed"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Heat from the Sun reaches Earth by radiation. Radiation does not need material in between, so it can cross empty space.",
+    "L2": "That is why the belief that heat cannot travel through empty space is wrong.",
+    "L3": "We also feel radiation from the side of a heater or a hot stove without touching it.",
+    "L4": "Every object gives out some radiation. Hotter objects give out more.",
+    "L5": "Dark and dull surfaces absorb more radiation, so they heat faster in sunlight.",
+    "L6": "Light-coloured and shiny surfaces reflect more radiation and stay cooler. That is why light clothes are comfortable in summer.",
+    "L7": "A black solar cooker absorbs sunlight, while white roofs and silver tanks reflect more and stay cooler."
+   },
+   "narration": {},
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "title"
+      },
+      {
+       "at": 0.4,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "sun",
+        "earth",
+        "space"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.8,
+       "target": "ray"
+      },
+      {
+       "at": 1.4,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "ray",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "myth"
+      },
+      {
+       "at": 0.5,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "heater",
+        "side"
+       ]
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.7,
+       "target": "r1"
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "r1",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "hotter"
+      },
+      {
+       "at": 0.4,
+       "do": "show",
+       "dur": 0.7,
+       "target": "r2"
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 1,
+       "target": "hotter"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "dark"
+      },
+      {
+       "at": 0.5,
+       "do": "highlight",
+       "dur": 1,
+       "target": "dark"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "light"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.7,
+       "target": "summer"
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "l1",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "light"
+      },
+      {
+       "at": 1.2,
+       "do": "interactive",
+       "dur": 1
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which surface absorbs more radiation in sunlight?",
+    "options": [
+     "light",
+     "dark",
+     "summer"
+    ],
+    "answer": "dark",
+    "src": "c7-science-ch07-t03-i02"
+   }
+  },
+  "repairs": [],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 53
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch07-t03-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9536,
+     "ops": [
+      {
+       "id": "sun",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        110,
+        220
+       ],
+       "r": 48,
+       "fill": "accent"
+      },
+      {
+       "id": "earth",
+       "op": "circle",
+       "startMs": 500,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        690,
+        220
+       ],
+       "r": 42
+      },
+      {
+       "id": "sunLabel",
+       "op": "label",
+       "startMs": 700,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        110,
+        305
+       ],
+       "text": "Sun"
+      },
+      {
+       "id": "earthLabel",
+       "op": "label",
+       "startMs": 900,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        690,
+        305
+       ],
+       "text": "Earth"
+      },
+      {
+       "id": "space",
+       "op": "text",
+       "startMs": 1200,
+       "endMs": 1900,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        400,
+        115
+       ],
+       "text": "empty space",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "rays",
+       "op": "arrow",
+       "startMs": 1900,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        165,
+        205
+       ],
+       "to": [
+        635,
+        205
+       ]
+      },
+      {
+       "id": "rays2",
+       "op": "arrow",
+       "startMs": 2300,
+       "endMs": 3900,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        165,
+        235
+       ],
+       "to": [
+        635,
+        235
+       ]
+      },
+      {
+       "id": "radLabel",
+       "op": "label",
+       "startMs": 3500,
+       "endMs": 4300,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        400,
+        180
+       ],
+       "text": "radiation"
+      },
+      {
+       "id": "noMatter",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        390
+       ],
+       "text": "no material",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "spaceLine",
+       "op": "line",
+       "startMs": 5500,
+       "endMs": 6100,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        220,
+        390
+       ],
+       "to": [
+        580,
+        390
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch07-t03-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "belief",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        100
+       ],
+       "text": "heat cannot travel",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "spaceBelief",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        145
+       ],
+       "text": "through empty space",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "wrongMark",
+       "op": "line",
+       "startMs": 1800,
+       "endMs": 2500,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        220,
+        75
+       ],
+       "to": [
+        580,
+        170
+       ]
+      },
+      {
+       "id": "wrongMark2",
+       "op": "line",
+       "startMs": 2100,
+       "endMs": 2800,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        580,
+        75
+       ],
+       "to": [
+        220,
+        170
+       ]
+      },
+      {
+       "id": "wrong",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        265
+       ],
+       "text": "wrong",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "correct",
+       "op": "text",
+       "startMs": 4200,
+       "endMs": 5200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        390
+       ],
+       "text": "radiation",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "correctArrow",
+       "op": "arrow",
+       "startMs": 4800,
+       "endMs": 5500,
+       "ink": "good",
+       "weight": 1,
+       "from": [
+        400,
+        340
+       ],
+       "to": [
+        400,
+        285
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch07-t03-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "heater",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        105,
+        180
+       ],
+       "w": 120,
+       "h": 170,
+       "fill": "accent",
+       "round": 12
+      },
+      {
+       "id": "heaterLabel",
+       "op": "label",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        165,
+        380
+       ],
+       "text": "heater"
+      },
+      {
+       "id": "person",
+       "op": "circle",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        630,
+        245
+       ],
+       "r": 38
+      },
+      {
+       "id": "personBody",
+       "op": "stroke",
+       "startMs": 1000,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         630,
+         285
+        ],
+        [
+         600,
+         350
+        ],
+        [
+         660,
+         350
+        ]
+       ]
+      },
+      {
+       "id": "sideRay1",
+       "op": "arrow",
+       "startMs": 1700,
+       "endMs": 3000,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        225,
+        220
+       ],
+       "to": [
+        570,
+        220
+       ]
+      },
+      {
+       "id": "sideRay2",
+       "op": "arrow",
+       "startMs": 2000,
+       "endMs": 3300,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        225,
+        270
+       ],
+       "to": [
+        570,
+        270
+       ]
+      },
+      {
+       "id": "radiationLabel",
+       "op": "label",
+       "startMs": 3000,
+       "endMs": 3800,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        390,
+        180
+       ],
+       "text": "radiation"
+      },
+      {
+       "id": "distance",
+       "op": "text",
+       "startMs": 4100,
+       "endMs": 5200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        430
+       ],
+       "text": "without touching",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch07-t03-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "coolObject",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        210,
+        220
+       ],
+       "r": 55
+      },
+      {
+       "id": "hotObject",
+       "op": "circle",
+       "startMs": 500,
+       "endMs": 1200,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        590,
+        220
+       ],
+       "r": 55,
+       "fill": "accent"
+      },
+      {
+       "id": "coolLabel",
+       "op": "label",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        210,
+        325
+       ],
+       "text": "object"
+      },
+      {
+       "id": "hotLabel",
+       "op": "label",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        590,
+        325
+       ],
+       "text": "hotter"
+      },
+      {
+       "id": "coolRay",
+       "op": "arrow",
+       "startMs": 1600,
+       "endMs": 2400,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        260,
+        220
+       ],
+       "to": [
+        345,
+        220
+       ]
+      },
+      {
+       "id": "hotRay1",
+       "op": "arrow",
+       "startMs": 1700,
+       "endMs": 2600,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        645,
+        190
+       ],
+       "to": [
+        735,
+        150
+       ]
+      },
+      {
+       "id": "hotRay2",
+       "op": "arrow",
+       "startMs": 1900,
+       "endMs": 2800,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        645,
+        250
+       ],
+       "to": [
+        735,
+        290
+       ]
+      },
+      {
+       "id": "more",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 4300,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        410
+       ],
+       "text": "hotter = more radiation",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch07-t03-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "dark",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        100,
+        150
+       ],
+       "w": 180,
+       "h": 180,
+       "fill": "accent",
+       "round": 8
+      },
+      {
+       "id": "dull",
+       "op": "rect",
+       "startMs": 500,
+       "endMs": 1200,
+       "ink": "soft",
+       "weight": 2,
+       "at": [
+        330,
+        150
+       ],
+       "w": 180,
+       "h": 180,
+       "fill": "soft",
+       "round": 8
+      },
+      {
+       "id": "sun",
+       "op": "circle",
+       "startMs": 800,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        650,
+        100
+       ],
+       "r": 38,
+       "fill": "accent"
+      },
+      {
+       "id": "sunRay1",
+       "op": "arrow",
+       "startMs": 1400,
+       "endMs": 2500,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        630,
+        135
+       ],
+       "to": [
+        190,
+        150
+       ]
+      },
+      {
+       "id": "sunRay2",
+       "op": "arrow",
+       "startMs": 1600,
+       "endMs": 2700,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        655,
+        138
+       ],
+       "to": [
+        420,
+        150
+       ]
+      },
+      {
+       "id": "darkLabel",
+       "op": "label",
+       "startMs": 2700,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        190,
+        365
+       ],
+       "text": "dark and dull"
+      },
+      {
+       "id": "absorb",
+       "op": "text",
+       "startMs": 3400,
+       "endMs": 4300,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        190,
+        420
+       ],
+       "text": "absorb more",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "heatArrow",
+       "op": "arrow",
+       "startMs": 4000,
+       "endMs": 4800,
+       "ink": "accent",
+       "weight": 1,
+       "from": [
+        190,
+        330
+       ],
+       "to": [
+        190,
+        390
+       ]
+      },
+      {
+       "id": "faster",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5500,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        465
+       ],
+       "text": "heat faster",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch07-t03-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "light",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "soft",
+       "weight": 2,
+       "at": [
+        95,
+        145
+       ],
+       "w": 190,
+       "h": 175,
+       "fill": "soft",
+       "round": 8
+      },
+      {
+       "id": "shiny",
+       "op": "rect",
+       "startMs": 500,
+       "endMs": 1200,
+       "ink": "ink",
+       "weight": 2,
+       "at": [
+        350,
+        145
+       ],
+       "w": 190,
+       "h": 175,
+       "fill": "ink",
+       "round": 8
+      },
+      {
+       "id": "sun",
+       "op": "circle",
+       "startMs": 800,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        650,
+        85
+       ],
+       "r": 38,
+       "fill": "accent"
+      },
+      {
+       "id": "ray1",
+       "op": "arrow",
+       "startMs": 1400,
+       "endMs": 2500,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        625,
+        120
+       ],
+       "to": [
+        180,
+        145
+       ]
+      },
+      {
+       "id": "reflect1",
+       "op": "arrow",
+       "startMs": 2200,
+       "endMs": 3200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        180,
+        145
+       ],
+       "to": [
+        80,
+        65
+       ]
+      },
+      {
+       "id": "reflect2",
+       "op": "arrow",
+       "startMs": 2500,
+       "endMs": 3500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        445,
+        145
+       ],
+       "to": [
+        570,
+        65
+       ]
+      },
+      {
+       "id": "lightLabel",
+       "op": "label",
+       "startMs": 3200,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        190,
+        365
+       ],
+       "text": "light-coloured"
+      },
+      {
+       "id": "shinyLabel",
+       "op": "label",
+       "startMs": 3500,
+       "endMs": 4200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        445,
+        400
+       ],
+       "text": "shiny"
+      },
+      {
+       "id": "reflectText",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 5200,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        455
+       ],
+       "text": "reflect more",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "summer",
+       "op": "text",
+       "startMs": 5600,
+       "endMs": 6400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        650,
+        400
+       ],
+       "text": "summer",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "coolArrow",
+       "op": "arrow",
+       "startMs": 6200,
+       "endMs": 7000,
+       "ink": "good",
+       "weight": 1,
+       "from": [
+        540,
+        320
+       ],
+       "to": [
+        650,
+        365
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch07-t03-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "sun",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        75
+       ],
+       "r": 42,
+       "fill": "accent"
+      },
+      {
+       "id": "cooker",
+       "op": "rect",
+       "startMs": 500,
+       "endMs": 1300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        90,
+        210
+       ],
+       "w": 190,
+       "h": 130,
+       "fill": "accent",
+       "round": 10
+      },
+      {
+       "id": "roof",
+       "op": "polygon",
+       "startMs": 900,
+       "endMs": 1600,
+       "ink": "soft",
+       "weight": 2,
+       "points": [
+        [
+         470,
+         290
+        ],
+        [
+         650,
+         290
+        ],
+        [
+         700,
+         350
+        ],
+        [
+         420,
+         350
+        ]
+       ],
+       "fill": "soft"
+      },
+      {
+       "id": "cookerLabel",
+       "op": "label",
+       "startMs": 1100,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        185,
+        375
+       ],
+       "text": "black solar cooker"
+      },
+      {
+       "id": "tank",
+       "op": "ellipse",
+       "startMs": 1300,
+       "endMs": 2000,
+       "ink": "ink",
+       "weight": 2,
+       "c": [
+        650,
+        190
+       ],
+       "rx": 75,
+       "ry": 38,
+       "fill": "ink"
+      },
+      {
+       "id": "roofLabel",
+       "op": "label",
+       "startMs": 1500,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        560,
+        390
+       ],
+       "text": "white roofs"
+      },
+      {
+       "id": "tankLabel",
+       "op": "label",
+       "startMs": 1900,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        650,
+        125
+       ],
+       "text": "silver tanks"
+      },
+      {
+       "id": "sunRay",
+       "op": "arrow",
+       "startMs": 2200,
+       "endMs": 3300,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        400,
+        120
+       ],
+       "to": [
+        185,
+        210
+       ]
+      },
+      {
+       "id": "absorb",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 4400,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        185,
+        245
+       ],
+       "text": "absorbs sunlight",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "reflectRoof",
+       "op": "arrow",
+       "startMs": 3500,
+       "endMs": 4500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        470,
+        290
+       ],
+       "to": [
+        400,
+        220
+       ]
+      },
+      {
+       "id": "reflectTank",
+       "op": "arrow",
+       "startMs": 3800,
+       "endMs": 4800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        650,
+        155
+       ],
+       "to": [
+        730,
+        100
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1",
+   "key": "white",
+   "prompt": "cool: black/white"
+  },
+  {
+   "itemId": "r2",
+   "key": "black",
+   "prompt": "warm: white/black"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

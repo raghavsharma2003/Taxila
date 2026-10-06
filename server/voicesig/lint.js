@@ -1,12 +1,12 @@
 // Microsoft AI Code of Conduct restriction 12 (`ct-no-voice-emotion-inference`): voice features are KNOWLEDGE states, named
-// by the action they license. This is the one word list the build lint (tests/p3-voicesig-lint.test.mjs) and the runtime
+// by the action they license. This is the one word list the build lint (tests/p3-voicesig-server.test.mjs, "restriction-12 lint") and the runtime
 // guard share, so the two can never disagree. The runtime guard drops any code or key that matches before it reaches a
 // trace row (it never should: the 10k-turn test asserts the pipeline produces none). Pure.
 //
 // The list is the SIGNALS-SPEC §3.1 affect regex plus SPEC §1.1's additions (unsure, confident/confidence, doubt,
 // nervous, hesitant, emotion*), plus the six basic emotions restriction 12 names and common near-synonyms, in English,
 // romanised Hindi and Devanagari.
-// It is DATA describing what must never appear, so this one file is exempt from the folder lint it serves (the lint
+// It is DATA describing what must never appear, so this one file is exempt from the folder lint it serves (tests/p3-voicesig-server.test.mjs; the lint
 // names it explicitly; no other file may be added to that exemption).
 
 const EN = [

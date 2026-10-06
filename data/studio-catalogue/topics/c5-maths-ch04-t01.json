@@ -1,0 +1,1672 @@
+{
+ "topicId": "c5-maths-ch04-t01",
+ "title": "Adding and subtracting large numbers",
+ "chapter": "We the Travellers — II",
+ "subject": "maths",
+ "class": 5,
+ "topicType": "T4",
+ "plan": {
+  "game": "dukaan@1",
+  "hint": "pay and change modes with larger amounts"
+ },
+ "game": {
+  "archetype": "dukaan@1",
+  "spec": {
+   "archetype": "dukaan@1",
+   "skills": [
+    "c5-maths-ch04-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "served": "served",
+    "patience": "patience",
+    "bill": "Bill",
+    "pays": "Pays",
+    "change": "Change",
+    "pack": "Pack",
+    "crates": "crates",
+    "left": "left over",
+    "enough": "Enough",
+    "notEnough": "Not enough",
+    "budget": "Has",
+    "coach": "Tap notes and coins to put them on the counter",
+    "runDone": "Shop closed",
+    "exact": "EXACT",
+    "short": "short by",
+    "over": "over by",
+    "carry": "carry them all",
+    "full": "full crates to sell",
+    "each": "each",
+    "inLast": "in the last"
+   },
+   "title": "Dukaan Rush",
+   "rounds": [
+    {
+     "mode": "pay",
+     "title": "Pay at the counter",
+     "sub": "Make each bill exact",
+     "customers": [
+      {
+       "items": [
+        {
+         "name": "Bus pass",
+         "price": 36250,
+         "qty": 1
+        },
+        {
+         "name": "Raincoat",
+         "price": 18750,
+         "qty": 1
+        }
+       ]
+      }
+     ],
+     "coins": true,
+     "speed": 0.9,
+     "targets": "c5-maths-ch04-t01-m-forget-carry"
+    },
+    {
+     "mode": "estimate",
+     "title": "Check the basket",
+     "sub": "Call only affordable baskets",
+     "customers": [
+      {
+       "items": [
+        {
+         "name": "Sports shoes",
+         "price": 18650,
+         "qty": 1
+        }
+       ],
+       "budget": 45000
+      },
+      {
+       "items": [
+        {
+         "name": "Story book",
+         "price": 15300,
+         "qty": 2
+        }
+       ],
+       "budget": 35000
+      }
+     ],
+     "coins": true,
+     "speed": 0.8
+    }
+   ]
+  },
+  "repairs": [
+   "price:not-payable",
+   "price:not-payable",
+   "price:not-payable",
+   "price:not-payable",
+   "round:customers",
+   "price:not-payable",
+   "price:not-payable",
+   "price:not-payable"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c5-maths-ch04-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Travel with place value",
+   "accent": "ion",
+   "targets": "c5-maths-ch04-t01-m-zero-regroup",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Adding and subtracting"
+      },
+      {
+       "id": "travel",
+       "type": "glyph",
+       "name": "road",
+       "size": 150,
+       "color": "ion"
+      },
+      {
+       "id": "place",
+       "type": "label",
+       "text": "Line up place values",
+       "x": 520,
+       "y": 250,
+       "color": "mint"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Every zero becomes 10"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "column",
+     "els": [
+      {
+       "id": "p1",
+       "type": "node",
+       "text": "Ten-thousands",
+       "glyph": "bank",
+       "color": "ion"
+      },
+      {
+       "id": "p2",
+       "type": "node",
+       "text": "Thousands",
+       "glyph": "coin",
+       "color": "sci"
+      },
+      {
+       "id": "p3",
+       "type": "node",
+       "text": "Hundreds",
+       "glyph": "coin",
+       "color": "mint"
+      },
+      {
+       "id": "p4",
+       "type": "node",
+       "text": "Tens",
+       "glyph": "coin",
+       "color": "amber"
+      },
+      {
+       "id": "p5",
+       "type": "node",
+       "text": "Ones",
+       "glyph": "coin",
+       "color": "sun"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "p1",
+       "to": "p2",
+       "text": "regroup"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "p2",
+       "to": "p3",
+       "text": "regroup"
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "p3",
+       "to": "p4",
+       "text": "regroup"
+      },
+      {
+       "id": "a4",
+       "type": "arrow",
+       "from": "p4",
+       "to": "p5",
+       "text": "regroup"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "work",
+       "type": "title",
+       "text": "40,000 − 12,368"
+      },
+      {
+       "id": "old",
+       "type": "label",
+       "text": "3 | 0 | 0 | 0 | 0",
+       "x": 180,
+       "y": 260,
+       "color": "ion"
+      },
+      {
+       "id": "new",
+       "type": "label",
+       "text": "3 | 9 | 9 | 9 | 10",
+       "x": 180,
+       "y": 340,
+       "color": "mint"
+      },
+      {
+       "id": "digits",
+       "type": "label",
+       "text": "2 | 7 | 6 | 3 | 2",
+       "x": 180,
+       "y": 430,
+       "color": "sun"
+      },
+      {
+       "id": "check",
+       "type": "label",
+       "text": "27,632 + 12,368 = 40,000",
+       "x": 440,
+       "y": 430,
+       "color": "sci"
+      },
+      {
+       "id": "flow",
+       "type": "arrow",
+       "from": "old",
+       "to": "new"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "row",
+     "els": [
+      {
+       "id": "sum",
+       "type": "node",
+       "text": "Add",
+       "color": "mint"
+      },
+      {
+       "id": "carry",
+       "type": "label",
+       "text": "Carry 1",
+       "x": 250,
+       "y": 250,
+       "color": "amber"
+      },
+      {
+       "id": "subtract",
+       "type": "node",
+       "text": "Subtract",
+       "glyph": "ruler",
+       "color": "ion"
+      },
+      {
+       "id": "top",
+       "type": "label",
+       "text": "Top digit first",
+       "x": 520,
+       "y": 250,
+       "color": "sci"
+      },
+      {
+       "id": "optA",
+       "type": "node",
+       "text": "7,655",
+       "glyph": "question",
+       "color": "amber"
+      },
+      {
+       "id": "optB",
+       "type": "node",
+       "text": "8,765",
+       "glyph": "question",
+       "color": "sun"
+      },
+      {
+       "id": "optC",
+       "type": "node",
+       "text": "6,755",
+       "glyph": "question",
+       "color": "volt"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "When we travel, we may need to add or subtract large numbers.",
+    "L2": "First, line up ones under ones, tens under tens, and every other place value.",
+    "L3": "In addition, add each column and carry 1 when a column reaches 10 or more.",
+    "L4": "In subtraction, take the bottom digit from the top digit. Regroup when the top digit is too small.",
+    "L5": "Watch 40,000 minus 12,368. The zeros cannot give directly, so break one ten-thousand.",
+    "L6": "It becomes 3 ten-thousands, 9 thousands, 9 hundreds, 9 tens, and 10 ones.",
+    "L7": "Now subtract each column to get 27,632, then check by adding 12,368 back.",
+    "L8": "A zero that gives one away keeps 9. Only the ones place keeps 10, so not every zero becomes 10."
+   },
+   "narration": {},
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "title"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.7,
+       "target": "travel"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "place"
+      },
+      {
+       "at": 0.5,
+       "do": "hide",
+       "dur": 0.4,
+       "target": "myth"
+      },
+      {
+       "at": 1,
+       "do": "camera",
+       "dur": 1,
+       "zoom": 1.05
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "sum"
+      },
+      {
+       "at": 0.4,
+       "do": "show",
+       "dur": 0.6,
+       "target": "carry"
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "carry"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "subtract"
+      },
+      {
+       "at": 0.4,
+       "do": "show",
+       "dur": 0.6,
+       "target": "top"
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "top"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "work"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": "old"
+      },
+      {
+       "at": 1.2,
+       "do": "show",
+       "dur": 0.8,
+       "target": "flow"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "new"
+      },
+      {
+       "at": 0.5,
+       "do": "flow",
+       "dur": 1,
+       "target": "flow",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "digits"
+      },
+      {
+       "at": 0.6,
+       "do": "show",
+       "dur": 0.8,
+       "target": "check"
+      },
+      {
+       "at": 1.2,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "check"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "myth"
+      },
+      {
+       "at": 0.7,
+       "do": "bust",
+       "dur": 1.1,
+       "target": "myth"
+      },
+      {
+       "at": "end",
+       "do": "interactive"
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "What is 10,000 minus 2,345?",
+    "options": [
+     "optA",
+     "optB",
+     "optC"
+    ],
+    "answer": "optA",
+    "src": "c5-maths-ch04-t01-i04"
+   }
+  },
+  "repairs": [
+   "string:flow.text",
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 57
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch04-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "title",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "large numbers",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "add",
+       "op": "text",
+       "startMs": 1000,
+       "endMs": 1700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        270,
+        190
+       ],
+       "text": "add",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "plus",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        190
+       ],
+       "text": "+",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "subtract",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 2800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        530,
+        190
+       ],
+       "text": "subtract",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "travel",
+       "op": "arrow",
+       "startMs": 3000,
+       "endMs": 4200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        150,
+        330
+       ],
+       "to": [
+        650,
+        330
+       ]
+      },
+      {
+       "id": "move",
+       "op": "text",
+       "startMs": 4200,
+       "endMs": 4800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        390
+       ],
+       "text": "travel",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch04-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "ones",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        220,
+        110
+       ],
+       "text": "ones",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "tens",
+       "op": "text",
+       "startMs": 500,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        340,
+        110
+       ],
+       "text": "tens",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "places",
+       "op": "text",
+       "startMs": 1000,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        520,
+        110
+       ],
+       "text": "place value",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "vline",
+       "op": "line",
+       "startMs": 1800,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        160,
+        145
+       ],
+       "to": [
+        640,
+        145
+       ]
+      },
+      {
+       "id": "onecol",
+       "op": "line",
+       "startMs": 2400,
+       "endMs": 3300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        220,
+        145
+       ],
+       "to": [
+        220,
+        390
+       ]
+      },
+      {
+       "id": "tencol",
+       "op": "line",
+       "startMs": 3000,
+       "endMs": 3900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        340,
+        145
+       ],
+       "to": [
+        340,
+        390
+       ]
+      },
+      {
+       "id": "align",
+       "op": "arrow",
+       "startMs": 4200,
+       "endMs": 5400,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        180,
+        430
+       ],
+       "to": [
+        500,
+        430
+       ]
+      },
+      {
+       "id": "under",
+       "op": "text",
+       "startMs": 5400,
+       "endMs": 6000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        470
+       ],
+       "text": "line up",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch04-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "colones",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        210,
+        90
+       ],
+       "text": "ones",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "coltens",
+       "op": "text",
+       "startMs": 400,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        390,
+        90
+       ],
+       "text": "tens",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "addline",
+       "op": "line",
+       "startMs": 1100,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        150,
+        145
+       ],
+       "to": [
+        570,
+        145
+       ]
+      },
+      {
+       "id": "addcol1",
+       "op": "arrow",
+       "startMs": 1900,
+       "endMs": 2700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        210,
+        180
+       ],
+       "to": [
+        210,
+        310
+       ]
+      },
+      {
+       "id": "addcol2",
+       "op": "arrow",
+       "startMs": 2700,
+       "endMs": 3500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        390,
+        180
+       ],
+       "to": [
+        390,
+        310
+       ]
+      },
+      {
+       "id": "carry",
+       "op": "text",
+       "startMs": 3700,
+       "endMs": 4500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        390,
+        350
+       ],
+       "text": "carry 1",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "ten",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5400,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        390,
+        400
+       ],
+       "text": "10 or more",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "carryarrow",
+       "op": "arrow",
+       "startMs": 5400,
+       "endMs": 6400,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        390,
+        340
+       ],
+       "to": [
+        510,
+        180
+       ],
+       "bend": -1
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch04-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "subhead",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        65
+       ],
+       "text": "subtraction",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "top",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        260,
+        150
+       ],
+       "text": "top",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "bottom",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        260,
+        270
+       ],
+       "text": "bottom",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "topline",
+       "op": "line",
+       "startMs": 2200,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        180,
+        180
+       ],
+       "to": [
+        340,
+        180
+       ]
+      },
+      {
+       "id": "bottomline",
+       "op": "line",
+       "startMs": 2800,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        180,
+        300
+       ],
+       "to": [
+        340,
+        300
+       ]
+      },
+      {
+       "id": "take",
+       "op": "arrow",
+       "startMs": 3500,
+       "endMs": 4300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        260,
+        205
+       ],
+       "to": [
+        260,
+        255
+       ]
+      },
+      {
+       "id": "small",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        530,
+        180
+       ],
+       "text": "top too small",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "regroup",
+       "op": "arrow",
+       "startMs": 5600,
+       "endMs": 6500,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        470,
+        210
+       ],
+       "to": [
+        380,
+        210
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch04-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "problem",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        210,
+        80
+       ],
+       "layout": "column_sub",
+       "rows": [
+        [
+         "4",
+         "0",
+         "0",
+         "0",
+         "0"
+        ],
+        [
+         "1",
+         "2",
+         "3",
+         "6",
+         "8"
+        ]
+       ]
+      },
+      {
+       "id": "zero1",
+       "op": "highlight",
+       "startMs": 1700,
+       "endMs": 2400,
+       "ink": "accent",
+       "weight": 2,
+       "target": "problem",
+       "style": "circle"
+      },
+      {
+       "id": "zero2",
+       "op": "highlight",
+       "startMs": 2400,
+       "endMs": 3100,
+       "ink": "accent",
+       "weight": 2,
+       "target": "problem",
+       "style": "circle"
+      },
+      {
+       "id": "zero3",
+       "op": "highlight",
+       "startMs": 3100,
+       "endMs": 3800,
+       "ink": "accent",
+       "weight": 2,
+       "target": "problem",
+       "style": "circle"
+      },
+      {
+       "id": "break",
+       "op": "arrow",
+       "startMs": 3900,
+       "endMs": 4700,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        520,
+        125
+       ],
+       "to": [
+        610,
+        125
+       ]
+      },
+      {
+       "id": "tenk",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        600,
+        200
+       ],
+       "text": "break 1 ten-thousand",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch04-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "regrouped",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        110
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "3",
+         "ten-th"
+        ],
+        [
+         "9",
+         "thousa"
+        ],
+        [
+         "9",
+         "hundre"
+        ],
+        [
+         "9",
+         "tens"
+        ],
+        [
+         "10",
+         "ones"
+        ]
+       ]
+      },
+      {
+       "id": "chain1",
+       "op": "arrow",
+       "startMs": 2700,
+       "endMs": 3300,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        190,
+        145
+       ],
+       "to": [
+        270,
+        145
+       ]
+      },
+      {
+       "id": "chain2",
+       "op": "arrow",
+       "startMs": 3300,
+       "endMs": 3900,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        190,
+        195
+       ],
+       "to": [
+        270,
+        195
+       ]
+      },
+      {
+       "id": "chain3",
+       "op": "arrow",
+       "startMs": 3900,
+       "endMs": 4500,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        190,
+        245
+       ],
+       "to": [
+        270,
+        245
+       ]
+      },
+      {
+       "id": "chain4",
+       "op": "arrow",
+       "startMs": 4500,
+       "endMs": 5100,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        190,
+        295
+       ],
+       "to": [
+        270,
+        295
+       ]
+      },
+      {
+       "id": "check",
+       "op": "highlight",
+       "startMs": 5200,
+       "endMs": 6000,
+       "ink": "good",
+       "weight": 2,
+       "target": "regrouped",
+       "style": "pulse"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch04-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "subresult",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        170,
+        80
+       ],
+       "layout": "column_sub",
+       "rows": [
+        [
+         "4",
+         "0",
+         "0",
+         "0",
+         "0"
+        ],
+        [
+         "1",
+         "2",
+         "3",
+         "6",
+         "8"
+        ],
+        [
+         "2",
+         "7",
+         "6",
+         "3",
+         "2"
+        ]
+       ]
+      },
+      {
+       "id": "answer",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 3000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        290
+       ],
+       "text": "27,632",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "checklabel",
+       "op": "text",
+       "startMs": 3200,
+       "endMs": 3800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        350
+       ],
+       "text": "check",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "checkwork",
+       "op": "numwork",
+       "startMs": 3900,
+       "endMs": 5600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        230,
+        390
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "27,632",
+         "+",
+         "12,368",
+         "=",
+         "40,000"
+        ]
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch04-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9111,
+     "ops": [
+      {
+       "id": "zero",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        150,
+        90
+       ],
+       "text": "0",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "give",
+       "op": "arrow",
+       "startMs": 700,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        180,
+        130
+       ],
+       "to": [
+        300,
+        130
+       ]
+      },
+      {
+       "id": "nine1",
+       "op": "text",
+       "startMs": 1600,
+       "endMs": 2100,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        330,
+        90
+       ],
+       "text": "9",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "nine2",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 2600,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        430,
+        90
+       ],
+       "text": "9",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "nine3",
+       "op": "text",
+       "startMs": 2600,
+       "endMs": 3100,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        530,
+        90
+       ],
+       "text": "9",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "ten",
+       "op": "text",
+       "startMs": 3100,
+       "endMs": 3700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        650,
+        90
+       ],
+       "text": "10",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "ones",
+       "op": "text",
+       "startMs": 3800,
+       "endMs": 4400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        650,
+        150
+       ],
+       "text": "ones",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "only",
+       "op": "highlight",
+       "startMs": 6200,
+       "endMs": 7100,
+       "ink": "accent",
+       "weight": 2,
+       "target": "ten",
+       "style": "circle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "₹550",
+   "prompt": "pay: 1×Bus pass@₹362.50, 1×Raincoat@₹187.50"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "true",
+   "prompt": "estimate: 1×Sports shoes@₹186.50 has ₹450"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "true",
+   "prompt": "estimate: 2×Story book@₹153 has ₹350"
+  }
+ ],
+ "check": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "Round 1 (pay) uses prices 36250 and 18750 but labels them 'Bus pass' and 'Raincoat'; these match kit item i14 (36,250 + 18,750 = 55,000), but the round's computed key is ₹550, implying prices are ₹362.50 and ₹187.50 (wrong decimal placement for the story context). A bus pass costing ₹36,250 is unrealistic for a child's shopping scenario and inappropriate for ages 9-15; also the computed key suggests very small amounts inconsistent with the listed numbers.",
+    "severity": "high"
+   },
+   {
+    "where": "explainer",
+    "what": "In scene s4, the label '7,655' is correct for 10,000 − 2,345 (kit item i04), but the options include '8,765', which matches the misconception belief from the kit (misconception c5-maths-ch04-t01-m-zero-regroup: '10,000 − 2,345 = 8,765 by making every zero a 10'). Presenting this as a distractor in the task is appropriate for testing; no issue here.",
+    "severity": "low"
+   }
+  ],
+  "verdict": "fail",
+  "model": "DeepSeek-V4-Flash"
+ },
+ "firstCheck": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "Round 1 prices are 23,45,000 and 9,54,800 (dots as thousands separators but numbers are 6-digit or 7-digit), while the kit is for 5-digit numbers. This is unrealistic for the story context (prices in lakhs) and beyond the class-5 5-digit range.",
+    "severity": "high"
+   },
+   {
+    "where": "game",
+    "what": "Round 2 price 40,00,000 (6-digit) and pays 50,00,000, again outside 5-digit range. Also change is ₹10,00,000, which is a large 7-digit number.",
+    "severity": "high"
+   },
+   {
+    "where": "game",
+    "what": "Round 3 prices (28,67,000, 12,35,000, 31,80,000, 8,75,000, 24,56,000, 13,44,000) and budgets (50,00,000, 40,00,000) are all 6-digit or 7-digit, not suitable for class 5 adding/subtracting 5-digit numbers.",
+    "severity": "high"
+   }
+  ],
+  "verdict": "fail",
+  "model": "DeepSeek-V4-Flash"
+ },
+ "regens": 2
+}

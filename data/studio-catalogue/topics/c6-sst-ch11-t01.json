@@ -1,0 +1,1710 @@
+{
+ "topicId": "c6-sst-ch11-t01",
+ "title": "Grassroots Democracy — Part 2: Local Government in Rural Areas",
+ "chapter": "Grassroots Democracy — Part 2: Local Government in Rural Areas",
+ "subject": "sst",
+ "class": 6,
+ "topicType": "T2",
+ "plan": {
+  "game": "town-lab@1",
+  "hint": "council mode: gram sabha / panchayat / ward decisions within a budget"
+ },
+ "game": {
+  "archetype": "town-lab@1",
+  "spec": {
+   "archetype": "town-lab@1",
+   "skills": [
+    "c6-sst-ch11-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "done": "right",
+    "have": "you have",
+    "need": "you need",
+    "has": "has",
+    "wants": "wants",
+    "trades": "trades",
+    "market": "market",
+    "coins": "coins",
+    "open": "OPEN",
+    "price": "price",
+    "cost": "cost",
+    "profit": "profit",
+    "sold": "sold",
+    "target": "target",
+    "stock": "stock",
+    "lock": "LOCK",
+    "run": "RUN",
+    "perMonth": "per month",
+    "years": "years",
+    "goal": "goal",
+    "saved": "saved",
+    "interest": "interest",
+    "budget": "budget",
+    "left": "left",
+    "families": "families helped",
+    "runDone": "Town closed",
+    "noDeal": "no deal",
+    "reset": "start again",
+    "rupee": "₹"
+   },
+   "title": "Village Council",
+   "rounds": [
+    {
+     "mode": "council",
+     "title": "Gram sabha choices",
+     "sub": "",
+     "budget": 30,
+     "projects": [
+      {
+       "name": "water tank",
+       "glyph": "tap",
+       "cost": 12,
+       "helps": 180
+      },
+      {
+       "name": "village road",
+       "glyph": "road",
+       "cost": 15,
+       "helps": 210
+      },
+      {
+       "name": "street lights",
+       "glyph": "bulb",
+       "cost": 8,
+       "helps": 120
+      },
+      {
+       "name": "clean drains",
+       "glyph": "drop",
+       "cost": 10,
+       "helps": 160
+      }
+     ],
+     "targets": "c6-sst-ch11-t01-m1"
+    },
+    {
+     "mode": "council",
+     "title": "Plan for families",
+     "sub": "choose the best village projects",
+     "budget": 35,
+     "projects": [
+      {
+       "name": "school toilet",
+       "glyph": "school",
+       "cost": 14,
+       "helps": 190
+      },
+      {
+       "name": "handpump",
+       "glyph": "tap",
+       "cost": 9,
+       "helps": 140
+      },
+      {
+       "name": "cleanliness",
+       "glyph": "recycle",
+       "cost": 7,
+       "helps": 110
+      },
+      {
+       "name": "village road",
+       "glyph": "road",
+       "cost": 18,
+       "helps": 230
+      },
+      {
+       "name": "street lights",
+       "glyph": "bulb",
+       "cost": 11,
+       "helps": 150
+      }
+     ]
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c6-sst-ch11-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "How villages govern themselves",
+   "accent": "mint",
+   "targets": "c6-sst-ch11-t01-m1",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "How villages govern themselves"
+      },
+      {
+       "id": "myth1",
+       "type": "myth",
+       "text": "Gram sabha and gram panchayat are the same"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "column",
+     "els": [
+      {
+       "id": "sabha",
+       "type": "node",
+       "text": "Gram sabha",
+       "sub": "Adult voters",
+       "glyph": "group",
+       "color": "mint"
+      },
+      {
+       "id": "panch",
+       "type": "node",
+       "text": "Gram panchayat",
+       "sub": "Elected members",
+       "glyph": "school",
+       "color": "sci"
+      },
+      {
+       "id": "meet",
+       "type": "arrow",
+       "from": "sabha",
+       "to": "panch",
+       "text": "checks work"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "water",
+       "type": "node",
+       "text": "Water",
+       "sub": "Local need",
+       "glyph": "drop",
+       "color": "ion"
+      },
+      {
+       "id": "roads",
+       "type": "node",
+       "text": "Roads",
+       "sub": "Local need",
+       "glyph": "road",
+       "color": "amber"
+      },
+      {
+       "id": "schemes",
+       "type": "node",
+       "text": "Schemes",
+       "sub": "Government",
+       "glyph": "scroll",
+       "color": "sun"
+      },
+      {
+       "id": "work",
+       "type": "label",
+       "text": "Panchayat carries out work"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "column",
+     "els": [
+      {
+       "id": "gp",
+       "type": "node",
+       "text": "Gram panchayat",
+       "sub": "Village",
+       "glyph": "house",
+       "color": "mint"
+      },
+      {
+       "id": "ps",
+       "type": "node",
+       "text": "Panchayat samiti",
+       "sub": "Block",
+       "glyph": "group",
+       "color": "sci"
+      },
+      {
+       "id": "zp",
+       "type": "node",
+       "text": "Zila parishad",
+       "sub": "District",
+       "glyph": "map",
+       "color": "amber"
+      },
+      {
+       "id": "up1",
+       "type": "arrow",
+       "from": "gp",
+       "to": "ps",
+       "text": "next tier"
+      },
+      {
+       "id": "up2",
+       "type": "arrow",
+       "from": "ps",
+       "to": "zp",
+       "text": "next tier"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Panchayati Raj is local self-government in villages.",
+    "L2": "It has three tiers, from the village level to the district level.",
+    "L3": "The gram sabha includes every adult aged 18 or above whose name is on the voters' list.",
+    "L4": "The gram sabha discusses plans, checks the panchayat's work and helps choose scheme beneficiaries.",
+    "L5": "The gram panchayat has elected panch members and a sarpanch.",
+    "L6": "It looks after needs such as drinking water, roads, drains, street lights and cleanliness.",
+    "L7": "The gram panchayat is elected for five years, while a government-appointed secretary keeps records.",
+    "L8": "The three tiers are gram panchayat, panchayat samiti and zila parishad."
+   },
+   "narration": {
+    "L1": {
+     "text": "Panchayati Raj is local self-government in villages.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "It has three tiers, from the village level to the district level.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "The gram sabha includes every adult aged 18 or above whose name is on the voters' list.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "The gram sabha discusses plans, checks the panchayat's work and helps choose scheme beneficiaries.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "The gram panchayat has elected panch members and a sarpanch.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "It looks after needs such as drinking water, roads, drains, street lights and cleanliness.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "The gram panchayat is elected for five years, while a government-appointed secretary keeps records.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "The three tiers are gram panchayat, panchayat samiti and zila parishad.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "title"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.5,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "gp",
+        "ps",
+        "zp"
+       ]
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "up1",
+        "up2"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "sabha"
+      },
+      {
+       "at": 0.6,
+       "do": "highlight",
+       "dur": 1,
+       "target": "sabha"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "meet"
+      },
+      {
+       "at": 0.4,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "meet",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "panch"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.9,
+       "target": [
+        "water",
+        "roads",
+        "schemes"
+       ]
+      },
+      {
+       "at": 0.5,
+       "do": "highlight",
+       "dur": 1,
+       "target": "work"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "panch"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "gp",
+        "ps",
+        "zp"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "interactive",
+       "dur": 1
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "order",
+    "prompt": "Tap the Panchayati Raj tiers from village to district.",
+    "items": [
+     "gp",
+     "ps",
+     "zp"
+    ],
+    "src": "c6-sst-ch11-t01-i01"
+   }
+  },
+  "repairs": [
+   "cue:target"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "passes": 2,
+  "seconds": 32
+ },
+ "keys": [
+  {
+   "itemId": "r1",
+   "key": "460 families: water tank, street lights, clean drains",
+   "prompt": "Gram sabha choices"
+  },
+  {
+   "itemId": "r2",
+   "key": "480 families: handpump, cleanliness, village road",
+   "prompt": "choose the best village projects"
+  }
+ ],
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch11-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 3579,
+     "ops": [
+      {
+       "id": "village",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        300
+       ],
+       "rx": 220,
+       "ry": 110
+      },
+      {
+       "id": "self",
+       "op": "circle",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        170
+       ],
+       "r": 55
+      },
+      {
+       "id": "l1",
+       "op": "text",
+       "startMs": 1300,
+       "endMs": 2100,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        175
+       ],
+       "text": "self-government",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "l2",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        320
+       ],
+       "text": "villages",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "a1",
+       "op": "arrow",
+       "startMs": 2400,
+       "endMs": 3100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        230
+       ],
+       "to": [
+        400,
+        265
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch11-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "tierline",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        180,
+        250
+       ],
+       "to": [
+        620,
+        250
+       ]
+      },
+      {
+       "id": "t1",
+       "op": "circle",
+       "startMs": 500,
+       "endMs": 1000,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        180,
+        250
+       ],
+       "r": 45
+      },
+      {
+       "id": "t2",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        250
+       ],
+       "r": 45
+      },
+      {
+       "id": "t3",
+       "op": "circle",
+       "startMs": 1300,
+       "endMs": 1800,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        620,
+        250
+       ],
+       "r": 45
+      },
+      {
+       "id": "ar1",
+       "op": "arrow",
+       "startMs": 1800,
+       "endMs": 2400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        230,
+        250
+       ],
+       "to": [
+        350,
+        250
+       ]
+      },
+      {
+       "id": "ar2",
+       "op": "arrow",
+       "startMs": 2200,
+       "endMs": 2800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        450,
+        250
+       ],
+       "to": [
+        570,
+        250
+       ]
+      },
+      {
+       "id": "tx1",
+       "op": "text",
+       "startMs": 2800,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        330
+       ],
+       "text": "village",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "tx2",
+       "op": "text",
+       "startMs": 3200,
+       "endMs": 3800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        330
+       ],
+       "text": "block",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "tx3",
+       "op": "text",
+       "startMs": 3600,
+       "endMs": 4200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        620,
+        330
+       ],
+       "text": "district",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "top",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 5100,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        100
+       ],
+       "text": "three tiers",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch11-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "gs",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        230
+       ],
+       "r": 120
+      },
+      {
+       "id": "adult",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1700,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        220
+       ],
+       "text": "gram sabha",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "age",
+       "op": "numwork",
+       "startMs": 1700,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        270,
+        300
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "adult",
+         "≥",
+         "18"
+        ]
+       ]
+      },
+      {
+       "id": "voter",
+       "op": "text",
+       "startMs": 2900,
+       "endMs": 3800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        380
+       ],
+       "text": "voters' list",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "p1",
+       "op": "circle",
+       "startMs": 3900,
+       "endMs": 4300,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        210,
+        230
+       ],
+       "r": 18
+      },
+      {
+       "id": "p2",
+       "op": "circle",
+       "startMs": 4100,
+       "endMs": 4500,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        590,
+        230
+       ],
+       "r": 18
+      },
+      {
+       "id": "p3",
+       "op": "circle",
+       "startMs": 4300,
+       "endMs": 4700,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        400,
+        100
+       ],
+       "r": 18
+      },
+      {
+       "id": "h1",
+       "op": "highlight",
+       "startMs": 5000,
+       "endMs": 5900,
+       "ink": "good",
+       "weight": 2,
+       "target": "gs",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch11-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "plan",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        70,
+        170
+       ],
+       "w": 190,
+       "h": 100,
+       "round": 12
+      },
+      {
+       "id": "work",
+       "op": "rect",
+       "startMs": 600,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        305,
+        170
+       ],
+       "w": 190,
+       "h": 100,
+       "round": 12
+      },
+      {
+       "id": "benefit",
+       "op": "rect",
+       "startMs": 1200,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        540,
+        170
+       ],
+       "w": 190,
+       "h": 100,
+       "round": 12
+      },
+      {
+       "id": "x1",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2400,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        165,
+        225
+       ],
+       "text": "plans",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "x2",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 2900,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        225
+       ],
+       "text": "checks work",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "x3",
+       "op": "text",
+       "startMs": 2800,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        635,
+        225
+       ],
+       "text": "beneficiaries",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "a1",
+       "op": "arrow",
+       "startMs": 3500,
+       "endMs": 3900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        260,
+        220
+       ],
+       "to": [
+        305,
+        220
+       ]
+      },
+      {
+       "id": "a2",
+       "op": "arrow",
+       "startMs": 3900,
+       "endMs": 4300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        495,
+        220
+       ],
+       "to": [
+        540,
+        220
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch11-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "gp",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        250,
+        210
+       ],
+       "w": 300,
+       "h": 150,
+       "round": 15
+      },
+      {
+       "id": "sarp",
+       "op": "circle",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        130
+       ],
+       "r": 48
+      },
+      {
+       "id": "st",
+       "op": "text",
+       "startMs": 1300,
+       "endMs": 1900,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        135
+       ],
+       "text": "sarpanch",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "p1",
+       "op": "circle",
+       "startMs": 1600,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        315,
+        300
+       ],
+       "r": 28
+      },
+      {
+       "id": "p2",
+       "op": "circle",
+       "startMs": 1900,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        400,
+        300
+       ],
+       "r": 28
+      },
+      {
+       "id": "p3",
+       "op": "circle",
+       "startMs": 2200,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        485,
+        300
+       ],
+       "r": 28
+      },
+      {
+       "id": "pt",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        410
+       ],
+       "text": "elected panch members",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch11-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "needs",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        80
+       ],
+       "text": "local needs",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "water",
+       "op": "rect",
+       "startMs": 500,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        70,
+        150
+       ],
+       "w": 190,
+       "h": 70,
+       "round": 10
+      },
+      {
+       "id": "roads",
+       "op": "rect",
+       "startMs": 800,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        305,
+        150
+       ],
+       "w": 190,
+       "h": 70,
+       "round": 10
+      },
+      {
+       "id": "drains",
+       "op": "rect",
+       "startMs": 1100,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        540,
+        150
+       ],
+       "w": 190,
+       "h": 70,
+       "round": 10
+      },
+      {
+       "id": "lights",
+       "op": "rect",
+       "startMs": 1500,
+       "endMs": 2000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        185,
+        290
+       ],
+       "w": 190,
+       "h": 70,
+       "round": 10
+      },
+      {
+       "id": "clean",
+       "op": "rect",
+       "startMs": 1800,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        425,
+        290
+       ],
+       "w": 190,
+       "h": 70,
+       "round": 10
+      },
+      {
+       "id": "w",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        165,
+        190
+       ],
+       "text": "drinking water",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "r",
+       "op": "text",
+       "startMs": 2600,
+       "endMs": 3100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        190
+       ],
+       "text": "roads",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "d",
+       "op": "text",
+       "startMs": 2900,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        635,
+        190
+       ],
+       "text": "drains",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "sl",
+       "op": "text",
+       "startMs": 3200,
+       "endMs": 3800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        280,
+        330
+       ],
+       "text": "street lights",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "cl",
+       "op": "text",
+       "startMs": 3600,
+       "endMs": 4200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        520,
+        330
+       ],
+       "text": "cleanliness",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch11-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "five",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1100,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        100,
+        120
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "electe",
+         "=",
+         "5",
+         "years"
+        ]
+       ]
+      },
+      {
+       "id": "box",
+       "op": "rect",
+       "startMs": 1100,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        210
+       ],
+       "w": 270,
+       "h": 130,
+       "round": 12
+      },
+      {
+       "id": "gp2",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        225,
+        280
+       ],
+       "text": "gram panchayat",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "sec",
+       "op": "rect",
+       "startMs": 1900,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        460,
+        210
+       ],
+       "w": 270,
+       "h": 130,
+       "round": 12
+      },
+      {
+       "id": "secretary",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3100,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        595,
+        270
+       ],
+       "text": "secretary",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "record",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        595,
+        315
+       ],
+       "text": "records",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "arr",
+       "op": "arrow",
+       "startMs": 3500,
+       "endMs": 4100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        360,
+        275
+       ],
+       "to": [
+        460,
+        275
+       ]
+      },
+      {
+       "id": "gov",
+       "op": "label",
+       "startMs": 4100,
+       "endMs": 5100,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        595,
+        180
+       ],
+       "text": "government-appointed",
+       "to": [
+        595,
+        210
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch11-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "three",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        70
+       ],
+       "text": "three tiers",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "g",
+       "op": "rect",
+       "startMs": 500,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        55,
+        190
+       ],
+       "w": 210,
+       "h": 110,
+       "round": 12
+      },
+      {
+       "id": "s",
+       "op": "rect",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        295,
+        190
+       ],
+       "w": 210,
+       "h": 110,
+       "round": 12
+      },
+      {
+       "id": "z",
+       "op": "rect",
+       "startMs": 1300,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        535,
+        190
+       ],
+       "w": 210,
+       "h": 110,
+       "round": 12
+      },
+      {
+       "id": "gt",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2700,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        160,
+        245
+       ],
+       "text": "gram panchayat",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "st",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 3200,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        245
+       ],
+       "text": "panchayat samiti",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "zt",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        640,
+        245
+       ],
+       "text": "zila parishad",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "ga",
+       "op": "arrow",
+       "startMs": 3500,
+       "endMs": 3900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        265,
+        245
+       ],
+       "to": [
+        295,
+        245
+       ]
+      },
+      {
+       "id": "sa",
+       "op": "arrow",
+       "startMs": 3900,
+       "endMs": 4300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        505,
+        245
+       ],
+       "to": [
+        535,
+        245
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "check": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "Round 1 budget is 30 but the computed key requires spending 12+8+10 = 30. Round 2 budget is 35 but the key requires spending 9+7+18 = 34, which is within budget. No extra issue.",
+    "severity": "low"
+   }
+  ],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

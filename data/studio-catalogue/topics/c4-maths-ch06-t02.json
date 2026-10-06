@@ -112,5 +112,912 @@
   "repairs": [],
   "attempts": 1,
   "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c4-maths-ch06-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Distance around a shape",
+   "accent": "mint",
+   "targets": "c4-maths-ch06-t02-m-two-sides",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Distance around a shape"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Two sides are enough"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "rect",
+       "type": "node",
+       "text": "Rectangle",
+       "sub": "150 cm by 100 cm",
+       "color": "mint"
+      },
+      {
+       "id": "l1",
+       "type": "label",
+       "text": "150 cm"
+      },
+      {
+       "id": "w1",
+       "type": "label",
+       "text": "100 cm"
+      },
+      {
+       "id": "l2",
+       "type": "label",
+       "text": "150 cm"
+      },
+      {
+       "id": "w2",
+       "type": "label",
+       "text": "100 cm"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "rect",
+       "to": "l1",
+       "text": "side"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "rect",
+       "to": "w1",
+       "text": "side"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "column",
+     "els": [
+      {
+       "id": "axis",
+       "type": "axis",
+       "min": 0,
+       "max": 600,
+       "step": 100,
+       "unit": "cm",
+       "scale": "linear",
+       "y": 400
+      },
+      {
+       "id": "sum",
+       "type": "label",
+       "text": "150+100+150+100"
+      },
+      {
+       "id": "total",
+       "type": "node",
+       "text": "Total length",
+       "sub": "boundary",
+       "glyph": "ruler",
+       "color": "amber"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Distance around a shape means the total length of its boundary.",
+    "L2": "For a rectangle, we add all four sides.",
+    "L3": "Opposite sides are equal, so the sides are 150, 100, 150 and 100 centimetres.",
+    "L4": "Adding only 150 plus 100 misses two sides.",
+    "L5": "Add the four sides: 150 plus 100 plus 150 plus 100.",
+    "L6": "That gives 500 centimetres of lace around the tablecloth.",
+    "L7": "Now place the total distance around the rectangle."
+   },
+   "narration": {
+    "L1": {
+     "text": "Distance around a shape means the total length of its boundary.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "For a rectangle, we add all four sides.",
+     "dur": 2.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "Opposite sides are equal, so the sides are 150, 100, 150 and 100 centimetres.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "Adding only 150 plus 100 misses two sides.",
+     "dur": 2.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "Add the four sides: 150 plus 100 plus 150 plus 100.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "That gives 500 centimetres of lace around the tablecloth.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Now place the total distance around the rectangle.",
+     "dur": 2,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.3,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "rect"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "l1",
+        "w1",
+        "l2",
+        "w2"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": [
+        "l1",
+        "l2"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 1,
+       "target": [
+        "w1",
+        "w2"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.3,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "myth"
+      },
+      {
+       "at": 0.8,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "flow",
+       "dur": 1.2,
+       "target": [
+        "a1",
+        "a2"
+       ],
+       "to": 1
+      },
+      {
+       "at": 1.2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "rect"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.3,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "sum"
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.8,
+       "target": "total"
+      },
+      {
+       "at": 1.5,
+       "do": "focus",
+       "dur": 1,
+       "target": "total"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "axis"
+      },
+      {
+       "at": 0.8,
+       "do": "interactive",
+       "dur": 1
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "place",
+    "prompt": "Place the distance around the tablecloth on the scale.",
+    "axis": "axis",
+    "answer": 500,
+    "tol": 3,
+    "src": "c4-maths-ch06-t02-i12"
+   }
+  },
+  "repairs": [
+   "glyph",
+   "clamp:task.tol"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 23
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch06-t02-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "shape",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        180,
+        130
+       ],
+       "w": 440,
+       "h": 220,
+       "round": 8
+      },
+      {
+       "id": "boundary",
+       "op": "highlight",
+       "startMs": 1800,
+       "endMs": 3000,
+       "ink": "accent",
+       "weight": 2,
+       "target": "shape",
+       "style": "pulse"
+      },
+      {
+       "id": "lab",
+       "op": "label",
+       "startMs": 3200,
+       "endMs": 4500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        400
+       ],
+       "text": "total boundary",
+       "target": "shape"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch06-t02-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 4004,
+     "ops": [
+      {
+       "id": "rect2",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        180,
+        130
+       ],
+       "w": 440,
+       "h": 220,
+       "round": 8
+      },
+      {
+       "id": "top",
+       "op": "highlight",
+       "startMs": 1400,
+       "endMs": 2100,
+       "ink": "accent",
+       "weight": 2,
+       "target": "rect2",
+       "style": "underline"
+      },
+      {
+       "id": "all",
+       "op": "label",
+       "startMs": 2500,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        400
+       ],
+       "text": "all four sides",
+       "target": "rect2"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch06-t02-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "r3",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        180,
+        130
+       ],
+       "w": 440,
+       "h": 220,
+       "round": 8
+      },
+      {
+       "id": "length",
+       "op": "label",
+       "startMs": 1200,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        105
+       ],
+       "text": "150 cm",
+       "to": [
+        400,
+        130
+       ]
+      },
+      {
+       "id": "width",
+       "op": "label",
+       "startMs": 2300,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        650,
+        240
+       ],
+       "text": "100 cm",
+       "to": [
+        620,
+        240
+       ]
+      },
+      {
+       "id": "length2",
+       "op": "label",
+       "startMs": 3400,
+       "endMs": 4400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        375
+       ],
+       "text": "150 cm",
+       "to": [
+        400,
+        350
+       ]
+      },
+      {
+       "id": "width2",
+       "op": "label",
+       "startMs": 4500,
+       "endMs": 5500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        150,
+        240
+       ],
+       "text": "100 cm",
+       "to": [
+        180,
+        240
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch06-t02-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 4004,
+     "ops": [
+      {
+       "id": "partial",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        230,
+        130
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "150",
+         "+",
+         "100"
+        ]
+       ]
+      },
+      {
+       "id": "miss",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2900,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        220
+       ],
+       "text": "misses sides",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "mark",
+       "op": "highlight",
+       "startMs": 3000,
+       "endMs": 3700,
+       "ink": "accent",
+       "weight": 2,
+       "target": "partial",
+       "style": "underline"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch06-t02-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "sum",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        190,
+        150
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "150",
+         "+",
+         "100",
+         "+",
+         "150",
+         "+",
+         "100"
+        ]
+       ]
+      },
+      {
+       "id": "sides",
+       "op": "text",
+       "startMs": 3200,
+       "endMs": 4300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        270
+       ],
+       "text": "four sides",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "underline",
+       "op": "highlight",
+       "startMs": 4400,
+       "endMs": 5000,
+       "ink": "accent",
+       "weight": 2,
+       "target": "sum",
+       "style": "underline"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch06-t02-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4430,
+     "ops": [
+      {
+       "id": "result",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        280,
+        150
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "500",
+         "cm"
+        ]
+       ]
+      },
+      {
+       "id": "lace",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        270
+       ],
+       "text": "lace",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "around",
+       "op": "ellipse",
+       "startMs": 3100,
+       "endMs": 4000,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        250
+       ],
+       "rx": 230,
+       "ry": 130
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch06-t02-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4004,
+     "ops": [
+      {
+       "id": "finalrect",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        180,
+        130
+       ],
+       "w": 440,
+       "h": 220,
+       "round": 8
+      },
+      {
+       "id": "aroundarrow",
+       "op": "arrow",
+       "startMs": 1300,
+       "endMs": 2500,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        180,
+        130
+       ],
+       "to": [
+        620,
+        130
+       ],
+       "bend": 1
+      },
+      {
+       "id": "total",
+       "op": "label",
+       "startMs": 2700,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        410
+       ],
+       "text": "total distance",
+       "to": [
+        400,
+        350
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "{\"kind\":\"perimeter\",\"value\":12}",
+   "prompt": "perimeter"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "{\"kind\":\"perimeter\",\"value\":16}",
+   "prompt": "perimeter"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "{\"kind\":\"polygon\",\"sides\":4}",
+   "prompt": "polygon"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "{\"kind\":\"perimeter\",\"value\":26}",
+   "prompt": "perimeter"
+  },
+  {
+   "itemId": "r3:0",
+   "key": "{\"kind\":\"polygon\",\"sides\":4}",
+   "prompt": "polygon"
+  },
+  {
+   "itemId": "r3:1",
+   "key": "{\"kind\":\"perimeter\",\"value\":14}",
+   "prompt": "perimeter"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ },
+ "firstCheck": {
+  "issues": [
+   {
+    "where": "explainer",
+    "what": "The explainer's task references source item c4-maths-ch06-t02-i01 which is a triangle question, but the task itself is about a 150 x 100 cm rectangle; this is a mismatch—the 'src' attribute incorrectly points to a triangle item instead of the relevant rectangle item (e.g., i02 or the worked example).",
+    "severity": "high"
+   }
+  ],
+  "verdict": "fail",
+  "model": "DeepSeek-V4-Flash"
  }
 }

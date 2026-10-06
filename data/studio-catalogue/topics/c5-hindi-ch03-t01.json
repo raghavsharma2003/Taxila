@@ -1,0 +1,1835 @@
+{
+ "topicId": "c5-hindi-ch03-t01",
+ "title": "चाँद का कुरता",
+ "chapter": "चाँद का कुरता",
+ "subject": "hindi",
+ "class": 5,
+ "topicType": "T1",
+ "plan": {
+  "game": "beat-line@1",
+  "hint": "beat and rhyme rounds (Hindi: matra round on a doha/chaupai line)"
+ },
+ "game": {
+  "archetype": "beat-line@1",
+  "spec": {
+   "archetype": "beat-line@1",
+   "skills": [
+    "c5-hindi-ch03-t01"
+   ],
+   "lang": "hi",
+   "strings": {
+    "round": "दौर",
+    "onBeat": "ताल पर",
+    "combo": "लगातार ताल",
+    "tap": "ताल पर टैप करो",
+    "catch": "तुक पकड़ो",
+    "mark": "छोटा या लंबा?",
+    "short": "छोटी मात्रा",
+    "long": "लंबी मात्रा",
+    "practice": "अभ्यास पंक्ति",
+    "runDone": "कविता पूरी हुई",
+    "perfect": "सही ताल",
+    "early": "जल्दी",
+    "late": "देर से",
+    "meter": "मात्रा"
+   },
+   "title": "चाँद का कुरता",
+   "bpm": 76,
+   "lines": [
+    {
+     "text": "चंदा मामा ज़िद पर आया",
+     "beats": [
+      0,
+      3
+     ],
+     "own": true
+    },
+    {
+     "text": "माँ के आगे शोर मचाया",
+     "beats": [
+      0,
+      3
+     ],
+     "own": true
+    },
+    {
+     "text": "कल था पतला, आज है मोटा",
+     "beats": [
+      0,
+      3
+     ],
+     "own": true
+    },
+    {
+     "text": "रोज़ नया-सा रूप तुम्हारा",
+     "beats": [
+      0,
+      3
+     ],
+     "own": true
+    }
+   ],
+   "rounds": [
+    {
+     "mode": "beat",
+     "title": "ताल पकड़ो",
+     "sub": "ज़ोरदार ध्वनि पर टैप करो",
+     "lines": [
+      0,
+      1
+     ]
+    },
+    {
+     "mode": "rhyme",
+     "title": "तुक पकड़ो",
+     "sub": "आखिरी ध्वनि ध्यान से सुनो",
+     "items": [
+      {
+       "cue": "‘आया’ से मेल खाता शब्द चुनो।",
+       "options": [
+        "मचाया",
+        "कुरता",
+        "माँ"
+       ],
+       "answer": "मचाया",
+       "src": "c5-hindi-ch03-t01-i04"
+      },
+      {
+       "cue": "‘मोटा’ से मेल खाता शब्द चुनो।",
+       "options": [
+        "छोटा",
+        "चाँद",
+        "ठंड"
+       ],
+       "answer": "छोटा",
+       "src": "c5-hindi-ch03-t01-i05"
+      }
+     ]
+    },
+    {
+     "mode": "matra",
+     "title": "मात्रा पहचानो",
+     "sub": "हर टुकड़े को छोटा या लंबा बताओ",
+     "lines": [
+      2,
+      3
+     ]
+    }
+   ]
+  },
+  "repairs": [
+   "targets"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c5-hindi-ch03-t01"
+   ],
+   "lang": "hi",
+   "strings": {
+    "again": "फिर से दिखाएँ",
+    "yourTurn": "अब आपकी बारी",
+    "check": "जाँचें",
+    "right": "सही",
+    "look": "फिर देखें",
+    "myth": "भ्रम",
+    "busted": "गलत",
+    "order": "क्रम में लगाएँ"
+   },
+   "title": "चाँद का कुरता",
+   "accent": "amber",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "row",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "चाँद का कुरता"
+      },
+      {
+       "id": "moon",
+       "type": "node",
+       "text": "चंदा मामा",
+       "sub": "कुरता चाहिए",
+       "glyph": "moon",
+       "color": "amber"
+      },
+      {
+       "id": "cold",
+       "type": "node",
+       "text": "ठंडी रातें",
+       "sub": "बचाव चाहिए",
+       "glyph": "wind",
+       "color": "ion"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "चाँद सचमुच मोटा-पतला होता है"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "want",
+       "type": "node",
+       "text": "कुरता",
+       "sub": "चंदा की माँग",
+       "color": "mint"
+      },
+      {
+       "id": "reason",
+       "type": "node",
+       "text": "ठंड से बचाव",
+       "sub": "क्यों चाहिए",
+       "glyph": "shield",
+       "color": "sci"
+      },
+      {
+       "id": "thin",
+       "type": "node",
+       "text": "पतला",
+       "sub": "एक रात",
+       "glyph": "moon",
+       "color": "ion"
+      },
+      {
+       "id": "round",
+       "type": "node",
+       "text": "मोटा",
+       "sub": "दूसरी रात",
+       "glyph": "moon",
+       "color": "amber"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "want",
+       "to": "reason",
+       "text": "क्यों?"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "thin",
+       "to": "round",
+       "text": "रूप बदलता"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "same",
+       "type": "node",
+       "text": "चाँद का आकार",
+       "sub": "वही रहता है",
+       "glyph": "moon",
+       "color": "amber"
+      },
+      {
+       "id": "light",
+       "type": "node",
+       "text": "रोशनी वाला भाग",
+       "glyph": "sun",
+       "color": "sun"
+      },
+      {
+       "id": "line",
+       "type": "node",
+       "text": "पतली लकीर",
+       "sub": "अमावस्या के बाद",
+       "glyph": "moon",
+       "color": "ion"
+      },
+      {
+       "id": "half",
+       "type": "node",
+       "text": "आधा चाँद",
+       "sub": "अगला रूप",
+       "glyph": "moon",
+       "color": "mint"
+      },
+      {
+       "id": "full",
+       "type": "node",
+       "text": "पूरा गोल",
+       "sub": "पूर्णिमा",
+       "glyph": "moon",
+       "color": "amber"
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "same",
+       "to": "light",
+       "text": "असल बात"
+      },
+      {
+       "id": "a4",
+       "type": "arrow",
+       "from": "line",
+       "to": "half",
+       "text": "फिर"
+      },
+      {
+       "id": "a5",
+       "type": "arrow",
+       "from": "half",
+       "to": "full",
+       "text": "फिर"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "column",
+     "els": [
+      {
+       "id": "checktitle",
+       "type": "title",
+       "text": "अब क्रम लगाओ"
+      },
+      {
+       "id": "op1",
+       "type": "node",
+       "text": "पतली लकीर",
+       "sub": "पहला",
+       "glyph": "moon",
+       "color": "ion"
+      },
+      {
+       "id": "op2",
+       "type": "node",
+       "text": "आधा चाँद",
+       "sub": "दूसरा",
+       "glyph": "moon",
+       "color": "mint"
+      },
+      {
+       "id": "op3",
+       "type": "node",
+       "text": "पूरा गोल",
+       "sub": "तीसरा",
+       "glyph": "moon",
+       "color": "amber"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "चंदा मामा माँ से कुरता माँगते हैं, ताकि ठंडी रातों से बच सकें।",
+    "L2": "माँ हँसकर कहती हैं, कल चाँद पतला था और आज मोटा है। ऐसे बदलते नाप का कुरता कैसे बने?",
+    "L3": "यह बात कविता में मज़ेदार है, पर चाँद सचमुच मोटा-पतला नहीं होता।",
+    "L4": "चाँद का आकार वही रहता है; हमें उसकी सूरज की रोशनी वाला हिस्सा कम या ज़्यादा दिखता है।",
+    "L5": "अमावस्या के बाद चाँद पहले पतली लकीर, फिर आधा चाँद और फिर पूरा गोल दिखता है।",
+    "L6": "कविता में ‘आया’ और ‘मचाया’ तुक मिलाने वाले शब्द हैं।",
+    "L7": "सही शब्द ‘चाँद’ है, क्योंकि इसमें चंद्रबिंदु की नाक की गूँज सुनाई देती है।",
+    "L8": "अब बताओ, अमावस्या के बाद चाँद के रूप किस क्रम में दिखाई देते हैं।"
+   },
+   "narration": {
+    "L1": {
+     "text": "चंदा मामा माँ से कुरता माँगते हैं, ताकि ठंडी रातों से बच सकें।",
+     "dur": 6,
+     "lead": 0.2,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L2": {
+     "text": "माँ हँसकर कहती हैं, कल चाँद पतला था और आज मोटा है। ऐसे बदलते नाप का कुरता कैसे बने?",
+     "dur": 8,
+     "lead": 0.2,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L3": {
+     "text": "यह बात कविता में मज़ेदार है, पर चाँद सचमुच मोटा-पतला नहीं होता।",
+     "dur": 6,
+     "lead": 0.2,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L4": {
+     "text": "चाँद का आकार वही रहता है; हमें उसकी सूरज की रोशनी वाला हिस्सा कम या ज़्यादा दिखता है।",
+     "dur": 8,
+     "lead": 0.2,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L5": {
+     "text": "अमावस्या के बाद चाँद पहले पतली लकीर, फिर आधा चाँद और फिर पूरा गोल दिखता है।",
+     "dur": 8,
+     "lead": 0.2,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L6": {
+     "text": "कविता में ‘आया’ और ‘मचाया’ तुक मिलाने वाले शब्द हैं।",
+     "dur": 5,
+     "lead": 0.2,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L7": {
+     "text": "सही शब्द ‘चाँद’ है, क्योंकि इसमें चंद्रबिंदु की नाक की गूँज सुनाई देती है।",
+     "dur": 7,
+     "lead": 0.2,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L8": {
+     "text": "अब बताओ, अमावस्या के बाद चाँद के रूप किस क्रम में दिखाई देते हैं।",
+     "dur": 6,
+     "lead": 0.2,
+     "tail": 0.3,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "title"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.9,
+       "target": [
+        "moon",
+        "cold"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.5,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "thin",
+        "round",
+        "a2"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "thin"
+      },
+      {
+       "at": 2,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "round"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      },
+      {
+       "at": 1.2,
+       "do": "bust",
+       "dur": 1.2,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.9,
+       "target": [
+        "same",
+        "light",
+        "a3"
+       ]
+      },
+      {
+       "at": 1.1,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "a3",
+       "to": 1
+      },
+      {
+       "at": 2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "light"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.9,
+       "target": [
+        "line",
+        "half",
+        "full",
+        "a4",
+        "a5"
+       ]
+      },
+      {
+       "at": 1.1,
+       "do": "flow",
+       "dur": 1,
+       "target": [
+        "a4",
+        "a5"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "want"
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "a1"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "moon"
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 1,
+       "target": "moon"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "checktitle"
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.9,
+       "target": [
+        "op1",
+        "op2",
+        "op3"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive"
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "order",
+    "prompt": "अमावस्या के बाद चाँद के रूपों को सही क्रम में लगाओ।",
+    "items": [
+     "op1",
+     "op2",
+     "op3"
+    ],
+    "src": "c5-hindi-ch03-t01-i11"
+   }
+  },
+  "repairs": [
+   "glyph",
+   "string:light.sub",
+   "cue:target",
+   "targets"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 58
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-hindi-ch03-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "moon",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        180,
+        170
+       ],
+       "r": 65
+      },
+      {
+       "id": "moonlabel",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        270
+       ],
+       "text": "चंदा मामा",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "kurta",
+       "op": "rect",
+       "startMs": 1500,
+       "endMs": 2500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        430,
+        120
+       ],
+       "w": 150,
+       "h": 180,
+       "round": 12
+      },
+      {
+       "id": "kurtaLabel",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        505,
+        330
+       ],
+       "text": "कुरता",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "request",
+       "op": "arrow",
+       "startMs": 3100,
+       "endMs": 3900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        250,
+        170
+       ],
+       "to": [
+        420,
+        200
+       ]
+      },
+      {
+       "id": "cold",
+       "op": "stroke",
+       "startMs": 4000,
+       "endMs": 4700,
+       "ink": "soft",
+       "weight": 2,
+       "points": [
+        [
+         620,
+         390
+        ],
+        [
+         600,
+         360
+        ],
+        [
+         620,
+         330
+        ],
+        [
+         600,
+         300
+        ]
+       ]
+      },
+      {
+       "id": "nights",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        600,
+        440
+       ],
+       "text": "ठंडी रातों",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "protect",
+       "op": "arrow",
+       "startMs": 5300,
+       "endMs": 6100,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        505,
+        300
+       ],
+       "to": [
+        505,
+        370
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-hindi-ch03-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "thin",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        180,
+        180
+       ],
+       "rx": 45,
+       "ry": 75
+      },
+      {
+       "id": "thinLabel",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        285
+       ],
+       "text": "पतला",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "thick",
+       "op": "circle",
+       "startMs": 1500,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        570,
+        180
+       ],
+       "r": 75
+      },
+      {
+       "id": "thickLabel",
+       "op": "text",
+       "startMs": 2400,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        570,
+        285
+       ],
+       "text": "मोटा",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "change",
+       "op": "arrow",
+       "startMs": 3000,
+       "endMs": 3700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        250,
+        180
+       ],
+       "to": [
+        480,
+        180
+       ]
+      },
+      {
+       "id": "measure",
+       "op": "line",
+       "startMs": 3900,
+       "endMs": 4500,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        105,
+        390
+       ],
+       "to": [
+        255,
+        390
+       ]
+      },
+      {
+       "id": "measure2",
+       "op": "line",
+       "startMs": 4500,
+       "endMs": 5100,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        495,
+        390
+       ],
+       "to": [
+        645,
+        390
+       ]
+      },
+      {
+       "id": "kurta",
+       "op": "rect",
+       "startMs": 5200,
+       "endMs": 6100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        325,
+        350
+       ],
+       "w": 150,
+       "h": 90,
+       "round": 10
+      },
+      {
+       "id": "question",
+       "op": "text",
+       "startMs": 6500,
+       "endMs": 7200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        475
+       ],
+       "text": "कैसे बने",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "highlightThin",
+       "op": "highlight",
+       "startMs": 7200,
+       "endMs": 7700,
+       "ink": "accent",
+       "weight": 1,
+       "target": "thin",
+       "style": "circle"
+      },
+      {
+       "id": "highlightThick",
+       "op": "highlight",
+       "startMs": 7700,
+       "endMs": 8685,
+       "ink": "accent",
+       "weight": 1,
+       "target": "thick",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-hindi-ch03-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "poem",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        80
+       ],
+       "text": "कविता",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "fun",
+       "op": "text",
+       "startMs": 800,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        160
+       ],
+       "text": "मज़ेदार",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "moon",
+       "op": "circle",
+       "startMs": 1600,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        315
+       ],
+       "r": 85
+      },
+      {
+       "id": "same",
+       "op": "line",
+       "startMs": 2800,
+       "endMs": 3500,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        315,
+        430
+       ],
+       "to": [
+        485,
+        430
+       ]
+      },
+      {
+       "id": "sameLabel",
+       "op": "text",
+       "startMs": 3700,
+       "endMs": 4700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        475
+       ],
+       "text": "सचमुच मोटा-पतला नहीं",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "highlight",
+       "op": "highlight",
+       "startMs": 4700,
+       "endMs": 5706,
+       "ink": "accent",
+       "weight": 1,
+       "target": "moon",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 2,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-hindi-ch03-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "moon",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        190,
+        220
+       ],
+       "r": 90
+      },
+      {
+       "id": "same",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        190,
+        350
+       ],
+       "text": "आकार वही",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "sun",
+       "op": "circle",
+       "startMs": 1600,
+       "endMs": 2400,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        640,
+        180
+       ],
+       "r": 55,
+       "fill": "accent"
+      },
+      {
+       "id": "ray1",
+       "op": "line",
+       "startMs": 2400,
+       "endMs": 2700,
+       "ink": "accent",
+       "weight": 1,
+       "from": [
+        585,
+        180
+       ],
+       "to": [
+        520,
+        180
+       ]
+      },
+      {
+       "id": "ray2",
+       "op": "line",
+       "startMs": 2700,
+       "endMs": 3000,
+       "ink": "accent",
+       "weight": 1,
+       "from": [
+        600,
+        140
+       ],
+       "to": [
+        550,
+        100
+       ]
+      },
+      {
+       "id": "light",
+       "op": "arrow",
+       "startMs": 3000,
+       "endMs": 3900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        580,
+        190
+       ],
+       "to": [
+        290,
+        220
+       ]
+      },
+      {
+       "id": "less",
+       "op": "text",
+       "startMs": 5400,
+       "endMs": 6300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        380
+       ],
+       "text": "कम या ज़्यादा",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-hindi-ch03-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "newmoon",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "ink",
+       "weight": 2,
+       "c": [
+        105,
+        220
+       ],
+       "r": 50,
+       "fill": "ink"
+      },
+      {
+       "id": "line",
+       "op": "ellipse",
+       "startMs": 900,
+       "endMs": 1600,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        280,
+        220
+       ],
+       "rx": 22,
+       "ry": 65,
+       "fill": "soft"
+      },
+      {
+       "id": "full",
+       "op": "circle",
+       "startMs": 2800,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        660,
+        220
+       ],
+       "r": 70,
+       "fill": "soft"
+      },
+      {
+       "id": "l1",
+       "op": "text",
+       "startMs": 3800,
+       "endMs": 4400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        105,
+        340
+       ],
+       "text": "अमावस्या",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "l2",
+       "op": "text",
+       "startMs": 4400,
+       "endMs": 5000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        280,
+        340
+       ],
+       "text": "पतली लकीर",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "l3",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 5600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        470,
+        340
+       ],
+       "text": "आधा चाँद",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "l4",
+       "op": "text",
+       "startMs": 5600,
+       "endMs": 6200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        660,
+        340
+       ],
+       "text": "पूरा गोल",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "seq",
+       "op": "arrow",
+       "startMs": 6200,
+       "endMs": 6600,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        155,
+        220
+       ],
+       "to": [
+        215,
+        220
+       ]
+      },
+      {
+       "id": "seq2",
+       "op": "arrow",
+       "startMs": 6600,
+       "endMs": 7000,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        335,
+        220
+       ],
+       "to": [
+        405,
+        220
+       ]
+      },
+      {
+       "id": "seq3",
+       "op": "arrow",
+       "startMs": 7000,
+       "endMs": 7409,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        540,
+        220
+       ],
+       "to": [
+        585,
+        220
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-hindi-ch03-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "aaya",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        250,
+        180
+       ],
+       "text": "आया",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "machaya",
+       "op": "text",
+       "startMs": 1000,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        550,
+        180
+       ],
+       "text": "मचाया",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "rhyme",
+       "op": "line",
+       "startMs": 2100,
+       "endMs": 2800,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        250,
+        240
+       ],
+       "to": [
+        550,
+        240
+       ]
+      },
+      {
+       "id": "pair",
+       "op": "text",
+       "startMs": 2900,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        330
+       ],
+       "text": "तुक मिलाने वाले शब्द",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "h1",
+       "op": "highlight",
+       "startMs": 3900,
+       "endMs": 4300,
+       "ink": "accent",
+       "weight": 1,
+       "target": "aaya",
+       "style": "underline"
+      },
+      {
+       "id": "h2",
+       "op": "highlight",
+       "startMs": 4300,
+       "endMs": 4855,
+       "ink": "accent",
+       "weight": 1,
+       "target": "machaya",
+       "style": "underline"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-hindi-ch03-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "word",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        100
+       ],
+       "text": "चाँद",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "part1",
+       "op": "text",
+       "startMs": 1000,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        260,
+        220
+       ],
+       "text": "च",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "plus",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        330,
+        220
+       ],
+       "text": "+",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "aa",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        220
+       ],
+       "text": "ा",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "nasal",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 2800,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        470,
+        220
+       ],
+       "text": "ँ",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "part2",
+       "op": "text",
+       "startMs": 2800,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        540,
+        220
+       ],
+       "text": "द",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "join",
+       "op": "arrow",
+       "startMs": 3500,
+       "endMs": 4200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        260,
+        300
+       ],
+       "to": [
+        540,
+        300
+       ]
+      },
+      {
+       "id": "correct",
+       "op": "text",
+       "startMs": 4400,
+       "endMs": 5200,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        400
+       ],
+       "text": "चाँद",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "echo",
+       "op": "text",
+       "startMs": 5300,
+       "endMs": 6557,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        465
+       ],
+       "text": "चंद्रबिंदु",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-hindi-ch03-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "start",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "ink",
+       "weight": 2,
+       "c": [
+        100,
+        230
+       ],
+       "r": 48,
+       "fill": "ink"
+      },
+      {
+       "id": "thin",
+       "op": "ellipse",
+       "startMs": 800,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        290,
+        230
+       ],
+       "rx": 22,
+       "ry": 65,
+       "fill": "soft"
+      },
+      {
+       "id": "full",
+       "op": "circle",
+       "startMs": 2700,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        700,
+        230
+       ],
+       "r": 70,
+       "fill": "soft"
+      },
+      {
+       "id": "a1",
+       "op": "arrow",
+       "startMs": 3600,
+       "endMs": 4000,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        150,
+        230
+       ],
+       "to": [
+        245,
+        230
+       ]
+      },
+      {
+       "id": "a2",
+       "op": "arrow",
+       "startMs": 4000,
+       "endMs": 4400,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        335,
+        230
+       ],
+       "to": [
+        425,
+        230
+       ]
+      },
+      {
+       "id": "a3",
+       "op": "arrow",
+       "startMs": 4400,
+       "endMs": 4800,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        555,
+        230
+       ],
+       "to": [
+        625,
+        230
+       ]
+      },
+      {
+       "id": "label1",
+       "op": "text",
+       "startMs": 4800,
+       "endMs": 5400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        100,
+        350
+       ],
+       "text": "अमावस्या",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "label2",
+       "op": "text",
+       "startMs": 5400,
+       "endMs": 6000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        490,
+        350
+       ],
+       "text": "आधा चाँद",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "label3",
+       "op": "text",
+       "startMs": 6000,
+       "endMs": 6557,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        700,
+        350
+       ],
+       "text": "पूरा गोल",
+       "size": "s",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "b0:*",
+   "key": "चंदा · पर",
+   "prompt": "stressed words in: चंदा मामा ज़िद पर आया"
+  },
+  {
+   "itemId": "b1:*",
+   "key": "माँ · शोर",
+   "prompt": "stressed words in: माँ के आगे शोर मचाया"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "मचाया",
+   "prompt": "‘आया’ से मेल खाता शब्द चुनो। [मचाया / कुरता / माँ]",
+   "src": "c5-hindi-ch03-t01-i04"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "छोटा",
+   "prompt": "‘मोटा’ से मेल खाता शब्द चुनो। [छोटा / चाँद / ठंड]",
+   "src": "c5-hindi-ch03-t01-i05"
+  },
+  {
+   "itemId": "m2:*",
+   "key": "11211221222",
+   "prompt": "मात्रा: कल था पतला, आज है मोटा"
+  },
+  {
+   "itemId": "m3:*",
+   "key": "2112221222",
+   "prompt": "मात्रा: रोज़ नया-सा रूप तुम्हारा"
+  }
+ ],
+ "check": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "Game round 'ताल पकड़ो' shows stressed words as 'चंदा · पर' and 'माँ · शोर' but the kit poem lines do not mark any specific stressed syllables; the game's own computed stress pattern may be different from the poem's natural emphasis, but this is a design choice, not a factual error.",
+    "severity": "low"
+   },
+   {
+    "where": "game",
+    "what": "In round 'तुक पकड़ो', item with cue 'मोटा' has options 'छोटा', 'चाँद', 'ठंड' and answer 'छोटा'. While 'छोटा' rhymes with 'मोटा' in the poem line 'कल था पतला, आज है मोटा', the kit item i05 expects any '-ओटा' word like 'छोटा' or 'लोटा', not specifically 'छोटा'. The answer 'छोटा' is acceptable and not incorrect; no issue.",
+    "severity": "low"
+   }
+  ],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

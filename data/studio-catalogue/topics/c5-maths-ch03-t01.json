@@ -1,0 +1,1517 @@
+{
+ "topicId": "c5-maths-ch03-t01",
+ "title": "Angles as amount of turning",
+ "chapter": "Angles as Turns",
+ "subject": "maths",
+ "class": 5,
+ "topicType": "T3",
+ "plan": {
+  "game": "angle-cannon@1",
+  "hint": "turret angles: turns, types, measuring"
+ },
+ "game": {
+  "archetype": "angle-cannon@1",
+  "spec": {
+   "archetype": "angle-cannon@1",
+   "skills": [
+    "c5-maths-ch03-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "coach": "Drag to turn the turret · release to fire",
+    "wave": "Wave",
+    "threat": "THREAT AT",
+    "copy": "COPY THIS TURN",
+    "only": "HIT ONLY",
+    "hit": "DIRECT HIT",
+    "close": "CLOSE",
+    "offBy": "off by",
+    "runDone": "Sector clear",
+    "accuracy": "accuracy",
+    "hits": "hits",
+    "acute": "ACUTE",
+    "right": "RIGHT",
+    "obtuse": "OBTUSE",
+    "reflex": "REFLEX"
+   },
+   "waves": [
+    {
+     "title": "Clock turns",
+     "sub": "match each turn around the clock",
+     "mode": "call",
+     "items": [
+      90,
+      180,
+      270
+     ],
+     "range": 360,
+     "scaffold": "tens",
+     "speed": 0.7
+    },
+    {
+     "title": "Turn and copy",
+     "sub": "copy the amount of opening",
+     "mode": "copy",
+     "items": [
+      45,
+      90,
+      135
+     ],
+     "range": 180,
+     "scaffold": "protractor",
+     "speed": 0.8,
+     "targets": "c5-maths-ch03-t01-m-angle-is-length"
+    },
+    {
+     "title": "Find the corner",
+     "sub": "choose the angle type",
+     "mode": "classify",
+     "items": [
+      45,
+      90,
+      120,
+      90,
+      30,
+      150
+     ],
+     "kind": "right",
+     "range": 180,
+     "scaffold": "none",
+     "speed": 0.9
+    },
+    {
+     "title": "Past the opposite",
+     "sub": "keep turning around the full circle",
+     "mode": "call",
+     "items": [
+      180,
+      270,
+      90,
+      135
+     ],
+     "range": 360,
+     "scaffold": "none",
+     "speed": 1,
+     "targets": "c5-maths-ch03-t01-m-half-is-quarter"
+    }
+   ]
+  },
+  "repairs": [
+   "items:dropped"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c5-maths-ch03-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Angles as amount of turning",
+   "accent": "ion",
+   "targets": "c5-maths-ch03-t01-m-angle-is-length",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Angles as turning"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Longer arms make a bigger angle"
+      },
+      {
+       "id": "turn",
+       "type": "node",
+       "text": "Amount of turn",
+       "sub": "not arm length",
+       "glyph": "compass",
+       "color": "ion"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "clock",
+       "type": "node",
+       "text": "Clock face",
+       "sub": "clockwise guide",
+       "glyph": "clock",
+       "color": "sci"
+      },
+      {
+       "id": "quarter",
+       "type": "node",
+       "text": "Quarter turn",
+       "sub": "1 right angle",
+       "color": "mint"
+      },
+      {
+       "id": "half",
+       "type": "node",
+       "text": "Half turn",
+       "sub": "opposite way",
+       "glyph": "compass",
+       "color": "amber"
+      },
+      {
+       "id": "three",
+       "type": "node",
+       "text": "Three-quarter",
+       "sub": "3 quarter turns",
+       "glyph": "wheel",
+       "color": "sun"
+      },
+      {
+       "id": "full",
+       "type": "node",
+       "text": "Full turn",
+       "sub": "back to start",
+       "glyph": "spark",
+       "color": "volt"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "clock",
+       "to": "quarter",
+       "text": "12 to 3"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "quarter",
+       "to": "half",
+       "text": "two quarters"
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "half",
+       "to": "three",
+       "text": "three quarters"
+      },
+      {
+       "id": "a4",
+       "type": "arrow",
+       "from": "three",
+       "to": "full",
+       "text": "four quarters"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "cw",
+       "type": "node",
+       "text": "Clockwise",
+       "sub": "12 to 3 to 6",
+       "glyph": "clock",
+       "color": "sci"
+      },
+      {
+       "id": "acw",
+       "type": "node",
+       "text": "Anticlockwise",
+       "sub": "opposite way",
+       "glyph": "compass",
+       "color": "ion"
+      },
+      {
+       "id": "same",
+       "type": "node",
+       "text": "Same place",
+       "glyph": "balance",
+       "color": "mint"
+      },
+      {
+       "id": "two",
+       "type": "node",
+       "text": "2",
+       "sub": "quarter turns",
+       "color": "amber"
+      },
+      {
+       "id": "one",
+       "type": "node",
+       "text": "1",
+       "sub": "quarter turn",
+       "color": "mint"
+      },
+      {
+       "id": "threeOpt",
+       "type": "node",
+       "text": "3",
+       "sub": "quarter turns",
+       "color": "sun"
+      },
+      {
+       "id": "fourOpt",
+       "type": "node",
+       "text": "4",
+       "sub": "quarter turns",
+       "color": "volt"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "An angle measures how much something turns, not how long its arms are.",
+    "L2": "So the longer arms in this myth do not make the angle bigger.",
+    "L3": "A full turn brings you back to where you started.",
+    "L4": "A quarter turn is one right angle, and four quarter turns make a full turn.",
+    "L5": "A half turn is two quarter turns, so you face the opposite way.",
+    "L6": "Three quarter turns are three quarter turns of a full turn.",
+    "L7": "Clockwise follows clock hands; anticlockwise goes the other way.",
+    "L8": "Now check: how many quarter turns make a half turn?"
+   },
+   "narration": {},
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "title"
+      },
+      {
+       "at": 0.4,
+       "do": "show",
+       "dur": 0.8,
+       "target": "turn"
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 1,
+       "target": "turn"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "myth"
+      },
+      {
+       "at": 0.5,
+       "do": "bust",
+       "dur": 1.2,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "clock",
+        "full"
+       ]
+      },
+      {
+       "at": 0.6,
+       "do": "highlight",
+       "dur": 1,
+       "target": "full"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "quarter",
+        "a1",
+        "a4"
+       ]
+      },
+      {
+       "at": 0.7,
+       "do": "flow",
+       "dur": 0.8,
+       "target": [
+        "a1",
+        "a4"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "half",
+        "a2"
+       ]
+      },
+      {
+       "at": 0.5,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "a2",
+       "to": 1
+      },
+      {
+       "at": 1.2,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "half"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "three",
+        "a3"
+       ]
+      },
+      {
+       "at": 0.5,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "a3",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "cw",
+        "acw",
+        "same"
+       ]
+      },
+      {
+       "at": 0.6,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "cw"
+      },
+      {
+       "at": 1.4,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "acw"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "two",
+        "one",
+        "threeOpt",
+        "fourOpt"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "How many quarter turns make a half turn?",
+    "options": [
+     "one",
+     "two",
+     "threeOpt",
+     "fourOpt"
+    ],
+    "answer": "two",
+    "src": "c5-maths-ch03-t01-i02"
+   }
+  },
+  "repairs": [
+   "glyph",
+   "string:same.sub",
+   "glyph",
+   "glyph",
+   "glyph",
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 46
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch03-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "arc1",
+       "op": "sector",
+       "startMs": 0,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        270,
+        250
+       ],
+       "r": 125,
+       "fill": "soft",
+       "fromDeg": 210,
+       "toDeg": 330
+      },
+      {
+       "id": "arm1",
+       "op": "line",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        270,
+        250
+       ],
+       "to": [
+        160,
+        185
+       ]
+      },
+      {
+       "id": "arm2",
+       "op": "line",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        270,
+        250
+       ],
+       "to": [
+        380,
+        185
+       ]
+      },
+      {
+       "id": "turn",
+       "op": "arrow",
+       "startMs": 1500,
+       "endMs": 2800,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        190,
+        205
+       ],
+       "to": [
+        350,
+        205
+       ],
+       "bend": 1
+      },
+      {
+       "id": "angle",
+       "op": "text",
+       "startMs": 2800,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        270,
+        315
+       ],
+       "text": "angle",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "measure",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4200,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        270,
+        365
+       ],
+       "text": "turn",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "notlength",
+       "op": "text",
+       "startMs": 4400,
+       "endMs": 5300,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        270,
+        425
+       ],
+       "text": "not length",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch03-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "long1",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        270,
+        250
+       ],
+       "to": [
+        90,
+        140
+       ]
+      },
+      {
+       "id": "long2",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        270,
+        250
+       ],
+       "to": [
+        450,
+        140
+       ]
+      },
+      {
+       "id": "samearc",
+       "op": "sector",
+       "startMs": 900,
+       "endMs": 1800,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        270,
+        250
+       ],
+       "r": 125,
+       "fill": "soft",
+       "fromDeg": 210,
+       "toDeg": 330
+      },
+      {
+       "id": "same",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 3200,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        270,
+        330
+       ],
+       "text": "same angle",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "myth",
+       "op": "text",
+       "startMs": 3400,
+       "endMs": 4400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        270,
+        390
+       ],
+       "text": "long arms",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "cross",
+       "op": "line",
+       "startMs": 4500,
+       "endMs": 5000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        190,
+        370
+       ],
+       "to": [
+        350,
+        415
+       ]
+      },
+      {
+       "id": "cross2",
+       "op": "line",
+       "startMs": 4500,
+       "endMs": 5000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        350,
+        370
+       ],
+       "to": [
+        190,
+        415
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch03-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "fullcircle",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        250
+       ],
+       "r": 145
+      },
+      {
+       "id": "startdot",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1300,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        400,
+        105
+       ],
+       "r": 8,
+       "fill": "accent"
+      },
+      {
+       "id": "turnarrow",
+       "op": "arrow",
+       "startMs": 1300,
+       "endMs": 2800,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        400,
+        105
+       ],
+       "to": [
+        520,
+        250
+       ],
+       "bend": 1
+      },
+      {
+       "id": "back",
+       "op": "arrow",
+       "startMs": 2800,
+       "endMs": 3800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        520,
+        250
+       ],
+       "to": [
+        400,
+        105
+       ],
+       "bend": 1
+      },
+      {
+       "id": "full",
+       "op": "text",
+       "startMs": 3800,
+       "endMs": 4855,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        420
+       ],
+       "text": "full turn",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch03-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "qcircle",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        250
+       ],
+       "r": 145
+      },
+      {
+       "id": "q1",
+       "op": "line",
+       "startMs": 900,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        400,
+        105
+       ],
+       "to": [
+        545,
+        250
+       ]
+      },
+      {
+       "id": "q2",
+       "op": "line",
+       "startMs": 1400,
+       "endMs": 1900,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        545,
+        250
+       ],
+       "to": [
+        400,
+        395
+       ]
+      },
+      {
+       "id": "q3",
+       "op": "line",
+       "startMs": 1900,
+       "endMs": 2400,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        400,
+        395
+       ],
+       "to": [
+        255,
+        250
+       ]
+      },
+      {
+       "id": "q4",
+       "op": "line",
+       "startMs": 2400,
+       "endMs": 2900,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        255,
+        250
+       ],
+       "to": [
+        400,
+        105
+       ]
+      },
+      {
+       "id": "quarter",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 4000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        445
+       ],
+       "text": "quarter turn",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "right",
+       "op": "text",
+       "startMs": 4100,
+       "endMs": 5100,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        475
+       ],
+       "text": "right angle",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "four",
+       "op": "numwork",
+       "startMs": 5200,
+       "endMs": 6983,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        90,
+        55
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "4",
+         "quarte",
+         "=",
+         "full t"
+        ]
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch03-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "halfarc",
+       "op": "sector",
+       "startMs": 0,
+       "endMs": 1300,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        250
+       ],
+       "r": 145,
+       "fill": "soft",
+       "fromDeg": 90,
+       "toDeg": 270
+      },
+      {
+       "id": "halfline",
+       "op": "line",
+       "startMs": 900,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        400,
+        105
+       ],
+       "to": [
+        400,
+        395
+       ]
+      },
+      {
+       "id": "two",
+       "op": "numwork",
+       "startMs": 1700,
+       "endMs": 3300,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        90,
+        80
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "2",
+         "quarte",
+         "=",
+         "half t"
+        ]
+       ]
+      },
+      {
+       "id": "opposite1",
+       "op": "arrow",
+       "startMs": 3400,
+       "endMs": 4500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        105
+       ],
+       "to": [
+        400,
+        395
+       ]
+      },
+      {
+       "id": "opposite",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5600,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        440
+       ],
+       "text": "opposite way",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch03-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "threearc",
+       "op": "sector",
+       "startMs": 0,
+       "endMs": 1600,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        250
+       ],
+       "r": 145,
+       "fill": "soft",
+       "fromDeg": 0,
+       "toDeg": 270
+      },
+      {
+       "id": "three1",
+       "op": "line",
+       "startMs": 800,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        400,
+        105
+       ],
+       "to": [
+        545,
+        250
+       ]
+      },
+      {
+       "id": "three2",
+       "op": "line",
+       "startMs": 1200,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        545,
+        250
+       ],
+       "to": [
+        400,
+        395
+       ]
+      },
+      {
+       "id": "three3",
+       "op": "line",
+       "startMs": 1600,
+       "endMs": 2000,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        400,
+        395
+       ],
+       "to": [
+        255,
+        250
+       ]
+      },
+      {
+       "id": "three",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        445
+       ],
+       "text": "three quarter turns",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "fullref",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 4800,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        400,
+        475
+       ],
+       "text": "full turn",
+       "size": "s",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch03-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4430,
+     "ops": [
+      {
+       "id": "clock",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        240
+       ],
+       "r": 145
+      },
+      {
+       "id": "hand1",
+       "op": "line",
+       "startMs": 700,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        400,
+        240
+       ],
+       "to": [
+        400,
+        115
+       ]
+      },
+      {
+       "id": "hand2",
+       "op": "line",
+       "startMs": 700,
+       "endMs": 1200,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        400,
+        240
+       ],
+       "to": [
+        500,
+        325
+       ]
+      },
+      {
+       "id": "cw",
+       "op": "arrow",
+       "startMs": 1300,
+       "endMs": 2400,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        400,
+        105
+       ],
+       "to": [
+        520,
+        240
+       ],
+       "bend": 1
+      },
+      {
+       "id": "clockwise",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        420
+       ],
+       "text": "clockwise",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "anticlock",
+       "op": "arrow",
+       "startMs": 2800,
+       "endMs": 3800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        105
+       ],
+       "to": [
+        280,
+        240
+       ],
+       "bend": -1
+      },
+      {
+       "id": "anti",
+       "op": "text",
+       "startMs": 3700,
+       "endMs": 4430,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        400,
+        465
+       ],
+       "text": "anticlockwise",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch03-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "check",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        90
+       ],
+       "text": "check",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "halfdiagram",
+       "op": "circle",
+       "startMs": 600,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        260
+       ],
+       "r": 120
+      },
+      {
+       "id": "halfdiam",
+       "op": "line",
+       "startMs": 1100,
+       "endMs": 1700,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        400,
+        140
+       ],
+       "to": [
+        400,
+        380
+       ]
+      },
+      {
+       "id": "qmark",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2400,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        220
+       ],
+       "text": "?",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "answerline",
+       "op": "numwork",
+       "startMs": 2600,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        170,
+        410
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "quarte",
+         "=",
+         "?"
+        ]
+       ]
+      },
+      {
+       "id": "answer",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4855,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        470
+       ],
+       "text": "2",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

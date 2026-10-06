@@ -1,0 +1,1473 @@
+{
+ "topicId": "c7-maths-ch03-t04",
+ "title": "Adding and subtracting decimals",
+ "chapter": "A Peek Beyond the Point",
+ "subject": "maths",
+ "class": 7,
+ "topicType": "T4",
+ "plan": {
+  "game": "dukaan@1",
+  "hint": "pay and change with paise (decimals in money); one estimate round"
+ },
+ "game": {
+  "archetype": "dukaan@1",
+  "spec": {
+   "archetype": "dukaan@1",
+   "skills": [
+    "c7-maths-ch03-t04"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "served": "served",
+    "patience": "patience",
+    "bill": "Bill",
+    "pays": "Pays",
+    "change": "Change",
+    "pack": "Pack",
+    "crates": "crates",
+    "left": "left over",
+    "enough": "Enough",
+    "notEnough": "Not enough",
+    "budget": "Has",
+    "coach": "Tap notes and coins to put them on the counter",
+    "runDone": "Shop closed",
+    "exact": "EXACT",
+    "short": "short by",
+    "over": "over by",
+    "carry": "carry them all",
+    "full": "full crates to sell",
+    "each": "each",
+    "inLast": "in the last"
+   },
+   "title": "Dukaan Rush",
+   "rounds": [
+    {
+     "mode": "pay",
+     "title": "Pay the exact bill",
+     "sub": "Line up the points",
+     "customers": [
+      {
+       "items": [
+        {
+         "name": "Rice",
+         "price": 6250,
+         "qty": 1
+        }
+       ]
+      },
+      {
+       "items": [
+        {
+         "name": "Notebook",
+         "price": 4850,
+         "qty": 2
+        },
+        {
+         "name": "Juice",
+         "price": 3750,
+         "qty": 1
+        }
+       ]
+      }
+     ],
+     "coins": true,
+     "speed": 0.9,
+     "targets": "c7-maths-ch03-t04-m-right-align"
+    },
+    {
+     "mode": "change",
+     "title": "Give the change",
+     "sub": "Use notes and coins",
+     "customers": [
+      {
+       "items": [
+        {
+         "name": "Snacks",
+         "price": 8650,
+         "qty": 1
+        }
+       ],
+       "pays": 20000
+      }
+     ],
+     "coins": true,
+     "speed": 0.85
+    },
+    {
+     "mode": "estimate",
+     "title": "Call the basket",
+     "sub": "Estimate, then check",
+     "customers": [
+      {
+       "items": [
+        {
+         "name": "Biscuits",
+         "price": 3150,
+         "qty": 2
+        }
+       ],
+       "budget": 12000
+      },
+      {
+       "items": [
+        {
+         "name": "Rice",
+         "price": 6250,
+         "qty": 1
+        }
+       ],
+       "budget": 10000
+      },
+      {
+       "items": [
+        {
+         "name": "Salt",
+         "price": 2200,
+         "qty": 1
+        }
+       ],
+       "budget": 16000
+      }
+     ],
+     "coins": true,
+     "speed": 0.8
+    }
+   ]
+  },
+  "repairs": [
+   "price:not-payable",
+   "price:not-payable",
+   "price:not-payable",
+   "price:not-payable",
+   "price:not-payable",
+   "price:not-payable"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-maths-ch03-t04"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Right",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "BUSTED",
+    "order": "Tap them in order"
+   },
+   "title": "Adding and subtracting decimals",
+   "accent": "ion",
+   "targets": "c7-maths-ch03-t04-m-right-align",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Adding decimals"
+      },
+      {
+       "id": "prob",
+       "type": "label",
+       "text": "14.6 + 2.85"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Line up the last digits"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "column",
+     "els": [
+      {
+       "id": "a",
+       "type": "node",
+       "text": "14.60",
+       "sub": "whole and decimal",
+       "glyph": "ruler",
+       "color": "ion"
+      },
+      {
+       "id": "b",
+       "type": "node",
+       "text": "2.85",
+       "sub": "two decimal places",
+       "glyph": "ruler",
+       "color": "mint"
+      },
+      {
+       "id": "p1",
+       "type": "label",
+       "text": "decimal points",
+       "x": 300,
+       "y": 240,
+       "color": "amber"
+      },
+      {
+       "id": "p2",
+       "type": "label",
+       "text": "equal places",
+       "x": 300,
+       "y": 330,
+       "color": "amber"
+      },
+      {
+       "id": "z",
+       "type": "node",
+       "text": "0",
+       "sub": "hundredths",
+       "glyph": "spark",
+       "color": "sun"
+      },
+      {
+       "id": "arrow1",
+       "type": "arrow",
+       "from": "a",
+       "to": "p1",
+       "text": "line up"
+      },
+      {
+       "id": "arrow2",
+       "type": "arrow",
+       "from": "b",
+       "to": "p1",
+       "text": "line up"
+      },
+      {
+       "id": "arrow3",
+       "type": "arrow",
+       "from": "z",
+       "to": "p2",
+       "text": "fill zero"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "ask",
+       "type": "title",
+       "text": "Which sum is correct?"
+      },
+      {
+       "id": "opt1",
+       "type": "node",
+       "text": "17.45",
+       "sub": "14.60 + 2.85",
+       "color": "mint"
+      },
+      {
+       "id": "opt2",
+       "type": "node",
+       "text": "16.25",
+       "sub": "misaligned",
+       "glyph": "question",
+       "color": "amber"
+      },
+      {
+       "id": "opt3",
+       "type": "node",
+       "text": "17.05",
+       "sub": "check places",
+       "glyph": "question",
+       "color": "volt"
+      },
+      {
+       "id": "opt4",
+       "type": "node",
+       "text": "16.95",
+       "sub": "check places",
+       "glyph": "question",
+       "color": "sun"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "To add decimals, line up the decimal points first.",
+    "L2": "A common mistake is lining up the last digits like whole numbers. That does not keep place values together.",
+    "L3": "For 14.6 plus 2.85, write 14.6 as 14.60 so both numbers have hundredths.",
+    "L4": "Now the points line up: 14.60 is above 2.85.",
+    "L5": "Add the hundredths: zero plus five is five. Then add the tenths: six plus eight is fourteen, so write four and carry one.",
+    "L6": "Add the ones: four plus two plus the carried one is seven. The answer is 17.45.",
+    "L7": "For subtraction, write a whole number with zeros, such as 5.00, and trade exactly as with whole numbers.",
+    "L8": "Estimate with whole numbers to check that your answer makes sense. Now choose the correct sum."
+   },
+   "narration": {
+    "L1": {
+     "text": "To add decimals, line up the decimal points first.",
+     "dur": 2.4,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L2": {
+     "text": "A common mistake is lining up the last digits like whole numbers. That does not keep place values together.",
+     "dur": 4.2,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L3": {
+     "text": "For 14.6 plus 2.85, write 14.6 as 14.60 so both numbers have hundredths.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L4": {
+     "text": "Now the points line up: 14.60 is above 2.85.",
+     "dur": 2.8,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L5": {
+     "text": "Add the hundredths: zero plus five is five. Then add the tenths: six plus eight is fourteen, so write four and carry one.",
+     "dur": 5.8,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Add the ones: four plus two plus the carried one is seven. The answer is 17.45.",
+     "dur": 3.4,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L7": {
+     "text": "For subtraction, write a whole number with zeros, such as 5.00, and trade exactly as with whole numbers.",
+     "dur": 4.4,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Estimate with whole numbers to check that your answer makes sense. Now choose the correct sum.",
+     "dur": 3.6,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.3,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "title"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.7,
+       "target": "prob"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "myth"
+      },
+      {
+       "at": 1,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "a",
+        "b"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.6,
+       "target": "z"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "arrow1",
+        "arrow2",
+        "p1"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 0.6,
+       "target": [
+        "arrow1",
+        "arrow2"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "z"
+      },
+      {
+       "at": 0.9,
+       "do": "highlight",
+       "dur": 1.1,
+       "target": "b"
+      },
+      {
+       "at": 2.2,
+       "do": "show",
+       "dur": 0.6,
+       "target": "p2"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "a"
+      },
+      {
+       "at": 1.2,
+       "do": "camera",
+       "dur": 1.5,
+       "zoom": 1.06
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "arrow3"
+      },
+      {
+       "at": 0.7,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "arrow3",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.9,
+       "target": [
+        "ask",
+        "opt1",
+        "opt2",
+        "opt3",
+        "opt4"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive"
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Tap the correctly aligned sum for 14.6 + 2.85.",
+    "options": [
+     "opt1",
+     "opt2",
+     "opt3",
+     "opt4"
+    ],
+    "answer": "opt1",
+    "src": "c7-maths-ch03-t04-i02"
+   }
+  },
+  "repairs": [
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "passes": 2,
+  "seconds": 34
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "₹62.50",
+   "prompt": "pay: 1×Rice@₹62.50"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "₹134.50",
+   "prompt": "pay: 2×Notebook@₹48.50, 1×Juice@₹37.50"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "₹113.50",
+   "prompt": "change: 1×Snacks@₹86.50 pays ₹200"
+  },
+  {
+   "itemId": "r3:0",
+   "key": "true",
+   "prompt": "estimate: 2×Biscuits@₹31.50 has ₹120"
+  },
+  {
+   "itemId": "r3:1",
+   "key": "true",
+   "prompt": "estimate: 1×Rice@₹62.50 has ₹100"
+  },
+  {
+   "itemId": "r3:2",
+   "key": "true",
+   "prompt": "estimate: 1×Salt@₹22 has ₹160"
+  }
+ ],
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch03-t04-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4430,
+     "ops": [
+      {
+       "id": "title",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "Add decimals",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "d1",
+       "op": "numwork",
+       "startMs": 700,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        220,
+        150
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "decima",
+         "point"
+        ]
+       ]
+      },
+      {
+       "id": "vline",
+       "op": "line",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        360,
+        110
+       ],
+       "to": [
+        360,
+        390
+       ]
+      },
+      {
+       "id": "a1",
+       "op": "arrow",
+       "startMs": 2200,
+       "endMs": 3000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        270,
+        320
+       ],
+       "to": [
+        350,
+        320
+       ]
+      },
+      {
+       "id": "a2",
+       "op": "arrow",
+       "startMs": 3000,
+       "endMs": 3800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        450,
+        320
+       ],
+       "to": [
+        370,
+        320
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch03-t04-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "wrong",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        130
+       ],
+       "layout": "column_add",
+       "rows": [
+        [
+         "14.6"
+        ],
+        [
+         "2.85"
+        ]
+       ]
+      },
+      {
+       "id": "wrongline",
+       "op": "line",
+       "startMs": 1300,
+       "endMs": 1900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        120,
+        225
+       ],
+       "to": [
+        270,
+        225
+       ]
+      },
+      {
+       "id": "cross",
+       "op": "line",
+       "startMs": 2200,
+       "endMs": 3000,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        105,
+        105
+       ],
+       "to": [
+        285,
+        240
+       ]
+      },
+      {
+       "id": "place",
+       "op": "text",
+       "startMs": 3200,
+       "endMs": 4200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        470,
+        125
+       ],
+       "text": "place values",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "slots",
+       "op": "numwork",
+       "startMs": 4300,
+       "endMs": 5600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        180
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "tenths",
+         "hundre"
+        ]
+       ]
+      },
+      {
+       "id": "check",
+       "op": "highlight",
+       "startMs": 6000,
+       "endMs": 7000,
+       "ink": "good",
+       "weight": 2,
+       "target": "slots",
+       "style": "underline"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch03-t04-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "prob",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "14.6 + 2.85",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "expanded",
+       "op": "numwork",
+       "startMs": 800,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        250,
+        145
+       ],
+       "layout": "column_add",
+       "rows": [
+        [
+         "1",
+         "4",
+         ".",
+         "6",
+         "0"
+        ],
+        [
+         "0",
+         "2",
+         ".",
+         "8",
+         "5"
+        ]
+       ]
+      },
+      {
+       "id": "zero",
+       "op": "highlight",
+       "startMs": 2400,
+       "endMs": 3300,
+       "ink": "accent",
+       "weight": 2,
+       "target": "expanded",
+       "style": "circle"
+      },
+      {
+       "id": "hundredths",
+       "op": "label",
+       "startMs": 3300,
+       "endMs": 4400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        580,
+        280
+       ],
+       "text": "hundredths",
+       "to": [
+        490,
+        245
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch03-t04-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 4430,
+     "ops": [
+      {
+       "id": "top",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        250,
+        130
+       ],
+       "layout": "column_add",
+       "rows": [
+        [
+         "1",
+         "4",
+         ".",
+         "6",
+         "0"
+        ],
+        [
+         "2",
+         ".",
+         "8",
+         "5"
+        ]
+       ]
+      },
+      {
+       "id": "pointline",
+       "op": "line",
+       "startMs": 1200,
+       "endMs": 2100,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        400,
+        105
+       ],
+       "to": [
+        400,
+        275
+       ]
+      },
+      {
+       "id": "above",
+       "op": "label",
+       "startMs": 2200,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        480,
+        120
+       ],
+       "text": "above",
+       "to": [
+        400,
+        145
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch03-t04-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 10387,
+     "ops": [
+      {
+       "id": "columns",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        220,
+        120
+       ],
+       "layout": "column_add",
+       "rows": [
+        [
+         "1",
+         "4",
+         ".",
+         "6",
+         "0"
+        ],
+        [
+         "0",
+         "2",
+         ".",
+         "8",
+         "5"
+        ],
+        [
+         "",
+         "",
+         "",
+         "",
+         "5"
+        ]
+       ]
+      },
+      {
+       "id": "hund",
+       "op": "numwork",
+       "startMs": 1600,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        420,
+        300
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "0",
+         "+",
+         "5",
+         "=",
+         "5"
+        ]
+       ]
+      },
+      {
+       "id": "tenths",
+       "op": "numwork",
+       "startMs": 3200,
+       "endMs": 4700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        420,
+        365
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "6",
+         "+",
+         "8",
+         "=",
+         "14"
+        ]
+       ]
+      },
+      {
+       "id": "carry",
+       "op": "label",
+       "startMs": 5000,
+       "endMs": 6200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        540,
+        330
+       ],
+       "text": "carry 1",
+       "to": [
+        475,
+        350
+       ]
+      },
+      {
+       "id": "write4",
+       "op": "label",
+       "startMs": 6500,
+       "endMs": 7600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        540,
+        390
+       ],
+       "text": "write 4",
+       "to": [
+        500,
+        390
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch03-t04-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "ones",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        180,
+        120
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "4",
+         "+",
+         "2",
+         "+",
+         "1",
+         "=",
+         "7"
+        ]
+       ]
+      },
+      {
+       "id": "tens",
+       "op": "label",
+       "startMs": 1900,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        190,
+        220
+       ],
+       "text": "1"
+      },
+      {
+       "id": "answer",
+       "op": "numwork",
+       "startMs": 3000,
+       "endMs": 5000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        420,
+        300
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "14.6",
+         "+",
+         "2.85",
+         "=",
+         "17.45"
+        ]
+       ]
+      },
+      {
+       "id": "box",
+       "op": "rect",
+       "startMs": 5100,
+       "endMs": 6100,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        270
+       ],
+       "w": 280,
+       "h": 70,
+       "round": 8
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch03-t04-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "sub",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "Subtraction",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "whole",
+       "op": "numwork",
+       "startMs": 800,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        280,
+        130
+       ],
+       "layout": "column_sub",
+       "rows": [
+        [
+         "5",
+         ".",
+         "0",
+         "0"
+        ],
+        [
+         "",
+         "",
+         "",
+         ""
+        ]
+       ]
+      },
+      {
+       "id": "zeros",
+       "op": "highlight",
+       "startMs": 1900,
+       "endMs": 2800,
+       "ink": "accent",
+       "weight": 2,
+       "target": "whole",
+       "style": "circle"
+      },
+      {
+       "id": "trade",
+       "op": "arrow",
+       "startMs": 3000,
+       "endMs": 3900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        440,
+        180
+       ],
+       "to": [
+        540,
+        180
+       ]
+      },
+      {
+       "id": "same",
+       "op": "label",
+       "startMs": 4100,
+       "endMs": 5400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        470,
+        260
+       ],
+       "text": "whole numbers",
+       "to": [
+        400,
+        205
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch03-t04-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "estimate",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "Estimate",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "round",
+       "op": "arrow",
+       "startMs": 900,
+       "endMs": 1800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        250,
+        150
+       ],
+       "to": [
+        400,
+        150
+       ]
+      },
+      {
+       "id": "whole",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        170,
+        150
+       ],
+       "text": "whole",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "sum",
+       "op": "numwork",
+       "startMs": 2200,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        230,
+        245
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "sum",
+         "≈",
+         "whole"
+        ]
+       ]
+      },
+      {
+       "id": "check",
+       "op": "circle",
+       "startMs": 4000,
+       "endMs": 5000,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        430,
+        265
+       ],
+       "r": 70
+      },
+      {
+       "id": "choose",
+       "op": "label",
+       "startMs": 5200,
+       "endMs": 6500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        430,
+        390
+       ],
+       "text": "correct sum",
+       "to": [
+        430,
+        335
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

@@ -1,0 +1,1350 @@
+{
+ "topicId": "c4-maths-ch07-t02",
+ "title": "Estimating costs",
+ "chapter": "The Cleanest Village",
+ "subject": "maths",
+ "class": 4,
+ "topicType": "T5",
+ "plan": {
+  "game": "dukaan@1",
+  "hint": "estimate mode (round to the nearest 10/100/1000 before deciding)"
+ },
+ "game": {
+  "archetype": "dukaan@1",
+  "spec": null,
+  "repairs": [
+   "failed after 3 attempts"
+  ],
+  "lastFeedback": "the spec was rejected and replaced by the default (num:price; num:price; num:price; price:not-payable; num:price; round:customers; price:not-payable; price:not-payable; num:price; price:not-payable; price:not-payable; price:not-payable; round:customers; price:not-payable; price:not-payable; price:not-payable; price:not-payable; price:not-payable; round:customers; fallback-default; unknown kit id \"c5-maths-ch09-t02-m-always-drop\" (use one of: c4-maths-ch07-t02, c4-maths-ch07-t02-m-estimate-equals-exact, c4-maths-ch07-t02-m-estimate-is-guess, c4-maths-ch07-t02-m-estimate-at-limit, c4-maths-ch07-",
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "passes": 2
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c4-maths-ch07-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Right",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "BUSTED",
+    "order": "Tap them in order"
+   },
+   "title": "Estimating costs",
+   "accent": "amber",
+   "targets": "c4-maths-ch07-t02-m-estimate-equals-exact",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Estimating costs"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "An estimate must equal the exact answer"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "p1",
+       "type": "node",
+       "text": "₹185",
+       "sub": "cap"
+      },
+      {
+       "id": "p2",
+       "type": "node",
+       "text": "₹122",
+       "sub": "bottle"
+      },
+      {
+       "id": "p3",
+       "type": "node",
+       "text": "₹89",
+       "sub": "torch"
+      },
+      {
+       "id": "r1",
+       "type": "node",
+       "text": "₹200",
+       "sub": "rounded"
+      },
+      {
+       "id": "r2",
+       "type": "node",
+       "text": "₹100",
+       "sub": "rounded"
+      },
+      {
+       "id": "r3",
+       "type": "node",
+       "text": "₹100",
+       "sub": "rounded"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "p1",
+       "to": "r1",
+       "text": "round"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "p2",
+       "to": "r2",
+       "text": "round"
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "p3",
+       "to": "r3",
+       "text": "round"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "column",
+     "els": [
+      {
+       "id": "sum",
+       "type": "bar",
+       "parts": 3,
+       "shaded": 3,
+       "text": "₹400"
+      },
+      {
+       "id": "money",
+       "type": "node",
+       "text": "₹500",
+       "sub": "have"
+      },
+      {
+       "id": "close",
+       "type": "label",
+       "text": "close to exact",
+       "x": 300,
+       "y": 450
+      },
+      {
+       "id": "exact",
+       "type": "label",
+       "text": "₹396 exact",
+       "x": 300,
+       "y": 500
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "row",
+     "els": [
+      {
+       "id": "up",
+       "type": "node",
+       "text": "Rounded up",
+       "sub": "real total less"
+      },
+      {
+       "id": "down",
+       "type": "node",
+       "text": "Rounded down",
+       "sub": "real total more"
+      },
+      {
+       "id": "limit",
+       "type": "node",
+       "text": "At the limit",
+       "sub": "check exactly"
+      }
+     ]
+    },
+    {
+     "id": "s5",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "qtitle",
+       "type": "title",
+       "text": "Quick check"
+      },
+      {
+       "id": "o1",
+       "type": "label",
+       "text": "₹80",
+       "x": 150,
+       "y": 300
+      },
+      {
+       "id": "o2",
+       "type": "label",
+       "text": "₹1000",
+       "x": 400,
+       "y": 300
+      },
+      {
+       "id": "o3",
+       "type": "label",
+       "text": "₹700",
+       "x": 650,
+       "y": 300
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "An estimate helps us check a total before doing exact addition.",
+    "L2": "It is not a random guess: round each price, then add the rounded numbers.",
+    "L3": "For the cap, bottle and torch, round ₹185 to ₹200, ₹122 to ₹100, and ₹89 to ₹100.",
+    "L4": "Now add: ₹200 plus ₹100 plus ₹100 is about ₹400.",
+    "L5": "₹400 is well below ₹500, so the money is enough. The exact total is ₹396, close to the estimate.",
+    "L6": "An estimate uses rounded numbers, so it need not equal the exact answer.",
+    "L7": "If every price was rounded up, the real total is less than the estimate; if rounded down, it is more.",
+    "L8": "When an estimate is right at the money limit, calculate the exact total before deciding."
+   },
+   "narration": {
+    "L1": {
+     "text": "An estimate helps us check a total before doing exact addition.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "It is not a random guess: round each price, then add the rounded numbers.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "For the cap, bottle and torch, round ₹185 to ₹200, ₹122 to ₹100, and ₹89 to ₹100.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "Now add: ₹200 plus ₹100 plus ₹100 is about ₹400.",
+     "dur": 2.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "₹400 is well below ₹500, so the money is enough. The exact total is ₹396, close to the estimate.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "An estimate uses rounded numbers, so it need not equal the exact answer.",
+     "dur": 2.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "If every price was rounded up, the real total is less than the estimate; if rounded down, it is more.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "When an estimate is right at the money limit, calculate the exact total before deciding.",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.3,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "title"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.3,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "myth"
+      },
+      {
+       "at": 1,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.4,
+       "target": "p1"
+      },
+      {
+       "at": 0.3,
+       "do": "show",
+       "dur": 0.5,
+       "target": "r1"
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 0.5,
+       "target": "a1",
+       "to": 1
+      },
+      {
+       "at": 1.3,
+       "do": "show",
+       "dur": 0.4,
+       "target": "p2"
+      },
+      {
+       "at": 1.6,
+       "do": "show",
+       "dur": 0.5,
+       "target": "r2"
+      },
+      {
+       "at": 2.1,
+       "do": "flow",
+       "dur": 0.5,
+       "target": "a2",
+       "to": 1
+      },
+      {
+       "at": 2.6,
+       "do": "show",
+       "dur": 0.4,
+       "target": "p3"
+      },
+      {
+       "at": 2.9,
+       "do": "show",
+       "dur": 0.5,
+       "target": "r3"
+      },
+      {
+       "at": 3.4,
+       "do": "flow",
+       "dur": 0.5,
+       "target": "a3",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.3,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "sum"
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "sum"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.3,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.5,
+       "target": "money"
+      },
+      {
+       "at": 0.6,
+       "do": "show",
+       "dur": 0.5,
+       "target": "close"
+      },
+      {
+       "at": 1.2,
+       "do": "show",
+       "dur": 0.5,
+       "target": "exact"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.3,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.3,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.5,
+       "target": "up"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.5,
+       "target": "down"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.5,
+       "target": "limit"
+      },
+      {
+       "at": 1.5,
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which estimate is sensible for ₹478 + ₹205?",
+    "options": [
+     "o1",
+     "o2",
+     "o3"
+    ],
+    "answer": "o3",
+    "src": "c4-maths-ch07-t02-i06"
+   }
+  },
+  "repairs": [],
+  "attempts": 2,
+  "model": "taxila-fast-bg",
+  "seconds": 29
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch07-t02-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "title",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "estimate",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "check",
+       "op": "text",
+       "startMs": 800,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        150
+       ],
+       "text": "check total",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "before",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        220,
+        260
+       ],
+       "text": "before",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "exact",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        580,
+        260
+       ],
+       "text": "exact addition",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "arr",
+       "op": "arrow",
+       "startMs": 2500,
+       "endMs": 3400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        300,
+        260
+       ],
+       "to": [
+        500,
+        260
+       ]
+      },
+      {
+       "id": "total",
+       "op": "text",
+       "startMs": 3700,
+       "endMs": 4400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        370
+       ],
+       "text": "total",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "ring",
+       "op": "circle",
+       "startMs": 4500,
+       "endMs": 5100,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        400,
+        365
+       ],
+       "r": 65
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch07-t02-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "not",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "not random",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "round",
+       "op": "text",
+       "startMs": 1000,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        220,
+        180
+       ],
+       "text": "round",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "each",
+       "op": "text",
+       "startMs": 1600,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        180
+       ],
+       "text": "each price",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "arrow1",
+       "op": "arrow",
+       "startMs": 2500,
+       "endMs": 3200,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        220,
+        220
+       ],
+       "to": [
+        220,
+        330
+       ]
+      },
+      {
+       "id": "add",
+       "op": "text",
+       "startMs": 3400,
+       "endMs": 4000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        580,
+        180
+       ],
+       "text": "add",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "arrow2",
+       "op": "arrow",
+       "startMs": 4100,
+       "endMs": 4800,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        580,
+        220
+       ],
+       "to": [
+        580,
+        330
+       ]
+      },
+      {
+       "id": "rounded",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 5900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        400
+       ],
+       "text": "rounded numbers",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch07-t02-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "cap",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        120,
+        80
+       ],
+       "text": "cap",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "bottle",
+       "op": "text",
+       "startMs": 400,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        80
+       ],
+       "text": "bottle",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "torch",
+       "op": "text",
+       "startMs": 800,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        680,
+        80
+       ],
+       "text": "torch",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "prices",
+       "op": "numwork",
+       "startMs": 1500,
+       "endMs": 4200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        70,
+        150
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "₹185",
+         "→",
+         "₹200"
+        ],
+        [
+         "₹122",
+         "→",
+         "₹100"
+        ],
+        [
+         "₹89",
+         "→",
+         "₹100"
+        ]
+       ]
+      },
+      {
+       "id": "r1",
+       "op": "highlight",
+       "startMs": 4400,
+       "endMs": 5000,
+       "ink": "accent",
+       "weight": 1,
+       "target": "prices",
+       "style": "circle"
+      },
+      {
+       "id": "r2",
+       "op": "highlight",
+       "startMs": 5100,
+       "endMs": 5700,
+       "ink": "accent",
+       "weight": 1,
+       "target": "prices",
+       "style": "underline"
+      },
+      {
+       "id": "r3",
+       "op": "highlight",
+       "startMs": 5800,
+       "endMs": 6400,
+       "ink": "accent",
+       "weight": 1,
+       "target": "prices",
+       "style": "pulse"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch07-t02-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "sum",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        170,
+        150
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "₹200",
+         "+",
+         "₹100",
+         "+",
+         "₹100",
+         "=",
+         "₹400"
+        ]
+       ]
+      },
+      {
+       "id": "about",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        280
+       ],
+       "text": "about ₹400",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "circle400",
+       "op": "circle",
+       "startMs": 3700,
+       "endMs": 4500,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        400,
+        275
+       ],
+       "r": 85
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch07-t02-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "enough",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 3000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        190
+       ],
+       "text": "money enough",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "exactsum",
+       "op": "numwork",
+       "startMs": 3500,
+       "endMs": 5900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        310
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "₹185",
+         "+",
+         "₹122",
+         "+",
+         "₹89",
+         "=",
+         "₹396"
+        ]
+       ]
+      },
+      {
+       "id": "close",
+       "op": "text",
+       "startMs": 6200,
+       "endMs": 7400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        420
+       ],
+       "text": "₹396 close to ₹400",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "mark",
+       "op": "highlight",
+       "startMs": 7600,
+       "endMs": 8300,
+       "ink": "good",
+       "weight": 1,
+       "target": "exactsum",
+       "style": "underline"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch07-t02-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "roundednums",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        80
+       ],
+       "text": "rounded numbers",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "estimateeq",
+       "op": "numwork",
+       "startMs": 1200,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        180
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "estima",
+         "≠",
+         "exact "
+        ]
+       ]
+      },
+      {
+       "id": "closeanswer",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        320
+       ],
+       "text": "close answer",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "not_equal",
+       "op": "highlight",
+       "startMs": 4200,
+       "endMs": 5100,
+       "ink": "accent",
+       "weight": 1,
+       "target": "estimateeq",
+       "style": "circle"
+      },
+      {
+       "id": "neednot",
+       "op": "text",
+       "startMs": 5200,
+       "endMs": 5900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        430
+       ],
+       "text": "need not equal",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 4,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch07-t02-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 9111,
+     "ops": [
+      {
+       "id": "up",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        220,
+        80
+       ],
+       "text": "rounded up",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "down",
+       "op": "text",
+       "startMs": 400,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        580,
+        80
+       ],
+       "text": "rounded down",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "arrowup",
+       "op": "arrow",
+       "startMs": 4800,
+       "endMs": 5400,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        220,
+        110
+       ],
+       "to": [
+        220,
+        150
+       ]
+      },
+      {
+       "id": "arrowdown",
+       "op": "arrow",
+       "startMs": 5500,
+       "endMs": 6100,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        580,
+        110
+       ],
+       "to": [
+        580,
+        150
+       ]
+      },
+      {
+       "id": "real",
+       "op": "text",
+       "startMs": 6500,
+       "endMs": 7300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        350
+       ],
+       "text": "real total",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch07-t02-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "limit",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        80
+       ],
+       "text": "money limit",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "estimateLimit",
+       "op": "numwork",
+       "startMs": 1100,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        170
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "estima",
+         "=",
+         "money "
+        ]
+       ]
+      },
+      {
+       "id": "exact",
+       "op": "text",
+       "startMs": 2900,
+       "endMs": 3800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        300
+       ],
+       "text": "exact total",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "arrowexact",
+       "op": "arrow",
+       "startMs": 4000,
+       "endMs": 4600,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        400,
+        220
+       ],
+       "to": [
+        400,
+        270
+       ]
+      },
+      {
+       "id": "calculate",
+       "op": "numwork",
+       "startMs": 4900,
+       "endMs": 6200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        150,
+        390
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "exact ",
+         "=",
+         "calcul"
+        ]
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ }
+}

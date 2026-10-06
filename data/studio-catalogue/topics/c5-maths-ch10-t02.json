@@ -1,0 +1,1887 @@
+{
+ "topicId": "c5-maths-ch10-t02",
+ "title": "Making symmetrical designs",
+ "chapter": "Symmetrical Designs",
+ "subject": "maths",
+ "class": 5,
+ "topicType": "T5",
+ "plan": {
+  "game": "mirror-paint@1",
+  "hint": "complete mode (rangoli halves)"
+ },
+ "game": {
+  "archetype": "mirror-paint@1",
+  "spec": {
+   "archetype": "mirror-paint@1",
+   "skills": [
+    "c5-maths-ch10-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "done": "designs",
+    "check": "CHECK",
+    "rotate": "TURN",
+    "flip": "FLIP",
+    "coach": "Paint the mirror half: tap the squares",
+    "runDone": "Studio closed",
+    "lines": "Mark every line of symmetry",
+    "turn": "How many times the same in one full turn?",
+    "twin": "Turn and flip it to fit its twin",
+    "same": "SAME",
+    "order": "order",
+    "fold": "FOLD"
+   },
+   "title": "Mirror Studio",
+   "rounds": [
+    {
+     "mode": "complete",
+     "title": "Finish the rangoli",
+     "sub": "Flip each mark across the middle",
+     "size": 8,
+     "cells": [
+      [
+       0,
+       1
+      ],
+      [
+       1,
+       1
+      ],
+      [
+       2,
+       1
+      ],
+      [
+       1,
+       2
+      ],
+      [
+       2,
+       2
+      ],
+      [
+       0,
+       3
+      ],
+      [
+       1,
+       3
+      ],
+      [
+       2,
+       4
+      ],
+      [
+       1,
+       5
+      ],
+      [
+       2,
+       5
+      ],
+      [
+       0,
+       6
+      ]
+     ],
+     "axis": "v",
+     "time": 60,
+     "targets": "c5-maths-ch10-t02-m-copy-not-flip"
+    },
+    {
+     "mode": "lines",
+     "title": "Fold the design",
+     "sub": "Mark every fold that matches",
+     "size": 7,
+     "cells": [
+      [
+       3,
+       1
+      ],
+      [
+       4,
+       1
+      ],
+      [
+       4,
+       2
+      ],
+      [
+       5,
+       3
+      ],
+      [
+       5,
+       4
+      ],
+      [
+       4,
+       4
+      ],
+      [
+       3,
+       5
+      ],
+      [
+       2,
+       5
+      ],
+      [
+       2,
+       4
+      ],
+      [
+       1,
+       3
+      ],
+      [
+       1,
+       2
+      ],
+      [
+       2,
+       2
+      ]
+     ],
+     "time": 50,
+     "targets": "c5-maths-ch10-t02-m-turn-implies-mirror"
+    },
+    {
+     "mode": "turn",
+     "title": "Turn the kolam",
+     "sub": "Count the matching quarter turns",
+     "size": 7,
+     "cells": [
+      [
+       3,
+       1
+      ],
+      [
+       4,
+       1
+      ],
+      [
+       4,
+       2
+      ],
+      [
+       5,
+       3
+      ],
+      [
+       5,
+       4
+      ],
+      [
+       4,
+       4
+      ],
+      [
+       3,
+       5
+      ],
+      [
+       2,
+       5
+      ],
+      [
+       2,
+       4
+      ],
+      [
+       1,
+       3
+      ],
+      [
+       1,
+       2
+      ],
+      [
+       2,
+       2
+      ]
+     ],
+     "time": 45
+    },
+    {
+     "mode": "twin",
+     "title": "Fit the school badge",
+     "sub": "Turn and flip the piece to match",
+     "size": 6,
+     "cells": [
+      [
+       1,
+       1
+      ],
+      [
+       2,
+       1
+      ],
+      [
+       1,
+       2
+      ],
+      [
+       1,
+       3
+      ],
+      [
+       2,
+       3
+      ],
+      [
+       4,
+       2
+      ],
+      [
+       4,
+       3
+      ],
+      [
+       5,
+       3
+      ],
+      [
+       5,
+       4
+      ]
+     ],
+     "time": 55
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c5-maths-ch10-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Correct",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "BUSTED",
+    "order": "Tap them in order"
+   },
+   "title": "Making symmetrical designs",
+   "accent": "mint",
+   "targets": "c5-maths-ch10-t02-m-turn-implies-mirror",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Mirror and turn symmetry"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Turn symmetry always has a mirror line"
+      },
+      {
+       "id": "mirror",
+       "type": "node",
+       "text": "Mirror line",
+       "glyph": "mirror",
+       "color": "mint"
+      },
+      {
+       "id": "fold",
+       "type": "node",
+       "text": "Fold",
+       "glyph": "hand",
+       "color": "ion"
+      },
+      {
+       "id": "arrow1",
+       "type": "arrow",
+       "from": "fold",
+       "to": "mirror",
+       "text": "becomes",
+       "bend": 0
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "grid",
+       "type": "grid",
+       "cols": 7,
+       "rows": 5,
+       "shaded": 1,
+       "x": 160,
+       "y": 220
+      },
+      {
+       "id": "line",
+       "type": "label",
+       "text": "mirror line",
+       "x": 500,
+       "y": 200,
+       "color": "amber"
+      },
+      {
+       "id": "left",
+       "type": "node",
+       "text": "Point left",
+       "sub": "2 left",
+       "glyph": "spark",
+       "color": "ion"
+      },
+      {
+       "id": "right",
+       "type": "node",
+       "text": "Point right",
+       "sub": "2 right",
+       "glyph": "spark",
+       "color": "mint"
+      },
+      {
+       "id": "arrow2",
+       "type": "arrow",
+       "from": "left",
+       "to": "right",
+       "text": "flip",
+       "bend": 0
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "centre",
+       "type": "node",
+       "text": "Centre",
+       "glyph": "spark",
+       "color": "amber"
+      },
+      {
+       "id": "motif1",
+       "type": "node",
+       "text": "Motif 1",
+       "glyph": "leaf",
+       "color": "mint"
+      },
+      {
+       "id": "motif2",
+       "type": "node",
+       "text": "Motif 2",
+       "glyph": "leaf",
+       "color": "mint"
+      },
+      {
+       "id": "motif3",
+       "type": "node",
+       "text": "Motif 3",
+       "glyph": "leaf",
+       "color": "mint"
+      },
+      {
+       "id": "motif4",
+       "type": "node",
+       "text": "Motif 4",
+       "glyph": "leaf",
+       "color": "mint"
+      },
+      {
+       "id": "turn1",
+       "type": "arrow",
+       "from": "motif1",
+       "to": "motif2",
+       "text": "quarter turn",
+       "bend": 0
+      },
+      {
+       "id": "turn2",
+       "type": "arrow",
+       "from": "motif2",
+       "to": "motif3",
+       "text": "quarter turn",
+       "bend": 0
+      },
+      {
+       "id": "turn3",
+       "type": "arrow",
+       "from": "motif3",
+       "to": "motif4",
+       "text": "quarter turn",
+       "bend": 0
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "row",
+     "els": [
+      {
+       "id": "flower",
+       "type": "node",
+       "text": "Flower",
+       "glyph": "flower",
+       "color": "mint"
+      },
+      {
+       "id": "pinwheel",
+       "type": "node",
+       "text": "Pinwheel",
+       "glyph": "wind",
+       "color": "amber"
+      },
+      {
+       "id": "turn",
+       "type": "label",
+       "text": "turn symmetry",
+       "x": 400,
+       "y": 300,
+       "color": "ion"
+      },
+      {
+       "id": "nomirror",
+       "type": "label",
+       "text": "no mirror line",
+       "x": 600,
+       "y": 300,
+       "color": "amber"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "A mirror image flips a shape across a line. Every point stays the same distance from that line.",
+    "L2": "Folding paper makes the fold a mirror line. When you open it, the cut shape appears on both sides.",
+    "L3": "A copied shape is not enough. The shape must flip, so its details face the opposite way.",
+    "L4": "For quarter-turn symmetry, repeat one motif around the same centre. Make four equally spaced copies.",
+    "L5": "A design can have turn symmetry without a mirror line. A pinwheel is one example.",
+    "L6": "Check mirror symmetry by folding. Check turn symmetry by turning a tracing around the centre.",
+    "L7": "Now choose the design that has turn symmetry but no mirror line."
+   },
+   "narration": {},
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.7,
+       "target": "mirror"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "fold",
+        "arrow1"
+       ]
+      },
+      {
+       "at": 0.5,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "mirror"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "grid",
+        "left"
+       ]
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "arrow2",
+        "right"
+       ]
+      },
+      {
+       "at": 1.1,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "arrow2",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "centre"
+      },
+      {
+       "at": 0.4,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "motif1",
+        "motif2",
+        "motif3",
+        "motif4"
+       ]
+      },
+      {
+       "at": 1.2,
+       "do": "flow",
+       "dur": 0.8,
+       "target": [
+        "turn1",
+        "turn2",
+        "turn3"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "flower",
+        "pinwheel"
+       ]
+      },
+      {
+       "at": 0.7,
+       "do": "show",
+       "dur": 0.7,
+       "target": "nomirror"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "focus",
+       "dur": 0.6,
+       "target": "centre"
+      },
+      {
+       "at": 0.5,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "motif1"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "interactive",
+       "dur": 1
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which design has turn symmetry but no mirror line?",
+    "options": [
+     "flower",
+     "pinwheel"
+    ],
+    "answer": "pinwheel",
+    "src": "c5-maths-ch10-t02-i06"
+   }
+  },
+  "repairs": [
+   "cue:target"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 53
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch10-t02-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "shape1",
+       "op": "polygon",
+       "startMs": 0,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         120,
+         150
+        ],
+        [
+         190,
+         100
+        ],
+        [
+         240,
+         180
+        ],
+        [
+         190,
+         260
+        ],
+        [
+         120,
+         220
+        ]
+       ]
+      },
+      {
+       "id": "mirror",
+       "op": "line",
+       "startMs": 600,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        400,
+        60
+       ],
+       "to": [
+        400,
+        440
+       ]
+      },
+      {
+       "id": "mlabel",
+       "op": "label",
+       "startMs": 1500,
+       "endMs": 2300,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        420,
+        80
+       ],
+       "text": "mirror line",
+       "to": [
+        400,
+        160
+       ]
+      },
+      {
+       "id": "pointa",
+       "op": "circle",
+       "startMs": 2100,
+       "endMs": 2500,
+       "ink": "mark",
+       "weight": 2,
+       "c": [
+        170,
+        150
+       ],
+       "r": 6
+      },
+      {
+       "id": "pointb",
+       "op": "circle",
+       "startMs": 2500,
+       "endMs": 2900,
+       "ink": "mark",
+       "weight": 2,
+       "c": [
+        630,
+        150
+       ],
+       "r": 6
+      },
+      {
+       "id": "flipshape",
+       "op": "polygon",
+       "startMs": 2900,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         680,
+         150
+        ],
+        [
+         610,
+         100
+        ],
+        [
+         560,
+         180
+        ],
+        [
+         610,
+         260
+        ],
+        [
+         680,
+         220
+        ]
+       ]
+      },
+      {
+       "id": "dist1",
+       "op": "line",
+       "startMs": 4200,
+       "endMs": 5000,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        170,
+        150
+       ],
+       "to": [
+        400,
+        150
+       ],
+       "dashed": true
+      },
+      {
+       "id": "dist2",
+       "op": "line",
+       "startMs": 5000,
+       "endMs": 5800,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        400,
+        150
+       ],
+       "to": [
+        630,
+        150
+       ],
+       "dashed": true
+      },
+      {
+       "id": "equal",
+       "op": "text",
+       "startMs": 5800,
+       "endMs": 6800,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        135
+       ],
+       "text": "same distance",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "flip",
+       "op": "arrow",
+       "startMs": 6800,
+       "endMs": 7600,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        275,
+        310
+       ],
+       "to": [
+        525,
+        310
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch10-t02-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "paper",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        100,
+        100
+       ],
+       "w": 600,
+       "h": 280
+      },
+      {
+       "id": "fold",
+       "op": "line",
+       "startMs": 700,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        400,
+        80
+       ],
+       "to": [
+        400,
+        400
+       ]
+      },
+      {
+       "id": "foldlabel",
+       "op": "label",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        420,
+        100
+       ],
+       "text": "fold",
+       "to": [
+        400,
+        180
+       ]
+      },
+      {
+       "id": "cut1",
+       "op": "polygon",
+       "startMs": 2300,
+       "endMs": 3400,
+       "ink": "mark",
+       "weight": 2,
+       "points": [
+        [
+         250,
+         180
+        ],
+        [
+         300,
+         140
+        ],
+        [
+         340,
+         210
+        ],
+        [
+         300,
+         260
+        ],
+        [
+         250,
+         230
+        ]
+       ]
+      },
+      {
+       "id": "cutlabel",
+       "op": "text",
+       "startMs": 3400,
+       "endMs": 4300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        250,
+        300
+       ],
+       "text": "cut shape",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "copy",
+       "op": "polygon",
+       "startMs": 4700,
+       "endMs": 5900,
+       "ink": "good",
+       "weight": 2,
+       "points": [
+        [
+         550,
+         180
+        ],
+        [
+         500,
+         140
+        ],
+        [
+         460,
+         210
+        ],
+        [
+         500,
+         260
+        ],
+        [
+         550,
+         230
+        ]
+       ]
+      },
+      {
+       "id": "both",
+       "op": "text",
+       "startMs": 6500,
+       "endMs": 7600,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        440
+       ],
+       "text": "both sides",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch10-t02-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "orig",
+       "op": "polygon",
+       "startMs": 0,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         130,
+         170
+        ],
+        [
+         190,
+         110
+        ],
+        [
+         250,
+         170
+        ],
+        [
+         220,
+         250
+        ],
+        [
+         140,
+         240
+        ]
+       ]
+      },
+      {
+       "id": "copybad",
+       "op": "polygon",
+       "startMs": 1400,
+       "endMs": 2600,
+       "ink": "soft",
+       "weight": 2,
+       "points": [
+        [
+         550,
+         170
+        ],
+        [
+         610,
+         110
+        ],
+        [
+         670,
+         170
+        ],
+        [
+         640,
+         250
+        ],
+        [
+         560,
+         240
+        ]
+       ]
+      },
+      {
+       "id": "notflip",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3700,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        610,
+        300
+       ],
+       "text": "copied shape",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "opposite",
+       "op": "polygon",
+       "startMs": 4000,
+       "endMs": 5400,
+       "ink": "good",
+       "weight": 2,
+       "points": [
+        [
+         550,
+         170
+        ],
+        [
+         610,
+         230
+        ],
+        [
+         670,
+         170
+        ],
+        [
+         640,
+         90
+        ],
+        [
+         560,
+         100
+        ]
+       ]
+      },
+      {
+       "id": "fliplabel",
+       "op": "text",
+       "startMs": 5500,
+       "endMs": 6600,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        610,
+        330
+       ],
+       "text": "opposite way",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "fliparrow",
+       "op": "arrow",
+       "startMs": 6500,
+       "endMs": 7300,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        330,
+        180
+       ],
+       "to": [
+        470,
+        180
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch10-t02-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "centre",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        250
+       ],
+       "r": 8
+      },
+      {
+       "id": "c1",
+       "op": "polygon",
+       "startMs": 600,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         400,
+         250
+        ],
+        [
+         470,
+         220
+        ],
+        [
+         470,
+         250
+        ]
+       ]
+      },
+      {
+       "id": "c2",
+       "op": "polygon",
+       "startMs": 1500,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         400,
+         250
+        ],
+        [
+         430,
+         320
+        ],
+        [
+         400,
+         320
+        ]
+       ]
+      },
+      {
+       "id": "c3",
+       "op": "polygon",
+       "startMs": 2400,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         400,
+         250
+        ],
+        [
+         330,
+         280
+        ],
+        [
+         330,
+         250
+        ]
+       ]
+      },
+      {
+       "id": "c4",
+       "op": "polygon",
+       "startMs": 3300,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         400,
+         250
+        ],
+        [
+         370,
+         180
+        ],
+        [
+         400,
+         180
+        ]
+       ]
+      },
+      {
+       "id": "four",
+       "op": "text",
+       "startMs": 4100,
+       "endMs": 5000,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        440
+       ],
+       "text": "4 copies",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "turn1",
+       "op": "arrow",
+       "startMs": 5000,
+       "endMs": 6100,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        500,
+        150
+       ],
+       "to": [
+        570,
+        220
+       ],
+       "bend": 1
+      },
+      {
+       "id": "equal",
+       "op": "text",
+       "startMs": 6100,
+       "endMs": 6800,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        400,
+        80
+       ],
+       "text": "equally spaced",
+       "size": "s",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch10-t02-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "pincentre",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        250
+       ],
+       "r": 9
+      },
+      {
+       "id": "blade1",
+       "op": "polygon",
+       "startMs": 500,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         400,
+         250
+        ],
+        [
+         570,
+         210
+        ],
+        [
+         520,
+         270
+        ]
+       ]
+      },
+      {
+       "id": "blade2",
+       "op": "polygon",
+       "startMs": 1400,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         400,
+         250
+        ],
+        [
+         440,
+         420
+        ],
+        [
+         380,
+         360
+        ]
+       ]
+      },
+      {
+       "id": "blade3",
+       "op": "polygon",
+       "startMs": 2300,
+       "endMs": 3100,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         400,
+         250
+        ],
+        [
+         230,
+         290
+        ],
+        [
+         280,
+         230
+        ]
+       ]
+      },
+      {
+       "id": "blade4",
+       "op": "polygon",
+       "startMs": 3200,
+       "endMs": 4000,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         400,
+         250
+        ],
+        [
+         360,
+         80
+        ],
+        [
+         420,
+         140
+        ]
+       ]
+      },
+      {
+       "id": "turn",
+       "op": "arrow",
+       "startMs": 4100,
+       "endMs": 5200,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        600,
+        150
+       ],
+       "to": [
+        650,
+        260
+       ],
+       "bend": 1
+      },
+      {
+       "id": "turnlabel",
+       "op": "text",
+       "startMs": 5200,
+       "endMs": 6200,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        620,
+        330
+       ],
+       "text": "turn symmetry",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "nomirror",
+       "op": "text",
+       "startMs": 6200,
+       "endMs": 6900,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        400,
+        460
+       ],
+       "text": "no mirror line",
+       "size": "s",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch10-t02-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "foldcheck",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        120,
+        100
+       ],
+       "to": [
+        120,
+        400
+       ]
+      },
+      {
+       "id": "foldarrow",
+       "op": "arrow",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        180,
+        250
+       ],
+       "to": [
+        120,
+        250
+       ]
+      },
+      {
+       "id": "foldtext",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        200,
+        250
+       ],
+       "text": "folding",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "turncentre",
+       "op": "circle",
+       "startMs": 2400,
+       "endMs": 2800,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        560,
+        250
+       ],
+       "r": 7
+      },
+      {
+       "id": "trace",
+       "op": "polygon",
+       "startMs": 2800,
+       "endMs": 3600,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         560,
+         250
+        ],
+        [
+         650,
+         220
+        ],
+        [
+         625,
+         280
+        ]
+       ]
+      },
+      {
+       "id": "turncheck",
+       "op": "arrow",
+       "startMs": 3700,
+       "endMs": 4800,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        670,
+        180
+       ],
+       "to": [
+        720,
+        250
+       ],
+       "bend": 1
+      },
+      {
+       "id": "turntext",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 6100,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        600,
+        430
+       ],
+       "text": "turning a tracing",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "centrelabel",
+       "op": "label",
+       "startMs": 6100,
+       "endMs": 6800,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        575,
+        220
+       ],
+       "text": "centre",
+       "target": "turncentre"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch10-t02-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "choiceA",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        80,
+        100
+       ],
+       "w": 180,
+       "h": 140
+      },
+      {
+       "id": "choiceB",
+       "op": "rect",
+       "startMs": 500,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        310,
+        100
+       ],
+       "w": 180,
+       "h": 140
+      },
+      {
+       "id": "choiceC",
+       "op": "rect",
+       "startMs": 1000,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        540,
+        100
+       ],
+       "w": 180,
+       "h": 140
+      },
+      {
+       "id": "pinA",
+       "op": "polygon",
+       "startMs": 1800,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         170,
+         170
+        ],
+        [
+         220,
+         150
+        ],
+        [
+         190,
+         180
+        ],
+        [
+         220,
+         210
+        ]
+       ]
+      },
+      {
+       "id": "mirrorB",
+       "op": "line",
+       "startMs": 2500,
+       "endMs": 3200,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        400,
+        120
+       ],
+       "to": [
+        400,
+        220
+       ]
+      },
+      {
+       "id": "shapeB",
+       "op": "polygon",
+       "startMs": 2600,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         400,
+         170
+        ],
+        [
+         450,
+         150
+        ],
+        [
+         430,
+         210
+        ]
+       ]
+      },
+      {
+       "id": "pinC",
+       "op": "polygon",
+       "startMs": 3300,
+       "endMs": 4100,
+       "ink": "good",
+       "weight": 2,
+       "points": [
+        [
+         630,
+         170
+        ],
+        [
+         680,
+         150
+        ],
+        [
+         650,
+         180
+        ],
+        [
+         680,
+         210
+        ]
+       ]
+      },
+      {
+       "id": "circleC",
+       "op": "circle",
+       "startMs": 4100,
+       "endMs": 4800,
+       "ink": "good",
+       "weight": 1,
+       "c": [
+        630,
+        170
+       ],
+       "r": 55
+      },
+      {
+       "id": "choose",
+       "op": "highlight",
+       "startMs": 4800,
+       "endMs": 5500,
+       "ink": "good",
+       "weight": 2,
+       "target": "pinC",
+       "style": "circle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1",
+   "key": "complete",
+   "prompt": "complete 8×8"
+  },
+  {
+   "itemId": "r2",
+   "key": "none",
+   "prompt": "lines 7×7"
+  },
+  {
+   "itemId": "r3",
+   "key": "4",
+   "prompt": "turn 7×7"
+  },
+  {
+   "itemId": "r4",
+   "key": "twin",
+   "prompt": "twin 6×6"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

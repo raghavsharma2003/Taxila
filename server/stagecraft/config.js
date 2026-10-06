@@ -172,3 +172,5 @@ export const DEFAULT_CONFIG = Object.freeze({
   swapSpacingTurns: 2,
   firstRevealTurn: 3,
 });
+/** ship5 p4-content: the needs a personal generated spec is built for when a checked instant piece exists (lesson.js). */
+export const PERSONAL_NEEDS = Object.freeze(["contrast_misconception", "re_represent"]);

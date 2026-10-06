@@ -1,0 +1,1707 @@
+{
+ "topicId": "c6-maths-ch05-t01",
+ "title": "Common factors and common multiples",
+ "chapter": "Prime Time",
+ "subject": "maths",
+ "class": 6,
+ "topicType": "T4",
+ "plan": {
+  "game": "sieve-storm@1",
+  "hint": "rules common / cfactor (common factors and common multiples)"
+ },
+ "game": {
+  "archetype": "sieve-storm@1",
+  "spec": {
+   "archetype": "sieve-storm@1",
+   "skills": [
+    "c6-maths-ch05-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "slashed": "right calls",
+    "combo": "combo",
+    "coach": "Swipe the numbers that fit the rule",
+    "runDone": "Storm over",
+    "prime": "prime",
+    "composite": "composite",
+    "even": "even",
+    "odd": "odd",
+    "multipleOf": "multiples of",
+    "commonOf": "common multiples of",
+    "factorOf": "factors of",
+    "cfactorOf": "common factors of",
+    "divisibleBy": "divisible by",
+    "coprimeWith": "co-prime with",
+    "square": "square numbers",
+    "palindrome": "palindromes",
+    "slipped": "slipped",
+    "wrongCut": "not this one",
+    "and": "and"
+   },
+   "title": "Sieve Storm",
+   "rounds": [
+    {
+     "rule": "factor",
+     "a": 12,
+     "title": "Factor Check",
+     "sub": "factors of 12",
+     "lo": 1,
+     "hi": 12,
+     "count": 12,
+     "hitRate": 0.5,
+     "seed": 17,
+     "speed": 0.8,
+     "targets": "c6-maths-ch05-t01-m-factor-multiple"
+    },
+    {
+     "rule": "cfactor",
+     "a": 18,
+     "b": 24,
+     "title": "Shared Factors",
+     "sub": "factors of 18 and 24",
+     "lo": 1,
+     "hi": 18,
+     "count": 14,
+     "hitRate": 0.4,
+     "seed": 29,
+     "speed": 0.95
+    },
+    {
+     "rule": "common",
+     "a": 4,
+     "b": 6,
+     "title": "Shared Multiples",
+     "sub": "multiples of 4 and 6",
+     "lo": 2,
+     "hi": 60,
+     "count": 16,
+     "hitRate": 0.35,
+     "seed": 41,
+     "speed": 1.05,
+     "targets": "c6-maths-ch05-t01-m-common-product"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 2,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c6-maths-ch05-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Factors and multiples",
+   "accent": "ion",
+   "targets": "c6-maths-ch05-t01-m-common-product",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Factors and multiples"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "The first common multiple is always the product"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "factor",
+       "type": "node",
+       "text": "Factor",
+       "sub": "divides exactly",
+       "glyph": "ruler",
+       "color": "mint"
+      },
+      {
+       "id": "number",
+       "type": "node",
+       "text": "Number",
+       "sub": "the whole",
+       "glyph": "coin",
+       "color": "ion"
+      },
+      {
+       "id": "multiple",
+       "type": "node",
+       "text": "Multiple",
+       "sub": "times table",
+       "glyph": "clock",
+       "color": "amber"
+      },
+      {
+       "id": "af",
+       "type": "arrow",
+       "from": "factor",
+       "to": "number",
+       "text": "divides"
+      },
+      {
+       "id": "nm",
+       "type": "arrow",
+       "from": "number",
+       "to": "multiple",
+       "text": "repeats"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "column",
+     "els": [
+      {
+       "id": "work",
+       "type": "title",
+       "text": "Common factors of 20 and 30"
+      },
+      {
+       "id": "list20",
+       "type": "label",
+       "text": "20: 1,2,4,5,10,20"
+      },
+      {
+       "id": "list30",
+       "type": "label",
+       "text": "30: 1,2,3,5,6,10,15,30"
+      },
+      {
+       "id": "common",
+       "type": "label",
+       "text": "Both: 1,2,5,10",
+       "color": "mint"
+      },
+      {
+       "id": "biggest",
+       "type": "label",
+       "text": "Biggest: 10",
+       "color": "amber"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "row",
+     "els": [
+      {
+       "id": "four",
+       "type": "node",
+       "text": "4",
+       "sub": "multiples",
+       "glyph": "ruler",
+       "color": "ion"
+      },
+      {
+       "id": "six",
+       "type": "node",
+       "text": "6",
+       "sub": "multiples",
+       "glyph": "ruler",
+       "color": "sci"
+      },
+      {
+       "id": "twelve",
+       "type": "node",
+       "text": "12",
+       "sub": "first both",
+       "glyph": "spark",
+       "color": "mint"
+      },
+      {
+       "id": "twentyfour",
+       "type": "node",
+       "text": "24",
+       "sub": "next both",
+       "glyph": "spark",
+       "color": "amber"
+      },
+      {
+       "id": "f12",
+       "type": "arrow",
+       "from": "four",
+       "to": "twelve",
+       "text": "4×3"
+      },
+      {
+       "id": "s12",
+       "type": "arrow",
+       "from": "six",
+       "to": "twelve",
+       "text": "6×2"
+      },
+      {
+       "id": "repeat",
+       "type": "arrow",
+       "from": "twelve",
+       "to": "twentyfour",
+       "text": "next"
+      }
+     ]
+    },
+    {
+     "id": "s5",
+     "layout": "split",
+     "els": [
+      {
+       "id": "share",
+       "type": "node",
+       "text": "Equal groups",
+       "sub": "use factors",
+       "glyph": "group",
+       "color": "mint"
+      },
+      {
+       "id": "repeatuse",
+       "type": "node",
+       "text": "Repeat together",
+       "sub": "use multiples",
+       "glyph": "clock",
+       "color": "amber"
+      },
+      {
+       "id": "opA",
+       "type": "label",
+       "text": "6"
+      },
+      {
+       "id": "opB",
+       "type": "label",
+       "text": "12"
+      },
+      {
+       "id": "opC",
+       "type": "label",
+       "text": "24"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "A factor divides a number exactly. A multiple belongs to that number's times table.",
+    "L2": "Factors of a number are few and stop at the number. Multiples keep going in the times table.",
+    "L3": "To find common factors, list the factors of both numbers and keep the numbers in both lists.",
+    "L4": "For 20 and 30, the common factors are 1, 2, 5 and 10. The biggest common factor is 10.",
+    "L5": "Now compare multiples of 4 and 6. Both lists meet at 12, then again at 24.",
+    "L6": "So 12 is the first common multiple, not 24, which is their product. The first common multiple is not always the product.",
+    "L7": "Use common factors for equal groups. Use common multiples when events repeat together.",
+    "L8": "Your turn: choose the first common multiple of 4 and 6."
+   },
+   "narration": {},
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "factor"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.6,
+       "target": "number"
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.6,
+       "target": "multiple"
+      },
+      {
+       "at": 1.5,
+       "do": "flow",
+       "dur": 0.8,
+       "target": [
+        "af",
+        "nm"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "factor"
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 1,
+       "target": "multiple"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.5,
+       "target": "work"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": "list20"
+      },
+      {
+       "at": 1.2,
+       "do": "show",
+       "dur": 0.8,
+       "target": "list30"
+      },
+      {
+       "at": 2,
+       "do": "highlight",
+       "dur": 0.9,
+       "target": "common"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "common"
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.8,
+       "target": "biggest"
+      },
+      {
+       "at": 1.8,
+       "do": "focus",
+       "dur": 0.6,
+       "target": "biggest"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "four",
+        "six"
+       ]
+      },
+      {
+       "at": 0.7,
+       "do": "show",
+       "dur": 0.8,
+       "target": "twelve"
+      },
+      {
+       "at": 1.3,
+       "do": "show",
+       "dur": 0.8,
+       "target": "twentyfour"
+      },
+      {
+       "at": 2,
+       "do": "flow",
+       "dur": 0.7,
+       "target": [
+        "f12",
+        "s12"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "myth"
+      },
+      {
+       "at": 0.8,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s5",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "share"
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.8,
+       "target": "repeatuse"
+      },
+      {
+       "at": 1.6,
+       "do": "focus",
+       "dur": 0.8,
+       "target": [
+        "share",
+        "repeatuse"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s5",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "opA",
+        "opB",
+        "opC"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Choose the first common multiple of 4 and 6.",
+    "options": [
+     "opA",
+     "opB",
+     "opC"
+    ],
+    "answer": "opB",
+    "src": "c6-maths-ch05-t01-i05"
+   }
+  },
+  "repairs": [
+   "cue:target"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 62
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch05-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "factorBox",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        55,
+        90
+       ],
+       "w": 300,
+       "h": 170,
+       "round": 12
+      },
+      {
+       "id": "factorTitle",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        205,
+        125
+       ],
+       "text": "factor",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "divide",
+       "op": "numwork",
+       "startMs": 1200,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        105,
+        165
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "number",
+         "÷",
+         "factor",
+         "=",
+         "exact"
+        ]
+       ]
+      },
+      {
+       "id": "multipleBox",
+       "op": "rect",
+       "startMs": 1800,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        445,
+        90
+       ],
+       "w": 300,
+       "h": 170,
+       "round": 12
+      },
+      {
+       "id": "multipleTitle",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        595,
+        125
+       ],
+       "text": "multiple",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "times",
+       "op": "text",
+       "startMs": 3100,
+       "endMs": 3800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        595,
+        195
+       ],
+       "text": "times table",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "arrowTimes",
+       "op": "arrow",
+       "startMs": 3900,
+       "endMs": 4700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        595,
+        215
+       ],
+       "to": [
+        595,
+        245
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch05-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "factorList",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        70,
+        90
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "factor",
+         "→",
+         "few"
+        ],
+        [
+         "factor",
+         "→",
+         "number"
+        ]
+       ]
+      },
+      {
+       "id": "factorStop",
+       "op": "line",
+       "startMs": 1900,
+       "endMs": 2700,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        70,
+        210
+       ],
+       "to": [
+        350,
+        210
+       ]
+      },
+      {
+       "id": "multipleList",
+       "op": "numwork",
+       "startMs": 2800,
+       "endMs": 4700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        430,
+        90
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "multip",
+         "→",
+         "times",
+         "table"
+        ],
+        [
+         "multip",
+         "→",
+         "going"
+        ]
+       ]
+      },
+      {
+       "id": "multipleArrow",
+       "op": "arrow",
+       "startMs": 4800,
+       "endMs": 6000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        500,
+        220
+       ],
+       "to": [
+        710,
+        220
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch05-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "listA",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        55,
+        95
+       ],
+       "w": 300,
+       "h": 220,
+       "round": 10
+      },
+      {
+       "id": "listATitle",
+       "op": "text",
+       "startMs": 600,
+       "endMs": 1200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        205,
+        130
+       ],
+       "text": "factors",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "listB",
+       "op": "rect",
+       "startMs": 900,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        445,
+        95
+       ],
+       "w": 300,
+       "h": 220,
+       "round": 10
+      },
+      {
+       "id": "listBTitle",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        595,
+        130
+       ],
+       "text": "factors",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "bothArrow",
+       "op": "arrow",
+       "startMs": 3000,
+       "endMs": 4100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        355,
+        205
+       ],
+       "to": [
+        445,
+        205
+       ]
+      },
+      {
+       "id": "bothLabel",
+       "op": "text",
+       "startMs": 4100,
+       "endMs": 4700,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        185
+       ],
+       "text": "both",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch05-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "f20",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        65,
+        85
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "20",
+         "→",
+         "1,2,4,"
+        ]
+       ]
+      },
+      {
+       "id": "f30",
+       "op": "numwork",
+       "startMs": 1500,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        65,
+        170
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "30",
+         "→",
+         "1,2,3,"
+        ]
+       ]
+      },
+      {
+       "id": "common",
+       "op": "numwork",
+       "startMs": 3500,
+       "endMs": 5100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        65,
+        270
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "common",
+         "→",
+         "1,2,5,"
+        ]
+       ]
+      },
+      {
+       "id": "gcf",
+       "op": "text",
+       "startMs": 5600,
+       "endMs": 6200,
+       "ink": "good",
+       "weight": 3,
+       "at": [
+        450,
+        285
+       ],
+       "text": "10",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "gcfLabel",
+       "op": "text",
+       "startMs": 6200,
+       "endMs": 7300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        450,
+        330
+       ],
+       "text": "biggest common factor",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "gcfCircle",
+       "op": "circle",
+       "startMs": 7300,
+       "endMs": 8000,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        450,
+        285
+       ],
+       "r": 35
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch05-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "fourList",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        70,
+        90
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "4",
+         "→",
+         "4,8,12"
+        ]
+       ]
+      },
+      {
+       "id": "sixList",
+       "op": "numwork",
+       "startMs": 1300,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        70,
+        180
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "6",
+         "→",
+         "6,12,1"
+        ]
+       ]
+      },
+      {
+       "id": "meet12",
+       "op": "circle",
+       "startMs": 3000,
+       "endMs": 3700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        430,
+        150
+       ],
+       "r": 35
+      },
+      {
+       "id": "twelve",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        430,
+        155
+       ],
+       "text": "12",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "meet24",
+       "op": "circle",
+       "startMs": 3900,
+       "endMs": 4600,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        650,
+        150
+       ],
+       "r": 35
+      },
+      {
+       "id": "twentyfour",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4400,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        650,
+        155
+       ],
+       "text": "24",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 2,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch05-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 9962,
+     "ops": [
+      {
+       "id": "firstLabel",
+       "op": "text",
+       "startMs": 1200,
+       "endMs": 2300,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        430,
+        225
+       ],
+       "text": "first common multiple",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "productWork",
+       "op": "numwork",
+       "startMs": 2600,
+       "endMs": 4300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        475,
+        285
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "4",
+         "×",
+         "6",
+         "=",
+         "24"
+        ]
+       ]
+      },
+      {
+       "id": "notAlways",
+       "op": "text",
+       "startMs": 6200,
+       "endMs": 7600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        405
+       ],
+       "text": "not always product",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch05-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "groups",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        180,
+        180
+       ],
+       "r": 75
+      },
+      {
+       "id": "groupDots",
+       "op": "circle",
+       "startMs": 600,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        155,
+        160
+       ],
+       "r": 8
+      },
+      {
+       "id": "groupDots2",
+       "op": "circle",
+       "startMs": 800,
+       "endMs": 1100,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        205,
+        200
+       ],
+       "r": 8
+      },
+      {
+       "id": "groupLabel",
+       "op": "text",
+       "startMs": 1200,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        295
+       ],
+       "text": "equal groups",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "repeatLine",
+       "op": "line",
+       "startMs": 2300,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        400,
+        180
+       ],
+       "to": [
+        700,
+        180
+       ]
+      },
+      {
+       "id": "repeatArrow",
+       "op": "arrow",
+       "startMs": 3200,
+       "endMs": 4100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        430,
+        180
+       ],
+       "to": [
+        670,
+        180
+       ]
+      },
+      {
+       "id": "repeatLabel",
+       "op": "text",
+       "startMs": 4200,
+       "endMs": 5600,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        550,
+        245
+       ],
+       "text": "events repeat together",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch05-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "question",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        80
+       ],
+       "text": "first common multiple",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "fourPrompt",
+       "op": "numwork",
+       "startMs": 900,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        70,
+        160
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "4",
+         "→",
+         "4,8,12"
+        ]
+       ]
+      },
+      {
+       "id": "sixPrompt",
+       "op": "numwork",
+       "startMs": 1800,
+       "endMs": 3100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        70,
+        250
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "6",
+         "→",
+         "6,12,1"
+        ]
+       ]
+      },
+      {
+       "id": "answerBox",
+       "op": "rect",
+       "startMs": 3200,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        500,
+        175
+       ],
+       "w": 180,
+       "h": 100,
+       "round": 12
+      },
+      {
+       "id": "answerLine",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        590,
+        225
+       ],
+       "text": "?",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 12 factor 12?"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 9 factor 12?"
+  },
+  {
+   "itemId": "r1:2",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 11 factor 12?"
+  },
+  {
+   "itemId": "r1:3",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 2 factor 12?"
+  },
+  {
+   "itemId": "r1:4",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 4 factor 12?"
+  },
+  {
+   "itemId": "r1:5",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 8 factor 12?"
+  },
+  {
+   "itemId": "r1:6",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 10 factor 12?"
+  },
+  {
+   "itemId": "r1:7",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 2 factor 12?"
+  },
+  {
+   "itemId": "r1:8",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 11 factor 12?"
+  },
+  {
+   "itemId": "r1:9",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 3 factor 12?"
+  },
+  {
+   "itemId": "r1:10",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 5 factor 12?"
+  },
+  {
+   "itemId": "r1:11",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 2 factor 12?"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 6 cfactor 18 24?"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 2 cfactor 18 24?"
+  },
+  {
+   "itemId": "r2:2",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 16 cfactor 18 24?"
+  },
+  {
+   "itemId": "r2:3",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 18 cfactor 18 24?"
+  },
+  {
+   "itemId": "r2:4",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 3 cfactor 18 24?"
+  },
+  {
+   "itemId": "r2:5",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 5 cfactor 18 24?"
+  },
+  {
+   "itemId": "r2:6",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 10 cfactor 18 24?"
+  },
+  {
+   "itemId": "r2:7",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 13 cfactor 18 24?"
+  },
+  {
+   "itemId": "r2:8",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 6 cfactor 18 24?"
+  },
+  {
+   "itemId": "r2:9",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 1 cfactor 18 24?"
+  },
+  {
+   "itemId": "r2:10",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 2 cfactor 18 24?"
+  },
+  {
+   "itemId": "r2:11",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 17 cfactor 18 24?"
+  },
+  {
+   "itemId": "r2:12",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 2 cfactor 18 24?"
+  },
+  {
+   "itemId": "r2:13",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 6 cfactor 18 24?"
+  },
+  {
+   "itemId": "r3:0",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 60 common 4 6?"
+  },
+  {
+   "itemId": "r3:1",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 38 common 4 6?"
+  },
+  {
+   "itemId": "r3:2",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 48 common 4 6?"
+  },
+  {
+   "itemId": "r3:3",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 24 common 4 6?"
+  },
+  {
+   "itemId": "r3:4",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 8 common 4 6?"
+  },
+  {
+   "itemId": "r3:5",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 48 common 4 6?"
+  },
+  {
+   "itemId": "r3:6",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 21 common 4 6?"
+  },
+  {
+   "itemId": "r3:7",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 51 common 4 6?"
+  },
+  {
+   "itemId": "r3:8",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 17 common 4 6?"
+  },
+  {
+   "itemId": "r3:9",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 40 common 4 6?"
+  },
+  {
+   "itemId": "r3:10",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 55 common 4 6?"
+  },
+  {
+   "itemId": "r3:11",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 59 common 4 6?"
+  },
+  {
+   "itemId": "r3:12",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 32 common 4 6?"
+  },
+  {
+   "itemId": "r3:13",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 39 common 4 6?"
+  },
+  {
+   "itemId": "r3:14",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 14 common 4 6?"
+  },
+  {
+   "itemId": "r3:15",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 36 common 4 6?"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ },
+ "firstCheck": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "Round r1 ('factor') targets misconception 'c6-maths-ch05-t01-m-factor-multiple', but its rule 'factor' asks for factors of 18, which does not directly address the confusion between factors and multiples; it merely practices factor listing.",
+    "severity": "low"
+   },
+   {
+    "where": "game",
+    "what": "Round r2 ('cfactor') has a parameter 'b' set to 18, but the computed keys show common factors of 12 and 18, which matches the KIT item i03; however, the kit item lists common factors as 1, 2, 3, 6, while the game's key includes 6 and 3 but also repeatedly includes 1, 6, 2 etc. No contradiction, but the repetition of identical numbers (e.g., multiple 'is 2 factor 18') might confuse children, though not factually wrong.",
+    "severity": "low"
+   },
+   {
+    "where": "game",
+    "what": "Round r3 ('common') targets misconception 'c6-maths-ch05-t01-m-common-product' and correctly identifies 12 as first common multiple of 4 and 6, but the computed keys show many common multiples like 36, 60, 12, 24 in random order, which does not match the expected 'first common multiple' concept taught in the kit. The round may inadvertently reinforce the idea that any common multiple is acceptable, not emphasizing that the first is smaller.",
+    "severity": "high"
+   },
+   {
+    "where": "explainer",
+    "what": "The scene 's3' displays '12' and '24' as common multiples of 4 and 6, but labels '12' as 'both lists' and '24' as 'both lists' without highlighting that 12 is the first common multiple. The arrow from '12' to '24' says 'repeat', which may confuse students into thinking that common multiples skip the first one or that 24 is the first repeat.",
+    "severity": "high"
+   }
+  ],
+  "verdict": "fail",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

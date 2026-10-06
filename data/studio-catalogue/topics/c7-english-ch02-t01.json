@@ -1,0 +1,1783 @@
+{
+ "topicId": "c7-english-ch02-t01",
+ "title": "Try Again",
+ "chapter": "Try Again",
+ "subject": "english",
+ "class": 7,
+ "topicType": "T3",
+ "plan": {
+  "game": "story-rail@1",
+  "hint": "sequence, cause and who modes from the lesson's events and speakers"
+ },
+ "game": {
+  "archetype": "story-rail@1",
+  "spec": {
+   "archetype": "story-rail@1",
+   "skills": [
+    "c7-english-ch02-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "picked": "coupled",
+    "streak": "streak",
+    "next": "What happens next?",
+    "effect": "What does this lead to?",
+    "who": "Who said this?",
+    "runDone": "Line complete",
+    "order": "your train",
+    "right": "Coupled",
+    "wrong": "Not this one",
+    "coach": "Tap a wagon before the train reaches the fork"
+   },
+   "title": "Try Again",
+   "rounds": [
+    {
+     "mode": "sequence",
+     "title": "The tiny sprout",
+     "sub": "couple the growing events",
+     "cards": [
+      {
+       "id": "s1",
+       "text": "Seed lies deep underground",
+       "glyph": "seed",
+       "src": "c7-english-ch02-t01-i04"
+      },
+      {
+       "id": "s2",
+       "text": "It pushes without a sound",
+       "glyph": "mountain",
+       "src": "c7-english-ch02-t01-i04"
+      },
+      {
+       "id": "s3",
+       "text": "Rain falls, sun comes out",
+       "glyph": "sun",
+       "src": "c7-english-ch02-t01-i04"
+      },
+      {
+       "id": "s4",
+       "text": "Sprout rises from the ground",
+       "glyph": "flower",
+       "src": "c7-english-ch02-t01-i04"
+      }
+     ],
+     "speed": 1.05
+    },
+    {
+     "mode": "cause",
+     "title": "Keep practising",
+     "sub": "match each cause to its result",
+     "pairs": [
+      {
+       "cause": {
+        "id": "c1",
+        "text": "You practise every day",
+        "glyph": "person",
+        "src": "c7-english-ch02-t01-i07"
+       },
+       "effect": {
+        "id": "e1",
+        "text": "You will get better at guitar",
+        "glyph": "music",
+        "src": "c7-english-ch02-t01-i07"
+       }
+      },
+      {
+       "cause": {
+        "id": "c2",
+        "text": "You fail once",
+        "glyph": "question",
+        "src": "c7-english-ch02-t01-i12"
+       },
+       "effect": {
+        "id": "e2",
+        "text": "You try again",
+        "glyph": "recycle",
+        "src": "c7-english-ch02-t01-i12"
+       }
+      },
+      {
+       "cause": {
+        "id": "c3",
+        "text": "A kite falls again",
+        "glyph": "wind",
+        "src": "c7-english-ch02-t01-i06"
+       },
+       "effect": {
+        "id": "e3",
+        "text": "It flies high at last",
+        "glyph": "bird",
+        "src": "c7-english-ch02-t01-i06"
+       }
+      }
+     ],
+     "speed": 0.9,
+     "targets": "c7-english-ch02-t01-m-if-will"
+    },
+    {
+     "mode": "who",
+     "title": "Who said the line?",
+     "sub": "send each line to its speaker",
+     "speakers": [
+      {
+       "id": "poem",
+       "name": "Poem voice",
+       "glyph": "book"
+      },
+      {
+       "id": "coach",
+       "name": "Coach",
+       "glyph": "person"
+      }
+     ],
+     "lines": [
+      {
+       "id": "w1",
+       "text": "Try, try again.",
+       "speaker": "poem",
+       "src": "c7-english-ch02-t01-i05"
+      },
+      {
+       "id": "w2",
+       "text": "Keep practising after a miss.",
+       "speaker": "coach",
+       "src": "c7-english-ch02-t01-i10"
+      }
+     ],
+     "speed": 0.8
+    }
+   ]
+  },
+  "repairs": [
+   "string:card.text"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-english-ch02-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Try Again",
+   "accent": "mint",
+   "targets": "c7-english-ch02-t01-m-if-will",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Try Again"
+      },
+      {
+       "id": "myth_if",
+       "type": "myth",
+       "text": "MYTH: Use will after if"
+      },
+      {
+       "id": "refrain",
+       "type": "quote",
+       "text": "Try, try again",
+       "hi": [
+        0
+       ],
+       "hi2": []
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "fail",
+       "type": "node",
+       "text": "Fail",
+       "sub": "first attempt",
+       "glyph": "question",
+       "color": "amber"
+      },
+      {
+       "id": "practise",
+       "type": "node",
+       "text": "Practise",
+       "sub": "keep working",
+       "glyph": "hand",
+       "color": "mint"
+      },
+      {
+       "id": "improve",
+       "type": "node",
+       "text": "Improve",
+       "sub": "get better",
+       "glyph": "spark",
+       "color": "sun"
+      },
+      {
+       "id": "succeed",
+       "type": "node",
+       "text": "Succeed",
+       "sub": "reach the goal",
+       "glyph": "crown",
+       "color": "volt"
+      },
+      {
+       "id": "go1",
+       "type": "arrow",
+       "from": "fail",
+       "to": "practise",
+       "text": "try again"
+      },
+      {
+       "id": "go2",
+       "type": "arrow",
+       "from": "practise",
+       "to": "improve",
+       "text": "practice"
+      },
+      {
+       "id": "go3",
+       "type": "arrow",
+       "from": "improve",
+       "to": "succeed",
+       "text": "progress"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "column",
+     "els": [
+      {
+       "id": "sore",
+       "type": "label",
+       "text": "sore",
+       "x": 240,
+       "y": 250,
+       "color": "ion"
+      },
+      {
+       "id": "more",
+       "type": "label",
+       "text": "more",
+       "x": 650,
+       "y": 250,
+       "color": "ion"
+      },
+      {
+       "id": "rhyme",
+       "type": "label",
+       "text": "rhyme",
+       "x": 450,
+       "y": 330,
+       "color": "mint"
+      },
+      {
+       "id": "scheme",
+       "type": "label",
+       "text": "AABB",
+       "x": 450,
+       "y": 410,
+       "color": "sun"
+      },
+      {
+       "id": "condGood",
+       "type": "label",
+       "text": "If you practise, you will improve",
+       "x": 100,
+       "y": 470,
+       "color": "mint"
+      },
+      {
+       "id": "condBad",
+       "type": "label",
+       "text": "If you will practise, you improve",
+       "x": 100,
+       "y": 530,
+       "color": "amber"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "The poem's central idea is simple: when you fail, do not give up. Try again and keep practising.",
+    "L2": "A repeated line, such as “Try, try again,” is a refrain. Repetition fixes the message in our mind, like practice itself.",
+    "L3": "The kite or climb is an example, but the lesson is for life: keep trying after you fail.",
+    "L4": "Listen to the line endings: sore and more rhyme because their sounds match.",
+    "L5": "A stanza can use a rhyme scheme. In the seed stanza, ground and sound, then out and sprout, make AABB.",
+    "L6": "The first conditional has simple present in the if-part. The result part uses will plus the base verb.",
+    "L7": "So we say, “If you practise, you will improve.” We do not put will in the if-part.",
+    "L8": "Now choose the sentence that uses the first conditional correctly."
+   },
+   "narration": {
+    "L1": {
+     "text": "The poem's central idea is simple: when you fail, do not give up. Try again and keep practising.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L2": {
+     "text": "A repeated line, such as “Try, try again,” is a refrain. Repetition fixes the message in our mind, like practice itself.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L3": {
+     "text": "The kite or climb is an example, but the lesson is for life: keep trying after you fail.",
+     "dur": 4.5,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L4": {
+     "text": "Listen to the line endings: sore and more rhyme because their sounds match.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L5": {
+     "text": "A stanza can use a rhyme scheme. In the seed stanza, ground and sound, then out and sprout, make AABB.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L6": {
+     "text": "The first conditional has simple present in the if-part. The result part uses will plus the base verb.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L7": {
+     "text": "So we say, “If you practise, you will improve.” We do not put will in the if-part.",
+     "dur": 4.5,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Now choose the sentence that uses the first conditional correctly.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.8,
+       "target": "refrain"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1.2,
+       "target": "refrain"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "fail"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "go1",
+        "practise"
+       ]
+      },
+      {
+       "at": 1.3,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "go1",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "sore",
+        "more"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.7,
+       "target": "rhyme"
+      },
+      {
+       "at": 1.2,
+       "do": "highlight",
+       "dur": 1,
+       "target": [
+        "sore",
+        "more"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "scheme"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "condGood"
+      },
+      {
+       "at": 0.9,
+       "do": "highlight",
+       "dur": 1,
+       "target": "condGood"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "myth_if"
+      },
+      {
+       "at": 0.8,
+       "do": "bust",
+       "dur": 1.2,
+       "target": "myth_if"
+      },
+      {
+       "at": 2,
+       "do": "unfocus",
+       "dur": 0.4
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "condGood",
+        "condBad"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive",
+       "dur": 0.5
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which sentence uses the first conditional correctly?",
+    "options": [
+     "condGood",
+     "condBad"
+    ],
+    "answer": "condGood",
+    "src": "c7-english-ch02-t01-i08"
+   }
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg",
+  "seconds": 41
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch02-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "idea",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "central idea",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "fail",
+       "op": "text",
+       "startMs": 1000,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        170,
+        170
+       ],
+       "text": "fail",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "no",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2300,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        170,
+        230
+       ],
+       "text": "do not give up",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "try",
+       "op": "arrow",
+       "startMs": 2400,
+       "endMs": 2900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        250,
+        170
+       ],
+       "to": [
+        360,
+        170
+       ]
+      },
+      {
+       "id": "again",
+       "op": "text",
+       "startMs": 2900,
+       "endMs": 3500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        430,
+        170
+       ],
+       "text": "try again",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "practice",
+       "op": "text",
+       "startMs": 3800,
+       "endMs": 4600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        290
+       ],
+       "text": "keep practising",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "loop1",
+       "op": "arrow",
+       "startMs": 4700,
+       "endMs": 5400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        500,
+        210
+       ],
+       "to": [
+        560,
+        280
+       ],
+       "bend": 1
+      },
+      {
+       "id": "loop2",
+       "op": "arrow",
+       "startMs": 5400,
+       "endMs": 6100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        560,
+        280
+       ],
+       "to": [
+        480,
+        350
+       ],
+       "bend": 1
+      },
+      {
+       "id": "loop3",
+       "op": "arrow",
+       "startMs": 6100,
+       "endMs": 6800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        480,
+        350
+       ],
+       "to": [
+        400,
+        310
+       ],
+       "bend": 1
+      },
+      {
+       "id": "check",
+       "op": "highlight",
+       "startMs": 7000,
+       "endMs": 8260,
+       "ink": "good",
+       "weight": 2,
+       "target": "practice",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch02-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9536,
+     "ops": [
+      {
+       "id": "repeat",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "Try, try again",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "refrain",
+       "op": "text",
+       "startMs": 1200,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        140
+       ],
+       "text": "refrain",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "r1",
+       "op": "arrow",
+       "startMs": 2100,
+       "endMs": 2700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        300,
+        180
+       ],
+       "to": [
+        220,
+        300
+       ]
+      },
+      {
+       "id": "r2",
+       "op": "arrow",
+       "startMs": 2700,
+       "endMs": 3300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        500,
+        180
+       ],
+       "to": [
+        580,
+        300
+       ]
+      },
+      {
+       "id": "message",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        340
+       ],
+       "text": "message",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "practice",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 4900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        420
+       ],
+       "text": "practice",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "fix",
+       "op": "highlight",
+       "startMs": 5200,
+       "endMs": 6100,
+       "ink": "accent",
+       "weight": 2,
+       "target": "message",
+       "style": "circle"
+      },
+      {
+       "id": "fix2",
+       "op": "highlight",
+       "startMs": 6500,
+       "endMs": 7300,
+       "ink": "good",
+       "weight": 2,
+       "target": "practice",
+       "style": "underline"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch02-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "kite",
+       "op": "polygon",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         180,
+         150
+        ],
+        [
+         230,
+         190
+        ],
+        [
+         180,
+         230
+        ],
+        [
+         130,
+         190
+        ]
+       ]
+      },
+      {
+       "id": "kiteword",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        180,
+        280
+       ],
+       "text": "kite",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "climb",
+       "op": "line",
+       "startMs": 1600,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        400,
+        350
+       ],
+       "to": [
+        560,
+        150
+       ]
+      },
+      {
+       "id": "climbword",
+       "op": "text",
+       "startMs": 2400,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        560,
+        120
+       ],
+       "text": "climb",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "fail",
+       "op": "text",
+       "startMs": 3100,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        300,
+        390
+       ],
+       "text": "fail",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "try",
+       "op": "arrow",
+       "startMs": 3600,
+       "endMs": 4300,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        330,
+        370
+       ],
+       "to": [
+        470,
+        300
+       ]
+      },
+      {
+       "id": "life",
+       "op": "text",
+       "startMs": 4600,
+       "endMs": 5000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        450
+       ],
+       "text": "life",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "keep",
+       "op": "text",
+       "startMs": 5200,
+       "endMs": 5900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        620,
+        350
+       ],
+       "text": "keep trying",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "ring",
+       "op": "highlight",
+       "startMs": 6500,
+       "endMs": 8260,
+       "ink": "good",
+       "weight": 2,
+       "target": "keep",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch02-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "endings",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "line endings",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "sore",
+       "op": "text",
+       "startMs": 1000,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        240,
+        190
+       ],
+       "text": "sore",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "more",
+       "op": "text",
+       "startMs": 1600,
+       "endMs": 2100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        560,
+        190
+       ],
+       "text": "more",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "match",
+       "op": "arrow",
+       "startMs": 2400,
+       "endMs": 3000,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        300,
+        190
+       ],
+       "to": [
+        500,
+        190
+       ]
+      },
+      {
+       "id": "sounds",
+       "op": "text",
+       "startMs": 3200,
+       "endMs": 4000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        300
+       ],
+       "text": "sounds match",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "rh",
+       "op": "highlight",
+       "startMs": 4300,
+       "endMs": 5000,
+       "ink": "good",
+       "weight": 2,
+       "target": "sore",
+       "style": "underline"
+      },
+      {
+       "id": "rh2",
+       "op": "highlight",
+       "startMs": 5000,
+       "endMs": 6132,
+       "ink": "good",
+       "weight": 2,
+       "target": "more",
+       "style": "underline"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch02-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9111,
+     "ops": [
+      {
+       "id": "stanza",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "stanza",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "ground",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        180,
+        150
+       ],
+       "text": "ground",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "sound",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        620,
+        150
+       ],
+       "text": "sound",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "out",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 2700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        180,
+        290
+       ],
+       "text": "out",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "sprout",
+       "op": "text",
+       "startMs": 2800,
+       "endMs": 3400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        620,
+        290
+       ],
+       "text": "sprout",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "a1",
+       "op": "text",
+       "startMs": 3600,
+       "endMs": 4000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        180,
+        205
+       ],
+       "text": "A",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "a2",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 4400,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        620,
+        205
+       ],
+       "text": "A",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "b1",
+       "op": "text",
+       "startMs": 4400,
+       "endMs": 4800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        180,
+        345
+       ],
+       "text": "B",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "b2",
+       "op": "text",
+       "startMs": 4800,
+       "endMs": 5200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        620,
+        345
+       ],
+       "text": "B",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "scheme",
+       "op": "text",
+       "startMs": 6000,
+       "endMs": 6800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        430
+       ],
+       "text": "AABB",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch02-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "title",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        60
+       ],
+       "text": "first conditional",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "ifpart",
+       "op": "rect",
+       "startMs": 1100,
+       "endMs": 1800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        80,
+        150
+       ],
+       "w": 280,
+       "h": 120,
+       "round": 12
+      },
+      {
+       "id": "iflabel",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        220,
+        205
+       ],
+       "text": "if-part",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "present",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 3000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        220,
+        245
+       ],
+       "text": "simple present",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "result",
+       "op": "rect",
+       "startMs": 3100,
+       "endMs": 3800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        440,
+        150
+       ],
+       "w": 280,
+       "h": 120,
+       "round": 12
+      },
+      {
+       "id": "resultlabel",
+       "op": "text",
+       "startMs": 3800,
+       "endMs": 4400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        580,
+        205
+       ],
+       "text": "result part",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "will",
+       "op": "text",
+       "startMs": 4400,
+       "endMs": 5200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        580,
+        245
+       ],
+       "text": "will + base verb",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "join",
+       "op": "arrow",
+       "startMs": 5500,
+       "endMs": 6100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        360,
+        210
+       ],
+       "to": [
+        440,
+        210
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch02-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "eq",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        80,
+        100
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "If",
+         "you",
+         "practi",
+         ",",
+         "you",
+         "will",
+         "improv"
+        ]
+       ]
+      },
+      {
+       "id": "correct",
+       "op": "highlight",
+       "startMs": 2400,
+       "endMs": 3400,
+       "ink": "good",
+       "weight": 2,
+       "target": "eq",
+       "style": "underline"
+      },
+      {
+       "id": "ifpart",
+       "op": "text",
+       "startMs": 3600,
+       "endMs": 4200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        220,
+        280
+       ],
+       "text": "practise",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "result",
+       "op": "text",
+       "startMs": 4200,
+       "endMs": 5000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        580,
+        280
+       ],
+       "text": "will improve",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "bad",
+       "op": "text",
+       "startMs": 5300,
+       "endMs": 5700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        220,
+        380
+       ],
+       "text": "will",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "cross",
+       "op": "line",
+       "startMs": 5700,
+       "endMs": 6200,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        185,
+        360
+       ],
+       "to": [
+        255,
+        400
+       ]
+      },
+      {
+       "id": "rule",
+       "op": "text",
+       "startMs": 6400,
+       "endMs": 7200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        450
+       ],
+       "text": "no will in if-part",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch02-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "choose",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        75
+       ],
+       "text": "choose",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "one",
+       "op": "text",
+       "startMs": 800,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        155
+       ],
+       "text": "sentence",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "ifbox",
+       "op": "rect",
+       "startMs": 1700,
+       "endMs": 2600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        130,
+        230
+       ],
+       "w": 540,
+       "h": 120,
+       "round": 12
+      },
+      {
+       "id": "ifrule",
+       "op": "text",
+       "startMs": 2800,
+       "endMs": 3500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        290
+       ],
+       "text": "first conditional",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "question",
+       "op": "text",
+       "startMs": 3700,
+       "endMs": 4300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        420
+       ],
+       "text": "correctly",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "It pushes without a sound",
+   "prompt": "sequence: after/for \"Seed lies deep underground\"",
+   "src": "c7-english-ch02-t01-i04"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "Rain falls, sun comes out",
+   "prompt": "sequence: after/for \"It pushes without a sound\"",
+   "src": "c7-english-ch02-t01-i04"
+  },
+  {
+   "itemId": "r1:2",
+   "key": "Sprout rises from the ground",
+   "prompt": "sequence: after/for \"Rain falls, sun comes out\"",
+   "src": "c7-english-ch02-t01-i04"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "You will get better at guitar",
+   "prompt": "cause: after/for \"You practise every day\"",
+   "src": "c7-english-ch02-t01-i07"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "You try again",
+   "prompt": "cause: after/for \"You fail once\"",
+   "src": "c7-english-ch02-t01-i12"
+  },
+  {
+   "itemId": "r2:2",
+   "key": "It flies high at last",
+   "prompt": "cause: after/for \"A kite falls again\"",
+   "src": "c7-english-ch02-t01-i06"
+  },
+  {
+   "itemId": "r3:0",
+   "key": "Poem voice",
+   "prompt": "who: after/for \"Try, try again.\"",
+   "src": "c7-english-ch02-t01-i05"
+  },
+  {
+   "itemId": "r3:1",
+   "key": "Coach",
+   "prompt": "who: after/for \"Keep practising after a miss.\"",
+   "src": "c7-english-ch02-t01-i10"
+  }
+ ],
+ "check": {
+  "issues": [
+   {
+    "where": "game: round 2 (cause mode): target for the kite pair",
+    "what": "The pair \"A kite falls again\" → \"It flies high at last\" references kit item c7-english-ch02-t01-i06, but the kit item says the poem is about not giving up after failing, not a specific kite that falls again. The round presents a concrete scenario (kite falls) that is not in the kit; the kit's item is about the poem's meaning, not a cause-effect pair. However, this is a new example built from the kit's theme, not a factual contradiction. The round's own numbers (pairs) are consistent, and the computed key matches the round's data. No high-severity issue.",
+    "severity": "low"
+   }
+  ],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

@@ -246,6 +246,8 @@ export class EngineHost {
   /** The child's median f0 from earlier in the lesson (Hz); the host also learns it from the child's own turns. */
   setChildF0(hz: number | null): void { this.childF0Prior = hz; }
   private childF0Prior: number | null = null;
+  /** The last burst whose pitch could be read: was it a voice far below the child's own (p1-duplex)? */
+  private attribution: { at: Ms; lowVoice: boolean } | null = null;
 
   /** One STT event of the always-on stream. */
   stt(ev: HostSttEvent): void {
@@ -291,6 +293,7 @@ export class EngineHost {
         const skip = up && normalizeLead(ev.text).startsWith(normalizeLead(up)) ? up.split(/\s+/).filter(Boolean).length : 0;
         this.echo.heard(ev.utteranceId, words.slice(skip));
         this.audio.setHerLevel(ev.outputDb ?? null);
+        this.audio.dropPending();
         this.hushAt = null;
         // her words open an overlap epoch: what the child says over her is read on its own (a revoke restores the turn)
         this.prevTurnStart = this.fanin.turnStart;
@@ -473,11 +476,21 @@ export class EngineHost {
     // attribution from pitch only (never an affect read): the child's median f0 from their own turns vs the burst's opening
     const childF0 = this.audio.childF0Hz() ?? this.childF0Prior;
     const burstF0 = OVERLAP.notChildSemitones > 0 && childF0 !== null ? this.audio.burstF0Hz(onset) : null;
-    const lowVoice = burstF0 !== null && childF0 !== null && 12 * Math.log2(childF0 / burstF0) >= OVERLAP.notChildSemitones;
+    // p1-duplex (2026-10-06): a steady tone read by YIN at the top of its range is not a voice (a pressure-cooker whistle,
+    // ~3 kHz, aliases to 485-618 Hz, median 573, on every frame; children's speech f0 on TaxilaFDB TRAIN: p99 513 Hz)
+    const openF0 = OVERLAP.toneF0Hz > 0 ? this.audio.burstF0Hz(onset) : null;
+    const tonal = openF0 !== null && openF0 >= OVERLAP.toneF0Hz;
+    let lowVoice = burstF0 !== null && childF0 !== null && 12 * Math.log2(childF0 / burstF0) >= OVERLAP.notChildSemitones;
+    // p1-duplex (2026-10-06, TaxilaFDB TRAIN F9 her_tv): a TV voice breaks into many short bursts; one too short to carry its
+    // own pitch (< 3 f0 frames) inherited nothing, so the TV's late words ("संभावना") arrived on it and yielded her as a turn.
+    // The attribution carries over to the next burst for OVERLAP.attributionCarryMs; the burst's own pitch, once it has
+    // some, always wins.
+    if (burstF0 !== null) this.attribution = { at: t, lowVoice };
+    else if (this.attribution && this.attribution.lowVoice && onset - this.attribution.at <= OVERLAP.attributionCarryMs) lowVoice = true;
     return {
       onsetAt: onset,
       durMs: Math.max(0, (voicing ? t + 20 : this.audio.t - (this.audio.silenceRunMs() ?? 0) + 20) - onset),
-      targetSpeaker: lowVoice ? 0.1 : quiet ? 0.2 : null,
+      targetSpeaker: lowVoice || tonal ? 0.1 : quiet ? 0.2 : null,
       echoLikelihood: echoRemoved ? 0.8 : lvl !== null && lvl < 3 ? 0.6 : 0.05,
       levelOverEchoDb: lvl,
       onsetF0Rel: this.audio.onsetF0Rel(),
@@ -606,6 +619,7 @@ export class EngineHost {
     if (d.action === "SPEAK" && det?.action === "SPEAK") {
       const uptake = det.firstSound === "uptake" ? uptakeOf(tr.text) : null;
       this.pendingUptake = uptake;
+      this.audio.confirmOwn();
       this.o.emit({ to: "voice", op: "speak", t, reason: det.reason, firstSound: det.firstSound, verdictNotBefore: det.verdictNotBefore, text: tr.text, textHash: tr.textHash,
         uptake, turnSeq: this.governor.turnSeq });
     } else if (d.action === "CUT_IN" && det?.action === "CUT_IN") {

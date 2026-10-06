@@ -1,0 +1,1282 @@
+{
+ "topicId": "c5-maths-ch11-t02",
+ "title": "Perimeter of rectangles",
+ "chapter": "Grandmother’s Quilt",
+ "subject": "maths",
+ "class": 5,
+ "topicType": "T4",
+ "plan": {
+  "game": "area-claim@1",
+  "hint": "Plot: area by squares, perimeter, same area different shapes"
+ },
+ "game": {
+  "archetype": "area-claim@1",
+  "spec": {
+   "archetype": "area-claim@1",
+   "skills": [
+    "c5-maths-ch11-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "coach": "Drag to claim your plot",
+    "round": "Round",
+    "area": "area",
+    "perimeter": "perimeter",
+    "claim": "CLAIMED",
+    "need": "need",
+    "sq": "sq",
+    "units": "units",
+    "newShape": "a new shape this time",
+    "maxArea": "most area for",
+    "runDone": "Field complete",
+    "timeUp": "Time is up"
+   },
+   "grid": {
+    "cols": 12,
+    "rows": 8
+   },
+   "drift": 0.5,
+   "rounds": [
+    {
+     "goal": "area",
+     "target": 12,
+     "seconds": 35,
+     "different": false
+    },
+    {
+     "goal": "perimeter",
+     "target": 14,
+     "seconds": 35,
+     "different": false
+    },
+    {
+     "goal": "area",
+     "target": 12,
+     "seconds": 30,
+     "different": true
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c5-maths-ch11-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Correct",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "BUSTED",
+    "order": "Tap them in order"
+   },
+   "title": "Perimeter goes around",
+   "accent": "mint",
+   "targets": "c5-maths-ch11-t02-m-once-only",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Perimeter goes around"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Add length and breadth once"
+      },
+      {
+       "id": "boundary",
+       "type": "label",
+       "text": "Boundary",
+       "x": 650,
+       "y": 300,
+       "color": "amber"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "free",
+     "els": [
+      {
+       "id": "rect",
+       "type": "poly",
+       "points": [
+        [
+         180,
+         220
+        ],
+        [
+         720,
+         220
+        ],
+        [
+         720,
+         450
+        ],
+        [
+         180,
+         450
+        ]
+       ],
+       "closed": true
+      },
+      {
+       "id": "length",
+       "type": "label",
+       "text": "length 45 cm",
+       "x": 350,
+       "y": 190,
+       "color": "ion"
+      },
+      {
+       "id": "breadth",
+       "type": "label",
+       "text": "breadth 30 cm",
+       "x": 740,
+       "y": 335,
+       "color": "sci"
+      },
+      {
+       "id": "walk",
+       "type": "arrow",
+       "from": "length",
+       "to": "breadth",
+       "text": "around",
+       "bend": 0.2
+      },
+      {
+       "id": "sum",
+       "type": "label",
+       "text": "45 + 30 + 45 + 30",
+       "x": 300,
+       "y": 510,
+       "color": "mint"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "formula",
+       "type": "label",
+       "text": "2 × (length + breadth)",
+       "x": 220,
+       "y": 300,
+       "color": "mint"
+      },
+      {
+       "id": "calc",
+       "type": "label",
+       "text": "2 × (45 + 30) = 150 cm",
+       "x": 220,
+       "y": 370,
+       "color": "amber"
+      },
+      {
+       "id": "ruler",
+       "type": "glyph",
+       "name": "ruler",
+       "x": 760,
+       "y": 330,
+       "size": 120,
+       "color": "ion"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "row",
+     "els": [
+      {
+       "id": "square",
+       "type": "node",
+       "text": "Square",
+       "sub": "4 equal sides",
+       "color": "sci"
+      },
+      {
+       "id": "sqformula",
+       "type": "label",
+       "text": "4 × side",
+       "x": 470,
+       "y": 300,
+       "color": "mint"
+      },
+      {
+       "id": "sqexample",
+       "type": "label",
+       "text": "6 cm → 24 cm",
+       "x": 650,
+       "y": 300,
+       "color": "amber"
+      }
+     ]
+    },
+    {
+     "id": "s5",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "grid",
+       "type": "grid",
+       "cols": 4,
+       "rows": 3,
+       "shaded": 0,
+       "x": 180,
+       "y": 220
+      },
+      {
+       "id": "units",
+       "type": "label",
+       "text": "Count unit lengths",
+       "x": 500,
+       "y": 300,
+       "color": "ion"
+      },
+      {
+       "id": "notareas",
+       "type": "label",
+       "text": "Not squares",
+       "x": 500,
+       "y": 365,
+       "color": "amber"
+      }
+     ]
+    },
+    {
+     "id": "s6",
+     "layout": "row",
+     "els": [
+      {
+       "id": "q",
+       "type": "title",
+       "text": "Check the boundary"
+      },
+      {
+       "id": "opt1",
+       "type": "label",
+       "text": "26 cm",
+       "x": 250,
+       "y": 350,
+       "color": "mint"
+      },
+      {
+       "id": "opt2",
+       "type": "label",
+       "text": "40 cm",
+       "x": 450,
+       "y": 350,
+       "color": "amber"
+      },
+      {
+       "id": "opt3",
+       "type": "label",
+       "text": "13 cm",
+       "x": 650,
+       "y": 350,
+       "color": "sci"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Perimeter is the total length around a shape's boundary.",
+    "L2": "A common mistake is to add the length and breadth only once. That gives just one length and one breadth.",
+    "L3": "A rectangle has two lengths and two breadths, so perimeter is 2 times length plus breadth.",
+    "L4": "For 45 centimetres by 30 centimetres, the perimeter is 2 times 75, or 150 centimetres.",
+    "L5": "A square has four equal sides, so its perimeter is 4 times its side. On a grid, count unit lengths along the edge, not squares.",
+    "L6": "Now find the perimeter of a rectangle that is 8 centimetres by 5 centimetres."
+   },
+   "narration": {
+    "L1": {
+     "text": "Perimeter is the total length around a shape's boundary.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "A common mistake is to add the length and breadth only once. That gives just one length and one breadth.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "A rectangle has two lengths and two breadths, so perimeter is 2 times length plus breadth.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "For 45 centimetres by 30 centimetres, the perimeter is 2 times 75, or 150 centimetres.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "A square has four equal sides, so its perimeter is 4 times its side. On a grid, count unit lengths along the edge, not squares.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Now find the perimeter of a rectangle that is 8 centimetres by 5 centimetres.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "title"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.6,
+       "target": "boundary"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "myth"
+      },
+      {
+       "at": 1,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "rect"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.7,
+       "target": "walk"
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 1,
+       "target": "walk",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "formula"
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.8,
+       "target": "calc"
+      },
+      {
+       "at": 1.5,
+       "do": "highlight",
+       "dur": 1,
+       "target": "calc"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "square"
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.7,
+       "target": "sqformula"
+      },
+      {
+       "at": 1.5,
+       "do": "show",
+       "dur": 0.7,
+       "target": "sqexample"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0,
+     "scene": "s6",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "q"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "opt1",
+        "opt2",
+        "opt3"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "What is the perimeter of the 8 cm by 5 cm rectangle?",
+    "options": [
+     "opt1",
+     "opt2",
+     "opt3"
+    ],
+    "answer": "opt1",
+    "src": "c5-maths-ch11-t02-i03"
+   }
+  },
+  "repairs": [
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 30
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch11-t02-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4430,
+     "ops": [
+      {
+       "id": "shape",
+       "op": "polygon",
+       "startMs": 0,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         180,
+         140
+        ],
+        [
+         620,
+         140
+        ],
+        [
+         620,
+         360
+        ],
+        [
+         180,
+         360
+        ],
+        [
+         180,
+         140
+        ]
+       ]
+      },
+      {
+       "id": "perimeter",
+       "op": "text",
+       "startMs": 300,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        90
+       ],
+       "text": "Perimeter",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "boundary",
+       "op": "highlight",
+       "startMs": 1300,
+       "endMs": 3000,
+       "ink": "accent",
+       "weight": 2,
+       "target": "shape",
+       "style": "pulse"
+      },
+      {
+       "id": "total",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        430
+       ],
+       "text": "total length",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch11-t02-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 9111,
+     "ops": [
+      {
+       "id": "rect",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        180,
+        140
+       ],
+       "w": 440,
+       "h": 220
+      },
+      {
+       "id": "length",
+       "op": "label",
+       "startMs": 1000,
+       "endMs": 1800,
+       "ink": "chalk",
+       "at": [
+        400,
+        125
+       ],
+       "text": "length",
+       "to": [
+        400,
+        140
+       ]
+      },
+      {
+       "id": "breadth",
+       "op": "label",
+       "startMs": 1900,
+       "endMs": 2700,
+       "ink": "chalk",
+       "at": [
+        640,
+        250
+       ],
+       "text": "breadth",
+       "to": [
+        620,
+        250
+       ]
+      },
+      {
+       "id": "wrong",
+       "op": "numwork",
+       "startMs": 3000,
+       "endMs": 4300,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        220,
+        400
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "length",
+         "+",
+         "breadt"
+        ]
+       ]
+      },
+      {
+       "id": "wrongmark",
+       "op": "highlight",
+       "startMs": 4500,
+       "endMs": 5600,
+       "ink": "accent",
+       "weight": 2,
+       "target": "wrong",
+       "style": "circle"
+      },
+      {
+       "id": "one",
+       "op": "text",
+       "startMs": 5800,
+       "endMs": 7200,
+       "ink": "chalk",
+       "at": [
+        400,
+        470
+       ],
+       "text": "one length + one breadth",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "erasewrong",
+       "op": "erase",
+       "startMs": 7600,
+       "endMs": 8500,
+       "ink": "chalk",
+       "target": "wrongmark"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch11-t02-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "rect2",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        180,
+        130
+       ],
+       "w": 440,
+       "h": 220
+      },
+      {
+       "id": "twol",
+       "op": "label",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "chalk",
+       "at": [
+        400,
+        115
+       ],
+       "text": "length",
+       "to": [
+        400,
+        130
+       ]
+      },
+      {
+       "id": "twob",
+       "op": "label",
+       "startMs": 1600,
+       "endMs": 2200,
+       "ink": "chalk",
+       "at": [
+        650,
+        240
+       ],
+       "text": "breadth",
+       "to": [
+        620,
+        240
+       ]
+      },
+      {
+       "id": "formula",
+       "op": "numwork",
+       "startMs": 2700,
+       "endMs": 5000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        180,
+        390
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "perime",
+         "=",
+         "2",
+         "×",
+         "(",
+         "length",
+         "+",
+         "breadt",
+         ")"
+        ]
+       ]
+      },
+      {
+       "id": "twolabel",
+       "op": "text",
+       "startMs": 5200,
+       "endMs": 5900,
+       "ink": "chalk",
+       "at": [
+        250,
+        80
+       ],
+       "text": "2 lengths",
+       "size": "s"
+      },
+      {
+       "id": "twoblabel",
+       "op": "text",
+       "startMs": 6000,
+       "endMs": 6800,
+       "ink": "chalk",
+       "at": [
+        550,
+        80
+       ],
+       "text": "2 breadths",
+       "size": "s"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch11-t02-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "calc",
+       "op": "numwork",
+       "startMs": 1400,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        170,
+        160
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "45",
+         "+",
+         "30",
+         "=",
+         "75"
+        ]
+       ]
+      },
+      {
+       "id": "twocalc",
+       "op": "numwork",
+       "startMs": 3000,
+       "endMs": 4700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        170,
+        260
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "2",
+         "×",
+         "75",
+         "=",
+         "150",
+         "centim"
+        ]
+       ]
+      },
+      {
+       "id": "check",
+       "op": "numwork",
+       "startMs": 5000,
+       "endMs": 6300,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        170,
+        360
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "perime",
+         "=",
+         "150",
+         "centim"
+        ]
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch11-t02-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 11238,
+     "ops": [
+      {
+       "id": "square",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        100
+       ],
+       "w": 220,
+       "h": 220
+      },
+      {
+       "id": "side",
+       "op": "label",
+       "startMs": 1000,
+       "endMs": 1600,
+       "ink": "chalk",
+       "at": [
+        210,
+        80
+       ],
+       "text": "side",
+       "to": [
+        210,
+        100
+       ]
+      },
+      {
+       "id": "squareformula",
+       "op": "numwork",
+       "startMs": 1800,
+       "endMs": 3300,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        100,
+        370
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "perime",
+         "=",
+         "4",
+         "×",
+         "side"
+        ]
+       ]
+      },
+      {
+       "id": "grid",
+       "op": "rect",
+       "startMs": 3500,
+       "endMs": 4300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        470,
+        100
+       ],
+       "w": 240,
+       "h": 240
+      },
+      {
+       "id": "g1",
+       "op": "line",
+       "startMs": 4400,
+       "endMs": 4800,
+       "ink": "soft",
+       "from": [
+        530,
+        100
+       ],
+       "to": [
+        530,
+        340
+       ]
+      },
+      {
+       "id": "g2",
+       "op": "line",
+       "startMs": 4400,
+       "endMs": 4800,
+       "ink": "soft",
+       "from": [
+        590,
+        100
+       ],
+       "to": [
+        590,
+        340
+       ]
+      },
+      {
+       "id": "g3",
+       "op": "line",
+       "startMs": 4400,
+       "endMs": 4800,
+       "ink": "soft",
+       "from": [
+        650,
+        100
+       ],
+       "to": [
+        650,
+        340
+       ]
+      },
+      {
+       "id": "g4",
+       "op": "line",
+       "startMs": 4900,
+       "endMs": 5300,
+       "ink": "soft",
+       "from": [
+        470,
+        160
+       ],
+       "to": [
+        710,
+        160
+       ]
+      },
+      {
+       "id": "g5",
+       "op": "line",
+       "startMs": 4900,
+       "endMs": 5300,
+       "ink": "soft",
+       "from": [
+        470,
+        220
+       ],
+       "to": [
+        710,
+        220
+       ]
+      },
+      {
+       "id": "g6",
+       "op": "line",
+       "startMs": 4900,
+       "endMs": 5300,
+       "ink": "soft",
+       "from": [
+        470,
+        280
+       ],
+       "to": [
+        710,
+        280
+       ]
+      },
+      {
+       "id": "edge",
+       "op": "highlight",
+       "startMs": 5600,
+       "endMs": 6900,
+       "ink": "accent",
+       "weight": 2,
+       "target": "grid",
+       "style": "underline"
+      },
+      {
+       "id": "units",
+       "op": "text",
+       "startMs": 7000,
+       "endMs": 8000,
+       "ink": "chalk",
+       "at": [
+        590,
+        390
+       ],
+       "text": "unit lengths",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "notSquares",
+       "op": "text",
+       "startMs": 8200,
+       "endMs": 9300,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        590,
+        440
+       ],
+       "text": "not squares",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch11-t02-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "question",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "Find the perimeter",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "r",
+       "op": "rect",
+       "startMs": 1100,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        220,
+        150
+       ],
+       "w": 360,
+       "h": 220
+      },
+      {
+       "id": "eight",
+       "op": "label",
+       "startMs": 2200,
+       "endMs": 3000,
+       "ink": "chalk",
+       "at": [
+        400,
+        130
+       ],
+       "text": "8 centimetres",
+       "to": [
+        400,
+        150
+       ]
+      },
+      {
+       "id": "five",
+       "op": "label",
+       "startMs": 3100,
+       "endMs": 3900,
+       "ink": "chalk",
+       "at": [
+        610,
+        260
+       ],
+       "text": "5 centimetres",
+       "to": [
+        580,
+        260
+       ]
+      },
+      {
+       "id": "setup",
+       "op": "numwork",
+       "startMs": 4200,
+       "endMs": 5700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        180,
+        420
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "perime",
+         "=",
+         "2",
+         "×",
+         "(",
+         "8",
+         "+",
+         "5",
+         ")"
+        ]
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [],
+ "check": {
+  "issues": [
+   {
+    "where": "kit item i03 question",
+    "what": "The kit item 'c5-maths-ch11-t02-i03' asks 'What is the perimeter of a rectangle 8 cm by 5 cm?' with answer '26 cm'. The explainer's task repeats this question and correctly provides the answer '26 cm' (opt1). This matches the kit and is not an issue.",
+    "severity": "low"
+   }
+  ],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

@@ -134,7 +134,10 @@ export function policyDecide(text: string, ctx: TurnContext): { send: boolean; h
  * passes `askedYesNo`).
  */
 export type OverlapKind = "continuer" | "answer" | "repair" | "stop" | "turn";
-const CONTINUERS = new Set(["hmm", "hm", "hmmm", "mm", "mhm", "achha", "acha", "accha", "ok", "okay", "theek", "ji", "हम्म", "अच्छा", "ओके", "जी", "ठीक", "हम", "हम्म्म", "हूँ", "हूं", "achcha", "theek"]);
+// p1-duplex (2026-10-06, decided BEFORE the AMI real-speech run): English-medium children's listening tokens too ("yeah",
+// "right", "uh-huh" → "uh huh", "mm-hmm" → "mm hmm"); a lone one over her is a continuer, never a turn
+const CONTINUERS = new Set(["hmm", "hm", "hmmm", "mm", "mhm", "achha", "acha", "accha", "ok", "okay", "theek", "ji", "हम्म", "अच्छा", "ओके", "जी", "ठीक", "हम", "हम्म्म", "हूँ", "हूं", "achcha",
+  "yeah", "yep", "yup", "right", "sure", "alright", "uh", "huh", "mmhmm", "mhmm", "oh", "येह", "यस"]);
 const YES = new Set(["haan", "han", "haa", "haanji", "yes", "हाँ", "हां"]);
 const NO = new Set(["nahi", "nahin", "na", "no", "नहीं", "ना"]);
 export function overlapKind(text: string, opts: { askedYesNo?: boolean } = {}): OverlapKind {

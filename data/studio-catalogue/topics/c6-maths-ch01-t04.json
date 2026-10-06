@@ -1,0 +1,1840 @@
+{
+ "topicId": "c6-maths-ch01-t04",
+ "title": "Patterns in shapes",
+ "chapter": "Patterns in Mathematics",
+ "subject": "maths",
+ "class": 6,
+ "topicType": "T3",
+ "plan": {
+  "game": "rule-machine@1",
+  "hint": "seq and build modes: number patterns and growing patterns"
+ },
+ "game": {
+  "archetype": "rule-machine@1",
+  "spec": {
+   "archetype": "rule-machine@1",
+   "skills": [
+    "c6-maths-ch01-t04"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "built": "machines",
+    "run": "RUN",
+    "want": "order",
+    "got": "made",
+    "coach": "Tap tiles to fill the machine, then RUN",
+    "runDone": "Factory closed",
+    "step": "step",
+    "predict": "step",
+    "inverse": "run it backwards",
+    "target": "target",
+    "steps": "steps",
+    "pick": "Pick a start",
+    "works": "WORKS",
+    "fix": "not for every input"
+   },
+   "title": "Shape Pattern Machines",
+   "rounds": [
+    {
+     "mode": "build",
+     "title": "Snowflake sides",
+     "sub": "make every order fit",
+     "rule": [
+      "×4"
+     ],
+     "inputs": [
+      3,
+      12,
+      48,
+      192
+     ],
+     "tiles": [
+      "×4",
+      "+4",
+      "+9",
+      "×3"
+     ],
+     "targets": "c6-maths-ch01-t04-m-sides-plus"
+    },
+    {
+     "mode": "seq",
+     "title": "Triangle rows",
+     "sub": "count the small triangles",
+     "pattern": "dots-square",
+     "rule": [
+      "²"
+     ],
+     "tiles": [
+      "²",
+      "+2",
+      "×2",
+      "+4"
+     ],
+     "ask": 6,
+     "targets": "c6-maths-ch01-t04-m-unrelated"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c6-maths-ch01-t04"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Patterns hidden in shapes",
+   "accent": "ion",
+   "targets": "c6-maths-ch01-t04-m-line-jump",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "row",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Patterns hidden in shapes"
+      },
+      {
+       "id": "poly3",
+       "type": "node",
+       "text": "Triangle",
+       "sub": "3 sides",
+       "color": "mint"
+      },
+      {
+       "id": "poly4",
+       "type": "node",
+       "text": "Square",
+       "sub": "4 sides",
+       "color": "ion"
+      },
+      {
+       "id": "poly5",
+       "type": "node",
+       "text": "Pentagon",
+       "sub": "5 sides",
+       "color": "amber"
+      },
+      {
+       "id": "polyArrow",
+       "type": "arrow",
+       "from": "poly3",
+       "to": "poly4",
+       "text": "one more"
+      },
+      {
+       "id": "polyArrow2",
+       "type": "arrow",
+       "from": "poly4",
+       "to": "poly5",
+       "text": "one more"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "split",
+     "els": [
+      {
+       "id": "p1",
+       "type": "node",
+       "text": "Point 1",
+       "sub": "4 joins",
+       "glyph": "spark",
+       "color": "ion"
+      },
+      {
+       "id": "p2",
+       "type": "node",
+       "text": "Point 2",
+       "sub": "3 new",
+       "glyph": "spark",
+       "color": "ion"
+      },
+      {
+       "id": "p3",
+       "type": "node",
+       "text": "Point 3",
+       "sub": "2 new",
+       "glyph": "spark",
+       "color": "ion"
+      },
+      {
+       "id": "p4",
+       "type": "node",
+       "text": "Point 4",
+       "sub": "1 new",
+       "glyph": "spark",
+       "color": "ion"
+      },
+      {
+       "id": "p5",
+       "type": "node",
+       "text": "Point 5",
+       "sub": "last",
+       "glyph": "spark",
+       "color": "ion"
+      },
+      {
+       "id": "joinArrow",
+       "type": "arrow",
+       "from": "p5",
+       "to": "p1",
+       "text": "+4 new lines"
+      },
+      {
+       "id": "lineBars",
+       "type": "bars",
+       "values": [
+        0,
+        1,
+        3,
+        6,
+        10
+       ],
+       "labels": [
+        "0",
+        "1",
+        "3",
+        "6",
+        "10"
+       ],
+       "unit": "lines"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Count every line from both ends"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "column",
+     "els": [
+      {
+       "id": "tri",
+       "type": "label",
+       "text": "Triangular totals",
+       "x": 80,
+       "y": 220,
+       "color": "mint"
+      },
+      {
+       "id": "triSeq",
+       "type": "bars",
+       "values": [
+        0,
+        1,
+        3,
+        6,
+        10
+       ],
+       "labels": [
+        "0",
+        "1",
+        "3",
+        "6",
+        "10"
+       ],
+       "unit": "lines"
+      },
+      {
+       "id": "koch",
+       "type": "node",
+       "text": "Koch snowflake",
+       "sub": "multiply by 4",
+       "color": "sci"
+      },
+      {
+       "id": "kochSeq",
+       "type": "bars",
+       "values": [
+        3,
+        12,
+        48,
+        192
+       ],
+       "labels": [
+        "3",
+        "12",
+        "48",
+        "192"
+       ],
+       "unit": "sides"
+      },
+      {
+       "id": "opt12",
+       "type": "label",
+       "text": "12",
+       "x": 180,
+       "y": 500,
+       "color": "amber"
+      },
+      {
+       "id": "opt15",
+       "type": "label",
+       "text": "15",
+       "x": 470,
+       "y": 500,
+       "color": "mint"
+      },
+      {
+       "id": "opt18",
+       "type": "label",
+       "text": "18",
+       "x": 760,
+       "y": 500,
+       "color": "volt"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Shape patterns can hide number patterns.",
+    "L2": "Regular polygons have equal sides and equal angles. Their side counts go 3, 4, 5, 6 and so on.",
+    "L3": "Now join every pair of points. Each new point joins every old point once.",
+    "L4": "For 5 points, the new lines are 4, then 3, then 2, then 1. The total is 10.",
+    "L5": "The totals 0, 1, 3, 6, 10 are triangular numbers.",
+    "L6": "A common mistake is counting each line from both ends. That counts every line twice.",
+    "L7": "In a Koch snowflake, each side becomes 4 smaller sides. So 3, 12, 48 becomes 192.",
+    "L8": "Use the number rule to predict what comes next. Now check the joining-points pattern."
+   },
+   "narration": {},
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "poly3",
+        "poly4",
+        "poly5"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "flow",
+       "dur": 1.2,
+       "target": [
+        "polyArrow",
+        "polyArrow2"
+       ],
+       "to": 1
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "poly5"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "p1",
+        "p2",
+        "p3",
+        "p4",
+        "p5"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "joinArrow",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "lineBars"
+      },
+      {
+       "at": 0.5,
+       "do": "count",
+       "dur": 1.2,
+       "target": "lineBars",
+       "to": 1
+      },
+      {
+       "at": 1.2,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "p5"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "tri",
+        "triSeq"
+       ]
+      },
+      {
+       "at": 0.6,
+       "do": "highlight",
+       "dur": 1,
+       "target": "triSeq"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.5,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      },
+      {
+       "at": 0.7,
+       "do": "bust",
+       "dur": 1.2,
+       "target": "myth"
+      },
+      {
+       "at": 1.4,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "lineBars"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.9,
+       "target": [
+        "koch",
+        "kochSeq"
+       ]
+      },
+      {
+       "at": 0.7,
+       "do": "flow",
+       "dur": 1.1,
+       "target": "kochSeq",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "opt12",
+        "opt15",
+        "opt18"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "For 6 points, how many lines join every pair?",
+    "options": [
+     "opt12",
+     "opt15",
+     "opt18"
+    ],
+    "answer": "opt15",
+    "src": "c6-maths-ch01-t04-i03"
+   }
+  },
+  "repairs": [
+   "glyph",
+   "glyph",
+   "glyph",
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 54
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch01-t04-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 3153,
+     "ops": [
+      {
+       "id": "shape1",
+       "op": "polygon",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         180,
+         350
+        ],
+        [
+         260,
+         190
+        ],
+        [
+         340,
+         350
+        ]
+       ]
+      },
+      {
+       "id": "shape2",
+       "op": "polygon",
+       "startMs": 700,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         450,
+         330
+        ],
+        [
+         510,
+         250
+        ],
+        [
+         590,
+         250
+        ],
+        [
+         650,
+         330
+        ]
+       ]
+      },
+      {
+       "id": "p1",
+       "op": "numwork",
+       "startMs": 1500,
+       "endMs": 2600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        190,
+        80
+       ],
+       "layout": "number_line",
+       "rows": [
+        [
+         "3",
+         "4",
+         "5",
+         "6"
+        ]
+       ],
+       "range": [
+        3,
+        6
+       ]
+      },
+      {
+       "id": "a1",
+       "op": "arrow",
+       "startMs": 2200,
+       "endMs": 2700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        300,
+        150
+       ],
+       "to": [
+        300,
+        100
+       ]
+      },
+      {
+       "id": "h1",
+       "op": "highlight",
+       "startMs": 2700,
+       "endMs": 3153,
+       "ink": "good",
+       "weight": 2,
+       "target": "p1",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch01-t04-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "tri",
+       "op": "polygon",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         120,
+         350
+        ],
+        [
+         190,
+         220
+        ],
+        [
+         260,
+         350
+        ]
+       ]
+      },
+      {
+       "id": "sq",
+       "op": "polygon",
+       "startMs": 600,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         310,
+         350
+        ],
+        [
+         310,
+         230
+        ],
+        [
+         430,
+         230
+        ],
+        [
+         430,
+         350
+        ]
+       ]
+      },
+      {
+       "id": "pen",
+       "op": "polygon",
+       "startMs": 1200,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         500,
+         350
+        ],
+        [
+         540,
+         250
+        ],
+        [
+         640,
+         250
+        ],
+        [
+         680,
+         350
+        ],
+        [
+         590,
+         390
+        ]
+       ]
+      },
+      {
+       "id": "hex",
+       "op": "polygon",
+       "startMs": 2000,
+       "endMs": 3100,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         130,
+         140
+        ],
+        [
+         180,
+         100
+        ],
+        [
+         250,
+         100
+        ],
+        [
+         300,
+         140
+        ],
+        [
+         250,
+         180
+        ],
+        [
+         180,
+         180
+        ]
+       ]
+      },
+      {
+       "id": "eq1",
+       "op": "numwork",
+       "startMs": 3000,
+       "endMs": 4000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        340,
+        70
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "equal",
+         "sides"
+        ]
+       ]
+      },
+      {
+       "id": "eq2",
+       "op": "numwork",
+       "startMs": 3900,
+       "endMs": 5000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        540,
+        70
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "equal",
+         "angles"
+        ]
+       ]
+      },
+      {
+       "id": "seq",
+       "op": "numwork",
+       "startMs": 5200,
+       "endMs": 6800,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        280,
+        420
+       ],
+       "layout": "number_line",
+       "rows": [
+        [
+         "3",
+         "4",
+         "5",
+         "6"
+        ]
+       ],
+       "range": [
+        3,
+        6
+       ]
+      },
+      {
+       "id": "arr",
+       "op": "arrow",
+       "startMs": 6800,
+       "endMs": 7600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        350,
+        400
+       ],
+       "to": [
+        610,
+        400
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch01-t04-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "points",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 400,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        180,
+        150
+       ],
+       "r": 7,
+       "fill": "accent"
+      },
+      {
+       "id": "p2",
+       "op": "circle",
+       "startMs": 300,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        620,
+        150
+       ],
+       "r": 7,
+       "fill": "accent"
+      },
+      {
+       "id": "p3",
+       "op": "circle",
+       "startMs": 600,
+       "endMs": 1000,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        620,
+        370
+       ],
+       "r": 7,
+       "fill": "accent"
+      },
+      {
+       "id": "p4",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1300,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        180,
+        370
+       ],
+       "r": 7,
+       "fill": "accent"
+      },
+      {
+       "id": "j1",
+       "op": "line",
+       "startMs": 1400,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        180,
+        150
+       ],
+       "to": [
+        620,
+        150
+       ]
+      },
+      {
+       "id": "j2",
+       "op": "line",
+       "startMs": 2100,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        180,
+        150
+       ],
+       "to": [
+        620,
+        370
+       ]
+      },
+      {
+       "id": "j3",
+       "op": "line",
+       "startMs": 2800,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        180,
+        150
+       ],
+       "to": [
+        180,
+        370
+       ]
+      },
+      {
+       "id": "j4",
+       "op": "line",
+       "startMs": 3400,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        620,
+        150
+       ],
+       "to": [
+        620,
+        370
+       ]
+      },
+      {
+       "id": "j5",
+       "op": "line",
+       "startMs": 4000,
+       "endMs": 4700,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        620,
+        150
+       ],
+       "to": [
+        180,
+        370
+       ]
+      },
+      {
+       "id": "j6",
+       "op": "line",
+       "startMs": 4600,
+       "endMs": 5300,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        180,
+        370
+       ],
+       "to": [
+        620,
+        370
+       ]
+      },
+      {
+       "id": "old",
+       "op": "highlight",
+       "startMs": 5300,
+       "endMs": 6557,
+       "ink": "good",
+       "weight": 2,
+       "target": "j1",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch01-t04-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "five",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "soft",
+       "weight": 1,
+       "c": [
+        400,
+        250
+       ],
+       "r": 120
+      },
+      {
+       "id": "nw",
+       "op": "numwork",
+       "startMs": 500,
+       "endMs": 2100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        250,
+        60
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "4",
+         "+",
+         "3",
+         "+",
+         "2",
+         "+",
+         "1",
+         "=",
+         "10"
+        ]
+       ]
+      },
+      {
+       "id": "n1",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        270,
+        180
+       ],
+       "text": "4",
+       "size": "l"
+      },
+      {
+       "id": "n2",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        370,
+        180
+       ],
+       "text": "3",
+       "size": "l"
+      },
+      {
+       "id": "n3",
+       "op": "text",
+       "startMs": 3200,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        470,
+        180
+       ],
+       "text": "2",
+       "size": "l"
+      },
+      {
+       "id": "n4",
+       "op": "text",
+       "startMs": 3700,
+       "endMs": 4200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        570,
+        180
+       ],
+       "text": "1",
+       "size": "l"
+      },
+      {
+       "id": "total",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 5600,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        440
+       ],
+       "text": "10",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "hl",
+       "op": "highlight",
+       "startMs": 6500,
+       "endMs": 8260,
+       "ink": "good",
+       "weight": 2,
+       "target": "nw",
+       "style": "underline"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch01-t04-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "tri1",
+       "op": "polygon",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         100,
+         350
+        ],
+        [
+         140,
+         280
+        ],
+        [
+         180,
+         350
+        ]
+       ]
+      },
+      {
+       "id": "tri2",
+       "op": "polygon",
+       "startMs": 500,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         250,
+         350
+        ],
+        [
+         290,
+         280
+        ],
+        [
+         330,
+         350
+        ],
+        [
+         290,
+         210
+        ]
+       ]
+      },
+      {
+       "id": "tri3",
+       "op": "polygon",
+       "startMs": 1000,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         430,
+         350
+        ],
+        [
+         470,
+         280
+        ],
+        [
+         510,
+         350
+        ],
+        [
+         550,
+         280
+        ],
+        [
+         590,
+         350
+        ],
+        [
+         510,
+         210
+        ]
+       ]
+      },
+      {
+       "id": "seq5",
+       "op": "numwork",
+       "startMs": 1800,
+       "endMs": 3300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        120,
+        80
+       ],
+       "layout": "number_line",
+       "rows": [
+        [
+         "0",
+         "1",
+         "3",
+         "6",
+         "10"
+        ]
+       ],
+       "range": [
+        0,
+        10
+       ]
+      },
+      {
+       "id": "lab",
+       "op": "text",
+       "startMs": 3400,
+       "endMs": 4200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        440
+       ],
+       "text": "triangular numbers",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "u5",
+       "op": "highlight",
+       "startMs": 4200,
+       "endMs": 4855,
+       "ink": "good",
+       "weight": 2,
+       "target": "seq5",
+       "style": "underline"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch01-t04-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "bad1",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        150,
+        150
+       ],
+       "to": [
+        650,
+        150
+       ]
+      },
+      {
+       "id": "bad2",
+       "op": "arrow",
+       "startMs": 1000,
+       "endMs": 1900,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        150,
+        150
+       ],
+       "to": [
+        650,
+        150
+       ]
+      },
+      {
+       "id": "bad3",
+       "op": "arrow",
+       "startMs": 2000,
+       "endMs": 2900,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        650,
+        150
+       ],
+       "to": [
+        150,
+        150
+       ]
+      },
+      {
+       "id": "mark1",
+       "op": "text",
+       "startMs": 3200,
+       "endMs": 3900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        110
+       ],
+       "text": "twice",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "goodline",
+       "op": "line",
+       "startMs": 4100,
+       "endMs": 5000,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        150,
+        330
+       ],
+       "to": [
+        650,
+        330
+       ]
+      },
+      {
+       "id": "oneway",
+       "op": "arrow",
+       "startMs": 5100,
+       "endMs": 6100,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        150,
+        330
+       ],
+       "to": [
+        650,
+        330
+       ]
+      },
+      {
+       "id": "cross",
+       "op": "erase",
+       "startMs": 6100,
+       "endMs": 6983,
+       "ink": "soft",
+       "weight": 2,
+       "target": "bad2"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch01-t04-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "k1",
+       "op": "polygon",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         100,
+         350
+        ],
+        [
+         220,
+         140
+        ],
+        [
+         340,
+         350
+        ]
+       ]
+      },
+      {
+       "id": "k2",
+       "op": "polygon",
+       "startMs": 900,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         430,
+         350
+        ],
+        [
+         490,
+         245
+        ],
+        [
+         550,
+         350
+        ]
+       ]
+      },
+      {
+       "id": "k3",
+       "op": "polygon",
+       "startMs": 1600,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         590,
+         350
+        ],
+        [
+         620,
+         295
+        ],
+        [
+         650,
+         350
+        ]
+       ]
+      },
+      {
+       "id": "rule",
+       "op": "numwork",
+       "startMs": 2300,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        210,
+        60
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "3",
+         "×",
+         "4",
+         "=",
+         "12"
+        ]
+       ]
+      },
+      {
+       "id": "rule2",
+       "op": "numwork",
+       "startMs": 3400,
+       "endMs": 4700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        440,
+        60
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "12",
+         "×",
+         "4",
+         "=",
+         "48"
+        ]
+       ]
+      },
+      {
+       "id": "rule3",
+       "op": "numwork",
+       "startMs": 4700,
+       "endMs": 6100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        260,
+        420
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "48",
+         "×",
+         "4",
+         "=",
+         "192"
+        ]
+       ]
+      },
+      {
+       "id": "hkoch",
+       "op": "highlight",
+       "startMs": 6200,
+       "endMs": 7409,
+       "ink": "good",
+       "weight": 2,
+       "target": "rule3",
+       "style": "underline"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch01-t04-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "rulea",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        80,
+        80
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "3",
+         "4",
+         "5",
+         "6"
+        ]
+       ]
+      },
+      {
+       "id": "nexta",
+       "op": "text",
+       "startMs": 1100,
+       "endMs": 1600,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        550,
+        110
+       ],
+       "text": "next",
+       "size": "m"
+      },
+      {
+       "id": "shapea",
+       "op": "polygon",
+       "startMs": 1700,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         150,
+         350
+        ],
+        [
+         230,
+         210
+        ],
+        [
+         310,
+         350
+        ]
+       ]
+      },
+      {
+       "id": "shapeb",
+       "op": "polygon",
+       "startMs": 2500,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         480,
+         350
+        ],
+        [
+         520,
+         270
+        ],
+        [
+         600,
+         270
+        ],
+        [
+         640,
+         350
+        ]
+       ]
+      },
+      {
+       "id": "joinp",
+       "op": "circle",
+       "startMs": 3500,
+       "endMs": 3900,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        350
+       ],
+       "r": 7,
+       "fill": "accent"
+      },
+      {
+       "id": "joinq",
+       "op": "circle",
+       "startMs": 3900,
+       "endMs": 4300,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        220
+       ],
+       "r": 7,
+       "fill": "accent"
+      },
+      {
+       "id": "joinline",
+       "op": "line",
+       "startMs": 4300,
+       "endMs": 5000,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        400,
+        350
+       ],
+       "to": [
+        400,
+        220
+       ]
+      },
+      {
+       "id": "check",
+       "op": "highlight",
+       "startMs": 5200,
+       "endMs": 6557,
+       "ink": "good",
+       "weight": 2,
+       "target": "joinline",
+       "style": "pulse"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1",
+   "key": "×4",
+   "prompt": "inputs 3,12,48,192 → 12,48,192,768"
+  },
+  {
+   "itemId": "r2",
+   "key": "²",
+   "prompt": "dots-square: 1,4,9"
+  }
+ ],
+ "check": {
+  "issues": [
+   {
+    "where": "explainer",
+    "what": "Scene s2 lines show bars labeled 0, 1, 3, 6, 10 lines, yet the text says 'For 5 points, the new lines are 4, then 3, then 2, then 1. The total is 10.' The bars with labels 0,1,3,6,10 match the totals for 0 to 4 points, not the new lines added (4,3,2,1). While related, it may confuse learners who expect the stepwise additions. However, since the task asks for 6 points and the options are included correctly, this is a minor mismatch.",
+    "severity": "low"
+   },
+   {
+    "where": "game",
+    "what": "Round 2 (Triangle rows) uses the pattern title 'dots-square' with rule ² and tiles including '×2' and '×4'. For dots-square, the sequence is 1, 4, 9 (square numbers) and the next is 16. Tile '×2' does not match the square‐number rule and could mislead students if selected, but it appears as a distractor. This is intentional and not an error.",
+    "severity": "low"
+   }
+  ],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

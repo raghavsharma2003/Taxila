@@ -1,0 +1,1773 @@
+{
+ "topicId": "c6-sst-ch04-t01",
+ "title": "Timeline and Sources of History",
+ "chapter": "Timeline and Sources of History",
+ "subject": "sst",
+ "class": 6,
+ "topicType": "T4",
+ "plan": {
+  "game": "era-drop@1",
+  "hint": "place / century / order modes with BCE and CE dates from the kit"
+ },
+ "game": {
+  "archetype": "era-drop@1",
+  "spec": {
+   "archetype": "era-drop@1",
+   "skills": [
+    "c6-sst-ch04-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "landed": "landed",
+    "precision": "precision",
+    "coach": "Drag the dock along the timeline",
+    "first": "Which came first?",
+    "runDone": "Timeline complete",
+    "offBy": "off by",
+    "years": "years",
+    "exact": "SPOT ON",
+    "century": "century",
+    "bce": "BCE",
+    "ce": "CE",
+    "earlier": "EARLIER"
+   },
+   "title": "Timeline explorers",
+   "axis": {
+    "min": -3000,
+    "max": 2000
+   },
+   "rounds": [
+    {
+     "mode": "place",
+     "title": "Drop the dates",
+     "sub": "BCE counts down; CE counts up",
+     "ticks": 0,
+     "speed": 0.8,
+     "tol": 42,
+     "items": [
+      {
+       "text": "Harappan cities peak",
+       "value": -2600,
+       "src": "c6-sst-ch04-t01-i01"
+      },
+      {
+       "text": "A museum coin",
+       "value": -500,
+       "src": "c6-sst-ch04-t01-i01"
+      },
+      {
+       "text": "India becomes independent",
+       "value": 1947,
+       "src": "c6-sst-ch04-t01-i01"
+      },
+      {
+       "text": "A CE timeline mark",
+       "value": 100,
+       "src": "c6-sst-ch04-t01-i01"
+      }
+     ]
+    },
+    {
+     "mode": "century",
+     "title": "Find the century",
+     "sub": "Think in blocks of 100 years",
+     "ticks": 0,
+     "speed": 0.95,
+     "tol": 42,
+     "items": [
+      {
+       "text": "India becomes independent",
+       "value": 1947,
+       "src": "c6-sst-ch04-t01-i04"
+      },
+      {
+       "text": "A ruler's time",
+       "value": 268,
+       "src": "c6-sst-ch04-t01-i11"
+      },
+      {
+       "text": "Aryabhata's work",
+       "value": 499,
+       "src": "c6-sst-ch04-t01-i11"
+      },
+      {
+       "text": "Harappan cities peak",
+       "value": -2600,
+       "src": "c6-sst-ch04-t01-i11"
+      }
+     ],
+     "targets": "c6-sst-ch04-t01-m2"
+    },
+    {
+     "mode": "order",
+     "title": "Which came first?",
+     "sub": "Bigger BCE number means earlier",
+     "ticks": 0,
+     "speed": 1.1,
+     "tol": 42,
+     "items": [
+      {
+       "text": "India becomes independent",
+       "value": 1947,
+       "src": "c6-sst-ch04-t01-i01"
+      },
+      {
+       "text": "Harappan cities peak",
+       "value": -2600,
+       "src": "c6-sst-ch04-t01-i01"
+      },
+      {
+       "text": "A 500 BCE coin",
+       "value": -500,
+       "src": "c6-sst-ch04-t01-i01"
+      },
+      {
+       "text": "A 100 CE event",
+       "value": 100,
+       "src": "c6-sst-ch04-t01-i01"
+      }
+     ],
+     "targets": "c6-sst-ch04-t01-m1"
+    }
+   ]
+  },
+  "repairs": [
+   "ticks:dense",
+   "ticks:dense",
+   "ticks:dense"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c6-sst-ch04-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Timeline and Sources of History",
+   "accent": "amber",
+   "targets": "c6-sst-ch04-t01-m1",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Timeline and Sources"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "500 BCE comes after 100 BCE"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "bce",
+       "type": "node",
+       "text": "BCE",
+       "sub": "counts down",
+       "glyph": "clock",
+       "color": "amber"
+      },
+      {
+       "id": "ce",
+       "type": "node",
+       "text": "CE",
+       "sub": "counts up",
+       "glyph": "clock",
+       "color": "ion"
+      },
+      {
+       "id": "zero",
+       "type": "label",
+       "text": "No year 0",
+       "x": 450,
+       "y": 300,
+       "color": "volt"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "bce",
+       "to": "ce",
+       "text": "1 BCE to 1 CE"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "remains",
+       "type": "node",
+       "text": "Remains",
+       "sub": "tools, pots",
+       "glyph": "pot",
+       "color": "mint"
+      },
+      {
+       "id": "inscribe",
+       "type": "node",
+       "text": "Inscriptions",
+       "sub": "stone, metal",
+       "glyph": "pillar",
+       "color": "amber"
+      },
+      {
+       "id": "texts",
+       "type": "node",
+       "text": "Written texts",
+       "sub": "manuscripts",
+       "glyph": "book",
+       "color": "ion"
+      },
+      {
+       "id": "oral",
+       "type": "node",
+       "text": "Oral traditions",
+       "sub": "songs, stories",
+       "glyph": "music",
+       "color": "sun"
+      },
+      {
+       "id": "evidence",
+       "type": "node",
+       "text": "Cross-check",
+       "sub": "many sources",
+       "glyph": "balance",
+       "color": "volt"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "remains",
+       "to": "evidence",
+       "text": "evidence"
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "inscribe",
+       "to": "evidence",
+       "text": "evidence"
+      },
+      {
+       "id": "a4",
+       "type": "arrow",
+       "from": "texts",
+       "to": "evidence",
+       "text": "evidence"
+      },
+      {
+       "id": "a5",
+       "type": "arrow",
+       "from": "oral",
+       "to": "evidence",
+       "text": "evidence"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "row",
+     "els": [
+      {
+       "id": "d1",
+       "type": "label",
+       "text": "3000 BCE",
+       "x": 80,
+       "y": 320,
+       "color": "amber"
+      },
+      {
+       "id": "d2",
+       "type": "label",
+       "text": "500 BCE",
+       "x": 280,
+       "y": 320,
+       "color": "amber"
+      },
+      {
+       "id": "d3",
+       "type": "label",
+       "text": "100 CE",
+       "x": 500,
+       "y": 320,
+       "color": "ion"
+      },
+      {
+       "id": "d4",
+       "type": "label",
+       "text": "1947 CE",
+       "x": 720,
+       "y": 320,
+       "color": "ion"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "A timeline helps us place events in order, from earlier to later.",
+    "L2": "BCE years count backwards, so 500 BCE is earlier than 100 BCE. The bigger BCE number is farther back.",
+    "L3": "CE years count up from 1 CE. There is no year 0: 1 BCE is followed directly by 1 CE.",
+    "L4": "For example, 2600 BCE comes before 268 BCE, and 1947 CE comes later on the timeline.",
+    "L5": "A decade is 10 years, a century is 100 years, and a millennium is 1,000 years.",
+    "L6": "Historians use remains, inscriptions, written texts, and oral traditions as sources.",
+    "L7": "They cross-check many sources because one source can be incomplete or show only one point of view.",
+    "L8": "Now put these dates in order from earliest to latest."
+   },
+   "narration": {
+    "L1": {
+     "text": "A timeline helps us place events in order, from earlier to later.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L2": {
+     "text": "BCE years count backwards, so 500 BCE is earlier than 100 BCE. The bigger BCE number is farther back.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L3": {
+     "text": "CE years count up from 1 CE. There is no year 0: 1 BCE is followed directly by 1 CE.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L4": {
+     "text": "For example, 2600 BCE comes before 268 BCE, and 1947 CE comes later on the timeline.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L5": {
+     "text": "A decade is 10 years, a century is 100 years, and a millennium is 1,000 years.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Historians use remains, inscriptions, written texts, and oral traditions as sources.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L7": {
+     "text": "They cross-check many sources because one source can be incomplete or show only one point of view.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Now put these dates in order from earliest to latest.",
+     "dur": 2,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "title"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      },
+      {
+       "at": 1,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "bce",
+        "ce"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.7,
+       "target": "zero"
+      },
+      {
+       "at": 1.4,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "a1",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "d1",
+        "d2",
+        "d3",
+        "d4"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 1,
+       "target": [
+        "d1",
+        "d2",
+        "d3",
+        "d4"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "focus",
+       "dur": 0.7,
+       "target": "bce"
+      },
+      {
+       "at": 1,
+       "do": "focus",
+       "dur": 0.7,
+       "target": "ce"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "remains",
+        "inscribe",
+        "texts",
+        "oral"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 1,
+       "target": [
+        "a2",
+        "a3",
+        "a4",
+        "a5"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "evidence"
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 1,
+       "target": "evidence"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "interactive",
+       "dur": 1
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "order",
+    "prompt": "Tap these dates from earliest to latest.",
+    "items": [
+     "d1",
+     "d2",
+     "d3",
+     "d4"
+    ],
+    "src": "c6-sst-ch04-t01-i01"
+   }
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg",
+  "seconds": 35
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch04-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "axis",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        100,
+        260
+       ],
+       "to": [
+        700,
+        260
+       ]
+      },
+      {
+       "id": "earlier",
+       "op": "arrow",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        180,
+        260
+       ],
+       "to": [
+        100,
+        260
+       ]
+      },
+      {
+       "id": "later",
+       "op": "arrow",
+       "startMs": 1200,
+       "endMs": 1900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        620,
+        260
+       ],
+       "to": [
+        700,
+        260
+       ]
+      },
+      {
+       "id": "e",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        120,
+        220
+       ],
+       "text": "earlier",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "l",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        680,
+        220
+       ],
+       "text": "later",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "events",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3800,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        330
+       ],
+       "text": "events",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch04-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "axis2",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        100,
+        270
+       ],
+       "to": [
+        700,
+        270
+       ]
+      },
+      {
+       "id": "bcearrow",
+       "op": "arrow",
+       "startMs": 700,
+       "endMs": 1800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        650,
+        270
+       ],
+       "to": [
+        120,
+        270
+       ]
+      },
+      {
+       "id": "t500",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2600,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        220,
+        230
+       ],
+       "text": "500 BCE",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "t100",
+       "op": "text",
+       "startMs": 2600,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        560,
+        230
+       ],
+       "text": "100 BCE",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "tick1",
+       "op": "line",
+       "startMs": 3300,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 1,
+       "from": [
+        220,
+        250
+       ],
+       "to": [
+        220,
+        290
+       ]
+      },
+      {
+       "id": "tick2",
+       "op": "line",
+       "startMs": 3700,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 1,
+       "from": [
+        560,
+        250
+       ],
+       "to": [
+        560,
+        290
+       ]
+      },
+      {
+       "id": "earlier2",
+       "op": "label",
+       "startMs": 4300,
+       "endMs": 5000,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        220,
+        350
+       ],
+       "text": "earlier",
+       "to": [
+        220,
+        290
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch04-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9111,
+     "ops": [
+      {
+       "id": "ceaxis",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        100,
+        270
+       ],
+       "to": [
+        700,
+        270
+       ]
+      },
+      {
+       "id": "bce1",
+       "op": "text",
+       "startMs": 1200,
+       "endMs": 1900,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        250,
+        220
+       ],
+       "text": "1 BCE",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "ce1",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        550,
+        220
+       ],
+       "text": "1 CE",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "tickb",
+       "op": "line",
+       "startMs": 2600,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 1,
+       "from": [
+        250,
+        250
+       ],
+       "to": [
+        250,
+        290
+       ]
+      },
+      {
+       "id": "tickc",
+       "op": "line",
+       "startMs": 3000,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 1,
+       "from": [
+        550,
+        250
+       ],
+       "to": [
+        550,
+        290
+       ]
+      },
+      {
+       "id": "up",
+       "op": "arrow",
+       "startMs": 3500,
+       "endMs": 4400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        570,
+        270
+       ],
+       "to": [
+        690,
+        270
+       ]
+      },
+      {
+       "id": "count",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5600,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        650,
+        350
+       ],
+       "text": "CE: 1, 2, 3",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch04-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "exaxis",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        80,
+        270
+       ],
+       "to": [
+        720,
+        270
+       ]
+      },
+      {
+       "id": "a2600",
+       "op": "text",
+       "startMs": 1000,
+       "endMs": 1800,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        180,
+        220
+       ],
+       "text": "2600 BCE",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "a268",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        360,
+        220
+       ],
+       "text": "268 BCE",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "a1947",
+       "op": "text",
+       "startMs": 2600,
+       "endMs": 3400,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        620,
+        220
+       ],
+       "text": "1947 CE",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "t2600",
+       "op": "line",
+       "startMs": 3400,
+       "endMs": 3800,
+       "ink": "chalk",
+       "weight": 1,
+       "from": [
+        180,
+        250
+       ],
+       "to": [
+        180,
+        290
+       ]
+      },
+      {
+       "id": "t268",
+       "op": "line",
+       "startMs": 3800,
+       "endMs": 4200,
+       "ink": "chalk",
+       "weight": 1,
+       "from": [
+        360,
+        250
+       ],
+       "to": [
+        360,
+        290
+       ]
+      },
+      {
+       "id": "t1947",
+       "op": "line",
+       "startMs": 4200,
+       "endMs": 4600,
+       "ink": "chalk",
+       "weight": 1,
+       "from": [
+        620,
+        250
+       ],
+       "to": [
+        620,
+        290
+       ]
+      },
+      {
+       "id": "order",
+       "op": "arrow",
+       "startMs": 4700,
+       "endMs": 5700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        120,
+        330
+       ],
+       "to": [
+        680,
+        330
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch04-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "decade",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        80,
+        100
+       ],
+       "w": 180,
+       "h": 100,
+       "round": 10
+      },
+      {
+       "id": "dtext",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        170,
+        145
+       ],
+       "text": "decade",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "dnum",
+       "op": "text",
+       "startMs": 1200,
+       "endMs": 1800,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        170,
+        180
+       ],
+       "text": "10 years",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "century",
+       "op": "rect",
+       "startMs": 1800,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        310,
+        100
+       ],
+       "w": 180,
+       "h": 100,
+       "round": 10
+      },
+      {
+       "id": "ctext",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        145
+       ],
+       "text": "century",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "cnum",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3600,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        180
+       ],
+       "text": "100 years",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "mill",
+       "op": "rect",
+       "startMs": 3600,
+       "endMs": 4300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        540,
+        100
+       ],
+       "w": 180,
+       "h": 100,
+       "round": 10
+      },
+      {
+       "id": "mtext",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 4900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        630,
+        145
+       ],
+       "text": "millennium",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "mnum",
+       "op": "text",
+       "startMs": 4900,
+       "endMs": 5600,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        630,
+        180
+       ],
+       "text": "1,000 years",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch04-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "remains",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        120,
+        150
+       ],
+       "r": 45
+      },
+      {
+       "id": "rlabel",
+       "op": "text",
+       "startMs": 600,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        120,
+        225
+       ],
+       "text": "remains",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "inscription",
+       "op": "rect",
+       "startMs": 1200,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        280,
+        105
+       ],
+       "w": 120,
+       "h": 90
+      },
+      {
+       "id": "ilabel",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        340,
+        225
+       ],
+       "text": "inscriptions",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "written",
+       "op": "rect",
+       "startMs": 2500,
+       "endMs": 3100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        475,
+        105
+       ],
+       "w": 150,
+       "h": 90,
+       "round": 6
+      },
+      {
+       "id": "wlabel",
+       "op": "text",
+       "startMs": 3100,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        550,
+        225
+       ],
+       "text": "written texts",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "oral",
+       "op": "ellipse",
+       "startMs": 3500,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        350,
+        370
+       ],
+       "rx": 170,
+       "ry": 45
+      },
+      {
+       "id": "olabel",
+       "op": "text",
+       "startMs": 4100,
+       "endMs": 5000,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        350,
+        378
+       ],
+       "text": "oral traditions",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch04-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "s1",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        80,
+        100
+       ],
+       "w": 170,
+       "h": 80
+      },
+      {
+       "id": "s2",
+       "op": "rect",
+       "startMs": 500,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        315,
+        100
+       ],
+       "w": 170,
+       "h": 80
+      },
+      {
+       "id": "s3",
+       "op": "rect",
+       "startMs": 1000,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        550,
+        100
+       ],
+       "w": 170,
+       "h": 80
+      },
+      {
+       "id": "source1",
+       "op": "text",
+       "startMs": 1600,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        165,
+        145
+       ],
+       "text": "source",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "source2",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        145
+       ],
+       "text": "source",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "source3",
+       "op": "text",
+       "startMs": 2000,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        635,
+        145
+       ],
+       "text": "source",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "cross1",
+       "op": "line",
+       "startMs": 2600,
+       "endMs": 3100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        250,
+        140
+       ],
+       "to": [
+        315,
+        140
+       ]
+      },
+      {
+       "id": "cross2",
+       "op": "line",
+       "startMs": 3000,
+       "endMs": 3500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        485,
+        140
+       ],
+       "to": [
+        550,
+        140
+       ]
+      },
+      {
+       "id": "check",
+       "op": "text",
+       "startMs": 3700,
+       "endMs": 4700,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        300
+       ],
+       "text": "cross-check",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "incomplete",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 6200,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        390
+       ],
+       "text": "one point of view",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch04-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "orderaxis",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        80,
+        270
+       ],
+       "to": [
+        720,
+        270
+       ]
+      },
+      {
+       "id": "leftarrow",
+       "op": "arrow",
+       "startMs": 700,
+       "endMs": 1200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        150,
+        270
+       ],
+       "to": [
+        80,
+        270
+       ]
+      },
+      {
+       "id": "rightarrow",
+       "op": "arrow",
+       "startMs": 900,
+       "endMs": 1400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        650,
+        270
+       ],
+       "to": [
+        720,
+        270
+       ]
+      },
+      {
+       "id": "earliest8",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        150,
+        220
+       ],
+       "text": "earliest",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "latest8",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        650,
+        220
+       ],
+       "text": "latest",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "dates8",
+       "op": "text",
+       "startMs": 2800,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        350
+       ],
+       "text": "dates",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "2600 BCE",
+   "prompt": "Harappan cities peak",
+   "src": "c6-sst-ch04-t01-i01"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "500 BCE",
+   "prompt": "A museum coin",
+   "src": "c6-sst-ch04-t01-i01"
+  },
+  {
+   "itemId": "r1:2",
+   "key": "1947 CE",
+   "prompt": "India becomes independent",
+   "src": "c6-sst-ch04-t01-i01"
+  },
+  {
+   "itemId": "r1:3",
+   "key": "100 CE",
+   "prompt": "A CE timeline mark",
+   "src": "c6-sst-ch04-t01-i01"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "20th century CE",
+   "prompt": "India becomes independent",
+   "src": "c6-sst-ch04-t01-i04"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "3rd century CE",
+   "prompt": "A ruler's time",
+   "src": "c6-sst-ch04-t01-i11"
+  },
+  {
+   "itemId": "r2:2",
+   "key": "5th century CE",
+   "prompt": "Aryabhata's work",
+   "src": "c6-sst-ch04-t01-i11"
+  },
+  {
+   "itemId": "r2:3",
+   "key": "26th century BCE",
+   "prompt": "Harappan cities peak",
+   "src": "c6-sst-ch04-t01-i11"
+  },
+  {
+   "itemId": "r3:0",
+   "key": "Harappan cities peak",
+   "prompt": "earlier: India becomes independent (1947 CE) vs Harappan cities peak (2600 BCE)"
+  },
+  {
+   "itemId": "r3:1",
+   "key": "A 500 BCE coin",
+   "prompt": "earlier: A 500 BCE coin (500 BCE) vs A 100 CE event (100 CE)"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

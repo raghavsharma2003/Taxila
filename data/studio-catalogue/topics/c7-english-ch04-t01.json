@@ -1,0 +1,1560 @@
+{
+ "topicId": "c7-english-ch04-t01",
+ "title": "Animals, Birds, and Dr. Dolittle",
+ "chapter": "Animals, Birds, and Dr. Dolittle",
+ "subject": "english",
+ "class": 7,
+ "topicType": "T2",
+ "plan": {
+  "game": "story-rail@1",
+  "hint": "sequence, cause and who modes from the lesson's events and speakers"
+ },
+ "game": {
+  "archetype": "story-rail@1",
+  "spec": {
+   "archetype": "story-rail@1",
+   "skills": [
+    "c7-english-ch04-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "picked": "coupled",
+    "streak": "streak",
+    "next": "What happens next?",
+    "effect": "What does this lead to?",
+    "who": "Who said this?",
+    "runDone": "Line complete",
+    "order": "your train",
+    "right": "Coupled",
+    "wrong": "Not this one",
+    "coach": "Tap a wagon before the train reaches the fork"
+   },
+   "title": "Dr Dolittle and the Animals",
+   "rounds": [
+    {
+     "mode": "sequence",
+     "title": "Story order",
+     "sub": "couple the events in order",
+     "cards": [
+      {
+       "id": "e1",
+       "text": "Doctor Ramu likes animals",
+       "glyph": "person"
+      },
+      {
+       "id": "e2",
+       "text": "Mitthu says animals talk too",
+       "glyph": "bird",
+       "src": "c7-english-ch04-t01-i01"
+      },
+      {
+       "id": "e3",
+       "text": "Dogs use their tails"
+      },
+      {
+       "id": "e4",
+       "text": "Cows use their ears",
+       "glyph": "cow"
+      },
+      {
+       "id": "e5",
+       "text": "The doctor understands animals",
+       "glyph": "person"
+      },
+      {
+       "id": "e6",
+       "text": "Sick animals come for help"
+      }
+     ],
+     "speed": 0.9
+    },
+    {
+     "mode": "cause",
+     "title": "Cause and effect",
+     "sub": "match each cause to its effect",
+     "pairs": [
+      {
+       "cause": {
+        "id": "c2",
+        "text": "Animals communicate clearly",
+        "glyph": "bird",
+        "src": "c7-english-ch04-t01-i12"
+       },
+       "effect": {
+        "id": "f2",
+        "text": "The doctor can help them",
+        "glyph": "hand"
+       }
+      },
+      {
+       "cause": {
+        "id": "c3",
+        "text": "Birds travel as a group",
+        "glyph": "bird",
+        "src": "c7-english-ch04-t01-i04"
+       },
+       "effect": {
+        "id": "f3",
+        "text": "They form a flock",
+        "glyph": "group"
+       }
+      },
+      {
+       "cause": {
+        "id": "c4",
+        "text": "Bees travel as a group",
+        "glyph": "insect",
+        "src": "c7-english-ch04-t01-i06"
+       },
+       "effect": {
+        "id": "f4",
+        "text": "They form a swarm",
+        "glyph": "group"
+       }
+      }
+     ],
+     "speed": 0.85,
+     "targets": "c7-english-ch04-t01-m-group-word"
+    },
+    {
+     "mode": "who",
+     "title": "Who said it?",
+     "sub": "send each line to its speaker",
+     "speakers": [
+      {
+       "id": "mitthu",
+       "name": "Mitthu",
+       "glyph": "bird"
+      },
+      {
+       "id": "vet",
+       "name": "Vet",
+       "glyph": "person"
+      }
+     ],
+     "lines": [
+      {
+       "id": "w1",
+       "text": "Animals talk too.",
+       "speaker": "mitthu",
+       "src": "c7-english-ch04-t01-i01"
+      },
+      {
+       "id": "w2",
+       "text": "The owl is ready to fly.",
+       "speaker": "vet"
+      },
+      {
+       "id": "w3",
+       "text": "The calf is safe.",
+       "speaker": "vet"
+      }
+     ],
+     "speed": 0.8,
+     "targets": "c7-english-ch04-t01-m-told-no-object"
+    }
+   ]
+  },
+  "repairs": [
+   "glyph",
+   "glyph",
+   "string:card.text",
+   "src",
+   "src"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-english-ch04-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "How Animals Communicate",
+   "accent": "ion",
+   "targets": "c7-english-ch04-t01-m-told-no-object",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "row",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "How Animals Communicate"
+      },
+      {
+       "id": "mitthu",
+       "type": "node",
+       "text": "Mitthu",
+       "sub": "parrot",
+       "glyph": "bird",
+       "color": "sun"
+      },
+      {
+       "id": "doctor",
+       "type": "node",
+       "text": "Doctor Ramu",
+       "sub": "listener",
+       "glyph": "person",
+       "color": "ion"
+      },
+      {
+       "id": "help",
+       "type": "arrow",
+       "from": "mitthu",
+       "to": "doctor",
+       "text": "teaches"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Told works like said"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "dog",
+       "type": "node",
+       "text": "Dog",
+       "sub": "tail",
+       "color": "mint"
+      },
+      {
+       "id": "cow",
+       "type": "node",
+       "text": "Cow",
+       "sub": "ears",
+       "glyph": "cow",
+       "color": "amber"
+      },
+      {
+       "id": "sound",
+       "type": "node",
+       "text": "Sounds",
+       "sub": "barks, moos",
+       "glyph": "music",
+       "color": "ion"
+      },
+      {
+       "id": "movement",
+       "type": "node",
+       "text": "Movements",
+       "sub": "tail, ears",
+       "glyph": "wave",
+       "color": "sun"
+      },
+      {
+       "id": "d1",
+       "type": "arrow",
+       "from": "dog",
+       "to": "movement",
+       "text": "wags"
+      },
+      {
+       "id": "c1",
+       "type": "arrow",
+       "from": "cow",
+       "to": "movement",
+       "text": "moves"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "split",
+     "els": [
+      {
+       "id": "said",
+       "type": "node",
+       "text": "said",
+       "sub": "message",
+       "glyph": "note",
+       "color": "ion"
+      },
+      {
+       "id": "told",
+       "type": "node",
+       "text": "told",
+       "sub": "listener",
+       "glyph": "letter",
+       "color": "mint"
+      },
+      {
+       "id": "person",
+       "type": "node",
+       "text": "listener",
+       "sub": "after told",
+       "glyph": "person",
+       "color": "amber"
+      },
+      {
+       "id": "msg",
+       "type": "label",
+       "text": "that animals talk",
+       "x": 560,
+       "y": 300,
+       "color": "sun"
+      },
+      {
+       "id": "aS",
+       "type": "arrow",
+       "from": "said",
+       "to": "msg",
+       "text": "that"
+      },
+      {
+       "id": "aT",
+       "type": "arrow",
+       "from": "told",
+       "to": "person",
+       "text": "needs person"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Doctor Ramu learns to understand animals with help from his parrot, Mitthu.",
+    "L2": "Mitthu explains that animals communicate through sounds and body movements, not words.",
+    "L3": "A dog talks with its tail, while a cow can communicate with its ears.",
+    "L4": "Animals trust the doctor because he understands them and can find what is wrong.",
+    "L5": "We also use precise group words: a flock of birds, a herd of cows, and a swarm of bees.",
+    "L6": "When we report speech, said can introduce a message, but told needs a listener after it.",
+    "L7": "The myth is that told works just like said. It is wrong: we say 'He told me,' not 'He told that.'",
+    "L8": "Now choose the word that completes the reporting sentence."
+   },
+   "narration": {},
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "mitthu",
+        "doctor"
+       ]
+      },
+      {
+       "at": 1.2,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "help",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "sound",
+        "movement"
+       ]
+      },
+      {
+       "at": 0.5,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "sound"
+      },
+      {
+       "at": 1.2,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "movement"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "dog",
+        "cow"
+       ]
+      },
+      {
+       "at": 0.5,
+       "do": "flow",
+       "dur": 0.7,
+       "target": [
+        "d1",
+        "c1"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "doctor"
+      },
+      {
+       "at": 0.5,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "help",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "sound"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.6,
+       "target": "movement"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "said",
+        "told"
+       ]
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "person",
+        "msg"
+       ]
+      },
+      {
+       "at": 1.2,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "aT",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      },
+      {
+       "at": 0.8,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "interactive",
+       "dur": 0.5
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which word completes: 'The parrot ___ the doctor a secret.'",
+    "options": [
+     "said",
+     "told"
+    ],
+    "answer": "told",
+    "src": "c7-english-ch04-t01-i07"
+   }
+  },
+  "repairs": [
+   "glyph",
+   "arrow:dangling"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 56
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch04-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "doctor",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        190,
+        220
+       ],
+       "r": 70
+      },
+      {
+       "id": "parrot",
+       "op": "circle",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        580,
+        180
+       ],
+       "r": 55
+      },
+      {
+       "id": "d1",
+       "op": "arrow",
+       "startMs": 1400,
+       "endMs": 2200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        255,
+        210
+       ],
+       "to": [
+        515,
+        185
+       ]
+      },
+      {
+       "id": "t1",
+       "op": "label",
+       "startMs": 2200,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        145,
+        330
+       ],
+       "text": "Doctor Ramu",
+       "to": [
+        190,
+        285
+       ]
+      },
+      {
+       "id": "t2",
+       "op": "label",
+       "startMs": 3000,
+       "endMs": 3700,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        535,
+        270
+       ],
+       "text": "Mitthu",
+       "to": [
+        580,
+        235
+       ]
+      },
+      {
+       "id": "t3",
+       "op": "text",
+       "startMs": 3800,
+       "endMs": 4700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        410
+       ],
+       "text": "understand animals",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch04-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "sound",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        170,
+        180
+       ],
+       "r": 55
+      },
+      {
+       "id": "movement",
+       "op": "arrow",
+       "startMs": 600,
+       "endMs": 1500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        390,
+        180
+       ],
+       "to": [
+        590,
+        180
+       ],
+       "bend": 1
+      },
+      {
+       "id": "words",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2600,
+       "ink": "soft",
+       "weight": 2,
+       "at": [
+        400,
+        360
+       ],
+       "text": "not words",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "l1",
+       "op": "label",
+       "startMs": 2700,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        120,
+        290
+       ],
+       "text": "sounds",
+       "to": [
+        170,
+        235
+       ]
+      },
+      {
+       "id": "l2",
+       "op": "label",
+       "startMs": 3400,
+       "endMs": 4500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        570,
+        290
+       ],
+       "text": "body movements",
+       "to": [
+        590,
+        220
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch04-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "dog",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        170,
+        170
+       ],
+       "r": 55
+      },
+      {
+       "id": "tail",
+       "op": "arrow",
+       "startMs": 600,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        220,
+        210
+       ],
+       "to": [
+        320,
+        270
+       ],
+       "bend": 1
+      },
+      {
+       "id": "cow",
+       "op": "circle",
+       "startMs": 1500,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        570,
+        170
+       ],
+       "r": 55
+      },
+      {
+       "id": "ears",
+       "op": "arrow",
+       "startMs": 2100,
+       "endMs": 2900,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        530,
+        190
+       ],
+       "to": [
+        450,
+        270
+       ],
+       "bend": -1
+      },
+      {
+       "id": "l1",
+       "op": "label",
+       "startMs": 3000,
+       "endMs": 3600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        260,
+        330
+       ],
+       "text": "tail",
+       "to": [
+        300,
+        260
+       ]
+      },
+      {
+       "id": "l2",
+       "op": "label",
+       "startMs": 3600,
+       "endMs": 4200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        410,
+        330
+       ],
+       "text": "ears",
+       "to": [
+        465,
+        265
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch04-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "trust",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        400,
+        160
+       ],
+       "r": 75
+      },
+      {
+       "id": "understand",
+       "op": "arrow",
+       "startMs": 900,
+       "endMs": 1700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        325,
+        180
+       ],
+       "to": [
+        180,
+        300
+       ]
+      },
+      {
+       "id": "wrong",
+       "op": "arrow",
+       "startMs": 1700,
+       "endMs": 2500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        475,
+        180
+       ],
+       "to": [
+        620,
+        300
+       ]
+      },
+      {
+       "id": "l1",
+       "op": "label",
+       "startMs": 2600,
+       "endMs": 3600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        120,
+        350
+       ],
+       "text": "understands them",
+       "to": [
+        190,
+        295
+       ]
+      },
+      {
+       "id": "l2",
+       "op": "label",
+       "startMs": 3600,
+       "endMs": 4900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        565,
+        350
+       ],
+       "text": "find what is wrong",
+       "to": [
+        615,
+        295
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch04-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "flock",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        150,
+        100
+       ],
+       "text": "flock",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "birds",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        150,
+        180
+       ],
+       "text": "birds",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "herd",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        100
+       ],
+       "text": "herd",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "cows",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        180
+       ],
+       "text": "cows",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "swarm",
+       "op": "text",
+       "startMs": 2800,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        650,
+        100
+       ],
+       "text": "swarm",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "bees",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        650,
+        180
+       ],
+       "text": "bees",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "a1",
+       "op": "arrow",
+       "startMs": 4500,
+       "endMs": 5000,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        150,
+        220
+       ],
+       "to": [
+        150,
+        300
+       ]
+      },
+      {
+       "id": "a2",
+       "op": "arrow",
+       "startMs": 5000,
+       "endMs": 5500,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        400,
+        220
+       ],
+       "to": [
+        400,
+        300
+       ]
+      },
+      {
+       "id": "a3",
+       "op": "arrow",
+       "startMs": 5500,
+       "endMs": 6000,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        650,
+        220
+       ],
+       "to": [
+        650,
+        300
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch04-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "said",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        220,
+        120
+       ],
+       "text": "said",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "told",
+       "op": "text",
+       "startMs": 800,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        580,
+        120
+       ],
+       "text": "told",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "m1",
+       "op": "numwork",
+       "startMs": 1800,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        100,
+        240
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "said",
+         "=",
+         "messag"
+        ]
+       ]
+      },
+      {
+       "id": "m2",
+       "op": "numwork",
+       "startMs": 3000,
+       "endMs": 4300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        430,
+        240
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "told",
+         "=",
+         "listen"
+        ]
+       ]
+      },
+      {
+       "id": "a1",
+       "op": "arrow",
+       "startMs": 4400,
+       "endMs": 5000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        580,
+        165
+       ],
+       "to": [
+        580,
+        220
+       ]
+      },
+      {
+       "id": "l1",
+       "op": "label",
+       "startMs": 5000,
+       "endMs": 5900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        535,
+        330
+       ],
+       "text": "listener",
+       "to": [
+        580,
+        220
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch04-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 9536,
+     "ops": [
+      {
+       "id": "myth",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "soft",
+       "weight": 2,
+       "at": [
+        170,
+        100
+       ],
+       "text": "myth",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "wrong",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        620,
+        100
+       ],
+       "text": "wrong",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "e1",
+       "op": "numwork",
+       "startMs": 1700,
+       "endMs": 3000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        80,
+        210
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "He",
+         "told",
+         "me"
+        ]
+       ]
+      },
+      {
+       "id": "e2",
+       "op": "numwork",
+       "startMs": 3000,
+       "endMs": 4300,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        430,
+        210
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "He",
+         "told",
+         "that"
+        ]
+       ]
+      },
+      {
+       "id": "h1",
+       "op": "highlight",
+       "startMs": 4700,
+       "endMs": 5600,
+       "ink": "good",
+       "weight": 2,
+       "target": "e1",
+       "style": "circle"
+      },
+      {
+       "id": "h2",
+       "op": "highlight",
+       "startMs": 5600,
+       "endMs": 6500,
+       "ink": "accent",
+       "weight": 2,
+       "target": "e2",
+       "style": "underline"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch04-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4430,
+     "ops": [
+      {
+       "id": "choose",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        100
+       ],
+       "text": "choose",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "reporting",
+       "op": "text",
+       "startMs": 800,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        190
+       ],
+       "text": "reporting sentence",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "box",
+       "op": "rect",
+       "startMs": 1900,
+       "endMs": 2800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        170,
+        270
+       ],
+       "w": 460,
+       "h": 90,
+       "round": 12
+      },
+      {
+       "id": "arrow",
+       "op": "arrow",
+       "startMs": 2800,
+       "endMs": 3400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        230
+       ],
+       "to": [
+        400,
+        270
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "Mitthu says animals talk too",
+   "prompt": "sequence: after/for \"Doctor Ramu likes animals\"",
+   "src": "c7-english-ch04-t01-i01"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "Dogs use their tails",
+   "prompt": "sequence: after/for \"Mitthu says animals talk too\""
+  },
+  {
+   "itemId": "r1:2",
+   "key": "Cows use their ears",
+   "prompt": "sequence: after/for \"Dogs use their tails\""
+  },
+  {
+   "itemId": "r1:3",
+   "key": "The doctor understands animals",
+   "prompt": "sequence: after/for \"Cows use their ears\""
+  },
+  {
+   "itemId": "r1:4",
+   "key": "Sick animals come for help",
+   "prompt": "sequence: after/for \"The doctor understands animals\""
+  },
+  {
+   "itemId": "r2:0",
+   "key": "The doctor can help them",
+   "prompt": "cause: after/for \"Animals communicate clearly\""
+  },
+  {
+   "itemId": "r2:1",
+   "key": "They form a flock",
+   "prompt": "cause: after/for \"Birds travel as a group\""
+  },
+  {
+   "itemId": "r2:2",
+   "key": "They form a swarm",
+   "prompt": "cause: after/for \"Bees travel as a group\""
+  },
+  {
+   "itemId": "r3:0",
+   "key": "Mitthu",
+   "prompt": "who: after/for \"Animals talk too.\"",
+   "src": "c7-english-ch04-t01-i01"
+  },
+  {
+   "itemId": "r3:1",
+   "key": "Vet",
+   "prompt": "who: after/for \"The owl is ready to fly.\""
+  },
+  {
+   "itemId": "r3:2",
+   "key": "Vet",
+   "prompt": "who: after/for \"The calf is safe.\""
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ },
+ "firstCheck": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "Round 1 (sequence): 'Mitthu shares a secret' is labeled src i01 but in the kit i01 says 'One day his parrot Mitthu said, \"Animals talk too.\"' That is not a secret; the kit does not call it a secret. Changing the kit's fact by calling it a secret is a problem.",
+    "severity": "high"
+   },
+   {
+    "where": "game",
+    "what": "Round 2 (cause): Cause 'Birds fly over the clinic' is labeled src i04 but i04 is a fill-in-the-blank question about 'a flock of birds', not a story event about birds flying over the clinic. The round retells a kit scenario but changes its facts.",
+    "severity": "high"
+   },
+   {
+    "where": "game",
+    "what": "Round 3 (who): Line 'My ear feels sore.' is attributed to 'Cow', but the kit never says a cow says that; the kit item i03 describes a cow holding one ear down and swishing her tail. The round invents a spoken line from the cow that is not in the kit.",
+    "severity": "high"
+   }
+  ],
+  "verdict": "fail",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

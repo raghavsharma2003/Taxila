@@ -5,6 +5,26 @@ Every step is a proposal for that file's owner. Line numbers are from the tree o
 before BR2), so re-check them before applying. Everything ships **shadow-only**: `server/voicesig/ladder.js` puts every
 state at L0, so no step below changes what a child is taught until a state earns L1 with a measurement.
 
+## As shipped in ship5 (2026-10-06): this plan is superseded by the patch set
+
+The A1-A7 steps below were the 2026-10-04 proposal. The owner directive `owner-ship-five-2026-10-05` (ship it, ON by
+default, kill switch, old path as fallback) replaced them with one seam module and eleven patches against HEAD 8006902.
+Apply order, switches and the test that proves each patch: `docs/design/ship5/p3-voicesig/APPLY.md`.
+
+| was | now |
+|---|---|
+| A1/A2 signals-layer wiring | not needed: `server/voicesig/lesson.js` `turn()` reads kv + transcript + grader verdict and hands the Director, comprehension and pace consumers the existing tie-breaker vocabulary (`followUpProbe` / `gentlerHint` / `slowerPace`) through `planCtx.voice`, only for a LIVE state (patch 03) |
+| A3 validator precondition | unchanged: kv rides top-level on `TurnRequest.voiceFeatures.kv` (patch 01 types it) |
+| A4 baselines at start / end | patch 04 (`startRows` / `endSave`), patch 07 = migration `db/migrations/021_voicesig.sql` (the proposal SQL, numbered), patch 05 = the parent toggle `voice_pace_memory` (off by default; withdrawal deletes at once), patch 11 = the worker consent sweep |
+| A5 `src/lesson/frontendGlue.ts` | `src/voicesig/lessonTap.ts` (ONE tap per lesson, reference-counted; duplex's `src/duplex/liveTap.ts` takes frames from it) + `src/voicesig/lessonFeatures.ts` (patch 09 adds `VoiceFeatures.attachFrames`, patch 10 makes it the runtime default with `VoiceFeatures` as the fallback) |
+| A6 kv on the request | inside `VoicesigLessonFeatures` (kv is attached to the same utterance object the turn POST already carries; never delays the turn) |
+| A7 comprehension | the probe-gap path already reads `voice.followUpProbe`; nothing new |
+| the filler detector runtime | patch 08: `onnxruntime-web` 1.30.0 (owner-approved), WASM single thread, same-origin assets, lazy, skipped on Save-Data / 2G |
+| status page | `GET /api/voicesig/status` (patch 06): per state population / precision / CI / recall / n / method / date and why it is shadow |
+
+Every state is shadow today: no state has a precision measured on children, and `server/voicesig/gate.js` lets only a
+children-population precision >= 0.80 (n fired >= 100, ladder L1, `TAXILA_VOICESIG=on`) open the gate.
+
 ## What exists now (built and tested here)
 
 | piece | file | status |

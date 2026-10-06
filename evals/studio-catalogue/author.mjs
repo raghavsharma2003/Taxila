@@ -119,6 +119,7 @@ function explainerMessages(t, feedback) {
     `- Bust one kit misconception: a "myth" element showing the wrong belief (short), busted while the narration explains why; set "targets" to that misconception id.`,
     `- "text" holds the spoken lines (L1, L2 ...): 6-12 lines, each one or two short spoken sentences a teacher would say; plain and exact. Each beat shows/animates elements in time with its line.`,
     `- End with a "task" (tap / order / place per the schema) whose answer follows from the explainer; "src" a kit item id if one matches. The task prompt must not contain its answer.`,
+    `- The task's ids live in the LAST scene: tap = "options" (2-6 ids) and "answer" (one of them); order = "items" (3-6 distinct ids, in the right order); each id must be a node, glyph, label, mark or myth element of the LAST scene's els. place = "axis" (an axis element of the last scene) and a numeric "answer" inside its min..max.`,
     `- Every element id referenced by cues/arrows/task must exist; keep element text short (labels, not sentences).`,
     `- ${LANG_RULE(t)}`,
     `JSON Schema: ${toSchema(d.schema)}`,
@@ -173,7 +174,7 @@ async function authorSpec(t, arch, messagesFor, tag) {
     if (!v.fellBack && v.repairs.length === 0) break;
     feedback = feedbackOf(v);
   }
-  return best ? { archetype: arch, ...best, attempts, model: AUTHOR } : { archetype: arch, spec: null, repairs: ["failed after 3 attempts"], attempts, model: AUTHOR };
+  return best ? { archetype: arch, ...best, attempts, model: AUTHOR } : { archetype: arch, spec: null, repairs: ["failed after 3 attempts"], lastFeedback: String(feedback).slice(0, 600), attempts, model: AUTHOR };
 }
 /** Drawn tokens must be grounded: every word/number on the board appears in the spoken line or the kit (the live gate's rule). */
 function grounding(script, lineText, kitText) { const hay = (lineText + " " + kitText).toLowerCase(); return [...new Set(scriptTokens(script))].filter((tok) => tok.length > 1 && !hay.includes(tok)); }
@@ -202,13 +203,19 @@ async function doTopic(t) {
   if (EXCLUDED.test(t.topicId) || SAFETY_EXCLUDED.test(t.topicId)) { rec.excluded = "child-safety floor: Adolescence chapter gets no generated game or animation (teacher-led only)"; fs.writeFileSync(file, JSON.stringify(rec, null, 1)); return rec; }
   const plan = planFor(t); rec.plan = plan;
   const save = () => fs.writeFileSync(file, JSON.stringify(rec, null, 1));
-  if (STAGES.has("game") && !rec.game?.spec) { rec.game = await authorSpec(t, plan.game, (fb) => gameMessages(t, plan, fb), "game"); save(); }
-  if (STAGES.has("explainer") && !rec.explainer?.spec) { rec.explainer = await authorSpec(t, "scene-explainer@1", (fb) => explainerMessages(t, fb), "explainer"); if (rec.explainer.spec) rec.explainer.seconds = Math.round(sceneSeconds(rec.explainer.spec)); save(); }
+  // at most 2 authoring passes per stage (3 attempts each): a stage that failed twice is reported, not retried forever
+  const passes = (x) => (x ? x.passes ?? 1 : 0);
+  if (STAGES.has("game") && !rec.game?.spec && passes(rec.game) < 2) { const p0 = passes(rec.game); rec.game = { ...(await authorSpec(t, plan.game, (fb) => gameMessages(t, plan, fb), "game")), passes: p0 + 1 }; save(); }
+  if (STAGES.has("explainer") && !rec.explainer?.spec && passes(rec.explainer) < 2) { const p0 = passes(rec.explainer); rec.explainer = { ...(await authorSpec(t, "scene-explainer@1", (fb) => explainerMessages(t, fb), "explainer")), passes: p0 + 1 }; if (rec.explainer.spec) rec.explainer.seconds = Math.round(sceneSeconds(rec.explainer.spec)); save(); }
   if (STAGES.has("wb") && rec.explainer?.spec && !(rec.whiteboard?.beats?.length && rec.whiteboard.beats.every((b) => b.ok))) { rec.whiteboard = await authorWb(t, rec.explainer.spec); save(); }
   if (rec.game?.spec) rec.keys = keysOf(plan.game, rec.game.spec);
-  const runCheck = async () => { try { return { ...(await call(CHECKER, checkMessages(t, rec.game, rec.explainer, rec.keys), { maxTokens: 2500 }, `check:${t.topicId}`)), model: CHECKER }; } catch (e) { return { error: String(e.message).slice(0, 160), model: CHECKER }; } };
-  if (STAGES.has("check") && rec.game?.spec && rec.explainer?.spec && !rec.check) {
-    rec.check = await runCheck(); save();
+  const runCheck = async () => { try { return { ...(await call(CHECKER, checkMessages(t, rec.game, rec.explainer, rec.keys), { maxTokens: 8000 }, `check:${t.topicId}`)), model: CHECKER }; } catch (e) { return { error: String(e.message).slice(0, 160), model: CHECKER }; } };
+  // a check that failed after its one regeneration may get ONE more (ship5 p4-content, --refix): at most 2 per topic
+  const refix = args.includes("--refix") && rec.check?.verdict === "fail" && (rec.regens ?? 1) < 2;
+  if (STAGES.has("check") && rec.game?.spec && rec.explainer?.spec && (!rec.check || rec.check.error || refix)) {
+    if (refix) rec.regens = (rec.regens ?? 1) + 1;
+    else rec.check = await runCheck();
+    save();
     // one regeneration pass for HIGH-severity findings, then a fresh blind check (both results are kept)
     const high = (rec.check.issues ?? []).filter((i) => i?.severity === "high");
     if (rec.check.verdict === "fail" && high.length) {

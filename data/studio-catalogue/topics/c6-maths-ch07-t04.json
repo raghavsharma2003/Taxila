@@ -1,0 +1,1419 @@
+{
+ "topicId": "c6-maths-ch07-t04",
+ "title": "Comparing fractions",
+ "chapter": "Fractions",
+ "subject": "maths",
+ "class": 6,
+ "topicType": "T4",
+ "plan": {
+  "game": "catch-on-line@1",
+  "hint": "Landfall: fractions on the number line"
+ },
+ "game": {
+  "archetype": "catch-on-line@1",
+  "spec": null,
+  "repairs": [
+   "failed after 3 attempts"
+  ],
+  "lastFeedback": "the spec was rejected and replaced by the default (item:pair-not-equal; item:pair-not-equal; item:pair-not-equal; item:pair-not-equal; wave-empty; item:pair-not-equal; item:pair-not-equal; item:pair-not-equal; item:pair-not-equal; wave-empty; item:pair-not-equal; item:pair-not-equal; item:pair-not-equal; item:pair-not-equal; wave-empty; item:pair-not-equal; item:pair-not-equal; item:pair-not-equal; item:pair-not-equal; wave-empty; fallback-default; unknown kit id \"c6-maths-ch07-t02-m-count-marks\" (use one of: c6-maths-ch07-t04, c6-maths-ch07-t04-m-only-num-den, c6-maths-ch07-t04-m-gap, c6-math",
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "passes": 2
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c6-maths-ch07-t04"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Compare fractions fairly",
+   "accent": "mint",
+   "targets": "c6-maths-ch07-t04-m-bigger-den-bigger",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Compare fractions fairly"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Same numerator: bigger denominator means bigger"
+      },
+      {
+       "id": "bust",
+       "type": "label",
+       "text": "Wrong: ninths are smaller",
+       "x": 90,
+       "y": 410,
+       "color": "volt"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "sameD",
+       "type": "title",
+       "text": "Same denominator"
+      },
+      {
+       "id": "f57",
+       "type": "bar",
+       "parts": 7,
+       "shaded": 5,
+       "x": 60,
+       "y": 300,
+       "w": 360,
+       "text": "5/7"
+      },
+      {
+       "id": "f37",
+       "type": "bar",
+       "parts": 7,
+       "shaded": 3,
+       "x": 520,
+       "y": 300,
+       "w": 360,
+       "text": "3/7"
+      },
+      {
+       "id": "more",
+       "type": "label",
+       "text": "More equal parts means more",
+       "x": 220,
+       "y": 470,
+       "color": "mint"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "sameN",
+       "type": "title",
+       "text": "Same numerator"
+      },
+      {
+       "id": "f35",
+       "type": "bar",
+       "parts": 5,
+       "shaded": 3,
+       "x": 60,
+       "y": 300,
+       "w": 360,
+       "text": "3/5"
+      },
+      {
+       "id": "f38",
+       "type": "bar",
+       "parts": 8,
+       "shaded": 3,
+       "x": 520,
+       "y": 300,
+       "w": 360,
+       "text": "3/8"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "work",
+       "type": "title",
+       "text": "Common denominator"
+      },
+      {
+       "id": "a56",
+       "type": "label",
+       "text": "5/6",
+       "x": 80,
+       "y": 300,
+       "color": "ion"
+      },
+      {
+       "id": "b45",
+       "type": "label",
+       "text": "4/5",
+       "x": 80,
+       "y": 390,
+       "color": "amber"
+      },
+      {
+       "id": "a30",
+       "type": "label",
+       "text": "25/30",
+       "x": 500,
+       "y": 300,
+       "color": "ion"
+      },
+      {
+       "id": "b30",
+       "type": "label",
+       "text": "24/30",
+       "x": 500,
+       "y": 390,
+       "color": "amber"
+      },
+      {
+       "id": "eq1",
+       "type": "arrow",
+       "from": "a56",
+       "to": "a30",
+       "text": "×5"
+      },
+      {
+       "id": "eq2",
+       "type": "arrow",
+       "from": "b45",
+       "to": "b30",
+       "text": "×6"
+      }
+     ]
+    },
+    {
+     "id": "s5",
+     "layout": "row",
+     "els": [
+      {
+       "id": "bench",
+       "type": "title",
+       "text": "Use one half"
+      },
+      {
+       "id": "half",
+       "type": "node",
+       "text": "1/2",
+       "sub": "benchmark",
+       "glyph": "balance",
+       "color": "mint"
+      }
+     ]
+    },
+    {
+     "id": "s6",
+     "layout": "split",
+     "els": [
+      {
+       "id": "check",
+       "type": "title",
+       "text": "Your turn"
+      },
+      {
+       "id": "optA",
+       "type": "label",
+       "text": "5/6",
+       "x": 100,
+       "y": 320,
+       "color": "ion"
+      },
+      {
+       "id": "optB",
+       "type": "label",
+       "text": "4/5",
+       "x": 600,
+       "y": 320,
+       "color": "amber"
+      },
+      {
+       "id": "rule",
+       "type": "label",
+       "text": "Make parts match",
+       "x": 300,
+       "y": 480,
+       "color": "mint"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "To compare fractions, compare equal-sized parts. The fair comparison depends on the numerators and denominators.",
+    "L2": "First, bust this myth: with the same numerator, a bigger denominator does not mean a bigger fraction.",
+    "L3": "Ninths are smaller pieces than fifths, so 2/5 is bigger than 2/9.",
+    "L4": "If denominators match, the parts are the same size. More parts means the larger fraction, so 5/7 is greater than 3/7.",
+    "L5": "If numerators match, the same number of parts is shaded. The smaller denominator makes bigger parts, so 3/5 is greater than 3/8.",
+    "L6": "When both numbers differ, change both fractions to equivalent fractions with a common denominator.",
+    "L7": "For 5/6 and 4/5, use 30. They become 25/30 and 24/30, so 5/6 is greater.",
+    "L8": "You can also use one half as a benchmark. Now choose the greater fraction: 5/6 or 4/5."
+   },
+   "narration": {
+    "L1": {
+     "text": "To compare fractions, compare equal-sized parts. The fair comparison depends on the numerators and denominators.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L2": {
+     "text": "First, bust this myth: with the same numerator, a bigger denominator does not mean a bigger fraction.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L3": {
+     "text": "Ninths are smaller pieces than fifths, so 2/5 is bigger than 2/9.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L4": {
+     "text": "If denominators match, the parts are the same size. More parts means the larger fraction, so 5/7 is greater than 3/7.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L5": {
+     "text": "If numerators match, the same number of parts is shaded. The smaller denominator makes bigger parts, so 3/5 is greater than 3/8.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L6": {
+     "text": "When both numbers differ, change both fractions to equivalent fractions with a common denominator.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L7": {
+     "text": "For 5/6 and 4/5, use 30. They become 25/30 and 24/30, so 5/6 is greater.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L8": {
+     "text": "You can also use one half as a benchmark. Now choose the greater fraction: 5/6 or 4/5.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "myth"
+      },
+      {
+       "at": 0.5,
+       "do": "highlight",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "bust"
+      },
+      {
+       "at": 0.5,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "f57",
+        "f37"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 1,
+       "target": "more"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "f35",
+        "f38"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "a56",
+        "b45"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "eq1",
+        "eq2",
+        "a30",
+        "b30"
+       ]
+      },
+      {
+       "at": 1.3,
+       "do": "flow",
+       "dur": 0.7,
+       "target": [
+        "eq1",
+        "eq2"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": []
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s6",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "optA",
+        "optB",
+        "rule"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive"
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which fraction is greater?",
+    "options": [
+     "optA",
+     "optB"
+    ],
+    "answer": "optA",
+    "src": "c6-maths-ch07-t04-i07"
+   }
+  },
+  "repairs": [
+   "string:mfrac.text",
+   "string:small.text",
+   "string:result.text",
+   "string:f37b.text",
+   "string:f58b.text",
+   "cue:target",
+   "cue:target"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 42
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch07-t04-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "title",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "compare fractions",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "parts",
+       "op": "rect",
+       "startMs": 900,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        150
+       ],
+       "w": 240,
+       "h": 180
+      },
+      {
+       "id": "partlines",
+       "op": "line",
+       "startMs": 1800,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 1,
+       "from": [
+        180,
+        150
+       ],
+       "to": [
+        180,
+        330
+       ]
+      },
+      {
+       "id": "partlines2",
+       "op": "line",
+       "startMs": 2200,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 1,
+       "from": [
+        260,
+        150
+       ],
+       "to": [
+        260,
+        330
+       ]
+      },
+      {
+       "id": "equal",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        220,
+        370
+       ],
+       "text": "equal-sized parts",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "nums",
+       "op": "label",
+       "startMs": 4000,
+       "endMs": 4900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        485,
+        155
+       ],
+       "text": "numerators",
+       "to": [
+        480,
+        190
+       ]
+      },
+      {
+       "id": "dens",
+       "op": "label",
+       "startMs": 4900,
+       "endMs": 6000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        485,
+        300
+       ],
+       "text": "denominators",
+       "to": [
+        480,
+        260
+       ]
+      },
+      {
+       "id": "fair",
+       "op": "text",
+       "startMs": 6100,
+       "endMs": 6983,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        450
+       ],
+       "text": "fair comparison",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 2,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch07-t04-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "myth",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        60
+       ],
+       "text": "myth",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "same",
+       "op": "text",
+       "startMs": 800,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        135
+       ],
+       "text": "same numerator",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "frac1",
+       "op": "numwork",
+       "startMs": 1900,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        130,
+        215
+       ],
+       "layout": "fraction",
+       "rows": [
+        [
+         "numera"
+        ],
+        [
+         "denomi"
+        ]
+       ]
+      },
+      {
+       "id": "frac2",
+       "op": "numwork",
+       "startMs": 3000,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        500,
+        215
+       ],
+       "layout": "fraction",
+       "rows": [
+        [
+         "numera"
+        ],
+        [
+         "denomi"
+        ]
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch07-t04-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "fifths",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        130
+       ],
+       "layout": "fraction",
+       "rows": [
+        [
+         "2"
+        ],
+        [
+         "5"
+        ]
+       ]
+      },
+      {
+       "id": "ninths",
+       "op": "numwork",
+       "startMs": 1000,
+       "endMs": 2000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        500,
+        130
+       ],
+       "layout": "fraction",
+       "rows": [
+        [
+         "2"
+        ],
+        [
+         "9"
+        ]
+       ]
+      },
+      {
+       "id": "small",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 3200,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        500,
+        290
+       ],
+       "text": "ninths smaller",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "big",
+       "op": "text",
+       "startMs": 3200,
+       "endMs": 4300,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        120,
+        290
+       ],
+       "text": "fifths bigger",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch07-t04-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9536,
+     "ops": [
+      {
+       "id": "sameD",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "same denominator",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "f57",
+       "op": "numwork",
+       "startMs": 1000,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        130,
+        145
+       ],
+       "layout": "fraction",
+       "rows": [
+        [
+         "5"
+        ],
+        [
+         "7"
+        ]
+       ]
+      },
+      {
+       "id": "f37",
+       "op": "numwork",
+       "startMs": 1800,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        500,
+        145
+       ],
+       "layout": "fraction",
+       "rows": [
+        [
+         "3"
+        ],
+        [
+         "7"
+        ]
+       ]
+      },
+      {
+       "id": "partsame",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 4000,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        290
+       ],
+       "text": "parts are same size",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "more",
+       "op": "text",
+       "startMs": 4100,
+       "endMs": 5500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        355
+       ],
+       "text": "more parts means more",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "h5",
+       "op": "highlight",
+       "startMs": 7100,
+       "endMs": 8000,
+       "ink": "good",
+       "weight": 2,
+       "target": "f57",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch07-t04-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9962,
+     "ops": [
+      {
+       "id": "sameN",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        50
+       ],
+       "text": "same numerator",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "f35",
+       "op": "numwork",
+       "startMs": 1000,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        140,
+        140
+       ],
+       "layout": "fraction",
+       "rows": [
+        [
+         "3"
+        ],
+        [
+         "5"
+        ]
+       ]
+      },
+      {
+       "id": "f38",
+       "op": "numwork",
+       "startMs": 1900,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        570,
+        140
+       ],
+       "layout": "fraction",
+       "rows": [
+        [
+         "3"
+        ],
+        [
+         "8"
+        ]
+       ]
+      },
+      {
+       "id": "sameparts",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 4200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        285
+       ],
+       "text": "same number shaded",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "smallD",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 5600,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        180,
+        355
+       ],
+       "text": "smaller denominator",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "bigparts",
+       "op": "text",
+       "startMs": 5700,
+       "endMs": 6800,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        620,
+        355
+       ],
+       "text": "bigger parts",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "arrowbig",
+       "op": "arrow",
+       "startMs": 6900,
+       "endMs": 7600,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        285,
+        340
+       ],
+       "to": [
+        480,
+        340
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch07-t04-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "different",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        60
+       ],
+       "text": "different numbers",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "change",
+       "op": "arrow",
+       "startMs": 1100,
+       "endMs": 2100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        180,
+        180
+       ],
+       "to": [
+        620,
+        180
+       ]
+      },
+      {
+       "id": "equiv",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2900,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        150
+       ],
+       "text": "equivalent fractions",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "common",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 4400,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        270
+       ],
+       "text": "common denominator",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "both",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5557,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        375
+       ],
+       "text": "change both fractions",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 2,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch07-t04-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "problem",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        80
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "5/6",
+         "and",
+         "4/5"
+        ]
+       ]
+      },
+      {
+       "id": "thirty",
+       "op": "text",
+       "startMs": 1000,
+       "endMs": 1700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        80
+       ],
+       "text": "30",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "eq1",
+       "op": "numwork",
+       "startMs": 1800,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        110,
+        190
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "5/6",
+         "=",
+         "25/30"
+        ]
+       ]
+      },
+      {
+       "id": "eq2",
+       "op": "numwork",
+       "startMs": 3000,
+       "endMs": 4200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        110,
+        275
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "4/5",
+         "=",
+         "24/30"
+        ]
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch07-t04-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "benchmark",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "one half",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "halfline",
+       "op": "line",
+       "startMs": 900,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        100,
+        190
+       ],
+       "to": [
+        700,
+        190
+       ]
+      },
+      {
+       "id": "halfmark",
+       "op": "line",
+       "startMs": 1700,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        400,
+        165
+       ],
+       "to": [
+        400,
+        215
+       ]
+      },
+      {
+       "id": "left",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        250,
+        255
+       ],
+       "text": "less than one half",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "right",
+       "op": "text",
+       "startMs": 3400,
+       "endMs": 4700,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        550,
+        255
+       ],
+       "text": "more than one half",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "choices",
+       "op": "numwork",
+       "startMs": 4900,
+       "endMs": 6100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        190,
+        355
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "5/6",
+         "or",
+         "4/5"
+        ]
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ }
+}

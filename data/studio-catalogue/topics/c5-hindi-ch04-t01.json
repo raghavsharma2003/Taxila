@@ -1,0 +1,1931 @@
+{
+ "topicId": "c5-hindi-ch04-t01",
+ "title": "साङकेन",
+ "chapter": "साङकेन",
+ "subject": "hindi",
+ "class": 5,
+ "topicType": "T3",
+ "plan": {
+  "game": "story-rail@1",
+  "hint": "sequence, cause and who modes from the lesson's events and speakers"
+ },
+ "game": {
+  "archetype": "story-rail@1",
+  "spec": {
+   "archetype": "story-rail@1",
+   "skills": [
+    "c5-hindi-ch04-t01"
+   ],
+   "lang": "hi",
+   "strings": {
+    "round": "दौर",
+    "picked": "जुड़ा",
+    "streak": "लगातार सही",
+    "next": "अब क्या होता है?",
+    "effect": "इससे क्या होता है?",
+    "who": "यह किसने कहा?",
+    "runDone": "क्रम पूरा हुआ",
+    "order": "तुम्हारी रेल",
+    "right": "सही जोड़ा",
+    "wrong": "यह नहीं",
+    "coach": "फाँक तक पहुँचने से पहले डिब्बा चुनो"
+   },
+   "title": "साङ्केन",
+   "rounds": [
+    {
+     "mode": "sequence",
+     "title": "त्योहार का क्रम",
+     "sub": "घटनाओं को सही क्रम में जोड़ो",
+     "cards": [
+      {
+       "id": "e1",
+       "text": "बुद्ध की मूर्तियाँ नहलाना",
+       "glyph": "temple",
+       "src": "c5-hindi-ch04-t01-i02"
+      },
+      {
+       "id": "e2",
+       "text": "एक-दूसरे पर पानी डालना",
+       "glyph": "drop",
+       "src": "c5-hindi-ch04-t01-i03"
+      },
+      {
+       "id": "e3",
+       "text": "गीत, नाच और पकवान",
+       "glyph": "music",
+       "src": "c5-hindi-ch04-t01-i10"
+      }
+     ],
+     "speed": 0.95
+    },
+    {
+     "mode": "cause",
+     "title": "पानी का मतलब",
+     "sub": "हर कारण को उसके असर से जोड़ो",
+     "pairs": [
+      {
+       "cause": {
+        "id": "c1",
+        "text": "लोग पानी डालते हैं",
+        "glyph": "drop",
+        "src": "c5-hindi-ch04-t01-i03"
+       },
+       "effect": {
+        "id": "f1",
+        "text": "पुरानी थकान धुलती है",
+        "glyph": "wave",
+        "src": "c5-hindi-ch04-t01-i03"
+       }
+      },
+      {
+       "cause": {
+        "id": "c2",
+        "text": "साङ्केन का पहला दिन",
+        "glyph": "sun",
+        "src": "c5-hindi-ch04-t01-i02"
+       },
+       "effect": {
+        "id": "f2",
+        "text": "बुद्ध की मूर्ति नहलाते हैं",
+        "glyph": "temple",
+        "src": "c5-hindi-ch04-t01-i02"
+       }
+      },
+      {
+       "cause": {
+        "id": "c3",
+        "text": "लोग मिल-जुलकर मनाते हैं",
+        "glyph": "group",
+        "src": "c5-hindi-ch04-t01-i09"
+       },
+       "effect": {
+        "id": "f3",
+        "text": "तीन दिन गीत, नाच चलते हैं",
+        "glyph": "music",
+        "src": "c5-hindi-ch04-t01-i02"
+       }
+      }
+     ],
+     "speed": 0.85
+    },
+    {
+     "mode": "who",
+     "title": "किसने कहा?",
+     "sub": "हर पंक्ति को सही वक्ता से जोड़ो",
+     "speakers": [
+      {
+       "id": "narrator",
+       "name": "वर्णनकर्ता",
+       "glyph": "book"
+      },
+      {
+       "id": "people",
+       "name": "लोग",
+       "glyph": "group"
+      }
+     ],
+     "lines": [
+      {
+       "id": "w1",
+       "text": "यह खाम्ती लोगों का नया साल है।",
+       "speaker": "narrator",
+       "src": "c5-hindi-ch04-t01-i01"
+      },
+      {
+       "id": "w2",
+       "text": "हम पानी से नई शुरुआत करते हैं।",
+       "speaker": "people",
+       "src": "c5-hindi-ch04-t01-i03"
+      }
+     ],
+     "speed": 0.8
+    }
+   ]
+  },
+  "repairs": [
+   "targets",
+   "string:card.text"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c5-hindi-ch04-t01"
+   ],
+   "lang": "hi",
+   "strings": {
+    "again": "फिर दिखाएँ",
+    "yourTurn": "अब आपकी बारी",
+    "check": "जाँचें",
+    "right": "सही",
+    "look": "फिर देखें",
+    "myth": "भ्रम",
+    "busted": "गलत बात",
+    "order": "क्रम लगाएँ"
+   },
+   "title": "साङ्केन: नई शुरुआत का उत्सव",
+   "accent": "mint",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "t1",
+       "type": "title",
+       "text": "साङ्केन: नई शुरुआत"
+      },
+      {
+       "id": "place",
+       "type": "label",
+       "text": "अरुणाचल प्रदेश",
+       "x": 120,
+       "y": 230,
+       "color": "mint"
+      },
+      {
+       "id": "time",
+       "type": "label",
+       "text": "अप्रैल का मध्य",
+       "x": 120,
+       "y": 290,
+       "color": "sun"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "पानी डालना बस खेल है",
+       "x": 500,
+       "y": 270
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "buddha",
+       "type": "node",
+       "text": "मूर्ति नहलाना",
+       "sub": "पहला दिन",
+       "glyph": "temple",
+       "color": "mint"
+      },
+      {
+       "id": "splash",
+       "type": "node",
+       "text": "पानी डालना",
+       "sub": "मिल-जुलकर",
+       "glyph": "drop",
+       "color": "sci"
+      },
+      {
+       "id": "fest",
+       "type": "node",
+       "text": "गीत और पकवान",
+       "sub": "तीन दिन",
+       "glyph": "music",
+       "color": "amber"
+      },
+      {
+       "id": "p1",
+       "type": "arrow",
+       "from": "buddha",
+       "to": "splash",
+       "text": "फिर"
+      },
+      {
+       "id": "p2",
+       "type": "arrow",
+       "from": "splash",
+       "to": "fest",
+       "text": "उसके बाद"
+      },
+      {
+       "id": "meaning",
+       "type": "label",
+       "text": "पुरानी थकान धुलती है",
+       "x": 250,
+       "y": 500,
+       "color": "ion"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "orderTitle",
+       "type": "title",
+       "text": "साङ्केन का सही क्रम"
+      },
+      {
+       "id": "k",
+       "type": "node",
+       "text": "मूर्ति नहलाना",
+       "sub": "पहले",
+       "glyph": "temple",
+       "color": "mint"
+      },
+      {
+       "id": "g",
+       "type": "node",
+       "text": "पानी डालना",
+       "sub": "फिर",
+       "glyph": "drop",
+       "color": "sci"
+      },
+      {
+       "id": "a",
+       "type": "node",
+       "text": "गीत, नाच, पकवान",
+       "sub": "तीन दिन",
+       "glyph": "music",
+       "color": "amber"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "साङ्केन अरुणाचल प्रदेश के खाम्ती लोगों का नया साल है। यह त्योहार अप्रैल के मध्य में आता है।",
+    "L2": "कुछ लोग सोचते हैं कि पानी डालना बस खेल है। यह भ्रम सही नहीं है।",
+    "L3": "पहले दिन बुद्ध की मूर्तियों को बाहर लाकर साफ़ पानी से नहलाया जाता है।",
+    "L4": "फिर बच्चे और बड़े एक-दूसरे पर पानी डालते हैं। माना जाता है कि इससे पुराने साल की थकान और बुराइयाँ धुलती हैं।",
+    "L5": "यह नई और साफ़ शुरुआत का संकेत है। तीन दिन तक गीत, नाच और पकवान चलते हैं।",
+    "L6": "होली की तरह साङ्केन में भी लोग पानी या रंग डालकर खुशी मनाते हैं। फर्क यह है कि साङ्केन खाम्ती लोगों का नया साल है और इसमें बुद्ध की मूर्ति नहलाई जाती है।",
+    "L7": "साङ्केन को साङ्-केन बोलो। इसमें ङ, ड़ से अलग है और नाक से बोला जाता है।",
+    "L8": "अब क्रम याद करो: पहले मूर्ति नहलाना, फिर पानी डालना, उसके बाद गीत, नाच और पकवान।"
+   },
+   "narration": {
+    "L1": {
+     "text": "साङ्केन अरुणाचल प्रदेश के खाम्ती लोगों का नया साल है। यह त्योहार अप्रैल के मध्य में आता है।",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L2": {
+     "text": "कुछ लोग सोचते हैं कि पानी डालना बस खेल है। यह भ्रम सही नहीं है।",
+     "dur": 3.8,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L3": {
+     "text": "पहले दिन बुद्ध की मूर्तियों को बाहर लाकर साफ़ पानी से नहलाया जाता है।",
+     "dur": 3.8,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L4": {
+     "text": "फिर बच्चे और बड़े एक-दूसरे पर पानी डालते हैं। माना जाता है कि इससे पुराने साल की थकान और बुराइयाँ धुलती हैं।",
+     "dur": 5.5,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L5": {
+     "text": "यह नई और साफ़ शुरुआत का संकेत है। तीन दिन तक गीत, नाच और पकवान चलते हैं।",
+     "dur": 4.2,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L6": {
+     "text": "होली की तरह साङ्केन में भी लोग पानी या रंग डालकर खुशी मनाते हैं। फर्क यह है कि साङ्केन खाम्ती लोगों का नया साल है और इसमें बुद्ध की मूर्ति नहलाई जाती है।",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0.5,
+     "pauses": []
+    },
+    "L7": {
+     "text": "साङ्केन को साङ्-केन बोलो। इसमें ङ, ड़ से अलग है और नाक से बोला जाता है।",
+     "dur": 4.2,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L8": {
+     "text": "अब क्रम याद करो: पहले मूर्ति नहलाना, फिर पानी डालना, उसके बाद गीत, नाच और पकवान।",
+     "dur": 4.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "t1"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "place",
+        "time"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      },
+      {
+       "at": 2,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "buddha"
+      },
+      {
+       "at": 0.7,
+       "do": "highlight",
+       "dur": 1,
+       "target": "buddha"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "p1",
+        "splash"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "p1",
+       "to": 1
+      },
+      {
+       "at": 1.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": "meaning"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "p2",
+        "fest"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "p2",
+       "to": 1
+      },
+      {
+       "at": 1.6,
+       "do": "highlight",
+       "dur": 1,
+       "target": "fest"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "splash"
+      },
+      {
+       "at": 1.2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "meaning"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "focus",
+       "dur": 0.8,
+       "target": "buddha"
+      },
+      {
+       "at": 1,
+       "do": "focus",
+       "dur": 0.8,
+       "target": "splash"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "orderTitle",
+        "k",
+        "g",
+        "a"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "order",
+    "prompt": "साङ्केन के कामों को सही क्रम में लगाओ।",
+    "items": [
+     "k",
+     "g",
+     "a"
+    ],
+    "src": "c5-hindi-ch04-t01-i10"
+   }
+  },
+  "repairs": [
+   "targets"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "passes": 2,
+  "seconds": 42
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "एक-दूसरे पर पानी डालना",
+   "prompt": "sequence: after/for \"बुद्ध की मूर्तियाँ नहलाना\"",
+   "src": "c5-hindi-ch04-t01-i03"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "गीत, नाच और पकवान",
+   "prompt": "sequence: after/for \"एक-दूसरे पर पानी डालना\"",
+   "src": "c5-hindi-ch04-t01-i10"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "पुरानी थकान धुलती है",
+   "prompt": "cause: after/for \"लोग पानी डालते हैं\"",
+   "src": "c5-hindi-ch04-t01-i03"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "बुद्ध की मूर्ति नहलाते हैं",
+   "prompt": "cause: after/for \"साङ्केन का पहला दिन\"",
+   "src": "c5-hindi-ch04-t01-i02"
+  },
+  {
+   "itemId": "r2:2",
+   "key": "तीन दिन गीत, नाच चलते हैं",
+   "prompt": "cause: after/for \"लोग मिल-जुलकर मनाते हैं\"",
+   "src": "c5-hindi-ch04-t01-i02"
+  },
+  {
+   "itemId": "r3:0",
+   "key": "वर्णनकर्ता",
+   "prompt": "who: after/for \"यह खाम्ती लोगों का नया साल है।\"",
+   "src": "c5-hindi-ch04-t01-i01"
+  },
+  {
+   "itemId": "r3:1",
+   "key": "लोग",
+   "prompt": "who: after/for \"हम पानी से नई शुरुआत करते हैं।\"",
+   "src": "c5-hindi-ch04-t01-i03"
+  }
+ ],
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-hindi-ch04-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "title",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "साङ्केन",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "state",
+       "op": "text",
+       "startMs": 1000,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        120
+       ],
+       "text": "अरुणाचल प्रदेश",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "people",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        170
+       ],
+       "text": "खाम्ती लोग",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "newyear",
+       "op": "circle",
+       "startMs": 2800,
+       "endMs": 3700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        270
+       ],
+       "r": 70,
+       "fill": "accent"
+      },
+      {
+       "id": "nylabel",
+       "op": "label",
+       "startMs": 3700,
+       "endMs": 4500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        370
+       ],
+       "text": "नया साल",
+       "to": [
+        400,
+        330
+       ]
+      },
+      {
+       "id": "april",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        430
+       ],
+       "text": "अप्रैल",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "mid",
+       "op": "text",
+       "startMs": 5400,
+       "endMs": 6100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        470
+       ],
+       "text": "मध्य",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "calendar",
+       "op": "rect",
+       "startMs": 6200,
+       "endMs": 7000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        600,
+        90
+       ],
+       "w": 100,
+       "h": 90,
+       "round": 8
+      },
+      {
+       "id": "arrow",
+       "op": "arrow",
+       "startMs": 7000,
+       "endMs": 7800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        550,
+        220
+       ],
+       "to": [
+        650,
+        180
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-hindi-ch04-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "water",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        180,
+        250
+       ],
+       "rx": 120,
+       "ry": 55,
+       "fill": "soft"
+      },
+      {
+       "id": "play",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        350
+       ],
+       "text": "खेल",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "wrong",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2800,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        400,
+        120
+       ],
+       "text": "भ्रम",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "cross",
+       "op": "line",
+       "startMs": 2800,
+       "endMs": 3400,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        350,
+        80
+       ],
+       "to": [
+        450,
+        160
+       ]
+      },
+      {
+       "id": "cross2",
+       "op": "line",
+       "startMs": 3400,
+       "endMs": 4000,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        450,
+        80
+       ],
+       "to": [
+        350,
+        160
+       ]
+      },
+      {
+       "id": "right",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 5100,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        620,
+        250
+       ],
+       "text": "सही",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "not",
+       "op": "text",
+       "startMs": 5100,
+       "endMs": 5800,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        620,
+        330
+       ],
+       "text": "नहीं",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-hindi-ch04-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "first",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "पहले दिन",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "buddha",
+       "op": "circle",
+       "startMs": 1000,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        185
+       ],
+       "r": 55
+      },
+      {
+       "id": "body",
+       "op": "rect",
+       "startMs": 1900,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        360,
+        240
+       ],
+       "w": 80,
+       "h": 110,
+       "round": 12
+      },
+      {
+       "id": "outside",
+       "op": "arrow",
+       "startMs": 2700,
+       "endMs": 3500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        250,
+        220
+       ],
+       "to": [
+        330,
+        220
+       ]
+      },
+      {
+       "id": "clean",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        220
+       ],
+       "text": "बाहर",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "water",
+       "op": "ellipse",
+       "startMs": 4200,
+       "endMs": 5000,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        610,
+        280
+       ],
+       "rx": 100,
+       "ry": 45,
+       "fill": "soft"
+      },
+      {
+       "id": "wash",
+       "op": "arrow",
+       "startMs": 5000,
+       "endMs": 5900,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        570,
+        250
+       ],
+       "to": [
+        450,
+        220
+       ]
+      },
+      {
+       "id": "label",
+       "op": "label",
+       "startMs": 5900,
+       "endMs": 6500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        610,
+        360
+       ],
+       "text": "साफ़ पानी",
+       "to": [
+        610,
+        310
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-hindi-ch04-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9962,
+     "ops": [
+      {
+       "id": "child",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        180,
+        150
+       ],
+       "r": 28
+      },
+      {
+       "id": "adult",
+       "op": "circle",
+       "startMs": 500,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        620,
+        150
+       ],
+       "r": 28
+      },
+      {
+       "id": "water1",
+       "op": "arrow",
+       "startMs": 1200,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        220,
+        190
+       ],
+       "to": [
+        560,
+        190
+       ]
+      },
+      {
+       "id": "water2",
+       "op": "arrow",
+       "startMs": 2200,
+       "endMs": 3200,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        580,
+        220
+       ],
+       "to": [
+        240,
+        220
+       ]
+      },
+      {
+       "id": "splash",
+       "op": "ellipse",
+       "startMs": 3200,
+       "endMs": 4000,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        220
+       ],
+       "rx": 130,
+       "ry": 40,
+       "fill": "soft"
+      },
+      {
+       "id": "old",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 5100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        350
+       ],
+       "text": "पुराना साल",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "tired",
+       "op": "text",
+       "startMs": 5100,
+       "endMs": 5800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        350
+       ],
+       "text": "थकान",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "bad",
+       "op": "text",
+       "startMs": 5800,
+       "endMs": 6600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        620,
+        350
+       ],
+       "text": "बुराइयाँ",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "washaway",
+       "op": "arrow",
+       "startMs": 6600,
+       "endMs": 7500,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        400,
+        320
+       ],
+       "to": [
+        400,
+        260
+       ]
+      },
+      {
+       "id": "clean",
+       "op": "text",
+       "startMs": 7900,
+       "endMs": 9000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        450
+       ],
+       "text": "धुलती हैं",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-hindi-ch04-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "fresh",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1100,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        65
+       ],
+       "text": "नई शुरुआत",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "clean",
+       "op": "ellipse",
+       "startMs": 1200,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        170
+       ],
+       "rx": 150,
+       "ry": 55
+      },
+      {
+       "id": "signal",
+       "op": "arrow",
+       "startMs": 2200,
+       "endMs": 2900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        240
+       ],
+       "to": [
+        400,
+        310
+       ]
+      },
+      {
+       "id": "three",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        350
+       ],
+       "text": "तीन दिन",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "song",
+       "op": "text",
+       "startMs": 4100,
+       "endMs": 4800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        440
+       ],
+       "text": "गीत",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "dance",
+       "op": "text",
+       "startMs": 4800,
+       "endMs": 5500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        440
+       ],
+       "text": "नाच",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "food",
+       "op": "text",
+       "startMs": 5500,
+       "endMs": 6300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        620,
+        440
+       ],
+       "text": "पकवान",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "brace",
+       "op": "line",
+       "startMs": 6500,
+       "endMs": 7300,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        120,
+        400
+       ],
+       "to": [
+        680,
+        400
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-hindi-ch04-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 14643,
+     "ops": [
+      {
+       "id": "holi",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        200,
+        60
+       ],
+       "text": "होली",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "sangken",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        600,
+        60
+       ],
+       "text": "साङ्केन",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "holiwater",
+       "op": "ellipse",
+       "startMs": 2100,
+       "endMs": 2900,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        200,
+        190
+       ],
+       "rx": 110,
+       "ry": 55,
+       "fill": "soft"
+      },
+      {
+       "id": "sangwater",
+       "op": "ellipse",
+       "startMs": 2900,
+       "endMs": 3700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        600,
+        190
+       ],
+       "rx": 110,
+       "ry": 55,
+       "fill": "soft"
+      },
+      {
+       "id": "same",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 5000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        290
+       ],
+       "text": "पानी या रंग",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "samearrow1",
+       "op": "arrow",
+       "startMs": 5000,
+       "endMs": 5700,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        260,
+        190
+       ],
+       "to": [
+        350,
+        270
+       ]
+      },
+      {
+       "id": "samearrow2",
+       "op": "arrow",
+       "startMs": 5700,
+       "endMs": 6400,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        540,
+        190
+       ],
+       "to": [
+        450,
+        270
+       ]
+      },
+      {
+       "id": "diff",
+       "op": "text",
+       "startMs": 6700,
+       "endMs": 7500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        365
+       ],
+       "text": "फर्क",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "khanti",
+       "op": "text",
+       "startMs": 7800,
+       "endMs": 8600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        200,
+        440
+       ],
+       "text": "खाम्ती लोग",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "newyear",
+       "op": "text",
+       "startMs": 8600,
+       "endMs": 9400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        600,
+        440
+       ],
+       "text": "नया साल",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "buddha",
+       "op": "circle",
+       "startMs": 10200,
+       "endMs": 10900,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        400,
+        145
+       ],
+       "r": 30
+      },
+      {
+       "id": "wash",
+       "op": "arrow",
+       "startMs": 10900,
+       "endMs": 11700,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        400,
+        180
+       ],
+       "to": [
+        400,
+        240
+       ]
+      },
+      {
+       "id": "idol",
+       "op": "text",
+       "startMs": 11700,
+       "endMs": 12400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        125
+       ],
+       "text": "बुद्ध",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-hindi-ch04-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "word",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        65
+       ],
+       "text": "साङ्केन",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "split",
+       "op": "text",
+       "startMs": 1000,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        145
+       ],
+       "text": "साङ्-केन",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "say",
+       "op": "arrow",
+       "startMs": 2000,
+       "endMs": 2700,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        400,
+        190
+       ],
+       "to": [
+        400,
+        240
+       ]
+      },
+      {
+       "id": "ng",
+       "op": "text",
+       "startMs": 2900,
+       "endMs": 3800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        250,
+        330
+       ],
+       "text": "ङ",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "notd",
+       "op": "text",
+       "startMs": 3800,
+       "endMs": 4700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        550,
+        330
+       ],
+       "text": "ड़",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "different",
+       "op": "line",
+       "startMs": 4700,
+       "endMs": 5300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        300,
+        320
+       ],
+       "to": [
+        500,
+        320
+       ]
+      },
+      {
+       "id": "nose",
+       "op": "circle",
+       "startMs": 5500,
+       "endMs": 6200,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        400,
+        430
+       ],
+       "r": 35
+      },
+      {
+       "id": "nasal",
+       "op": "label",
+       "startMs": 6200,
+       "endMs": 7000,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        485
+       ],
+       "text": "नाक",
+       "to": [
+        400,
+        455
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-hindi-ch04-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "order",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "क्रम",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "one",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        100,
+        190
+       ],
+       "r": 35
+      },
+      {
+       "id": "oneText",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        100,
+        190
+       ],
+       "text": "1",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "idol",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        100,
+        270
+       ],
+       "text": "मूर्ति",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "a1",
+       "op": "arrow",
+       "startMs": 2500,
+       "endMs": 3100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        145,
+        190
+       ],
+       "to": [
+        255,
+        190
+       ]
+      },
+      {
+       "id": "two",
+       "op": "circle",
+       "startMs": 3100,
+       "endMs": 3600,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        300,
+        190
+       ],
+       "r": 35
+      },
+      {
+       "id": "twoText",
+       "op": "text",
+       "startMs": 3600,
+       "endMs": 4000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        300,
+        190
+       ],
+       "text": "2",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "water",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 4600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        300,
+        270
+       ],
+       "text": "पानी",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "a2",
+       "op": "arrow",
+       "startMs": 4600,
+       "endMs": 5200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        345,
+        190
+       ],
+       "to": [
+        455,
+        190
+       ]
+      },
+      {
+       "id": "three",
+       "op": "circle",
+       "startMs": 5200,
+       "endMs": 5700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        500,
+        190
+       ],
+       "r": 35
+      },
+      {
+       "id": "threeText",
+       "op": "text",
+       "startMs": 5700,
+       "endMs": 6100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        500,
+        190
+       ],
+       "text": "3",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "events",
+       "op": "text",
+       "startMs": 6100,
+       "endMs": 7100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        500,
+        270
+       ],
+       "text": "गीत नाच पकवान",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

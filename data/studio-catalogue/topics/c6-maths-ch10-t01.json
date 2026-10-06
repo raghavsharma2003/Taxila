@@ -1,0 +1,1889 @@
+{
+ "topicId": "c6-maths-ch10-t01",
+ "title": "Integers in everyday life",
+ "chapter": "The Other Side of Zero",
+ "subject": "maths",
+ "class": 6,
+ "topicType": "T3",
+ "plan": {
+  "game": "instrument@1",
+  "hint": "thermo mode including temperatures below zero"
+ },
+ "game": {
+  "archetype": "instrument@1",
+  "spec": {
+   "archetype": "instrument@1",
+   "skills": [
+    "c6-maths-ch10-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "measured": "measured",
+    "precision": "precision",
+    "hold": "Hold to pour",
+    "release": "Release",
+    "cut": "Tap to cut",
+    "set": "Set",
+    "am": "a.m.",
+    "pm": "p.m.",
+    "tapAt": "Tap when it reads",
+    "runDone": "Bench clear",
+    "offBy": "off by",
+    "exact": "EXACT",
+    "after": "after",
+    "minutes": "min",
+    "balanced": "BALANCED",
+    "heavy": "parcel heavier",
+    "light": "weights heavier"
+   },
+   "title": "Instrument Bench",
+   "rounds": [
+    {
+     "mode": "pour",
+     "title": "Fill the jug",
+     "sub": "read the mark in ml",
+     "items": [
+      {
+       "target": 1250,
+       "show": "l"
+      },
+      {
+       "target": 750,
+       "show": "l"
+      },
+      {
+       "target": 1600,
+       "show": "l+ml"
+      }
+     ],
+     "scaleMax": 2000,
+     "minor": 50,
+     "tol": 25,
+     "speed": 1
+    },
+    {
+     "mode": "weigh",
+     "title": "Balance the parcel",
+     "sub": "add weights and balance",
+     "items": [
+      {
+       "target": 1350,
+       "show": "kg"
+      },
+      {
+       "target": 2250,
+       "show": "kg+g"
+      }
+     ],
+     "scaleMax": 5000,
+     "minor": 5,
+     "tol": 0,
+     "speed": 1
+    },
+    {
+     "mode": "thermo",
+     "title": "Read the cold",
+     "sub": "tap below and above zero",
+     "items": [
+      {
+       "target": -8,
+       "show": "C"
+      },
+      {
+       "target": -3,
+       "show": "C"
+      },
+      {
+       "target": 4,
+       "show": "C"
+      }
+     ],
+     "scaleMax": 20,
+     "minor": 1,
+     "tol": 0,
+     "speed": 1,
+     "targets": "c6-maths-ch10-t01-m-zero-nothing"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 2,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c6-maths-ch10-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Integers in everyday life",
+   "accent": "ion",
+   "targets": "c6-maths-ch10-t01-m-not-real",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Integers in everyday life"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Negative numbers are not real"
+      },
+      {
+       "id": "zero",
+       "type": "node",
+       "text": "0",
+       "sub": "reference point",
+       "glyph": "balance",
+       "x": 500,
+       "y": 330,
+       "color": "sun"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "below",
+       "type": "node",
+       "text": "Below",
+       "sub": "opposite direction",
+       "x": 150,
+       "y": 390,
+       "color": "ion"
+      },
+      {
+       "id": "zero2",
+       "type": "node",
+       "text": "0",
+       "sub": "reference point",
+       "glyph": "balance",
+       "x": 500,
+       "y": 300,
+       "color": "sun"
+      },
+      {
+       "id": "above",
+       "type": "node",
+       "text": "Above",
+       "sub": "positive direction",
+       "x": 850,
+       "y": 210,
+       "color": "mint"
+      },
+      {
+       "id": "line",
+       "type": "arrow",
+       "from": "below",
+       "to": "zero2",
+       "text": "towards 0"
+      },
+      {
+       "id": "line2",
+       "type": "arrow",
+       "from": "zero2",
+       "to": "above",
+       "text": "positive"
+      },
+      {
+       "id": "axis",
+       "type": "axis",
+       "min": -3,
+       "max": 3,
+       "step": 1,
+       "unit": "floors",
+       "scale": "linear",
+       "y": 500
+      },
+      {
+       "id": "m3",
+       "type": "mark",
+       "axis": "axis",
+       "value": -3,
+       "text": "−3",
+       "color": "ion"
+      },
+      {
+       "id": "m0",
+       "type": "mark",
+       "axis": "axis",
+       "value": 0,
+       "text": "0",
+       "color": "sun"
+      },
+      {
+       "id": "p3",
+       "type": "mark",
+       "axis": "axis",
+       "value": 3,
+       "text": "+3",
+       "color": "mint"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "profit",
+       "type": "node",
+       "text": "+200",
+       "sub": "profit",
+       "glyph": "coin",
+       "x": 180,
+       "y": 190,
+       "color": "mint"
+      },
+      {
+       "id": "loss",
+       "type": "node",
+       "text": "−150",
+       "sub": "loss",
+       "glyph": "coin",
+       "x": 500,
+       "y": 190,
+       "color": "ion"
+      },
+      {
+       "id": "owed",
+       "type": "node",
+       "text": "−20",
+       "sub": "money owed",
+       "glyph": "coin",
+       "x": 820,
+       "y": 190,
+       "color": "ion"
+      },
+      {
+       "id": "b2",
+       "type": "node",
+       "text": "B2",
+       "sub": "two below 0",
+       "glyph": "shop",
+       "x": 180,
+       "y": 430,
+       "color": "ion"
+      },
+      {
+       "id": "optPlus2",
+       "type": "label",
+       "text": "+2",
+       "x": 430,
+       "y": 430,
+       "color": "mint"
+      },
+      {
+       "id": "optNeg2",
+       "type": "label",
+       "text": "−2",
+       "x": 560,
+       "y": 430,
+       "color": "ion"
+      },
+      {
+       "id": "optZero",
+       "type": "label",
+       "text": "0",
+       "x": 680,
+       "y": 430,
+       "color": "sun"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Integers include counting numbers, zero, and their negatives.",
+    "L2": "Negative numbers are real and useful, so the idea that they are not real is not true.",
+    "L3": "Zero is a reference point. It can mean ground floor, 0 degrees Celsius, or owing nothing.",
+    "L4": "We choose a positive direction, and a negative number shows the opposite direction.",
+    "L5": "On this number line, numbers below zero are negative and numbers above zero are positive.",
+    "L6": "A profit of 200 is +200, while a loss of 150 is −150.",
+    "L7": "B2 is two floors below ground floor 0, so its integer is −2, not +2.",
+    "L8": "Now check your understanding: choose the integer for B2."
+   },
+   "narration": {
+    "L1": {
+     "text": "Integers include counting numbers, zero, and their negatives.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "Negative numbers are real and useful, so the idea that they are not real is not true.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "Zero is a reference point. It can mean ground floor, 0 degrees Celsius, or owing nothing.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "We choose a positive direction, and a negative number shows the opposite direction.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "On this number line, numbers below zero are negative and numbers above zero are positive.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "A profit of 200 is +200, while a loss of 150 is −150.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "B2 is two floors below ground floor 0, so its integer is −2, not +2.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Now check your understanding: choose the integer for B2.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.8,
+       "target": "zero"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      },
+      {
+       "at": 1,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1.2,
+       "target": "zero"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "below",
+        "zero2",
+        "above"
+       ]
+      },
+      {
+       "at": 1.2,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "line2",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "axis"
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "m3",
+        "m0",
+        "p3"
+       ]
+      },
+      {
+       "at": 2,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "m3"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "profit",
+        "loss"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "loss"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "b2"
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 1,
+       "target": "optNeg2"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "interactive",
+       "dur": 1
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which integer represents B2, two floors below ground floor 0?",
+    "options": [
+     "optPlus2",
+     "optNeg2",
+     "optZero"
+    ],
+    "answer": "optNeg2",
+    "src": "c6-maths-ch10-t01-i01"
+   }
+  },
+  "repairs": [
+   "glyph",
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 57
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch10-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4004,
+     "ops": [
+      {
+       "id": "nl1",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        90,
+        250
+       ],
+       "to": [
+        710,
+        250
+       ]
+      },
+      {
+       "id": "ar1",
+       "op": "arrow",
+       "startMs": 700,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        90,
+        250
+       ],
+       "to": [
+        710,
+        250
+       ]
+      },
+      {
+       "id": "t0",
+       "op": "line",
+       "startMs": 1000,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        400,
+        225
+       ],
+       "to": [
+        400,
+        275
+       ]
+      },
+      {
+       "id": "n0",
+       "op": "text",
+       "startMs": 1300,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        310
+       ],
+       "text": "0",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "tn",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2300,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        170,
+        195
+       ],
+       "text": "−3  −2  −1",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "tp",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 2900,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        580,
+        195
+       ],
+       "text": "1  2  3",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "lab1",
+       "op": "label",
+       "startMs": 2900,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        120
+       ],
+       "text": "integers",
+       "to": [
+        400,
+        235
+       ]
+      },
+      {
+       "id": "lab2",
+       "op": "label",
+       "startMs": 3400,
+       "endMs": 4004,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        170,
+        360
+       ],
+       "text": "negatives",
+       "to": [
+        220,
+        260
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch10-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "real",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        120,
+        90
+       ],
+       "text": "real",
+       "size": "l"
+      },
+      {
+       "id": "useful",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        300,
+        90
+       ],
+       "text": "useful",
+       "size": "l"
+      },
+      {
+       "id": "neg",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 2300,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        490,
+        90
+       ],
+       "text": "negative numbers",
+       "size": "m"
+      },
+      {
+       "id": "neq",
+       "op": "numwork",
+       "startMs": 2300,
+       "endMs": 3800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        260,
+        180
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "negati",
+         "number",
+         "≠",
+         "not",
+         "real"
+        ]
+       ]
+      },
+      {
+       "id": "circneq",
+       "op": "circle",
+       "startMs": 3800,
+       "endMs": 4400,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        485,
+        202
+       ],
+       "r": 30
+      },
+      {
+       "id": "use1",
+       "op": "arrow",
+       "startMs": 4500,
+       "endMs": 5100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        390,
+        280
+       ],
+       "to": [
+        390,
+        350
+       ]
+      },
+      {
+       "id": "use2",
+       "op": "label",
+       "startMs": 5100,
+       "endMs": 5900,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        425,
+        355
+       ],
+       "text": "useful",
+       "to": [
+        390,
+        350
+       ]
+      },
+      {
+       "id": "real2",
+       "op": "label",
+       "startMs": 5900,
+       "endMs": 6800,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        150,
+        350
+       ],
+       "text": "real",
+       "to": [
+        210,
+        250
+       ]
+      },
+      {
+       "id": "neg2",
+       "op": "label",
+       "startMs": 6800,
+       "endMs": 7834,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        560,
+        350
+       ],
+       "text": "negative",
+       "to": [
+        570,
+        250
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch10-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "zero",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        250
+       ],
+       "r": 42,
+       "fill": "accent"
+      },
+      {
+       "id": "ztext",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        258
+       ],
+       "text": "0",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "ref",
+       "op": "label",
+       "startMs": 1100,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        130
+       ],
+       "text": "reference point",
+       "to": [
+        400,
+        205
+       ]
+      },
+      {
+       "id": "floor",
+       "op": "rect",
+       "startMs": 1900,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        100,
+        330
+       ],
+       "w": 170,
+       "h": 55
+      },
+      {
+       "id": "flab",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        185,
+        365
+       ],
+       "text": "ground floor",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "temp",
+       "op": "circle",
+       "startMs": 3100,
+       "endMs": 3600,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        400,
+        358
+       ],
+       "r": 28
+      },
+      {
+       "id": "tlabel",
+       "op": "text",
+       "startMs": 3600,
+       "endMs": 4200,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        365
+       ],
+       "text": "0 °C",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "money",
+       "op": "ellipse",
+       "startMs": 4200,
+       "endMs": 4700,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        620,
+        358
+       ],
+       "rx": 85,
+       "ry": 30
+      },
+      {
+       "id": "mlabel",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5600,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        620,
+        365
+       ],
+       "text": "owing nothing",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "conn1",
+       "op": "line",
+       "startMs": 5600,
+       "endMs": 6100,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        320,
+        250
+       ],
+       "to": [
+        185,
+        330
+       ]
+      },
+      {
+       "id": "conn2",
+       "op": "line",
+       "startMs": 6100,
+       "endMs": 6600,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        440,
+        250
+       ],
+       "to": [
+        400,
+        330
+       ]
+      },
+      {
+       "id": "conn3",
+       "op": "line",
+       "startMs": 6600,
+       "endMs": 7409,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        480,
+        250
+       ],
+       "to": [
+        620,
+        330
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch10-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "dirline",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        120,
+        250
+       ],
+       "to": [
+        680,
+        250
+       ]
+      },
+      {
+       "id": "posarr",
+       "op": "arrow",
+       "startMs": 800,
+       "endMs": 1600,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        400,
+        200
+       ],
+       "to": [
+        650,
+        200
+       ]
+      },
+      {
+       "id": "postxt",
+       "op": "text",
+       "startMs": 1600,
+       "endMs": 2500,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        650,
+        165
+       ],
+       "text": "positive direction",
+       "size": "m"
+      },
+      {
+       "id": "negarr",
+       "op": "arrow",
+       "startMs": 2500,
+       "endMs": 3300,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        400,
+        300
+       ],
+       "to": [
+        150,
+        300
+       ]
+      },
+      {
+       "id": "negtxt",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 4300,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        150,
+        350
+       ],
+       "text": "negative direction",
+       "size": "m"
+      },
+      {
+       "id": "opp",
+       "op": "label",
+       "startMs": 4300,
+       "endMs": 5200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        335,
+        120
+       ],
+       "text": "opposite direction",
+       "to": [
+        400,
+        280
+       ]
+      },
+      {
+       "id": "zero4",
+       "op": "text",
+       "startMs": 5200,
+       "endMs": 6132,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        270
+       ],
+       "text": "0",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch10-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "line5",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        90,
+        270
+       ],
+       "to": [
+        710,
+        270
+       ]
+      },
+      {
+       "id": "arr5",
+       "op": "arrow",
+       "startMs": 600,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        90,
+        270
+       ],
+       "to": [
+        710,
+        270
+       ]
+      },
+      {
+       "id": "zero5",
+       "op": "text",
+       "startMs": 1000,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        325
+       ],
+       "text": "0",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "below",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        210,
+        150
+       ],
+       "text": "below zero",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "above",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 3000,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        590,
+        150
+       ],
+       "text": "above zero",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "neg5",
+       "op": "label",
+       "startMs": 3000,
+       "endMs": 3900,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        210,
+        205
+       ],
+       "text": "negative",
+       "to": [
+        210,
+        260
+       ]
+      },
+      {
+       "id": "pos5",
+       "op": "label",
+       "startMs": 3900,
+       "endMs": 4800,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        590,
+        205
+       ],
+       "text": "positive",
+       "to": [
+        590,
+        260
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch10-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "profit",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1300,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        130,
+        130
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "profit",
+         "=",
+         "+200"
+        ]
+       ]
+      },
+      {
+       "id": "loss",
+       "op": "numwork",
+       "startMs": 1300,
+       "endMs": 2600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        130,
+        230
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "loss",
+         "=",
+         "−150"
+        ]
+       ]
+      },
+      {
+       "id": "plus",
+       "op": "circle",
+       "startMs": 2600,
+       "endMs": 3200,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        330,
+        150
+       ],
+       "r": 38
+      },
+      {
+       "id": "minus",
+       "op": "circle",
+       "startMs": 3200,
+       "endMs": 3800,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        330,
+        250
+       ],
+       "r": 38
+      },
+      {
+       "id": "shop",
+       "op": "rect",
+       "startMs": 3800,
+       "endMs": 4500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        500,
+        150
+       ],
+       "w": 160,
+       "h": 130,
+       "round": 10
+      },
+      {
+       "id": "shoplab",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        580,
+        225
+       ],
+       "text": "shop",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "profitlab",
+       "op": "label",
+       "startMs": 5100,
+       "endMs": 5600,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        410,
+        150
+       ],
+       "text": "profit",
+       "to": [
+        330,
+        150
+       ]
+      },
+      {
+       "id": "losslab",
+       "op": "label",
+       "startMs": 5600,
+       "endMs": 6132,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        410,
+        250
+       ],
+       "text": "loss",
+       "to": [
+        330,
+        250
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch10-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "building",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        270,
+        80
+       ],
+       "w": 260,
+       "h": 350
+      },
+      {
+       "id": "g0",
+       "op": "line",
+       "startMs": 900,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 1,
+       "from": [
+        270,
+        180
+       ],
+       "to": [
+        530,
+        180
+       ]
+      },
+      {
+       "id": "g1",
+       "op": "line",
+       "startMs": 1300,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 1,
+       "from": [
+        270,
+        280
+       ],
+       "to": [
+        530,
+        280
+       ]
+      },
+      {
+       "id": "g2",
+       "op": "line",
+       "startMs": 1700,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 1,
+       "from": [
+        270,
+        380
+       ],
+       "to": [
+        530,
+        380
+       ]
+      },
+      {
+       "id": "ground",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 3000,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        550,
+        175
+       ],
+       "text": "ground floor 0",
+       "size": "m"
+      },
+      {
+       "id": "b1",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        245
+       ],
+       "text": "B1",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "b2",
+       "op": "text",
+       "startMs": 3400,
+       "endMs": 3800,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        345
+       ],
+       "text": "B2",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "down1",
+       "op": "arrow",
+       "startMs": 3800,
+       "endMs": 4400,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        590,
+        180
+       ],
+       "to": [
+        590,
+        280
+       ]
+      },
+      {
+       "id": "down2",
+       "op": "arrow",
+       "startMs": 4400,
+       "endMs": 5000,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        590,
+        280
+       ],
+       "to": [
+        590,
+        380
+       ]
+      },
+      {
+       "id": "twobelow",
+       "op": "label",
+       "startMs": 5000,
+       "endMs": 5900,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        610,
+        330
+       ],
+       "text": "two floors below",
+       "to": [
+        530,
+        330
+       ]
+      },
+      {
+       "id": "integer7",
+       "op": "numwork",
+       "startMs": 5900,
+       "endMs": 6983,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        120,
+        400
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "B2",
+         "=",
+         "−2"
+        ]
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch10-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 4430,
+     "ops": [
+      {
+       "id": "prompt",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        80
+       ],
+       "text": "choose the integer",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "b2again",
+       "op": "circle",
+       "startMs": 1000,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        345
+       ],
+       "r": 35
+      },
+      {
+       "id": "choice1",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        160,
+        440
+       ],
+       "text": "+2",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "choice2",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 2700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        440
+       ],
+       "text": "−2",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "choice3",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        640,
+        440
+       ],
+       "text": "0",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "arrowans",
+       "op": "arrow",
+       "startMs": 3200,
+       "endMs": 3800,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        400,
+        410
+       ],
+       "to": [
+        400,
+        365
+       ]
+      },
+      {
+       "id": "ans",
+       "op": "highlight",
+       "startMs": 3800,
+       "endMs": 4430,
+       "ink": "good",
+       "weight": 2,
+       "target": "choice2",
+       "style": "circle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "1250 ml",
+   "prompt": "pour: 1.25 l"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "750 ml",
+   "prompt": "pour: 0.75 l"
+  },
+  {
+   "itemId": "r1:2",
+   "key": "1600 ml",
+   "prompt": "pour: 1 l 600 ml"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "1350 g",
+   "prompt": "weigh: 1.35 kg"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "2250 g",
+   "prompt": "weigh: 2 kg 250 g"
+  },
+  {
+   "itemId": "r3:0",
+   "key": "-8 tenths C",
+   "prompt": "thermo: -0.8 °C"
+  },
+  {
+   "itemId": "r3:1",
+   "key": "-3 tenths C",
+   "prompt": "thermo: -0.3 °C"
+  },
+  {
+   "itemId": "r3:2",
+   "key": "4 tenths C",
+   "prompt": "thermo: 0.4 °C"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ },
+ "firstCheck": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "Round 3 (thermo) shows target values -8, -3, 4 as 'C' but the correct readings for a thermometer marked in 1° increments are -8°C, -3°C, 4°C, not -0.8°C, -0.3°C, 0.4°C. The keys compute the targets as 'tenths of °C', which is inconsistent with the literal display of 'C' and the scale max of 20 (implying whole degrees). This mismatch between displayed target and actual interpretation could confuse a child using the instrument.",
+    "severity": "high"
+   },
+   {
+    "where": "game",
+    "what": "Round 1 (pour) has target 1250 marked as 'l' but the sub says 'the jug is marked in ml'. The key correctly interprets it as 1250 ml, but the label 'l' (litres) is misleading for children at this level.",
+    "severity": "low"
+   }
+  ],
+  "verdict": "fail",
+  "model": "DeepSeek-V4-Flash"
+ },
+ "regens": 2
+}

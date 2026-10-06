@@ -1,0 +1,1736 @@
+{
+ "topicId": "c7-science-ch10-t01",
+ "title": "Photosynthesis",
+ "chapter": "Life Processes in Plants",
+ "subject": "science",
+ "class": 7,
+ "topicType": "T3",
+ "plan": {
+  "game": "life-lab@1",
+  "hint": "leaf mode (light and CO2 levels; goals)"
+ },
+ "game": {
+  "archetype": "life-lab@1",
+  "spec": {
+   "archetype": "life-lab@1",
+   "skills": [
+    "c7-science-ch10-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "done": "right",
+    "sugar": "sugar",
+    "water": "water",
+    "light": "light",
+    "co2": "CO2",
+    "stomata": "stomata",
+    "open": "open",
+    "closed": "closed",
+    "wilted": "WILTED",
+    "oxygen": "oxygen",
+    "pull": "Pull the diaphragm down",
+    "perMin": "per min",
+    "rest": "resting",
+    "walk": "walking",
+    "run": "running",
+    "mouth": "mouth",
+    "stomach": "stomach",
+    "small": "small intestine",
+    "large": "large intestine",
+    "saliva": "saliva",
+    "gastric": "gastric",
+    "bile": "bile",
+    "pancreatic": "pancreatic",
+    "absorbed": "absorbed",
+    "starch": "starch",
+    "protein": "protein",
+    "fat": "fat",
+    "runDone": "Lab closed",
+    "xylem": "xylem",
+    "phloem": "phloem",
+    "drops": "drops left"
+   },
+   "title": "Life Lab",
+   "rounds": [
+    {
+     "mode": "leaf",
+     "title": "Wake the leaf",
+     "sub": "make food without wilting",
+     "light": 100,
+     "co2": 100,
+     "heat": 0.2,
+     "roots": 1,
+     "water0": 10,
+     "goal": 1,
+     "time": 40,
+     "transport": true,
+     "targets": "c7-science-ch10-t01-m1"
+    },
+    {
+     "mode": "leaf",
+     "title": "Feed the green leaf",
+     "sub": "use air, water and sunlight",
+     "light": 100,
+     "co2": 100,
+     "heat": 0.2,
+     "roots": 1,
+     "water0": 10,
+     "goal": 1,
+     "time": 40,
+     "transport": true,
+     "targets": "c7-science-ch10-t01-m3"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 2,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-science-ch10-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "How green leaves make food",
+   "accent": "sci",
+   "targets": "c7-science-ch10-t01-m1",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "How green leaves make food"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Plants get food from soil"
+      },
+      {
+       "id": "leaf",
+       "type": "node",
+       "text": "Green leaf",
+       "sub": "food maker",
+       "glyph": "leaf",
+       "color": "mint"
+      },
+      {
+       "id": "soil",
+       "type": "node",
+       "text": "Soil",
+       "sub": "water and minerals",
+       "glyph": "earth",
+       "color": "amber"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "leaf2",
+       "type": "node",
+       "text": "Green leaf",
+       "sub": "chlorophyll",
+       "glyph": "leaf",
+       "color": "mint"
+      },
+      {
+       "id": "sun",
+       "type": "node",
+       "text": "Sunlight",
+       "sub": "energy",
+       "glyph": "sun",
+       "color": "sun"
+      },
+      {
+       "id": "air",
+       "type": "node",
+       "text": "Carbon dioxide",
+       "sub": "from air",
+       "glyph": "wind",
+       "color": "ion"
+      },
+      {
+       "id": "water",
+       "type": "node",
+       "text": "Water",
+       "sub": "from soil",
+       "glyph": "drop",
+       "color": "sci"
+      },
+      {
+       "id": "in1",
+       "type": "arrow",
+       "from": "sun",
+       "to": "leaf2",
+       "text": "energy"
+      },
+      {
+       "id": "in2",
+       "type": "arrow",
+       "from": "air",
+       "to": "leaf2",
+       "text": "enters"
+      },
+      {
+       "id": "in3",
+       "type": "arrow",
+       "from": "water",
+       "to": "leaf2",
+       "text": "travels"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "leaf3",
+       "type": "node",
+       "text": "Leaf",
+       "sub": "chlorophyll",
+       "glyph": "leaf",
+       "color": "mint"
+      },
+      {
+       "id": "glucose",
+       "type": "node",
+       "text": "Glucose",
+       "sub": "food",
+       "glyph": "apple",
+       "color": "amber"
+      },
+      {
+       "id": "oxygen",
+       "type": "node",
+       "text": "Oxygen",
+       "sub": "released",
+       "glyph": "wind",
+       "color": "ion"
+      },
+      {
+       "id": "starch",
+       "type": "node",
+       "text": "Starch",
+       "sub": "stored food",
+       "color": "sun"
+      },
+      {
+       "id": "make",
+       "type": "arrow",
+       "from": "leaf3",
+       "to": "glucose",
+       "text": "makes"
+      },
+      {
+       "id": "release",
+       "type": "arrow",
+       "from": "leaf3",
+       "to": "oxygen",
+       "text": "releases"
+      },
+      {
+       "id": "store",
+       "type": "arrow",
+       "from": "glucose",
+       "to": "starch",
+       "text": "stored as"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "split",
+     "els": [
+      {
+       "id": "iodine",
+       "type": "node",
+       "text": "Iodine test",
+       "sub": "starch",
+       "glyph": "beaker",
+       "color": "sci"
+      },
+      {
+       "id": "blue",
+       "type": "label",
+       "text": "Blue-black",
+       "color": "ion"
+      },
+      {
+       "id": "respire",
+       "type": "node",
+       "text": "Respiration",
+       "sub": "day and night",
+       "glyph": "lungs",
+       "color": "amber"
+      },
+      {
+       "id": "myth2",
+       "type": "myth",
+       "text": "Plants never respire"
+      },
+      {
+       "id": "co2",
+       "type": "node",
+       "text": "Carbon dioxide",
+       "sub": "from respiration",
+       "glyph": "wind",
+       "color": "volt"
+      }
+     ]
+    },
+    {
+     "id": "s5",
+     "layout": "row",
+     "els": [
+      {
+       "id": "q",
+       "type": "title",
+       "text": "Quick check"
+      },
+      {
+       "id": "qair",
+       "type": "node",
+       "text": "Carbon dioxide",
+       "sub": "air",
+       "glyph": "wind",
+       "color": "ion"
+      },
+      {
+       "id": "qsoil",
+       "type": "node",
+       "text": "Minerals",
+       "sub": "soil",
+       "glyph": "earth",
+       "color": "amber"
+      },
+      {
+       "id": "qlight",
+       "type": "node",
+       "text": "Sunlight",
+       "sub": "energy",
+       "glyph": "sun",
+       "color": "sun"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Green plants make their own food. This process is called photosynthesis, and it happens mainly in the leaves.",
+    "L2": "A common myth says plants get their food from the soil. Soil gives water and minerals, not food.",
+    "L3": "A green leaf needs sunlight, carbon dioxide from the air, water from the soil, and chlorophyll.",
+    "L4": "Chlorophyll uses sunlight energy to combine carbon dioxide and water. The leaf makes glucose, its food.",
+    "L5": "Glucose can be turned into starch and stored. Oxygen is released during photosynthesis.",
+    "L6": "A leaf that has made starch turns blue-black when tested with iodine. This shows where food was made.",
+    "L7": "Plants also respire all the time, day and night. In sunlight, photosynthesis is faster, so a leaf gives out more oxygen than it uses.",
+    "L8": "Now check one pathway: which substance enters the leaf from the air during photosynthesis?"
+   },
+   "narration": {
+    "L1": {
+     "text": "Green plants make their own food. This process is called photosynthesis, and it happens mainly in the leaves.",
+     "dur": 5.2,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L2": {
+     "text": "A common myth says plants get their food from the soil. Soil gives water and minerals, not food.",
+     "dur": 5.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L3": {
+     "text": "A green leaf needs sunlight, carbon dioxide from the air, water from the soil, and chlorophyll.",
+     "dur": 5.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L4": {
+     "text": "Chlorophyll uses sunlight energy to combine carbon dioxide and water. The leaf makes glucose, its food.",
+     "dur": 5.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L5": {
+     "text": "Glucose can be turned into starch and stored. Oxygen is released during photosynthesis.",
+     "dur": 4.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L6": {
+     "text": "A leaf that has made starch turns blue-black when tested with iodine. This shows where food was made.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Plants also respire all the time, day and night. In sunlight, photosynthesis is faster, so a leaf gives out more oxygen than it uses.",
+     "dur": 6.2,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Now check one pathway: which substance enters the leaf from the air during photosynthesis?",
+     "dur": 4.2,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": "leaf"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "myth"
+      },
+      {
+       "at": 2,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "sun",
+        "air",
+        "water",
+        "leaf2"
+       ]
+      },
+      {
+       "at": 1.5,
+       "do": "flow",
+       "dur": 1,
+       "target": [
+        "in1",
+        "in2",
+        "in3"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "leaf3",
+        "glucose",
+        "make"
+       ]
+      },
+      {
+       "at": 1.2,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "make",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "oxygen",
+        "release",
+        "starch",
+        "store"
+       ]
+      },
+      {
+       "at": 1.2,
+       "do": "flow",
+       "dur": 0.8,
+       "target": [
+        "release",
+        "store"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "iodine"
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.7,
+       "target": "blue"
+      },
+      {
+       "at": 2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "blue"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "respire",
+        "myth2"
+       ]
+      },
+      {
+       "at": 2,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth2"
+      },
+      {
+       "at": 3,
+       "do": "show",
+       "dur": 0.7,
+       "target": "co2"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s5",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "q"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "qair",
+        "qsoil",
+        "qlight"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which substance enters a leaf from the air during photosynthesis?",
+    "options": [
+     "qair",
+     "qsoil",
+     "qlight"
+    ],
+    "answer": "qair",
+    "src": "c7-science-ch10-t01-i11"
+   }
+  },
+  "repairs": [
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 45
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch10-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "plant",
+       "op": "polygon",
+       "startMs": 0,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         370,
+         390
+        ],
+        [
+         400,
+         300
+        ],
+        [
+         430,
+         390
+        ],
+        [
+         400,
+         350
+        ]
+       ]
+      },
+      {
+       "id": "leaf1",
+       "op": "ellipse",
+       "startMs": 800,
+       "endMs": 1600,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        330,
+        280
+       ],
+       "rx": 85,
+       "ry": 35
+      },
+      {
+       "id": "leaf2",
+       "op": "ellipse",
+       "startMs": 1000,
+       "endMs": 1800,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        470,
+        280
+       ],
+       "rx": 85,
+       "ry": 35
+      },
+      {
+       "id": "root",
+       "op": "line",
+       "startMs": 1300,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        400,
+        390
+       ],
+       "to": [
+        360,
+        455
+       ]
+      },
+      {
+       "id": "root2",
+       "op": "line",
+       "startMs": 1500,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        400,
+        390
+       ],
+       "to": [
+        440,
+        455
+       ]
+      },
+      {
+       "id": "photosyn",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        90
+       ],
+       "text": "photosynthesis",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "leaflabel",
+       "op": "label",
+       "startMs": 3700,
+       "endMs": 4500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        535,
+        275
+       ],
+       "text": "leaves",
+       "to": [
+        490,
+        280
+       ]
+      },
+      {
+       "id": "food",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 5700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        455
+       ],
+       "text": "food",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch10-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "soil",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        80,
+        330
+       ],
+       "w": 260,
+       "h": 100,
+       "fill": "soft"
+      },
+      {
+       "id": "plant2",
+       "op": "line",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        210,
+        330
+       ],
+       "to": [
+        210,
+        170
+       ]
+      },
+      {
+       "id": "leaf3",
+       "op": "ellipse",
+       "startMs": 1000,
+       "endMs": 1700,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        160,
+        165
+       ],
+       "rx": 65,
+       "ry": 25
+      },
+      {
+       "id": "leaf4",
+       "op": "ellipse",
+       "startMs": 1200,
+       "endMs": 1900,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        260,
+        165
+       ],
+       "rx": 65,
+       "ry": 25
+      },
+      {
+       "id": "soiltext",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        210,
+        385
+       ],
+       "text": "soil",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "water",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3600,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        150,
+        470
+       ],
+       "text": "water",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "minerals",
+       "op": "text",
+       "startMs": 3200,
+       "endMs": 3900,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        275,
+        470
+       ],
+       "text": "minerals",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "notfood",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        600,
+        250
+       ],
+       "text": "not food",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "myth",
+       "op": "text",
+       "startMs": 6000,
+       "endMs": 6500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        600,
+        120
+       ],
+       "text": "myth",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch10-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "leafmain",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        400,
+        270
+       ],
+       "rx": 190,
+       "ry": 105
+      },
+      {
+       "id": "sun",
+       "op": "circle",
+       "startMs": 500,
+       "endMs": 1200,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        110,
+        90
+       ],
+       "r": 42,
+       "fill": "accent"
+      },
+      {
+       "id": "sunray",
+       "op": "arrow",
+       "startMs": 1200,
+       "endMs": 2100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        155,
+        115
+       ],
+       "to": [
+        290,
+        210
+       ]
+      },
+      {
+       "id": "air",
+       "op": "arrow",
+       "startMs": 1800,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        730,
+        150
+       ],
+       "to": [
+        570,
+        220
+       ]
+      },
+      {
+       "id": "waterin",
+       "op": "arrow",
+       "startMs": 2300,
+       "endMs": 3200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        460
+       ],
+       "to": [
+        400,
+        380
+       ]
+      },
+      {
+       "id": "chlorophyll",
+       "op": "text",
+       "startMs": 3400,
+       "endMs": 4200,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        80
+       ],
+       "text": "chlorophyll",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "co2",
+       "op": "label",
+       "startMs": 4300,
+       "endMs": 5200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        600,
+        190
+       ],
+       "text": "carbon dioxide",
+       "to": [
+        570,
+        220
+       ]
+      },
+      {
+       "id": "water",
+       "op": "label",
+       "startMs": 5300,
+       "endMs": 5900,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        430,
+        445
+       ],
+       "text": "water",
+       "to": [
+        400,
+        390
+       ]
+      },
+      {
+       "id": "sunlight",
+       "op": "label",
+       "startMs": 6000,
+       "endMs": 6800,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        180,
+        145
+       ],
+       "text": "sunlight",
+       "to": [
+        285,
+        205
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch10-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "co2in",
+       "op": "arrow",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        120,
+        190
+       ],
+       "to": [
+        280,
+        250
+       ]
+      },
+      {
+       "id": "waterin2",
+       "op": "arrow",
+       "startMs": 500,
+       "endMs": 1400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        430
+       ],
+       "to": [
+        400,
+        340
+       ]
+      },
+      {
+       "id": "energy",
+       "op": "arrow",
+       "startMs": 1000,
+       "endMs": 1900,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        400,
+        80
+       ],
+       "to": [
+        400,
+        180
+       ]
+      },
+      {
+       "id": "combine",
+       "op": "numwork",
+       "startMs": 2200,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        170,
+        115
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "carbon",
+         "dioxid",
+         "+",
+         "water",
+         "=",
+         "glucos"
+        ]
+       ]
+      },
+      {
+       "id": "glucose",
+       "op": "text",
+       "startMs": 4400,
+       "endMs": 5300,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        430
+       ],
+       "text": "glucose",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch10-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "glucosebox",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        280,
+        100
+       ],
+       "w": 240,
+       "h": 70
+      },
+      {
+       "id": "starcharrow",
+       "op": "arrow",
+       "startMs": 900,
+       "endMs": 1700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        175
+       ],
+       "to": [
+        400,
+        270
+       ]
+      },
+      {
+       "id": "starch",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2600,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        310
+       ],
+       "text": "starch",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "store",
+       "op": "arrow",
+       "startMs": 2800,
+       "endMs": 3600,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        400,
+        330
+       ],
+       "to": [
+        400,
+        410
+       ]
+      },
+      {
+       "id": "oxygen",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        610,
+        270
+       ],
+       "text": "oxygen",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "release",
+       "op": "arrow",
+       "startMs": 4500,
+       "endMs": 5600,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        520,
+        270
+       ],
+       "to": [
+        680,
+        270
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch10-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "leaftest",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        400,
+        240
+       ],
+       "rx": 220,
+       "ry": 120
+      },
+      {
+       "id": "paper",
+       "op": "rect",
+       "startMs": 900,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        285,
+        135
+       ],
+       "w": 230,
+       "h": 210,
+       "fill": "soft"
+      },
+      {
+       "id": "iodine",
+       "op": "text",
+       "startMs": 2000,
+       "endMs": 2800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "iodine",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "drop",
+       "op": "arrow",
+       "startMs": 2700,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        400,
+        90
+       ],
+       "to": [
+        400,
+        180
+       ]
+      },
+      {
+       "id": "blueblack",
+       "op": "ellipse",
+       "startMs": 3900,
+       "endMs": 5000,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        240
+       ],
+       "rx": 105,
+       "ry": 65,
+       "fill": "accent"
+      },
+      {
+       "id": "starch2",
+       "op": "text",
+       "startMs": 5200,
+       "endMs": 6000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        420
+       ],
+       "text": "starch",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "shows",
+       "op": "arrow",
+       "startMs": 6200,
+       "endMs": 7100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        350
+       ],
+       "to": [
+        400,
+        390
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch10-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 10813,
+     "ops": [
+      {
+       "id": "day",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        150,
+        105
+       ],
+       "r": 42,
+       "fill": "accent"
+      },
+      {
+       "id": "night",
+       "op": "circle",
+       "startMs": 500,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        650,
+        105
+       ],
+       "r": 42,
+       "fill": "soft"
+      },
+      {
+       "id": "leafresp",
+       "op": "ellipse",
+       "startMs": 1000,
+       "endMs": 1900,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        400,
+        285
+       ],
+       "rx": 150,
+       "ry": 90
+      },
+      {
+       "id": "resp1",
+       "op": "arrow",
+       "startMs": 2200,
+       "endMs": 3100,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        280,
+        285
+       ],
+       "to": [
+        180,
+        285
+       ]
+      },
+      {
+       "id": "resp2",
+       "op": "arrow",
+       "startMs": 2600,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        520,
+        285
+       ],
+       "to": [
+        620,
+        285
+       ]
+      },
+      {
+       "id": "respire",
+       "op": "text",
+       "startMs": 3600,
+       "endMs": 4400,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        400,
+        285
+       ],
+       "text": "respire",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "photospeed",
+       "op": "arrow",
+       "startMs": 4700,
+       "endMs": 5700,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        150,
+        155
+       ],
+       "to": [
+        300,
+        230
+       ]
+      },
+      {
+       "id": "moreoxygen",
+       "op": "text",
+       "startMs": 6200,
+       "endMs": 7300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        430
+       ],
+       "text": "more oxygen",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "daynight",
+       "op": "text",
+       "startMs": 7600,
+       "endMs": 8500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        60
+       ],
+       "text": "day and night",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch10-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "leafpath",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        400,
+        250
+       ],
+       "rx": 190,
+       "ry": 110
+      },
+      {
+       "id": "airarrow",
+       "op": "arrow",
+       "startMs": 1000,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        700,
+        180
+       ],
+       "to": [
+        570,
+        230
+       ]
+      },
+      {
+       "id": "airlabel",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        650,
+        130
+       ],
+       "text": "air",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "question",
+       "op": "text",
+       "startMs": 3200,
+       "endMs": 4300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        80
+       ],
+       "text": "which substance?",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "co2answer",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        430
+       ],
+       "text": "carbon dioxide",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1",
+   "key": "best 20.0 sugar ≥ 1",
+   "prompt": "make 1 sugar"
+  },
+  {
+   "itemId": "r2",
+   "key": "best 20.0 sugar ≥ 1",
+   "prompt": "make 1 sugar"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

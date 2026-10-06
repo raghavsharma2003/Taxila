@@ -1,0 +1,1594 @@
+{
+ "topicId": "c6-science-ch02-t04",
+ "title": "Why diversity matters",
+ "chapter": "Diversity in the Living World",
+ "subject": "science",
+ "class": 6,
+ "topicType": "T3",
+ "plan": {
+  "game": "food-web@1",
+  "hint": "Balance the Forest: habitats and who eats whom; remove a species and watch"
+ },
+ "game": {
+  "archetype": "food-web@1",
+  "spec": {
+   "archetype": "food-web@1",
+   "skills": [
+    "c6-science-ch02-t04"
+   ],
+   "lang": "en",
+   "strings": {
+    "step": "Step",
+    "predict": "First, predict",
+    "up": "Goes up",
+    "down": "Goes down",
+    "same": "About the same",
+    "remove": "Remove",
+    "add": "Bring in",
+    "relocate": "Relocate",
+    "day": "DAY",
+    "alive": "all alive",
+    "lost": "lost",
+    "drought": "DROUGHT",
+    "arrows": "Drag from the food to the one that eats it",
+    "done": "Forest steady",
+    "watch": "watch"
+   },
+   "species": [
+    "grass",
+    "insects",
+    "deer",
+    "frog",
+    "snake",
+    "tiger"
+   ],
+   "steps": [
+    {
+     "kind": "arrows"
+    },
+    {
+     "kind": "predict-remove",
+     "remove": "frog",
+     "watch": "insects",
+     "days": 60
+    },
+    {
+     "kind": "predict-remove",
+     "remove": "deer",
+     "watch": "tiger",
+     "days": 90
+    },
+    {
+     "kind": "keep-alive",
+     "days": 80,
+     "droughtFrom": 25,
+     "droughtDays": 12
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c6-science-ch02-t04"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Why diversity matters",
+   "accent": "mint",
+   "targets": "c6-science-ch02-t04-m1",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Why diversity matters"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Losing one species does not affect others"
+      },
+      {
+       "id": "bio",
+       "type": "node",
+       "text": "Biodiversity",
+       "sub": "many living things",
+       "glyph": "group",
+       "color": "mint"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "bees",
+       "type": "node",
+       "text": "Bees",
+       "sub": "pollinators",
+       "glyph": "insect",
+       "color": "amber"
+      },
+      {
+       "id": "mustard",
+       "type": "node",
+       "text": "Mustard flowers",
+       "sub": "need pollen",
+       "glyph": "flower",
+       "color": "sun"
+      },
+      {
+       "id": "pods",
+       "type": "node",
+       "text": "Fewer pods",
+       "sub": "fewer seeds",
+       "glyph": "seed",
+       "color": "sci"
+      },
+      {
+       "id": "oil",
+       "type": "node",
+       "text": "Less mustard oil",
+       "sub": "less income",
+       "glyph": "wheat",
+       "color": "mint"
+      },
+      {
+       "id": "b1",
+       "type": "arrow",
+       "from": "bees",
+       "to": "mustard",
+       "text": "pollinate"
+      },
+      {
+       "id": "b2",
+       "type": "arrow",
+       "from": "mustard",
+       "to": "pods",
+       "text": "fewer"
+      },
+      {
+       "id": "b3",
+       "type": "arrow",
+       "from": "pods",
+       "to": "oil",
+       "text": "less"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "column",
+     "els": [
+      {
+       "id": "vul",
+       "type": "node",
+       "text": "Vultures",
+       "sub": "eat carcasses",
+       "glyph": "bird",
+       "color": "sci"
+      },
+      {
+       "id": "carc",
+       "type": "node",
+       "text": "Carcasses",
+       "sub": "rot longer",
+       "glyph": "cow",
+       "color": "amber"
+      },
+      {
+       "id": "dogs",
+       "type": "node",
+       "text": "Stray dogs",
+       "sub": "increase",
+       "color": "sun"
+      },
+      {
+       "id": "risk",
+       "type": "node",
+       "text": "Disease risk",
+       "sub": "rabies",
+       "glyph": "shield",
+       "color": "volt"
+      },
+      {
+       "id": "protect",
+       "type": "node",
+       "text": "Conserve",
+       "sub": "protect habitats",
+       "glyph": "tree",
+       "color": "mint"
+      },
+      {
+       "id": "v1",
+       "type": "arrow",
+       "from": "vul",
+       "to": "carc",
+       "text": "cleans"
+      },
+      {
+       "id": "v2",
+       "type": "arrow",
+       "from": "carc",
+       "to": "dogs",
+       "text": "more food"
+      },
+      {
+       "id": "v3",
+       "type": "arrow",
+       "from": "dogs",
+       "to": "risk",
+       "text": "higher risk"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Biodiversity means the variety of living things in a place.",
+    "L2": "Plants and animals depend on one another, so losing one species can affect many others.",
+    "L3": "Here is a worked example: bees carry pollen between mustard flowers.",
+    "L4": "If bees become fewer, fewer flowers are pollinated, so fewer pods and seeds form.",
+    "L5": "That means less mustard oil and less income for farmers.",
+    "L6": "Vultures also have a role: they eat dead animals and clean the surroundings.",
+    "L7": "When vultures declined, carcasses rotted longer, stray dogs increased and disease risk rose.",
+    "L8": "We conserve diversity by protecting habitats, avoiding pollution and harmful chemicals, and planting native species."
+   },
+   "narration": {
+    "L1": {
+     "text": "Biodiversity means the variety of living things in a place.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L2": {
+     "text": "Plants and animals depend on one another, so losing one species can affect many others.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L3": {
+     "text": "Here is a worked example: bees carry pollen between mustard flowers.",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L4": {
+     "text": "If bees become fewer, fewer flowers are pollinated, so fewer pods and seeds form.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L5": {
+     "text": "That means less mustard oil and less income for farmers.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Vultures also have a role: they eat dead animals and clean the surroundings.",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L7": {
+     "text": "When vultures declined, carcasses rotted longer, stray dogs increased and disease risk rose.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L8": {
+     "text": "We conserve diversity by protecting habitats, avoiding pollution and harmful chemicals, and planting native species.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "title"
+      },
+      {
+       "at": 0.6,
+       "do": "show",
+       "dur": 0.8,
+       "target": "bio"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      },
+      {
+       "at": 1,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "bees"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.6,
+       "target": "mustard"
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "b1",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "bees"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.7,
+       "target": "pods"
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "b2",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "oil"
+      },
+      {
+       "at": 0.6,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "b3",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "vul"
+      },
+      {
+       "at": 0.6,
+       "do": "show",
+       "dur": 0.7,
+       "target": "carc"
+      },
+      {
+       "at": 1.2,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "v1",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "dogs"
+      },
+      {
+       "at": 0.5,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "v2",
+       "to": 1
+      },
+      {
+       "at": 1.4,
+       "do": "show",
+       "dur": 0.7,
+       "target": "risk"
+      },
+      {
+       "at": 1.8,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "v3",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "protect"
+      },
+      {
+       "at": 1,
+       "do": "focus",
+       "dur": 1,
+       "target": "protect"
+      },
+      {
+       "at": "end",
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "What may happen first when vultures decline?",
+    "options": [
+     "carc",
+     "dogs",
+     "risk"
+    ],
+    "answer": "carc",
+    "src": "c6-science-ch02-t04-i04"
+   }
+  },
+  "repairs": [
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 33
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch02-t04-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "title",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "Biodiversity",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "place",
+       "op": "ellipse",
+       "startMs": 700,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        285
+       ],
+       "rx": 280,
+       "ry": 125
+      },
+      {
+       "id": "plant",
+       "op": "line",
+       "startMs": 1300,
+       "endMs": 1900,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        285,
+        355
+       ],
+       "to": [
+        285,
+        240
+       ]
+      },
+      {
+       "id": "leaf1",
+       "op": "ellipse",
+       "startMs": 1700,
+       "endMs": 2200,
+       "ink": "good",
+       "weight": 1,
+       "c": [
+        260,
+        285
+       ],
+       "rx": 38,
+       "ry": 16
+      },
+      {
+       "id": "leaf2",
+       "op": "ellipse",
+       "startMs": 1900,
+       "endMs": 2400,
+       "ink": "good",
+       "weight": 1,
+       "c": [
+        310,
+        315
+       ],
+       "rx": 38,
+       "ry": 16
+      },
+      {
+       "id": "animal",
+       "op": "circle",
+       "startMs": 2200,
+       "endMs": 2800,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        515,
+        285
+       ],
+       "r": 38
+      },
+      {
+       "id": "wing1",
+       "op": "ellipse",
+       "startMs": 2500,
+       "endMs": 3000,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        480,
+        260
+       ],
+       "rx": 28,
+       "ry": 16
+      },
+      {
+       "id": "wing2",
+       "op": "ellipse",
+       "startMs": 2700,
+       "endMs": 3200,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        550,
+        260
+       ],
+       "rx": 28,
+       "ry": 16
+      },
+      {
+       "id": "living",
+       "op": "label",
+       "startMs": 3300,
+       "endMs": 4100,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        400,
+        450
+       ],
+       "text": "living things",
+       "to": [
+        400,
+        300
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch02-t04-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "plant2",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        220,
+        380
+       ],
+       "to": [
+        220,
+        245
+       ]
+      },
+      {
+       "id": "animal2",
+       "op": "circle",
+       "startMs": 300,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        560,
+        285
+       ],
+       "r": 42
+      },
+      {
+       "id": "dep1",
+       "op": "arrow",
+       "startMs": 1100,
+       "endMs": 2200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        270,
+        280
+       ],
+       "to": [
+        510,
+        275
+       ]
+      },
+      {
+       "id": "dep2",
+       "op": "arrow",
+       "startMs": 1900,
+       "endMs": 3000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        520,
+        320
+       ],
+       "to": [
+        270,
+        350
+       ]
+      },
+      {
+       "id": "depend",
+       "op": "label",
+       "startMs": 3000,
+       "endMs": 3800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        220
+       ],
+       "text": "depend",
+       "to": [
+        400,
+        280
+       ]
+      },
+      {
+       "id": "loss",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 5000,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        430
+       ],
+       "text": "losing one species",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "affect",
+       "op": "arrow",
+       "startMs": 5000,
+       "endMs": 6100,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        400,
+        395
+       ],
+       "to": [
+        600,
+        335
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch02-t04-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "mustard",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "mustard flowers",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "flower1",
+       "op": "circle",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        250,
+        245
+       ],
+       "r": 42
+      },
+      {
+       "id": "flower2",
+       "op": "circle",
+       "startMs": 1000,
+       "endMs": 1600,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        550,
+        245
+       ],
+       "r": 42
+      },
+      {
+       "id": "bee",
+       "op": "circle",
+       "startMs": 1500,
+       "endMs": 2000,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        150
+       ],
+       "r": 25
+      },
+      {
+       "id": "pollen1",
+       "op": "arrow",
+       "startMs": 2000,
+       "endMs": 2900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        375,
+        165
+       ],
+       "to": [
+        275,
+        230
+       ]
+      },
+      {
+       "id": "pollen2",
+       "op": "arrow",
+       "startMs": 2800,
+       "endMs": 3700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        425,
+        165
+       ],
+       "to": [
+        525,
+        230
+       ]
+      },
+      {
+       "id": "carry",
+       "op": "label",
+       "startMs": 3700,
+       "endMs": 4600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        350
+       ],
+       "text": "carry pollen",
+       "to": [
+        400,
+        190
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch02-t04-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "fewbee",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "fewer bees",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "arrow1",
+       "op": "arrow",
+       "startMs": 800,
+       "endMs": 1400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        90
+       ],
+       "to": [
+        400,
+        165
+       ]
+      },
+      {
+       "id": "fewpoll",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        205
+       ],
+       "text": "fewer pollinated flowers",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "arrow2",
+       "op": "arrow",
+       "startMs": 2500,
+       "endMs": 3100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        240
+       ],
+       "to": [
+        400,
+        315
+       ]
+      },
+      {
+       "id": "fewpods",
+       "op": "text",
+       "startMs": 3100,
+       "endMs": 4200,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        355
+       ],
+       "text": "fewer pods and seeds",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "chain",
+       "op": "highlight",
+       "startMs": 4500,
+       "endMs": 5400,
+       "ink": "accent",
+       "weight": 2,
+       "target": "fewpods",
+       "style": "underline"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch02-t04-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "seeds",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "fewer seeds",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "oilarr",
+       "op": "arrow",
+       "startMs": 800,
+       "endMs": 1600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        90
+       ],
+       "to": [
+        250,
+        190
+       ]
+      },
+      {
+       "id": "income",
+       "op": "arrow",
+       "startMs": 1100,
+       "endMs": 1900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        90
+       ],
+       "to": [
+        550,
+        190
+       ]
+      },
+      {
+       "id": "oil",
+       "op": "text",
+       "startMs": 1600,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        190,
+        230
+       ],
+       "text": "less mustard oil",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "farmer",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        585,
+        230
+       ],
+       "text": "less income",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "result",
+       "op": "highlight",
+       "startMs": 3300,
+       "endMs": 4200,
+       "ink": "accent",
+       "weight": 2,
+       "target": "income",
+       "style": "underline"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch02-t04-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "vulture",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "vultures",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "bird",
+       "op": "ellipse",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        190
+       ],
+       "rx": 75,
+       "ry": 38
+      },
+      {
+       "id": "wing",
+       "op": "line",
+       "startMs": 1100,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        400,
+        190
+       ],
+       "to": [
+        330,
+        125
+       ]
+      },
+      {
+       "id": "dead",
+       "op": "ellipse",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "soft",
+       "weight": 2,
+       "c": [
+        400,
+        350
+       ],
+       "rx": 115,
+       "ry": 35
+      },
+      {
+       "id": "eat",
+       "op": "arrow",
+       "startMs": 2300,
+       "endMs": 3200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        245
+       ],
+       "to": [
+        400,
+        315
+       ]
+      },
+      {
+       "id": "clean",
+       "op": "label",
+       "startMs": 3300,
+       "endMs": 4400,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        570,
+        350
+       ],
+       "text": "clean surroundings",
+       "to": [
+        500,
+        350
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch02-t04-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "decline",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "vultures declined",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "carcass",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        190
+       ],
+       "text": "carcasses",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "rot",
+       "op": "arrow",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        240,
+        200
+       ],
+       "to": [
+        330,
+        200
+       ]
+      },
+      {
+       "id": "rotted",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 3100,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        400,
+        200
+       ],
+       "text": "rotted longer",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "dogs",
+       "op": "arrow",
+       "startMs": 3000,
+       "endMs": 3800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        240
+       ],
+       "to": [
+        520,
+        300
+       ]
+      },
+      {
+       "id": "stray",
+       "op": "text",
+       "startMs": 3800,
+       "endMs": 4900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        590,
+        320
+       ],
+       "text": "stray dogs increased",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "risk",
+       "op": "text",
+       "startMs": 4900,
+       "endMs": 5900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        440
+       ],
+       "text": "disease risk rose",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch02-t04-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "conserve",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        50
+       ],
+       "text": "conserve diversity",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "habitat",
+       "op": "rect",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        80,
+        145
+       ],
+       "w": 180,
+       "h": 105
+      },
+      {
+       "id": "habitatLabel",
+       "op": "label",
+       "startMs": 1400,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        170,
+        285
+       ],
+       "text": "protect habitats",
+       "to": [
+        170,
+        250
+       ]
+      },
+      {
+       "id": "pollution",
+       "op": "circle",
+       "startMs": 1600,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        195
+       ],
+       "r": 52
+      },
+      {
+       "id": "avoid",
+       "op": "label",
+       "startMs": 2200,
+       "endMs": 3100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        285
+       ],
+       "text": "avoid pollution",
+       "to": [
+        400,
+        245
+       ]
+      },
+      {
+       "id": "nativePlant",
+       "op": "line",
+       "startMs": 2500,
+       "endMs": 3300,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        620,
+        270
+       ],
+       "to": [
+        620,
+        150
+       ]
+      },
+      {
+       "id": "chemicals",
+       "op": "label",
+       "startMs": 3100,
+       "endMs": 4100,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        345
+       ],
+       "text": "harmful chemicals",
+       "to": [
+        400,
+        315
+       ]
+      },
+      {
+       "id": "nativeLeaf",
+       "op": "ellipse",
+       "startMs": 3100,
+       "endMs": 3600,
+       "ink": "good",
+       "weight": 1,
+       "c": [
+        590,
+        195
+       ],
+       "rx": 35,
+       "ry": 15
+      },
+      {
+       "id": "nativeLabel",
+       "op": "label",
+       "startMs": 4100,
+       "endMs": 5400,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        625,
+        350
+       ],
+       "text": "plant native species",
+       "to": [
+        620,
+        270
+       ]
+      },
+      {
+       "id": "all",
+       "op": "highlight",
+       "startMs": 5700,
+       "endMs": 6500,
+       "ink": "good",
+       "weight": 2,
+       "target": "conserve",
+       "style": "underline"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [],
+ "check": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "The game includes 'frog' and 'snake' as species. The kit does not mention frogs or snakes in the given items; item i03 involves a frog pond disappearance scenario but that is not part of the game's food web. The game's arrows step and keep-alive drought are not mentioned in the kit. However, the game does not contradict the kit's factual content: it is a new, abstract food-web activity with its own numbers and species. The kit's expectations only forbid contradicting kit facts; this is allowed. No issue.",
+    "severity": "low"
+   }
+  ],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

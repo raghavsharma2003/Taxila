@@ -1,0 +1,1387 @@
+{
+ "topicId": "c5-hindi-ch01-t01",
+ "title": "किरन",
+ "chapter": "किरन",
+ "subject": "hindi",
+ "class": 5,
+ "topicType": "T1",
+ "plan": {
+  "game": "beat-line@1",
+  "hint": "beat and rhyme rounds (Hindi: matra round on a doha/chaupai line)"
+ },
+ "game": {
+  "archetype": "beat-line@1",
+  "spec": {
+   "archetype": "beat-line@1",
+   "skills": [
+    "c5-hindi-ch01-t01"
+   ],
+   "lang": "hi",
+   "strings": {
+    "round": "चक्र",
+    "onBeat": "ताल पर",
+    "combo": "लगातार ताल",
+    "tap": "ताल पर थपकी दो",
+    "catch": "तुक पकड़ो",
+    "mark": "छोटी या बड़ी?",
+    "short": "ह्रस्व",
+    "long": "दीर्घ",
+    "practice": "अभ्यास पंक्ति",
+    "runDone": "कविता पूरी हुई",
+    "perfect": "सही ताल",
+    "early": "जल्दी",
+    "late": "देर से",
+    "meter": "मात्रा"
+   },
+   "title": "किरन की सुबह",
+   "bpm": 76,
+   "lines": [
+    {
+     "text": "सुबह-सुबह इक किरन सुनहरी, आई मेरे द्वार।",
+     "beats": [
+      1,
+      3,
+      6
+     ],
+     "own": true
+    },
+    {
+     "text": "बोली उठो, चलो अब खेलें, जागा सब संसार।",
+     "beats": [
+      1,
+      3,
+      6
+     ],
+     "own": true
+    },
+    {
+     "text": "कलियों को छूकर वह बोली, खिलो हुआ उजियारा।",
+     "beats": [
+      1,
+      3,
+      6
+     ],
+     "own": true
+    },
+    {
+     "text": "ओस की बूँदें चमक उठीं, जैसे मोती प्यारा।",
+     "beats": [
+      1,
+      3,
+      6
+     ],
+     "own": true
+    }
+   ],
+   "rounds": [
+    {
+     "mode": "beat",
+     "title": "ताल पर थपकी",
+     "sub": "हर पंक्ति की मज़बूत ताल पकड़ो",
+     "lines": [
+      0,
+      1
+     ]
+    },
+    {
+     "mode": "rhyme",
+     "title": "तुक पकड़ो",
+     "sub": "मिलती ध्वनि वाला शब्द चुनो",
+     "items": [
+      {
+       "cue": "‘द्वार’ से कौन-सा शब्द तुक मिलाता है?",
+       "options": [
+        "संसार",
+        "उजियारा",
+        "किरन"
+       ],
+       "answer": "संसार",
+       "src": "c5-hindi-ch01-t01-i02"
+      },
+      {
+       "cue": "‘उजियारा’ से कौन-सा शब्द तुक मिला सकता है?",
+       "options": [
+        "प्यारा",
+        "द्वार",
+        "संसार"
+       ],
+       "answer": "प्यारा",
+       "src": "c5-hindi-ch01-t01-i03"
+      },
+      {
+       "cue": "सूरज की रोशनी वाला सही शब्द चुनो।",
+       "options": [
+        "किरन",
+        "कीरन"
+       ],
+       "answer": "किरन",
+       "src": "c5-hindi-ch01-t01-i07"
+      }
+     ]
+    },
+    {
+     "mode": "matra",
+     "title": "मात्रा पहचानो",
+     "sub": "हर अक्षर की मात्रा ध्यान से सुनो",
+     "lines": [
+      2,
+      3
+     ]
+    }
+   ]
+  },
+  "repairs": [
+   "targets"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c5-hindi-ch01-t01"
+   ],
+   "lang": "hi",
+   "strings": {
+    "again": "फिर दिखाएँ",
+    "yourTurn": "अब आपकी बारी",
+    "check": "जाँचें",
+    "right": "सही",
+    "look": "फिर देखें",
+    "myth": "भ्रम",
+    "busted": "गलत",
+    "order": "क्रम में चुनें"
+   },
+   "title": "किरन की नई सुबह",
+   "accent": "sun",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "row",
+     "els": [
+      {
+       "id": "ttl",
+       "type": "title",
+       "text": "किरन की नई सुबह"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "यह कविता केवल धूप बताती है"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "kir",
+       "type": "node",
+       "text": "सुनहरी किरन",
+       "sub": "नई शुरुआत",
+       "glyph": "sun",
+       "color": "sun"
+      },
+      {
+       "id": "dwar",
+       "type": "node",
+       "text": "द्वार",
+       "sub": "दरवाज़ा",
+       "color": "amber"
+      },
+      {
+       "id": "jag",
+       "type": "node",
+       "text": "जागना",
+       "sub": "सब संसार",
+       "glyph": "person",
+       "color": "ion"
+      },
+      {
+       "id": "kali",
+       "type": "node",
+       "text": "कलियाँ",
+       "sub": "खिलो",
+       "glyph": "flower",
+       "color": "mint"
+      },
+      {
+       "id": "os",
+       "type": "node",
+       "text": "ओस",
+       "sub": "मोती जैसी",
+       "glyph": "drop",
+       "color": "sci"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "kir",
+       "to": "dwar",
+       "text": "आती है"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "kir",
+       "to": "jag",
+       "text": "जगाती है"
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "kir",
+       "to": "kali",
+       "text": "छूती है"
+      },
+      {
+       "id": "a4",
+       "type": "arrow",
+       "from": "kir",
+       "to": "os",
+       "text": "चमकाती है"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "split",
+     "els": [
+      {
+       "id": "bhaav",
+       "type": "title",
+       "text": "भाव"
+      },
+      {
+       "id": "happy",
+       "type": "label",
+       "text": "नई, खुशी भरी शुरुआत",
+       "x": 120,
+       "y": 300
+      },
+      {
+       "id": "rhy",
+       "type": "label",
+       "text": "द्वार — संसार",
+       "x": 120,
+       "y": 380
+      },
+      {
+       "id": "word",
+       "type": "node",
+       "text": "किरन",
+       "sub": "सही वर्तनी",
+       "glyph": "sun",
+       "color": "sun"
+      },
+      {
+       "id": "wrong",
+       "type": "myth",
+       "text": "कीरन"
+      },
+      {
+       "id": "fix",
+       "type": "label",
+       "text": "छोटी ि",
+       "x": 600,
+       "y": 380
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "row",
+     "els": [
+      {
+       "id": "tasktitle",
+       "type": "title",
+       "text": "अब आपकी बारी"
+      },
+      {
+       "id": "q",
+       "type": "label",
+       "text": "सूरज की रोशनी वाला सही शब्द चुनो",
+       "x": 100,
+       "y": 250
+      },
+      {
+       "id": "op1",
+       "type": "node",
+       "text": "किरन",
+       "sub": "सही",
+       "glyph": "sun",
+       "color": "sun"
+      },
+      {
+       "id": "op2",
+       "type": "node",
+       "text": "कीरन",
+       "sub": "गलत",
+       "glyph": "question",
+       "color": "amber"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "सुबह-सुबह एक सुनहरी किरन मेरे द्वार पर आती है।",
+    "L2": "वह कहती है, उठो और खेलो; जाग गया सब संसार।",
+    "L3": "किरन कलियों को छूकर कहती है, खिलो; उजियारा हो गया।",
+    "L4": "ओस की बूँदें मोतियों जैसी चमक उठती हैं।",
+    "L5": "इस कविता का भाव है—सुबह नई और खुशी भरी शुरुआत लाती है।",
+    "L6": "ध्यान रखो, सही शब्द ‘किरन’ है, ‘कीरन’ नहीं।",
+    "L7": "‘द्वार’ और ‘संसार’ तुक मिलाने वाले शब्द हैं।"
+   },
+   "narration": {
+    "L1": {
+     "text": "सुबह-सुबह एक सुनहरी किरन मेरे द्वार पर आती है।",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "वह कहती है, उठो और खेलो; जाग गया सब संसार।",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "किरन कलियों को छूकर कहती है, खिलो; उजियारा हो गया।",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "ओस की बूँदें मोतियों जैसी चमक उठती हैं।",
+     "dur": 2.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "इस कविता का भाव है—सुबह नई और खुशी भरी शुरुआत लाती है।",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "ध्यान रखो, सही शब्द ‘किरन’ है, ‘कीरन’ नहीं।",
+     "dur": 2.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "‘द्वार’ और ‘संसार’ तुक मिलाने वाले शब्द हैं।",
+     "dur": 2.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.3,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "ttl"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "kir",
+        "dwar",
+        "a1"
+       ]
+      },
+      {
+       "at": 0.5,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "a1",
+       "to": 1
+      },
+      {
+       "at": 1.2,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "jag",
+        "a2"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "kali",
+        "a3"
+       ]
+      },
+      {
+       "at": 0.5,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "a3",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "os",
+        "a4"
+       ]
+      },
+      {
+       "at": 0.5,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "os"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.3,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "bhaav",
+        "happy"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.3,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "word",
+        "wrong",
+        "fix"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "rhy"
+      },
+      {
+       "at": "end",
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "सूरज की रोशनी वाला सही शब्द चुनो।",
+    "options": [
+     "op1",
+     "op2"
+    ],
+    "answer": "op1",
+    "src": "c5-hindi-ch01-t01-i07"
+   }
+  },
+  "repairs": [
+   "glyph",
+   "cue:target",
+   "cue:target",
+   "targets"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 22
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-hindi-ch01-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4430,
+     "ops": [
+      {
+       "id": "sun",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        150,
+        110
+       ],
+       "r": 48,
+       "fill": "accent"
+      },
+      {
+       "id": "door",
+       "op": "rect",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        560,
+        180
+       ],
+       "w": 130,
+       "h": 220,
+       "round": 4
+      },
+      {
+       "id": "ray",
+       "op": "arrow",
+       "startMs": 1400,
+       "endMs": 2500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        195,
+        135
+       ],
+       "to": [
+        550,
+        240
+       ]
+      },
+      {
+       "id": "sunlabel",
+       "op": "label",
+       "startMs": 2500,
+       "endMs": 3200,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        115,
+        55
+       ],
+       "text": "सुनहरी",
+       "target": "sun"
+      },
+      {
+       "id": "raylabel",
+       "op": "label",
+       "startMs": 3200,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        300,
+        145
+       ],
+       "text": "किरन",
+       "target": "ray"
+      },
+      {
+       "id": "doorlabel",
+       "op": "label",
+       "startMs": 3900,
+       "endMs": 4300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        575,
+        425
+       ],
+       "text": "द्वार",
+       "target": "door"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-hindi-ch01-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "wake",
+       "op": "arrow",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        620,
+        260
+       ],
+       "to": [
+        620,
+        150
+       ]
+      },
+      {
+       "id": "wakeLabel",
+       "op": "label",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        650,
+        145
+       ],
+       "text": "उठो",
+       "target": "wake"
+      },
+      {
+       "id": "play",
+       "op": "circle",
+       "startMs": 1500,
+       "endMs": 2100,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        390,
+        330
+       ],
+       "r": 35
+      },
+      {
+       "id": "playLabel",
+       "op": "label",
+       "startMs": 2100,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        365,
+        390
+       ],
+       "text": "खेलो",
+       "target": "play"
+      },
+      {
+       "id": "world",
+       "op": "ellipse",
+       "startMs": 2700,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        210,
+        350
+       ],
+       "rx": 85,
+       "ry": 45
+      },
+      {
+       "id": "worldLabel",
+       "op": "label",
+       "startMs": 3400,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        175,
+        430
+       ],
+       "text": "संसार",
+       "target": "world"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-hindi-ch01-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "bud1",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        250,
+        300
+       ],
+       "r": 25
+      },
+      {
+       "id": "bud2",
+       "op": "circle",
+       "startMs": 500,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        350,
+        280
+       ],
+       "r": 25
+      },
+      {
+       "id": "touch",
+       "op": "arrow",
+       "startMs": 1200,
+       "endMs": 2200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        150,
+        150
+       ],
+       "to": [
+        250,
+        275
+       ]
+      },
+      {
+       "id": "bloom",
+       "op": "polygon",
+       "startMs": 2200,
+       "endMs": 3000,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         235,
+         290
+        ],
+        [
+         250,
+         260
+        ],
+        [
+         265,
+         290
+        ],
+        [
+         250,
+         315
+        ]
+       ],
+       "fill": "accent"
+      },
+      {
+       "id": "khilo",
+       "op": "label",
+       "startMs": 3000,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        290,
+        235
+       ],
+       "text": "खिलो",
+       "target": "bud2"
+      },
+      {
+       "id": "light",
+       "op": "label",
+       "startMs": 3700,
+       "endMs": 4500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        470,
+        150
+       ],
+       "text": "उजियारा",
+       "target": "touch"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-hindi-ch01-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 4004,
+     "ops": [
+      {
+       "id": "grass",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        100,
+        390
+       ],
+       "to": [
+        700,
+        390
+       ]
+      },
+      {
+       "id": "dew1",
+       "op": "circle",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        230,
+        350
+       ],
+       "r": 18,
+       "fill": "accent"
+      },
+      {
+       "id": "dew2",
+       "op": "circle",
+       "startMs": 1000,
+       "endMs": 1600,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        360,
+        335
+       ],
+       "r": 18,
+       "fill": "accent"
+      },
+      {
+       "id": "dew3",
+       "op": "circle",
+       "startMs": 1300,
+       "endMs": 1900,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        500,
+        350
+       ],
+       "r": 18,
+       "fill": "accent"
+      },
+      {
+       "id": "dewlabel",
+       "op": "label",
+       "startMs": 1900,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        280,
+        315
+       ],
+       "text": "ओस",
+       "target": "dew2"
+      },
+      {
+       "id": "pearl",
+       "op": "label",
+       "startMs": 2500,
+       "endMs": 3300,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        540,
+        315
+       ],
+       "text": "मोतियों",
+       "target": "dew3"
+      },
+      {
+       "id": "shine",
+       "op": "highlight",
+       "startMs": 3300,
+       "endMs": 3900,
+       "ink": "good",
+       "weight": 2,
+       "target": "dew1",
+       "style": "pulse"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-hindi-ch01-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "morning",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        180,
+        150
+       ],
+       "r": 55,
+       "fill": "accent"
+      },
+      {
+       "id": "start",
+       "op": "arrow",
+       "startMs": 700,
+       "endMs": 1600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        250,
+        300
+       ],
+       "to": [
+        500,
+        180
+       ]
+      },
+      {
+       "id": "new",
+       "op": "label",
+       "startMs": 1600,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        430,
+        150
+       ],
+       "text": "नई",
+       "target": "start"
+      },
+      {
+       "id": "happy",
+       "op": "circle",
+       "startMs": 2200,
+       "endMs": 2900,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        570,
+        290
+       ],
+       "r": 48
+      },
+      {
+       "id": "happyLabel",
+       "op": "label",
+       "startMs": 2900,
+       "endMs": 3600,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        530,
+        370
+       ],
+       "text": "खुशी",
+       "target": "happy"
+      },
+      {
+       "id": "begin",
+       "op": "label",
+       "startMs": 3600,
+       "endMs": 4500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        420,
+        240
+       ],
+       "text": "शुरुआत",
+       "target": "start"
+      },
+      {
+       "id": "bhaav",
+       "op": "label",
+       "startMs": 4500,
+       "endMs": 5400,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        300,
+        90
+       ],
+       "text": "भाव",
+       "target": "morning"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-hindi-ch01-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4004,
+     "ops": [
+      {
+       "id": "correct",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        170,
+        150
+       ],
+       "text": "किरन",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "wrong",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        570,
+        150
+       ],
+       "text": "कीरन",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "mark",
+       "op": "line",
+       "startMs": 1600,
+       "endMs": 2300,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        485,
+        175
+       ],
+       "to": [
+        655,
+        175
+       ]
+      },
+      {
+       "id": "cross",
+       "op": "stroke",
+       "startMs": 2300,
+       "endMs": 3100,
+       "ink": "mark",
+       "weight": 2,
+       "points": [
+        [
+         500,
+         115
+        ],
+        [
+         635,
+         185
+        ],
+        [
+         635,
+         115
+        ],
+        [
+         500,
+         185
+        ]
+       ]
+      },
+      {
+       "id": "right",
+       "op": "highlight",
+       "startMs": 3100,
+       "endMs": 3900,
+       "ink": "good",
+       "weight": 2,
+       "target": "correct",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-hindi-ch01-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4004,
+     "ops": [
+      {
+       "id": "word1",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        220,
+        180
+       ],
+       "text": "द्वार",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "word2",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        580,
+        180
+       ],
+       "text": "संसार",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "rhyme1",
+       "op": "line",
+       "startMs": 1600,
+       "endMs": 2600,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        220,
+        220
+       ],
+       "to": [
+        580,
+        220
+       ]
+      },
+      {
+       "id": "arrow1",
+       "op": "arrow",
+       "startMs": 2600,
+       "endMs": 3200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        300,
+        260
+       ],
+       "to": [
+        500,
+        260
+       ]
+      },
+      {
+       "id": "rhymeLabel",
+       "op": "label",
+       "startMs": 3200,
+       "endMs": 3900,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        350,
+        310
+       ],
+       "text": "तुक",
+       "target": "rhyme1"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "b0:*",
+   "key": "इक · सुनहरी, · द्वार।",
+   "prompt": "stressed words in: सुबह-सुबह इक किरन सुनहरी, आई मेरे द्वार।"
+  },
+  {
+   "itemId": "b1:*",
+   "key": "उठो, · अब · सब",
+   "prompt": "stressed words in: बोली उठो, चलो अब खेलें, जागा सब संसार।"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "संसार",
+   "prompt": "‘द्वार’ से कौन-सा शब्द तुक मिलाता है? [संसार / उजियारा / किरन]",
+   "src": "c5-hindi-ch01-t01-i02"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "प्यारा",
+   "prompt": "‘उजियारा’ से कौन-सा शब्द तुक मिला सकता है? [प्यारा / द्वार / संसार]",
+   "src": "c5-hindi-ch01-t01-i03"
+  },
+  {
+   "itemId": "r2:2",
+   "key": "किरन",
+   "prompt": "सूरज की रोशनी वाला सही शब्द चुनो। [किरन / कीरन]",
+   "src": "c5-hindi-ch01-t01-i07"
+  },
+  {
+   "itemId": "m2:*",
+   "key": "1122211112212121122",
+   "prompt": "मात्रा: कलियों को छूकर वह बोली, खिलो हुआ उजियारा।"
+  },
+  {
+   "itemId": "m3:*",
+   "key": "2122211112222222",
+   "prompt": "मात्रा: ओस की बूँदें चमक उठीं, जैसे मोती प्यारा।"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

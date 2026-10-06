@@ -1,0 +1,1794 @@
+{
+ "topicId": "c6-maths-ch04-t02",
+ "title": "Pictographs",
+ "chapter": "Data Handling and Presentation",
+ "subject": "maths",
+ "class": 6,
+ "topicType": "T4",
+ "plan": {
+  "game": "pictograph@1",
+  "hint": "picto mode with a scale (one symbol = k, half symbols)"
+ },
+ "game": {
+  "archetype": "pictograph@1",
+  "spec": {
+   "archetype": "pictograph@1",
+   "skills": [
+    "c6-maths-ch04-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "right": "right",
+    "coach": "Read the key, then count pictures",
+    "runDone": "Data done",
+    "key": "each symbol =",
+    "half": "½",
+    "check": "CHECK",
+    "trueW": "TRUE",
+    "falseW": "FALSE",
+    "total": "Total"
+   },
+   "title": "Pictograph Lab",
+   "rounds": [
+    {
+     "mode": "tally",
+     "title": "School gate count",
+     "sub": "tap each vehicle as it passes",
+     "cats": [
+      {
+       "label": "Cycles",
+       "glyph": "wheel",
+       "count": 7
+      },
+      {
+       "label": "Buses",
+       "glyph": "car",
+       "count": 4
+      },
+      {
+       "label": "Walkers",
+       "glyph": "person",
+       "count": 9
+      }
+     ],
+     "scale": 1,
+     "axisStart": 0,
+     "claims": [],
+     "seed": 21,
+     "speed": 1
+    },
+    {
+     "mode": "picto",
+     "title": "Draw the rows",
+     "sub": "use the key and half symbols",
+     "cats": [
+      {
+       "label": "Trees",
+       "glyph": "tree",
+       "count": 25
+      },
+      {
+       "label": "Plants",
+       "glyph": "flower",
+       "count": 40
+      },
+      {
+       "label": "Saplings",
+       "glyph": "seed",
+       "count": 15
+      }
+     ],
+     "scale": 10,
+     "axisStart": 0,
+     "claims": [],
+     "seed": 34,
+     "speed": 1,
+     "targets": "c6-maths-ch04-t02-m-half-symbol"
+    },
+    {
+     "mode": "bars",
+     "title": "Match the counts",
+     "sub": "drag each bar on the scaled axis",
+     "cats": [
+      {
+       "label": "Rotis",
+       "glyph": "plate",
+       "count": 10
+      },
+      {
+       "label": "Laddoos",
+       "count": 25
+      },
+      {
+       "label": "Kites",
+       "count": 35
+      }
+     ],
+     "scale": 5,
+     "axisStart": 0,
+     "claims": [],
+     "seed": 48,
+     "speed": 0.9
+    },
+    {
+     "mode": "claims",
+     "title": "Check the chart",
+     "sub": "the axis starts above zero",
+     "cats": [
+      {
+       "label": "Trees",
+       "glyph": "tree",
+       "count": 25
+      },
+      {
+       "label": "Plants",
+       "glyph": "flower",
+       "count": 40
+      },
+      {
+       "label": "Saplings",
+       "glyph": "seed",
+       "count": 15
+      },
+      {
+       "label": "Books",
+       "glyph": "book",
+       "count": 30
+      }
+     ],
+     "scale": 5,
+     "axisStart": 10,
+     "claims": [
+      {
+       "kind": "more",
+       "a": 1,
+       "b": 0
+      },
+      {
+       "kind": "twice",
+       "a": 1,
+       "b": 2
+      },
+      {
+       "kind": "diff",
+       "a": 3,
+       "b": 0,
+       "value": 5
+      },
+      {
+       "kind": "total",
+       "a": 0,
+       "b": 0,
+       "value": 100
+      }
+     ],
+     "seed": 63,
+     "speed": 0.8
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c6-maths-ch04-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "How to read a pictograph",
+   "accent": "mint",
+   "targets": "c6-maths-ch04-t02-m-ignore-key",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "How to read a pictograph"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Each picture means one item"
+      },
+      {
+       "id": "key",
+       "type": "node",
+       "text": "Key",
+       "sub": "1 tree = 10",
+       "glyph": "tree",
+       "color": "mint"
+      },
+      {
+       "id": "trees",
+       "type": "node",
+       "text": "Trees",
+       "sub": "4 pictures",
+       "glyph": "tree",
+       "color": "sci"
+      },
+      {
+       "id": "arrow1",
+       "type": "arrow",
+       "from": "key",
+       "to": "trees",
+       "text": "explains"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "kites",
+       "type": "node",
+       "text": "45 kites",
+       "sub": "data",
+       "color": "amber"
+      },
+      {
+       "id": "divide",
+       "type": "node",
+       "text": "45 ÷ 10",
+       "sub": "4 remainder 5",
+       "glyph": "ruler",
+       "color": "ion"
+      },
+      {
+       "id": "whole",
+       "type": "node",
+       "text": "4 pictures",
+       "sub": "40 kites",
+       "color": "mint"
+      },
+      {
+       "id": "half",
+       "type": "node",
+       "text": "½ picture",
+       "sub": "5 kites",
+       "color": "sun"
+      },
+      {
+       "id": "total",
+       "type": "node",
+       "text": "4½ pictures",
+       "sub": "45 kites",
+       "color": "volt"
+      },
+      {
+       "id": "arrow2",
+       "type": "arrow",
+       "from": "kites",
+       "to": "divide",
+       "text": "divide"
+      },
+      {
+       "id": "arrow3",
+       "type": "arrow",
+       "from": "divide",
+       "to": "whole",
+       "text": "whole part"
+      },
+      {
+       "id": "arrow4",
+       "type": "arrow",
+       "from": "divide",
+       "to": "half",
+       "text": "remainder"
+      },
+      {
+       "id": "arrow5",
+       "type": "arrow",
+       "from": "whole",
+       "to": "total",
+       "text": "combine"
+      },
+      {
+       "id": "arrow6",
+       "type": "arrow",
+       "from": "half",
+       "to": "total",
+       "text": "combine"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "column",
+     "els": [
+      {
+       "id": "rule",
+       "type": "title",
+       "text": "Count, then multiply"
+      },
+      {
+       "id": "same",
+       "type": "label",
+       "text": "Same size, even spacing"
+      },
+      {
+       "id": "formula",
+       "type": "node",
+       "text": "pictures × key",
+       "sub": "items",
+       "glyph": "spark",
+       "color": "mint"
+      },
+      {
+       "id": "o35",
+       "type": "node",
+       "text": "35",
+       "sub": "3½ × 10",
+       "glyph": "tree",
+       "color": "sci"
+      },
+      {
+       "id": "o30",
+       "type": "node",
+       "text": "30",
+       "sub": "3 × 10",
+       "glyph": "tree",
+       "color": "amber"
+      },
+      {
+       "id": "o40",
+       "type": "node",
+       "text": "40",
+       "sub": "4 × 10",
+       "glyph": "tree",
+       "color": "sun"
+      },
+      {
+       "id": "arrow7",
+       "type": "arrow",
+       "from": "formula",
+       "to": "o35",
+       "text": "example"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "A pictograph uses pictures to show data. First, read the key.",
+    "L2": "The key tells us how many items one picture stands for, so we must not count each picture as one item.",
+    "L3": "To find the total, multiply the number of pictures by the key value.",
+    "L4": "A half picture stands for half the key value. So half of 10 is 5.",
+    "L5": "For 45 kites with a key of 10 kites per picture, divide 45 by 10: that gives 4 whole pictures and 5 left over.",
+    "L6": "The 5 left over is half of 10, so the pictograph row has 4 and a half pictures.",
+    "L7": "Keep every picture the same size and evenly spaced, so rows can be compared fairly.",
+    "L8": "Now use the key, count the pictures including any half picture, and calculate the total."
+   },
+   "narration": {},
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "title"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": "key"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "myth"
+      },
+      {
+       "at": 0.8,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "trees"
+      },
+      {
+       "at": 0.5,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "arrow1",
+       "to": 1
+      },
+      {
+       "at": 1.2,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "key"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "half"
+      },
+      {
+       "at": 0.6,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "half"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "kites",
+        "divide"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "arrow2",
+       "to": 1
+      },
+      {
+       "at": 1.4,
+       "do": "show",
+       "dur": 0.7,
+       "target": "whole"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "total"
+      },
+      {
+       "at": 0.6,
+       "do": "flow",
+       "dur": 1,
+       "target": [
+        "arrow3",
+        "arrow4",
+        "arrow5",
+        "arrow6"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "same"
+      },
+      {
+       "at": 0.7,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "same"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "formula"
+      },
+      {
+       "at": 0.8,
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "With 1 tree picture = 10 trees, how many trees are 3½ pictures?",
+    "options": [
+     "o35",
+     "o30",
+     "o40"
+    ],
+    "answer": "o35",
+    "src": "c6-maths-ch04-t02-i02"
+   }
+  },
+  "repairs": [
+   "glyph",
+   "glyph",
+   "glyph",
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 63
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch04-t02-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "title",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "pictograph",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "keybox",
+       "op": "rect",
+       "startMs": 800,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        500,
+        100
+       ],
+       "w": 240,
+       "h": 100,
+       "round": 10
+      },
+      {
+       "id": "keypic",
+       "op": "circle",
+       "startMs": 1500,
+       "endMs": 2100,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        540,
+        145
+       ],
+       "r": 25
+      },
+      {
+       "id": "keylabel",
+       "op": "label",
+       "startMs": 2100,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        590,
+        145
+       ],
+       "text": "key",
+       "to": [
+        565,
+        145
+       ]
+      },
+      {
+       "id": "pic1",
+       "op": "circle",
+       "startMs": 2700,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        130,
+        180
+       ],
+       "r": 28
+      },
+      {
+       "id": "pic2",
+       "op": "circle",
+       "startMs": 3200,
+       "endMs": 3800,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        210,
+        180
+       ],
+       "r": 28
+      },
+      {
+       "id": "pic3",
+       "op": "circle",
+       "startMs": 3700,
+       "endMs": 4300,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        290,
+        180
+       ],
+       "r": 28
+      },
+      {
+       "id": "data",
+       "op": "label",
+       "startMs": 4300,
+       "endMs": 5000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        210,
+        245
+       ],
+       "text": "data",
+       "to": [
+        210,
+        210
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch04-t02-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 9536,
+     "ops": [
+      {
+       "id": "keyitems",
+       "op": "label",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        590,
+        145
+       ],
+       "text": "items",
+       "to": [
+        565,
+        145
+       ]
+      },
+      {
+       "id": "keyarrow",
+       "op": "arrow",
+       "startMs": 1200,
+       "endMs": 2000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        500,
+        215
+       ],
+       "to": [
+        500,
+        270
+       ]
+      },
+      {
+       "id": "one",
+       "op": "text",
+       "startMs": 2000,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        500,
+        310
+       ],
+       "text": "one picture",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "stands",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        500,
+        355
+       ],
+       "text": "stands for",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "many",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        500,
+        400
+       ],
+       "text": "many items",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "cross",
+       "op": "line",
+       "startMs": 5400,
+       "endMs": 6100,
+       "ink": "accent",
+       "weight": 3,
+       "from": [
+        100,
+        300
+       ],
+       "to": [
+        330,
+        430
+       ]
+      },
+      {
+       "id": "warning",
+       "op": "text",
+       "startMs": 6500,
+       "endMs": 7600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        430,
+        430
+       ],
+       "text": "not one item",
+       "size": "m"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch04-t02-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "rule",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "total",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "eq",
+       "op": "numwork",
+       "startMs": 900,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        170
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "number",
+         "of",
+         "pictur",
+         "×",
+         "key",
+         "value"
+        ],
+        [
+         "=",
+         "total"
+        ]
+       ]
+      },
+      {
+       "id": "p1",
+       "op": "circle",
+       "startMs": 3200,
+       "endMs": 3700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        180,
+        350
+       ],
+       "r": 28
+      },
+      {
+       "id": "p2",
+       "op": "circle",
+       "startMs": 3600,
+       "endMs": 4100,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        260,
+        350
+       ],
+       "r": 28
+      },
+      {
+       "id": "multiply",
+       "op": "arrow",
+       "startMs": 4100,
+       "endMs": 4700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        320,
+        350
+       ],
+       "to": [
+        420,
+        350
+       ]
+      },
+      {
+       "id": "keyval",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        470,
+        350
+       ],
+       "text": "key value",
+       "size": "m"
+      },
+      {
+       "id": "totalhigh",
+       "op": "highlight",
+       "startMs": 5400,
+       "endMs": 6100,
+       "ink": "accent",
+       "weight": 2,
+       "target": "eq",
+       "style": "underline"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch04-t02-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "whole",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        180,
+        180
+       ],
+       "r": 45
+      },
+      {
+       "id": "half",
+       "op": "sector",
+       "startMs": 900,
+       "endMs": 1700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        300,
+        180
+       ],
+       "r": 45,
+       "fill": "accent",
+       "fromDeg": 90,
+       "toDeg": 270
+      },
+      {
+       "id": "halflabel",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        300,
+        260
+       ],
+       "text": "half picture",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "ten",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        150,
+        350
+       ],
+       "text": "10",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "halfline",
+       "op": "arrow",
+       "startMs": 3700,
+       "endMs": 4500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        205,
+        350
+       ],
+       "to": [
+        350,
+        350
+       ]
+      },
+      {
+       "id": "five",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        410,
+        350
+       ],
+       "text": "5",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "equation",
+       "op": "numwork",
+       "startMs": 5300,
+       "endMs": 6800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        180,
+        420
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "half",
+         "of",
+         "10",
+         "=",
+         "5"
+        ]
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch04-t02-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 10813,
+     "ops": [
+      {
+       "id": "kites",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "45 kites",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "key10",
+       "op": "text",
+       "startMs": 800,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        105
+       ],
+       "text": "key 10",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "division",
+       "op": "numwork",
+       "startMs": 1600,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        180,
+        170
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "45",
+         "÷",
+         "10",
+         "=",
+         "4",
+         "remain",
+         "5"
+        ]
+       ]
+      },
+      {
+       "id": "four",
+       "op": "text",
+       "startMs": 3600,
+       "endMs": 4200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        220,
+        280
+       ],
+       "text": "4",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "wholepic1",
+       "op": "circle",
+       "startMs": 4200,
+       "endMs": 4800,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        300,
+        280
+       ],
+       "r": 32
+      },
+      {
+       "id": "wholepic2",
+       "op": "circle",
+       "startMs": 4700,
+       "endMs": 5300,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        380,
+        280
+       ],
+       "r": 32
+      },
+      {
+       "id": "wholepic3",
+       "op": "circle",
+       "startMs": 5200,
+       "endMs": 5800,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        460,
+        280
+       ],
+       "r": 32
+      },
+      {
+       "id": "wholepic4",
+       "op": "circle",
+       "startMs": 5700,
+       "endMs": 6300,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        540,
+        280
+       ],
+       "r": 32
+      },
+      {
+       "id": "leftover",
+       "op": "text",
+       "startMs": 6500,
+       "endMs": 7600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        390
+       ],
+       "text": "5 left over",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "remarrow",
+       "op": "arrow",
+       "startMs": 7600,
+       "endMs": 8300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        560,
+        205
+       ],
+       "to": [
+        560,
+        245
+       ]
+      },
+      {
+       "id": "result",
+       "op": "label",
+       "startMs": 8300,
+       "endMs": 9700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        620,
+        280
+       ],
+       "text": "4 whole pictures",
+       "to": [
+        570,
+        280
+       ]
+      },
+      {
+       "id": "result2",
+       "op": "label",
+       "startMs": 9700,
+       "endMs": 10600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        440
+       ],
+       "text": "5 left over",
+       "to": [
+        400,
+        400
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch04-t02-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "halfmark",
+       "op": "sector",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        620,
+        280
+       ],
+       "r": 32,
+       "fill": "accent",
+       "fromDeg": 90,
+       "toDeg": 270
+      },
+      {
+       "id": "rowarrow",
+       "op": "arrow",
+       "startMs": 1000,
+       "endMs": 1600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        575,
+        280
+       ],
+       "to": [
+        590,
+        280
+       ]
+      },
+      {
+       "id": "rowlabel",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        390
+       ],
+       "text": "4 and a half pictures",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "fivehalf",
+       "op": "numwork",
+       "startMs": 3500,
+       "endMs": 5000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        180,
+        440
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "5",
+         "is",
+         "half",
+         "of",
+         "10"
+        ]
+       ]
+      },
+      {
+       "id": "highlightrow",
+       "op": "highlight",
+       "startMs": 5200,
+       "endMs": 6800,
+       "ink": "accent",
+       "weight": 2,
+       "target": "rowlabel",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch04-t02-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "row1",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        140,
+        150
+       ],
+       "r": 30
+      },
+      {
+       "id": "row2",
+       "op": "circle",
+       "startMs": 500,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        220,
+        150
+       ],
+       "r": 30
+      },
+      {
+       "id": "row3",
+       "op": "circle",
+       "startMs": 1000,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        300,
+        150
+       ],
+       "r": 30
+      },
+      {
+       "id": "row4",
+       "op": "circle",
+       "startMs": 1500,
+       "endMs": 2000,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        140,
+        280
+       ],
+       "r": 30
+      },
+      {
+       "id": "row5",
+       "op": "circle",
+       "startMs": 2000,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        220,
+        280
+       ],
+       "r": 30
+      },
+      {
+       "id": "row6",
+       "op": "circle",
+       "startMs": 2500,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        300,
+        280
+       ],
+       "r": 30
+      },
+      {
+       "id": "space1",
+       "op": "line",
+       "startMs": 3300,
+       "endMs": 4000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        100,
+        200
+       ],
+       "to": [
+        340,
+        200
+       ],
+       "dashed": true
+      },
+      {
+       "id": "space2",
+       "op": "line",
+       "startMs": 4000,
+       "endMs": 4700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        100,
+        330
+       ],
+       "to": [
+        340,
+        330
+       ],
+       "dashed": true
+      },
+      {
+       "id": "same",
+       "op": "text",
+       "startMs": 4800,
+       "endMs": 5600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        500,
+        180
+       ],
+       "text": "same size",
+       "size": "m"
+      },
+      {
+       "id": "even",
+       "op": "text",
+       "startMs": 5600,
+       "endMs": 6700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        500,
+        280
+       ],
+       "text": "evenly spaced",
+       "size": "m"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch04-t02-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "keytitle",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "key",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "keycircle",
+       "op": "circle",
+       "startMs": 700,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        300,
+        130
+       ],
+       "r": 32
+      },
+      {
+       "id": "count",
+       "op": "text",
+       "startMs": 1300,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        130
+       ],
+       "text": "count pictures",
+       "size": "m"
+      },
+      {
+       "id": "halfpic",
+       "op": "sector",
+       "startMs": 2300,
+       "endMs": 3000,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        500,
+        130
+       ],
+       "r": 32,
+       "fill": "accent",
+       "fromDeg": 90,
+       "toDeg": 270
+      },
+      {
+       "id": "include",
+       "op": "text",
+       "startMs": 3100,
+       "endMs": 4500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        220
+       ],
+       "text": "including half picture",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "calc",
+       "op": "numwork",
+       "startMs": 4700,
+       "endMs": 6200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        140,
+        300
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "pictur",
+         "×",
+         "key",
+         "value",
+         "=",
+         "total"
+        ]
+       ]
+      },
+      {
+       "id": "final",
+       "op": "highlight",
+       "startMs": 6200,
+       "endMs": 6800,
+       "ink": "good",
+       "weight": 2,
+       "target": "calc",
+       "style": "pulse"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "7",
+   "prompt": "tally: Cycles"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "4",
+   "prompt": "tally: Buses"
+  },
+  {
+   "itemId": "r1:2",
+   "key": "9",
+   "prompt": "tally: Walkers"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "2.5 symbols",
+   "prompt": "picto: Trees"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "4 symbols",
+   "prompt": "picto: Plants"
+  },
+  {
+   "itemId": "r2:2",
+   "key": "1.5 symbols",
+   "prompt": "picto: Saplings"
+  },
+  {
+   "itemId": "r3:0",
+   "key": "10",
+   "prompt": "bars: Rotis"
+  },
+  {
+   "itemId": "r3:1",
+   "key": "25",
+   "prompt": "bars: Laddoos"
+  },
+  {
+   "itemId": "r3:2",
+   "key": "35",
+   "prompt": "bars: Kites"
+  },
+  {
+   "itemId": "r4:0",
+   "key": "true",
+   "prompt": "Plants > Trees"
+  },
+  {
+   "itemId": "r4:1",
+   "key": "false",
+   "prompt": "Plants = 2 × Saplings"
+  },
+  {
+   "itemId": "r4:2",
+   "key": "true",
+   "prompt": "Books − Trees = 5"
+  },
+  {
+   "itemId": "r4:3",
+   "key": "false",
+   "prompt": "Total = 100"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

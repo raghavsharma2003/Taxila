@@ -1,0 +1,1836 @@
+{
+ "topicId": "c6-science-ch08-t01",
+ "title": "Solid, liquid and gas states of water",
+ "chapter": "A Journey through States of Water",
+ "subject": "science",
+ "class": 6,
+ "topicType": "T3",
+ "plan": {
+  "game": "phase-shift@1",
+  "hint": "Phase Shift: states of water, evaporation and condensation, factors"
+ },
+ "game": {
+  "archetype": "phase-shift@1",
+  "spec": {
+   "archetype": "phase-shift@1",
+   "skills": [
+    "c6-science-ch08-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "step": "Step",
+    "heat": "HEAT",
+    "cool": "COOL",
+    "fan": "FAN",
+    "lid": "COLD LID",
+    "temp": "TEMP",
+    "ice": "ice",
+    "water": "water",
+    "vapour": "vapour",
+    "plateau": "Heat is changing the state",
+    "boiling": "Heat is making vapour",
+    "invisible": "vapour is invisible",
+    "predict": "First, predict",
+    "done": "Done",
+    "noBoil": "Keep it below boiling"
+   },
+   "start": -10,
+   "steps": [
+    {
+     "kind": "goal",
+     "goal": "melt",
+     "arg": 0,
+     "tMax": 40,
+     "text": "Warm the ice until it becomes water."
+    },
+    {
+     "kind": "goal",
+     "goal": "evaporate",
+     "arg": 0.12,
+     "tMax": 70,
+     "text": "Make some water become vapour without boiling."
+    },
+    {
+     "kind": "probe",
+     "probe": "bubbles",
+     "targets": "c6-science-ch08-t01-m1"
+    },
+    {
+     "kind": "probe",
+     "probe": "steam",
+     "targets": "c6-science-ch08-t01-m2"
+    },
+    {
+     "kind": "goal",
+     "goal": "condense",
+     "arg": 0.08,
+     "tMax": 100,
+     "text": "Cool the vapour and collect water drops."
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c6-science-ch08-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Water changes its state",
+   "accent": "sci",
+   "targets": "c6-science-ch08-t01-m2",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Water changes its state"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "White cloud is water vapour"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "solid",
+       "type": "node",
+       "text": "Ice",
+       "sub": "solid",
+       "color": "ion"
+      },
+      {
+       "id": "liquid",
+       "type": "node",
+       "text": "Water",
+       "sub": "liquid",
+       "glyph": "drop",
+       "color": "sci"
+      },
+      {
+       "id": "gas",
+       "type": "node",
+       "text": "Water vapour",
+       "sub": "gas",
+       "glyph": "wind",
+       "color": "mint"
+      },
+      {
+       "id": "melt",
+       "type": "arrow",
+       "from": "solid",
+       "to": "liquid",
+       "text": "melting"
+      },
+      {
+       "id": "freeze",
+       "type": "arrow",
+       "from": "liquid",
+       "to": "solid",
+       "text": "freezing"
+      },
+      {
+       "id": "evap",
+       "type": "arrow",
+       "from": "liquid",
+       "to": "gas",
+       "text": "evaporation"
+      },
+      {
+       "id": "condense",
+       "type": "arrow",
+       "from": "gas",
+       "to": "liquid",
+       "text": "condensation"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "iceb",
+       "type": "node",
+       "text": "Ice cube",
+       "sub": "0 °C",
+       "glyph": "drop",
+       "color": "ion"
+      },
+      {
+       "id": "waterb",
+       "type": "node",
+       "text": "Water",
+       "sub": "bowl shape",
+       "glyph": "jug",
+       "color": "sci"
+      },
+      {
+       "id": "vapb",
+       "type": "node",
+       "text": "Vapour",
+       "sub": "invisible gas",
+       "glyph": "wind",
+       "color": "mint"
+      },
+      {
+       "id": "heat",
+       "type": "arrow",
+       "from": "iceb",
+       "to": "waterb",
+       "text": "warms"
+      },
+      {
+       "id": "dry",
+       "type": "arrow",
+       "from": "waterb",
+       "to": "vapb",
+       "text": "evaporates"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "split",
+     "els": [
+      {
+       "id": "boil",
+       "type": "node",
+       "text": "Boiling water",
+       "sub": "about 100 °C",
+       "glyph": "beaker",
+       "color": "sci"
+      },
+      {
+       "id": "bubbles",
+       "type": "node",
+       "text": "Big bubbles",
+       "sub": "water vapour",
+       "glyph": "spark",
+       "color": "amber"
+      },
+      {
+       "id": "clear",
+       "type": "label",
+       "text": "clear gap: invisible vapour"
+      },
+      {
+       "id": "white",
+       "type": "node",
+       "text": "White cloud",
+       "sub": "tiny droplets",
+       "glyph": "cloud",
+       "color": "ion"
+      },
+      {
+       "id": "rise",
+       "type": "arrow",
+       "from": "boil",
+       "to": "bubbles",
+       "text": "forms"
+      },
+      {
+       "id": "cool",
+       "type": "arrow",
+       "from": "bubbles",
+       "to": "white",
+       "text": "cools"
+      }
+     ]
+    },
+    {
+     "id": "s5",
+     "layout": "row",
+     "els": [
+      {
+       "id": "solid2",
+       "type": "node",
+       "text": "Solid",
+       "sub": "ice",
+       "glyph": "drop",
+       "color": "ion"
+      },
+      {
+       "id": "liquid2",
+       "type": "node",
+       "text": "Liquid",
+       "sub": "water",
+       "glyph": "jug",
+       "color": "sci"
+      },
+      {
+       "id": "gas2",
+       "type": "node",
+       "text": "Gas",
+       "sub": "vapour",
+       "glyph": "wind",
+       "color": "mint"
+      },
+      {
+       "id": "same",
+       "type": "label",
+       "text": "Water all along"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Water can be a solid, a liquid, or a gas. These are its three states.",
+    "L2": "Ice is solid and keeps a fixed shape. Liquid water takes the shape of its container but keeps its amount.",
+    "L3": "Water vapour is a gas. It is invisible and spreads to fill the space around it.",
+    "L4": "When ice is warmed, it melts at 0 °C and becomes water. Water freezes into ice at 0 °C.",
+    "L5": "When water boils at about 100 °C, it becomes vapour. When vapour cools, it condenses back into water.",
+    "L6": "Here is a common mistake: the white cloud above boiling water is called vapour.",
+    "L7": "That is not true. Vapour is invisible; the white cloud is made of tiny droplets formed when vapour cools.",
+    "L8": "So water changes state, but it remains water. Can you identify the invisible gas?"
+   },
+   "narration": {
+    "L1": {
+     "text": "Water can be a solid, a liquid, or a gas. These are its three states.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L2": {
+     "text": "Ice is solid and keeps a fixed shape. Liquid water takes the shape of its container but keeps its amount.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L3": {
+     "text": "Water vapour is a gas. It is invisible and spreads to fill the space around it.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L4": {
+     "text": "When ice is warmed, it melts at 0 °C and becomes water. Water freezes into ice at 0 °C.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L5": {
+     "text": "When water boils at about 100 °C, it becomes vapour. When vapour cools, it condenses back into water.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Here is a common mistake: the white cloud above boiling water is called vapour.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L7": {
+     "text": "That is not true. Vapour is invisible; the white cloud is made of tiny droplets formed when vapour cools.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L8": {
+     "text": "So water changes state, but it remains water. Can you identify the invisible gas?",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "title"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "solid",
+        "liquid"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 1,
+       "target": "solid"
+      },
+      {
+       "at": 2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "liquid"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "gas"
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 1.2,
+       "target": "gas"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "melt",
+        "freeze"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 0.8,
+       "target": [
+        "melt",
+        "freeze"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "iceb",
+        "waterb",
+        "vapb"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 0.8,
+       "target": [
+        "heat",
+        "dry"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.5,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.7,
+       "target": "white"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "clear",
+        "bubbles"
+       ]
+      },
+      {
+       "at": 2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "white"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s5",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "solid2",
+        "liquid2",
+        "gas2"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which state of water is invisible and spreads to fill a space?",
+    "options": [
+     "solid2",
+     "liquid2",
+     "gas2"
+    ],
+    "answer": "gas2",
+    "src": "c6-science-ch08-t01-i01"
+   }
+  },
+  "repairs": [
+   "glyph",
+   "cue:target",
+   "cue:target"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 54
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch08-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "title",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "Water",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "solid",
+       "op": "rect",
+       "startMs": 800,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        170
+       ],
+       "w": 150,
+       "h": 130
+      },
+      {
+       "id": "solidText",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        165,
+        335
+       ],
+       "text": "solid",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "liquid",
+       "op": "ellipse",
+       "startMs": 2100,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        260
+       ],
+       "rx": 85,
+       "ry": 55
+      },
+      {
+       "id": "liquidText",
+       "op": "text",
+       "startMs": 2800,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        335
+       ],
+       "text": "liquid",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "gas",
+       "op": "circle",
+       "startMs": 3400,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        640,
+        235
+       ],
+       "r": 65
+      },
+      {
+       "id": "gasText",
+       "op": "text",
+       "startMs": 4100,
+       "endMs": 4600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        640,
+        335
+       ],
+       "text": "gas",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "three",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 5700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        430
+       ],
+       "text": "three states",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch08-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 9111,
+     "ops": [
+      {
+       "id": "ice",
+       "op": "polygon",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         90,
+         150
+        ],
+        [
+         190,
+         150
+        ],
+        [
+         215,
+         185
+        ],
+        [
+         190,
+         220
+        ],
+        [
+         90,
+         220
+        ],
+        [
+         65,
+         185
+        ]
+       ]
+      },
+      {
+       "id": "iceLabel",
+       "op": "label",
+       "startMs": 900,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        105,
+        125
+       ],
+       "text": "ice",
+       "to": [
+        140,
+        165
+       ]
+      },
+      {
+       "id": "fixed",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        70,
+        270
+       ],
+       "text": "fixed shape",
+       "size": "s"
+      },
+      {
+       "id": "container",
+       "op": "rect",
+       "startMs": 2500,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        315,
+        145
+       ],
+       "w": 170,
+       "h": 125
+      },
+      {
+       "id": "water",
+       "op": "ellipse",
+       "startMs": 3300,
+       "endMs": 3900,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        245
+       ],
+       "rx": 75,
+       "ry": 22
+      },
+      {
+       "id": "waterLabel",
+       "op": "label",
+       "startMs": 3900,
+       "endMs": 4600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        350,
+        120
+       ],
+       "text": "liquid water",
+       "to": [
+        400,
+        220
+       ]
+      },
+      {
+       "id": "shape",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        315,
+        315
+       ],
+       "text": "container shape",
+       "size": "s"
+      },
+      {
+       "id": "amount",
+       "op": "text",
+       "startMs": 5900,
+       "endMs": 6700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        560,
+        210
+       ],
+       "text": "same amount",
+       "size": "s"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch08-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "vapour",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "water vapour",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "invisible",
+       "op": "text",
+       "startMs": 1100,
+       "endMs": 1800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        145
+       ],
+       "text": "invisible",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "space",
+       "op": "rect",
+       "startMs": 2200,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        190,
+        220
+       ],
+       "w": 420,
+       "h": 190
+      },
+      {
+       "id": "p1",
+       "op": "circle",
+       "startMs": 3100,
+       "endMs": 3400,
+       "ink": "mark",
+       "weight": 1,
+       "c": [
+        250,
+        280
+       ],
+       "r": 8
+      },
+      {
+       "id": "p2",
+       "op": "circle",
+       "startMs": 3400,
+       "endMs": 3700,
+       "ink": "mark",
+       "weight": 1,
+       "c": [
+        390,
+        345
+       ],
+       "r": 8
+      },
+      {
+       "id": "p3",
+       "op": "circle",
+       "startMs": 3700,
+       "endMs": 4000,
+       "ink": "mark",
+       "weight": 1,
+       "c": [
+        535,
+        270
+       ],
+       "r": 8
+      },
+      {
+       "id": "spread1",
+       "op": "arrow",
+       "startMs": 4200,
+       "endMs": 4800,
+       "ink": "accent",
+       "weight": 1,
+       "from": [
+        260,
+        285
+       ],
+       "to": [
+        330,
+        310
+       ]
+      },
+      {
+       "id": "spread2",
+       "op": "arrow",
+       "startMs": 4800,
+       "endMs": 5400,
+       "ink": "accent",
+       "weight": 1,
+       "from": [
+        400,
+        340
+       ],
+       "to": [
+        500,
+        300
+       ]
+      },
+      {
+       "id": "spaceLabel",
+       "op": "label",
+       "startMs": 5700,
+       "endMs": 6300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        300,
+        445
+       ],
+       "text": "space",
+       "to": [
+        400,
+        400
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch08-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "ice4",
+       "op": "polygon",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         90,
+         180
+        ],
+        [
+         190,
+         180
+        ],
+        [
+         210,
+         215
+        ],
+        [
+         190,
+         250
+        ],
+        [
+         90,
+         250
+        ],
+        [
+         70,
+         215
+        ]
+       ]
+      },
+      {
+       "id": "warm",
+       "op": "arrow",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        145,
+        330
+       ],
+       "to": [
+        145,
+        270
+       ]
+      },
+      {
+       "id": "warmLabel",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2100,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        95,
+        365
+       ],
+       "text": "warmed",
+       "size": "s"
+      },
+      {
+       "id": "melt",
+       "op": "arrow",
+       "startMs": 2300,
+       "endMs": 3000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        220,
+        215
+       ],
+       "to": [
+        355,
+        215
+       ]
+      },
+      {
+       "id": "zero1",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        245,
+        165
+       ],
+       "text": "0 °C",
+       "size": "m"
+      },
+      {
+       "id": "water4",
+       "op": "ellipse",
+       "startMs": 3600,
+       "endMs": 4300,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        430,
+        235
+       ],
+       "rx": 80,
+       "ry": 40
+      },
+      {
+       "id": "freeze",
+       "op": "arrow",
+       "startMs": 4700,
+       "endMs": 5400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        590,
+        215
+       ],
+       "to": [
+        700,
+        215
+       ]
+      },
+      {
+       "id": "zero2",
+       "op": "text",
+       "startMs": 5400,
+       "endMs": 6000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        605,
+        165
+       ],
+       "text": "0 °C",
+       "size": "m"
+      },
+      {
+       "id": "iceEnd",
+       "op": "polygon",
+       "startMs": 6000,
+       "endMs": 6800,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         690,
+         180
+        ],
+        [
+         750,
+         180
+        ],
+        [
+         765,
+         215
+        ],
+        [
+         750,
+         250
+        ],
+        [
+         690,
+         250
+        ],
+        [
+         675,
+         215
+        ]
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch08-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "water5",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        170,
+        300
+       ],
+       "rx": 100,
+       "ry": 45
+      },
+      {
+       "id": "boil",
+       "op": "arrow",
+       "startMs": 900,
+       "endMs": 1600,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        170,
+        240
+       ],
+       "to": [
+        170,
+        150
+       ]
+      },
+      {
+       "id": "boilText",
+       "op": "text",
+       "startMs": 1600,
+       "endMs": 2300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        105,
+        110
+       ],
+       "text": "100 °C",
+       "size": "m"
+      },
+      {
+       "id": "vapour5",
+       "op": "circle",
+       "startMs": 2500,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        430,
+        160
+       ],
+       "r": 65
+      },
+      {
+       "id": "vapourText",
+       "op": "text",
+       "startMs": 3200,
+       "endMs": 3800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        430,
+        265
+       ],
+       "text": "vapour",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "cool",
+       "op": "arrow",
+       "startMs": 4100,
+       "endMs": 4800,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        540,
+        160
+       ],
+       "to": [
+        650,
+        160
+       ]
+      },
+      {
+       "id": "coolText",
+       "op": "text",
+       "startMs": 4800,
+       "endMs": 5300,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        575,
+        115
+       ],
+       "text": "cools",
+       "size": "m"
+      },
+      {
+       "id": "condense",
+       "op": "arrow",
+       "startMs": 5500,
+       "endMs": 6200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        650,
+        200
+       ],
+       "to": [
+        650,
+        300
+       ]
+      },
+      {
+       "id": "waterBack",
+       "op": "ellipse",
+       "startMs": 6300,
+       "endMs": 7000,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        650,
+        340
+       ],
+       "rx": 80,
+       "ry": 35
+      },
+      {
+       "id": "waterBackText",
+       "op": "text",
+       "startMs": 7000,
+       "endMs": 7500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        650,
+        410
+       ],
+       "text": "water",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch08-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "mistake",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        65
+       ],
+       "text": "common mistake",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "pot",
+       "op": "rect",
+       "startMs": 1100,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        275,
+        300
+       ],
+       "w": 250,
+       "h": 90
+      },
+      {
+       "id": "boiling",
+       "op": "ellipse",
+       "startMs": 1800,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        400,
+        300
+       ],
+       "rx": 105,
+       "ry": 25
+      },
+      {
+       "id": "steam",
+       "op": "ellipse",
+       "startMs": 2500,
+       "endMs": 3300,
+       "ink": "soft",
+       "weight": 2,
+       "c": [
+        400,
+        190
+       ],
+       "rx": 125,
+       "ry": 55
+      },
+      {
+       "id": "above",
+       "op": "text",
+       "startMs": 3400,
+       "endMs": 4300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        105
+       ],
+       "text": "above boiling water",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "wrong",
+       "op": "label",
+       "startMs": 4500,
+       "endMs": 5200,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        550,
+        185
+       ],
+       "text": "vapour",
+       "to": [
+        480,
+        190
+       ]
+      },
+      {
+       "id": "question",
+       "op": "text",
+       "startMs": 5400,
+       "endMs": 6000,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        455
+       ],
+       "text": "vapour?",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch08-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "notTrue",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        60
+       ],
+       "text": "not true",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "vapourInvisible",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        170,
+        145
+       ],
+       "text": "vapour invisible",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "cloud",
+       "op": "ellipse",
+       "startMs": 2100,
+       "endMs": 2900,
+       "ink": "soft",
+       "weight": 2,
+       "c": [
+        585,
+        205
+       ],
+       "rx": 120,
+       "ry": 65
+      },
+      {
+       "id": "cloudText",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        585,
+        305
+       ],
+       "text": "white cloud",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "droplet1",
+       "op": "circle",
+       "startMs": 3900,
+       "endMs": 4300,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        535,
+        205
+       ],
+       "r": 9
+      },
+      {
+       "id": "droplet2",
+       "op": "circle",
+       "startMs": 4300,
+       "endMs": 4700,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        585,
+        230
+       ],
+       "r": 9
+      },
+      {
+       "id": "droplet3",
+       "op": "circle",
+       "startMs": 4700,
+       "endMs": 5100,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        635,
+        195
+       ],
+       "r": 9
+      },
+      {
+       "id": "coolArrow",
+       "op": "arrow",
+       "startMs": 5300,
+       "endMs": 5900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        145
+       ],
+       "to": [
+        520,
+        185
+       ]
+      },
+      {
+       "id": "coolLabel",
+       "op": "text",
+       "startMs": 5900,
+       "endMs": 6400,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        390,
+        125
+       ],
+       "text": "cools",
+       "size": "m"
+      },
+      {
+       "id": "formed",
+       "op": "text",
+       "startMs": 6700,
+       "endMs": 7500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        420
+       ],
+       "text": "tiny droplets",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch08-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "water8",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        65
+       ],
+       "text": "water",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "solid8",
+       "op": "rect",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        180
+       ],
+       "w": 130,
+       "h": 110
+      },
+      {
+       "id": "liquid8",
+       "op": "ellipse",
+       "startMs": 1700,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        235
+       ],
+       "rx": 75,
+       "ry": 40
+      },
+      {
+       "id": "gas8",
+       "op": "circle",
+       "startMs": 2500,
+       "endMs": 3100,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        650,
+        225
+       ],
+       "r": 60
+      },
+      {
+       "id": "same",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 4100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        370
+       ],
+       "text": "remains water",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "change",
+       "op": "arrow",
+       "startMs": 4200,
+       "endMs": 4700,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        240,
+        235
+       ],
+       "to": [
+        325,
+        235
+       ]
+      },
+      {
+       "id": "change2",
+       "op": "arrow",
+       "startMs": 4700,
+       "endMs": 5200,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        480,
+        235
+       ],
+       "to": [
+        575,
+        235
+       ]
+      },
+      {
+       "id": "identify",
+       "op": "text",
+       "startMs": 5350,
+       "endMs": 6300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        455
+       ],
+       "text": "identify invisible gas",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [],
+ "check": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "Step 'heat' has initial temperature -10, but step has no mechanism to reach 0 °C for melting; unrealistic for a child to imagine warming from -10 °C directly to melt without addressing the time to reach 0 °C, but this is a low-severity gameplay abstraction.",
+    "severity": "low"
+   },
+   {
+    "where": "explainer",
+    "what": "Task prompt 'Which state of water is invisible and spreads to fill a space?' answer 'gas2' is correct and matches kit item i01; no issue."
+   }
+  ],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

@@ -1,0 +1,1892 @@
+{
+ "topicId": "c6-english-ch09-t01",
+ "title": "Spices that Heal Us",
+ "chapter": "Spices that Heal Us",
+ "subject": "english",
+ "class": 6,
+ "topicType": "T2",
+ "plan": {
+  "game": "story-rail@1",
+  "hint": "sequence, cause and who modes from the lesson's events and speakers"
+ },
+ "game": {
+  "archetype": "story-rail@1",
+  "spec": {
+   "archetype": "story-rail@1",
+   "skills": [
+    "c6-english-ch09-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "picked": "coupled",
+    "streak": "streak",
+    "next": "What happens next?",
+    "effect": "What does this lead to?",
+    "who": "Who said this?",
+    "runDone": "Line complete",
+    "order": "your train",
+    "right": "Coupled",
+    "wrong": "Not this one",
+    "coach": "Tap a wagon before the train reaches the fork"
+   },
+   "title": "Spices that Heal Us",
+   "rounds": [
+    {
+     "mode": "sequence",
+     "title": "Daadi's letter",
+     "sub": "couple the events in order",
+     "cards": [
+      {
+       "id": "e1",
+       "text": "Daadi writes to the children",
+       "glyph": "letter",
+       "src": "c6-english-ch09-t01-i01"
+      },
+      {
+       "id": "e3",
+       "text": "She shares spice benefits",
+       "glyph": "leaf",
+       "src": "c6-english-ch09-t01-i02"
+      },
+      {
+       "id": "e5",
+       "text": "They ask an elder first",
+       "glyph": "person",
+       "src": "c6-english-ch09-t01-i07"
+      }
+     ],
+     "speed": 0.9,
+     "targets": "c6-english-ch09-t01-m-tradition-is-cure"
+    },
+    {
+     "mode": "cause",
+     "title": "Spice effects",
+     "sub": "match each cause to its effect",
+     "pairs": [
+      {
+       "cause": {
+        "id": "c1",
+        "text": "Cumin seeds soak overnight",
+        "glyph": "drop",
+        "src": "c6-english-ch09-t01-i03"
+       },
+       "effect": {
+        "id": "f1",
+        "text": "They can help digestion",
+        "glyph": "stomach",
+        "src": "c6-english-ch09-t01-i03"
+       }
+      },
+      {
+       "cause": {
+        "id": "c2",
+        "text": "There is toothache",
+        "src": "c6-english-ch09-t01-i08"
+       },
+       "effect": {
+        "id": "f2",
+        "text": "Clove may give relief",
+        "glyph": "leaf",
+        "src": "c6-english-ch09-t01-i08"
+       }
+      },
+      {
+       "cause": {
+        "id": "c3",
+        "text": "A remedy is needed",
+        "glyph": "question",
+        "src": "c6-english-ch09-t01-i07"
+       },
+       "effect": {
+        "id": "f3",
+        "text": "Consult an elder first",
+        "glyph": "person",
+        "src": "c6-english-ch09-t01-i07"
+       }
+      }
+     ],
+     "speed": 0.85
+    },
+    {
+     "mode": "who",
+     "title": "Who said it?",
+     "sub": "send each line to its speaker",
+     "speakers": [
+      {
+       "id": "daadi",
+       "name": "Daadi",
+       "glyph": "person"
+      },
+      {
+       "id": "vikram",
+       "name": "Vikram",
+       "glyph": "person"
+      },
+      {
+       "id": "vaibhavi",
+       "name": "Vaibhavi",
+       "glyph": "person"
+      }
+     ],
+     "lines": [
+      {
+       "id": "w2",
+       "text": "Let us identify the spices.",
+       "speaker": "vikram",
+       "src": "c6-english-ch09-t01-i04"
+      },
+      {
+       "id": "w3",
+       "text": "We can share what we learn.",
+       "speaker": "vaibhavi",
+       "src": "c6-english-ch09-t01-i09"
+      }
+     ],
+     "speed": 0.8,
+     "targets": "c6-english-ch09-t01-m-modal-to"
+    }
+   ]
+  },
+  "repairs": [
+   "string:card.text",
+   "string:card.text",
+   "glyph",
+   "string:card.text"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c6-english-ch09-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Spices that Heal Us",
+   "accent": "mint",
+   "targets": "c6-english-ch09-t01-m-tradition-is-cure",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Spices that Heal Us"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Home spices cure every illness"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "daadi",
+       "type": "node",
+       "text": "Daadi",
+       "sub": "writes a letter",
+       "glyph": "letter",
+       "color": "mint"
+      },
+      {
+       "id": "spices",
+       "type": "node",
+       "text": "Kitchen spices",
+       "sub": "natural cures",
+       "glyph": "pot",
+       "color": "amber"
+      },
+      {
+       "id": "help",
+       "type": "node",
+       "text": "Health benefits",
+       "sub": "energy, digestion",
+       "glyph": "spark",
+       "color": "sun"
+      },
+      {
+       "id": "elder",
+       "type": "node",
+       "text": "Ask an elder",
+       "sub": "before using",
+       "glyph": "person",
+       "color": "ion"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "daadi",
+       "to": "spices",
+       "text": "shares"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "spices",
+       "to": "help",
+       "text": "can help"
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "help",
+       "to": "elder",
+       "text": "stay safe"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "must",
+       "type": "node",
+       "text": "must",
+       "sub": "compulsion",
+       "glyph": "shield",
+       "color": "ion"
+      },
+      {
+       "id": "should",
+       "type": "node",
+       "text": "should",
+       "sub": "advice",
+       "glyph": "compass",
+       "color": "mint"
+      },
+      {
+       "id": "can",
+       "type": "node",
+       "text": "can",
+       "sub": "ability",
+       "glyph": "spark",
+       "color": "sun"
+      },
+      {
+       "id": "rule",
+       "type": "label",
+       "text": "modal + plain verb",
+       "x": 180,
+       "y": 500,
+       "color": "amber"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Daadi wrote to Vikram and Vaibhavi after her natural cures helped them get better.",
+    "L2": "She shared more benefits of spices found in the kitchen.",
+    "L3": "Turmeric can help with energy and digestion. Cumin seeds soaked overnight can improve digestion and help with sleeplessness.",
+    "L4": "Methi is fenugreek. Its soaked seeds can help keep sugar level and weight in control.",
+    "L5": "Cinnamon and clove can give relief from toothache until we see a dentist.",
+    "L6": "Spices may help, but they do not cure every illness. You must consult an elder before using them.",
+    "L7": "These cures pass through generations because Daadi learnt them from her grandmother and teaches her grandchildren.",
+    "L8": "A modal takes a plain verb: must consult, should rest, or can help.",
+    "L9": "Now choose the word that completes the safety advice."
+   },
+   "narration": {
+    "L1": {
+     "text": "Daadi wrote to Vikram and Vaibhavi after her natural cures helped them get better.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "She shared more benefits of spices found in the kitchen.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "Turmeric can help with energy and digestion. Cumin seeds soaked overnight can improve digestion and help with sleeplessness.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "Methi is fenugreek. Its soaked seeds can help keep sugar level and weight in control.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "Cinnamon and clove can give relief from toothache until we see a dentist.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Spices may help, but they do not cure every illness. You must consult an elder before using them.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "These cures pass through generations because Daadi learnt them from her grandmother and teaches her grandchildren.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "A modal takes a plain verb: must consult, should rest, or can help.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L9": {
+     "text": "Now choose the word that completes the safety advice.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      },
+      {
+       "at": 0.7,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.7,
+       "target": "daadi"
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.7,
+       "target": "spices"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "help"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "a1",
+        "a2"
+       ]
+      },
+      {
+       "at": 1.2,
+       "do": "flow",
+       "dur": 0.8,
+       "target": [
+        "a1",
+        "a2"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1.2,
+       "target": "help"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "elder"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.7,
+       "target": "a3"
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "a3",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1.2,
+       "target": "elder"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "camera",
+       "dur": 1.5,
+       "zoom": 1.05
+      },
+      {
+       "at": 0.6,
+       "do": "highlight",
+       "dur": 1,
+       "target": "daadi"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "must",
+        "should",
+        "can",
+        "rule"
+       ]
+      },
+      {
+       "at": 0.7,
+       "do": "highlight",
+       "dur": 1,
+       "target": "must"
+      }
+     ]
+    },
+    {
+     "line": "L9",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "interactive",
+       "dur": 0.5
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Choose the word: You ___ consult an elder before using the spices.",
+    "options": [
+     "must",
+     "should",
+     "can"
+    ],
+    "answer": "must",
+    "src": "c6-english-ch09-t01-i07"
+   }
+  },
+  "repairs": [
+   "cue:target",
+   "cue:target",
+   "cue:target"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "passes": 2,
+  "seconds": 51
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "She shares spice benefits",
+   "prompt": "sequence: after/for \"Daadi writes to the children\"",
+   "src": "c6-english-ch09-t01-i02"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "They ask an elder first",
+   "prompt": "sequence: after/for \"She shares spice benefits\"",
+   "src": "c6-english-ch09-t01-i07"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "They can help digestion",
+   "prompt": "cause: after/for \"Cumin seeds soak overnight\"",
+   "src": "c6-english-ch09-t01-i03"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "Clove may give relief",
+   "prompt": "cause: after/for \"There is toothache\"",
+   "src": "c6-english-ch09-t01-i08"
+  },
+  {
+   "itemId": "r2:2",
+   "key": "Consult an elder first",
+   "prompt": "cause: after/for \"A remedy is needed\"",
+   "src": "c6-english-ch09-t01-i07"
+  },
+  {
+   "itemId": "r3:0",
+   "key": "Vikram",
+   "prompt": "who: after/for \"Let us identify the spices.\"",
+   "src": "c6-english-ch09-t01-i04"
+  },
+  {
+   "itemId": "r3:1",
+   "key": "Vaibhavi",
+   "prompt": "who: after/for \"We can share what we learn.\"",
+   "src": "c6-english-ch09-t01-i09"
+  }
+ ],
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-english-ch09-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "daadi",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        150,
+        150
+       ],
+       "r": 55
+      },
+      {
+       "id": "dlabel",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        150,
+        230
+       ],
+       "text": "Daadi",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "letter",
+       "op": "rect",
+       "startMs": 1100,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        300,
+        100
+       ],
+       "w": 180,
+       "h": 125,
+       "round": 8
+      },
+      {
+       "id": "fold1",
+       "op": "line",
+       "startMs": 1900,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 1,
+       "from": [
+        300,
+        140
+       ],
+       "to": [
+        480,
+        140
+       ]
+      },
+      {
+       "id": "vline",
+       "op": "arrow",
+       "startMs": 2200,
+       "endMs": 2700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        480,
+        155
+       ],
+       "to": [
+        550,
+        155
+       ]
+      },
+      {
+       "id": "vlabel",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        570,
+        145
+       ],
+       "text": "Vikram",
+       "size": "m"
+      },
+      {
+       "id": "vline2",
+       "op": "arrow",
+       "startMs": 2700,
+       "endMs": 3200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        480,
+        185
+       ],
+       "to": [
+        550,
+        190
+       ]
+      },
+      {
+       "id": "valabel",
+       "op": "text",
+       "startMs": 2800,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        570,
+        200
+       ],
+       "text": "Vaibhavi",
+       "size": "m"
+      },
+      {
+       "id": "cure",
+       "op": "text",
+       "startMs": 3700,
+       "endMs": 4400,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        160,
+        350
+       ],
+       "text": "natural cures",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "better",
+       "op": "text",
+       "startMs": 4400,
+       "endMs": 5100,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        470,
+        350
+       ],
+       "text": "get better",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "help",
+       "op": "arrow",
+       "startMs": 5100,
+       "endMs": 5700,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        260,
+        350
+       ],
+       "to": [
+        370,
+        350
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-english-ch09-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "spices",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        95
+       ],
+       "text": "spices",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "kitchen",
+       "op": "rect",
+       "startMs": 700,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        250,
+        180
+       ],
+       "w": 300,
+       "h": 170,
+       "round": 10
+      },
+      {
+       "id": "klabel",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        385
+       ],
+       "text": "kitchen",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "benefits",
+       "op": "arrow",
+       "startMs": 2200,
+       "endMs": 2800,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        400,
+        130
+       ],
+       "to": [
+        400,
+        180
+       ]
+      },
+      {
+       "id": "more",
+       "op": "text",
+       "startMs": 3200,
+       "endMs": 3900,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        450
+       ],
+       "text": "more benefits",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-english-ch09-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "turmeric",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        140,
+        100
+       ],
+       "text": "Turmeric",
+       "size": "l"
+      },
+      {
+       "id": "energy",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        100,
+        210
+       ],
+       "text": "energy",
+       "size": "m"
+      },
+      {
+       "id": "dig1",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 2000,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        100,
+        270
+       ],
+       "text": "digestion",
+       "size": "m"
+      },
+      {
+       "id": "tarrow",
+       "op": "arrow",
+       "startMs": 2000,
+       "endMs": 2500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        180,
+        130
+       ],
+       "to": [
+        150,
+        200
+       ]
+      },
+      {
+       "id": "cumin",
+       "op": "text",
+       "startMs": 2600,
+       "endMs": 3400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        470,
+        100
+       ],
+       "text": "Cumin seeds",
+       "size": "l"
+      },
+      {
+       "id": "overnight",
+       "op": "text",
+       "startMs": 3400,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        470,
+        180
+       ],
+       "text": "overnight",
+       "size": "m"
+      },
+      {
+       "id": "dig2",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 4800,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        470,
+        270
+       ],
+       "text": "digestion",
+       "size": "m"
+      },
+      {
+       "id": "sleeplessness",
+       "op": "text",
+       "startMs": 4800,
+       "endMs": 5500,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        470,
+        330
+       ],
+       "text": "sleeplessness",
+       "size": "m"
+      },
+      {
+       "id": "canhelp",
+       "op": "text",
+       "startMs": 6200,
+       "endMs": 6900,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        330,
+        430
+       ],
+       "text": "can help",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-english-ch09-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "methi",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        150,
+        100
+       ],
+       "text": "Methi",
+       "size": "l"
+      },
+      {
+       "id": "fenugreek",
+       "op": "text",
+       "startMs": 600,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        150,
+        160
+       ],
+       "text": "fenugreek",
+       "size": "m"
+      },
+      {
+       "id": "seeds",
+       "op": "ellipse",
+       "startMs": 1300,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        180,
+        270
+       ],
+       "rx": 75,
+       "ry": 35
+      },
+      {
+       "id": "soaked",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        340
+       ],
+       "text": "soaked seeds",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "sugar",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3300,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        500,
+        170
+       ],
+       "text": "sugar level",
+       "size": "m"
+      },
+      {
+       "id": "weight",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 3800,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        500,
+        240
+       ],
+       "text": "weight",
+       "size": "m"
+      },
+      {
+       "id": "control",
+       "op": "rect",
+       "startMs": 3900,
+       "endMs": 4700,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        450,
+        290
+       ],
+       "w": 160,
+       "h": 75,
+       "round": 8
+      },
+      {
+       "id": "controltext",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5400,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        530,
+        335
+       ],
+       "text": "in control",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "helps",
+       "op": "arrow",
+       "startMs": 5400,
+       "endMs": 6200,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        260,
+        270
+       ],
+       "to": [
+        440,
+        270
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-english-ch09-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "cinnamon",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        130,
+        100
+       ],
+       "text": "Cinnamon",
+       "size": "l"
+      },
+      {
+       "id": "clove",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        500,
+        100
+       ],
+       "text": "clove",
+       "size": "l"
+      },
+      {
+       "id": "tooth",
+       "op": "circle",
+       "startMs": 1400,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        250
+       ],
+       "r": 70
+      },
+      {
+       "id": "toothache",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 2700,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        350
+       ],
+       "text": "toothache",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "relief1",
+       "op": "arrow",
+       "startMs": 2800,
+       "endMs": 3500,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        190,
+        130
+       ],
+       "to": [
+        340,
+        230
+       ]
+      },
+      {
+       "id": "relief2",
+       "op": "arrow",
+       "startMs": 3500,
+       "endMs": 4200,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        520,
+        130
+       ],
+       "to": [
+        460,
+        230
+       ]
+      },
+      {
+       "id": "dentist",
+       "op": "text",
+       "startMs": 4600,
+       "endMs": 5200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        440
+       ],
+       "text": "dentist",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-english-ch09-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "may",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        150,
+        100
+       ],
+       "text": "Spices may help",
+       "size": "m"
+      },
+      {
+       "id": "notcure",
+       "op": "text",
+       "startMs": 1000,
+       "endMs": 1600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        150,
+        170
+       ],
+       "text": "do not cure",
+       "size": "m"
+      },
+      {
+       "id": "every",
+       "op": "text",
+       "startMs": 1600,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        150,
+        230
+       ],
+       "text": "every illness",
+       "size": "m"
+      },
+      {
+       "id": "warning",
+       "op": "polygon",
+       "startMs": 2400,
+       "endMs": 3200,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         470,
+         100
+        ],
+        [
+         540,
+         220
+        ],
+        [
+         400,
+         220
+        ]
+       ]
+      },
+      {
+       "id": "elder",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 3900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        470,
+        280
+       ],
+       "text": "elder",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "consult",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        470,
+        350
+       ],
+       "text": "consult",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "before",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        470,
+        425
+       ],
+       "text": "before using",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "must",
+       "op": "text",
+       "startMs": 5700,
+       "endMs": 6200,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        150,
+        350
+       ],
+       "text": "must",
+       "size": "l"
+      },
+      {
+       "id": "advice",
+       "op": "arrow",
+       "startMs": 6200,
+       "endMs": 7100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        210,
+        370
+       ],
+       "to": [
+        390,
+        370
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-english-ch09-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "grandmother",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        120,
+        180
+       ],
+       "r": 55
+      },
+      {
+       "id": "gmlabel",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        120,
+        260
+       ],
+       "text": "grandmother",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "daadi2",
+       "op": "circle",
+       "startMs": 1400,
+       "endMs": 2000,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        180
+       ],
+       "r": 50
+      },
+      {
+       "id": "d2label",
+       "op": "text",
+       "startMs": 2000,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        260
+       ],
+       "text": "Daadi",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "grandchildren",
+       "op": "circle",
+       "startMs": 2400,
+       "endMs": 3100,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        680,
+        180
+       ],
+       "r": 60
+      },
+      {
+       "id": "gclabel",
+       "op": "text",
+       "startMs": 3100,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        680,
+        270
+       ],
+       "text": "grandchildren",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "pass1",
+       "op": "arrow",
+       "startMs": 4000,
+       "endMs": 4700,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        180,
+        180
+       ],
+       "to": [
+        340,
+        180
+       ]
+      },
+      {
+       "id": "pass2",
+       "op": "arrow",
+       "startMs": 4700,
+       "endMs": 5400,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        460,
+        180
+       ],
+       "to": [
+        610,
+        180
+       ]
+      },
+      {
+       "id": "generations",
+       "op": "text",
+       "startMs": 5700,
+       "endMs": 6500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        400
+       ],
+       "text": "generations",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-english-ch09-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "modal",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        80
+       ],
+       "text": "modal",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "plain",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        145
+       ],
+       "text": "plain verb",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "mustconsult",
+       "op": "numwork",
+       "startMs": 1600,
+       "endMs": 2400,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        100,
+        220
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "must",
+         "consul"
+        ]
+       ]
+      },
+      {
+       "id": "shouldrest",
+       "op": "numwork",
+       "startMs": 2400,
+       "endMs": 3200,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        300,
+        220
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "should",
+         "rest"
+        ]
+       ]
+      },
+      {
+       "id": "canhelp2",
+       "op": "numwork",
+       "startMs": 3200,
+       "endMs": 4000,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        500,
+        220
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "can",
+         "help"
+        ]
+       ]
+      },
+      {
+       "id": "take",
+       "op": "arrow",
+       "startMs": 4200,
+       "endMs": 4900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        175
+       ],
+       "to": [
+        400,
+        220
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L9",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-english-ch09-t01-wb-L9",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4430,
+     "ops": [
+      {
+       "id": "choose",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        90
+       ],
+       "text": "choose",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "word",
+       "op": "text",
+       "startMs": 600,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        160
+       ],
+       "text": "word",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "safety",
+       "op": "rect",
+       "startMs": 1300,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        230,
+        230
+       ],
+       "w": 340,
+       "h": 110,
+       "round": 10
+      },
+      {
+       "id": "advice2",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 2800,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        290
+       ],
+       "text": "safety advice",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "question",
+       "op": "text",
+       "startMs": 3100,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        420
+       ],
+       "text": "?",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "check": {
+  "issues": [
+   {
+    "where": "explainer",
+    "what": "spices may help",
+    "severity": "low"
+   }
+  ],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

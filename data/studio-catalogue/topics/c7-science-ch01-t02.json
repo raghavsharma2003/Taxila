@@ -1,0 +1,1968 @@
+{
+ "topicId": "c7-science-ch01-t02",
+ "title": "Science as a shared human effort",
+ "chapter": "The Ever-Evolving World of Science",
+ "subject": "science",
+ "class": 7,
+ "topicType": "T3",
+ "plan": {
+  "game": "era-drop@1",
+  "hint": "place and order modes: discoveries and inventions by people across the world (dates from the kit)"
+ },
+ "game": {
+  "archetype": "era-drop@1",
+  "spec": {
+   "archetype": "era-drop@1",
+   "skills": [
+    "c7-science-ch01-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "landed": "landed",
+    "precision": "precision",
+    "coach": "Steer the dock to the event",
+    "first": "Which came first?",
+    "runDone": "Timeline complete",
+    "offBy": "off by",
+    "years": "years",
+    "exact": "SPOT ON",
+    "century": "century",
+    "bce": "BCE",
+    "ce": "CE",
+    "earlier": "EARLIER"
+   },
+   "title": "Science grows together",
+   "axis": {
+    "min": 1800,
+    "max": 1950
+   },
+   "rounds": [
+    {
+     "mode": "place",
+     "title": "Drop the discoveries",
+     "sub": "Place each event on the timeline",
+     "ticks": 60,
+     "speed": 0.8,
+     "tol": 8,
+     "items": [
+      {
+       "text": "Laveran sees parasites",
+       "value": 1880,
+       "src": "c7-science-ch01-t02-i12"
+      },
+      {
+       "text": "Ross studies mosquitoes",
+       "value": 1897,
+       "src": "c7-science-ch01-t02-i12"
+      },
+      {
+       "text": "Raman wins Nobel Prize",
+       "value": 1930,
+       "src": "c7-science-ch01-t02-i01"
+      }
+     ]
+    },
+    {
+     "mode": "century",
+     "title": "Find the century",
+     "sub": "Match each event to its century",
+     "ticks": 40,
+     "speed": 0.95,
+     "tol": 2,
+     "items": [
+      {
+       "text": "Laveran sees parasites",
+       "value": 1880,
+       "src": "c7-science-ch01-t02-i12"
+      },
+      {
+       "text": "Ross studies mosquitoes",
+       "value": 1897,
+       "src": "c7-science-ch01-t02-i12"
+      },
+      {
+       "text": "Raman wins Nobel Prize",
+       "value": 1930,
+       "src": "c7-science-ch01-t02-i01"
+      }
+     ]
+    },
+    {
+     "mode": "order",
+     "title": "Timeline",
+     "sub": "",
+     "ticks": 0,
+     "speed": 1,
+     "tol": 2,
+     "items": [
+      {
+       "text": "Laveran sees parasites",
+       "value": 1880,
+       "src": "c7-science-ch01-t02-i12"
+      },
+      {
+       "text": "Ross studies mosquitoes",
+       "value": 1897,
+       "src": "c7-science-ch01-t02-i12"
+      },
+      {
+       "text": "Raman wins Nobel Prize",
+       "value": 1930,
+       "src": "c7-science-ch01-t02-i01"
+      }
+     ],
+     "targets": "c7-science-ch01-t02-m2"
+    }
+   ]
+  },
+  "repairs": [
+   "string:round.title"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-science-ch01-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Science grows together",
+   "accent": "sci",
+   "targets": "c7-science-ch01-t02-m2",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Science grows together"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "One genius works alone"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "arya",
+       "type": "node",
+       "text": "Aryabhata",
+       "glyph": "globe",
+       "color": "amber"
+      },
+      {
+       "id": "raman",
+       "type": "node",
+       "text": "C.V. Raman",
+       "glyph": "lightning",
+       "color": "sci"
+      },
+      {
+       "id": "isro",
+       "type": "node",
+       "text": "ISRO teams",
+       "color": "ion"
+      },
+      {
+       "id": "e1",
+       "type": "arrow",
+       "from": "arya",
+       "to": "raman",
+       "text": "builds on"
+      },
+      {
+       "id": "e2",
+       "type": "arrow",
+       "from": "raman",
+       "to": "isro",
+       "text": "builds on"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "swamp",
+       "type": "node",
+       "text": "Swamp fevers",
+       "glyph": "cloud",
+       "color": "mint"
+      },
+      {
+       "id": "laveran",
+       "type": "node",
+       "text": "Laveran",
+       "glyph": "eye",
+       "color": "sci"
+      },
+      {
+       "id": "ross",
+       "type": "node",
+       "text": "Ronald Ross",
+       "glyph": "insect",
+       "color": "amber"
+      },
+      {
+       "id": "anopheles",
+       "type": "node",
+       "text": "Anopheles",
+       "glyph": "insect",
+       "color": "ion"
+      },
+      {
+       "id": "health",
+       "type": "node",
+       "text": "Health teams",
+       "glyph": "group",
+       "color": "mint"
+      },
+      {
+       "id": "m1",
+       "type": "arrow",
+       "from": "swamp",
+       "to": "laveran",
+       "text": "observed"
+      },
+      {
+       "id": "m2",
+       "type": "arrow",
+       "from": "laveran",
+       "to": "ross",
+       "text": "built on"
+      },
+      {
+       "id": "m3",
+       "type": "arrow",
+       "from": "ross",
+       "to": "anopheles",
+       "text": "identified"
+      },
+      {
+       "id": "m4",
+       "type": "arrow",
+       "from": "anopheles",
+       "to": "health",
+       "text": "used"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "row",
+     "els": [
+      {
+       "id": "share",
+       "type": "node",
+       "text": "Share methods",
+       "glyph": "book",
+       "color": "mint"
+      },
+      {
+       "id": "secret",
+       "type": "node",
+       "text": "Keep secret",
+       "glyph": "shield",
+       "color": "amber"
+      },
+      {
+       "id": "checkable",
+       "type": "label",
+       "text": "Check and improve",
+       "color": "sci"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Science is a shared human effort. People across times and cultures add to knowledge.",
+    "L2": "A discovery is not usually made by one genius alone. Others observe, test and build on earlier work.",
+    "L3": "Aryabhata studied astronomy, C.V. Raman studied scattered light, and ISRO teams extend knowledge through shared work.",
+    "L4": "Scientists share methods and results so others can check, repeat and improve them.",
+    "L5": "Knowledge about malaria grew step by step, from observations near swamps to studies of parasites and mosquitoes.",
+    "L6": "In 1880, Laveran saw parasites in blood. In 1897, Ronald Ross found the parasite inside a mosquito.",
+    "L7": "Other scientists identified Anopheles mosquitoes, and health teams used this knowledge to fight malaria.",
+    "L8": "Anyone can contribute by observing carefully, asking questions and recording evidence. Now choose the practice that makes results checkable."
+   },
+   "narration": {
+    "L1": {
+     "text": "Science is a shared human effort. People across times and cultures add to knowledge.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L2": {
+     "text": "A discovery is not usually made by one genius alone. Others observe, test and build on earlier work.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L3": {
+     "text": "Aryabhata studied astronomy, C.V. Raman studied scattered light, and ISRO teams extend knowledge through shared work.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L4": {
+     "text": "Scientists share methods and results so others can check, repeat and improve them.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L5": {
+     "text": "Knowledge about malaria grew step by step, from observations near swamps to studies of parasites and mosquitoes.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L6": {
+     "text": "In 1880, Laveran saw parasites in blood. In 1897, Ronald Ross found the parasite inside a mosquito.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Other scientists identified Anopheles mosquitoes, and health teams used this knowledge to fight malaria.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Anyone can contribute by observing carefully, asking questions and recording evidence. Now choose the practice that makes results checkable.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "title"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "myth"
+      },
+      {
+       "at": 2,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "arya"
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.6,
+       "target": "raman"
+      },
+      {
+       "at": 1.6,
+       "do": "show",
+       "dur": 0.6,
+       "target": "isro"
+      },
+      {
+       "at": 2.2,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "e1",
+       "to": 1
+      },
+      {
+       "at": 3,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "e2",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "share"
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.7,
+       "target": "checkable"
+      },
+      {
+       "at": 2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "share"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "swamp"
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.6,
+       "target": "laveran"
+      },
+      {
+       "at": 1.6,
+       "do": "show",
+       "dur": 0.6,
+       "target": "ross"
+      },
+      {
+       "at": 2.4,
+       "do": "show",
+       "dur": 0.6,
+       "target": "anopheles"
+      },
+      {
+       "at": 3.2,
+       "do": "show",
+       "dur": 0.6,
+       "target": "health"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "m1",
+       "to": 1
+      },
+      {
+       "at": 1.2,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "m2",
+       "to": 1
+      },
+      {
+       "at": 2.4,
+       "do": "highlight",
+       "dur": 1,
+       "target": "ross"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "m3",
+       "to": 1
+      },
+      {
+       "at": 1.2,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "m4",
+       "to": 1
+      },
+      {
+       "at": 2.4,
+       "do": "highlight",
+       "dur": 1,
+       "target": "health"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "secret"
+      },
+      {
+       "at": 0.8,
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which practice makes a scientific result checkable and improvable?",
+    "options": [
+     "share",
+     "secret"
+    ],
+    "answer": "share",
+    "src": "c7-science-ch01-t02-i02"
+   }
+  },
+  "repairs": [
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 65
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch01-t02-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "people",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        120,
+        170
+       ],
+       "r": 42
+      },
+      {
+       "id": "people2",
+       "op": "circle",
+       "startMs": 400,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        680,
+        170
+       ],
+       "r": 42
+      },
+      {
+       "id": "shared",
+       "op": "arrow",
+       "startMs": 900,
+       "endMs": 1700,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        165,
+        170
+       ],
+       "to": [
+        635,
+        170
+       ]
+      },
+      {
+       "id": "science",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        80
+       ],
+       "text": "Science",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "effort",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        135
+       ],
+       "text": "shared human effort",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "times",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        120,
+        280
+       ],
+       "text": "times",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "cultures",
+       "op": "text",
+       "startMs": 3400,
+       "endMs": 4000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        680,
+        280
+       ],
+       "text": "cultures",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "add",
+       "op": "arrow",
+       "startMs": 4100,
+       "endMs": 5000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        170,
+        320
+       ],
+       "to": [
+        630,
+        320
+       ]
+      },
+      {
+       "id": "knowledge",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 5900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        410
+       ],
+       "text": "knowledge",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch01-t02-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "genius",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 650,
+       "ink": "soft",
+       "weight": 2,
+       "c": [
+        400,
+        105
+       ],
+       "r": 48
+      },
+      {
+       "id": "alone",
+       "op": "text",
+       "startMs": 550,
+       "endMs": 1200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        180
+       ],
+       "text": "not alone",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "observe",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        130,
+        300
+       ],
+       "text": "observe",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "test",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        300
+       ],
+       "text": "test",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "build",
+       "op": "text",
+       "startMs": 2600,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        670,
+        300
+       ],
+       "text": "build",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "a1",
+       "op": "arrow",
+       "startMs": 3300,
+       "endMs": 3900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        180,
+        300
+       ],
+       "to": [
+        350,
+        300
+       ]
+      },
+      {
+       "id": "a2",
+       "op": "arrow",
+       "startMs": 3900,
+       "endMs": 4500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        450,
+        300
+       ],
+       "to": [
+        620,
+        300
+       ]
+      },
+      {
+       "id": "earlier",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        420
+       ],
+       "text": "earlier work",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "base",
+       "op": "line",
+       "startMs": 5500,
+       "endMs": 5900,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        270,
+        390
+       ],
+       "to": [
+        530,
+        390
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch01-t02-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "arya",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 650,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        130,
+        150
+       ],
+       "r": 48
+      },
+      {
+       "id": "aryabhata",
+       "op": "text",
+       "startMs": 550,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        130,
+        235
+       ],
+       "text": "Aryabhata",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "raman",
+       "op": "circle",
+       "startMs": 1000,
+       "endMs": 1650,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        150
+       ],
+       "r": 48
+      },
+      {
+       "id": "cvr",
+       "op": "text",
+       "startMs": 1550,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        235
+       ],
+       "text": "C.V. Raman",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "light",
+       "op": "line",
+       "startMs": 2300,
+       "endMs": 2800,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        360,
+        310
+       ],
+       "to": [
+        440,
+        310
+       ]
+      },
+      {
+       "id": "scattered",
+       "op": "text",
+       "startMs": 2750,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        365
+       ],
+       "text": "scattered light",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "isro",
+       "op": "rect",
+       "startMs": 3000,
+       "endMs": 3650,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        610,
+        105
+       ],
+       "w": 140,
+       "h": 90,
+       "round": 12
+      },
+      {
+       "id": "isrolabel",
+       "op": "text",
+       "startMs": 3600,
+       "endMs": 4300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        680,
+        155
+       ],
+       "text": "ISRO teams",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "extend",
+       "op": "arrow",
+       "startMs": 4400,
+       "endMs": 5300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        180,
+        150
+       ],
+       "to": [
+        600,
+        150
+       ]
+      },
+      {
+       "id": "sharedwork",
+       "op": "text",
+       "startMs": 5400,
+       "endMs": 6200,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        455
+       ],
+       "text": "shared work",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch01-t02-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "methods",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        150,
+        120
+       ],
+       "text": "methods",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "results",
+       "op": "text",
+       "startMs": 500,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        650,
+        120
+       ],
+       "text": "results",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "share",
+       "op": "arrow",
+       "startMs": 1200,
+       "endMs": 2000,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        230,
+        120
+       ],
+       "to": [
+        570,
+        120
+       ]
+      },
+      {
+       "id": "check",
+       "op": "circle",
+       "startMs": 1800,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        150,
+        290
+       ],
+       "r": 48
+      },
+      {
+       "id": "checkt",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 2850,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        150,
+        370
+       ],
+       "text": "check",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "repeat",
+       "op": "circle",
+       "startMs": 2500,
+       "endMs": 3100,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        290
+       ],
+       "r": 48
+      },
+      {
+       "id": "repeatt",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3550,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        370
+       ],
+       "text": "repeat",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "improve",
+       "op": "circle",
+       "startMs": 3300,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        650,
+        290
+       ],
+       "r": 48
+      },
+      {
+       "id": "improvet",
+       "op": "text",
+       "startMs": 3800,
+       "endMs": 4500,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        650,
+        370
+       ],
+       "text": "improve",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "cycle",
+       "op": "arrow",
+       "startMs": 4500,
+       "endMs": 5400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        195,
+        290
+       ],
+       "to": [
+        605,
+        290
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch01-t02-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "swamp",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        150,
+        350
+       ],
+       "rx": 110,
+       "ry": 45
+      },
+      {
+       "id": "swamps",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        150,
+        430
+       ],
+       "text": "swamps",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "observe",
+       "op": "text",
+       "startMs": 1200,
+       "endMs": 2000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        150,
+        150
+       ],
+       "text": "observations",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "step1",
+       "op": "arrow",
+       "startMs": 1900,
+       "endMs": 2500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        220,
+        330
+       ],
+       "to": [
+        300,
+        260
+       ]
+      },
+      {
+       "id": "parasites",
+       "op": "circle",
+       "startMs": 2500,
+       "endMs": 3300,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        220
+       ],
+       "r": 58
+      },
+      {
+       "id": "pt",
+       "op": "text",
+       "startMs": 3200,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        310
+       ],
+       "text": "parasites",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "step2",
+       "op": "arrow",
+       "startMs": 3900,
+       "endMs": 4600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        460,
+        220
+       ],
+       "to": [
+        570,
+        280
+       ]
+      },
+      {
+       "id": "mosquitoes",
+       "op": "circle",
+       "startMs": 4600,
+       "endMs": 5400,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        650,
+        330
+       ],
+       "r": 58
+      },
+      {
+       "id": "mt",
+       "op": "text",
+       "startMs": 5300,
+       "endMs": 6100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        650,
+        425
+       ],
+       "text": "mosquitoes",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "growth",
+       "op": "text",
+       "startMs": 6200,
+       "endMs": 7100,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        80
+       ],
+       "text": "step by step",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch01-t02-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "year1880",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        130,
+        90
+       ],
+       "text": "1880",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "laveran",
+       "op": "text",
+       "startMs": 600,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        130,
+        165
+       ],
+       "text": "Laveran",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "blood",
+       "op": "ellipse",
+       "startMs": 1200,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        130,
+        300
+       ],
+       "rx": 90,
+       "ry": 55
+      },
+      {
+       "id": "parasite",
+       "op": "circle",
+       "startMs": 1900,
+       "endMs": 2400,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        130,
+        300
+       ],
+       "r": 15
+      },
+      {
+       "id": "bloodlabel",
+       "op": "text",
+       "startMs": 2350,
+       "endMs": 2850,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        130,
+        390
+       ],
+       "text": "blood",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "year1897",
+       "op": "text",
+       "startMs": 2600,
+       "endMs": 3300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        670,
+        90
+       ],
+       "text": "1897",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "ross",
+       "op": "text",
+       "startMs": 3200,
+       "endMs": 4000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        670,
+        165
+       ],
+       "text": "Ronald Ross",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "mosquito",
+       "op": "ellipse",
+       "startMs": 4000,
+       "endMs": 4700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        670,
+        300
+       ],
+       "rx": 95,
+       "ry": 42
+      },
+      {
+       "id": "inside",
+       "op": "circle",
+       "startMs": 4700,
+       "endMs": 5200,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        670,
+        300
+       ],
+       "r": 15
+      },
+      {
+       "id": "insideLabel",
+       "op": "text",
+       "startMs": 5150,
+       "endMs": 6000,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        670,
+        390
+       ],
+       "text": "inside mosquito",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "timeline",
+       "op": "arrow",
+       "startMs": 6000,
+       "endMs": 6900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        220,
+        220
+       ],
+       "to": [
+        570,
+        220
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch01-t02-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "anopheles",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        170,
+        170
+       ],
+       "r": 58
+      },
+      {
+       "id": "anot",
+       "op": "text",
+       "startMs": 600,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        170,
+        260
+       ],
+       "text": "Anopheles",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "identify",
+       "op": "arrow",
+       "startMs": 1300,
+       "endMs": 1900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        240,
+        170
+       ],
+       "to": [
+        350,
+        170
+       ]
+      },
+      {
+       "id": "health",
+       "op": "circle",
+       "startMs": 1900,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        470,
+        170
+       ],
+       "r": 58
+      },
+      {
+       "id": "healtht",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        470,
+        260
+       ],
+       "text": "health teams",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "use",
+       "op": "arrow",
+       "startMs": 3300,
+       "endMs": 3900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        540,
+        170
+       ],
+       "to": [
+        650,
+        170
+       ]
+      },
+      {
+       "id": "fight",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        650,
+        270
+       ],
+       "text": "fight malaria",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "knowledge",
+       "op": "text",
+       "startMs": 4800,
+       "endMs": 5700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        400
+       ],
+       "text": "knowledge",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch01-t02-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "anyone",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 650,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        120,
+        150
+       ],
+       "r": 48
+      },
+      {
+       "id": "observe",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        280,
+        120
+       ],
+       "text": "observing carefully",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "question",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        280,
+        220
+       ],
+       "text": "asking questions",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "record",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        280,
+        320
+       ],
+       "text": "recording evidence",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "a1",
+       "op": "arrow",
+       "startMs": 3200,
+       "endMs": 3600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        170,
+        150
+       ],
+       "to": [
+        220,
+        120
+       ]
+      },
+      {
+       "id": "a2",
+       "op": "arrow",
+       "startMs": 3600,
+       "endMs": 4000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        170,
+        170
+       ],
+       "to": [
+        220,
+        220
+       ]
+      },
+      {
+       "id": "a3",
+       "op": "arrow",
+       "startMs": 4000,
+       "endMs": 4400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        170,
+        190
+       ],
+       "to": [
+        220,
+        320
+       ]
+      },
+      {
+       "id": "checkable",
+       "op": "rect",
+       "startMs": 4500,
+       "endMs": 5300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        500,
+        135
+       ],
+       "w": 220,
+       "h": 130,
+       "round": 14
+      },
+      {
+       "id": "checkableText",
+       "op": "text",
+       "startMs": 5300,
+       "endMs": 6200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        610,
+        210
+       ],
+       "text": "checkable",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "choose",
+       "op": "text",
+       "startMs": 6500,
+       "endMs": 7500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        420
+       ],
+       "text": "choose the practice",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "1880 CE",
+   "prompt": "Laveran sees parasites",
+   "src": "c7-science-ch01-t02-i12"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "1897 CE",
+   "prompt": "Ross studies mosquitoes",
+   "src": "c7-science-ch01-t02-i12"
+  },
+  {
+   "itemId": "r1:2",
+   "key": "1930 CE",
+   "prompt": "Raman wins Nobel Prize",
+   "src": "c7-science-ch01-t02-i01"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "19th century CE",
+   "prompt": "Laveran sees parasites",
+   "src": "c7-science-ch01-t02-i12"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "19th century CE",
+   "prompt": "Ross studies mosquitoes",
+   "src": "c7-science-ch01-t02-i12"
+  },
+  {
+   "itemId": "r2:2",
+   "key": "20th century CE",
+   "prompt": "Raman wins Nobel Prize",
+   "src": "c7-science-ch01-t02-i01"
+  },
+  {
+   "itemId": "r3:0",
+   "key": "Laveran sees parasites",
+   "prompt": "earlier: Laveran sees parasites (1880 CE) vs Ross studies mosquitoes (1897 CE)"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

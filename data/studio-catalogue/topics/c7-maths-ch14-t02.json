@@ -1,0 +1,1592 @@
+{
+ "topicId": "c7-maths-ch14-t02",
+ "title": "Tilings",
+ "chapter": "Constructions and Tilings",
+ "subject": "maths",
+ "class": 7,
+ "topicType": "T3",
+ "plan": {
+  "game": "pattern-lab@1",
+  "hint": "tile mode (regular polygons round a point; 1, 2 and 3 kinds)"
+ },
+ "game": {
+  "archetype": "pattern-lab@1",
+  "spec": {
+   "archetype": "pattern-lab@1",
+   "skills": [
+    "c7-maths-ch14-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "done": "right",
+    "check": "CHECK",
+    "add": "ADD",
+    "clear": "CLEAR",
+    "sum": "sum",
+    "found": "found",
+    "short": "short",
+    "long": "long",
+    "beats": "beats",
+    "cipher": "Turn the dials until the sum is true",
+    "tiles": "Fit shapes round the point",
+    "gap": "gap",
+    "overlap": "overlap",
+    "runDone": "Lab closed",
+    "repeat": "already found",
+    "magic": "every line adds to",
+    "rows": "rows",
+    "cols": "columns"
+   },
+   "title": "Tilings Pattern Lab",
+   "rounds": [
+    {
+     "mode": "tile",
+     "title": "One shape",
+     "sub": "Fit copies round a point",
+     "kinds": 1,
+     "allowed": [
+      3,
+      4,
+      5,
+      6,
+      8,
+      12
+     ],
+     "targets": "c7-maths-ch14-t02-m-any-regular"
+    },
+    {
+     "mode": "tile",
+     "title": "Two shapes",
+     "sub": "Make a corner with no gap",
+     "kinds": 2,
+     "allowed": [
+      4,
+      8
+     ],
+     "targets": "c7-maths-ch14-t02-m-gap-ok"
+    },
+    {
+     "mode": "tile",
+     "title": "Three shapes",
+     "sub": "Close the corner exactly",
+     "kinds": 3,
+     "allowed": [
+      3,
+      4,
+      6
+     ]
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-maths-ch14-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "How shapes tile",
+   "accent": "ion",
+   "targets": "c7-maths-ch14-t02-m-any-regular",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "row",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "How shapes tile"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Any regular polygon tiles"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "corner",
+       "type": "node",
+       "text": "One corner",
+       "sub": "360° total",
+       "glyph": "spark",
+       "color": "ion"
+      },
+      {
+       "id": "tri",
+       "type": "node",
+       "text": "Triangle",
+       "sub": "60°",
+       "color": "mint"
+      },
+      {
+       "id": "square",
+       "type": "node",
+       "text": "Square",
+       "sub": "90°",
+       "color": "amber"
+      },
+      {
+       "id": "hex",
+       "type": "node",
+       "text": "Hexagon",
+       "sub": "120°",
+       "color": "sci"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "tri",
+       "to": "corner",
+       "text": "6 × 60°"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "square",
+       "to": "corner",
+       "text": "4 × 90°"
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "hex",
+       "to": "corner",
+       "text": "3 × 120°"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "split",
+     "els": [
+      {
+       "id": "pent",
+       "type": "node",
+       "text": "Pentagon",
+       "sub": "108°",
+       "color": "volt"
+      },
+      {
+       "id": "gap",
+       "type": "node",
+       "text": "Gap",
+       "sub": "36° left",
+       "glyph": "question",
+       "color": "sun"
+      },
+      {
+       "id": "p1",
+       "type": "arrow",
+       "from": "pent",
+       "to": "gap",
+       "text": "3 × 108°"
+      },
+      {
+       "id": "quad",
+       "type": "node",
+       "text": "Quadrilateral",
+       "sub": "any shape",
+       "color": "mint"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "check",
+       "type": "title",
+       "text": "Check the corner"
+      },
+      {
+       "id": "angle1",
+       "type": "label",
+       "text": "120°"
+      },
+      {
+       "id": "angle2",
+       "type": "label",
+       "text": "90°"
+      },
+      {
+       "id": "angle3",
+       "type": "label",
+       "text": "80°"
+      },
+      {
+       "id": "angle4",
+       "type": "label",
+       "text": "?°"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "A tiling covers a floor with no gaps and no overlaps.",
+    "L2": "At every corner, the tile angles must add to exactly 360 degrees.",
+    "L3": "A regular polygon tiles on its own when its angle divides 360 degrees exactly.",
+    "L4": "Triangles, squares, and regular hexagons pass this test: six, four, or three fit around a corner.",
+    "L5": "A regular pentagon has angle 108 degrees. Three make 324 degrees, leaving a 36-degree gap.",
+    "L6": "So not every regular polygon tiles on its own. But any quadrilateral can tile because its four angles add to 360 degrees.",
+    "L7": "To test a shape, find its angle and divide 360 by it. A whole number means no gap or overlap.",
+    "L8": "Now find the missing angle at this corner: 120 degrees, 90 degrees, 80 degrees, and one more angle."
+   },
+   "narration": {},
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "corner"
+      },
+      {
+       "at": 0.5,
+       "do": "highlight",
+       "dur": 1,
+       "target": "corner"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "tri",
+        "square",
+        "hex"
+       ]
+      },
+      {
+       "at": 0.5,
+       "do": "flow",
+       "dur": 1,
+       "target": [
+        "a1",
+        "a2",
+        "a3"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1.2,
+       "target": [
+        "a1",
+        "a2",
+        "a3"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "pent"
+      },
+      {
+       "at": 0.4,
+       "do": "show",
+       "dur": 0.7,
+       "target": "gap"
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "p1",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": "quad"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "focus",
+       "dur": 1,
+       "target": "corner"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "check",
+        "angle1",
+        "angle2",
+        "angle3",
+        "angle4"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which angle completes 120° + 90° + 80° at a point?",
+    "options": [
+     "angle1",
+     "angle2",
+     "angle3",
+     "angle4"
+    ],
+    "answer": "angle4"
+   }
+  },
+  "repairs": [
+   "glyph",
+   "glyph",
+   "glyph",
+   "glyph",
+   "glyph",
+   "arrow:dangling",
+   "cue:target",
+   "cue:target",
+   "src"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 61
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch14-t02-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "floor",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        120
+       ],
+       "w": 600,
+       "h": 270
+      },
+      {
+       "id": "tile1",
+       "op": "polygon",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         130,
+         150
+        ],
+        [
+         260,
+         150
+        ],
+        [
+         260,
+         280
+        ],
+        [
+         130,
+         280
+        ]
+       ]
+      },
+      {
+       "id": "tile2",
+       "op": "polygon",
+       "startMs": 1100,
+       "endMs": 1800,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         260,
+         150
+        ],
+        [
+         390,
+         150
+        ],
+        [
+         390,
+         280
+        ],
+        [
+         260,
+         280
+        ]
+       ]
+      },
+      {
+       "id": "tile3",
+       "op": "polygon",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         390,
+         150
+        ],
+        [
+         520,
+         150
+        ],
+        [
+         520,
+         280
+        ],
+        [
+         390,
+         280
+        ]
+       ]
+      },
+      {
+       "id": "tile4",
+       "op": "polygon",
+       "startMs": 1900,
+       "endMs": 2600,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         520,
+         150
+        ],
+        [
+         650,
+         150
+        ],
+        [
+         650,
+         280
+        ],
+        [
+         520,
+         280
+        ]
+       ]
+      },
+      {
+       "id": "gap",
+       "op": "highlight",
+       "startMs": 3000,
+       "endMs": 3500,
+       "ink": "mark",
+       "weight": 2,
+       "target": "tile2",
+       "style": "underline"
+      },
+      {
+       "id": "lab",
+       "op": "text",
+       "startMs": 3800,
+       "endMs": 4700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        440
+       ],
+       "text": "no gaps, no overlaps",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch14-t02-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "corner",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "mark",
+       "weight": 2,
+       "c": [
+        400,
+        250
+       ],
+       "r": 8
+      },
+      {
+       "id": "a1",
+       "op": "sector",
+       "startMs": 500,
+       "endMs": 1300,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        250
+       ],
+       "r": 110,
+       "fill": "accent",
+       "fromDeg": 180,
+       "toDeg": 270
+      },
+      {
+       "id": "a2",
+       "op": "sector",
+       "startMs": 1000,
+       "endMs": 1800,
+       "ink": "soft",
+       "weight": 2,
+       "c": [
+        400,
+        250
+       ],
+       "r": 110,
+       "fill": "soft",
+       "fromDeg": 270,
+       "toDeg": 360
+      },
+      {
+       "id": "a3",
+       "op": "sector",
+       "startMs": 1500,
+       "endMs": 2300,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        250
+       ],
+       "r": 110,
+       "fill": "accent",
+       "fromDeg": 0,
+       "toDeg": 90
+      },
+      {
+       "id": "a4",
+       "op": "sector",
+       "startMs": 2000,
+       "endMs": 2800,
+       "ink": "soft",
+       "weight": 2,
+       "c": [
+        400,
+        250
+       ],
+       "r": 110,
+       "fill": "soft",
+       "fromDeg": 90,
+       "toDeg": 180
+      },
+      {
+       "id": "sum",
+       "op": "numwork",
+       "startMs": 3200,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        270,
+        390
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "360",
+         "degree"
+        ]
+       ]
+      },
+      {
+       "id": "lab",
+       "op": "label",
+       "startMs": 4200,
+       "endMs": 5200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        470,
+        235
+       ],
+       "text": "360 degrees",
+       "to": [
+        410,
+        250
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch14-t02-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "poly",
+       "op": "polygon",
+       "startMs": 0,
+       "endMs": 1200,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         150,
+         300
+        ],
+        [
+         230,
+         190
+        ],
+        [
+         350,
+         190
+        ],
+        [
+         430,
+         300
+        ],
+        [
+         290,
+         380
+        ]
+       ]
+      },
+      {
+       "id": "angle",
+       "op": "text",
+       "startMs": 1300,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        290,
+        410
+       ],
+       "text": "angle",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "div",
+       "op": "numwork",
+       "startMs": 2000,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        470,
+        170
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "360",
+         "÷",
+         "angle"
+        ]
+       ]
+      },
+      {
+       "id": "whole",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4400,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        470,
+        280
+       ],
+       "text": "whole number",
+       "size": "m"
+      },
+      {
+       "id": "check",
+       "op": "highlight",
+       "startMs": 4600,
+       "endMs": 5600,
+       "ink": "good",
+       "weight": 2,
+       "target": "div",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch14-t02-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "tri",
+       "op": "polygon",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         100,
+         220
+        ],
+        [
+         150,
+         140
+        ],
+        [
+         200,
+         220
+        ]
+       ]
+      },
+      {
+       "id": "sq",
+       "op": "rect",
+       "startMs": 500,
+       "endMs": 1200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        260,
+        150
+       ],
+       "w": 100,
+       "h": 100
+      },
+      {
+       "id": "hex",
+       "op": "polygon",
+       "startMs": 900,
+       "endMs": 1700,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         480,
+         150
+        ],
+        [
+         550,
+         120
+        ],
+        [
+         620,
+         150
+        ],
+        [
+         620,
+         230
+        ],
+        [
+         550,
+         260
+        ],
+        [
+         480,
+         230
+        ]
+       ]
+      },
+      {
+       "id": "n1",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        150,
+        290
+       ],
+       "text": "6",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "n2",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        310,
+        290
+       ],
+       "text": "4",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "n3",
+       "op": "text",
+       "startMs": 3200,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        550,
+        300
+       ],
+       "text": "3",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "fit",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5700,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        420
+       ],
+       "text": "fit around a corner",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch14-t02-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "pent",
+       "op": "polygon",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         230,
+         150
+        ],
+        [
+         330,
+         150
+        ],
+        [
+         390,
+         230
+        ],
+        [
+         280,
+         320
+        ],
+        [
+         170,
+         230
+        ]
+       ]
+      },
+      {
+       "id": "ang",
+       "op": "text",
+       "startMs": 1200,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        280,
+        365
+       ],
+       "text": "108 degrees",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "calc",
+       "op": "numwork",
+       "startMs": 2300,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        470,
+        150
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "3",
+         "×",
+         "108",
+         "=",
+         "324"
+        ]
+       ]
+      },
+      {
+       "id": "gapcalc",
+       "op": "numwork",
+       "startMs": 3900,
+       "endMs": 5200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        470,
+        270
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "360",
+         "−",
+         "324",
+         "=",
+         "36"
+        ]
+       ]
+      },
+      {
+       "id": "gap",
+       "op": "label",
+       "startMs": 5400,
+       "endMs": 6400,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        470,
+        370
+       ],
+       "text": "36-degree gap",
+       "to": [
+        540,
+        300
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch14-t02-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9962,
+     "ops": [
+      {
+       "id": "quad",
+       "op": "polygon",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         150,
+         170
+        ],
+        [
+         300,
+         130
+        ],
+        [
+         390,
+         270
+        ],
+        [
+         220,
+         350
+        ]
+       ]
+      },
+      {
+       "id": "q2",
+       "op": "polygon",
+       "startMs": 900,
+       "endMs": 1600,
+       "ink": "soft",
+       "weight": 2,
+       "points": [
+        [
+         300,
+         130
+        ],
+        [
+         450,
+         170
+        ],
+        [
+         390,
+         270
+        ]
+       ]
+      },
+      {
+       "id": "q3",
+       "op": "polygon",
+       "startMs": 1400,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         390,
+         270
+        ],
+        [
+         450,
+         170
+        ],
+        [
+         600,
+         230
+        ],
+        [
+         520,
+         370
+        ]
+       ]
+      },
+      {
+       "id": "sum",
+       "op": "numwork",
+       "startMs": 2800,
+       "endMs": 4200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        180,
+        400
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "four a",
+         "=",
+         "360 de"
+        ]
+       ]
+      },
+      {
+       "id": "any",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5800,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        560,
+        120
+       ],
+       "text": "any quadrilateral",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "result",
+       "op": "text",
+       "startMs": 7000,
+       "endMs": 7800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        560,
+        430
+       ],
+       "text": "tiles",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch14-t02-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 9111,
+     "ops": [
+      {
+       "id": "shape",
+       "op": "polygon",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         100,
+         230
+        ],
+        [
+         180,
+         140
+        ],
+        [
+         290,
+         140
+        ],
+        [
+         370,
+         230
+        ],
+        [
+         290,
+         320
+        ],
+        [
+         180,
+         320
+        ]
+       ]
+      },
+      {
+       "id": "find",
+       "op": "text",
+       "startMs": 1000,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        235,
+        370
+       ],
+       "text": "find angle",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "formula",
+       "op": "numwork",
+       "startMs": 2200,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        450,
+        150
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "360",
+         "÷",
+         "angle"
+        ]
+       ]
+      },
+      {
+       "id": "whole",
+       "op": "text",
+       "startMs": 3800,
+       "endMs": 4700,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        450,
+        270
+       ],
+       "text": "whole number",
+       "size": "m"
+      },
+      {
+       "id": "nogap",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 6200,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        450,
+        350
+       ],
+       "text": "no gap or overlap",
+       "size": "m"
+      },
+      {
+       "id": "arrow",
+       "op": "arrow",
+       "startMs": 6500,
+       "endMs": 7200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        350,
+        260
+       ],
+       "to": [
+        430,
+        260
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch14-t02-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "corner",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "mark",
+       "weight": 2,
+       "c": [
+        400,
+        250
+       ],
+       "r": 10
+      },
+      {
+       "id": "s1",
+       "op": "sector",
+       "startMs": 500,
+       "endMs": 1200,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        250
+       ],
+       "r": 120,
+       "fill": "accent",
+       "fromDeg": 180,
+       "toDeg": 300
+      },
+      {
+       "id": "s2",
+       "op": "sector",
+       "startMs": 1000,
+       "endMs": 1700,
+       "ink": "soft",
+       "weight": 2,
+       "c": [
+        400,
+        250
+       ],
+       "r": 120,
+       "fill": "soft",
+       "fromDeg": 300,
+       "toDeg": 390
+      },
+      {
+       "id": "s3",
+       "op": "sector",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        250
+       ],
+       "r": 120,
+       "fill": "accent",
+       "fromDeg": 30,
+       "toDeg": 110
+      },
+      {
+       "id": "s4",
+       "op": "sector",
+       "startMs": 2000,
+       "endMs": 2700,
+       "ink": "soft",
+       "weight": 2,
+       "c": [
+        400,
+        250
+       ],
+       "r": 120,
+       "fill": "soft",
+       "fromDeg": 110,
+       "toDeg": 180
+      },
+      {
+       "id": "work",
+       "op": "numwork",
+       "startMs": 3200,
+       "endMs": 5000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        210,
+        400
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "120",
+         "＋",
+         "90",
+         "＋",
+         "80",
+         "＋",
+         "?",
+         "=",
+         "360"
+        ]
+       ]
+      },
+      {
+       "id": "answer",
+       "op": "numwork",
+       "startMs": 5400,
+       "endMs": 6700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        500,
+        320
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "?",
+         "=",
+         "70 deg"
+        ]
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1",
+   "key": "3+3+3+3+3+3 | 4+4+4+4 | 6+6+6",
+   "prompt": "Fit copies round a point"
+  },
+  {
+   "itemId": "r2",
+   "key": "4+8+8",
+   "prompt": "Make a corner with no gap"
+  },
+  {
+   "itemId": "r3",
+   "key": "3+4+4+6",
+   "prompt": "Close the corner exactly"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

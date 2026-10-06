@@ -1,0 +1,2232 @@
+{
+ "topicId": "c5-evs-ch03-t01",
+ "title": "Why food spoils: microbes",
+ "chapter": "The Mystery of Food",
+ "subject": "evs",
+ "class": 5,
+ "topicType": "T3",
+ "plan": {
+  "game": "fair-test@1",
+  "hint": "spoilage model: predict and design (warmth, moisture, covering)"
+ },
+ "game": {
+  "archetype": "fair-test@1",
+  "spec": {
+   "archetype": "fair-test@1",
+   "skills": [
+    "c5-evs-ch03-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "run": "RUN",
+    "day": "day",
+    "predict": "Tap every setup that will show it",
+    "design": "Make it a fair test",
+    "conclude": "Which factor matters?",
+    "notMatter": "Which factor does NOT matter?",
+    "fair": "FAIR TEST",
+    "unfair": "NOT FAIR",
+    "runDone": "Lab closed",
+    "correct": "right calls",
+    "drip": "Hold to add drops; stop when it turns",
+    "drops": "drops",
+    "neutral": "NEUTRAL",
+    "hint": "change only one thing"
+   },
+   "title": "Food Spoilage Lab",
+   "model": "spoilage",
+   "rounds": [
+    {
+     "mode": "predict",
+     "title": "Make a prediction",
+     "sub": "Which food will spoil?",
+     "setups": [
+      {
+       "temp": "warm",
+       "moisture": "moist",
+       "salt": "no",
+       "lid": "open"
+      },
+      {
+       "temp": "cold",
+       "moisture": "dry",
+       "salt": "no",
+       "lid": "covered"
+      },
+      {
+       "temp": "warm",
+       "moisture": "dry",
+       "salt": "no",
+       "lid": "covered"
+      },
+      {
+       "temp": "cold",
+       "moisture": "moist",
+       "salt": "yes",
+       "lid": "open"
+      }
+     ],
+     "src": "c5-evs-ch03-t01-i03",
+     "targets": "c5-evs-ch03-t01-m1"
+    },
+    {
+     "mode": "design",
+     "title": "Test warmth",
+     "sub": "Change only the temperature",
+     "vary": "temp",
+     "start": [
+      {
+       "temp": "warm",
+       "moisture": "moist",
+       "salt": "no",
+       "lid": "covered"
+      },
+      {
+       "temp": "cold",
+       "moisture": "moist",
+       "salt": "no",
+       "lid": "covered"
+      }
+     ]
+    },
+    {
+     "mode": "design",
+     "title": "Test covering",
+     "sub": "Change only the lid",
+     "vary": "lid",
+     "start": [
+      {
+       "temp": "warm",
+       "moisture": "moist",
+       "salt": "no",
+       "lid": "open"
+      },
+      {
+       "temp": "warm",
+       "moisture": "moist",
+       "salt": "no",
+       "lid": "covered"
+      }
+     ]
+    }
+   ]
+  },
+  "repairs": [
+   "conclude:needs-exactly-one-key"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c5-evs-ch03-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Why food spoils",
+   "accent": "sci",
+   "targets": "c5-evs-ch03-t01-m1",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Why food spoils"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Food spoils only because it gets old"
+      },
+      {
+       "id": "food",
+       "type": "node",
+       "text": "Food",
+       "sub": "changes",
+       "glyph": "plate",
+       "color": "amber"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "microbes",
+       "type": "node",
+       "text": "Microbes",
+       "sub": "tiny living things",
+       "glyph": "insect",
+       "color": "sci"
+      },
+      {
+       "id": "air",
+       "type": "node",
+       "text": "Air",
+       "glyph": "wind",
+       "color": "ion"
+      },
+      {
+       "id": "hands",
+       "type": "node",
+       "text": "Hands",
+       "glyph": "hand",
+       "color": "amber"
+      },
+      {
+       "id": "food2",
+       "type": "node",
+       "text": "Food",
+       "glyph": "plate",
+       "color": "mint"
+      },
+      {
+       "id": "land",
+       "type": "arrow",
+       "from": "air",
+       "to": "food2",
+       "text": "land"
+      },
+      {
+       "id": "touch",
+       "type": "arrow",
+       "from": "hands",
+       "to": "food2",
+       "text": "touch"
+      },
+      {
+       "id": "grow",
+       "type": "arrow",
+       "from": "microbes",
+       "to": "food2",
+       "text": "grow"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "warm",
+       "type": "node",
+       "text": "Warmth",
+       "glyph": "sun",
+       "color": "sun"
+      },
+      {
+       "id": "moist",
+       "type": "node",
+       "text": "Moisture",
+       "glyph": "drop",
+       "color": "ion"
+      },
+      {
+       "id": "fast",
+       "type": "node",
+       "text": "Fast growth",
+       "glyph": "spark",
+       "color": "sci"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "warm",
+       "to": "fast",
+       "text": "helps"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "moist",
+       "to": "fast",
+       "text": "helps"
+      },
+      {
+       "id": "bar",
+       "type": "bar",
+       "parts": 5,
+       "shaded": 5,
+       "text": "growth"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "smell",
+       "type": "node",
+       "text": "Bad smell",
+       "glyph": "question",
+       "color": "amber"
+      },
+      {
+       "id": "slime",
+       "type": "node",
+       "text": "Slime",
+       "glyph": "drop",
+       "color": "sci"
+      },
+      {
+       "id": "colour",
+       "type": "node",
+       "text": "Colour change",
+       "glyph": "spark",
+       "color": "volt"
+      },
+      {
+       "id": "mould",
+       "type": "node",
+       "text": "Fuzzy mould",
+       "glyph": "cloud",
+       "color": "mint"
+      },
+      {
+       "id": "cover",
+       "type": "node",
+       "text": "Cover food",
+       "glyph": "shield",
+       "color": "mint"
+      },
+      {
+       "id": "cool",
+       "type": "node",
+       "text": "Keep cool",
+       "color": "ion"
+      },
+      {
+       "id": "dry",
+       "type": "node",
+       "text": "Keep dry",
+       "glyph": "wind",
+       "color": "amber"
+      },
+      {
+       "id": "wash",
+       "type": "node",
+       "text": "Wash hands",
+       "glyph": "hand",
+       "color": "sci"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Food does not spoil just because time passes. Tiny living things called microbes grow on food and spoil it.",
+    "L2": "Microbes are too small to see without a microscope. They can be in air, water and soil, and on our hands.",
+    "L3": "When microbes land on food, they can grow and multiply. That is why food changes.",
+    "L4": "Microbes grow fastest when food is warm and moist. Warmth plus moisture makes growth quick.",
+    "L5": "Spoiled food may smell bad, turn slimy, change colour or grow fuzzy mould. Do not taste it to check.",
+    "L6": "Covering food, keeping it cool and dry, and washing our hands slow microbes down.",
+    "L7": "Not all microbes are harmful. Helpful microbes make curd, make idli batter rise and help make compost.",
+    "L8": "So the same idea explains both cases: microbes grow and change materials, but the result can help us or spoil food.",
+    "L9": "Now tap the sign that can tell you food has spoiled without tasting it."
+   },
+   "narration": {
+    "L1": {
+     "text": "Food does not spoil just because time passes. Tiny living things called microbes grow on food and spoil it.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "Microbes are too small to see without a microscope. They can be in air, water and soil, and on our hands.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "When microbes land on food, they can grow and multiply. That is why food changes.",
+     "dur": 4.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "Microbes grow fastest when food is warm and moist. Warmth plus moisture makes growth quick.",
+     "dur": 4.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "Spoiled food may smell bad, turn slimy, change colour or grow fuzzy mould. Do not taste it to check.",
+     "dur": 5.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Covering food, keeping it cool and dry, and washing our hands slow microbes down.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Not all microbes are harmful. Helpful microbes make curd, make idli batter rise and help make compost.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "So the same idea explains both cases: microbes grow and change materials, but the result can help us or spoil food.",
+     "dur": 5.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L9": {
+     "text": "Now tap the sign that can tell you food has spoiled without tasting it.",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.7,
+       "target": "food"
+      },
+      {
+       "at": 2,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      },
+      {
+       "at": 3,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "microbes"
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "air",
+        "hands"
+       ]
+      },
+      {
+       "at": 2,
+       "do": "flow",
+       "dur": 0.8,
+       "target": [
+        "land",
+        "touch"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "food2"
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.7,
+       "target": "grow"
+      },
+      {
+       "at": 1.5,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "grow",
+       "to": 1
+      },
+      {
+       "at": 2.5,
+       "do": "highlight",
+       "dur": 1,
+       "target": "food2"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "warm",
+        "moist"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.7,
+       "target": "fast"
+      },
+      {
+       "at": 1.7,
+       "do": "flow",
+       "dur": 0.8,
+       "target": [
+        "a1",
+        "a2"
+       ],
+       "to": 1
+      },
+      {
+       "at": 2.8,
+       "do": "shade",
+       "dur": 1,
+       "target": "bar",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": [
+        "smell",
+        "slime"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "colour",
+        "mould"
+       ]
+      },
+      {
+       "at": 2.2,
+       "do": "highlight",
+       "dur": 1,
+       "target": [
+        "smell",
+        "mould"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "cover",
+        "cool"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "dry",
+        "wash"
+       ]
+      },
+      {
+       "at": 2,
+       "do": "highlight",
+       "dur": 1,
+       "target": [
+        "cover",
+        "cool",
+        "dry",
+        "wash"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.5,
+       "target": "cover"
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.5,
+       "target": "cool"
+      },
+      {
+       "at": 1.6,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "cover"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "focus",
+       "dur": 0.8,
+       "target": "microbes"
+      },
+      {
+       "at": 1,
+       "do": "focus",
+       "dur": 0.8,
+       "target": "food2"
+      },
+      {
+       "at": 2,
+       "do": "camera",
+       "dur": 1.5,
+       "zoom": 1.05
+      }
+     ]
+    },
+    {
+     "line": "L9",
+     "gap": 0,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "interactive",
+       "dur": 1
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Tap one sign that can show food has spoiled without tasting it.",
+    "options": [
+     "smell",
+     "slime",
+     "colour",
+     "mould"
+    ],
+    "answer": "smell",
+    "src": "c5-evs-ch03-t01-i02"
+   }
+  },
+  "repairs": [
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 48
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch03-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "food",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        180
+       ],
+       "w": 180,
+       "h": 120,
+       "round": 12
+      },
+      {
+       "id": "foodlabel",
+       "op": "label",
+       "startMs": 1000,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        330
+       ],
+       "text": "food",
+       "target": "food"
+      },
+      {
+       "id": "microbe1",
+       "op": "circle",
+       "startMs": 1800,
+       "endMs": 2400,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        500,
+        180
+       ],
+       "r": 28
+      },
+      {
+       "id": "microbe2",
+       "op": "circle",
+       "startMs": 2200,
+       "endMs": 2800,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        570,
+        250
+       ],
+       "r": 20
+      },
+      {
+       "id": "microbelabel",
+       "op": "label",
+       "startMs": 2800,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        610,
+        150
+       ],
+       "text": "microbes",
+       "to": [
+        520,
+        180
+       ]
+      },
+      {
+       "id": "arrow1",
+       "op": "arrow",
+       "startMs": 3700,
+       "endMs": 4500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        470,
+        210
+       ],
+       "to": [
+        280,
+        230
+       ]
+      },
+      {
+       "id": "grow1",
+       "op": "circle",
+       "startMs": 4700,
+       "endMs": 5200,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        420,
+        330
+       ],
+       "r": 18
+      },
+      {
+       "id": "grow2",
+       "op": "circle",
+       "startMs": 5100,
+       "endMs": 5600,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        480,
+        350
+       ],
+       "r": 25
+      },
+      {
+       "id": "spoil",
+       "op": "label",
+       "startMs": 5700,
+       "endMs": 6400,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        570,
+        370
+       ],
+       "text": "spoil",
+       "to": [
+        490,
+        345
+       ]
+      },
+      {
+       "id": "time",
+       "op": "text",
+       "startMs": 6800,
+       "endMs": 7300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        110,
+        100
+       ],
+       "text": "time",
+       "size": "m"
+      },
+      {
+       "id": "notcause",
+       "op": "line",
+       "startMs": 7300,
+       "endMs": 8000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        95,
+        90
+       ],
+       "to": [
+        180,
+        110
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch03-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 9536,
+     "ops": [
+      {
+       "id": "microscope",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        390,
+        235
+       ],
+       "r": 78
+      },
+      {
+       "id": "lens",
+       "op": "circle",
+       "startMs": 600,
+       "endMs": 1100,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        390,
+        235
+       ],
+       "r": 35
+      },
+      {
+       "id": "tiny",
+       "op": "label",
+       "startMs": 1200,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        350,
+        350
+       ],
+       "text": "too small",
+       "to": [
+        390,
+        235
+       ]
+      },
+      {
+       "id": "air",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        100,
+        110
+       ],
+       "text": "air",
+       "size": "m"
+      },
+      {
+       "id": "water",
+       "op": "text",
+       "startMs": 2800,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        100,
+        240
+       ],
+       "text": "water",
+       "size": "m"
+      },
+      {
+       "id": "soil",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        100,
+        370
+       ],
+       "text": "soil",
+       "size": "m"
+      },
+      {
+       "id": "hand",
+       "op": "ellipse",
+       "startMs": 4000,
+       "endMs": 4700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        670,
+        270
+       ],
+       "rx": 85,
+       "ry": 45
+      },
+      {
+       "id": "handlabel",
+       "op": "label",
+       "startMs": 4700,
+       "endMs": 5300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        625,
+        350
+       ],
+       "text": "hands",
+       "to": [
+        670,
+        270
+       ]
+      },
+      {
+       "id": "dots",
+       "op": "circle",
+       "startMs": 5500,
+       "endMs": 5800,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        630,
+        255
+       ],
+       "r": 6
+      },
+      {
+       "id": "dots2",
+       "op": "circle",
+       "startMs": 5700,
+       "endMs": 6000,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        700,
+        280
+       ],
+       "r": 6
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch03-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "food3",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        190
+       ],
+       "w": 190,
+       "h": 110,
+       "round": 10
+      },
+      {
+       "id": "microbe3",
+       "op": "circle",
+       "startMs": 700,
+       "endMs": 1200,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        500,
+        100
+       ],
+       "r": 25
+      },
+      {
+       "id": "land",
+       "op": "arrow",
+       "startMs": 900,
+       "endMs": 1600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        500,
+        110
+       ],
+       "to": [
+        220,
+        205
+       ]
+      },
+      {
+       "id": "growa",
+       "op": "circle",
+       "startMs": 2000,
+       "endMs": 2400,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        410,
+        245
+       ],
+       "r": 18
+      },
+      {
+       "id": "growb",
+       "op": "circle",
+       "startMs": 2400,
+       "endMs": 2900,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        470,
+        280
+       ],
+       "r": 28
+      },
+      {
+       "id": "growc",
+       "op": "circle",
+       "startMs": 2900,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        550,
+        330
+       ],
+       "r": 40
+      },
+      {
+       "id": "multiply",
+       "op": "label",
+       "startMs": 3600,
+       "endMs": 4300,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        565,
+        400
+       ],
+       "text": "multiply",
+       "to": [
+        550,
+        330
+       ]
+      },
+      {
+       "id": "change",
+       "op": "arrow",
+       "startMs": 4600,
+       "endMs": 5200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        290,
+        245
+       ],
+       "to": [
+        360,
+        245
+       ]
+      },
+      {
+       "id": "changes",
+       "op": "text",
+       "startMs": 5400,
+       "endMs": 6000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        380,
+        180
+       ],
+       "text": "changes",
+       "size": "m"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch03-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "warm",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        90,
+        120
+       ],
+       "w": 250,
+       "h": 130,
+       "round": 10
+      },
+      {
+       "id": "warmlabel",
+       "op": "text",
+       "startMs": 800,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        215,
+        190
+       ],
+       "text": "warm",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "moist",
+       "op": "ellipse",
+       "startMs": 1300,
+       "endMs": 2000,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        215,
+        350
+       ],
+       "rx": 125,
+       "ry": 55
+      },
+      {
+       "id": "moistlabel",
+       "op": "text",
+       "startMs": 2000,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        215,
+        360
+       ],
+       "text": "moist",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "plus",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3000,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        390,
+        260
+       ],
+       "text": "+",
+       "size": "l"
+      },
+      {
+       "id": "quick",
+       "op": "arrow",
+       "startMs": 3300,
+       "endMs": 4100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        500,
+        260
+       ],
+       "to": [
+        690,
+        260
+       ]
+      },
+      {
+       "id": "growth",
+       "op": "label",
+       "startMs": 4200,
+       "endMs": 4800,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        585,
+        220
+       ],
+       "text": "growth",
+       "to": [
+        590,
+        260
+       ]
+      },
+      {
+       "id": "fastest",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 5600,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        565,
+        330
+       ],
+       "text": "fastest",
+       "size": "m"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch03-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "spoiledfood",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        70,
+        170
+       ],
+       "w": 190,
+       "h": 120,
+       "round": 10
+      },
+      {
+       "id": "bad",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        365,
+        100
+       ],
+       "text": "bad smell",
+       "size": "m"
+      },
+      {
+       "id": "slimy",
+       "op": "ellipse",
+       "startMs": 1600,
+       "endMs": 2300,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        430,
+        220
+       ],
+       "rx": 70,
+       "ry": 35
+      },
+      {
+       "id": "slimylabel",
+       "op": "label",
+       "startMs": 2300,
+       "endMs": 2900,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        490,
+        280
+       ],
+       "text": "slimy",
+       "to": [
+        450,
+        225
+       ]
+      },
+      {
+       "id": "colour",
+       "op": "circle",
+       "startMs": 3000,
+       "endMs": 3700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        600,
+        210
+       ],
+       "r": 42,
+       "fill": "accent"
+      },
+      {
+       "id": "colourlabel",
+       "op": "label",
+       "startMs": 3700,
+       "endMs": 4300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        570,
+        290
+       ],
+       "text": "colour",
+       "to": [
+        600,
+        250
+       ]
+      },
+      {
+       "id": "mould",
+       "op": "circle",
+       "startMs": 4500,
+       "endMs": 5200,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        680,
+        350
+       ],
+       "r": 38
+      },
+      {
+       "id": "fuzzy",
+       "op": "label",
+       "startMs": 5200,
+       "endMs": 6000,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        625,
+        420
+       ],
+       "text": "fuzzy mould",
+       "to": [
+        680,
+        350
+       ]
+      },
+      {
+       "id": "dont",
+       "op": "line",
+       "startMs": 6300,
+       "endMs": 7100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        100,
+        380
+       ],
+       "to": [
+        245,
+        450
+       ]
+      },
+      {
+       "id": "taste",
+       "op": "text",
+       "startMs": 7100,
+       "endMs": 7600,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        150,
+        430
+       ],
+       "text": "taste",
+       "size": "m"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch03-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "cover",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        80,
+        110
+       ],
+       "w": 200,
+       "h": 130,
+       "round": 10
+      },
+      {
+       "id": "coverlabel",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        175
+       ],
+       "text": "cover",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "cool",
+       "op": "circle",
+       "startMs": 1300,
+       "endMs": 2000,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        175
+       ],
+       "r": 65
+      },
+      {
+       "id": "coollabel",
+       "op": "text",
+       "startMs": 2000,
+       "endMs": 2500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        175
+       ],
+       "text": "cool",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "dry",
+       "op": "rect",
+       "startMs": 2600,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        540,
+        110
+       ],
+       "w": 170,
+       "h": 130,
+       "round": 10
+      },
+      {
+       "id": "drylabel",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 3800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        625,
+        175
+       ],
+       "text": "dry",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "handwash",
+       "op": "ellipse",
+       "startMs": 3900,
+       "endMs": 4600,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        260,
+        380
+       ],
+       "rx": 95,
+       "ry": 48
+      },
+      {
+       "id": "wash",
+       "op": "label",
+       "startMs": 4600,
+       "endMs": 5300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        225,
+        455
+       ],
+       "text": "washing hands",
+       "to": [
+        260,
+        380
+       ]
+      },
+      {
+       "id": "slow",
+       "op": "arrow",
+       "startMs": 5400,
+       "endMs": 6100,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        520,
+        380
+       ],
+       "to": [
+        690,
+        380
+       ]
+      },
+      {
+       "id": "slowlabel",
+       "op": "text",
+       "startMs": 6100,
+       "endMs": 6500,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        605,
+        340
+       ],
+       "text": "slow",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch03-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "helpful",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        70
+       ],
+       "text": "helpful microbes",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "milk",
+       "op": "ellipse",
+       "startMs": 1000,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        135,
+        220
+       ],
+       "rx": 85,
+       "ry": 55
+      },
+      {
+       "id": "curd",
+       "op": "arrow",
+       "startMs": 1700,
+       "endMs": 2300,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        220,
+        220
+       ],
+       "to": [
+        300,
+        220
+       ]
+      },
+      {
+       "id": "curdlabel",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 2700,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        350,
+        220
+       ],
+       "text": "curd",
+       "size": "m"
+      },
+      {
+       "id": "batter",
+       "op": "rect",
+       "startMs": 2800,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        350
+       ],
+       "w": 150,
+       "h": 70,
+       "round": 10
+      },
+      {
+       "id": "rise",
+       "op": "arrow",
+       "startMs": 3400,
+       "endMs": 4000,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        175,
+        345
+       ],
+       "to": [
+        175,
+        270
+       ]
+      },
+      {
+       "id": "idli",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 4600,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        330,
+        370
+       ],
+       "text": "idli batter",
+       "size": "m"
+      },
+      {
+       "id": "waste",
+       "op": "rect",
+       "startMs": 4700,
+       "endMs": 5400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        500,
+        330
+       ],
+       "w": 150,
+       "h": 80,
+       "round": 10
+      },
+      {
+       "id": "compostarrow",
+       "op": "arrow",
+       "startMs": 5400,
+       "endMs": 6000,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        575,
+        320
+       ],
+       "to": [
+        575,
+        250
+       ]
+      },
+      {
+       "id": "compost",
+       "op": "text",
+       "startMs": 6000,
+       "endMs": 6600,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        575,
+        200
+       ],
+       "text": "compost",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch03-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9536,
+     "ops": [
+      {
+       "id": "microbes8",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        115
+       ],
+       "r": 42
+      },
+      {
+       "id": "grow8",
+       "op": "arrow",
+       "startMs": 800,
+       "endMs": 1400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        165
+       ],
+       "to": [
+        400,
+        235
+       ]
+      },
+      {
+       "id": "materials",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        280
+       ],
+       "text": "materials",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "change8",
+       "op": "arrow",
+       "startMs": 2200,
+       "endMs": 2800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        300
+       ],
+       "to": [
+        400,
+        365
+       ]
+      },
+      {
+       "id": "help",
+       "op": "rect",
+       "startMs": 3000,
+       "endMs": 3700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        90,
+        370
+       ],
+       "w": 220,
+       "h": 75,
+       "round": 10
+      },
+      {
+       "id": "helptext",
+       "op": "text",
+       "startMs": 3700,
+       "endMs": 4300,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        200,
+        415
+       ],
+       "text": "help",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "spoilbox",
+       "op": "rect",
+       "startMs": 4400,
+       "endMs": 5100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        490,
+        370
+       ],
+       "w": 220,
+       "h": 75,
+       "round": 10
+      },
+      {
+       "id": "spoiltext",
+       "op": "text",
+       "startMs": 5100,
+       "endMs": 5700,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        600,
+        415
+       ],
+       "text": "spoil",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "split",
+       "op": "line",
+       "startMs": 5800,
+       "endMs": 6300,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        400,
+        365
+       ],
+       "to": [
+        310,
+        405
+       ]
+      },
+      {
+       "id": "split2",
+       "op": "line",
+       "startMs": 6300,
+       "endMs": 6800,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        400,
+        365
+       ],
+       "to": [
+        490,
+        405
+       ]
+      },
+      {
+       "id": "same",
+       "op": "text",
+       "startMs": 7000,
+       "endMs": 7700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        335
+       ],
+       "text": "same idea",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L9",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch03-t01-wb-L9",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "signboard",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        170,
+        95
+       ],
+       "w": 460,
+       "h": 300,
+       "round": 14
+      },
+      {
+       "id": "smell",
+       "op": "text",
+       "startMs": 1000,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        250,
+        150
+       ],
+       "text": "bad smell",
+       "size": "m"
+      },
+      {
+       "id": "slimy9",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        250,
+        220
+       ],
+       "text": "slimy",
+       "size": "m"
+      },
+      {
+       "id": "colour9",
+       "op": "text",
+       "startMs": 2400,
+       "endMs": 3000,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        250,
+        290
+       ],
+       "text": "change colour",
+       "size": "m"
+      },
+      {
+       "id": "mould9",
+       "op": "text",
+       "startMs": 3200,
+       "endMs": 3900,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        250,
+        360
+       ],
+       "text": "fuzzy mould",
+       "size": "m"
+      },
+      {
+       "id": "check",
+       "op": "circle",
+       "startMs": 4200,
+       "endMs": 4600,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        205,
+        150
+       ],
+       "r": 15
+      },
+      {
+       "id": "check2",
+       "op": "circle",
+       "startMs": 4600,
+       "endMs": 5000,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        205,
+        220
+       ],
+       "r": 15
+      },
+      {
+       "id": "check3",
+       "op": "circle",
+       "startMs": 5000,
+       "endMs": 5400,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        205,
+        290
+       ],
+       "r": 15
+      },
+      {
+       "id": "check4",
+       "op": "circle",
+       "startMs": 5400,
+       "endMs": 5800,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        205,
+        360
+       ],
+       "r": 15
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1",
+   "key": "1:spoils 2:no 3:no 4:no",
+   "prompt": "spoilage: {\"temp\":\"warm\",\"moisture\":\"moist\",\"salt\":\"no\",\"lid\":\"open\"} | {\"temp\":\"cold\",\"moisture\":\"dry\",\"salt\":\"no\",\"lid\":\"covered\"} | {\"temp\":\"warm\",\"moisture\":\"dry\",\"salt\":\"no\",\"lid\":\"covered\"} | {\"temp\":\"cold\",\"moisture\":\"moist\",\"salt\":\"yes\",\"lid\":\"open\"}",
+   "src": "c5-evs-ch03-t01-i03"
+  },
+  {
+   "itemId": "r2",
+   "key": "vary only temp",
+   "prompt": "fair test for temp"
+  },
+  {
+   "itemId": "r3",
+   "key": "vary only lid",
+   "prompt": "fair test for lid"
+  }
+ ],
+ "check": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "Round 1 prediction target is 'c5-evs-ch03-t01-m1' (misconception 'Food spoils only because it gets old'), but the round asks which food will spoil based on conditions (warm/moist vs cold/dry etc.), which is about microbes growing faster/slower—this correctly challenges the misconception and is fine. No change to kit facts.",
+    "severity": "low"
+   }
+  ],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

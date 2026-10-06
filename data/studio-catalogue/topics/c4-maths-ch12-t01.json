@@ -1,0 +1,1434 @@
+{
+ "topicId": "c4-maths-ch12-t01",
+ "title": "Time to 5 minutes and a.m./p.m.",
+ "chapter": "Ticking Clocks and Turning Calendar",
+ "subject": "maths",
+ "class": 4,
+ "topicType": "T4",
+ "plan": {
+  "game": "instrument@1",
+  "hint": "clock mode: time to 5 minutes, a.m./p.m., elapsed time ('after')"
+ },
+ "game": {
+  "archetype": "instrument@1",
+  "spec": {
+   "archetype": "instrument@1",
+   "skills": [
+    "c4-maths-ch12-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "measured": "measured",
+    "precision": "precision",
+    "hold": "Hold to pour",
+    "release": "Release",
+    "cut": "Tap to cut",
+    "set": "Set",
+    "am": "a.m.",
+    "pm": "p.m.",
+    "tapAt": "Tap when it reads",
+    "runDone": "Bench clear",
+    "offBy": "off by",
+    "exact": "EXACT",
+    "after": "after",
+    "minutes": "min",
+    "balanced": "BALANCED",
+    "heavy": "parcel heavier",
+    "light": "weights heavier"
+   },
+   "title": "Clock Time Bench",
+   "rounds": [
+    {
+     "mode": "clock",
+     "title": "Read the clock",
+     "sub": "read the hands to 5 minutes",
+     "items": [
+      {
+       "target": 160,
+       "show": "12h"
+      },
+      {
+       "target": 545,
+       "show": "12h"
+      }
+     ],
+     "scaleMax": 1440,
+     "minor": 5,
+     "tol": 2,
+     "speed": 1,
+     "targets": "c4-maths-ch12-t01-m-minute-number"
+    },
+    {
+     "mode": "clock",
+     "title": "Morning or evening",
+     "sub": "choose a.m. or p.m.",
+     "items": [
+      {
+       "target": 480,
+       "show": "12h"
+      },
+      {
+       "target": 720,
+       "show": "12h"
+      },
+      {
+       "target": 780,
+       "show": "12h"
+      }
+     ],
+     "scaleMax": 1440,
+     "minor": 5,
+     "tol": 2,
+     "speed": 0.9,
+     "targets": "c4-maths-ch12-t01-m-noon-12am"
+    },
+    {
+     "mode": "clock",
+     "title": "Set time after",
+     "sub": "move the clock forward",
+     "items": [
+      {
+       "target": 695,
+       "show": "after",
+       "start": 650
+      },
+      {
+       "target": 1005,
+       "show": "after",
+       "start": 930
+      }
+     ],
+     "scaleMax": 1440,
+     "minor": 5,
+     "tol": 2,
+     "speed": 0.8
+    }
+   ]
+  },
+  "repairs": [
+   "enum:show",
+   "enum:show"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c4-maths-ch12-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Correct",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "BUSTED",
+    "order": "Tap them in order"
+   },
+   "title": "Read a clock in 5s",
+   "accent": "ion",
+   "targets": "c4-maths-ch12-t01-m-minute-number",
+   "scenes": [
+    {
+     "id": "intro",
+     "layout": "row",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Read a clock in 5s"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "The minute number is the minutes"
+      }
+     ]
+    },
+    {
+     "id": "clock",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "hour",
+       "type": "node",
+       "text": "Hour",
+       "glyph": "clock",
+       "color": "amber"
+      },
+      {
+       "id": "minute",
+       "type": "node",
+       "text": "Minutes",
+       "glyph": "clock",
+       "color": "ion"
+      },
+      {
+       "id": "five",
+       "type": "label",
+       "text": "Count by 5s",
+       "color": "mint"
+      },
+      {
+       "id": "h1",
+       "type": "arrow",
+       "from": "hour",
+       "to": "minute",
+       "text": "short hand"
+      },
+      {
+       "id": "h2",
+       "type": "arrow",
+       "from": "minute",
+       "to": "five",
+       "text": "long hand"
+      }
+     ]
+    },
+    {
+     "id": "example",
+     "layout": "split",
+     "els": [
+      {
+       "id": "clock9",
+       "type": "node",
+       "text": "9:55",
+       "glyph": "clock",
+       "color": "ion"
+      },
+      {
+       "id": "nine",
+       "type": "label",
+       "text": "Hour: 9",
+       "color": "amber"
+      },
+      {
+       "id": "eleven",
+       "type": "label",
+       "text": "11 × 5 = 55",
+       "color": "mint"
+      },
+      {
+       "id": "past",
+       "type": "label",
+       "text": "Just past 9",
+       "color": "sun"
+      }
+     ]
+    },
+    {
+     "id": "day",
+     "layout": "row",
+     "els": [
+      {
+       "id": "am",
+       "type": "node",
+       "text": "a.m.",
+       "glyph": "sun",
+       "color": "sun"
+      },
+      {
+       "id": "pm",
+       "type": "node",
+       "text": "p.m.",
+       "glyph": "moon",
+       "color": "ion"
+      },
+      {
+       "id": "noon",
+       "type": "label",
+       "text": "12 noon = 12 p.m.",
+       "color": "amber"
+      },
+      {
+       "id": "midnight",
+       "type": "label",
+       "text": "12 midnight = 12 a.m.",
+       "color": "mint"
+      }
+     ]
+    },
+    {
+     "id": "check",
+     "layout": "row",
+     "els": [
+      {
+       "id": "q",
+       "type": "title",
+       "text": "Your turn"
+      },
+      {
+       "id": "opt1",
+       "type": "label",
+       "text": "8:10",
+       "color": "mint"
+      },
+      {
+       "id": "opt2",
+       "type": "label",
+       "text": "8:02",
+       "color": "amber"
+      },
+      {
+       "id": "opt3",
+       "type": "label",
+       "text": "9:10",
+       "color": "ion"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "A clock has two important hands. The short hand shows the hour, and the long hand shows the minutes.",
+    "L2": "The minute hand counts by fives. So the number 4 means 20 minutes, not 4 minutes.",
+    "L3": "The hour is the number the short hand has just passed. Do not read the number it is coming to.",
+    "L4": "In the worked example, the hour hand is just past 9 and the minute hand is on 11.",
+    "L5": "Count eleven groups of five: 11 times 5 is 55. The time is 9:55.",
+    "L6": "a.m. is from midnight to noon, and p.m. is from noon to midnight. So 12 noon is 12 p.m.",
+    "L7": "Now check this: the hour hand is just past 8 and the minute hand points to 2. Choose the time."
+   },
+   "narration": {
+    "L1": {
+     "text": "A clock has two important hands. The short hand shows the hour, and the long hand shows the minutes.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "The minute hand counts by fives. So the number 4 means 20 minutes, not 4 minutes.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "The hour is the number the short hand has just passed. Do not read the number it is coming to.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "In the worked example, the hour hand is just past 9 and the minute hand is on 11.",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "Count eleven groups of five: 11 times 5 is 55. The time is 9:55.",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "a.m. is from midnight to noon, and p.m. is from noon to midnight. So 12 noon is 12 p.m.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Now check this: the hour hand is just past 8 and the minute hand points to 2. Choose the time.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "clock",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "hour"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.6,
+       "target": "minute"
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "h1",
+        "h2"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "clock",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "five"
+      },
+      {
+       "at": 0.5,
+       "do": "highlight",
+       "dur": 1,
+       "target": "five"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "intro",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "myth"
+      },
+      {
+       "at": 0.8,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "example",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "clock9"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "nine",
+        "eleven",
+        "past"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "example",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1.2,
+       "target": "eleven"
+      },
+      {
+       "at": 1,
+       "do": "focus",
+       "dur": 0.8,
+       "target": "clock9"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "day",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "am",
+        "pm",
+        "noon",
+        "midnight"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 1,
+       "target": "noon"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0,
+     "scene": "check",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.5,
+       "target": "q"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "opt1",
+        "opt2",
+        "opt3"
+       ]
+      },
+      {
+       "at": 1.5,
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "The hour hand is just past 8 and the minute hand points to 2. Which time is shown?",
+    "options": [
+     "opt1",
+     "opt2",
+     "opt3"
+    ],
+    "answer": "opt1"
+   }
+  },
+  "repairs": [
+   "src"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 30
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch12-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "clock",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        300,
+        250
+       ],
+       "r": 150
+      },
+      {
+       "id": "short",
+       "op": "line",
+       "startMs": 1200,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 3,
+       "from": [
+        300,
+        250
+       ],
+       "to": [
+        250,
+        150
+       ]
+      },
+      {
+       "id": "long",
+       "op": "line",
+       "startMs": 2200,
+       "endMs": 3300,
+       "ink": "mark",
+       "weight": 3,
+       "from": [
+        300,
+        250
+       ],
+       "to": [
+        300,
+        105
+       ]
+      },
+      {
+       "id": "hourLabel",
+       "op": "label",
+       "startMs": 3800,
+       "endMs": 4600,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        520,
+        155
+       ],
+       "text": "hour",
+       "to": [
+        250,
+        150
+       ]
+      },
+      {
+       "id": "minuteLabel",
+       "op": "label",
+       "startMs": 4700,
+       "endMs": 5600,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        520,
+        285
+       ],
+       "text": "minutes",
+       "to": [
+        300,
+        105
+       ]
+      },
+      {
+       "id": "shortText",
+       "op": "text",
+       "startMs": 5900,
+       "endMs": 6700,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        95,
+        430
+       ],
+       "text": "short hand",
+       "size": "m"
+      },
+      {
+       "id": "longText",
+       "op": "text",
+       "startMs": 6800,
+       "endMs": 7600,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        470,
+        430
+       ],
+       "text": "long hand",
+       "size": "m"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch12-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "five",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        520,
+        100
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "4",
+         "×",
+         "5",
+         "=",
+         "20"
+        ]
+       ]
+      },
+      {
+       "id": "countArrow",
+       "op": "arrow",
+       "startMs": 1900,
+       "endMs": 2900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        380,
+        250
+       ],
+       "to": [
+        490,
+        150
+       ]
+      },
+      {
+       "id": "fourLabel",
+       "op": "label",
+       "startMs": 3000,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        490,
+        125
+       ],
+       "text": "4"
+      },
+      {
+       "id": "twenty",
+       "op": "text",
+       "startMs": 3700,
+       "endMs": 4700,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        550,
+        210
+       ],
+       "text": "20 minutes",
+       "size": "m"
+      },
+      {
+       "id": "notFour",
+       "op": "text",
+       "startMs": 4900,
+       "endMs": 6200,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        550,
+        270
+       ],
+       "text": "not 4 minutes",
+       "size": "m"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch12-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 9111,
+     "ops": [
+      {
+       "id": "hourHand",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 1100,
+       "ink": "accent",
+       "weight": 3,
+       "from": [
+        300,
+        250
+       ],
+       "to": [
+        245,
+        155
+       ]
+      },
+      {
+       "id": "passed",
+       "op": "label",
+       "startMs": 1400,
+       "endMs": 2500,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        120,
+        130
+       ],
+       "text": "just passed",
+       "to": [
+        245,
+        155
+       ]
+      },
+      {
+       "id": "coming",
+       "op": "label",
+       "startMs": 2800,
+       "endMs": 3700,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        420,
+        115
+       ],
+       "text": "coming to",
+       "to": [
+        400,
+        120
+       ]
+      },
+      {
+       "id": "warning",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 5700,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        420,
+        390
+       ],
+       "text": "read passed number",
+       "size": "m"
+      },
+      {
+       "id": "cross",
+       "op": "line",
+       "startMs": 5900,
+       "endMs": 6700,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        410,
+        100
+       ],
+       "to": [
+        500,
+        190
+       ]
+      },
+      {
+       "id": "cross2",
+       "op": "line",
+       "startMs": 5900,
+       "endMs": 6700,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        500,
+        100
+       ],
+       "to": [
+        410,
+        190
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch12-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "exampleClock",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        300,
+        250
+       ],
+       "r": 150
+      },
+      {
+       "id": "nine",
+       "op": "text",
+       "startMs": 1000,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        205,
+        375
+       ],
+       "text": "9",
+       "size": "m"
+      },
+      {
+       "id": "eleven",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        165,
+        145
+       ],
+       "text": "11",
+       "size": "m"
+      },
+      {
+       "id": "hour9",
+       "op": "line",
+       "startMs": 1900,
+       "endMs": 2900,
+       "ink": "accent",
+       "weight": 3,
+       "from": [
+        300,
+        250
+       ],
+       "to": [
+        235,
+        165
+       ]
+      },
+      {
+       "id": "minute11",
+       "op": "line",
+       "startMs": 2900,
+       "endMs": 4000,
+       "ink": "mark",
+       "weight": 3,
+       "from": [
+        300,
+        250
+       ],
+       "to": [
+        205,
+        145
+       ]
+      },
+      {
+       "id": "past9",
+       "op": "label",
+       "startMs": 4300,
+       "endMs": 5500,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        90,
+        390
+       ],
+       "text": "just past 9",
+       "to": [
+        235,
+        165
+       ]
+      },
+      {
+       "id": "on11",
+       "op": "label",
+       "startMs": 5700,
+       "endMs": 6600,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        90,
+        105
+       ],
+       "text": "on 11",
+       "to": [
+        205,
+        145
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch12-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "groups",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        500,
+        100
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "11",
+         "×",
+         "5",
+         "=",
+         "55"
+        ]
+       ]
+      },
+      {
+       "id": "times",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        500,
+        190
+       ],
+       "text": "11 times 5",
+       "size": "m"
+      },
+      {
+       "id": "timeResult",
+       "op": "numwork",
+       "startMs": 3400,
+       "endMs": 4800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        500,
+        280
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "9",
+         ":",
+         "55"
+        ]
+       ]
+      },
+      {
+       "id": "resultLabel",
+       "op": "label",
+       "startMs": 5000,
+       "endMs": 5700,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        500,
+        370
+       ],
+       "text": "time"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch12-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "dayLine",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        100,
+        250
+       ],
+       "to": [
+        700,
+        250
+       ]
+      },
+      {
+       "id": "midnight",
+       "op": "text",
+       "startMs": 1100,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        100,
+        220
+       ],
+       "text": "midnight",
+       "size": "m"
+      },
+      {
+       "id": "noon",
+       "op": "text",
+       "startMs": 1100,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        700,
+        220
+       ],
+       "text": "noon",
+       "size": "m"
+      },
+      {
+       "id": "am",
+       "op": "rect",
+       "startMs": 2300,
+       "endMs": 3200,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        170,
+        275
+       ],
+       "w": 200,
+       "h": 70,
+       "round": 12
+      },
+      {
+       "id": "amText",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 4100,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        270,
+        320
+       ],
+       "text": "a.m.",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "pm",
+       "op": "rect",
+       "startMs": 4300,
+       "endMs": 5200,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        430,
+        275
+       ],
+       "w": 200,
+       "h": 70,
+       "round": 12
+      },
+      {
+       "id": "pmText",
+       "op": "text",
+       "startMs": 5300,
+       "endMs": 6100,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        530,
+        320
+       ],
+       "text": "p.m.",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "noonTime",
+       "op": "numwork",
+       "startMs": 6400,
+       "endMs": 7900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        280,
+        390
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "12",
+         "noon",
+         "=",
+         "12",
+         "p.m."
+        ]
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch12-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9111,
+     "ops": [
+      {
+       "id": "checkClock",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        300,
+        250
+       ],
+       "r": 150
+      },
+      {
+       "id": "eight",
+       "op": "text",
+       "startMs": 1000,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        205,
+        375
+       ],
+       "text": "8",
+       "size": "m"
+      },
+      {
+       "id": "two",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        125
+       ],
+       "text": "2",
+       "size": "m"
+      },
+      {
+       "id": "short8",
+       "op": "line",
+       "startMs": 1900,
+       "endMs": 2900,
+       "ink": "accent",
+       "weight": 3,
+       "from": [
+        300,
+        250
+       ],
+       "to": [
+        230,
+        175
+       ]
+      },
+      {
+       "id": "long2",
+       "op": "line",
+       "startMs": 2900,
+       "endMs": 4000,
+       "ink": "mark",
+       "weight": 3,
+       "from": [
+        300,
+        250
+       ],
+       "to": [
+        375,
+        150
+       ]
+      },
+      {
+       "id": "past8",
+       "op": "label",
+       "startMs": 4300,
+       "endMs": 5500,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        80,
+        405
+       ],
+       "text": "just past 8",
+       "to": [
+        230,
+        175
+       ]
+      },
+      {
+       "id": "choice",
+       "op": "text",
+       "startMs": 5900,
+       "endMs": 7200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        500,
+        230
+       ],
+       "text": "choose the time",
+       "size": "m"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "160 min",
+   "prompt": "clock: 2:40 a.m."
+  },
+  {
+   "itemId": "r1:1",
+   "key": "545 min",
+   "prompt": "clock: 9:05 a.m."
+  },
+  {
+   "itemId": "r2:0",
+   "key": "480 min",
+   "prompt": "clock: 8:00 a.m."
+  },
+  {
+   "itemId": "r2:1",
+   "key": "720 min",
+   "prompt": "clock: 12:00 p.m."
+  },
+  {
+   "itemId": "r2:2",
+   "key": "780 min",
+   "prompt": "clock: 1:00 p.m."
+  },
+  {
+   "itemId": "r3:0",
+   "key": "695 min",
+   "prompt": "clock: 45 min after 10:50 a.m."
+  },
+  {
+   "itemId": "r3:1",
+   "key": "1005 min",
+   "prompt": "clock: 75 min after 3:30 p.m."
+  }
+ ],
+ "check": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "Round 2 item 2 target 780 min (13:00) is labelled p.m., but 12 p.m. is noon; 1 p.m. is correct but kit item i06 specifies noon = 12 p.m., not creating a conflict; however round 2 targets a.m./p.m. choices and includes 1 p.m. which is correct. No issue actually. Wait: re-evaluating. Round 2 items: target 480 = 8:00 a.m., target 720 = 12:00 p.m., target 780 = 13:00 = 1:00 p.m. The kit does not have 1:00 p.m. separately but it's fine. No problem.",
+    "severity": "high"
+   },
+   {
+    "where": "game",
+    "what": "Round 1 items: target 160 = 2:40 a.m. (160 min from midnight). The kit expects time reading to 5 minutes, but 2:40 is not a multiple of 5 minutes? 40 is multiple of 5, so fine. target 545 = 9:05 a.m. (545 min). That is 9:05, but 5 is not a multiple of 5? 5 is multiple of 5, so fine. No problem.",
+    "severity": "high"
+   }
+  ],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

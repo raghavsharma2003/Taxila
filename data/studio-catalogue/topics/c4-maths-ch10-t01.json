@@ -1,0 +1,1829 @@
+{
+ "topicId": "c4-maths-ch10-t01",
+ "title": "Addition chart and strategies",
+ "chapter": "Elephants, Tigers, and Leopards",
+ "subject": "maths",
+ "class": 4,
+ "topicType": "T4",
+ "plan": {
+  "game": "dukaan@1",
+  "hint": "pay and change modes with larger amounts"
+ },
+ "game": {
+  "archetype": "dukaan@1",
+  "spec": {
+   "archetype": "dukaan@1",
+   "skills": [
+    "c4-maths-ch10-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "served": "served",
+    "patience": "patience",
+    "bill": "Bill",
+    "pays": "Pays",
+    "change": "Change",
+    "pack": "Pack",
+    "crates": "crates",
+    "left": "left over",
+    "enough": "Enough",
+    "notEnough": "Not enough",
+    "budget": "Has",
+    "coach": "Tap notes and coins to put them on the counter",
+    "runDone": "Shop closed",
+    "exact": "EXACT",
+    "short": "short by",
+    "over": "over by",
+    "carry": "carry them all",
+    "full": "full crates to sell",
+    "each": "each",
+    "inLast": "in the last"
+   },
+   "title": "Dukaan Rush",
+   "rounds": [
+    {
+     "mode": "pay",
+     "title": "Build the bill",
+     "sub": "Make the exact amount",
+     "customers": [
+      {
+       "items": [
+        {
+         "name": "Notebook",
+         "price": 3800,
+         "qty": 1
+        },
+        {
+         "name": "Pencil box",
+         "price": 2500,
+         "qty": 1
+        },
+        {
+         "name": "Eraser",
+         "price": 700,
+         "qty": 1
+        }
+       ]
+      },
+      {
+       "items": [
+        {
+         "name": "Cricket ball",
+         "price": 23500,
+         "qty": 1
+        },
+        {
+         "name": "Water bottle",
+         "price": 18900,
+         "qty": 1
+        }
+       ]
+      }
+     ],
+     "coins": true,
+     "speed": 0.85
+    },
+    {
+     "mode": "change",
+     "title": "Give the change",
+     "sub": "Count back carefully",
+     "customers": [
+      {
+       "items": [
+        {
+         "name": "School bag",
+         "price": 34900,
+         "qty": 1
+        },
+        {
+         "name": "Lunch box",
+         "price": 12500,
+         "qty": 1
+        }
+       ],
+       "pays": 50000
+      },
+      {
+       "items": [
+        {
+         "name": "Kite",
+         "price": 3500,
+         "qty": 3
+        },
+        {
+         "name": "String roll",
+         "price": 2800,
+         "qty": 1
+        }
+       ],
+       "pays": 20000
+      },
+      {
+       "items": [
+        {
+         "name": "Story book",
+         "price": 27500,
+         "qty": 1
+        },
+        {
+         "name": "Colour set",
+         "price": 18900,
+         "qty": 1
+        }
+       ],
+       "pays": 50000
+      }
+     ],
+     "coins": true,
+     "speed": 0.8,
+     "targets": "c4-maths-ch10-t01-m-same-change-difference"
+    },
+    {
+     "mode": "estimate",
+     "title": "Check the basket",
+     "sub": "Estimate before you call",
+     "customers": [
+      {
+       "items": [
+        {
+         "name": "Mangoes",
+         "price": 18500,
+         "qty": 2
+        },
+        {
+         "name": "Biscuits",
+         "price": 6500,
+         "qty": 1
+        }
+       ],
+       "budget": 40000
+      },
+      {
+       "items": [
+        {
+         "name": "Toys",
+         "price": 12900,
+         "qty": 2
+        },
+        {
+         "name": "Juice",
+         "price": 7500,
+         "qty": 1
+        }
+       ],
+       "budget": 30000
+      },
+      {
+       "items": [
+        {
+         "name": "Sandals",
+         "price": 24900,
+         "qty": 1
+        },
+        {
+         "name": "Cap",
+         "price": 8500,
+         "qty": 1
+        }
+       ],
+       "budget": 40000
+      }
+     ],
+     "coins": true,
+     "speed": 0.75
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 2,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c4-maths-ch10-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Smart ways to add and subtract",
+   "accent": "mint",
+   "targets": "c4-maths-ch10-t01-m-compensation-wrong-way",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Smart ways to add and subtract"
+      },
+      {
+       "id": "goal",
+       "type": "label",
+       "text": "Make friendly numbers"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Add 10, then add 1 for 9"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "n68",
+       "type": "node",
+       "text": "68",
+       "sub": "start",
+       "color": "ion"
+      },
+      {
+       "id": "n30",
+       "type": "node",
+       "text": "30",
+       "sub": "friendly",
+       "glyph": "spark",
+       "color": "mint"
+      },
+      {
+       "id": "n98",
+       "type": "node",
+       "text": "98",
+       "sub": "68 + 30",
+       "color": "amber"
+      },
+      {
+       "id": "n97",
+       "type": "node",
+       "text": "97",
+       "sub": "take away 1",
+       "color": "sun"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "n68",
+       "to": "n98",
+       "text": "+30"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "n98",
+       "to": "n97",
+       "text": "−1"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "add9",
+       "type": "node",
+       "text": "57 + 9",
+       "sub": "add 10, −1",
+       "glyph": "ruler",
+       "color": "ion"
+      },
+      {
+       "id": "ans66",
+       "type": "node",
+       "text": "66",
+       "sub": "answer",
+       "color": "mint"
+      },
+      {
+       "id": "wrong",
+       "type": "node",
+       "text": "68",
+       "sub": "wrong way",
+       "glyph": "question",
+       "color": "sun"
+      },
+      {
+       "id": "b1",
+       "type": "arrow",
+       "from": "add9",
+       "to": "ans66",
+       "text": "correct"
+      },
+      {
+       "id": "b2",
+       "type": "arrow",
+       "from": "add9",
+       "to": "wrong",
+       "text": "not this"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "sub1",
+       "type": "node",
+       "text": "63 − 28",
+       "sub": "original gap",
+       "glyph": "balance",
+       "color": "ion"
+      },
+      {
+       "id": "sub2",
+       "type": "node",
+       "text": "65 − 30",
+       "sub": "same gap",
+       "glyph": "balance",
+       "color": "mint"
+      },
+      {
+       "id": "same",
+       "type": "label",
+       "text": "Both equal 35"
+      },
+      {
+       "id": "c1",
+       "type": "arrow",
+       "from": "sub1",
+       "to": "sub2",
+       "text": "+2 to both"
+      },
+      {
+       "id": "c2",
+       "type": "arrow",
+       "from": "sub2",
+       "to": "same",
+       "text": "still 35"
+      }
+     ]
+    },
+    {
+     "id": "s5",
+     "layout": "row",
+     "els": [
+      {
+       "id": "eq1",
+       "type": "node",
+       "text": "7 + 5",
+       "sub": "12",
+       "color": "ion"
+      },
+      {
+       "id": "equal",
+       "type": "label",
+       "text": "same value"
+      },
+      {
+       "id": "eq2",
+       "type": "node",
+       "text": "8 + 4",
+       "sub": "12",
+       "color": "mint"
+      },
+      {
+       "id": "e1",
+       "type": "arrow",
+       "from": "eq1",
+       "to": "equal",
+       "text": "="
+      },
+      {
+       "id": "e2",
+       "type": "arrow",
+       "from": "equal",
+       "to": "eq2",
+       "text": "="
+      }
+     ]
+    },
+    {
+     "id": "s6",
+     "layout": "column",
+     "els": [
+      {
+       "id": "axis",
+       "type": "axis",
+       "min": 0,
+       "max": 50,
+       "step": 10,
+       "scale": "linear",
+       "y": 430
+      },
+      {
+       "id": "m43",
+       "type": "mark",
+       "axis": "axis",
+       "value": 43,
+       "text": "?"
+      },
+      {
+       "id": "prompt",
+       "type": "label",
+       "text": "82 − 39"
+      },
+      {
+       "id": "opt41",
+       "type": "node",
+       "text": "41",
+       "sub": "choice",
+       "color": "sun"
+      },
+      {
+       "id": "opt43",
+       "type": "node",
+       "text": "43",
+       "sub": "choice",
+       "color": "mint"
+      },
+      {
+       "id": "opt45",
+       "type": "node",
+       "text": "45",
+       "sub": "choice",
+       "color": "ion"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "When numbers are close to tens, change them into friendly numbers.",
+    "L2": "For 68 plus 29, use 30: 68 plus 30 is 98, then take away 1 to get 97.",
+    "L3": "To add 9, add 10 and take away 1, because 10 is one too many.",
+    "L4": "So 57 plus 9 is 57 plus 10 minus 1, which is 66.",
+    "L5": "For subtraction, add the same number to both numbers. The gap stays the same.",
+    "L6": "That is why 63 minus 28 equals 65 minus 30, and both differences are 35.",
+    "L7": "The equals sign means both sides have the same value, not just that an answer comes next.",
+    "L8": "Now use the same-difference trick for 82 minus 39."
+   },
+   "narration": {
+    "L1": {
+     "text": "When numbers are close to tens, change them into friendly numbers.",
+     "dur": 6.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L2": {
+     "text": "For 68 plus 29, use 30: 68 plus 30 is 98, then take away 1 to get 97.",
+     "dur": 8.5,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L3": {
+     "text": "To add 9, add 10 and take away 1, because 10 is one too many.",
+     "dur": 7.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L4": {
+     "text": "So 57 plus 9 is 57 plus 10 minus 1, which is 66.",
+     "dur": 6.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L5": {
+     "text": "For subtraction, add the same number to both numbers. The gap stays the same.",
+     "dur": 7.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L6": {
+     "text": "That is why 63 minus 28 equals 65 minus 30, and both differences are 35.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L7": {
+     "text": "The equals sign means both sides have the same value, not just that an answer comes next.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Now use the same-difference trick for 82 minus 39.",
+     "dur": 5.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.7,
+       "target": "goal"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.5,
+       "target": "n68"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "n30",
+        "a1",
+        "n98"
+       ]
+      },
+      {
+       "at": 1.5,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "a1",
+       "to": 1
+      },
+      {
+       "at": 2.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "a2",
+        "n97"
+       ]
+      },
+      {
+       "at": 3.5,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "a2",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 1.5,
+       "do": "show",
+       "dur": 0.6,
+       "target": "add9"
+      },
+      {
+       "at": 2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "add9"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "b1",
+        "ans66"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "b1",
+       "to": 1
+      },
+      {
+       "at": 1.8,
+       "do": "hide",
+       "dur": 0.5,
+       "target": "wrong"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "sub1"
+      },
+      {
+       "at": 0.7,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "c1",
+        "sub2"
+       ]
+      },
+      {
+       "at": 1.7,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "c1",
+       "to": 1
+      },
+      {
+       "at": 2.5,
+       "do": "highlight",
+       "dur": 1,
+       "target": "same"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "c2"
+      },
+      {
+       "at": 0.7,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "c2",
+       "to": 1
+      },
+      {
+       "at": 1.5,
+       "do": "highlight",
+       "dur": 1.2,
+       "target": [
+        "sub1",
+        "sub2"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s5",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.9,
+       "target": [
+        "eq1",
+        "equal",
+        "eq2"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 0.7,
+       "target": [
+        "e1",
+        "e2"
+       ],
+       "to": 1
+      },
+      {
+       "at": 2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "equal"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s6",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "axis",
+        "prompt",
+        "m43",
+        "opt41",
+        "opt43",
+        "opt45"
+       ]
+      },
+      {
+       "at": 1.2,
+       "do": "interactive",
+       "dur": 1
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which number is the difference between 82 and 39?",
+    "options": [
+     "opt41",
+     "opt43",
+     "opt45"
+    ],
+    "answer": "opt43",
+    "src": "c4-maths-ch10-t01-i07"
+   }
+  },
+  "repairs": [
+   "glyph",
+   "glyph",
+   "glyph",
+   "glyph",
+   "glyph",
+   "glyph",
+   "string:axis.unit",
+   "glyph",
+   "glyph",
+   "glyph",
+   "cue:target",
+   "cue:target"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 62
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch10-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "tens",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        90
+       ],
+       "text": "tens",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "n1",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        250,
+        250
+       ],
+       "r": 58
+      },
+      {
+       "id": "n2",
+       "op": "circle",
+       "startMs": 1500,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        550,
+        250
+       ],
+       "r": 58
+      },
+      {
+       "id": "close1",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        250,
+        250
+       ],
+       "text": "38",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "close2",
+       "op": "text",
+       "startMs": 2600,
+       "endMs": 3100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        550,
+        250
+       ],
+       "text": "40",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "change",
+       "op": "arrow",
+       "startMs": 3100,
+       "endMs": 3900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        315,
+        250
+       ],
+       "to": [
+        485,
+        250
+       ]
+      },
+      {
+       "id": "friendly",
+       "op": "label",
+       "startMs": 3900,
+       "endMs": 4500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        350
+       ],
+       "text": "friendly",
+       "to": [
+        550,
+        310
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch10-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "problem",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        180,
+        80
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "68",
+         "+",
+         "29"
+        ]
+       ]
+      },
+      {
+       "id": "swap",
+       "op": "numwork",
+       "startMs": 900,
+       "endMs": 1800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        180,
+        160
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "68",
+         "+",
+         "30"
+        ]
+       ]
+      },
+      {
+       "id": "sum98",
+       "op": "numwork",
+       "startMs": 1800,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        180,
+        240
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "68",
+         "+",
+         "30",
+         "=",
+         "98"
+        ]
+       ]
+      },
+      {
+       "id": "minus1",
+       "op": "numwork",
+       "startMs": 3000,
+       "endMs": 4300,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        180,
+        320
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "98",
+         "−",
+         "1",
+         "=",
+         "97"
+        ]
+       ]
+      },
+      {
+       "id": "one",
+       "op": "label",
+       "startMs": 4300,
+       "endMs": 5000,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        500,
+        180
+       ],
+       "text": "1",
+       "to": [
+        480,
+        165
+       ]
+      },
+      {
+       "id": "too_many",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 5900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        500,
+        230
+       ],
+       "text": "1 too many",
+       "size": "m"
+      },
+      {
+       "id": "final",
+       "op": "highlight",
+       "startMs": 6500,
+       "endMs": 7600,
+       "ink": "good",
+       "weight": 2,
+       "target": "minus1",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch10-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "add9",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        170,
+        90
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "57",
+         "+",
+         "9"
+        ]
+       ]
+      },
+      {
+       "id": "add10",
+       "op": "numwork",
+       "startMs": 900,
+       "endMs": 1900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        170,
+        190
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "57",
+         "+",
+         "10"
+        ]
+       ]
+      },
+      {
+       "id": "take1",
+       "op": "numwork",
+       "startMs": 1900,
+       "endMs": 3100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        170,
+        290
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "57",
+         "+",
+         "10",
+         "−",
+         "1"
+        ]
+       ]
+      },
+      {
+       "id": "onearrow",
+       "op": "arrow",
+       "startMs": 3100,
+       "endMs": 3900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        500,
+        210
+       ],
+       "to": [
+        500,
+        310
+       ]
+      },
+      {
+       "id": "reason",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 5100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        570,
+        260
+       ],
+       "text": "10 is one too many",
+       "size": "m"
+      },
+      {
+       "id": "underline",
+       "op": "highlight",
+       "startMs": 5500,
+       "endMs": 6500,
+       "ink": "good",
+       "weight": 2,
+       "target": "take1",
+       "style": "underline"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch10-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "eq57",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        150,
+        100
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "57",
+         "+",
+         "9",
+         "=",
+         "57",
+         "+",
+         "10",
+         "−",
+         "1"
+        ]
+       ]
+      },
+      {
+       "id": "result66",
+       "op": "numwork",
+       "startMs": 2200,
+       "endMs": 3900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        250,
+        230
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "57",
+         "+",
+         "10",
+         "−",
+         "1",
+         "=",
+         "66"
+        ]
+       ]
+      },
+      {
+       "id": "mark9",
+       "op": "highlight",
+       "startMs": 4300,
+       "endMs": 5200,
+       "ink": "accent",
+       "weight": 2,
+       "target": "eq57",
+       "style": "circle"
+      },
+      {
+       "id": "mark66",
+       "op": "highlight",
+       "startMs": 5200,
+       "endMs": 6000,
+       "ink": "good",
+       "weight": 2,
+       "target": "result66",
+       "style": "underline"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch10-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "subtraction",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "subtraction",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "left",
+       "op": "numwork",
+       "startMs": 900,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        150,
+        170
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "63",
+         "−",
+         "28"
+        ]
+       ]
+      },
+      {
+       "id": "right",
+       "op": "numwork",
+       "startMs": 1800,
+       "endMs": 2700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        500,
+        170
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "65",
+         "−",
+         "30"
+        ]
+       ]
+      },
+      {
+       "id": "same1",
+       "op": "arrow",
+       "startMs": 2700,
+       "endMs": 3500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        310,
+        190
+       ],
+       "to": [
+        490,
+        190
+       ]
+      },
+      {
+       "id": "same",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4400,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        300
+       ],
+       "text": "same number",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "gap",
+       "op": "text",
+       "startMs": 4400,
+       "endMs": 5600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        380
+       ],
+       "text": "gap stays the same",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch10-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "orig",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        100
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "63",
+         "−",
+         "28",
+         "=",
+         "35"
+        ]
+       ]
+      },
+      {
+       "id": "shift",
+       "op": "numwork",
+       "startMs": 1500,
+       "endMs": 3000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        120,
+        220
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "65",
+         "−",
+         "30",
+         "=",
+         "35"
+        ]
+       ]
+      },
+      {
+       "id": "plus2a",
+       "op": "label",
+       "startMs": 3000,
+       "endMs": 3700,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        205,
+        175
+       ],
+       "text": "+2",
+       "to": [
+        205,
+        205
+       ]
+      },
+      {
+       "id": "plus2b",
+       "op": "label",
+       "startMs": 3700,
+       "endMs": 4400,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        420,
+        175
+       ],
+       "text": "+2",
+       "to": [
+        420,
+        205
+       ]
+      },
+      {
+       "id": "equal35",
+       "op": "highlight",
+       "startMs": 4800,
+       "endMs": 5900,
+       "ink": "good",
+       "weight": 2,
+       "target": "shift",
+       "style": "circle"
+      },
+      {
+       "id": "both",
+       "op": "text",
+       "startMs": 5900,
+       "endMs": 6800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        420
+       ],
+       "text": "both differences 35",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch10-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "side1",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        110
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "63",
+         "−",
+         "28",
+         "=",
+         "35"
+        ]
+       ]
+      },
+      {
+       "id": "side2",
+       "op": "numwork",
+       "startMs": 1500,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        230
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "65",
+         "−",
+         "30",
+         "=",
+         "35"
+        ]
+       ]
+      },
+      {
+       "id": "equals",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3800,
+       "ink": "accent",
+       "weight": 3,
+       "at": [
+        465,
+        170
+       ],
+       "text": "=",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "samevalue",
+       "op": "text",
+       "startMs": 3800,
+       "endMs": 4900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        560,
+        170
+       ],
+       "text": "same value",
+       "size": "m"
+      },
+      {
+       "id": "bothsides",
+       "op": "text",
+       "startMs": 4900,
+       "endMs": 5900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        390
+       ],
+       "text": "both sides",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "equalsmark",
+       "op": "highlight",
+       "startMs": 6100,
+       "endMs": 7400,
+       "ink": "accent",
+       "weight": 2,
+       "target": "equals",
+       "style": "pulse"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch10-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4430,
+     "ops": [
+      {
+       "id": "problem82",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        130,
+        100
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "82",
+         "−",
+         "39"
+        ]
+       ]
+      },
+      {
+       "id": "add1",
+       "op": "numwork",
+       "startMs": 900,
+       "endMs": 1900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        130,
+        200
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "83",
+         "−",
+         "40"
+        ]
+       ]
+      },
+      {
+       "id": "sameadd",
+       "op": "label",
+       "startMs": 1900,
+       "endMs": 2600,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        430,
+        160
+       ],
+       "text": "+1",
+       "to": [
+        430,
+        200
+       ]
+      },
+      {
+       "id": "answer",
+       "op": "numwork",
+       "startMs": 2600,
+       "endMs": 3900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        130,
+        300
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "83",
+         "−",
+         "40",
+         "=",
+         "43"
+        ]
+       ]
+      },
+      {
+       "id": "circleanswer",
+       "op": "highlight",
+       "startMs": 3900,
+       "endMs": 4300,
+       "ink": "good",
+       "weight": 2,
+       "target": "answer",
+       "style": "circle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "₹70",
+   "prompt": "pay: 1×Notebook@₹38, 1×Pencil box@₹25, 1×Eraser@₹7"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "₹424",
+   "prompt": "pay: 1×Cricket ball@₹235, 1×Water bottle@₹189"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "₹26",
+   "prompt": "change: 1×School bag@₹349, 1×Lunch box@₹125 pays ₹500"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "₹67",
+   "prompt": "change: 3×Kite@₹35, 1×String roll@₹28 pays ₹200"
+  },
+  {
+   "itemId": "r2:2",
+   "key": "₹36",
+   "prompt": "change: 1×Story book@₹275, 1×Colour set@₹189 pays ₹500"
+  },
+  {
+   "itemId": "r3:0",
+   "key": "false",
+   "prompt": "estimate: 2×Mangoes@₹185, 1×Biscuits@₹65 has ₹400"
+  },
+  {
+   "itemId": "r3:1",
+   "key": "false",
+   "prompt": "estimate: 2×Toys@₹129, 1×Juice@₹75 has ₹300"
+  },
+  {
+   "itemId": "r3:2",
+   "key": "true",
+   "prompt": "estimate: 1×Sandals@₹249, 1×Cap@₹85 has ₹400"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

@@ -1,0 +1,7 @@
+/* The Studio v2 stage's Latin display and mono faces in the LIVE LESSON (ship5 p4-content). The engines draw titles with
+   FONT.display ("Bricolage Grotesque") and HUD numbers with FONT.mono ("Geist Mono"); only the dev gallery declared them,
+   so in the lesson a title fell back to a wider system face and ran off the stage box (measured in the real client,
+   2026-10-06). Atkinson Hyperlegible Next comes from the app's own src/styles/fonts.css; Devanagari from ext/deva.css.
+   OFL fonts (../gallery/fonts/OFL-NOTICE.txt). Loaded with the stage controller's chunk, never on the lesson's first paint. */
+@font-face { font-family: "Bricolage Grotesque"; src: url("../gallery/fonts/bricolage-latin.woff2") format("woff2"); font-weight: 200 800; font-display: block; }
+@font-face { font-family: "Geist Mono"; src: url("../gallery/fonts/geist-mono-latin.woff2") format("woff2"); font-weight: 100 900; font-display: block; }

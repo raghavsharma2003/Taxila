@@ -10,6 +10,9 @@ import { BEAT_KINDS, BEAT_NEED, KINDS_FOR_NEED, NO_STAGE_BEATS } from "./config.
 import { admissible, liveArchetypes } from "./catalog.js";
 import { familyKey, REQUEST_SHAPE } from "./sources.js";
 
+/** Beats whose visual is the live whiteboard when cfg.boardOwnsExplain (ship5 p4-content). */
+export const BOARD_BEATS = Object.freeze(["explain", "worked_example", "recap"]);
+
 /**
  * @typedef {{
  *   pointKind: "trp"|"beat_boundary"|"request_answered", turnSeq: number, beat: string, beatChanged?: boolean,
@@ -57,6 +60,8 @@ export function wantAt(x, cfg) {
     return W({ origin: "plan_lookahead", family: familyKey(x.skillId, need, mis, null), need, kinds, pNeed: 0.9, archetype: pick(catalog, { topicId: x.topicId, misconceptionId: mis, kinds, contrast: !!mis, planned: true, preferLive: (x.prefetched ?? []).includes(familyKey(x.skillId, need, mis, null)) }) });
   }
 
+  // 0. ship5 p4-content: the child asked for the BOARD: the live whiteboard answers on her line; no piece competes with it
+  if (x.request?.kind === "board_request") return null;
   // 1. the child's request (newest), exempt from spacing and from the first-reveal turn
   if (x.request) {
     const shape = REQUEST_SHAPE[x.request.kind];
@@ -81,6 +86,14 @@ export function wantAt(x, cfg) {
     return W({ origin: "board_state", family: familyKey(x.skillId, "re_represent", mis, null), need: "re_represent", kinds: KINDS_FOR_NEED.re_represent, pNeed: 0.8,
       archetype: pick(catalog, { topicId: x.topicId, misconceptionId: mis, kinds: KINDS_FOR_NEED.re_represent, exclude: [on.archetype] }) });
   }
+  // ship5 p4-content: the REST rule (decision stagecraft-integration-decisions-2026-10-05: busy share <= 55%). Plan-,
+  // signal- and curiosity-led pieces wait while the stage has been busy for >= restShare of the teaching time so far; a
+  // child's request, a steer, a board reteach and a misconception contrast are exempt (each answers the child now).
+  // The FREQUENCY floor (VALUES-100 V3.3: >= 1 visual every 3 min unless the child is in flow): when nothing has been on
+  // stage for visualFloorMs, the beat's own idea may come back even if it was shown earlier in this beat. Both rules are
+  // inert when the caller passes no busyShare / lastVisualAgoMs (the 2026-10-05 sim and tests are unchanged).
+  const restDue = restIsDue(x, cfg);
+  const floorDue = !on && !x.inFlow && Number.isFinite(x.lastVisualAgoMs) && x.lastVisualAgoMs >= (cfg.visualFloorMs ?? 150_000);
   // the beat's own family (used for hot-swap of the same idea even inside the spacing window)
   const beatNeed = BEAT_NEED[x.beat];
   const beatMis = beatNeed === "contrast_misconception" ? (x.misconception?.state === "active" ? x.misconception.id : null) : null;
@@ -89,6 +102,7 @@ export function wantAt(x, cfg) {
     if (on && beatFamily && on.family === beatFamily) return W({ origin: "plan_lookahead", family: beatFamily, need: beatNeed, kinds: BEAT_KINDS[x.beat] ?? KINDS_FOR_NEED[beatNeed], pNeed: 0.9, archetype: on.archetype, swapOnly: true });
     return null;
   }
+  // (4 is exempt from rest: a contrast answers what the child just revealed)
   // 4. a misconception revealed THIS lesson and not contrasted yet: probe first, contrast at the next point (the turn after
   //    it was revealed she asks why; the contrast piece comes with her next line). A misconception known from earlier
   //    sessions waits for the contrast beat (step 5).
@@ -100,9 +114,14 @@ export function wantAt(x, cfg) {
   // 5. the beat plan (a new beat, or a beat with nothing of its own on stage yet). A contrast beat with no active
   //    misconception shows a (kit) contrast only to a child who never had one on this topic: a child who already
   //    repaired theirs is not shown the contrast again.
+  if (restDue && !floorDue) return null;
+  // ship5 p4-content: explanation beats are the live whiteboard's (owner priority 6: drawn on her words, re-gated against
+  // her line, synced to her audio). A plan-led piece there would decline the board (propose.js reveal_ready) and talk over
+  // her explanation; the cinematic explainer comes when the child asks, as a re-representation, or on a re-teach.
+  if (cfg.boardOwnsExplain && BOARD_BEATS.includes(x.beat) && !floorDue) return null;
   const repaired = beatNeed === "contrast_misconception" && !beatMis && (x.contrasted ?? []).some((m) => m.startsWith(x.topicId));
   // (a family already shown in this beat and retired by the seam is not shown again: no ping-pong after a retire)
-  if (beatNeed && !repaired && !(x.shownThisBeat ?? []).includes(beatFamily) && (x.pointKind === "beat_boundary" || x.beatChanged || !on || on.family !== beatFamily)) {
+  if (beatNeed && !repaired && (floorDue || !(x.shownThisBeat ?? []).includes(beatFamily)) && (x.pointKind === "beat_boundary" || x.beatChanged || !on || on.family !== beatFamily)) {
     const kinds = BEAT_KINDS[x.beat] ?? KINDS_FOR_NEED[beatNeed];
     if (!(on && on.family === beatFamily)) return W({ origin: "plan_lookahead", family: beatFamily, need: beatNeed, kinds, pNeed: 0.9, archetype: pick(catalog, { topicId: x.topicId, misconceptionId: beatMis, kinds, contrast: !!beatMis, planned: true }) });
   }
@@ -125,4 +144,28 @@ export function wantAt(x, cfg) {
     return W({ origin: "child_signal", family: familyKey(x.skillId, "explore_question", null, null), need: "explore_question", kinds, pNeed: 0.55, archetype: pick(catalog, { topicId: x.topicId, kinds }) });
   }
   return null;
+}
+
+/**
+ * The rest rule's gate (ship5 p4-content). Due when the stage has been busy for at least `restShare` of the teaching time
+ * so far, once at least `restGraceMs` of teaching has passed (the share is meaningless in the first minutes).
+ * @param {{ busyShare?: number, teachingMs?: number }} x @param {{ restShare?: number, restGraceMs?: number }} cfg
+ */
+export function restIsDue(x, cfg = {}) {
+  if (!Number.isFinite(x?.busyShare)) return false;
+  if ((x.teachingMs ?? Infinity) < (cfg.restGraceMs ?? 120_000)) return false;
+  return x.busyShare >= (cfg.restShare ?? 0.5);
+}
+
+/**
+ * Should the piece on stage step down so the stage rests (ship5 p4-content)? When rest is due, a piece that has been up
+ * for at least `restRetireTurns` turns and is not in use this turn (no answer on it in the child's last turn) retires to
+ * the calm stage; her voice carries the lesson until the share falls. Never during a safeguard (the seam already froze it).
+ * @param {{ busyShare?: number, teachingMs?: number, safety?: boolean, turnSeq: number, board?: { onStage?: { revealedTurn: number } | null, answeredThisTurn?: boolean } }} x
+ */
+export function restRetire(x, cfg = {}) {
+  const on = x?.board?.onStage;
+  if (!on || x.safety || x.board?.answeredThisTurn) return false;
+  if (!restIsDue(x, cfg)) return false;
+  return x.turnSeq - (on.revealedTurn ?? x.turnSeq) >= (cfg.restRetireTurns ?? 4);
 }

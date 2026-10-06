@@ -1,0 +1,1846 @@
+{
+ "topicId": "c7-maths-ch11-t01",
+ "title": "Highest common factor",
+ "chapter": "Finding Common Ground",
+ "subject": "maths",
+ "class": 7,
+ "topicType": "T5",
+ "plan": {
+  "game": "sieve-storm@1",
+  "hint": "rule cfactor (common factors of a and b: the highest one is the HCF)"
+ },
+ "game": {
+  "archetype": "sieve-storm@1",
+  "spec": {
+   "archetype": "sieve-storm@1",
+   "skills": [
+    "c7-maths-ch11-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "slashed": "right calls",
+    "combo": "combo",
+    "coach": "Swipe the numbers that fit the rule",
+    "runDone": "Storm over",
+    "prime": "prime",
+    "composite": "composite",
+    "even": "even",
+    "odd": "odd",
+    "multipleOf": "multiples of",
+    "commonOf": "common multiples of",
+    "factorOf": "factors of",
+    "cfactorOf": "common factors of",
+    "divisibleBy": "divisible by",
+    "coprimeWith": "co-prime with",
+    "square": "square numbers",
+    "palindrome": "palindromes",
+    "slipped": "slipped",
+    "wrongCut": "not this one",
+    "and": "and"
+   },
+   "title": "HCF Sieve Storm",
+   "rounds": [
+    {
+     "rule": "cfactor",
+     "a": 12,
+     "b": 16,
+     "title": "Shared factors",
+     "sub": "Cut common factors of 12 and 16",
+     "lo": 1,
+     "hi": 12,
+     "count": 12,
+     "hitRate": 0.5,
+     "seed": 17,
+     "speed": 0.8,
+     "targets": "c7-maths-ch11-t01-m-lowest"
+    },
+    {
+     "rule": "cfactor",
+     "a": 24,
+     "b": 36,
+     "title": "Factor rain",
+     "sub": "Find factors shared by 24 and 36",
+     "lo": 1,
+     "hi": 24,
+     "count": 16,
+     "hitRate": 0.45,
+     "seed": 31,
+     "speed": 1
+    },
+    {
+     "rule": "cfactor",
+     "a": 60,
+     "b": 84,
+     "title": "Prime factor storm",
+     "sub": "Use the shared parts of 60 and 84",
+     "lo": 1,
+     "hi": 60,
+     "count": 20,
+     "hitRate": 0.35,
+     "seed": 59,
+     "speed": 1.2,
+     "targets": "c7-maths-ch11-t01-m-all-primes"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-maths-ch11-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Finding the highest common factor",
+   "accent": "ion",
+   "targets": "c7-maths-ch11-t01-m-lowest",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "row",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Highest common factor"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "The lowest common factor is the answer"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "twelve",
+       "type": "node",
+       "text": "12",
+       "sub": "number",
+       "color": "ion"
+      },
+      {
+       "id": "sixteen",
+       "type": "node",
+       "text": "16",
+       "sub": "number",
+       "color": "sci"
+      },
+      {
+       "id": "f12",
+       "type": "label",
+       "text": "1, 2, 3, 4, 6, 12"
+      },
+      {
+       "id": "f16",
+       "type": "label",
+       "text": "1, 2, 4, 8, 16"
+      },
+      {
+       "id": "common",
+       "type": "label",
+       "text": "1, 2, 4"
+      },
+      {
+       "id": "highest",
+       "type": "node",
+       "text": "4",
+       "sub": "highest",
+       "glyph": "crown",
+       "color": "amber"
+      },
+      {
+       "id": "a12",
+       "type": "arrow",
+       "from": "twelve",
+       "to": "f12",
+       "text": "factors"
+      },
+      {
+       "id": "a16",
+       "type": "arrow",
+       "from": "sixteen",
+       "to": "f16",
+       "text": "factors"
+      },
+      {
+       "id": "ac",
+       "type": "arrow",
+       "from": "common",
+       "to": "highest",
+       "text": "largest"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "n36",
+       "type": "node",
+       "text": "36",
+       "sub": "2×2×3×3",
+       "color": "ion"
+      },
+      {
+       "id": "n48",
+       "type": "node",
+       "text": "48",
+       "sub": "2×2×2×2×3",
+       "color": "sci"
+      },
+      {
+       "id": "p36",
+       "type": "label",
+       "text": "2×2×3×3"
+      },
+      {
+       "id": "p48",
+       "type": "label",
+       "text": "2×2×2×2×3"
+      },
+      {
+       "id": "shared",
+       "type": "node",
+       "text": "2×2×3",
+       "sub": "common primes",
+       "color": "mint"
+      },
+      {
+       "id": "hcf12",
+       "type": "node",
+       "text": "12",
+       "sub": "HCF",
+       "glyph": "crown",
+       "color": "amber"
+      },
+      {
+       "id": "b36",
+       "type": "arrow",
+       "from": "n36",
+       "to": "p36",
+       "text": "prime factors"
+      },
+      {
+       "id": "b48",
+       "type": "arrow",
+       "from": "n48",
+       "to": "p48",
+       "text": "prime factors"
+      },
+      {
+       "id": "bs",
+       "type": "arrow",
+       "from": "shared",
+       "to": "hcf12",
+       "text": "multiply"
+      },
+      {
+       "id": "check36",
+       "type": "label",
+       "text": "36÷12=3"
+      },
+      {
+       "id": "check48",
+       "type": "label",
+       "text": "48÷12=4"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "row",
+     "els": [
+      {
+       "id": "qtitle",
+       "type": "title",
+       "text": "Choose the HCF"
+      },
+      {
+       "id": "opt4",
+       "type": "node",
+       "text": "4",
+       "sub": "option",
+       "glyph": "question",
+       "color": "volt"
+      },
+      {
+       "id": "opt12",
+       "type": "node",
+       "text": "12",
+       "sub": "option",
+       "glyph": "question",
+       "color": "mint"
+      },
+      {
+       "id": "opt36",
+       "type": "node",
+       "text": "36",
+       "sub": "option",
+       "glyph": "question",
+       "color": "amber"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "A common factor divides both numbers exactly. The HCF is the largest common factor.",
+    "L2": "One is always common, but it is not usually the answer. We need the highest one.",
+    "L3": "For 12 and 16, list the factors of each number.",
+    "L4": "The common factors are 1, 2, and 4, so the HCF is 4.",
+    "L5": "We can also use prime factorisation. Write each number as a product of primes.",
+    "L6": "For 36 and 48, the common primes are 2, 2, and 3. Their product is 12.",
+    "L7": "Check the result: 36 divided by 12 is 3, and 48 divided by 12 is 4.",
+    "L8": "Now choose the HCF of 36 and 48."
+   },
+   "narration": {
+    "L1": {
+     "text": "A common factor divides both numbers exactly. The HCF is the largest common factor.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L2": {
+     "text": "One is always common, but it is not usually the answer. We need the highest one.",
+     "dur": 4.5,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L3": {
+     "text": "For 12 and 16, list the factors of each number.",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L4": {
+     "text": "The common factors are 1, 2, and 4, so the HCF is 4.",
+     "dur": 3.8,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L5": {
+     "text": "We can also use prime factorisation. Write each number as a product of primes.",
+     "dur": 4.2,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L6": {
+     "text": "For 36 and 48, the common primes are 2, 2, and 3. Their product is 12.",
+     "dur": 4.5,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Check the result: 36 divided by 12 is 3, and 48 divided by 12 is 4.",
+     "dur": 4.2,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Now choose the HCF of 36 and 48.",
+     "dur": 2.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "myth"
+      },
+      {
+       "at": 1.2,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "twelve",
+        "sixteen"
+       ]
+      },
+      {
+       "at": 0.7,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "f12",
+        "f16"
+       ]
+      },
+      {
+       "at": 1.2,
+       "do": "flow",
+       "dur": 0.7,
+       "target": [
+        "a12",
+        "a16"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "common"
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.7,
+       "target": "highest"
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "ac",
+       "to": 1
+      },
+      {
+       "at": 1.8,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "highest"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "n36",
+        "n48"
+       ]
+      },
+      {
+       "at": 0.7,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "p36",
+        "p48"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 0.7,
+       "target": [
+        "b36",
+        "b48"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "shared"
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.8,
+       "target": "hcf12"
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "bs",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "check36",
+        "check48"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 1,
+       "target": "hcf12"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "qtitle",
+        "opt4",
+        "opt12",
+        "opt36"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "interactive"
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which number is the HCF of 36 and 48?",
+    "options": [
+     "opt4",
+     "opt12",
+     "opt36"
+    ],
+    "answer": "opt12",
+    "src": "c7-maths-ch11-t01-i02"
+   }
+  },
+  "repairs": [
+   "glyph",
+   "glyph",
+   "glyph",
+   "glyph",
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 36
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch11-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "a1",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        250,
+        220
+       ],
+       "r": 85
+      },
+      {
+       "id": "a2",
+       "op": "circle",
+       "startMs": 500,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        470,
+        220
+       ],
+       "r": 85
+      },
+      {
+       "id": "a3",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        360,
+        220
+       ],
+       "text": "common",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "a4",
+       "op": "arrow",
+       "startMs": 2300,
+       "endMs": 3000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        360,
+        300
+       ],
+       "to": [
+        360,
+        390
+       ]
+      },
+      {
+       "id": "a5",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        360,
+        430
+       ],
+       "text": "HCF",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "a6",
+       "op": "label",
+       "startMs": 3900,
+       "endMs": 4500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        250,
+        130
+       ],
+       "text": "number",
+       "to": [
+        250,
+        155
+       ]
+      },
+      {
+       "id": "a7",
+       "op": "label",
+       "startMs": 4500,
+       "endMs": 5100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        470,
+        130
+       ],
+       "text": "number",
+       "to": [
+        470,
+        155
+       ]
+      },
+      {
+       "id": "a8",
+       "op": "highlight",
+       "startMs": 5200,
+       "endMs": 6500,
+       "ink": "good",
+       "weight": 2,
+       "target": "a5",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch11-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "b1",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        110,
+        110
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "1",
+         "=",
+         "common"
+        ]
+       ]
+      },
+      {
+       "id": "b2",
+       "op": "text",
+       "startMs": 1300,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        110,
+        180
+       ],
+       "text": "always common",
+       "size": "m"
+      },
+      {
+       "id": "b3",
+       "op": "line",
+       "startMs": 2300,
+       "endMs": 2900,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        100,
+        245
+       ],
+       "to": [
+        330,
+        245
+       ]
+      },
+      {
+       "id": "b4",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3900,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        110,
+        300
+       ],
+       "text": "not highest",
+       "size": "m"
+      },
+      {
+       "id": "b5",
+       "op": "arrow",
+       "startMs": 4000,
+       "endMs": 4900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        420,
+        245
+       ],
+       "to": [
+        650,
+        245
+       ]
+      },
+      {
+       "id": "b6",
+       "op": "text",
+       "startMs": 4900,
+       "endMs": 5800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        520,
+        210
+       ],
+       "text": "highest",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "b7",
+       "op": "highlight",
+       "startMs": 5900,
+       "endMs": 7300,
+       "ink": "good",
+       "weight": 2,
+       "target": "b6",
+       "style": "underline"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch11-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "c1",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        210,
+        75
+       ],
+       "text": "12",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "c2",
+       "op": "text",
+       "startMs": 300,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        590,
+        75
+       ],
+       "text": "16",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "c3",
+       "op": "numwork",
+       "startMs": 900,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        90,
+        130
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "12",
+         ":",
+         "1,2,3,"
+        ]
+       ]
+      },
+      {
+       "id": "c4",
+       "op": "numwork",
+       "startMs": 1800,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        90,
+        220
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "16",
+         ":",
+         "1,2,4,"
+        ]
+       ]
+      },
+      {
+       "id": "c5",
+       "op": "line",
+       "startMs": 3000,
+       "endMs": 3600,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        80,
+        330
+       ],
+       "to": [
+        720,
+        330
+       ]
+      },
+      {
+       "id": "c6",
+       "op": "text",
+       "startMs": 3600,
+       "endMs": 4300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        390
+       ],
+       "text": "factors",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "c7",
+       "op": "highlight",
+       "startMs": 4300,
+       "endMs": 4800,
+       "ink": "mark",
+       "weight": 1,
+       "target": "c3",
+       "style": "pulse"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch11-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "d1",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        120
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "common",
+         "=",
+         "1,2,4"
+        ]
+       ]
+      },
+      {
+       "id": "d2",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        210
+       ],
+       "text": "1, 2, 4",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "d3",
+       "op": "arrow",
+       "startMs": 2500,
+       "endMs": 3200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        250
+       ],
+       "to": [
+        400,
+        330
+       ]
+      },
+      {
+       "id": "d4",
+       "op": "numwork",
+       "startMs": 3200,
+       "endMs": 4400,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        300,
+        350
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "HCF",
+         "=",
+         "4"
+        ]
+       ]
+      },
+      {
+       "id": "d5",
+       "op": "highlight",
+       "startMs": 4500,
+       "endMs": 6000,
+       "ink": "good",
+       "weight": 2,
+       "target": "d4",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch11-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "e1",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "prime factorisation",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "e2",
+       "op": "numwork",
+       "startMs": 1000,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        110,
+        150
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "36",
+         "=",
+         "2",
+         "×",
+         "2",
+         "×",
+         "3",
+         "×",
+         "3"
+        ]
+       ]
+      },
+      {
+       "id": "e3",
+       "op": "numwork",
+       "startMs": 1900,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        110,
+        240
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "48",
+         "=",
+         "2",
+         "×",
+         "2",
+         "×",
+         "2",
+         "×",
+         "2",
+         "×",
+         "3"
+        ]
+       ]
+      },
+      {
+       "id": "e4",
+       "op": "line",
+       "startMs": 3500,
+       "endMs": 4100,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        100,
+        350
+       ],
+       "to": [
+        700,
+        350
+       ]
+      },
+      {
+       "id": "e5",
+       "op": "text",
+       "startMs": 4100,
+       "endMs": 5000,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        400,
+        410
+       ],
+       "text": "product of primes",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "e6",
+       "op": "arrow",
+       "startMs": 5000,
+       "endMs": 5600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        430
+       ],
+       "to": [
+        400,
+        465
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch11-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "f1",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        80
+       ],
+       "text": "common primes",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "f2",
+       "op": "numwork",
+       "startMs": 900,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        145
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "2",
+         "×",
+         "2",
+         "×",
+         "3"
+        ]
+       ]
+      },
+      {
+       "id": "f3",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        245
+       ],
+       "text": "2, 2, 3",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "f4",
+       "op": "arrow",
+       "startMs": 2900,
+       "endMs": 3500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        285
+       ],
+       "to": [
+        400,
+        350
+       ]
+      },
+      {
+       "id": "f5",
+       "op": "numwork",
+       "startMs": 3500,
+       "endMs": 5000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        300,
+        370
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "2",
+         "×",
+         "2",
+         "×",
+         "3",
+         "=",
+         "12"
+        ]
+       ]
+      },
+      {
+       "id": "f6",
+       "op": "highlight",
+       "startMs": 5200,
+       "endMs": 7000,
+       "ink": "good",
+       "weight": 2,
+       "target": "f5",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch11-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "g1",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "check",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "g2",
+       "op": "numwork",
+       "startMs": 700,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        140
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "36",
+         "÷",
+         "12",
+         "=",
+         "3"
+        ]
+       ]
+      },
+      {
+       "id": "g3",
+       "op": "numwork",
+       "startMs": 1900,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        240
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "48",
+         "÷",
+         "12",
+         "=",
+         "4"
+        ]
+       ]
+      },
+      {
+       "id": "g4",
+       "op": "line",
+       "startMs": 3500,
+       "endMs": 4100,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        100,
+        340
+       ],
+       "to": [
+        700,
+        340
+       ]
+      },
+      {
+       "id": "g5",
+       "op": "text",
+       "startMs": 4100,
+       "endMs": 4900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        400
+       ],
+       "text": "exact",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "g6",
+       "op": "highlight",
+       "startMs": 5000,
+       "endMs": 5900,
+       "ink": "good",
+       "weight": 2,
+       "target": "g2",
+       "style": "underline"
+      },
+      {
+       "id": "g7",
+       "op": "highlight",
+       "startMs": 5900,
+       "endMs": 7200,
+       "ink": "good",
+       "weight": 2,
+       "target": "g3",
+       "style": "underline"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch11-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 4004,
+     "ops": [
+      {
+       "id": "h1",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        100
+       ],
+       "text": "36 and 48",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "h2",
+       "op": "arrow",
+       "startMs": 800,
+       "endMs": 1400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        140
+       ],
+       "to": [
+        400,
+        220
+       ]
+      },
+      {
+       "id": "h3",
+       "op": "numwork",
+       "startMs": 1400,
+       "endMs": 2600,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        280,
+        250
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "HCF",
+         "=",
+         "12"
+        ]
+       ]
+      },
+      {
+       "id": "h4",
+       "op": "highlight",
+       "startMs": 2700,
+       "endMs": 3900,
+       "ink": "good",
+       "weight": 2,
+       "target": "h3",
+       "style": "circle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 4 cfactor 12 16?"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 8 cfactor 12 16?"
+  },
+  {
+   "itemId": "r1:2",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 11 cfactor 12 16?"
+  },
+  {
+   "itemId": "r1:3",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 1 cfactor 12 16?"
+  },
+  {
+   "itemId": "r1:4",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 4 cfactor 12 16?"
+  },
+  {
+   "itemId": "r1:5",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 2 cfactor 12 16?"
+  },
+  {
+   "itemId": "r1:6",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 7 cfactor 12 16?"
+  },
+  {
+   "itemId": "r1:7",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 10 cfactor 12 16?"
+  },
+  {
+   "itemId": "r1:8",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 1 cfactor 12 16?"
+  },
+  {
+   "itemId": "r1:9",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 11 cfactor 12 16?"
+  },
+  {
+   "itemId": "r1:10",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 2 cfactor 12 16?"
+  },
+  {
+   "itemId": "r1:11",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 3 cfactor 12 16?"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 1 cfactor 24 36?"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 21 cfactor 24 36?"
+  },
+  {
+   "itemId": "r2:2",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 4 cfactor 24 36?"
+  },
+  {
+   "itemId": "r2:3",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 16 cfactor 24 36?"
+  },
+  {
+   "itemId": "r2:4",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 19 cfactor 24 36?"
+  },
+  {
+   "itemId": "r2:5",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 2 cfactor 24 36?"
+  },
+  {
+   "itemId": "r2:6",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 12 cfactor 24 36?"
+  },
+  {
+   "itemId": "r2:7",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 3 cfactor 24 36?"
+  },
+  {
+   "itemId": "r2:8",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 18 cfactor 24 36?"
+  },
+  {
+   "itemId": "r2:9",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 11 cfactor 24 36?"
+  },
+  {
+   "itemId": "r2:10",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 5 cfactor 24 36?"
+  },
+  {
+   "itemId": "r2:11",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 2 cfactor 24 36?"
+  },
+  {
+   "itemId": "r2:12",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 1 cfactor 24 36?"
+  },
+  {
+   "itemId": "r2:13",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 1 cfactor 24 36?"
+  },
+  {
+   "itemId": "r2:14",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 12 cfactor 24 36?"
+  },
+  {
+   "itemId": "r2:15",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 12 cfactor 24 36?"
+  },
+  {
+   "itemId": "r3:0",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 2 cfactor 60 84?"
+  },
+  {
+   "itemId": "r3:1",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 12 cfactor 60 84?"
+  },
+  {
+   "itemId": "r3:2",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 1 cfactor 60 84?"
+  },
+  {
+   "itemId": "r3:3",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 17 cfactor 60 84?"
+  },
+  {
+   "itemId": "r3:4",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 19 cfactor 60 84?"
+  },
+  {
+   "itemId": "r3:5",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 38 cfactor 60 84?"
+  },
+  {
+   "itemId": "r3:6",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 50 cfactor 60 84?"
+  },
+  {
+   "itemId": "r3:7",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 34 cfactor 60 84?"
+  },
+  {
+   "itemId": "r3:8",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 26 cfactor 60 84?"
+  },
+  {
+   "itemId": "r3:9",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 48 cfactor 60 84?"
+  },
+  {
+   "itemId": "r3:10",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 2 cfactor 60 84?"
+  },
+  {
+   "itemId": "r3:11",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 27 cfactor 60 84?"
+  },
+  {
+   "itemId": "r3:12",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 43 cfactor 60 84?"
+  },
+  {
+   "itemId": "r3:13",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 3 cfactor 60 84?"
+  },
+  {
+   "itemId": "r3:14",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 41 cfactor 60 84?"
+  },
+  {
+   "itemId": "r3:15",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 51 cfactor 60 84?"
+  },
+  {
+   "itemId": "r3:16",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 40 cfactor 60 84?"
+  },
+  {
+   "itemId": "r3:17",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 12 cfactor 60 84?"
+  },
+  {
+   "itemId": "r3:18",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 12 cfactor 60 84?"
+  },
+  {
+   "itemId": "r3:19",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 56 cfactor 60 84?"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

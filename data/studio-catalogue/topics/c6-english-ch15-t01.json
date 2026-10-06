@@ -1,0 +1,1551 @@
+{
+ "topicId": "c6-english-ch15-t01",
+ "title": "Ila Sachani: Embroidering Dreams with her Feet",
+ "chapter": "Ila Sachani: Embroidering Dreams with her Feet",
+ "subject": "english",
+ "class": 6,
+ "topicType": "T3",
+ "plan": {
+  "game": "story-rail@1",
+  "hint": "sequence, cause and who modes from the lesson's events and speakers"
+ },
+ "game": {
+  "archetype": "story-rail@1",
+  "spec": {
+   "archetype": "story-rail@1",
+   "skills": [
+    "c6-english-ch15-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "picked": "coupled",
+    "streak": "streak",
+    "next": "What happens next?",
+    "effect": "What does this lead to?",
+    "who": "Who said this?",
+    "runDone": "Line complete",
+    "order": "your train",
+    "right": "Coupled",
+    "wrong": "Not this one",
+    "coach": "Tap a wagon before the train reaches the fork"
+   },
+   "title": "Ila Sachani: Embroidering Dreams",
+   "rounds": [
+    {
+     "mode": "who",
+     "title": "Who said it?",
+     "sub": "send each line to its speaker",
+     "speakers": [
+      {
+       "id": "ila",
+       "name": "Ila",
+       "glyph": "person"
+      },
+      {
+       "id": "mother",
+       "name": "Mother",
+       "glyph": "person"
+      },
+      {
+       "id": "grandma",
+       "name": "Grandmother",
+       "glyph": "person"
+      }
+     ],
+     "lines": [
+      {
+       "id": "w1",
+       "text": "I will keep trying.",
+       "speaker": "ila"
+      },
+      {
+       "id": "w2",
+       "text": "I will teach you to embroider.",
+       "speaker": "mother"
+      }
+     ],
+     "speed": 0.85
+    }
+   ]
+  },
+  "repairs": [
+   "string:card.text",
+   "string:card.text",
+   "string:card.text",
+   "round:too-few-cards",
+   "string:card.text",
+   "glyph",
+   "string:card.text",
+   "string:card.text",
+   "string:card.text",
+   "round:too-few-pairs",
+   "string:card.text"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c6-english-ch15-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Ila Sachani: Skill and Determination",
+   "accent": "mint",
+   "targets": "c6-english-ch15-t01-m-challenge-as-pity",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Ila Sachani"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "A sad story about what Ila could not do"
+      },
+      {
+       "id": "skill",
+       "type": "node",
+       "text": "Skill",
+       "sub": "Her own way",
+       "glyph": "flower",
+       "color": "mint"
+      },
+      {
+       "id": "value",
+       "type": "node",
+       "text": "Determination",
+       "sub": "Never giving up",
+       "glyph": "shield",
+       "color": "amber"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "born",
+       "type": "node",
+       "text": "Born",
+       "sub": "Amreli family",
+       "glyph": "house",
+       "color": "ion"
+      },
+      {
+       "id": "learn",
+       "type": "node",
+       "text": "Learned",
+       "sub": "Feet embroider",
+       "color": "mint"
+      },
+      {
+       "id": "exhibit",
+       "type": "node",
+       "text": "Exhibition",
+       "sub": "Work was seen",
+       "glyph": "school",
+       "color": "amber"
+      },
+      {
+       "id": "ar1",
+       "type": "arrow",
+       "from": "born",
+       "to": "learn",
+       "text": "then"
+      },
+      {
+       "id": "ar2",
+       "type": "arrow",
+       "from": "learn",
+       "to": "exhibit",
+       "text": "shown"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "family",
+       "type": "node",
+       "text": "Family",
+       "sub": "Taught and helped",
+       "glyph": "group",
+       "color": "ion"
+      },
+      {
+       "id": "income",
+       "type": "node",
+       "text": "New independence",
+       "sub": "Regular income",
+       "glyph": "coin",
+       "color": "amber"
+      },
+      {
+       "id": "message",
+       "type": "node",
+       "text": "Victory",
+       "sub": "Focus and effort",
+       "glyph": "spark",
+       "color": "mint"
+      },
+      {
+       "id": "qborn",
+       "type": "node",
+       "text": "Born",
+       "sub": "Amreli",
+       "glyph": "house",
+       "color": "ion"
+      },
+      {
+       "id": "qlearn",
+       "type": "node",
+       "text": "Taught",
+       "glyph": "person",
+       "color": "mint"
+      },
+      {
+       "id": "qshow",
+       "type": "node",
+       "text": "Exhibition",
+       "sub": "Work shown",
+       "glyph": "school",
+       "color": "amber"
+      },
+      {
+       "id": "qmedal",
+       "type": "node",
+       "text": "Medal",
+       "sub": "President's Medal",
+       "glyph": "crown",
+       "color": "sun"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Ila Sachani's story is about skill and determination, not pity.",
+    "L2": "She found her own way to embroider with her feet, and she kept trying when threading a needle was hard.",
+    "L3": "Her mother and grandmother taught her embroidery, while her family supported her.",
+    "L4": "First, Ila was born in a farmer's family in Amreli.",
+    "L5": "Then her work was shown at a state exhibition, where people saw and bought it.",
+    "L6": "Her success grew, and she received many awards, including the President's Medal.",
+    "L7": "Her craft brought regular income and new independence. The message is that focus, hard work, positivity and never giving up can turn challenges into victories.",
+    "L8": "Now put the main events in the correct order."
+   },
+   "narration": {
+    "L1": {
+     "text": "Ila Sachani's story is about skill and determination, not pity.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "She found her own way to embroider with her feet, and she kept trying when threading a needle was hard.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "Her mother and grandmother taught her embroidery, while her family supported her.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "First, Ila was born in a farmer's family in Amreli.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "Then her work was shown at a state exhibition, where people saw and bought it.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Her success grew, and she received many awards, including the President's Medal.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Her craft brought regular income and new independence. The message is that focus, hard work, positivity and never giving up can turn challenges into victories.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Now put the main events in the correct order.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "title"
+      },
+      {
+       "at": 0.4,
+       "do": "show",
+       "dur": 0.7,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": "skill"
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.8,
+       "target": "value"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "family"
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 1,
+       "target": "family"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "born"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "learn",
+        "ar1"
+       ]
+      },
+      {
+       "at": 0.7,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "ar1",
+       "to": 1
+      },
+      {
+       "at": 1.4,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "exhibit",
+        "ar2"
+       ]
+      },
+      {
+       "at": 2.1,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "ar2",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": []
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "income"
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.8,
+       "target": "message"
+      },
+      {
+       "at": 2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "message"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "interactive",
+       "dur": 0.5
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "order",
+    "prompt": "Put these main events from Ila's story in the correct order.",
+    "items": [
+     "qborn",
+     "qlearn",
+     "qshow",
+     "qmedal"
+    ],
+    "src": "c6-english-ch15-t01-i03"
+   }
+  },
+  "repairs": [
+   "glyph",
+   "string:medal.text",
+   "string:qlearn.sub",
+   "arrow:dangling",
+   "cue:target",
+   "cue:target"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 36
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-english-ch15-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "skill",
+       "op": "text",
+       "startMs": 300,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        100
+       ],
+       "text": "skill",
+       "size": "l"
+      },
+      {
+       "id": "determination",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        120,
+        180
+       ],
+       "text": "determination",
+       "size": "m"
+      },
+      {
+       "id": "path",
+       "op": "arrow",
+       "startMs": 1800,
+       "endMs": 2600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        270,
+        145
+       ],
+       "to": [
+        500,
+        145
+       ]
+      },
+      {
+       "id": "pity",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3300,
+       "ink": "soft",
+       "weight": 2,
+       "at": [
+        560,
+        100
+       ],
+       "text": "pity",
+       "size": "l"
+      },
+      {
+       "id": "cross",
+       "op": "line",
+       "startMs": 3400,
+       "endMs": 3900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        550,
+        90
+       ],
+       "to": [
+        640,
+        170
+       ]
+      },
+      {
+       "id": "cross2",
+       "op": "line",
+       "startMs": 3900,
+       "endMs": 4400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        640,
+        90
+       ],
+       "to": [
+        550,
+        170
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-english-ch15-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 9111,
+     "ops": [
+      {
+       "id": "feet",
+       "op": "text",
+       "startMs": 300,
+       "endMs": 850,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        100,
+        260
+       ],
+       "text": "feet",
+       "size": "l"
+      },
+      {
+       "id": "needle",
+       "op": "line",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        250,
+        250
+       ],
+       "to": [
+        380,
+        190
+       ]
+      },
+      {
+       "id": "thread",
+       "op": "arrow",
+       "startMs": 1500,
+       "endMs": 2300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        380,
+        190
+       ],
+       "to": [
+        470,
+        270
+       ]
+      },
+      {
+       "id": "embroider",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        500,
+        250
+       ],
+       "text": "embroider",
+       "size": "m"
+      },
+      {
+       "id": "hard",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 3800,
+       "ink": "soft",
+       "weight": 2,
+       "at": [
+        110,
+        360
+       ],
+       "text": "hard",
+       "size": "m"
+      },
+      {
+       "id": "try",
+       "op": "arrow",
+       "startMs": 3900,
+       "endMs": 4700,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        180,
+        360
+       ],
+       "to": [
+        350,
+        360
+       ]
+      },
+      {
+       "id": "kept",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        380,
+        360
+       ],
+       "text": "kept trying",
+       "size": "m"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-english-ch15-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "mother",
+       "op": "text",
+       "startMs": 300,
+       "endMs": 850,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        100
+       ],
+       "text": "mother",
+       "size": "m"
+      },
+      {
+       "id": "grandmother",
+       "op": "text",
+       "startMs": 850,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        170
+       ],
+       "text": "grandmother",
+       "size": "m"
+      },
+      {
+       "id": "teach1",
+       "op": "arrow",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        230,
+        105
+       ],
+       "to": [
+        360,
+        220
+       ]
+      },
+      {
+       "id": "teach2",
+       "op": "arrow",
+       "startMs": 1800,
+       "endMs": 2500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        250,
+        175
+       ],
+       "to": [
+        360,
+        220
+       ]
+      },
+      {
+       "id": "embroidery",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        380,
+        210
+       ],
+       "text": "embroidery",
+       "size": "m"
+      },
+      {
+       "id": "family",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        350
+       ],
+       "text": "family",
+       "size": "l"
+      },
+      {
+       "id": "support",
+       "op": "arrow",
+       "startMs": 4100,
+       "endMs": 5000,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        250,
+        350
+       ],
+       "to": [
+        500,
+        250
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-english-ch15-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "born",
+       "op": "text",
+       "startMs": 300,
+       "endMs": 850,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        100
+       ],
+       "text": "born",
+       "size": "l"
+      },
+      {
+       "id": "farmer",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1450,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        180
+       ],
+       "text": "farmer",
+       "size": "m"
+      },
+      {
+       "id": "family",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2050,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        250
+       ],
+       "text": "family",
+       "size": "m"
+      },
+      {
+       "id": "amreli",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 2850,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        90,
+        330
+       ],
+       "text": "Amreli",
+       "size": "l"
+      },
+      {
+       "id": "place",
+       "op": "circle",
+       "startMs": 2850,
+       "endMs": 3500,
+       "ink": "mark",
+       "weight": 2,
+       "c": [
+        270,
+        330
+       ],
+       "r": 55
+      },
+      {
+       "id": "route",
+       "op": "arrow",
+       "startMs": 3600,
+       "endMs": 4500,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        350,
+        330
+       ],
+       "to": [
+        560,
+        330
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-english-ch15-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "work",
+       "op": "text",
+       "startMs": 300,
+       "endMs": 850,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        100
+       ],
+       "text": "work",
+       "size": "l"
+      },
+      {
+       "id": "shown",
+       "op": "arrow",
+       "startMs": 900,
+       "endMs": 1600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        180,
+        120
+       ],
+       "to": [
+        340,
+        120
+       ]
+      },
+      {
+       "id": "state",
+       "op": "text",
+       "startMs": 1600,
+       "endMs": 2450,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        360,
+        90
+       ],
+       "text": "state exhibition",
+       "size": "m"
+      },
+      {
+       "id": "people",
+       "op": "circle",
+       "startMs": 2800,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        480,
+        270
+       ],
+       "r": 35
+      },
+      {
+       "id": "saw",
+       "op": "text",
+       "startMs": 3400,
+       "endMs": 3850,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        540,
+        250
+       ],
+       "text": "saw",
+       "size": "m"
+      },
+      {
+       "id": "bought",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 4550,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        540,
+        330
+       ],
+       "text": "bought",
+       "size": "m"
+      },
+      {
+       "id": "buyarrow",
+       "op": "arrow",
+       "startMs": 4700,
+       "endMs": 5600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        450,
+        150
+       ],
+       "to": [
+        500,
+        230
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-english-ch15-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "success",
+       "op": "text",
+       "startMs": 300,
+       "endMs": 950,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        100,
+        100
+       ],
+       "text": "success",
+       "size": "l"
+      },
+      {
+       "id": "grow",
+       "op": "arrow",
+       "startMs": 1000,
+       "endMs": 1700,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        220,
+        150
+       ],
+       "to": [
+        220,
+        70
+       ]
+      },
+      {
+       "id": "awards",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2550,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        250
+       ],
+       "text": "awards",
+       "size": "l"
+      },
+      {
+       "id": "medal",
+       "op": "circle",
+       "startMs": 2700,
+       "endMs": 3400,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        420,
+        250
+       ],
+       "r": 55
+      },
+      {
+       "id": "president",
+       "op": "text",
+       "startMs": 3400,
+       "endMs": 4400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        500,
+        210
+       ],
+       "text": "President's Medal",
+       "size": "m"
+      },
+      {
+       "id": "many",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        340
+       ],
+       "text": "many",
+       "size": "m"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-english-ch15-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 11238,
+     "ops": [
+      {
+       "id": "income",
+       "op": "text",
+       "startMs": 300,
+       "endMs": 900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        90,
+        90
+       ],
+       "text": "income",
+       "size": "l"
+      },
+      {
+       "id": "regular",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1450,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        160
+       ],
+       "text": "regular",
+       "size": "m"
+      },
+      {
+       "id": "independence",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        90,
+        240
+       ],
+       "text": "independence",
+       "size": "m"
+      },
+      {
+       "id": "focus",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        450,
+        90
+       ],
+       "text": "focus",
+       "size": "m"
+      },
+      {
+       "id": "hardwork",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3650,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        450,
+        160
+       ],
+       "text": "hard work",
+       "size": "m"
+      },
+      {
+       "id": "positivity",
+       "op": "text",
+       "startMs": 3650,
+       "endMs": 4300,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        450,
+        230
+       ],
+       "text": "positivity",
+       "size": "m"
+      },
+      {
+       "id": "never",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 5100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        450,
+        300
+       ],
+       "text": "never giving up",
+       "size": "m"
+      },
+      {
+       "id": "challenge",
+       "op": "text",
+       "startMs": 5600,
+       "endMs": 6300,
+       "ink": "soft",
+       "weight": 2,
+       "at": [
+        100,
+        370
+       ],
+       "text": "challenges",
+       "size": "m"
+      },
+      {
+       "id": "victory",
+       "op": "arrow",
+       "startMs": 6500,
+       "endMs": 7800,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        280,
+        385
+       ],
+       "to": [
+        610,
+        385
+       ]
+      },
+      {
+       "id": "victories",
+       "op": "text",
+       "startMs": 7800,
+       "endMs": 8500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        620,
+        365
+       ],
+       "text": "victories",
+       "size": "m"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-english-ch15-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4430,
+     "ops": [
+      {
+       "id": "order",
+       "op": "text",
+       "startMs": 300,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        100,
+        90
+       ],
+       "text": "order",
+       "size": "l"
+      },
+      {
+       "id": "one",
+       "op": "circle",
+       "startMs": 1000,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        150,
+        230
+       ],
+       "r": 35
+      },
+      {
+       "id": "two",
+       "op": "circle",
+       "startMs": 1400,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        300,
+        230
+       ],
+       "r": 35
+      },
+      {
+       "id": "three",
+       "op": "circle",
+       "startMs": 1800,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        450,
+        230
+       ],
+       "r": 35
+      },
+      {
+       "id": "four",
+       "op": "circle",
+       "startMs": 2200,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        600,
+        230
+       ],
+       "r": 35
+      },
+      {
+       "id": "flow",
+       "op": "arrow",
+       "startMs": 2700,
+       "endMs": 3200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        190,
+        230
+       ],
+       "to": [
+        260,
+        230
+       ]
+      },
+      {
+       "id": "flow2",
+       "op": "arrow",
+       "startMs": 3200,
+       "endMs": 3700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        340,
+        230
+       ],
+       "to": [
+        410,
+        230
+       ]
+      },
+      {
+       "id": "flow3",
+       "op": "arrow",
+       "startMs": 3700,
+       "endMs": 4200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        490,
+        230
+       ],
+       "to": [
+        560,
+        230
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "Ila",
+   "prompt": "who: after/for \"I will keep trying.\""
+  },
+  {
+   "itemId": "r1:1",
+   "key": "Mother",
+   "prompt": "who: after/for \"I will teach you to embroider.\""
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ },
+ "firstCheck": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "Round r2 (cause-effect) links cause 'She became an expert' to effect 'Her challenge became a victory' referencing kit item i07. In the kit, i07 contrasts pity vs. success and states 'She found a new way to embroider and became a celebrated artist.' The kit does not present 'She became an expert' as a distinct cause of 'Her challenge became a victory'; the lesson shows determination leading to victory, not merely expertise as a cause. This is a factual misalignment.",
+    "severity": "high"
+   },
+   {
+    "where": "game",
+    "what": "Round r1 (sequence) order: the kit item i03 order is d, b, c, a (born → taught → exhibition → President's Medal). The game lists: born → mother teaches → learns to thread needle → exhibition. However, the kit says mother and grandmother taught her to embroider *with her feet*, and then she learned to thread a needle (implied as part of the learning). The game inserts 'Ila learns to thread a needle' as a separate step after teaching, whereas the kit integrates threading within the teaching. The sequence breaks the kit's explicit chronology where exhibition comes after learning (not after threading separately). This changes a key event order.",
+    "severity": "high"
+   },
+   {
+    "where": "explainer",
+    "what": "Explainer scene s3 includes nodes for 'Born (Amreli)', 'Taught', 'Exhibition (Work shown)', 'Medal (President's Medal)'. These four items match the kit order (d, b, c, a). However, the scene also includes nodes for 'Family', 'New independence', 'Victory', which are not part of the sequence task. The explainer's task asks to order 'qborn', 'qlearn', 'qshow', 'qmedal', but 'qlearn' is labeled 'Taught' without specifying 'foot embroidery' or 'by mother/grandmother'. This could confuse learners because the kit specifically emphasizes 'her mother and grandmother taught her to embroider'. Lack of specificity may cause misinterpretation.",
+    "severity": "low"
+   }
+  ],
+  "verdict": "fail",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

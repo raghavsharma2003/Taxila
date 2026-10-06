@@ -1,0 +1,1650 @@
+{
+ "topicId": "c5-maths-ch07-t01",
+ "title": "Triangles and polygons",
+ "chapter": "Shapes and Patterns",
+ "subject": "maths",
+ "class": 5,
+ "topicType": "T3",
+ "plan": {
+  "game": "geo-forge@1",
+  "hint": "polygon and area builds on the grid: shapes with a given number of sides / squares"
+ },
+ "game": {
+  "archetype": "geo-forge@1",
+  "spec": {
+   "archetype": "geo-forge@1",
+   "skills": [
+    "c5-maths-ch07-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "built": "built",
+    "check": "CHECK",
+    "undo": "UNDO",
+    "coach": "Tap pins to place corners; tap the first pin to close",
+    "runDone": "Blueprints done",
+    "perimeter": "perimeter",
+    "area": "area",
+    "units": "units",
+    "sq": "sq units",
+    "polygon": "sides",
+    "sticks": "Pick three sticks",
+    "rigid": "Brace it: it must not wobble",
+    "parallel": "Through the dot, parallel to the line",
+    "perpendicular": "Through the dot, at right angles",
+    "equidistant": "Place a pin the same distance from each dot",
+    "angle": "Make an angle of",
+    "right": "right-angled triangle",
+    "isosceles": "isosceles triangle",
+    "scalene": "scalene triangle",
+    "obtuse": "obtuse-angled triangle",
+    "acute": "acute-angled triangle",
+    "square": "square",
+    "rectangle": "rectangle",
+    "parallelogram": "parallelogram",
+    "rhombus": "rhombus",
+    "trapezium": "trapezium",
+    "kite": "kite",
+    "any": "shape",
+    "triangle": "triangle",
+    "make": "Make a",
+    "withArea": "with area",
+    "withPerim": "with perimeter",
+    "noTriangle": "Pick three that CANNOT close",
+    "wobbles": "WOBBLES",
+    "holds": "HOLDS",
+    "closes": "CLOSES",
+    "gap": "GAP",
+    "time": "time"
+   },
+   "title": "Shapes on the Pin Board",
+   "rounds": [
+    {
+     "title": "Count the Corners",
+     "sub": "Turn shapes any way you like",
+     "time": 45,
+     "challenges": [
+      {
+       "kind": "polygon",
+       "sides": 3
+      },
+      {
+       "kind": "polygon",
+       "sides": 4
+      },
+      {
+       "kind": "polygon",
+       "sides": 5
+      }
+     ]
+    },
+    {
+     "title": "Fill the Grid",
+     "sub": "Cover the right number of squares",
+     "time": 60,
+     "challenges": [
+      {
+       "kind": "area",
+       "value": 4,
+       "shape": "any"
+      },
+      {
+       "kind": "area",
+       "value": 6,
+       "shape": "triangle"
+      },
+      {
+       "kind": "area",
+       "value": 8,
+       "shape": "rectangle"
+      }
+     ]
+    },
+    {
+     "title": "Shape Detective",
+     "sub": "Build each closed straight-sided shape",
+     "time": 75,
+     "challenges": [
+      {
+       "kind": "polygon",
+       "sides": 6
+      },
+      {
+       "kind": "polygon",
+       "sides": 8
+      },
+      {
+       "kind": "area",
+       "value": 10,
+       "shape": "any"
+      }
+     ],
+     "targets": "c5-maths-ch07-t01-m-regular-only"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c5-maths-ch07-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Triangles and polygons",
+   "accent": "ion",
+   "targets": "c5-maths-ch07-t01-m-flat-base",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Triangles and polygons"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "A triangle needs a flat base"
+      },
+      {
+       "id": "tri",
+       "type": "node",
+       "text": "Triangle",
+       "sub": "3 sides",
+       "color": "ion"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "closed",
+       "type": "node",
+       "text": "Closed",
+       "sub": "no gaps",
+       "glyph": "shield",
+       "color": "mint"
+      },
+      {
+       "id": "straight",
+       "type": "node",
+       "text": "Straight",
+       "sub": "no curves",
+       "glyph": "ruler",
+       "color": "sci"
+      },
+      {
+       "id": "count",
+       "type": "node",
+       "text": "Count sides",
+       "sub": "name it",
+       "glyph": "hand",
+       "color": "amber"
+      },
+      {
+       "id": "polygon",
+       "type": "node",
+       "text": "Polygon",
+       "sub": "closed shape",
+       "glyph": "spark",
+       "color": "sun"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "closed",
+       "to": "straight",
+       "text": "then"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "straight",
+       "to": "count",
+       "text": "then"
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "count",
+       "to": "polygon",
+       "text": "names"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "five",
+       "type": "node",
+       "text": "5 sides",
+       "sub": "pentagon",
+       "glyph": "pick",
+       "color": "ion"
+      },
+      {
+       "id": "tilt",
+       "type": "node",
+       "text": "Tilted",
+       "sub": "still five",
+       "glyph": "compass",
+       "color": "mint"
+      },
+      {
+       "id": "uneven",
+       "type": "node",
+       "text": "Uneven",
+       "sub": "still five",
+       "glyph": "balance",
+       "color": "amber"
+      },
+      {
+       "id": "a4",
+       "type": "arrow",
+       "from": "five",
+       "to": "tilt",
+       "text": "turn"
+      },
+      {
+       "id": "a5",
+       "type": "arrow",
+       "from": "tilt",
+       "to": "uneven",
+       "text": "stretch"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "prompt",
+       "type": "title",
+       "text": "Which is a polygon?"
+      },
+      {
+       "id": "optTri",
+       "type": "label",
+       "text": "Triangle"
+      },
+      {
+       "id": "optCircle",
+       "type": "label",
+       "text": "Circle"
+      },
+      {
+       "id": "optOpen",
+       "type": "label",
+       "text": "Open line"
+      },
+      {
+       "id": "optD",
+       "type": "label",
+       "text": "D shape"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "A polygon is a closed shape made only of straight sides.",
+    "L2": "First check for a gap, then check that every side is straight.",
+    "L3": "Count the sides to name the polygon: three is a triangle, four a quadrilateral, and five a pentagon.",
+    "L4": "Six sides make a hexagon, and eight sides make an octagon.",
+    "L5": "Turning, flipping, or stretching does not change a shape's name if its number of sides stays the same.",
+    "L6": "A triangle does not need a flat, horizontal base. It still has three straight sides and three corners.",
+    "L7": "A tilted closed shape with five straight sides is a pentagon, even when its sides have different lengths.",
+    "L8": "Now tap the shape that is a polygon."
+   },
+   "narration": {
+    "L1": {
+     "text": "A polygon is a closed shape made only of straight sides.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "First check for a gap, then check that every side is straight.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "Count the sides to name the polygon: three is a triangle, four a quadrilateral, and five a pentagon.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "Six sides make a hexagon, and eight sides make an octagon.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "Turning, flipping, or stretching does not change a shape's name if its number of sides stays the same.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "A triangle does not need a flat, horizontal base. It still has three straight sides and three corners.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "A tilted closed shape with five straight sides is a pentagon, even when its sides have different lengths.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Now tap the shape that is a polygon.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "closed",
+        "straight",
+        "polygon"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "flow",
+       "dur": 1,
+       "target": [
+        "a1",
+        "a2"
+       ],
+       "to": 1
+      },
+      {
+       "at": 1.2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "straight"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.5,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "count"
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "a3",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1.2,
+       "target": "polygon"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.5,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "five"
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "tilt",
+        "uneven"
+       ]
+      },
+      {
+       "at": 1.8,
+       "do": "flow",
+       "dur": 0.8,
+       "target": [
+        "a4",
+        "a5"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      },
+      {
+       "at": 1,
+       "do": "bust",
+       "dur": 1.2,
+       "target": "myth"
+      },
+      {
+       "at": 2.4,
+       "do": "show",
+       "dur": 0.8,
+       "target": "tri"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.5,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "five"
+      },
+      {
+       "at": 1.2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "uneven"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "prompt",
+        "optTri",
+        "optCircle",
+        "optOpen",
+        "optD"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive"
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Tap the shape that is a polygon.",
+    "options": [
+     "optTri",
+     "optCircle",
+     "optOpen",
+     "optD"
+    ],
+    "answer": "optTri",
+    "src": "c5-maths-ch07-t01-i12"
+   }
+  },
+  "repairs": [
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 52
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch07-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "poly",
+       "op": "polygon",
+       "startMs": 300,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         170,
+         150
+        ],
+        [
+         270,
+         90
+        ],
+        [
+         390,
+         120
+        ],
+        [
+         430,
+         250
+        ],
+        [
+         300,
+         350
+        ],
+        [
+         170,
+         280
+        ]
+       ]
+      },
+      {
+       "id": "close",
+       "op": "highlight",
+       "startMs": 1900,
+       "endMs": 2700,
+       "ink": "good",
+       "weight": 2,
+       "target": "poly",
+       "style": "circle"
+      },
+      {
+       "id": "straight",
+       "op": "line",
+       "startMs": 2800,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        500,
+        150
+       ],
+       "to": [
+        650,
+        150
+       ]
+      },
+      {
+       "id": "side",
+       "op": "label",
+       "startMs": 3500,
+       "endMs": 4200,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        565,
+        180
+       ],
+       "text": "straight side",
+       "to": [
+        575,
+        150
+       ]
+      },
+      {
+       "id": "name",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 5000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        300,
+        420
+       ],
+       "text": "polygon",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch07-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "open",
+       "op": "polygon",
+       "startMs": 300,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         120,
+         170
+        ],
+        [
+         220,
+         100
+        ],
+        [
+         330,
+         150
+        ],
+        [
+         330,
+         280
+        ],
+        [
+         220,
+         340
+        ]
+       ]
+      },
+      {
+       "id": "gap",
+       "op": "label",
+       "startMs": 1600,
+       "endMs": 2300,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        250,
+        70
+       ],
+       "text": "gap",
+       "to": [
+        330,
+        280
+       ]
+      },
+      {
+       "id": "close2",
+       "op": "polygon",
+       "startMs": 2500,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         470,
+         170
+        ],
+        [
+         560,
+         100
+        ],
+        [
+         670,
+         150
+        ],
+        [
+         670,
+         280
+        ],
+        [
+         560,
+         340
+        ],
+        [
+         470,
+         280
+        ]
+       ]
+      },
+      {
+       "id": "check",
+       "op": "highlight",
+       "startMs": 3800,
+       "endMs": 4500,
+       "ink": "good",
+       "weight": 2,
+       "target": "close2",
+       "style": "circle"
+      },
+      {
+       "id": "straight2",
+       "op": "label",
+       "startMs": 4600,
+       "endMs": 5300,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        535,
+        390
+       ],
+       "text": "straight",
+       "to": [
+        560,
+        340
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch07-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "title",
+       "op": "text",
+       "startMs": 200,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "sides",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "names",
+       "op": "numwork",
+       "startMs": 900,
+       "endMs": 3600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        170,
+        110
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "3",
+         "=",
+         "triang"
+        ],
+        [
+         "4",
+         "=",
+         "quadri"
+        ],
+        [
+         "5",
+         "=",
+         "pentag"
+        ]
+       ]
+      },
+      {
+       "id": "quad",
+       "op": "polygon",
+       "startMs": 3900,
+       "endMs": 4700,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         300,
+         300
+        ],
+        [
+         370,
+         300
+        ],
+        [
+         370,
+         370
+        ],
+        [
+         300,
+         370
+        ]
+       ]
+      },
+      {
+       "id": "pent",
+       "op": "polygon",
+       "startMs": 4800,
+       "endMs": 5900,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         520,
+         290
+        ],
+        [
+         590,
+         320
+        ],
+        [
+         570,
+         390
+        ],
+        [
+         490,
+         390
+        ],
+        [
+         470,
+         320
+        ]
+       ]
+      },
+      {
+       "id": "count",
+       "op": "numwork",
+       "startMs": 6200,
+       "endMs": 7300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        170,
+        420
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "3",
+         "4",
+         "5"
+        ]
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch07-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "six",
+       "op": "polygon",
+       "startMs": 400,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         150,
+         180
+        ],
+        [
+         210,
+         110
+        ],
+        [
+         300,
+         110
+        ],
+        [
+         360,
+         180
+        ],
+        [
+         300,
+         260
+        ],
+        [
+         210,
+         260
+        ]
+       ]
+      },
+      {
+       "id": "sixlabel",
+       "op": "text",
+       "startMs": 1600,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        255,
+        310
+       ],
+       "text": "six",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "hex",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        255,
+        355
+       ],
+       "text": "hexagon",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "eight",
+       "op": "polygon",
+       "startMs": 3100,
+       "endMs": 4200,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         520,
+         120
+        ],
+        [
+         590,
+         120
+        ],
+        [
+         640,
+         170
+        ],
+        [
+         640,
+         240
+        ],
+        [
+         590,
+         290
+        ],
+        [
+         520,
+         290
+        ],
+        [
+         470,
+         240
+        ],
+        [
+         470,
+         170
+        ]
+       ]
+      },
+      {
+       "id": "oct",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 5000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        555,
+        345
+       ],
+       "text": "octagon",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch07-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "base",
+       "op": "polygon",
+       "startMs": 300,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         130,
+         180
+        ],
+        [
+         190,
+         120
+        ],
+        [
+         270,
+         140
+        ],
+        [
+         290,
+         230
+        ],
+        [
+         210,
+         280
+        ],
+        [
+         140,
+         240
+        ]
+       ]
+      },
+      {
+       "id": "turn",
+       "op": "arrow",
+       "startMs": 1500,
+       "endMs": 2300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        330,
+        190
+       ],
+       "to": [
+        410,
+        140
+       ],
+       "bend": 1
+      },
+      {
+       "id": "flip",
+       "op": "arrow",
+       "startMs": 2400,
+       "endMs": 3200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        330,
+        300
+       ],
+       "to": [
+        410,
+        350
+       ],
+       "bend": -1
+      },
+      {
+       "id": "stretch",
+       "op": "arrow",
+       "startMs": 3300,
+       "endMs": 4100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        510,
+        230
+       ],
+       "to": [
+        650,
+        230
+       ]
+      },
+      {
+       "id": "same",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        450
+       ],
+       "text": "same number of sides",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "result",
+       "op": "label",
+       "startMs": 5900,
+       "endMs": 7000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        610,
+        120
+       ],
+       "text": "pentagon",
+       "to": [
+        590,
+        180
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch07-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "tilttri",
+       "op": "polygon",
+       "startMs": 400,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         180,
+         310
+        ],
+        [
+         300,
+         120
+        ],
+        [
+         390,
+         330
+        ]
+       ]
+      },
+      {
+       "id": "three",
+       "op": "numwork",
+       "startMs": 1800,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        470,
+        130
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "3",
+         "straig"
+        ],
+        [
+         "3",
+         "corner"
+        ]
+       ]
+      },
+      {
+       "id": "corner1",
+       "op": "circle",
+       "startMs": 3600,
+       "endMs": 4000,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        180,
+        310
+       ],
+       "r": 10
+      },
+      {
+       "id": "corner2",
+       "op": "circle",
+       "startMs": 4100,
+       "endMs": 4500,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        300,
+        120
+       ],
+       "r": 10
+      },
+      {
+       "id": "corner3",
+       "op": "circle",
+       "startMs": 4600,
+       "endMs": 5000,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        390,
+        330
+       ],
+       "r": 10
+      },
+      {
+       "id": "triangle",
+       "op": "text",
+       "startMs": 5500,
+       "endMs": 6500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        285,
+        410
+       ],
+       "text": "triangle",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch07-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "uneven",
+       "op": "polygon",
+       "startMs": 400,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         180,
+         310
+        ],
+        [
+         240,
+         120
+        ],
+        [
+         370,
+         150
+        ],
+        [
+         410,
+         270
+        ],
+        [
+         270,
+         360
+        ]
+       ]
+      },
+      {
+       "id": "closed",
+       "op": "highlight",
+       "startMs": 1800,
+       "endMs": 2500,
+       "ink": "good",
+       "weight": 2,
+       "target": "uneven",
+       "style": "circle"
+      },
+      {
+       "id": "five",
+       "op": "numwork",
+       "startMs": 2700,
+       "endMs": 3800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        470,
+        120
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "5",
+         "straig"
+        ]
+       ]
+      },
+      {
+       "id": "tilted",
+       "op": "label",
+       "startMs": 3900,
+       "endMs": 4700,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        510,
+        230
+       ],
+       "text": "tilted",
+       "to": [
+        370,
+        150
+       ]
+      },
+      {
+       "id": "different",
+       "op": "label",
+       "startMs": 4800,
+       "endMs": 5900,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        500,
+        300
+       ],
+       "text": "different lengths",
+       "to": [
+        410,
+        270
+       ]
+      },
+      {
+       "id": "pentagon",
+       "op": "text",
+       "startMs": 6200,
+       "endMs": 7300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        430
+       ],
+       "text": "pentagon",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch07-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4004,
+     "ops": [
+      {
+       "id": "choice1",
+       "op": "circle",
+       "startMs": 300,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        150,
+        180
+       ],
+       "r": 70
+      },
+      {
+       "id": "choice2",
+       "op": "polygon",
+       "startMs": 1000,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         300,
+         120
+        ],
+        [
+         410,
+         120
+        ],
+        [
+         450,
+         220
+        ],
+        [
+         390,
+         320
+        ],
+        [
+         300,
+         280
+        ],
+        [
+         260,
+         190
+        ]
+       ]
+      },
+      {
+       "id": "choice3",
+       "op": "ellipse",
+       "startMs": 2000,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        610,
+        210
+       ],
+       "rx": 90,
+       "ry": 55
+      },
+      {
+       "id": "tap",
+       "op": "highlight",
+       "startMs": 2900,
+       "endMs": 3700,
+       "ink": "good",
+       "weight": 3,
+       "target": "choice2",
+       "style": "circle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "{\"kind\":\"polygon\",\"sides\":3}",
+   "prompt": "polygon"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "{\"kind\":\"polygon\",\"sides\":4}",
+   "prompt": "polygon"
+  },
+  {
+   "itemId": "r1:2",
+   "key": "{\"kind\":\"polygon\",\"sides\":5}",
+   "prompt": "polygon"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "{\"kind\":\"area\",\"value\":4,\"shape\":\"any\"}",
+   "prompt": "area"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "{\"kind\":\"area\",\"value\":6,\"shape\":\"triangle\"}",
+   "prompt": "area"
+  },
+  {
+   "itemId": "r2:2",
+   "key": "{\"kind\":\"area\",\"value\":8,\"shape\":\"rectangle\"}",
+   "prompt": "area"
+  },
+  {
+   "itemId": "r3:0",
+   "key": "{\"kind\":\"polygon\",\"sides\":6}",
+   "prompt": "polygon"
+  },
+  {
+   "itemId": "r3:1",
+   "key": "{\"kind\":\"polygon\",\"sides\":8}",
+   "prompt": "polygon"
+  },
+  {
+   "itemId": "r3:2",
+   "key": "{\"kind\":\"area\",\"value\":10,\"shape\":\"any\"}",
+   "prompt": "area"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

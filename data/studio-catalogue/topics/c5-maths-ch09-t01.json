@@ -1,0 +1,1407 @@
+{
+ "topicId": "c5-maths-ch09-t01",
+ "title": "Dividing larger numbers",
+ "chapter": "Coconut Farm",
+ "subject": "maths",
+ "class": 5,
+ "topicType": "T4",
+ "plan": {
+  "game": "dukaan@1",
+  "hint": "pack mode: crates of k (full / all, remainders)"
+ },
+ "game": {
+  "archetype": "dukaan@1",
+  "spec": {
+   "archetype": "dukaan@1",
+   "skills": [
+    "c5-maths-ch09-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "served": "served",
+    "patience": "patience",
+    "bill": "Bill",
+    "pays": "Pays",
+    "change": "Change",
+    "pack": "Pack",
+    "crates": "crates",
+    "left": "left over",
+    "enough": "Enough",
+    "notEnough": "Not enough",
+    "budget": "Has",
+    "coach": "Tap notes and coins to put them on the counter",
+    "runDone": "Shop closed",
+    "exact": "EXACT",
+    "short": "short by",
+    "over": "over by",
+    "carry": "carry them all",
+    "full": "full crates to sell",
+    "each": "each",
+    "inLast": "in the last"
+   },
+   "title": "Dukaan Rush",
+   "rounds": [
+    {
+     "mode": "pack",
+     "title": "Pack the crates",
+     "sub": "Keep track of extras",
+     "jobs": [
+      {
+       "thing": "coconuts",
+       "n": 72,
+       "per": 12,
+       "need": "full"
+      },
+      {
+       "thing": "mangoes",
+       "n": 95,
+       "per": 12,
+       "need": "all"
+      }
+     ],
+     "speed": 0.9,
+     "targets": "c5-maths-ch09-t01-m-ignore-remainder"
+    }
+   ]
+  },
+  "repairs": [
+   "num:price",
+   "num:price",
+   "num:price",
+   "num:price",
+   "round:customers",
+   "num:price",
+   "num:price",
+   "price:not-payable",
+   "round:customers"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c5-maths-ch09-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Right",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "BUSTED",
+    "order": "Tap them in order"
+   },
+   "title": "Divide place by place",
+   "accent": "mint",
+   "targets": "c5-maths-ch09-t01-m-zero-in-quotient",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Divide place by place"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "618 ÷ 6 = 13"
+      },
+      {
+       "id": "start",
+       "type": "label",
+       "text": "618 ÷ 6",
+       "x": 100,
+       "y": 300,
+       "color": "mint"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "h",
+       "type": "node",
+       "text": "7 hundreds",
+       "sub": "7 ÷ 7 = 1",
+       "glyph": "wheat",
+       "color": "mint"
+      },
+      {
+       "id": "t",
+       "type": "node",
+       "text": "3 tens",
+       "sub": "3 ÷ 7 = 0",
+       "glyph": "coin",
+       "color": "amber"
+      },
+      {
+       "id": "o",
+       "type": "node",
+       "text": "35 ones",
+       "sub": "35 ÷ 7 = 5",
+       "glyph": "apple",
+       "color": "sun"
+      },
+      {
+       "id": "ah",
+       "type": "arrow",
+       "from": "h",
+       "to": "t",
+       "text": "next"
+      },
+      {
+       "id": "at",
+       "type": "arrow",
+       "from": "t",
+       "to": "o",
+       "text": "bring down"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "column",
+     "els": [
+      {
+       "id": "work",
+       "type": "label",
+       "text": "735 ÷ 7",
+       "x": 120,
+       "y": 230,
+       "color": "ion"
+      },
+      {
+       "id": "q1",
+       "type": "bar",
+       "parts": 7,
+       "shaded": 7,
+       "x": 100,
+       "y": 300,
+       "w": 500,
+       "text": "1 hundred"
+      },
+      {
+       "id": "q0",
+       "type": "label",
+       "text": "0 tens",
+       "x": 120,
+       "y": 390,
+       "color": "amber"
+      },
+      {
+       "id": "q5",
+       "type": "bar",
+       "parts": 7,
+       "shaded": 7,
+       "x": 100,
+       "y": 460,
+       "w": 500,
+       "text": "5 ones"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "answer",
+       "type": "node",
+       "text": "105",
+       "sub": "quotient",
+       "color": "mint"
+      },
+      {
+       "id": "checkx",
+       "type": "node",
+       "text": "105 × 7",
+       "sub": "735",
+       "glyph": "balance",
+       "color": "ion"
+      },
+      {
+       "id": "checka",
+       "type": "arrow",
+       "from": "answer",
+       "to": "checkx",
+       "text": "check"
+      },
+      {
+       "id": "tap21",
+       "type": "label",
+       "text": "21",
+       "x": 130,
+       "y": 300,
+       "color": "amber"
+      },
+      {
+       "id": "tap103",
+       "type": "label",
+       "text": "103",
+       "x": 350,
+       "y": 300,
+       "color": "mint"
+      },
+      {
+       "id": "tap105",
+       "type": "label",
+       "text": "105",
+       "x": 570,
+       "y": 300,
+       "color": "sun"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Division makes equal groups or groups of a given size.",
+    "L2": "We divide from the left: hundreds, then tens, then ones.",
+    "L3": "Watch 735 divided by 7. Seven hundreds divided by seven gives one hundred.",
+    "L4": "Three tens is too small to divide by seven, so write zero in the tens place.",
+    "L5": "Bring down to make 35 ones. Thirty-five divided by seven gives five.",
+    "L6": "The quotient is 105. The zero is important because it keeps the place value correct.",
+    "L7": "Check by multiplying the quotient by the divisor. Then add any remainder.",
+    "L8": "Now choose the quotient for 618 divided by 6."
+   },
+   "narration": {},
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      },
+      {
+       "at": 0.4,
+       "do": "show",
+       "dur": 0.6,
+       "target": "start"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "h",
+        "t",
+        "o"
+       ]
+      },
+      {
+       "at": 0.5,
+       "do": "flow",
+       "dur": 0.8,
+       "target": [
+        "ah",
+        "at"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "work"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": "q1"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "q0"
+      },
+      {
+       "at": 0.2,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "q0"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "q5"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "myth"
+      },
+      {
+       "at": 0.7,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "answer",
+        "checkx"
+       ]
+      },
+      {
+       "at": 0.6,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "checka",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "tap21",
+        "tap103",
+        "tap105"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive"
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Choose the quotient for 618 ÷ 6.",
+    "options": [
+     "tap21",
+     "tap103",
+     "tap105"
+    ],
+    "answer": "tap103",
+    "src": "c5-maths-ch09-t01-i03"
+   }
+  },
+  "repairs": [
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 48
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch09-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "g1",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        220,
+        220
+       ],
+       "r": 75
+      },
+      {
+       "id": "g2",
+       "op": "circle",
+       "startMs": 300,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        220
+       ],
+       "r": 75
+      },
+      {
+       "id": "g3",
+       "op": "circle",
+       "startMs": 600,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        580,
+        220
+       ],
+       "r": 75
+      },
+      {
+       "id": "dots",
+       "op": "circle",
+       "startMs": 1300,
+       "endMs": 1600,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        220,
+        220
+       ],
+       "r": 10,
+       "fill": "accent"
+      },
+      {
+       "id": "d2",
+       "op": "circle",
+       "startMs": 1450,
+       "endMs": 1750,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        220
+       ],
+       "r": 10,
+       "fill": "accent"
+      },
+      {
+       "id": "d3",
+       "op": "circle",
+       "startMs": 1600,
+       "endMs": 1900,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        580,
+        220
+       ],
+       "r": 10,
+       "fill": "accent"
+      },
+      {
+       "id": "equal",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        360
+       ],
+       "text": "equal groups",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "given",
+       "op": "text",
+       "startMs": 3200,
+       "endMs": 4000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        420
+       ],
+       "text": "given size",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch09-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "h",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        150,
+        100
+       ],
+       "text": "hundreds",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "t",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        100
+       ],
+       "text": "tens",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "o",
+       "op": "text",
+       "startMs": 1200,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        650,
+        100
+       ],
+       "text": "ones",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "a1",
+       "op": "arrow",
+       "startMs": 1900,
+       "endMs": 2600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        150,
+        130
+       ],
+       "to": [
+        150,
+        250
+       ]
+      },
+      {
+       "id": "a2",
+       "op": "arrow",
+       "startMs": 2500,
+       "endMs": 3200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        130
+       ],
+       "to": [
+        400,
+        250
+       ]
+      },
+      {
+       "id": "a3",
+       "op": "arrow",
+       "startMs": 3100,
+       "endMs": 3800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        650,
+        130
+       ],
+       "to": [
+        650,
+        250
+       ]
+      },
+      {
+       "id": "divide",
+       "op": "text",
+       "startMs": 3800,
+       "endMs": 4700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        420
+       ],
+       "text": "divide from the left",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch09-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "problem",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        245,
+        80
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "735",
+         "÷",
+         "7"
+        ]
+       ]
+      },
+      {
+       "id": "hundreds",
+       "op": "numwork",
+       "startMs": 1000,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        190
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "7",
+         "hundre",
+         "÷",
+         "7",
+         "=",
+         "1",
+         "hundre"
+        ]
+       ]
+      },
+      {
+       "id": "q1",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        500,
+        190
+       ],
+       "text": "1",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "place",
+       "op": "line",
+       "startMs": 3400,
+       "endMs": 3900,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        485,
+        210
+       ],
+       "to": [
+        515,
+        210
+       ]
+      },
+      {
+       "id": "seven",
+       "op": "circle",
+       "startMs": 4000,
+       "endMs": 4600,
+       "ink": "mark",
+       "weight": 2,
+       "c": [
+        285,
+        210
+       ],
+       "r": 25
+      },
+      {
+       "id": "result",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        400
+       ],
+       "text": "1 hundred",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch09-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "tens",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        140,
+        90
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "3",
+         "tens",
+         "÷",
+         "7"
+        ]
+       ]
+      },
+      {
+       "id": "small",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 2300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        490,
+        100
+       ],
+       "text": "too small",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "zero",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 4200,
+       "ink": "good",
+       "weight": 3,
+       "at": [
+        400,
+        300
+       ],
+       "text": "0",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "tensplace",
+       "op": "line",
+       "startMs": 4300,
+       "endMs": 5000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        370,
+        320
+       ],
+       "to": [
+        430,
+        320
+       ]
+      },
+      {
+       "id": "keep",
+       "op": "text",
+       "startMs": 5300,
+       "endMs": 6500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        410
+       ],
+       "text": "tens place",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "highlightzero",
+       "op": "highlight",
+       "startMs": 6500,
+       "endMs": 7200,
+       "ink": "accent",
+       "weight": 2,
+       "target": "zero",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch09-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "down",
+       "op": "arrow",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        150
+       ],
+       "to": [
+        400,
+        230
+       ]
+      },
+      {
+       "id": "thirtyfive",
+       "op": "numwork",
+       "startMs": 900,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        180,
+        170
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "35",
+         "ones",
+         "÷",
+         "7",
+         "=",
+         "5"
+        ]
+       ]
+      },
+      {
+       "id": "bring",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        310
+       ],
+       "text": "bring down",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "five",
+       "op": "text",
+       "startMs": 3800,
+       "endMs": 4500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        600,
+        170
+       ],
+       "text": "5",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "check35",
+       "op": "highlight",
+       "startMs": 4600,
+       "endMs": 5400,
+       "ink": "accent",
+       "weight": 2,
+       "target": "thirtyfive",
+       "style": "underline"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch09-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "quotient",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        250,
+        100
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "quotie",
+         "=",
+         "105"
+        ]
+       ]
+      },
+      {
+       "id": "zeroagain",
+       "op": "text",
+       "startMs": 1600,
+       "endMs": 2400,
+       "ink": "accent",
+       "weight": 3,
+       "at": [
+        400,
+        250
+       ],
+       "text": "0",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "placevalue",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        330
+       ],
+       "text": "place value",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "hundredline",
+       "op": "line",
+       "startMs": 3800,
+       "endMs": 4500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        300,
+        180
+       ],
+       "to": [
+        500,
+        180
+       ]
+      },
+      {
+       "id": "tensline",
+       "op": "line",
+       "startMs": 4500,
+       "endMs": 5200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        370,
+        180
+       ],
+       "to": [
+        370,
+        300
+       ]
+      },
+      {
+       "id": "highlightq",
+       "op": "highlight",
+       "startMs": 5400,
+       "endMs": 6500,
+       "ink": "good",
+       "weight": 2,
+       "target": "quotient",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch09-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "checkeq",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        150,
+        90
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "105",
+         "×",
+         "7",
+         "=",
+         "735"
+        ]
+       ]
+      },
+      {
+       "id": "checkarrow",
+       "op": "arrow",
+       "startMs": 1800,
+       "endMs": 2700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        500,
+        130
+       ],
+       "to": [
+        600,
+        220
+       ]
+      },
+      {
+       "id": "plusrem",
+       "op": "numwork",
+       "startMs": 2800,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        180,
+        250
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "735",
+         "+",
+         "remain"
+        ]
+       ]
+      },
+      {
+       "id": "checklabel",
+       "op": "text",
+       "startMs": 4200,
+       "endMs": 5000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        600,
+        300
+       ],
+       "text": "check",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch09-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4430,
+     "ops": [
+      {
+       "id": "newproblem",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        180,
+        100
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "618",
+         "÷",
+         "6"
+        ]
+       ]
+      },
+      {
+       "id": "hundredpart",
+       "op": "numwork",
+       "startMs": 1100,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        130,
+        210
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "6",
+         "hundre",
+         "÷",
+         "6",
+         "=",
+         "1"
+        ]
+       ]
+      },
+      {
+       "id": "choice",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        500,
+        210
+       ],
+       "text": "quotient",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "question",
+       "op": "text",
+       "startMs": 3700,
+       "endMs": 4300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        500,
+        300
+       ],
+       "text": "?",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "6",
+   "prompt": "72 coconuts in crates of 12, full crates"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "8",
+   "prompt": "95 mangoes in crates of 12, carry all"
+  }
+ ],
+ "check": {
+  "issues": [
+   {
+    "where": "game/rounds/0",
+    "what": "Round title says 'Pack the crates', but the description 'Keep track of extras' does not match the kit items which only ask for full crates and total crates without extras.",
+    "severity": "low"
+   },
+   {
+    "where": "explainer/scenes/s2",
+    "what": "In s2, the first node shows '7 hundreds' and '7 ÷ 7 = 1', but the worked example in the kit divides 735 by 7, not 618 ÷ 6. The scene uses numbers from the worked example (735÷7) which is factually correct, but the text L4 and L5 also refer to 735÷7, while the task asks for 618÷6. This could be confusing but is not factually wrong.",
+    "severity": "low"
+   }
+  ],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

@@ -1,0 +1,1560 @@
+{
+ "topicId": "c5-maths-ch06-t02",
+ "title": "Multiplication patterns and estimation",
+ "chapter": "The Dairy Farm",
+ "subject": "maths",
+ "class": 5,
+ "topicType": "T4",
+ "plan": {
+  "game": "rule-machine@1",
+  "hint": "build mode: product patterns (×10, ×100, doubling and halving)"
+ },
+ "game": {
+  "archetype": "rule-machine@1",
+  "spec": {
+   "archetype": "rule-machine@1",
+   "skills": [
+    "c5-maths-ch06-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "built": "machines",
+    "run": "RUN",
+    "want": "order",
+    "got": "made",
+    "coach": "Tap tiles to fill the machine, then RUN",
+    "runDone": "Factory closed",
+    "step": "step",
+    "predict": "step",
+    "inverse": "run it backwards",
+    "target": "target",
+    "steps": "steps",
+    "pick": "Pick a start",
+    "works": "WORKS",
+    "fix": "not for every input"
+   },
+   "title": "Dairy Number Machines",
+   "rounds": [
+    {
+     "mode": "build",
+     "title": "Ten Times Fast",
+     "sub": "move digits with a place-value rule",
+     "rule": [
+      "×10"
+     ],
+     "inputs": [
+      4,
+      25,
+      120,
+      36
+     ],
+     "tiles": [
+      "×10",
+      "×100",
+      "×2",
+      "÷2"
+     ]
+    },
+    {
+     "mode": "build",
+     "title": "Same or Smaller",
+     "sub": "test a multiplying rule carefully",
+     "rule": [
+      "×1"
+     ],
+     "inputs": [
+      9,
+      45,
+      0
+     ],
+     "tiles": [
+      "×1",
+      "×0",
+      "×10",
+      "×2"
+     ],
+     "targets": "c5-maths-ch06-t02-m-mult-makes-bigger"
+    },
+    {
+     "mode": "brackets",
+     "title": "Bracket the Farm Order",
+     "sub": "place brackets to reach the target",
+     "tokens": [
+      "3",
+      "+",
+      "4",
+      "×",
+      "5"
+     ],
+     "target": 35
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 2,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c5-maths-ch06-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Right",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "BUSTED",
+    "order": "Tap in order"
+   },
+   "title": "Multiply with patterns",
+   "accent": "mint",
+   "targets": "c5-maths-ch06-t02-m-mult-makes-bigger",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Multiply with patterns"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Multiplication always makes bigger"
+      },
+      {
+       "id": "one",
+       "type": "label",
+       "text": "9 × 1 = 9"
+      },
+      {
+       "id": "zero",
+       "type": "label",
+       "text": "9 × 0 = 0"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "n36",
+       "type": "node",
+       "text": "36",
+       "sub": "ones",
+       "glyph": "ruler",
+       "color": "ion"
+      },
+      {
+       "id": "n3600",
+       "type": "node",
+       "text": "3,600",
+       "sub": "hundreds",
+       "glyph": "spark",
+       "color": "mint"
+      },
+      {
+       "id": "a10",
+       "type": "arrow",
+       "from": "n36",
+       "to": "n3600",
+       "text": "× 100"
+      },
+      {
+       "id": "p1",
+       "type": "label",
+       "text": "two places left"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "fifty",
+       "type": "node",
+       "text": "50",
+       "sub": "5 tens",
+       "glyph": "wheat",
+       "color": "amber"
+      },
+      {
+       "id": "forty",
+       "type": "node",
+       "text": "40",
+       "sub": "4 tens",
+       "glyph": "wheat",
+       "color": "amber"
+      },
+      {
+       "id": "prod",
+       "type": "node",
+       "text": "2,000",
+       "sub": "product",
+       "glyph": "coin",
+       "color": "sun"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "fifty",
+       "to": "prod",
+       "text": "5 × 4"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "forty",
+       "to": "prod",
+       "text": "two zeros"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "q25",
+       "type": "node",
+       "text": "25",
+       "sub": "one factor",
+       "color": "mint"
+      },
+      {
+       "id": "q16",
+       "type": "node",
+       "text": "16",
+       "sub": "other factor",
+       "color": "ion"
+      },
+      {
+       "id": "q50",
+       "type": "node",
+       "text": "50",
+       "sub": "double",
+       "glyph": "spark",
+       "color": "mint"
+      },
+      {
+       "id": "q8",
+       "type": "node",
+       "text": "8",
+       "sub": "half",
+       "glyph": "spark",
+       "color": "ion"
+      },
+      {
+       "id": "d1",
+       "type": "arrow",
+       "from": "q25",
+       "to": "q50",
+       "text": "double"
+      },
+      {
+       "id": "d2",
+       "type": "arrow",
+       "from": "q16",
+       "to": "q8",
+       "text": "halve"
+      }
+     ]
+    },
+    {
+     "id": "s5",
+     "layout": "row",
+     "els": [
+      {
+       "id": "r38",
+       "type": "node",
+       "text": "38",
+       "sub": "tickets",
+       "glyph": "note",
+       "color": "ion"
+      },
+      {
+       "id": "r52",
+       "type": "node",
+       "text": "₹52",
+       "sub": "each",
+       "glyph": "coin",
+       "color": "amber"
+      },
+      {
+       "id": "e40",
+       "type": "node",
+       "text": "40",
+       "sub": "rounded",
+       "glyph": "ruler",
+       "color": "mint"
+      },
+      {
+       "id": "e50",
+       "type": "node",
+       "text": "₹50",
+       "sub": "rounded",
+       "glyph": "coin",
+       "color": "mint"
+      },
+      {
+       "id": "estimate",
+       "type": "node",
+       "text": "₹2,000",
+       "sub": "estimate",
+       "glyph": "balance",
+       "color": "sun"
+      },
+      {
+       "id": "r1",
+       "type": "arrow",
+       "from": "r38",
+       "to": "e40",
+       "text": "round"
+      },
+      {
+       "id": "r2",
+       "type": "arrow",
+       "from": "r52",
+       "to": "e50",
+       "text": "round"
+      },
+      {
+       "id": "r3",
+       "type": "arrow",
+       "from": "e40",
+       "to": "estimate",
+       "text": "40 × 50"
+      }
+     ]
+    },
+    {
+     "id": "s6",
+     "layout": "row",
+     "els": [
+      {
+       "id": "choiceA",
+       "type": "label",
+       "text": "25 × 16 = 400"
+      },
+      {
+       "id": "choiceB",
+       "type": "label",
+       "text": "25 × 16 = 800"
+      },
+      {
+       "id": "choiceC",
+       "type": "label",
+       "text": "25 × 16 = 200"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Multiplication has useful patterns, so we can calculate mentally.",
+    "L2": "Multiplying by 100 moves every digit two places left. Thus 36 × 100 is 3,600.",
+    "L3": "For 50 × 40, multiply the non-zero parts: 5 × 4 is 20, then add two zeros.",
+    "L4": "Doubling one factor and halving the other keeps the product the same. So 25 × 16 becomes 50 × 8, and both products are 400.",
+    "L5": "Multiplication does not always make a number bigger. Multiplying by 1 keeps it the same, and multiplying by 0 gives zero.",
+    "L6": "For a quick estimate, round both numbers first. Thirty-eight times fifty-two is about forty times fifty, or ₹2,000.",
+    "L7": "Now choose the product of 25 and 16.",
+    "L8": "The correct product is 400, because doubling and halving preserved the product."
+   },
+   "narration": {
+    "L1": {
+     "text": "Multiplication has useful patterns, so we can calculate mentally.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "Multiplying by 100 moves every digit two places left. Thus 36 × 100 is 3,600.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "For 50 × 40, multiply the non-zero parts: 5 × 4 is 20, then add two zeros.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "Doubling one factor and halving the other keeps the product the same. So 25 × 16 becomes 50 × 8, and both products are 400.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "Multiplication does not always make a number bigger. Multiplying by 1 keeps it the same, and multiplying by 0 gives zero.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "For a quick estimate, round both numbers first. Thirty-eight times fifty-two is about forty times fifty, or ₹2,000.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Now choose the product of 25 and 16.",
+     "dur": 2,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "The correct product is 400, because doubling and halving preserved the product.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.3,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "title"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.5,
+       "target": "n36"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.7,
+       "target": "a10"
+      },
+      {
+       "at": 1.2,
+       "do": "show",
+       "dur": 0.7,
+       "target": "n3600"
+      },
+      {
+       "at": 2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "p1"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.3,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.5,
+       "target": "fifty"
+      },
+      {
+       "at": 0.4,
+       "do": "show",
+       "dur": 0.5,
+       "target": "forty"
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.6,
+       "target": "prod"
+      },
+      {
+       "at": 1.4,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "a1",
+       "to": 1
+      },
+      {
+       "at": 2,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "a2",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.3,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.5,
+       "target": "q25"
+      },
+      {
+       "at": 0.4,
+       "do": "show",
+       "dur": 0.5,
+       "target": "q16"
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.6,
+       "target": "d1"
+      },
+      {
+       "at": 1.6,
+       "do": "show",
+       "dur": 0.6,
+       "target": "d2"
+      },
+      {
+       "at": 2.2,
+       "do": "highlight",
+       "dur": 0.7,
+       "target": "q50"
+      },
+      {
+       "at": 2.9,
+       "do": "highlight",
+       "dur": 0.7,
+       "target": "q8"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.3,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "myth"
+      },
+      {
+       "at": 0.7,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      },
+      {
+       "at": 1.8,
+       "do": "show",
+       "dur": 0.5,
+       "target": "one"
+      },
+      {
+       "at": 2.4,
+       "do": "show",
+       "dur": 0.5,
+       "target": "zero"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.3,
+     "scene": "s5",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.4,
+       "target": "r38"
+      },
+      {
+       "at": 0.3,
+       "do": "show",
+       "dur": 0.4,
+       "target": "r52"
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.5,
+       "target": "e40"
+      },
+      {
+       "at": 1.2,
+       "do": "show",
+       "dur": 0.5,
+       "target": "e50"
+      },
+      {
+       "at": 1.7,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "r3",
+       "to": 1
+      },
+      {
+       "at": 2.5,
+       "do": "show",
+       "dur": 0.6,
+       "target": "estimate"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.5,
+     "scene": "s6",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.5,
+       "target": "choiceA"
+      },
+      {
+       "at": 0.3,
+       "do": "show",
+       "dur": 0.5,
+       "target": "choiceB"
+      },
+      {
+       "at": 0.6,
+       "do": "show",
+       "dur": 0.5,
+       "target": "choiceC"
+      },
+      {
+       "at": 1,
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s6",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "choiceA"
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which product is correct for 25 × 16?",
+    "options": [
+     "choiceA",
+     "choiceB",
+     "choiceC"
+    ],
+    "answer": "choiceA",
+    "src": "c5-maths-ch06-t02-i04"
+   }
+  },
+  "repairs": [
+   "glyph",
+   "glyph",
+   "glyph:name"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "passes": 2,
+  "seconds": 38
+ },
+ "keys": [
+  {
+   "itemId": "r1",
+   "key": "×10",
+   "prompt": "inputs 4,25,120,36 → 40,250,1200,360"
+  },
+  {
+   "itemId": "r2",
+   "key": "×1",
+   "prompt": "inputs 9,45,0 → 9,45,0"
+  },
+  {
+   "itemId": "r3",
+   "key": "35",
+   "prompt": "3 + 4 × 5 = 35?"
+  }
+ ],
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch06-t02-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4430,
+     "ops": [
+      {
+       "id": "title1",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        80
+       ],
+       "text": "useful patterns",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "m1",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        250,
+        250
+       ],
+       "r": 70
+      },
+      {
+       "id": "m2",
+       "op": "circle",
+       "startMs": 1200,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        550,
+        250
+       ],
+       "r": 70
+      },
+      {
+       "id": "pat",
+       "op": "arrow",
+       "startMs": 1900,
+       "endMs": 2600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        330,
+        250
+       ],
+       "to": [
+        470,
+        250
+       ]
+      },
+      {
+       "id": "mental",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3800,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        390
+       ],
+       "text": "calculate mentally",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch06-t02-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "eq2",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        130,
+        130
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "36",
+         "×",
+         "100",
+         "=",
+         "3,600"
+        ]
+       ]
+      },
+      {
+       "id": "shift",
+       "op": "arrow",
+       "startMs": 1800,
+       "endMs": 2800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        270,
+        230
+       ],
+       "to": [
+        400,
+        230
+       ]
+      },
+      {
+       "id": "two",
+       "op": "text",
+       "startMs": 2600,
+       "endMs": 3900,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        285
+       ],
+       "text": "two places left",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "digits",
+       "op": "numwork",
+       "startMs": 4000,
+       "endMs": 5700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        160,
+        360
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "36",
+         "→",
+         "3,600"
+        ]
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch06-t02-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "eq3",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        110
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "50",
+         "×",
+         "40"
+        ]
+       ]
+      },
+      {
+       "id": "parts",
+       "op": "numwork",
+       "startMs": 1300,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        220
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "5",
+         "×",
+         "4",
+         "=",
+         "20"
+        ]
+       ]
+      },
+      {
+       "id": "zeros",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 4000,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        410,
+        220
+       ],
+       "text": "two zeros",
+       "size": "m"
+      },
+      {
+       "id": "result3",
+       "op": "numwork",
+       "startMs": 4200,
+       "endMs": 6200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        340
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "50",
+         "×",
+         "40",
+         "=",
+         "2,000"
+        ]
+       ]
+      },
+      {
+       "id": "h3",
+       "op": "highlight",
+       "startMs": 6400,
+       "endMs": 7400,
+       "ink": "good",
+       "weight": 2,
+       "target": "result3",
+       "style": "underline"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch06-t02-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 11238,
+     "ops": [
+      {
+       "id": "start4",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        80,
+        100
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "25",
+         "×",
+         "16",
+         "=",
+         "400"
+        ]
+       ]
+      },
+      {
+       "id": "double",
+       "op": "arrow",
+       "startMs": 1800,
+       "endMs": 2600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        170,
+        170
+       ],
+       "to": [
+        170,
+        270
+       ]
+      },
+      {
+       "id": "half",
+       "op": "arrow",
+       "startMs": 2000,
+       "endMs": 2800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        330,
+        170
+       ],
+       "to": [
+        330,
+        270
+       ]
+      },
+      {
+       "id": "new4",
+       "op": "numwork",
+       "startMs": 2800,
+       "endMs": 4700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        80,
+        280
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "50",
+         "×",
+         "8",
+         "=",
+         "400"
+        ]
+       ]
+      },
+      {
+       "id": "dblabel",
+       "op": "label",
+       "startMs": 4700,
+       "endMs": 5700,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        190,
+        245
+       ],
+       "text": "double",
+       "to": [
+        170,
+        270
+       ]
+      },
+      {
+       "id": "halabel",
+       "op": "label",
+       "startMs": 5200,
+       "endMs": 6200,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        350,
+        245
+       ],
+       "text": "halve",
+       "to": [
+        330,
+        270
+       ]
+      },
+      {
+       "id": "same4",
+       "op": "text",
+       "startMs": 7000,
+       "endMs": 8500,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        430
+       ],
+       "text": "same product",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch06-t02-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 9536,
+     "ops": [
+      {
+       "id": "one5",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        110
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "number",
+         "×",
+         "1",
+         "=",
+         "same"
+        ]
+       ]
+      },
+      {
+       "id": "zero5",
+       "op": "numwork",
+       "startMs": 2200,
+       "endMs": 4300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        250
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "number",
+         "×",
+         "0",
+         "=",
+         "0"
+        ]
+       ]
+      },
+      {
+       "id": "bigger",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 6000,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        450,
+        170
+       ],
+       "text": "not always bigger",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "h1",
+       "op": "highlight",
+       "startMs": 6400,
+       "endMs": 7400,
+       "ink": "good",
+       "weight": 2,
+       "target": "one5",
+       "style": "circle"
+      },
+      {
+       "id": "h0",
+       "op": "highlight",
+       "startMs": 7600,
+       "endMs": 8600,
+       "ink": "good",
+       "weight": 2,
+       "target": "zero5",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch06-t02-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "exact6",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        80,
+        100
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "38",
+         "×",
+         "52"
+        ]
+       ]
+      },
+      {
+       "id": "round6",
+       "op": "numwork",
+       "startMs": 1700,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        80,
+        230
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "40",
+         "×",
+         "50",
+         "=",
+         "2,000"
+        ]
+       ]
+      },
+      {
+       "id": "roundlabel",
+       "op": "text",
+       "startMs": 3600,
+       "endMs": 4700,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        420,
+        170
+       ],
+       "text": "round first",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "about",
+       "op": "text",
+       "startMs": 4800,
+       "endMs": 6200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        420,
+        300
+       ],
+       "text": "about ₹2,000",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "est",
+       "op": "highlight",
+       "startMs": 6500,
+       "endMs": 7500,
+       "ink": "good",
+       "weight": 2,
+       "target": "round6",
+       "style": "underline"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch06-t02-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4004,
+     "ops": [
+      {
+       "id": "prompt7",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        80
+       ],
+       "text": "choose the product",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "q7",
+       "op": "numwork",
+       "startMs": 1100,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        110,
+        190
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "25",
+         "×",
+         "16",
+         "=",
+         "?"
+        ]
+       ]
+      },
+      {
+       "id": "choices7",
+       "op": "text",
+       "startMs": 2400,
+       "endMs": 3400,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        350
+       ],
+       "text": "25 × 16",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch06-t02-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "ans8",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        110,
+        190
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "25",
+         "×",
+         "16",
+         "=",
+         "400"
+        ]
+       ]
+      },
+      {
+       "id": "double8",
+       "op": "arrow",
+       "startMs": 1800,
+       "endMs": 2600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        190,
+        260
+       ],
+       "to": [
+        190,
+        350
+       ]
+      },
+      {
+       "id": "half8",
+       "op": "arrow",
+       "startMs": 2000,
+       "endMs": 2800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        340,
+        260
+       ],
+       "to": [
+        340,
+        350
+       ]
+      },
+      {
+       "id": "preserve8",
+       "op": "text",
+       "startMs": 3200,
+       "endMs": 4700,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        430
+       ],
+       "text": "product preserved",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "correct8",
+       "op": "highlight",
+       "startMs": 4700,
+       "endMs": 5500,
+       "ink": "good",
+       "weight": 2,
+       "target": "ans8",
+       "style": "circle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

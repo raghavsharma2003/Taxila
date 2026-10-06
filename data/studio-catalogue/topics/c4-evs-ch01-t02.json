@@ -1,0 +1,1649 @@
+{
+ "topicId": "c4-evs-ch01-t02",
+ "title": "Ways of communicating",
+ "chapter": "Living Together",
+ "subject": "evs",
+ "class": 4,
+ "topicType": "T3",
+ "plan": {
+  "game": "era-drop@1",
+  "hint": "order mode: ways of communicating through time (drum, letter, telegram, phone, video call)"
+ },
+ "game": {
+  "archetype": "era-drop@1",
+  "spec": {
+   "archetype": "era-drop@1",
+   "skills": [
+    "c4-evs-ch01-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "landed": "landed",
+    "precision": "precision",
+    "coach": "Drag the dock along the path",
+    "first": "Which reaches first?",
+    "runDone": "Timeline complete",
+    "offBy": "off by",
+    "years": "steps",
+    "exact": "SPOT ON",
+    "century": "place",
+    "bce": "before",
+    "ce": "after",
+    "earlier": "FIRST"
+   },
+   "title": "Ways of communicating",
+   "axis": {
+    "min": 0,
+    "max": 20
+   },
+   "rounds": [
+    {
+     "mode": "place",
+     "title": "Words or no words",
+     "sub": "Sort each way of sharing a message",
+     "ticks": 0,
+     "speed": 0.8,
+     "tol": 1,
+     "items": [
+      {
+       "text": "Talking",
+       "value": 1,
+       "src": "c4-evs-ch01-t02-i13"
+      },
+      {
+       "text": "Writing a letter",
+       "value": 1,
+       "src": "c4-evs-ch01-t02-i13"
+      },
+      {
+       "text": "Waving goodbye",
+       "value": 2,
+       "src": "c4-evs-ch01-t02-i12"
+      },
+      {
+       "text": "A red traffic light",
+       "value": 2,
+       "src": "c4-evs-ch01-t02-i02"
+      }
+     ],
+     "targets": "c4-evs-ch01-t02-m1"
+    },
+    {
+     "mode": "order",
+     "title": "Which reaches first?",
+     "sub": "Compare these two ways",
+     "ticks": 0,
+     "speed": 0.9,
+     "tol": 1,
+     "items": [
+      {
+       "text": "A posted letter",
+       "value": 2,
+       "src": "c4-evs-ch01-t02-i03"
+      },
+      {
+       "text": "A phone call",
+       "value": 1,
+       "src": "c4-evs-ch01-t02-i03"
+      }
+     ],
+     "targets": "c4-evs-ch01-t02-m3"
+    },
+    {
+     "mode": "place",
+     "title": "Check the sign idea",
+     "sub": "Place the true communication idea",
+     "ticks": 0,
+     "speed": 1.1,
+     "tol": 1,
+     "items": [
+      {
+       "text": "Fixed signs and rules",
+       "value": 1,
+       "src": "c4-evs-ch01-t02-i10"
+      },
+      {
+       "text": "Random hand-waving",
+       "value": 2,
+       "src": "c4-evs-ch01-t02-i10"
+      }
+     ],
+     "targets": "c4-evs-ch01-t02-m2"
+    }
+   ]
+  },
+  "repairs": [
+   "axis:min-range",
+   "ticks:sparse",
+   "ticks:sparse"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c4-evs-ch01-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Ways of communicating",
+   "accent": "mint",
+   "targets": "c4-evs-ch01-t02-m1",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "row",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Ways of communicating"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Only words communicate"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "message",
+       "type": "node",
+       "text": "Message",
+       "sub": "idea or feeling",
+       "glyph": "note",
+       "color": "mint"
+      },
+      {
+       "id": "talk",
+       "type": "node",
+       "text": "Talking",
+       "sub": "uses words",
+       "glyph": "person",
+       "color": "ion"
+      },
+      {
+       "id": "letter",
+       "type": "node",
+       "text": "Letter",
+       "sub": "can be kept",
+       "glyph": "letter",
+       "color": "amber"
+      },
+      {
+       "id": "phone",
+       "type": "node",
+       "text": "Phone call",
+       "sub": "fast and far",
+       "glyph": "phone",
+       "color": "volt"
+      },
+      {
+       "id": "gesture",
+       "type": "node",
+       "text": "Gesture",
+       "sub": "no words",
+       "glyph": "hand",
+       "color": "sun"
+      },
+      {
+       "id": "sign",
+       "type": "node",
+       "text": "Sign language",
+       "sub": "fixed signs",
+       "glyph": "hand",
+       "color": "sci"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "talk",
+       "to": "message",
+       "text": "shares"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "letter",
+       "to": "message",
+       "text": "shares"
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "phone",
+       "to": "message",
+       "text": "shares"
+      },
+      {
+       "id": "a4",
+       "type": "arrow",
+       "from": "gesture",
+       "to": "message",
+       "text": "shows"
+      },
+      {
+       "id": "a5",
+       "type": "arrow",
+       "from": "sign",
+       "to": "message",
+       "text": "shows"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "prompt",
+       "type": "title",
+       "text": "Choose a good way"
+      },
+      {
+       "id": "noisy",
+       "type": "node",
+       "text": "Noisy platform",
+       "sub": "friend is near",
+       "glyph": "train",
+       "color": "amber"
+      },
+      {
+       "id": "far",
+       "type": "node",
+       "text": "Aunt far away",
+       "sub": "in Chennai",
+       "glyph": "globe",
+       "color": "ion"
+      },
+      {
+       "id": "wave",
+       "type": "node",
+       "text": "Wave or point",
+       "sub": "can be seen",
+       "glyph": "hand",
+       "color": "sun"
+      },
+      {
+       "id": "call",
+       "type": "node",
+       "text": "Phone call",
+       "sub": "reaches fast",
+       "glyph": "phone",
+       "color": "volt"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Communication means sharing a message with someone who understands it.",
+    "L2": "A message can share an idea, a feeling or information.",
+    "L3": "We can use words, such as talking, letters, phone calls and text messages.",
+    "L4": "We can also communicate without words, using gestures, facial expressions, signs and pictures.",
+    "L5": "Sign language is a real language with fixed signs, and different countries can have different sign languages.",
+    "L6": "The best way depends on the need: a wave helps nearby, while a phone call reaches someone far away quickly.",
+    "L7": "Now choose the best way for each situation."
+   },
+   "narration": {
+    "L1": {
+     "text": "Communication means sharing a message with someone who understands it.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "A message can share an idea, a feeling or information.",
+     "dur": 2.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "We can use words, such as talking, letters, phone calls and text messages.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "We can also communicate without words, using gestures, facial expressions, signs and pictures.",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "Sign language is a real language with fixed signs, and different countries can have different sign languages.",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "The best way depends on the need: a wave helps nearby, while a phone call reaches someone far away quickly.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Now choose the best way for each situation.",
+     "dur": 2,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.3,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "message"
+      },
+      {
+       "at": 0.5,
+       "do": "highlight",
+       "dur": 1,
+       "target": "message"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.5,
+       "target": "talk"
+      },
+      {
+       "at": 0.3,
+       "do": "show",
+       "dur": 0.5,
+       "target": "letter"
+      },
+      {
+       "at": 0.6,
+       "do": "show",
+       "dur": 0.5,
+       "target": "phone"
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "a1",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.5,
+       "target": "gesture"
+      },
+      {
+       "at": 0.4,
+       "do": "show",
+       "dur": 0.5,
+       "target": "sign"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1.2,
+       "target": "sign"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "a4",
+       "to": 1
+      },
+      {
+       "at": 0.7,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "a3",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "prompt"
+      },
+      {
+       "at": "end",
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which way suits a friend across a noisy platform?",
+    "options": [
+     "wave",
+     "call"
+    ],
+    "answer": "wave",
+    "src": "c4-evs-ch01-t02-i11"
+   }
+  },
+  "repairs": [
+   "cue:target"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "passes": 2,
+  "seconds": 24
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "1 CE",
+   "prompt": "Talking",
+   "src": "c4-evs-ch01-t02-i13"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "1 CE",
+   "prompt": "Writing a letter",
+   "src": "c4-evs-ch01-t02-i13"
+  },
+  {
+   "itemId": "r1:2",
+   "key": "2 CE",
+   "prompt": "Waving goodbye",
+   "src": "c4-evs-ch01-t02-i12"
+  },
+  {
+   "itemId": "r1:3",
+   "key": "2 CE",
+   "prompt": "A red traffic light",
+   "src": "c4-evs-ch01-t02-i02"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "A phone call",
+   "prompt": "earlier: A posted letter (2 CE) vs A phone call (1 CE)"
+  },
+  {
+   "itemId": "r3:0",
+   "key": "1 CE",
+   "prompt": "Fixed signs and rules",
+   "src": "c4-evs-ch01-t02-i10"
+  },
+  {
+   "itemId": "r3:1",
+   "key": "2 CE",
+   "prompt": "Random hand-waving",
+   "src": "c4-evs-ch01-t02-i10"
+  }
+ ],
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-evs-ch01-t02-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "person1",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        180,
+        180
+       ],
+       "r": 45
+      },
+      {
+       "id": "person2",
+       "op": "circle",
+       "startMs": 300,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        620,
+        180
+       ],
+       "r": 45
+      },
+      {
+       "id": "msg",
+       "op": "arrow",
+       "startMs": 1100,
+       "endMs": 1900,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        240,
+        180
+       ],
+       "to": [
+        560,
+        180
+       ]
+      },
+      {
+       "id": "message",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        130
+       ],
+       "text": "message",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "understand",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3500,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        620,
+        280
+       ],
+       "text": "understands",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "share",
+       "op": "text",
+       "startMs": 3700,
+       "endMs": 4500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        380
+       ],
+       "text": "sharing",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-evs-ch01-t02-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "idea",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        180,
+        170
+       ],
+       "r": 55
+      },
+      {
+       "id": "ideaText",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        175
+       ],
+       "text": "idea",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "feeling",
+       "op": "circle",
+       "startMs": 1000,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        170
+       ],
+       "r": 55
+      },
+      {
+       "id": "feelingText",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        175
+       ],
+       "text": "feeling",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "information",
+       "op": "circle",
+       "startMs": 2000,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        620,
+        170
+       ],
+       "r": 55
+      },
+      {
+       "id": "infoText",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        620,
+        175
+       ],
+       "text": "information",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "share2",
+       "op": "arrow",
+       "startMs": 3500,
+       "endMs": 4300,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        220,
+        330
+       ],
+       "to": [
+        580,
+        330
+       ]
+      },
+      {
+       "id": "shareLabel",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 4750,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        390
+       ],
+       "text": "share",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-evs-ch01-t02-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "words",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "words",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "talk",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        130,
+        180
+       ],
+       "text": "talking",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "letter",
+       "op": "rect",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        290,
+        140
+       ],
+       "w": 130,
+       "h": 80
+      },
+      {
+       "id": "letterText",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        355,
+        185
+       ],
+       "text": "letters",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "phone",
+       "op": "circle",
+       "startMs": 2600,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        540,
+        180
+       ],
+       "r": 45
+      },
+      {
+       "id": "phoneText",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 4000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        540,
+        260
+       ],
+       "text": "phone calls",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "textMsg",
+       "op": "rect",
+       "startMs": 3900,
+       "endMs": 4500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        340
+       ],
+       "w": 220,
+       "h": 65
+      },
+      {
+       "id": "textLabel",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        230,
+        382
+       ],
+       "text": "text messages",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "connect",
+       "op": "arrow",
+       "startMs": 5200,
+       "endMs": 5900,
+       "ink": "accent",
+       "weight": 1,
+       "from": [
+        360,
+        340
+       ],
+       "to": [
+        500,
+        230
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-evs-ch01-t02-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "without",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        65
+       ],
+       "text": "without words",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "gesture",
+       "op": "stroke",
+       "startMs": 900,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         130,
+         250
+        ],
+        [
+         150,
+         220
+        ],
+        [
+         170,
+         250
+        ],
+        [
+         190,
+         220
+        ],
+        [
+         210,
+         250
+        ]
+       ]
+      },
+      {
+       "id": "gestureText",
+       "op": "text",
+       "startMs": 1600,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        170,
+        300
+       ],
+       "text": "gestures",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "face",
+       "op": "circle",
+       "startMs": 1900,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        350,
+        235
+       ],
+       "r": 50
+      },
+      {
+       "id": "faceText",
+       "op": "text",
+       "startMs": 2600,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        350,
+        310
+       ],
+       "text": "facial expressions",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "sign",
+       "op": "arrow",
+       "startMs": 3200,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        500,
+        250
+       ],
+       "to": [
+        580,
+        180
+       ]
+      },
+      {
+       "id": "signText",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        500,
+        320
+       ],
+       "text": "signs",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "picture",
+       "op": "rect",
+       "startMs": 4100,
+       "endMs": 4800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        625,
+        190
+       ],
+       "w": 110,
+       "h": 80
+      },
+      {
+       "id": "pictureText",
+       "op": "text",
+       "startMs": 4800,
+       "endMs": 5500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        680,
+        305
+       ],
+       "text": "pictures",
+       "size": "s",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-evs-ch01-t02-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "signLang",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        65
+       ],
+       "text": "Sign language",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "fixed",
+       "op": "rect",
+       "startMs": 1100,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        110,
+        145
+       ],
+       "w": 210,
+       "h": 100
+      },
+      {
+       "id": "fixedText",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        215,
+        200
+       ],
+       "text": "fixed signs",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "country1",
+       "op": "circle",
+       "startMs": 2800,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        490,
+        190
+       ],
+       "r": 55
+      },
+      {
+       "id": "country1Text",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        490,
+        190
+       ],
+       "text": "country",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "country2",
+       "op": "circle",
+       "startMs": 4000,
+       "endMs": 4700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        680,
+        190
+       ],
+       "r": 55
+      },
+      {
+       "id": "country2Text",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        680,
+        190
+       ],
+       "text": "country",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "different",
+       "op": "arrow",
+       "startMs": 5400,
+       "endMs": 6100,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        545,
+        190
+       ],
+       "to": [
+        625,
+        190
+       ]
+      },
+      {
+       "id": "differentText",
+       "op": "text",
+       "startMs": 6100,
+       "endMs": 6800,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        585,
+        130
+       ],
+       "text": "different",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "real",
+       "op": "text",
+       "startMs": 6900,
+       "endMs": 7600,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        215,
+        320
+       ],
+       "text": "real language",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-evs-ch01-t02-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9111,
+     "ops": [
+      {
+       "id": "need",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "best way depends on need",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "near",
+       "op": "circle",
+       "startMs": 1200,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        170,
+        220
+       ],
+       "r": 65
+      },
+      {
+       "id": "wave",
+       "op": "stroke",
+       "startMs": 1900,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         135,
+         220
+        ],
+        [
+         150,
+         190
+        ],
+        [
+         165,
+         220
+        ],
+        [
+         180,
+         190
+        ],
+        [
+         195,
+         220
+        ]
+       ]
+      },
+      {
+       "id": "far",
+       "op": "circle",
+       "startMs": 2500,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        620,
+        220
+       ],
+       "r": 65
+      },
+      {
+       "id": "waveText",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        170,
+        320
+       ],
+       "text": "wave",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "phoneCall",
+       "op": "circle",
+       "startMs": 3200,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        620,
+        220
+       ],
+       "r": 35
+      },
+      {
+       "id": "nearText",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 3800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        170,
+        390
+       ],
+       "text": "nearby",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "phoneCallText",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        620,
+        320
+       ],
+       "text": "phone call",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "farText",
+       "op": "text",
+       "startMs": 4600,
+       "endMs": 5200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        620,
+        390
+       ],
+       "text": "far away",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "quick",
+       "op": "arrow",
+       "startMs": 5600,
+       "endMs": 6500,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        530,
+        430
+       ],
+       "to": [
+        700,
+        430
+       ]
+      },
+      {
+       "id": "quickText",
+       "op": "text",
+       "startMs": 6500,
+       "endMs": 7300,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        615,
+        475
+       ],
+       "text": "quickly",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-evs-ch01-t02-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4004,
+     "ops": [
+      {
+       "id": "choose",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        80
+       ],
+       "text": "choose",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "best",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        145
+       ],
+       "text": "best way",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "situation1",
+       "op": "rect",
+       "startMs": 1500,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        230
+       ],
+       "w": 250,
+       "h": 110
+      },
+      {
+       "id": "situation2",
+       "op": "rect",
+       "startMs": 1900,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        450,
+        230
+       ],
+       "w": 250,
+       "h": 110
+      },
+      {
+       "id": "arrow1",
+       "op": "arrow",
+       "startMs": 2700,
+       "endMs": 3300,
+       "ink": "accent",
+       "weight": 1,
+       "from": [
+        225,
+        380
+       ],
+       "to": [
+        225,
+        350
+       ]
+      },
+      {
+       "id": "arrow2",
+       "op": "arrow",
+       "startMs": 3000,
+       "endMs": 3600,
+       "ink": "accent",
+       "weight": 1,
+       "from": [
+        575,
+        380
+       ],
+       "to": [
+        575,
+        350
+       ]
+      },
+      {
+       "id": "situation",
+       "op": "text",
+       "startMs": 3400,
+       "endMs": 3950,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        445
+       ],
+       "text": "situation",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ },
+ "firstCheck": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "Round 1 labels a 'Posted letter' as 150 CE, but the kit says a posted letter takes 'a few days'. The year 150 CE is ancient; letters as a common communication method didn't exist in India at that time. This is historically inaccurate and factually wrong for the intended audience (grades 4-7).",
+    "severity": "high"
+   },
+   {
+    "where": "game",
+    "what": "Round 2 includes a 'Telegram' item with a value of 250 CE, but the kit has no mention of telegrams. While not directly contradicting the kit, it introduces an anachronism (telegrams didn't exist in 250 CE) and is factually unrealistic for the story's implied timeline.",
+    "severity": "high"
+   }
+  ],
+  "verdict": "fail",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

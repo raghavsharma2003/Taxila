@@ -1,0 +1,1537 @@
+{
+ "topicId": "c6-maths-ch09-t02",
+ "title": "Rotational symmetry",
+ "chapter": "Symmetry",
+ "subject": "maths",
+ "class": 6,
+ "topicType": "T3",
+ "plan": {
+  "game": "mirror-paint@1",
+  "hint": "turn mode (orders of rotational symmetry 1, 2, 4)"
+ },
+ "game": {
+  "archetype": "mirror-paint@1",
+  "spec": {
+   "archetype": "mirror-paint@1",
+   "skills": [
+    "c6-maths-ch09-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "done": "designs",
+    "check": "CHECK",
+    "rotate": "TURN",
+    "flip": "FLIP",
+    "coach": "Turn the design and watch closely",
+    "runDone": "Studio closed",
+    "lines": "Mark every line of symmetry",
+    "turn": "How many times does it match?",
+    "twin": "Turn and flip it to fit its twin",
+    "same": "SAME",
+    "order": "order",
+    "fold": "FOLD"
+   },
+   "title": "Rotational Symmetry Studio",
+   "rounds": [
+    {
+     "mode": "turn",
+     "title": "Turn test",
+     "sub": "Do any smaller turns match?",
+     "size": 5,
+     "cells": [
+      [
+       0,
+       0
+      ],
+      [
+       1,
+       0
+      ],
+      [
+       0,
+       1
+      ],
+      [
+       3,
+       1
+      ]
+     ],
+     "time": 45,
+     "targets": "c6-maths-ch09-t02-m-full-turn"
+    },
+    {
+     "mode": "turn",
+     "title": "Twist and turn",
+     "sub": "Watch the shape around its centre",
+     "size": 6,
+     "cells": [
+      [
+       1,
+       1
+      ],
+      [
+       4,
+       4
+      ],
+      [
+       2,
+       1
+      ],
+      [
+       3,
+       4
+      ],
+      [
+       1,
+       2
+      ],
+      [
+       4,
+       3
+      ]
+     ],
+     "time": 55,
+     "targets": "c6-maths-ch09-t02-m-needs-line"
+    },
+    {
+     "mode": "turn",
+     "title": "Corner pattern",
+     "sub": "Count matches and name the smallest turn",
+     "size": 6,
+     "cells": [
+      [
+       2,
+       1
+      ],
+      [
+       3,
+       1
+      ],
+      [
+       4,
+       2
+      ],
+      [
+       4,
+       3
+      ],
+      [
+       3,
+       4
+      ],
+      [
+       2,
+       4
+      ],
+      [
+       1,
+       3
+      ],
+      [
+       1,
+       2
+      ]
+     ],
+     "time": 65,
+     "targets": "c6-maths-ch09-t02-m-angle-order"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c6-maths-ch09-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Rotational symmetry",
+   "accent": "ion",
+   "targets": "c6-maths-ch09-t02-m-full-turn",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Rotational symmetry"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Every shape has it after 360°"
+      },
+      {
+       "id": "turn",
+       "type": "label",
+       "text": "Less than 360°",
+       "x": 560,
+       "y": 330,
+       "color": "amber"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "hex",
+       "type": "poly",
+       "points": [
+        [
+         500,
+         230
+        ],
+        [
+         620,
+         230
+        ],
+        [
+         700,
+         350
+        ],
+        [
+         620,
+         470
+        ],
+        [
+         500,
+         470
+        ],
+        [
+         420,
+         350
+        ]
+       ],
+       "closed": true,
+       "x": 0,
+       "y": 0
+      },
+      {
+       "id": "hexlab",
+       "type": "label",
+       "text": "Regular hexagon",
+       "x": 470,
+       "y": 520,
+       "color": "ion"
+      },
+      {
+       "id": "centre",
+       "type": "node",
+       "text": "Centre",
+       "sub": "turn here",
+       "glyph": "compass",
+       "x": 560,
+       "y": 350,
+       "color": "mint"
+      },
+      {
+       "id": "angle",
+       "type": "label",
+       "text": "60°",
+       "x": 735,
+       "y": 350,
+       "color": "sun"
+      },
+      {
+       "id": "order",
+       "type": "label",
+       "text": "Order 6",
+       "x": 90,
+       "y": 350,
+       "color": "volt"
+      },
+      {
+       "id": "rot",
+       "type": "arrow",
+       "from": "centre",
+       "to": "angle",
+       "text": "turn",
+       "bend": 0.2
+      },
+      {
+       "id": "formula",
+       "type": "label",
+       "text": "360° ÷ 6 = 60°",
+       "x": 370,
+       "y": 100,
+       "color": "amber"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "prompt",
+       "type": "title",
+       "text": "Choose the order"
+      },
+      {
+       "id": "op3",
+       "type": "node",
+       "text": "3",
+       "sub": "order",
+       "glyph": "question",
+       "x": 250,
+       "y": 350,
+       "color": "amber"
+      },
+      {
+       "id": "op6",
+       "type": "node",
+       "text": "6",
+       "sub": "order",
+       "glyph": "question",
+       "x": 500,
+       "y": 350,
+       "color": "mint"
+      },
+      {
+       "id": "op12",
+       "type": "node",
+       "text": "12",
+       "sub": "order",
+       "glyph": "question",
+       "x": 750,
+       "y": 350,
+       "color": "sci"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "A figure has rotational symmetry when it looks exactly the same after a turn smaller than one full turn.",
+    "L2": "Do not count only the 360° turn. That turn makes every figure match, so it does not show rotational symmetry.",
+    "L3": "The smallest matching turn is called the angle of rotational symmetry.",
+    "L4": "The order tells us how many times the figure matches during one full turn.",
+    "L5": "For a regular hexagon, each corner moves into the next corner's place after 360° divided by 6.",
+    "L6": "So the smallest turn is 60°. The angle of rotational symmetry is 60°.",
+    "L7": "It matches six times in one full turn, so its order is 6.",
+    "L8": "Now use the same idea: order equals 360° divided by the angle."
+   },
+   "narration": {
+    "L1": {
+     "text": "A figure has rotational symmetry when it looks exactly the same after a turn smaller than one full turn.",
+     "dur": 7.5,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L2": {
+     "text": "Do not count only the 360° turn. That turn makes every figure match, so it does not show rotational symmetry.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L3": {
+     "text": "The smallest matching turn is called the angle of rotational symmetry.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L4": {
+     "text": "The order tells us how many times the figure matches during one full turn.",
+     "dur": 6.5,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L5": {
+     "text": "For a regular hexagon, each corner moves into the next corner's place after 360° divided by 6.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L6": {
+     "text": "So the smallest turn is 60°. The angle of rotational symmetry is 60°.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L7": {
+     "text": "It matches six times in one full turn, so its order is 6.",
+     "dur": 5.5,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Now use the same idea: order equals 360° divided by the angle.",
+     "dur": 5.5,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      },
+      {
+       "at": 0.7,
+       "do": "show",
+       "dur": 0.8,
+       "target": "turn"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      },
+      {
+       "at": 1,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "hex"
+      },
+      {
+       "at": 0.6,
+       "do": "show",
+       "dur": 0.7,
+       "target": "centre"
+      },
+      {
+       "at": 1.2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "hex"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "order"
+      },
+      {
+       "at": 0.8,
+       "do": "count",
+       "dur": 1.2,
+       "target": "hex",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "formula"
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.7,
+       "target": "rot"
+      },
+      {
+       "at": 1.4,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "rot",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "angle"
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 1,
+       "target": "angle"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1.2,
+       "target": "order"
+      },
+      {
+       "at": 1.2,
+       "do": "count",
+       "dur": 1.2,
+       "target": "hex",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "prompt"
+      },
+      {
+       "at": 0.6,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "op3",
+        "op6",
+        "op12"
+       ]
+      },
+      {
+       "at": 2,
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "A figure looks the same every 60°. What is its order of rotational symmetry?",
+    "options": [
+     "op3",
+     "op6",
+     "op12"
+    ],
+    "answer": "op6",
+    "src": "c6-maths-ch09-t02-i07"
+   }
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg",
+  "seconds": 57
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch09-t02-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "fig1",
+       "op": "polygon",
+       "startMs": 0,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         260,
+         150
+        ],
+        [
+         330,
+         110
+        ],
+        [
+         400,
+         150
+        ],
+        [
+         400,
+         230
+        ],
+        [
+         330,
+         270
+        ],
+        [
+         260,
+         230
+        ]
+       ]
+      },
+      {
+       "id": "cen1",
+       "op": "circle",
+       "startMs": 1700,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        330,
+        190
+       ],
+       "r": 6,
+       "fill": "accent"
+      },
+      {
+       "id": "turn1",
+       "op": "arrow",
+       "startMs": 2800,
+       "endMs": 4800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        330,
+        90
+       ],
+       "to": [
+        470,
+        190
+       ]
+      },
+      {
+       "id": "lab1",
+       "op": "label",
+       "startMs": 4700,
+       "endMs": 5700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        480,
+        180
+       ],
+       "text": "turn",
+       "to": [
+        430,
+        140
+       ]
+      },
+      {
+       "id": "same1",
+       "op": "text",
+       "startMs": 6000,
+       "endMs": 7000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        180,
+        350
+       ],
+       "text": "same",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "less1",
+       "op": "text",
+       "startMs": 6800,
+       "endMs": 7900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        510,
+        350
+       ],
+       "text": "smaller than",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "full1",
+       "op": "text",
+       "startMs": 7600,
+       "endMs": 8500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        650,
+        350
+       ],
+       "text": "360°",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch09-t02-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 9111,
+     "ops": [
+      {
+       "id": "fullturn",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        170,
+        180
+       ],
+       "r": 65
+      },
+      {
+       "id": "fulltext",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        170,
+        285
+       ],
+       "text": "360°",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "cross1",
+       "op": "line",
+       "startMs": 2200,
+       "endMs": 3000,
+       "ink": "accent",
+       "weight": 3,
+       "from": [
+        115,
+        125
+       ],
+       "to": [
+        225,
+        235
+       ]
+      },
+      {
+       "id": "cross2",
+       "op": "line",
+       "startMs": 2700,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 3,
+       "from": [
+        225,
+        125
+       ],
+       "to": [
+        115,
+        235
+       ]
+      },
+      {
+       "id": "every",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 5000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        430,
+        160
+       ],
+       "text": "every figure",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "match2",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 5900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        430,
+        225
+       ],
+       "text": "match",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "nocount",
+       "op": "text",
+       "startMs": 6300,
+       "endMs": 7600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        430,
+        310
+       ],
+       "text": "does not count",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch09-t02-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "smallest",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        180,
+        150
+       ],
+       "text": "smallest",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "turn3",
+       "op": "arrow",
+       "startMs": 700,
+       "endMs": 1600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        180,
+        210
+       ],
+       "to": [
+        300,
+        210
+       ]
+      },
+      {
+       "id": "angle3",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        150
+       ],
+       "text": "angle",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "rot3",
+       "op": "text",
+       "startMs": 2600,
+       "endMs": 4000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        220
+       ],
+       "text": "rotational symmetry",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "h3",
+       "op": "highlight",
+       "startMs": 4100,
+       "endMs": 5000,
+       "ink": "accent",
+       "weight": 2,
+       "target": "angle3",
+       "style": "underline"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch09-t02-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "orderword",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        170,
+        130
+       ],
+       "text": "order",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "equals4",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        300,
+        130
+       ],
+       "text": "=",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "count4",
+       "op": "text",
+       "startMs": 1300,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        470,
+        130
+       ],
+       "text": "how many times",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "turns4",
+       "op": "arrow",
+       "startMs": 2700,
+       "endMs": 3900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        300,
+        270
+       ],
+       "to": [
+        520,
+        270
+       ]
+      },
+      {
+       "id": "full4",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 5000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        350
+       ],
+       "text": "one full turn",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "h4",
+       "op": "highlight",
+       "startMs": 5200,
+       "endMs": 6200,
+       "ink": "accent",
+       "weight": 2,
+       "target": "orderword",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch09-t02-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "hex5",
+       "op": "polygon",
+       "startMs": 0,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         170,
+         150
+        ],
+        [
+         225,
+         118
+        ],
+        [
+         280,
+         150
+        ],
+        [
+         280,
+         220
+        ],
+        [
+         225,
+         252
+        ],
+        [
+         170,
+         220
+        ]
+       ]
+      },
+      {
+       "id": "hexlabel",
+       "op": "text",
+       "startMs": 1200,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        225,
+        300
+       ],
+       "text": "regular hexagon",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "div5",
+       "op": "numwork",
+       "startMs": 2200,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        380,
+        120
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "360°",
+         "÷",
+         "6"
+        ]
+       ]
+      },
+      {
+       "id": "corner5",
+       "op": "circle",
+       "startMs": 3900,
+       "endMs": 4500,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        170,
+        150
+       ],
+       "r": 10
+      },
+      {
+       "id": "next5",
+       "op": "arrow",
+       "startMs": 4500,
+       "endMs": 6000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        180,
+        145
+       ],
+       "to": [
+        270,
+        155
+       ]
+      },
+      {
+       "id": "place5",
+       "op": "text",
+       "startMs": 5900,
+       "endMs": 7200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        520,
+        280
+       ],
+       "text": "next corner's place",
+       "size": "s",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch09-t02-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "result6",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        180,
+        130
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "360°",
+         "÷",
+         "6",
+         "=",
+         "60°"
+        ]
+       ]
+      },
+      {
+       "id": "small6",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        220,
+        270
+       ],
+       "text": "smallest turn",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "angle6",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        520,
+        270
+       ],
+       "text": "angle",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "sixty6",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 5000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        520,
+        340
+       ],
+       "text": "60°",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "under6",
+       "op": "highlight",
+       "startMs": 5100,
+       "endMs": 6000,
+       "ink": "accent",
+       "weight": 2,
+       "target": "sixty6",
+       "style": "underline"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch09-t02-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "sixturns",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        190,
+        190
+       ],
+       "r": 90
+      },
+      {
+       "id": "marks7",
+       "op": "line",
+       "startMs": 1000,
+       "endMs": 1600,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        190,
+        90
+       ],
+       "to": [
+        190,
+        290
+       ]
+      },
+      {
+       "id": "mark7b",
+       "op": "line",
+       "startMs": 1500,
+       "endMs": 2100,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        100,
+        190
+       ],
+       "to": [
+        280,
+        190
+       ]
+      },
+      {
+       "id": "times7",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 3400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        470,
+        140
+       ],
+       "text": "six times",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "full7",
+       "op": "text",
+       "startMs": 3400,
+       "endMs": 4500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        470,
+        220
+       ],
+       "text": "one full turn",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "order7",
+       "op": "numwork",
+       "startMs": 4500,
+       "endMs": 5800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        350,
+        310
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "order",
+         "=",
+         "6"
+        ]
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch09-t02-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "rule8",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        150,
+        150
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "order",
+         "=",
+         "360°",
+         "÷",
+         "angle"
+        ]
+       ]
+      },
+      {
+       "id": "arrow8",
+       "op": "arrow",
+       "startMs": 2400,
+       "endMs": 3400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        510,
+        250
+       ],
+       "to": [
+        650,
+        250
+       ]
+      },
+      {
+       "id": "angle8",
+       "op": "text",
+       "startMs": 3400,
+       "endMs": 4300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        250,
+        350
+       ],
+       "text": "angle",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "order8",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 5200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        550,
+        350
+       ],
+       "text": "order",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1",
+   "key": "1",
+   "prompt": "turn 5×5"
+  },
+  {
+   "itemId": "r2",
+   "key": "2",
+   "prompt": "turn 6×6"
+  },
+  {
+   "itemId": "r3",
+   "key": "4",
+   "prompt": "turn 6×6"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

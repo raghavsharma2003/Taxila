@@ -1,0 +1,1725 @@
+{
+ "topicId": "c7-sst-ch16-t01",
+ "title": "Turning Tides: 11th and 12th Centuries",
+ "chapter": "Turning Tides: 11th and 12th Centuries",
+ "subject": "sst",
+ "class": 7,
+ "topicType": "T3",
+ "plan": {
+  "game": "era-drop@1",
+  "hint": "place / century / order modes with BCE and CE dates from the kit"
+ },
+ "game": {
+  "archetype": "era-drop@1",
+  "spec": {
+   "archetype": "era-drop@1",
+   "skills": [
+    "c7-sst-ch16-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "landed": "landed",
+    "precision": "precision",
+    "coach": "Drag the dock along the timeline",
+    "first": "Which came first?",
+    "runDone": "Timeline complete",
+    "offBy": "off by",
+    "years": "years",
+    "exact": "SPOT ON",
+    "century": "century",
+    "bce": "BCE",
+    "ce": "CE",
+    "earlier": "EARLIER"
+   },
+   "title": "Turning Tides",
+   "axis": {
+    "min": 990,
+    "max": 1200
+   },
+   "rounds": [
+    {
+     "mode": "place",
+     "title": "Drop the events",
+     "sub": "Place each event on the CE timeline",
+     "ticks": 50,
+     "speed": 0.8,
+     "tol": 8,
+     "items": [
+      {
+       "text": "Brihadeeswara completed",
+       "value": 1010,
+       "src": "c7-sst-ch16-t01-i01"
+      },
+      {
+       "text": "Somnath raid",
+       "value": 1025,
+       "src": "c7-sst-ch16-t01-i09"
+      },
+      {
+       "text": "First Battle of Tarain",
+       "value": 1191,
+       "src": "c7-sst-ch16-t01-i08"
+      },
+      {
+       "text": "Second Battle of Tarain",
+       "value": 1192,
+       "src": "c7-sst-ch16-t01-i08"
+      }
+     ]
+    },
+    {
+     "mode": "century",
+     "title": "Find the century",
+     "sub": "Match each event to its century",
+     "ticks": 40,
+     "speed": 0.9,
+     "tol": 8,
+     "items": [
+      {
+       "text": "Chola temple completed",
+       "value": 1010,
+       "src": "c7-sst-ch16-t01-i01"
+      },
+      {
+       "text": "Somnath raid",
+       "value": 1025,
+       "src": "c7-sst-ch16-t01-i09"
+      },
+      {
+       "text": "First Battle of Tarain",
+       "value": 1191,
+       "src": "c7-sst-ch16-t01-i08"
+      },
+      {
+       "text": "Second Battle of Tarain",
+       "value": 1192,
+       "src": "c7-sst-ch16-t01-i08"
+      }
+     ]
+    },
+    {
+     "mode": "order",
+     "title": "Which came first?",
+     "sub": "Compare the events on the timeline",
+     "ticks": 0,
+     "speed": 1,
+     "tol": 2,
+     "items": [
+      {
+       "text": "Brihadeeswara completed",
+       "value": 1010,
+       "src": "c7-sst-ch16-t01-i07"
+      },
+      {
+       "text": "Mahmud raids Somnath",
+       "value": 1025,
+       "src": "c7-sst-ch16-t01-i07"
+      },
+      {
+       "text": "First Battle of Tarain",
+       "value": 1191,
+       "src": "c7-sst-ch16-t01-i07"
+      },
+      {
+       "text": "Second Battle of Tarain",
+       "value": 1192,
+       "src": "c7-sst-ch16-t01-i07"
+      }
+     ],
+     "targets": "c7-sst-ch16-t01-m1"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-sst-ch16-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Turning Tides: 11th–12th Centuries",
+   "accent": "amber",
+   "targets": "c7-sst-ch16-t01-m1",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Turning Tides: 11th–12th Centuries"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Mahmud ruled all of India"
+      },
+      {
+       "id": "south",
+       "type": "node",
+       "text": "Cholas",
+       "sub": "South India",
+       "glyph": "temple",
+       "color": "amber"
+      },
+      {
+       "id": "north",
+       "type": "node",
+       "text": "North-west",
+       "sub": "Raids and battles",
+       "glyph": "shield",
+       "color": "volt"
+      },
+      {
+       "id": "shift",
+       "type": "arrow",
+       "from": "south",
+       "to": "north",
+       "text": "power shifts"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "tanj",
+       "type": "node",
+       "text": "Rajaraja I",
+       "sub": "Thanjavur, c. 1010",
+       "glyph": "temple",
+       "color": "amber"
+      },
+      {
+       "id": "rajendra",
+       "type": "node",
+       "text": "Rajendra I",
+       "sub": "Ganga and sea",
+       "glyph": "ship",
+       "color": "sci"
+      },
+      {
+       "id": "navy",
+       "type": "node",
+       "text": "Navy",
+       "sub": "Southeast Asia",
+       "glyph": "boat",
+       "color": "ion"
+      },
+      {
+       "id": "assembly",
+       "type": "node",
+       "text": "Uttaramerur",
+       "sub": "Village assembly",
+       "glyph": "group",
+       "color": "mint"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "tanj",
+       "to": "rajendra",
+       "text": "Chola power"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "rajendra",
+       "to": "navy",
+       "text": "campaigns"
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "tanj",
+       "to": "assembly",
+       "text": "local rule"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "e1",
+       "type": "node",
+       "text": "Brihadeeswara",
+       "sub": "c. 1010",
+       "glyph": "temple",
+       "color": "amber"
+      },
+      {
+       "id": "e2",
+       "type": "node",
+       "text": "Somnath raid",
+       "sub": "1025–26",
+       "glyph": "coin",
+       "color": "volt"
+      },
+      {
+       "id": "e3",
+       "type": "node",
+       "text": "Tarain I",
+       "sub": "1191",
+       "glyph": "shield",
+       "color": "sci"
+      },
+      {
+       "id": "e4",
+       "type": "node",
+       "text": "Tarain II",
+       "sub": "1192",
+       "glyph": "shield",
+       "color": "ion"
+      },
+      {
+       "id": "e5",
+       "type": "node",
+       "text": "Delhi Sultanate",
+       "sub": "founded later",
+       "glyph": "crown",
+       "color": "mint"
+      },
+      {
+       "id": "a4",
+       "type": "arrow",
+       "from": "e1",
+       "to": "e2",
+       "text": "later"
+      },
+      {
+       "id": "a5",
+       "type": "arrow",
+       "from": "e2",
+       "to": "e3",
+       "text": "later"
+      },
+      {
+       "id": "a6",
+       "type": "arrow",
+       "from": "e3",
+       "to": "e4",
+       "text": "next"
+      },
+      {
+       "id": "a7",
+       "type": "arrow",
+       "from": "e4",
+       "to": "e5",
+       "text": "opened way"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "The 11th and 12th centuries were a time of turning tides: power was shifting in different parts of India.",
+    "L2": "In the south, the Cholas became a great power. Rajaraja I completed the Brihadeeswara temple at Thanjavur around 1010 CE.",
+    "L3": "Rajendra I carried Chola power to the Ganga, founded Gangaikonda Cholapuram, and sent a navy to Southeast Asia around 1025.",
+    "L4": "Chola villages also had assemblies. At Uttaramerur, qualified candidates' names went into a pot, and a child drew the tickets by lot.",
+    "L5": "Now bust the myth: Mahmud of Ghazni raided north India for wealth, but he did not conquer and rule most of India.",
+    "L6": "Other kingdoms also built and created, including the Chandelas, Paramaras, Solankis and Hoysalas. Their temples show that invasions were not the only story.",
+    "L7": "Put these events in time order to check the changing pattern of power."
+   },
+   "narration": {
+    "L1": {
+     "text": "The 11th and 12th centuries were a time of turning tides: power was shifting in different parts of India.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L2": {
+     "text": "In the south, the Cholas became a great power. Rajaraja I completed the Brihadeeswara temple at Thanjavur around 1010 CE.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L3": {
+     "text": "Rajendra I carried Chola power to the Ganga, founded Gangaikonda Cholapuram, and sent a navy to Southeast Asia around 1025.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L4": {
+     "text": "Chola villages also had assemblies. At Uttaramerur, qualified candidates' names went into a pot, and a child drew the tickets by lot.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L5": {
+     "text": "Now bust the myth: Mahmud of Ghazni raided north India for wealth, but he did not conquer and rule most of India.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Other kingdoms also built and created, including the Chandelas, Paramaras, Solankis and Hoysalas. Their temples show that invasions were not the only story.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Put these events in time order to check the changing pattern of power.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "title"
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 1.2,
+       "target": [
+        "south",
+        "north",
+        "shift"
+       ]
+      },
+      {
+       "at": 2.2,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "shift",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "tanj"
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 1.2,
+       "target": "tanj"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "rajendra"
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "a1",
+       "to": 1
+      },
+      {
+       "at": 1.6,
+       "do": "show",
+       "dur": 0.8,
+       "target": "navy"
+      },
+      {
+       "at": 2.4,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "a2",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "assembly"
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 1.2,
+       "target": "assembly"
+      },
+      {
+       "at": 2.4,
+       "do": "count",
+       "dur": 1,
+       "target": "assembly",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      },
+      {
+       "at": 1.2,
+       "do": "bust",
+       "dur": 1.2,
+       "target": "myth"
+      },
+      {
+       "at": 2.6,
+       "do": "highlight",
+       "dur": 1,
+       "target": "north"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "focus",
+       "dur": 1,
+       "target": "south"
+      },
+      {
+       "at": 1.2,
+       "do": "unfocus",
+       "dur": 0.5
+      },
+      {
+       "at": 1.8,
+       "do": "focus",
+       "dur": 1,
+       "target": "north"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "e1",
+        "e2",
+        "e3",
+        "e4",
+        "e5"
+       ]
+      },
+      {
+       "at": 1.2,
+       "do": "interactive",
+       "dur": 0.5
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "order",
+    "prompt": "Tap these events in chronological order.",
+    "items": [
+     "e1",
+     "e2",
+     "e3",
+     "e4",
+     "e5"
+    ],
+    "src": "c7-sst-ch16-t01-i07"
+   }
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg",
+  "seconds": 49
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch16-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "tides",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "turning tides",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "century11",
+       "op": "text",
+       "startMs": 1300,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        170
+       ],
+       "text": "11th century",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "century12",
+       "op": "text",
+       "startMs": 1300,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        620,
+        170
+       ],
+       "text": "12th century",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "shift",
+       "op": "arrow",
+       "startMs": 2400,
+       "endMs": 3600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        250,
+        270
+       ],
+       "to": [
+        550,
+        270
+       ]
+      },
+      {
+       "id": "power",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 5200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        350
+       ],
+       "text": "power shifting",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "india",
+       "op": "text",
+       "startMs": 5500,
+       "endMs": 6800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        430
+       ],
+       "text": "different parts of India",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "h1",
+       "op": "highlight",
+       "startMs": 7000,
+       "endMs": 7800,
+       "ink": "good",
+       "weight": 2,
+       "target": "tides",
+       "style": "underline"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch16-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9111,
+     "ops": [
+      {
+       "id": "south",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        120,
+        70
+       ],
+       "text": "south",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "cholas",
+       "op": "text",
+       "startMs": 800,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        150
+       ],
+       "text": "Cholas",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "great",
+       "op": "text",
+       "startMs": 1600,
+       "endMs": 2400,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        120,
+        230
+       ],
+       "text": "great power",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "temple",
+       "op": "polygon",
+       "startMs": 2700,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         430,
+         270
+        ],
+        [
+         500,
+         140
+        ],
+        [
+         570,
+         270
+        ]
+       ]
+      },
+      {
+       "id": "brihadeeswara",
+       "op": "label",
+       "startMs": 4000,
+       "endMs": 5000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        600,
+        190
+       ],
+       "text": "Brihadeeswara",
+       "to": [
+        535,
+        210
+       ]
+      },
+      {
+       "id": "rajaraja",
+       "op": "text",
+       "startMs": 5100,
+       "endMs": 5900,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        500,
+        330
+       ],
+       "text": "Rajaraja I",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "thanjavur",
+       "op": "text",
+       "startMs": 6000,
+       "endMs": 6800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        500,
+        390
+       ],
+       "text": "Thanjavur",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "date1010",
+       "op": "text",
+       "startMs": 7000,
+       "endMs": 7800,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        500,
+        450
+       ],
+       "text": "1010 CE",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch16-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9111,
+     "ops": [
+      {
+       "id": "rajendra",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        120,
+        70
+       ],
+       "text": "Rajendra I",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "ganga",
+       "op": "arrow",
+       "startMs": 1000,
+       "endMs": 2200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        180,
+        190
+       ],
+       "to": [
+        390,
+        150
+       ]
+      },
+      {
+       "id": "gangaLabel",
+       "op": "label",
+       "startMs": 2300,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        390,
+        110
+       ],
+       "text": "Ganga",
+       "to": [
+        390,
+        150
+       ]
+      },
+      {
+       "id": "city",
+       "op": "text",
+       "startMs": 3200,
+       "endMs": 4400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        260
+       ],
+       "text": "Gangaikonda Cholapuram",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "navy",
+       "op": "arrow",
+       "startMs": 4500,
+       "endMs": 5700,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        500,
+        330
+       ],
+       "to": [
+        680,
+        400
+       ]
+      },
+      {
+       "id": "navyLabel",
+       "op": "label",
+       "startMs": 5800,
+       "endMs": 6500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        590,
+        330
+       ],
+       "text": "navy",
+       "to": [
+        610,
+        375
+       ]
+      },
+      {
+       "id": "sea",
+       "op": "text",
+       "startMs": 6600,
+       "endMs": 7800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        640,
+        450
+       ],
+       "text": "Southeast Asia",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "date1025",
+       "op": "text",
+       "startMs": 7900,
+       "endMs": 8500,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        120,
+        430
+       ],
+       "text": "1025",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch16-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9962,
+     "ops": [
+      {
+       "id": "assembly",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        70,
+        70
+       ],
+       "w": 300,
+       "h": 260
+      },
+      {
+       "id": "assemblyLabel",
+       "op": "text",
+       "startMs": 1100,
+       "endMs": 1900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        220,
+        105
+       ],
+       "text": "assemblies",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "candidates",
+       "op": "circle",
+       "startMs": 2000,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        220,
+        210
+       ],
+       "r": 70
+      },
+      {
+       "id": "candidateLabel",
+       "op": "label",
+       "startMs": 2900,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        220,
+        310
+       ],
+       "text": "qualified candidates",
+       "to": [
+        220,
+        275
+       ]
+      },
+      {
+       "id": "pot",
+       "op": "ellipse",
+       "startMs": 4200,
+       "endMs": 5100,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        590,
+        285
+       ],
+       "rx": 90,
+       "ry": 55
+      },
+      {
+       "id": "tickets",
+       "op": "text",
+       "startMs": 5200,
+       "endMs": 5900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        590,
+        220
+       ],
+       "text": "tickets",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "child",
+       "op": "text",
+       "startMs": 6000,
+       "endMs": 6700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        590,
+        120
+       ],
+       "text": "child",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "draw",
+       "op": "arrow",
+       "startMs": 6800,
+       "endMs": 7600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        590,
+        175
+       ],
+       "to": [
+        590,
+        250
+       ]
+      },
+      {
+       "id": "lot",
+       "op": "text",
+       "startMs": 7700,
+       "endMs": 8500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        590,
+        390
+       ],
+       "text": "by lot",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "uttara",
+       "op": "text",
+       "startMs": 8600,
+       "endMs": 9300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        220,
+        390
+       ],
+       "text": "Uttaramerur",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch16-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9962,
+     "ops": [
+      {
+       "id": "myth",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        60
+       ],
+       "text": "bust the myth",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "mahmud",
+       "op": "text",
+       "startMs": 1100,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        150
+       ],
+       "text": "Mahmud of Ghazni",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "raid",
+       "op": "arrow",
+       "startMs": 2300,
+       "endMs": 3300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        210,
+        210
+       ],
+       "to": [
+        390,
+        210
+       ]
+      },
+      {
+       "id": "north",
+       "op": "text",
+       "startMs": 3400,
+       "endMs": 4300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        470,
+        150
+       ],
+       "text": "north India",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "wealth",
+       "op": "text",
+       "startMs": 4400,
+       "endMs": 5200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        280
+       ],
+       "text": "wealth",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "not",
+       "op": "text",
+       "startMs": 5500,
+       "endMs": 6500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        350
+       ],
+       "text": "did not conquer",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "rule",
+       "op": "text",
+       "startMs": 6600,
+       "endMs": 7700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        420
+       ],
+       "text": "rule most of India",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "cross",
+       "op": "line",
+       "startMs": 7800,
+       "endMs": 8500,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        300,
+        390
+       ],
+       "to": [
+        500,
+        390
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch16-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 10387,
+     "ops": [
+      {
+       "id": "kingdoms",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "Other kingdoms",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "chandelas",
+       "op": "text",
+       "startMs": 1100,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        130,
+        150
+       ],
+       "text": "Chandelas",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "paramaras",
+       "op": "text",
+       "startMs": 2000,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        330,
+        150
+       ],
+       "text": "Paramaras",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "solankis",
+       "op": "text",
+       "startMs": 2900,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        500,
+        150
+       ],
+       "text": "Solankis",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "hoysalas",
+       "op": "text",
+       "startMs": 3800,
+       "endMs": 4600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        670,
+        150
+       ],
+       "text": "Hoysalas",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "temple1",
+       "op": "polygon",
+       "startMs": 4800,
+       "endMs": 5800,
+       "ink": "mark",
+       "weight": 2,
+       "points": [
+        [
+         80,
+         340
+        ],
+        [
+         130,
+         250
+        ],
+        [
+         180,
+         340
+        ]
+       ]
+      },
+      {
+       "id": "temple2",
+       "op": "polygon",
+       "startMs": 5900,
+       "endMs": 6900,
+       "ink": "mark",
+       "weight": 2,
+       "points": [
+        [
+         280,
+         340
+        ],
+        [
+         330,
+         250
+        ],
+        [
+         380,
+         340
+        ]
+       ]
+      },
+      {
+       "id": "temple3",
+       "op": "polygon",
+       "startMs": 7000,
+       "endMs": 8000,
+       "ink": "mark",
+       "weight": 2,
+       "points": [
+        [
+         450,
+         340
+        ],
+        [
+         500,
+         250
+        ],
+        [
+         550,
+         340
+        ]
+       ]
+      },
+      {
+       "id": "temple4",
+       "op": "polygon",
+       "startMs": 8100,
+       "endMs": 9000,
+       "ink": "mark",
+       "weight": 2,
+       "points": [
+        [
+         620,
+         340
+        ],
+        [
+         670,
+         250
+        ],
+        [
+         720,
+         340
+        ]
+       ]
+      },
+      {
+       "id": "story",
+       "op": "text",
+       "startMs": 9100,
+       "endMs": 10000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        450
+       ],
+       "text": "not the only story",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch16-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "prompt",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "events in time order",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "timeline",
+       "op": "line",
+       "startMs": 1200,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        90,
+        260
+       ],
+       "to": [
+        710,
+        260
+       ]
+      },
+      {
+       "id": "tick1",
+       "op": "line",
+       "startMs": 2300,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 1,
+       "from": [
+        170,
+        245
+       ],
+       "to": [
+        170,
+        275
+       ]
+      },
+      {
+       "id": "tick2",
+       "op": "line",
+       "startMs": 2800,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 1,
+       "from": [
+        350,
+        245
+       ],
+       "to": [
+        350,
+        275
+       ]
+      },
+      {
+       "id": "tick3",
+       "op": "line",
+       "startMs": 3300,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 1,
+       "from": [
+        530,
+        245
+       ],
+       "to": [
+        530,
+        275
+       ]
+      },
+      {
+       "id": "tick4",
+       "op": "line",
+       "startMs": 3800,
+       "endMs": 4200,
+       "ink": "chalk",
+       "weight": 1,
+       "from": [
+        710,
+        245
+       ],
+       "to": [
+        710,
+        275
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "1010 CE",
+   "prompt": "Brihadeeswara completed",
+   "src": "c7-sst-ch16-t01-i01"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "1025 CE",
+   "prompt": "Somnath raid",
+   "src": "c7-sst-ch16-t01-i09"
+  },
+  {
+   "itemId": "r1:2",
+   "key": "1191 CE",
+   "prompt": "First Battle of Tarain",
+   "src": "c7-sst-ch16-t01-i08"
+  },
+  {
+   "itemId": "r1:3",
+   "key": "1192 CE",
+   "prompt": "Second Battle of Tarain",
+   "src": "c7-sst-ch16-t01-i08"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "11th century CE",
+   "prompt": "Chola temple completed",
+   "src": "c7-sst-ch16-t01-i01"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "11th century CE",
+   "prompt": "Somnath raid",
+   "src": "c7-sst-ch16-t01-i09"
+  },
+  {
+   "itemId": "r2:2",
+   "key": "12th century CE",
+   "prompt": "First Battle of Tarain",
+   "src": "c7-sst-ch16-t01-i08"
+  },
+  {
+   "itemId": "r2:3",
+   "key": "12th century CE",
+   "prompt": "Second Battle of Tarain",
+   "src": "c7-sst-ch16-t01-i08"
+  },
+  {
+   "itemId": "r3:0",
+   "key": "Brihadeeswara completed",
+   "prompt": "earlier: Brihadeeswara completed (1010 CE) vs Mahmud raids Somnath (1025 CE)"
+  },
+  {
+   "itemId": "r3:1",
+   "key": "First Battle of Tarain",
+   "prompt": "earlier: First Battle of Tarain (1191 CE) vs Second Battle of Tarain (1192 CE)"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

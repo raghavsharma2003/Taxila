@@ -1,0 +1,1641 @@
+{
+ "topicId": "c5-english-ch03-t01",
+ "title": "The Rainbow",
+ "chapter": "The Rainbow",
+ "subject": "english",
+ "class": 5,
+ "topicType": "T1",
+ "plan": {
+  "game": "beat-line@1",
+  "hint": "beat and rhyme rounds (Hindi: matra round on a doha/chaupai line)"
+ },
+ "game": {
+  "archetype": "beat-line@1",
+  "spec": {
+   "archetype": "beat-line@1",
+   "skills": [
+    "c5-english-ch03-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "onBeat": "on beat",
+    "combo": "combo",
+    "tap": "Tap on the beat",
+    "catch": "Catch the rhyme",
+    "mark": "Short or long?",
+    "short": "। short",
+    "long": "ऽ long",
+    "practice": "PRACTICE LINE",
+    "runDone": "Poem played",
+    "perfect": "ON BEAT",
+    "early": "early",
+    "late": "late",
+    "meter": "मात्रा"
+   },
+   "title": "The Rainbow",
+   "bpm": 78,
+   "lines": [
+    {
+     "text": "The rain has stopped, the sun peeps through",
+     "beats": [
+      1,
+      4,
+      7
+     ],
+     "own": true
+    },
+    {
+     "text": "A bridge of colours, fresh and new",
+     "beats": [
+      1,
+      4
+     ],
+     "own": true
+    }
+   ],
+   "rounds": [
+    {
+     "mode": "beat",
+     "title": "Feel the rhythm",
+     "sub": "tap the strong beats in each line",
+     "lines": [
+      0,
+      1
+     ]
+    },
+    {
+     "mode": "rhyme",
+     "title": "Catch the rhyme",
+     "sub": "listen for the matching end sound",
+     "items": [
+      {
+       "cue": "The sun peeps through; the sky looks fresh and ____",
+       "options": [
+        "new",
+        "now",
+        "night"
+       ],
+       "answer": "new",
+       "src": "c5-english-ch03-t01-i04"
+      },
+      {
+       "cue": "A rainbow is a curved band of bright ____",
+       "options": [
+        "colours",
+        "covers",
+        "corners"
+       ],
+       "answer": "colours",
+       "src": "c5-english-ch03-t01-i05"
+      }
+     ],
+     "targets": "c5-english-ch03-t01-m-spell-by-sound"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c5-english-ch03-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "The Rainbow",
+   "accent": "sci",
+   "targets": "c5-english-ch03-t01-m-literal-figurative",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "The Rainbow"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "A bridge of colours is a real bridge"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "free",
+     "els": [
+      {
+       "id": "sky",
+       "type": "label",
+       "text": "sky",
+       "x": 470,
+       "y": 210,
+       "color": "ion"
+      },
+      {
+       "id": "rainbow",
+       "type": "node",
+       "text": "rainbow",
+       "sub": "curved band",
+       "x": 500,
+       "y": 330,
+       "color": "sci"
+      },
+      {
+       "id": "side1",
+       "type": "label",
+       "text": "one side",
+       "x": 210,
+       "y": 440,
+       "color": "mint"
+      },
+      {
+       "id": "side2",
+       "type": "label",
+       "text": "other side",
+       "x": 760,
+       "y": 440,
+       "color": "mint"
+      },
+      {
+       "id": "curve",
+       "type": "arrow",
+       "from": "side1",
+       "to": "side2",
+       "text": "curves across",
+       "bend": 0.7
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "red",
+       "type": "node",
+       "text": "red",
+       "sub": "1",
+       "glyph": "spark",
+       "color": "volt"
+      },
+      {
+       "id": "orange",
+       "type": "node",
+       "text": "orange",
+       "sub": "2",
+       "glyph": "spark",
+       "color": "amber"
+      },
+      {
+       "id": "yellow",
+       "type": "node",
+       "text": "yellow",
+       "sub": "3",
+       "glyph": "spark",
+       "color": "sun"
+      },
+      {
+       "id": "green",
+       "type": "node",
+       "text": "green",
+       "sub": "4",
+       "glyph": "leaf",
+       "color": "mint"
+      },
+      {
+       "id": "blue",
+       "type": "node",
+       "text": "blue",
+       "sub": "5",
+       "glyph": "wave",
+       "color": "ion"
+      },
+      {
+       "id": "indigo",
+       "type": "node",
+       "text": "indigo",
+       "sub": "6",
+       "glyph": "spark",
+       "color": "sci"
+      },
+      {
+       "id": "violet",
+       "type": "node",
+       "text": "violet",
+       "sub": "7",
+       "glyph": "flower",
+       "color": "volt"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "rain",
+       "type": "node",
+       "text": "rain stops",
+       "sub": "then",
+       "glyph": "rain",
+       "color": "sci"
+      },
+      {
+       "id": "sun",
+       "type": "node",
+       "text": "sun shines",
+       "sub": "through",
+       "glyph": "sun",
+       "color": "sun"
+      },
+      {
+       "id": "beauty",
+       "type": "node",
+       "text": "beautiful",
+       "sub": "nature",
+       "glyph": "flower",
+       "color": "mint"
+      },
+      {
+       "id": "fade",
+       "type": "node",
+       "text": "fades away",
+       "sub": "soon",
+       "glyph": "wind",
+       "color": "ion"
+      },
+      {
+       "id": "r1",
+       "type": "arrow",
+       "from": "rain",
+       "to": "sun",
+       "text": "after",
+       "bend": 0
+      },
+      {
+       "id": "r2",
+       "type": "arrow",
+       "from": "sun",
+       "to": "beauty",
+       "text": "shows",
+       "bend": 0
+      },
+      {
+       "id": "r3",
+       "type": "arrow",
+       "from": "beauty",
+       "to": "fade",
+       "text": "does not stay",
+       "bend": 0
+      }
+     ]
+    },
+    {
+     "id": "s5",
+     "layout": "row",
+     "els": [
+      {
+       "id": "word",
+       "type": "title",
+       "text": "Rainbow colours"
+      },
+      {
+       "id": "c_red",
+       "type": "label",
+       "text": "red",
+       "x": 100,
+       "y": 400,
+       "color": "volt"
+      },
+      {
+       "id": "c_orange",
+       "type": "label",
+       "text": "orange",
+       "x": 220,
+       "y": 400,
+       "color": "amber"
+      },
+      {
+       "id": "c_yellow",
+       "type": "label",
+       "text": "yellow",
+       "x": 340,
+       "y": 400,
+       "color": "sun"
+      },
+      {
+       "id": "c_green",
+       "type": "label",
+       "text": "green",
+       "x": 460,
+       "y": 400,
+       "color": "mint"
+      },
+      {
+       "id": "c_blue",
+       "type": "label",
+       "text": "blue",
+       "x": 580,
+       "y": 400,
+       "color": "ion"
+      },
+      {
+       "id": "c_indigo",
+       "type": "label",
+       "text": "indigo",
+       "x": 700,
+       "y": 400,
+       "color": "sci"
+      },
+      {
+       "id": "c_violet",
+       "type": "label",
+       "text": "violet",
+       "x": 820,
+       "y": 400,
+       "color": "volt"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "After the rain stops, the sun peeps through, and a rainbow may appear.",
+    "L2": "The poem calls it a bridge of colours. This is a comparison, not a real bridge.",
+    "L3": "A rainbow is curved across the sky from one side to the other, like a bridge.",
+    "L4": "It has seven colours in a special order: red, orange, yellow, green, blue, indigo, violet.",
+    "L5": "Say the colour names with rhythm, pausing at the ends of the lines.",
+    "L6": "The rainbow is beautiful, but it will not stay. It fades away, so look up quickly.",
+    "L7": "The poem celebrates beauty in nature, and words like fresh can describe what we see.",
+    "L8": "Now put the seven colours in the order used in the poem."
+   },
+   "narration": {
+    "L1": {
+     "text": "After the rain stops, the sun peeps through, and a rainbow may appear.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "The poem calls it a bridge of colours. This is a comparison, not a real bridge.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "A rainbow is curved across the sky from one side to the other, like a bridge.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "It has seven colours in a special order: red, orange, yellow, green, blue, indigo, violet.",
+     "dur": 9,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "Say the colour names with rhythm, pausing at the ends of the lines.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "The rainbow is beautiful, but it will not stay. It fades away, so look up quickly.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "The poem celebrates beauty in nature, and words like fresh can describe what we see.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Now put the seven colours in the order used in the poem.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "title"
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "bust",
+       "dur": 2,
+       "target": "myth"
+      },
+      {
+       "at": 2.5,
+       "do": "hide",
+       "dur": 0.6,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "rainbow"
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "side1",
+        "side2",
+        "curve"
+       ]
+      },
+      {
+       "at": 2,
+       "do": "flow",
+       "dur": 1,
+       "target": "curve",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "red",
+        "orange",
+        "yellow"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "green",
+        "blue",
+        "indigo",
+        "violet"
+       ]
+      },
+      {
+       "at": 2.2,
+       "do": "highlight",
+       "dur": 2,
+       "target": [
+        "red",
+        "orange",
+        "yellow",
+        "green",
+        "blue",
+        "indigo",
+        "violet"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "focus",
+       "dur": 0.6,
+       "target": "red"
+      },
+      {
+       "at": 1,
+       "do": "focus",
+       "dur": 0.6,
+       "target": "orange"
+      },
+      {
+       "at": 2,
+       "do": "focus",
+       "dur": 0.6,
+       "target": "yellow"
+      },
+      {
+       "at": 3,
+       "do": "focus",
+       "dur": 0.6,
+       "target": "green"
+      },
+      {
+       "at": 4,
+       "do": "focus",
+       "dur": 0.6,
+       "target": "blue"
+      },
+      {
+       "at": 5,
+       "do": "focus",
+       "dur": 0.6,
+       "target": "indigo"
+      },
+      {
+       "at": 6,
+       "do": "focus",
+       "dur": 0.6,
+       "target": "violet"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "rain",
+        "sun",
+        "beauty"
+       ]
+      },
+      {
+       "at": 1.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": "fade"
+      },
+      {
+       "at": 2.5,
+       "do": "flow",
+       "dur": 1.2,
+       "target": [
+        "r1",
+        "r2",
+        "r3"
+       ],
+       "to": 1
+      },
+      {
+       "at": 4,
+       "do": "highlight",
+       "dur": 1,
+       "target": "fade"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1.2,
+       "target": "beauty"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s5",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "word"
+      },
+      {
+       "at": 0.8,
+       "do": "interactive",
+       "dur": 1
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "order",
+    "prompt": "Tap the rainbow colours in their poem order, starting with red.",
+    "items": [
+     "c_red",
+     "c_orange",
+     "c_yellow",
+     "c_green",
+     "c_blue",
+     "c_indigo"
+    ],
+    "src": "c5-english-ch03-t01-i02"
+   }
+  },
+  "repairs": [
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 65
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-english-ch03-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "sky",
+       "op": "stroke",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         80,
+         150
+        ],
+        [
+         180,
+         125
+        ],
+        [
+         280,
+         140
+        ],
+        [
+         380,
+         120
+        ],
+        [
+         480,
+         135
+        ],
+        [
+         580,
+         115
+        ],
+        [
+         700,
+         140
+        ]
+       ]
+      },
+      {
+       "id": "sun",
+       "op": "circle",
+       "startMs": 500,
+       "endMs": 1100,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        150,
+        100
+       ],
+       "r": 42,
+       "fill": "accent"
+      },
+      {
+       "id": "rain",
+       "op": "line",
+       "startMs": 1000,
+       "endMs": 1400,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        260,
+        80
+       ],
+       "to": [
+        245,
+        145
+       ]
+      },
+      {
+       "id": "rain2",
+       "op": "line",
+       "startMs": 1100,
+       "endMs": 1500,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        330,
+        75
+       ],
+       "to": [
+        315,
+        140
+       ]
+      },
+      {
+       "id": "rain3",
+       "op": "line",
+       "startMs": 1200,
+       "endMs": 1600,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        400,
+        80
+       ],
+       "to": [
+        385,
+        145
+       ]
+      },
+      {
+       "id": "l1",
+       "op": "label",
+       "startMs": 4100,
+       "endMs": 4500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        125,
+        55
+       ],
+       "text": "sun",
+       "to": [
+        150,
+        100
+       ]
+      },
+      {
+       "id": "l2",
+       "op": "label",
+       "startMs": 4600,
+       "endMs": 5200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        610,
+        350
+       ],
+       "text": "rainbow",
+       "to": [
+        540,
+        285
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 3,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-english-ch03-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "t1",
+       "op": "text",
+       "startMs": 2800,
+       "endMs": 3800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        110
+       ],
+       "text": "bridge of colours",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "real",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4900,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        270,
+        420
+       ],
+       "text": "not a real bridge",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "compare",
+       "op": "arrow",
+       "startMs": 5000,
+       "endMs": 5600,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        400,
+        150
+       ],
+       "to": [
+        400,
+        200
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-english-ch03-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "skyline",
+       "op": "stroke",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         70,
+         360
+        ],
+        [
+         180,
+         350
+        ],
+        [
+         290,
+         365
+        ],
+        [
+         400,
+         345
+        ],
+        [
+         510,
+         360
+        ],
+        [
+         620,
+         350
+        ],
+        [
+         730,
+         365
+        ]
+       ]
+      },
+      {
+       "id": "left",
+       "op": "line",
+       "startMs": 2700,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        110,
+        340
+       ],
+       "to": [
+        150,
+        340
+       ]
+      },
+      {
+       "id": "right",
+       "op": "line",
+       "startMs": 3000,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        650,
+        340
+       ],
+       "to": [
+        690,
+        340
+       ]
+      },
+      {
+       "id": "l1",
+       "op": "label",
+       "startMs": 3500,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        105,
+        390
+       ],
+       "text": "one side",
+       "to": [
+        130,
+        340
+       ]
+      },
+      {
+       "id": "l2",
+       "op": "label",
+       "startMs": 4200,
+       "endMs": 4700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        665,
+        390
+       ],
+       "text": "other",
+       "to": [
+        675,
+        340
+       ]
+      },
+      {
+       "id": "l3",
+       "op": "text",
+       "startMs": 5100,
+       "endMs": 6000,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        400,
+        145
+       ],
+       "text": "like a bridge",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-english-ch03-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "r1",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        90,
+        100
+       ],
+       "text": "red",
+       "size": "m"
+      },
+      {
+       "id": "r2",
+       "op": "text",
+       "startMs": 600,
+       "endMs": 1200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        90,
+        150
+       ],
+       "text": "orange",
+       "size": "m"
+      },
+      {
+       "id": "r3",
+       "op": "text",
+       "startMs": 1200,
+       "endMs": 1800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        90,
+        200
+       ],
+       "text": "yellow",
+       "size": "m"
+      },
+      {
+       "id": "r4",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2400,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        90,
+        250
+       ],
+       "text": "green",
+       "size": "m"
+      },
+      {
+       "id": "r5",
+       "op": "text",
+       "startMs": 2400,
+       "endMs": 3000,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        90,
+        300
+       ],
+       "text": "blue",
+       "size": "m"
+      },
+      {
+       "id": "r6",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3600,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        90,
+        350
+       ],
+       "text": "indigo",
+       "size": "m"
+      },
+      {
+       "id": "r7",
+       "op": "text",
+       "startMs": 3600,
+       "endMs": 4200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        90,
+        400
+       ],
+       "text": "violet",
+       "size": "m"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-english-ch03-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "rhythm",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        220,
+        90
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "red",
+         "-",
+         "orange",
+         "-",
+         "yellow"
+        ]
+       ]
+      },
+      {
+       "id": "rhythm2",
+       "op": "numwork",
+       "startMs": 1500,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        220,
+        160
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "green",
+         "-",
+         "blue",
+         "-",
+         "indigo"
+        ]
+       ]
+      },
+      {
+       "id": "rhythm3",
+       "op": "numwork",
+       "startMs": 3000,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        220,
+        230
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "violet"
+        ]
+       ]
+      },
+      {
+       "id": "pause1",
+       "op": "line",
+       "startMs": 3900,
+       "endMs": 4400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        200,
+        320
+       ],
+       "to": [
+        600,
+        320
+       ]
+      },
+      {
+       "id": "pause2",
+       "op": "line",
+       "startMs": 4500,
+       "endMs": 5000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        200,
+        390
+       ],
+       "to": [
+        600,
+        390
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 3,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-english-ch03-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "beauty",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        120
+       ],
+       "text": "beautiful",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "away",
+       "op": "arrow",
+       "startMs": 5100,
+       "endMs": 5900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        510,
+        270
+       ],
+       "to": [
+        680,
+        170
+       ]
+      },
+      {
+       "id": "look",
+       "op": "text",
+       "startMs": 6000,
+       "endMs": 7000,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        650,
+        145
+       ],
+       "text": "look up quickly",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-english-ch03-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "tree",
+       "op": "stroke",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "good",
+       "weight": 2,
+       "points": [
+        [
+         150,
+         380
+        ],
+        [
+         150,
+         250
+        ],
+        [
+         110,
+         210
+        ],
+        [
+         150,
+         250
+        ],
+        [
+         190,
+         210
+        ],
+        [
+         150,
+         250
+        ],
+        [
+         150,
+         150
+        ]
+       ]
+      },
+      {
+       "id": "leaf",
+       "op": "circle",
+       "startMs": 700,
+       "endMs": 1200,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        110,
+        210
+       ],
+       "r": 28,
+       "fill": "good"
+      },
+      {
+       "id": "leaf2",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1400,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        190,
+        210
+       ],
+       "r": 28,
+       "fill": "good"
+      },
+      {
+       "id": "nature",
+       "op": "text",
+       "startMs": 2900,
+       "endMs": 3600,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        100
+       ],
+       "text": "nature",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "fresh",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 4700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        430
+       ],
+       "text": "fresh",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "label",
+       "op": "label",
+       "startMs": 5000,
+       "endMs": 5600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        210,
+        165
+       ],
+       "text": "fresh",
+       "to": [
+        175,
+        205
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-english-ch03-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "order",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        90,
+        80
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "red",
+         "orange",
+         "yellow"
+        ]
+       ]
+      },
+      {
+       "id": "order2",
+       "op": "numwork",
+       "startMs": 1400,
+       "endMs": 2800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        90,
+        150
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "green",
+         "blue",
+         "indigo"
+        ]
+       ]
+      },
+      {
+       "id": "order3",
+       "op": "numwork",
+       "startMs": 2800,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        90,
+        220
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "violet"
+        ]
+       ]
+      },
+      {
+       "id": "arrow1",
+       "op": "arrow",
+       "startMs": 3700,
+       "endMs": 4300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        80,
+        110
+       ],
+       "to": [
+        80,
+        360
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "b0:*",
+   "key": "rain · the · through",
+   "prompt": "stressed words in: The rain has stopped, the sun peeps through"
+  },
+  {
+   "itemId": "b1:*",
+   "key": "bridge · fresh",
+   "prompt": "stressed words in: A bridge of colours, fresh and new"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "new",
+   "prompt": "The sun peeps through; the sky looks fresh and ____ [new / now / night]",
+   "src": "c5-english-ch03-t01-i04"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "colours",
+   "prompt": "A rainbow is a curved band of bright ____ [colours / covers / corners]",
+   "src": "c5-english-ch03-t01-i05"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

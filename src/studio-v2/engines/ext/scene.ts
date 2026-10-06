@@ -252,9 +252,12 @@ function create(api: EngineApi, spec: SceneSpec): EngineInstance {
     const cx = box.x + box.w / 2, cy = box.y + box.h / 2;
     switch (e.type) {
       case "title": {
-        const lines = wrap(api, ctx, e.text, 820, { font: "display", size: 72, weight: 800 }, 2);
-        lines.forEach((l, i) => { const k = clamp(a * 1.4 - i * 0.25, 0, 1); api.text(ctx, l, cx, cy - (lines.length - 1) * 42 + i * 84 + (1 - ease.outCubic(k)) * 24, { font: "display", size: 72, weight: 800, align: "center", baseline: "middle", alpha: k, maxWidth: 860, track: -2 }); });
-        ctx.save(); ctx.strokeStyle = accent; ctx.lineWidth = 5; ctx.globalAlpha *= a; const lw = 240 * ease.outCubic(a); ctx.beginPath(); ctx.moveTo(cx - lw / 2, cy + lines.length * 42 + 14); ctx.lineTo(cx + lw / 2, cy + lines.length * 42 + 14); ctx.stroke(); ctx.restore();
+        // ship5 p4-content: the title wraps to ITS box (a split layout gives it the 470-unit left column); it used to wrap
+        // at 820 whatever the box, so a long title centred in the left column ran off the stage's left edge
+        const tw = Math.min(820, box.w - 20), size = tw < 600 ? 54 : 72, lh = size * 1.17;
+        const lines = wrap(api, ctx, e.text, tw, { font: "display", size, weight: 800 }, tw < 600 ? 3 : 2);
+        lines.forEach((l, i) => { const k = clamp(a * 1.4 - i * 0.25, 0, 1); api.text(ctx, l, cx, cy - ((lines.length - 1) * lh) / 2 + i * lh + (1 - ease.outCubic(k)) * 24, { font: "display", size, weight: 800, align: "center", baseline: "middle", alpha: k, maxWidth: tw, track: -2 }); });
+        ctx.save(); ctx.strokeStyle = accent; ctx.lineWidth = 5; ctx.globalAlpha *= a; const lw = Math.min(240, tw * 0.5) * ease.outCubic(a); ctx.beginPath(); ctx.moveTo(cx - lw / 2, cy + (lines.length * lh) / 2 + 14); ctx.lineTo(cx + lw / 2, cy + (lines.length * lh) / 2 + 14); ctx.stroke(); ctx.restore();
         break;
       }
       case "label": textBlock(api, ctx, e.text, cx, cy, Math.min(860, box.w), { size: 40, weight: 600, color: e.color ? ACC[e.color] : C.ink2, alpha: a }, 2); break;

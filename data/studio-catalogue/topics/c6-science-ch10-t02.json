@@ -1,0 +1,1869 @@
+{
+ "topicId": "c6-science-ch10-t02",
+ "title": "Conditions for germination",
+ "chapter": "Living Creatures: Exploring their Characteristics",
+ "subject": "science",
+ "class": 6,
+ "topicType": "T5",
+ "plan": {
+  "game": "fair-test@1",
+  "hint": "germination model: design (water / air / warmth), predict, conclude"
+ },
+ "game": {
+  "archetype": "fair-test@1",
+  "spec": {
+   "archetype": "fair-test@1",
+   "skills": [
+    "c6-science-ch10-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "run": "RUN",
+    "day": "day",
+    "predict": "Tap every setup that will show it",
+    "design": "Make it a fair test",
+    "conclude": "Which factor does NOT matter?",
+    "notMatter": "Which factor does NOT matter?",
+    "fair": "FAIR TEST",
+    "unfair": "NOT FAIR",
+    "runDone": "Lab closed",
+    "correct": "right calls",
+    "drip": "Hold to add drops; stop when it turns",
+    "drops": "drops",
+    "neutral": "NEUTRAL",
+    "hint": "change only one thing"
+   },
+   "title": "What does a seed need?",
+   "model": "germination",
+   "rounds": [
+    {
+     "mode": "predict",
+     "title": "Predict",
+     "sub": "which sets will sprout?",
+     "setups": [
+      {
+       "water": "dry",
+       "air": "yes",
+       "warmth": "warm",
+       "light": "light"
+      },
+      {
+       "water": "moist",
+       "air": "yes",
+       "warmth": "warm",
+       "light": "dark"
+      },
+      {
+       "water": "moist",
+       "air": "no",
+       "warmth": "warm",
+       "light": "light"
+      },
+      {
+       "water": "moist",
+       "air": "yes",
+       "warmth": "cold",
+       "light": "light"
+      }
+     ],
+     "src": "c6-science-ch10-t02-i03",
+     "targets": "c6-science-ch10-t02-m1"
+    },
+    {
+     "mode": "design",
+     "title": "Does light matter?",
+     "sub": "change only the light",
+     "vary": "light",
+     "start": [
+      {
+       "water": "moist",
+       "air": "yes",
+       "warmth": "warm",
+       "light": "light"
+      },
+      {
+       "water": "moist",
+       "air": "yes",
+       "warmth": "warm",
+       "light": "dark"
+      }
+     ],
+     "targets": "c6-science-ch10-t02-m1"
+    },
+    {
+     "mode": "conclude",
+     "title": "Conclude",
+     "sub": "what did the test show?",
+     "ask": "not",
+     "options": [
+      "water",
+      "air",
+      "warmth",
+      "light"
+     ],
+     "targets": "c6-science-ch10-t02-m1"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 2,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c6-science-ch10-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "What makes seeds sprout?",
+   "accent": "sci",
+   "targets": "c6-science-ch10-t02-m1",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "What makes seeds sprout?"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Seeds need soil and sunlight"
+      },
+      {
+       "id": "seed",
+       "type": "glyph",
+       "name": "seed",
+       "x": 720,
+       "y": 330,
+       "size": 150,
+       "color": "amber"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "water",
+       "type": "node",
+       "text": "Water",
+       "sub": "keeps seed wet",
+       "glyph": "drop",
+       "color": "sci"
+      },
+      {
+       "id": "air",
+       "type": "node",
+       "text": "Air",
+       "sub": "needed to sprout",
+       "glyph": "wind",
+       "color": "ion"
+      },
+      {
+       "id": "warm",
+       "type": "node",
+       "text": "Warmth",
+       "sub": "suitable warmth",
+       "glyph": "sun",
+       "color": "amber"
+      },
+      {
+       "id": "sprout",
+       "type": "node",
+       "text": "Sprout",
+       "sub": "young plant",
+       "glyph": "seed",
+       "color": "mint"
+      },
+      {
+       "id": "aw",
+       "type": "arrow",
+       "from": "water",
+       "to": "sprout",
+       "text": "helps"
+      },
+      {
+       "id": "aa",
+       "type": "arrow",
+       "from": "air",
+       "to": "sprout",
+       "text": "helps"
+      },
+      {
+       "id": "at",
+       "type": "arrow",
+       "from": "warm",
+       "to": "sprout",
+       "text": "helps"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "split",
+     "els": [
+      {
+       "id": "glassA",
+       "type": "node",
+       "text": "Glass A",
+       "sub": "wet cotton, open",
+       "glyph": "beaker",
+       "color": "mint"
+      },
+      {
+       "id": "glassB",
+       "type": "node",
+       "text": "Glass B",
+       "sub": "under water",
+       "glyph": "beaker",
+       "color": "ion"
+      },
+      {
+       "id": "same",
+       "type": "label",
+       "text": "Same place, 4 days",
+       "x": 430,
+       "y": 260,
+       "color": "sci"
+      },
+      {
+       "id": "diff",
+       "type": "label",
+       "text": "Air access differs",
+       "x": 430,
+       "y": 330,
+       "color": "amber"
+      },
+      {
+       "id": "good",
+       "type": "node",
+       "text": "Sprouts well",
+       "sub": "more air",
+       "glyph": "leaf",
+       "color": "mint"
+      },
+      {
+       "id": "poor",
+       "type": "node",
+       "text": "Sprouts poorly",
+       "sub": "too little air",
+       "glyph": "question",
+       "color": "volt"
+      },
+      {
+       "id": "ga",
+       "type": "arrow",
+       "from": "glassA",
+       "to": "good",
+       "text": "compare"
+      },
+      {
+       "id": "gb",
+       "type": "arrow",
+       "from": "glassB",
+       "to": "poor",
+       "text": "compare"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "ask",
+       "type": "title",
+       "text": "Which is not needed to germinate?"
+      },
+      {
+       "id": "optwater",
+       "type": "node",
+       "text": "Water",
+       "sub": "condition",
+       "glyph": "drop",
+       "color": "sci"
+      },
+      {
+       "id": "optair",
+       "type": "node",
+       "text": "Air",
+       "sub": "condition",
+       "glyph": "wind",
+       "color": "ion"
+      },
+      {
+       "id": "optwarm",
+       "type": "node",
+       "text": "Warmth",
+       "sub": "condition",
+       "glyph": "sun",
+       "color": "amber"
+      },
+      {
+       "id": "optsoil",
+       "type": "node",
+       "text": "Soil",
+       "sub": "not needed yet",
+       "glyph": "mountain",
+       "color": "volt"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Germination is when a seed starts growing into a young plant, or sprout.",
+    "L2": "A seed needs water, air and suitable warmth to germinate.",
+    "L3": "It does not need soil or sunlight yet, because food is stored inside the seed.",
+    "L4": "That is why moong can sprout on wet cotton, even in the dark.",
+    "L5": "But seeds kept fully under water get too little air and germinate poorly or not at all.",
+    "L6": "To test one condition fairly, change only that condition and keep the rest the same.",
+    "L7": "For air, use wet cotton in an open glass and seeds fully under water in another glass.",
+    "L8": "Keep the same seeds, number, place and time, then compare the sprouts after four days."
+   },
+   "narration": {
+    "L1": {
+     "text": "Germination is when a seed starts growing into a young plant, or sprout.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "A seed needs water, air and suitable warmth to germinate.",
+     "dur": 2.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "It does not need soil or sunlight yet, because food is stored inside the seed.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "That is why moong can sprout on wet cotton, even in the dark.",
+     "dur": 2.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "But seeds kept fully under water get too little air and germinate poorly or not at all.",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "To test one condition fairly, change only that condition and keep the rest the same.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "For air, use wet cotton in an open glass and seeds fully under water in another glass.",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Keep the same seeds, number, place and time, then compare the sprouts after four days.",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "title"
+      },
+      {
+       "at": 0.6,
+       "do": "show",
+       "dur": 0.8,
+       "target": "seed"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "water",
+        "air",
+        "warm"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "aw",
+        "aa",
+        "at",
+        "sprout"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 0.7,
+       "target": [
+        "aw",
+        "aa",
+        "at"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      },
+      {
+       "at": 1,
+       "do": "bust",
+       "dur": 1.2,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "water"
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "sprout"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "glassA",
+        "glassB"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "ga",
+        "gb",
+        "good",
+        "poor"
+       ]
+      },
+      {
+       "at": 1.5,
+       "do": "flow",
+       "dur": 0.7,
+       "target": [
+        "ga",
+        "gb"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "same",
+        "diff"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 1,
+       "target": "diff"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "focus",
+       "dur": 0.8,
+       "target": "glassA"
+      },
+      {
+       "at": 0.8,
+       "do": "focus",
+       "dur": 0.8,
+       "target": "glassB"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "same"
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 1,
+       "target": [
+        "good",
+        "poor"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which condition is not needed for a seed to germinate?",
+    "options": [
+     "optwater",
+     "optair",
+     "optwarm",
+     "optsoil"
+    ],
+    "answer": "optsoil",
+    "src": "c6-science-ch10-t02-i01"
+   }
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg",
+  "passes": 2,
+  "seconds": 28
+ },
+ "keys": [
+  {
+   "itemId": "r1",
+   "key": "1:no 2:sprouts 3:no 4:no",
+   "prompt": "germination: {\"water\":\"dry\",\"air\":\"yes\",\"warmth\":\"warm\",\"light\":\"light\"} | {\"water\":\"moist\",\"air\":\"yes\",\"warmth\":\"warm\",\"light\":\"dark\"} | {\"water\":\"moist\",\"air\":\"no\",\"warmth\":\"warm\",\"light\":\"light\"} | {\"water\":\"moist\",\"air\":\"yes\",\"warmth\":\"cold\",\"light\":\"light\"}",
+   "src": "c6-science-ch10-t02-i03"
+  },
+  {
+   "itemId": "r2",
+   "key": "vary only light",
+   "prompt": "fair test for light"
+  },
+  {
+   "itemId": "r3",
+   "key": "light",
+   "prompt": "which does not matter for sprouts: water, air, warmth, light"
+  }
+ ],
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch10-t02-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "seed",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        180,
+        250
+       ],
+       "rx": 55,
+       "ry": 35
+      },
+      {
+       "id": "crack",
+       "op": "stroke",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "mark",
+       "weight": 2,
+       "points": [
+        [
+         145,
+         250
+        ],
+        [
+         160,
+         245
+        ],
+        [
+         175,
+         252
+        ],
+        [
+         190,
+         245
+        ],
+        [
+         210,
+         250
+        ]
+       ]
+      },
+      {
+       "id": "root",
+       "op": "stroke",
+       "startMs": 1300,
+       "endMs": 2200,
+       "ink": "good",
+       "weight": 2,
+       "points": [
+        [
+         180,
+         275
+        ],
+        [
+         180,
+         320
+        ],
+        [
+         165,
+         350
+        ]
+       ]
+      },
+      {
+       "id": "stem",
+       "op": "stroke",
+       "startMs": 1800,
+       "endMs": 2700,
+       "ink": "good",
+       "weight": 2,
+       "points": [
+        [
+         180,
+         275
+        ],
+        [
+         180,
+         205
+        ],
+        [
+         195,
+         170
+        ]
+       ]
+      },
+      {
+       "id": "leaf1",
+       "op": "ellipse",
+       "startMs": 2400,
+       "endMs": 3100,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        205,
+        170
+       ],
+       "rx": 28,
+       "ry": 12
+      },
+      {
+       "id": "leaf2",
+       "op": "ellipse",
+       "startMs": 2800,
+       "endMs": 3500,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        160,
+        195
+       ],
+       "rx": 25,
+       "ry": 11
+      },
+      {
+       "id": "germ",
+       "op": "text",
+       "startMs": 3600,
+       "endMs": 4500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        300,
+        120
+       ],
+       "text": "Germination",
+       "size": "l"
+      },
+      {
+       "id": "sprout",
+       "op": "label",
+       "startMs": 4500,
+       "endMs": 5300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        290,
+        300
+       ],
+       "text": "sprout",
+       "to": [
+        195,
+        190
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch10-t02-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "water",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        330,
+        170
+       ],
+       "r": 34
+      },
+      {
+       "id": "waterT",
+       "op": "text",
+       "startMs": 500,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        330,
+        235
+       ],
+       "text": "water",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "air",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        470,
+        170
+       ],
+       "r": 34
+      },
+      {
+       "id": "airT",
+       "op": "text",
+       "startMs": 1300,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        470,
+        235
+       ],
+       "text": "air",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "warm",
+       "op": "circle",
+       "startMs": 1700,
+       "endMs": 2300,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        610,
+        170
+       ],
+       "r": 34
+      },
+      {
+       "id": "warmT",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        610,
+        235
+       ],
+       "text": "warmth",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "needs",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        470,
+        90
+       ],
+       "text": "needs",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "link",
+       "op": "arrow",
+       "startMs": 3700,
+       "endMs": 4300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        470,
+        105
+       ],
+       "to": [
+        470,
+        135
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch10-t02-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "soil",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        300,
+        100
+       ],
+       "text": "soil",
+       "size": "l"
+      },
+      {
+       "id": "soilX",
+       "op": "line",
+       "startMs": 700,
+       "endMs": 1200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        285,
+        90
+       ],
+       "to": [
+        350,
+        120
+       ]
+      },
+      {
+       "id": "sun",
+       "op": "circle",
+       "startMs": 1200,
+       "endMs": 1800,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        500,
+        100
+       ],
+       "r": 30
+      },
+      {
+       "id": "sunX",
+       "op": "line",
+       "startMs": 1800,
+       "endMs": 2300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        475,
+        75
+       ],
+       "to": [
+        525,
+        125
+       ]
+      },
+      {
+       "id": "food",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        390,
+        300
+       ],
+       "text": "food",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "inside",
+       "op": "label",
+       "startMs": 3200,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        390,
+        370
+       ],
+       "text": "inside",
+       "to": [
+        390,
+        315
+       ]
+      },
+      {
+       "id": "seedfood",
+       "op": "ellipse",
+       "startMs": 3900,
+       "endMs": 4700,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        390,
+        300
+       ],
+       "rx": 75,
+       "ry": 45
+      },
+      {
+       "id": "notyet",
+       "op": "text",
+       "startMs": 4900,
+       "endMs": 5700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        440
+       ],
+       "text": "not yet",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch10-t02-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "cotton",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        220,
+        370
+       ],
+       "rx": 120,
+       "ry": 28
+      },
+      {
+       "id": "moong",
+       "op": "ellipse",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        220,
+        340
+       ],
+       "rx": 48,
+       "ry": 25
+      },
+      {
+       "id": "wet",
+       "op": "text",
+       "startMs": 1300,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        220,
+        440
+       ],
+       "text": "wet cotton",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "darkbox",
+       "op": "rect",
+       "startMs": 1800,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        480,
+        280
+       ],
+       "w": 170,
+       "h": 130
+      },
+      {
+       "id": "dark",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        565,
+        340
+       ],
+       "text": "dark",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "sprout4",
+       "op": "stroke",
+       "startMs": 3400,
+       "endMs": 4400,
+       "ink": "good",
+       "weight": 2,
+       "points": [
+        [
+         565,
+         390
+        ],
+        [
+         565,
+         330
+        ],
+        [
+         590,
+         300
+        ]
+       ]
+      },
+      {
+       "id": "moongT",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        220,
+        280
+       ],
+       "text": "moong",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch10-t02-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "glass",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        150,
+        180
+       ],
+       "w": 180,
+       "h": 230
+      },
+      {
+       "id": "waterfill",
+       "op": "rect",
+       "startMs": 900,
+       "endMs": 1700,
+       "ink": "soft",
+       "weight": 2,
+       "at": [
+        155,
+        260
+       ],
+       "w": 170,
+       "h": 145,
+       "fill": "soft"
+      },
+      {
+       "id": "seedsub",
+       "op": "ellipse",
+       "startMs": 1700,
+       "endMs": 2400,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        240,
+        330
+       ],
+       "rx": 35,
+       "ry": 20
+      },
+      {
+       "id": "glassT",
+       "op": "text",
+       "startMs": 2400,
+       "endMs": 3100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        240,
+        445
+       ],
+       "text": "water",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "airsmall",
+       "op": "text",
+       "startMs": 3200,
+       "endMs": 4000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        500,
+        150
+       ],
+       "text": "little air",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "airarrow",
+       "op": "arrow",
+       "startMs": 4000,
+       "endMs": 4900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        500,
+        175
+       ],
+       "to": [
+        270,
+        300
+       ]
+      },
+      {
+       "id": "poor",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 5800,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        500,
+        300
+       ],
+       "text": "poorly",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "none",
+       "op": "text",
+       "startMs": 5900,
+       "endMs": 6800,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        500,
+        370
+       ],
+       "text": "not at all",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch10-t02-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "test",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        75
+       ],
+       "text": "fair test",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "one",
+       "op": "circle",
+       "startMs": 1000,
+       "endMs": 1700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        250,
+        190
+       ],
+       "r": 42
+      },
+      {
+       "id": "oneT",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        250,
+        260
+       ],
+       "text": "condition",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "change",
+       "op": "arrow",
+       "startMs": 2300,
+       "endMs": 3200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        300,
+        190
+       ],
+       "to": [
+        470,
+        190
+       ]
+      },
+      {
+       "id": "changeT",
+       "op": "text",
+       "startMs": 2800,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        385,
+        155
+       ],
+       "text": "change",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "samebox",
+       "op": "rect",
+       "startMs": 3500,
+       "endMs": 4300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        470,
+        140
+       ],
+       "w": 150,
+       "h": 100
+      },
+      {
+       "id": "same",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 5000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        545,
+        195
+       ],
+       "text": "same",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "rest",
+       "op": "text",
+       "startMs": 5100,
+       "endMs": 5900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        370
+       ],
+       "text": "rest same",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch10-t02-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "glassA",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        180
+       ],
+       "w": 220,
+       "h": 230
+      },
+      {
+       "id": "cotA",
+       "op": "ellipse",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        210,
+        365
+       ],
+       "rx": 85,
+       "ry": 22
+      },
+      {
+       "id": "seedA",
+       "op": "ellipse",
+       "startMs": 1200,
+       "endMs": 1800,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        210,
+        335
+       ],
+       "rx": 32,
+       "ry": 18
+      },
+      {
+       "id": "open",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        210,
+        145
+       ],
+       "text": "open",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "glassB",
+       "op": "rect",
+       "startMs": 2400,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        480,
+        180
+       ],
+       "w": 220,
+       "h": 230
+      },
+      {
+       "id": "waterB",
+       "op": "rect",
+       "startMs": 3200,
+       "endMs": 4000,
+       "ink": "soft",
+       "weight": 2,
+       "at": [
+        485,
+        270
+       ],
+       "w": 210,
+       "h": 135,
+       "fill": "soft"
+      },
+      {
+       "id": "seedB",
+       "op": "ellipse",
+       "startMs": 3900,
+       "endMs": 4500,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        590,
+        335
+       ],
+       "rx": 32,
+       "ry": 18
+      },
+      {
+       "id": "under",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        590,
+        145
+       ],
+       "text": "under water",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "airA",
+       "op": "arrow",
+       "startMs": 5300,
+       "endMs": 5900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        210,
+        180
+       ],
+       "to": [
+        210,
+        230
+       ]
+      },
+      {
+       "id": "airB",
+       "op": "line",
+       "startMs": 5900,
+       "endMs": 6500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        590,
+        180
+       ],
+       "to": [
+        590,
+        230
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch10-t02-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "sameSeeds",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        110,
+        90
+       ],
+       "text": "same seeds",
+       "size": "m"
+      },
+      {
+       "id": "sameNum",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        110,
+        140
+       ],
+       "text": "same number",
+       "size": "m"
+      },
+      {
+       "id": "samePlace",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        110,
+        190
+       ],
+       "text": "same place",
+       "size": "m"
+      },
+      {
+       "id": "sameTime",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        110,
+        240
+       ],
+       "text": "same time",
+       "size": "m"
+      },
+      {
+       "id": "four",
+       "op": "circle",
+       "startMs": 2900,
+       "endMs": 3600,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        530,
+        150
+       ],
+       "r": 45
+      },
+      {
+       "id": "days",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        530,
+        225
+       ],
+       "text": "four days",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "compare",
+       "op": "arrow",
+       "startMs": 4300,
+       "endMs": 5200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        300,
+        330
+       ],
+       "to": [
+        500,
+        330
+       ]
+      },
+      {
+       "id": "sproutA",
+       "op": "stroke",
+       "startMs": 5000,
+       "endMs": 5900,
+       "ink": "good",
+       "weight": 2,
+       "points": [
+        [
+         530,
+         390
+        ],
+        [
+         530,
+         330
+        ],
+        [
+         550,
+         305
+        ]
+       ]
+      },
+      {
+       "id": "sproutB",
+       "op": "stroke",
+       "startMs": 5400,
+       "endMs": 6200,
+       "ink": "mark",
+       "weight": 2,
+       "points": [
+        [
+         650,
+         390
+        ],
+        [
+         650,
+         365
+        ]
+       ]
+      },
+      {
+       "id": "compareT",
+       "op": "text",
+       "startMs": 6000,
+       "endMs": 6800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        590,
+        460
+       ],
+       "text": "compare sprouts",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "check": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "Round 1 predicts that setup 1 (dry, warm, light) will not sprout and setup 3 (moist, no air, warm, light) will not sprout, but item i03 says sprouts need water, air, and warmth—that’s correct. However, the computed key says setup 4 (moist, air, cold, light) will not sprout, but the target misconception is m1 (soil/sunlight); the round does not address cold as a failure, which is not a problem because the round’s key is correct by construction. No issue.",
+    "severity": "low"
+   }
+  ],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

@@ -1,0 +1,1517 @@
+{
+ "topicId": "c7-science-ch11-t01",
+ "title": "Sources of light and materials",
+ "chapter": "Light: Shadows and Reflections",
+ "subject": "science",
+ "class": 7,
+ "topicType": "T2",
+ "plan": {
+  "game": "shadow-play@1",
+  "hint": "Shadow Play: luminous/opaque/translucent and shadow formation"
+ },
+ "game": {
+  "archetype": "shadow-play@1",
+  "spec": {
+   "archetype": "shadow-play@1",
+   "skills": [
+    "c7-science-ch11-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "step": "Step",
+    "torch": "Drag the torch",
+    "tall": "TALL",
+    "times": "× the object",
+    "hold": "hold it",
+    "got": "Locked",
+    "band": "Keep the shadow's top in the band",
+    "opaque": "Opaque",
+    "translucent": "Translucent",
+    "transparent": "Transparent",
+    "sort": "Drop each one in the light, then sort it",
+    "done": "Light done",
+    "shadowColour": "shadow colour"
+   },
+   "steps": [
+    {
+     "kind": "materials",
+     "items": [
+      "glass",
+      "tracing",
+      "card"
+     ]
+    },
+    {
+     "kind": "materials",
+     "items": [
+      "frosted",
+      "wood",
+      "redcard",
+      "glass"
+     ]
+    },
+    {
+     "kind": "materials",
+     "items": [
+      "glass",
+      "tracing",
+      "wood",
+      "frosted"
+     ]
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-science-ch11-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Light sources and materials",
+   "accent": "sci",
+   "targets": "c7-science-ch11-t01-m1",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Light sources and materials"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "The Moon makes its own light"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "sun",
+       "type": "node",
+       "text": "Sun",
+       "sub": "luminous",
+       "glyph": "sun",
+       "color": "sun"
+      },
+      {
+       "id": "moon",
+       "type": "node",
+       "text": "Moon",
+       "sub": "non-luminous",
+       "glyph": "moon",
+       "color": "ion"
+      },
+      {
+       "id": "eye",
+       "type": "node",
+       "text": "Eye",
+       "glyph": "eye",
+       "color": "sci"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "sun",
+       "to": "moon",
+       "text": "light"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "moon",
+       "to": "eye",
+       "text": "reflects"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "glass",
+       "type": "node",
+       "text": "Clear glass",
+       "sub": "transparent",
+       "glyph": "mirror",
+       "color": "mint"
+      },
+      {
+       "id": "butter",
+       "type": "node",
+       "text": "Butter paper",
+       "sub": "translucent",
+       "glyph": "scroll",
+       "color": "amber"
+      },
+      {
+       "id": "card",
+       "type": "node",
+       "text": "Cardboard",
+       "sub": "opaque",
+       "glyph": "book",
+       "color": "ion"
+      },
+      {
+       "id": "torch",
+       "type": "node",
+       "text": "Torch",
+       "sub": "light source",
+       "glyph": "torch",
+       "color": "sun"
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "torch",
+       "to": "glass",
+       "text": "passes"
+      },
+      {
+       "id": "a4",
+       "type": "arrow",
+       "from": "torch",
+       "to": "butter",
+       "text": "some light"
+      },
+      {
+       "id": "a5",
+       "type": "arrow",
+       "from": "torch",
+       "to": "card",
+       "text": "blocked"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Some objects give out their own light. We call them luminous.",
+    "L2": "The Sun, a candle flame, a glowing bulb and a firefly are luminous sources.",
+    "L3": "The Moon is not luminous. It shines because sunlight reflects from it into our eyes.",
+    "L4": "Objects that do not make their own light are non-luminous. We see them when light is reflected into our eyes.",
+    "L5": "Transparent materials let almost all light pass, so we see clearly through them.",
+    "L6": "Translucent materials let some light pass, but not clearly. Opaque materials let no light pass.",
+    "L7": "Now classify this material: which one is translucent?"
+   },
+   "narration": {
+    "L1": {
+     "text": "Some objects give out their own light. We call them luminous.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "The Sun, a candle flame, a glowing bulb and a firefly are luminous sources.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "The Moon is not luminous. It shines because sunlight reflects from it into our eyes.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "Objects that do not make their own light are non-luminous. We see them when light is reflected into our eyes.",
+     "dur": 9,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "Transparent materials let almost all light pass, so we see clearly through them.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Translucent materials let some light pass, but not clearly. Opaque materials let no light pass.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Now classify this material: which one is translucent?",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "title"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "sun"
+      },
+      {
+       "at": 0.6,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "moon",
+        "eye"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "a1",
+        "a2"
+       ]
+      },
+      {
+       "at": 1.4,
+       "do": "flow",
+       "dur": 0.8,
+       "target": [
+        "a1",
+        "a2"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "myth"
+      },
+      {
+       "at": 2,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "moon"
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 1,
+       "target": "eye"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "torch"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.7,
+       "target": "glass"
+      },
+      {
+       "at": 1.1,
+       "do": "show",
+       "dur": 0.7,
+       "target": "a3"
+      },
+      {
+       "at": 1.5,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "a3",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "butter",
+        "card"
+       ]
+      },
+      {
+       "at": 0.7,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "a4",
+        "a5"
+       ]
+      },
+      {
+       "at": 1.2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "butter"
+      },
+      {
+       "at": 2.1,
+       "do": "highlight",
+       "dur": 1,
+       "target": "card"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which material is translucent?",
+    "options": [
+     "glass",
+     "butter",
+     "card"
+    ],
+    "answer": "butter",
+    "src": "c7-science-ch11-t01-i02"
+   }
+  },
+  "repairs": [
+   "string:eye.sub"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 53
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch11-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "title1",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        60
+       ],
+       "text": "Luminous",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "obj1",
+       "op": "circle",
+       "startMs": 700,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        250,
+        230
+       ],
+       "r": 75,
+       "fill": "accent"
+      },
+      {
+       "id": "rays1",
+       "op": "line",
+       "startMs": 1400,
+       "endMs": 1800,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        250,
+        130
+       ],
+       "to": [
+        250,
+        90
+       ]
+      },
+      {
+       "id": "rays2",
+       "op": "line",
+       "startMs": 1600,
+       "endMs": 2000,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        180,
+        170
+       ],
+       "to": [
+        150,
+        140
+       ]
+      },
+      {
+       "id": "rays3",
+       "op": "line",
+       "startMs": 1800,
+       "endMs": 2200,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        320,
+        170
+       ],
+       "to": [
+        350,
+        140
+       ]
+      },
+      {
+       "id": "lab1",
+       "op": "label",
+       "startMs": 2200,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        250,
+        350
+       ],
+       "text": "own light",
+       "to": [
+        250,
+        305
+       ]
+      },
+      {
+       "id": "arrow1",
+       "op": "arrow",
+       "startMs": 3000,
+       "endMs": 3700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        430,
+        230
+       ],
+       "to": [
+        590,
+        230
+       ]
+      },
+      {
+       "id": "lab2",
+       "op": "text",
+       "startMs": 3700,
+       "endMs": 4500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        650,
+        220
+       ],
+       "text": "luminous",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch11-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "sun2",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        110,
+        150
+       ],
+       "r": 48,
+       "fill": "accent"
+      },
+      {
+       "id": "sunr2",
+       "op": "line",
+       "startMs": 500,
+       "endMs": 800,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        110,
+        85
+       ],
+       "to": [
+        110,
+        50
+       ]
+      },
+      {
+       "id": "flame2",
+       "op": "polygon",
+       "startMs": 800,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         250,
+         190
+        ],
+        [
+         275,
+         130
+        ],
+        [
+         300,
+         190
+        ]
+       ],
+       "fill": "accent"
+      },
+      {
+       "id": "bulb2",
+       "op": "circle",
+       "startMs": 1500,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        425,
+        155
+       ],
+       "r": 38
+      },
+      {
+       "id": "bulbbase2",
+       "op": "line",
+       "startMs": 1900,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 1,
+       "from": [
+        405,
+        195
+       ],
+       "to": [
+        445,
+        195
+       ]
+      },
+      {
+       "id": "fly2",
+       "op": "ellipse",
+       "startMs": 2200,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        610,
+        160
+       ],
+       "rx": 45,
+       "ry": 25
+      },
+      {
+       "id": "glow2",
+       "op": "circle",
+       "startMs": 2600,
+       "endMs": 3100,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        610,
+        160
+       ],
+       "r": 12,
+       "fill": "accent"
+      },
+      {
+       "id": "lum2",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        390
+       ],
+       "text": "luminous sources",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch11-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "moon3",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        190,
+        190
+       ],
+       "r": 70
+      },
+      {
+       "id": "sun3",
+       "op": "circle",
+       "startMs": 500,
+       "endMs": 1100,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        610,
+        130
+       ],
+       "r": 45,
+       "fill": "accent"
+      },
+      {
+       "id": "sunlabel3",
+       "op": "label",
+       "startMs": 1100,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        610,
+        205
+       ],
+       "text": "Sun",
+       "to": [
+        610,
+        175
+       ]
+      },
+      {
+       "id": "ray3",
+       "op": "arrow",
+       "startMs": 1600,
+       "endMs": 2800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        560,
+        155
+       ],
+       "to": [
+        260,
+        185
+       ]
+      },
+      {
+       "id": "reflect3",
+       "op": "arrow",
+       "startMs": 2800,
+       "endMs": 4000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        125,
+        180
+       ],
+       "to": [
+        420,
+        340
+       ]
+      },
+      {
+       "id": "eye3",
+       "op": "ellipse",
+       "startMs": 3900,
+       "endMs": 4400,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        570,
+        350
+       ],
+       "rx": 45,
+       "ry": 25
+      },
+      {
+       "id": "moonlabel3",
+       "op": "label",
+       "startMs": 4400,
+       "endMs": 4900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        190,
+        290
+       ],
+       "text": "Moon",
+       "to": [
+        190,
+        260
+       ]
+      },
+      {
+       "id": "note3",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 6200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        440
+       ],
+       "text": "reflected sunlight",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch11-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9111,
+     "ops": [
+      {
+       "id": "source4",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        110,
+        150
+       ],
+       "r": 42,
+       "fill": "accent"
+      },
+      {
+       "id": "object4",
+       "op": "rect",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        330,
+        110
+       ],
+       "w": 130,
+       "h": 90,
+       "fill": "soft"
+      },
+      {
+       "id": "eye4",
+       "op": "ellipse",
+       "startMs": 1300,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        670,
+        155
+       ],
+       "rx": 48,
+       "ry": 28
+      },
+      {
+       "id": "ray4a",
+       "op": "arrow",
+       "startMs": 1800,
+       "endMs": 2800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        150,
+        150
+       ],
+       "to": [
+        330,
+        150
+       ]
+      },
+      {
+       "id": "ray4b",
+       "op": "arrow",
+       "startMs": 2800,
+       "endMs": 3900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        460,
+        150
+       ],
+       "to": [
+        620,
+        155
+       ]
+      },
+      {
+       "id": "lab4a",
+       "op": "label",
+       "startMs": 3900,
+       "endMs": 4600,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        110,
+        230
+       ],
+       "text": "light source",
+       "to": [
+        110,
+        190
+       ]
+      },
+      {
+       "id": "lab4b",
+       "op": "label",
+       "startMs": 4600,
+       "endMs": 5100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        395,
+        250
+       ],
+       "text": "object",
+       "to": [
+        395,
+        200
+       ]
+      },
+      {
+       "id": "lab4c",
+       "op": "label",
+       "startMs": 5100,
+       "endMs": 5600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        670,
+        225
+       ],
+       "text": "eyes",
+       "to": [
+        670,
+        183
+       ]
+      },
+      {
+       "id": "non4",
+       "op": "text",
+       "startMs": 6000,
+       "endMs": 7200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        370
+       ],
+       "text": "non-luminous",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "reflect4",
+       "op": "text",
+       "startMs": 7200,
+       "endMs": 8200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        430
+       ],
+       "text": "reflected light",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch11-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "glass5",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        290,
+        100
+       ],
+       "w": 220,
+       "h": 250,
+       "fill": "soft"
+      },
+      {
+       "id": "light5",
+       "op": "circle",
+       "startMs": 700,
+       "endMs": 1200,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        120,
+        225
+       ],
+       "r": 38,
+       "fill": "accent"
+      },
+      {
+       "id": "pass5a",
+       "op": "arrow",
+       "startMs": 1200,
+       "endMs": 2000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        165,
+        225
+       ],
+       "to": [
+        285,
+        225
+       ]
+      },
+      {
+       "id": "pass5b",
+       "op": "arrow",
+       "startMs": 2000,
+       "endMs": 2800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        515,
+        225
+       ],
+       "to": [
+        650,
+        225
+       ]
+      },
+      {
+       "id": "eye5",
+       "op": "ellipse",
+       "startMs": 2800,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        700,
+        225
+       ],
+       "rx": 45,
+       "ry": 25
+      },
+      {
+       "id": "lab5a",
+       "op": "label",
+       "startMs": 3500,
+       "endMs": 4300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        390
+       ],
+       "text": "transparent",
+       "to": [
+        400,
+        350
+       ]
+      },
+      {
+       "id": "lab5b",
+       "op": "text",
+       "startMs": 4400,
+       "endMs": 5300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        440
+       ],
+       "text": "see clearly",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch11-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "t6",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        50,
+        100
+       ],
+       "w": 210,
+       "h": 240,
+       "fill": "soft"
+      },
+      {
+       "id": "u6",
+       "op": "rect",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        295,
+        100
+       ],
+       "w": 210,
+       "h": 240,
+       "fill": "soft"
+      },
+      {
+       "id": "o6",
+       "op": "rect",
+       "startMs": 1400,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        540,
+        100
+       ],
+       "w": 210,
+       "h": 240
+      },
+      {
+       "id": "ray6a",
+       "op": "arrow",
+       "startMs": 2100,
+       "endMs": 2700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        75,
+        220
+       ],
+       "to": [
+        235,
+        220
+       ]
+      },
+      {
+       "id": "ray6b",
+       "op": "arrow",
+       "startMs": 2700,
+       "endMs": 3300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        320,
+        220
+       ],
+       "to": [
+        470,
+        220
+       ]
+      },
+      {
+       "id": "lab6a",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4200,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        155,
+        390
+       ],
+       "text": "transparent",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "lab6b",
+       "op": "text",
+       "startMs": 4200,
+       "endMs": 5000,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        390
+       ],
+       "text": "translucent",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "lab6c",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 5600,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        645,
+        390
+       ],
+       "text": "opaque",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "some6",
+       "op": "text",
+       "startMs": 5600,
+       "endMs": 6200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        455
+       ],
+       "text": "some light",
+       "size": "s",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch11-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4004,
+     "ops": [
+      {
+       "id": "q7",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "Which is translucent?",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "butter7",
+       "op": "rect",
+       "startMs": 900,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        80,
+        150
+       ],
+       "w": 180,
+       "h": 120,
+       "fill": "soft"
+      },
+      {
+       "id": "frost7",
+       "op": "rect",
+       "startMs": 1400,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        310,
+        150
+       ],
+       "w": 180,
+       "h": 120,
+       "fill": "soft"
+      },
+      {
+       "id": "oil7",
+       "op": "rect",
+       "startMs": 1900,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        540,
+        150
+       ],
+       "w": 180,
+       "h": 120,
+       "fill": "soft"
+      },
+      {
+       "id": "b7",
+       "op": "text",
+       "startMs": 2400,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        170,
+        330
+       ],
+       "text": "butter paper",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "f7",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        330
+       ],
+       "text": "frosted glass",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "o7",
+       "op": "text",
+       "startMs": 3600,
+       "endMs": 4004,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        630,
+        330
+       ],
+       "text": "oiled paper",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [],
+ "check": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "Step 2 includes 'wood' as a material. In the kit, wood is listed as opaque, but the game's material list 'wood' could be interpreted as a block of wood, which is fine; however, step 2 also lists 'redcard', which is not a standard term from the kit. The kit uses 'cardboard' as an opaque example; 'redcard' is not in the kit and could confuse children.",
+    "severity": "low"
+   }
+  ],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

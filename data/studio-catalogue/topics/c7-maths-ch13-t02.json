@@ -1,0 +1,1664 @@
+{
+ "topicId": "c7-maths-ch13-t02",
+ "title": "Representative values: mean, median, mode",
+ "chapter": "Connecting the Dots...",
+ "subject": "maths",
+ "class": 7,
+ "topicType": "T4",
+ "plan": {
+  "game": "data-rush@1",
+  "hint": "Traffic Census: bar graph from counts / representative values"
+ },
+ "game": {
+  "archetype": "data-rush@1",
+  "spec": {
+   "archetype": "data-rush@1",
+   "skills": [
+    "c7-maths-ch13-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "coach": "Tap each vehicle as it passes",
+    "minute": "MINUTE",
+    "tally": "tally",
+    "census": "TRAFFIC CENSUS",
+    "mean": "Find the mean",
+    "level": "levelled out",
+    "runDone": "Census done",
+    "cars": "vehicles",
+    "scale": "each square =",
+    "missed": "missed",
+    "extra": "not a vehicle",
+    "right": "Got it",
+    "per": "per minute"
+   },
+   "theme": "traffic",
+   "counts": [
+    3,
+    5,
+    4,
+    6,
+    14
+   ],
+   "distractors": 3,
+   "scaleStep": 2,
+   "speed": 1,
+   "seed": 7314,
+   "targets": "c7-maths-ch13-t02-m-outlier"
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-maths-ch13-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Mean, median and mode",
+   "accent": "ion",
+   "targets": "c7-maths-ch13-t02-m-mean-in-data",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "row",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Mean, median and mode"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "The mean must be in the data"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "data",
+       "type": "label",
+       "text": "4, 7, 10, 11"
+      },
+      {
+       "id": "total",
+       "type": "label",
+       "text": "Total = 32"
+      },
+      {
+       "id": "count",
+       "type": "label",
+       "text": "4 values"
+      },
+      {
+       "id": "mean",
+       "type": "node",
+       "text": "Mean",
+       "sub": "32 ÷ 4 = 8"
+      },
+      {
+       "id": "share",
+       "type": "bar",
+       "parts": 4,
+       "shaded": 4,
+       "text": "Equal share"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "data",
+       "to": "total",
+       "text": "add"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "total",
+       "to": "mean",
+       "text": "divide"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "column",
+     "els": [
+      {
+       "id": "raw",
+       "type": "label",
+       "text": "12, 7, 15, 10, 6"
+      },
+      {
+       "id": "ordered",
+       "type": "label",
+       "text": "6, 7, 10, 12, 15"
+      },
+      {
+       "id": "middle",
+       "type": "node",
+       "text": "Median",
+       "sub": "middle = 10"
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "raw",
+       "to": "ordered",
+       "text": "put in order"
+      },
+      {
+       "id": "a4",
+       "type": "arrow",
+       "from": "ordered",
+       "to": "middle",
+       "text": "find middle"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "row",
+     "els": [
+      {
+       "id": "sizes",
+       "type": "label",
+       "text": "5, 6, 6, 7, 6, 8, 5"
+      },
+      {
+       "id": "mode",
+       "type": "node",
+       "text": "Mode",
+       "sub": "6 occurs 3 times"
+      },
+      {
+       "id": "a5",
+       "type": "arrow",
+       "from": "sizes",
+       "to": "mode",
+       "text": "most often"
+      }
+     ]
+    },
+    {
+     "id": "s5",
+     "layout": "split",
+     "els": [
+      {
+       "id": "salaries",
+       "type": "label",
+       "text": "12k, 13k, 14k, 15k, 96k"
+      },
+      {
+       "id": "mean2",
+       "type": "node",
+       "text": "Mean",
+       "sub": "30k"
+      },
+      {
+       "id": "median2",
+       "type": "node",
+       "text": "Median",
+       "sub": "14k"
+      },
+      {
+       "id": "extreme",
+       "type": "label",
+       "text": "One extreme value"
+      },
+      {
+       "id": "a6",
+       "type": "arrow",
+       "from": "extreme",
+       "to": "mean2",
+       "text": "pulls up"
+      },
+      {
+       "id": "a7",
+       "type": "arrow",
+       "from": "extreme",
+       "to": "median2",
+       "text": "hardly moves"
+      }
+     ]
+    },
+    {
+     "id": "s6",
+     "layout": "row",
+     "els": [
+      {
+       "id": "choose",
+       "type": "title",
+       "text": "Choose the value"
+      },
+      {
+       "id": "mean3",
+       "type": "label",
+       "text": "Mean: total ÷ count"
+      },
+      {
+       "id": "median3",
+       "type": "label",
+       "text": "Median: ordered middle"
+      },
+      {
+       "id": "mode3",
+       "type": "label",
+       "text": "Mode: most frequent"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "We use representative values to describe a set of data.",
+    "L2": "The mean is the total divided by the number of values. It is the equal share after levelling out the total.",
+    "L3": "The mean need not be one of the data values. For 4, 7, 10 and 11, the mean is 32 divided by 4, which is 8.",
+    "L4": "The median is the middle value after putting the data in order. In 6, 7, 10, 12 and 15, the median is 10.",
+    "L5": "The mode is the value that occurs most often. In these shoe sizes, the mode is 6 because it occurs three times.",
+    "L6": "One extreme value pulls the mean a lot but hardly moves the median. Here, the median describes a typical salary better.",
+    "L7": "So remember: mean uses the total, median uses the ordered middle, and mode uses the most frequent value."
+   },
+   "narration": {
+    "L1": {
+     "text": "We use representative values to describe a set of data.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "The mean is the total divided by the number of values. It is the equal share after levelling out the total.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "The mean need not be one of the data values. For 4, 7, 10 and 11, the mean is 32 divided by 4, which is 8.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "The median is the middle value after putting the data in order. In 6, 7, 10, 12 and 15, the median is 10.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "The mode is the value that occurs most often. In these shoe sizes, the mode is 6 because it occurs three times.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "One extreme value pulls the mean a lot but hardly moves the median. Here, the median describes a typical salary better.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "So remember: mean uses the total, median uses the ordered middle, and mode uses the most frequent value.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "title"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "data",
+        "total",
+        "count"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "a1",
+       "to": 1
+      },
+      {
+       "at": 2,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "mean",
+        "share"
+       ]
+      },
+      {
+       "at": 3,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "a2",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "myth"
+      },
+      {
+       "at": 1,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "raw"
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.8,
+       "target": "ordered"
+      },
+      {
+       "at": 2,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "a3",
+       "to": 1
+      },
+      {
+       "at": 3,
+       "do": "show",
+       "dur": 0.8,
+       "target": "middle"
+      },
+      {
+       "at": 4,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "a4",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "sizes"
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.8,
+       "target": "mode"
+      },
+      {
+       "at": 2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "mode"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s5",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "salaries"
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "mean2",
+        "median2",
+        "extreme"
+       ]
+      },
+      {
+       "at": 2,
+       "do": "flow",
+       "dur": 0.8,
+       "target": [
+        "a6",
+        "a7"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0,
+     "scene": "s6",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "choose"
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "mean3",
+        "median3",
+        "mode3"
+       ]
+      },
+      {
+       "at": 3,
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which value is the middle after ordering the data?",
+    "options": [
+     "mean3",
+     "median3",
+     "mode3"
+    ],
+    "answer": "median3",
+    "src": "c7-maths-ch13-t02-i03"
+   }
+  },
+  "repairs": [],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 37
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch13-t02-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "title",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        65
+       ],
+       "text": "representative values",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "data",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        150,
+        180
+       ],
+       "text": "data",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "d1",
+       "op": "circle",
+       "startMs": 1100,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        110,
+        290
+       ],
+       "r": 25
+      },
+      {
+       "id": "d2",
+       "op": "circle",
+       "startMs": 1300,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        190,
+        290
+       ],
+       "r": 25
+      },
+      {
+       "id": "d3",
+       "op": "circle",
+       "startMs": 1500,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        270,
+        290
+       ],
+       "r": 25
+      },
+      {
+       "id": "rep",
+       "op": "arrow",
+       "startMs": 2100,
+       "endMs": 2700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        320,
+        290
+       ],
+       "to": [
+        500,
+        290
+       ]
+      },
+      {
+       "id": "value",
+       "op": "circle",
+       "startMs": 2800,
+       "endMs": 3300,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        570,
+        290
+       ],
+       "r": 32
+      },
+      {
+       "id": "lab",
+       "op": "label",
+       "startMs": 3400,
+       "endMs": 4300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        570,
+        370
+       ],
+       "text": "representative value",
+       "to": [
+        570,
+        325
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch13-t02-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9536,
+     "ops": [
+      {
+       "id": "mean",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "mean",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "eq",
+       "op": "numwork",
+       "startMs": 700,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        185,
+        120
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "mean",
+         "=",
+         "total",
+         "÷",
+         "number"
+        ]
+       ]
+      },
+      {
+       "id": "total",
+       "op": "rect",
+       "startMs": 2600,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        100,
+        290
+       ],
+       "w": 150,
+       "h": 55,
+       "round": 8
+      },
+      {
+       "id": "totalt",
+       "op": "text",
+       "startMs": 2900,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        175,
+        325
+       ],
+       "text": "total",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "level",
+       "op": "arrow",
+       "startMs": 3700,
+       "endMs": 4500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        275,
+        317
+       ],
+       "to": [
+        490,
+        317
+       ]
+      },
+      {
+       "id": "share",
+       "op": "rect",
+       "startMs": 4700,
+       "endMs": 5400,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        540,
+        290
+       ],
+       "w": 150,
+       "h": 55,
+       "round": 8
+      },
+      {
+       "id": "sharet",
+       "op": "text",
+       "startMs": 5100,
+       "endMs": 5900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        615,
+        325
+       ],
+       "text": "equal share",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "equal",
+       "op": "label",
+       "startMs": 6500,
+       "endMs": 7600,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        400,
+        405
+       ],
+       "text": "levelling out",
+       "to": [
+        400,
+        350
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch13-t02-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 11664,
+     "ops": [
+      {
+       "id": "vals",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        80
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "4",
+         "+",
+         "7",
+         "+",
+         "10",
+         "+",
+         "11",
+         "=",
+         "32"
+        ]
+       ]
+      },
+      {
+       "id": "calc",
+       "op": "numwork",
+       "startMs": 2500,
+       "endMs": 4200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        170,
+        190
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "32",
+         "÷",
+         "4",
+         "=",
+         "8"
+        ]
+       ]
+      },
+      {
+       "id": "line",
+       "op": "line",
+       "startMs": 4700,
+       "endMs": 5400,
+       "ink": "chalk",
+       "weight": 1,
+       "from": [
+        80,
+        320
+       ],
+       "to": [
+        700,
+        320
+       ]
+      },
+      {
+       "id": "p4",
+       "op": "circle",
+       "startMs": 5000,
+       "endMs": 5500,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        150,
+        320
+       ],
+       "r": 9
+      },
+      {
+       "id": "p7",
+       "op": "circle",
+       "startMs": 5300,
+       "endMs": 5800,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        300,
+        320
+       ],
+       "r": 9
+      },
+      {
+       "id": "p10",
+       "op": "circle",
+       "startMs": 5600,
+       "endMs": 6100,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        450,
+        320
+       ],
+       "r": 9
+      },
+      {
+       "id": "p11",
+       "op": "circle",
+       "startMs": 5900,
+       "endMs": 6400,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        600,
+        320
+       ],
+       "r": 9
+      },
+      {
+       "id": "eight",
+       "op": "text",
+       "startMs": 7000,
+       "endMs": 7500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        450,
+        395
+       ],
+       "text": "8",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "note",
+       "op": "label",
+       "startMs": 7800,
+       "endMs": 9500,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        450,
+        440
+       ],
+       "text": "not a data value",
+       "to": [
+        450,
+        350
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch13-t02-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 10387,
+     "ops": [
+      {
+       "id": "median",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "median",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "ordered",
+       "op": "numwork",
+       "startMs": 900,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        145
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "6",
+         ",",
+         "7",
+         ",",
+         "10",
+         ",",
+         "12",
+         ",",
+         "15"
+        ]
+       ]
+      },
+      {
+       "id": "bracket",
+       "op": "line",
+       "startMs": 3200,
+       "endMs": 3800,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        350,
+        195
+       ],
+       "to": [
+        350,
+        245
+       ]
+      },
+      {
+       "id": "middle",
+       "op": "highlight",
+       "startMs": 3900,
+       "endMs": 5000,
+       "ink": "accent",
+       "weight": 2,
+       "target": "bracket",
+       "style": "circle"
+      },
+      {
+       "id": "answer",
+       "op": "numwork",
+       "startMs": 5600,
+       "endMs": 7100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        300,
+        330
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "median",
+         "=",
+         "10"
+        ]
+       ]
+      },
+      {
+       "id": "orderlabel",
+       "op": "label",
+       "startMs": 7400,
+       "endMs": 8500,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        520,
+        220
+       ],
+       "text": "middle value",
+       "to": [
+        350,
+        195
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch13-t02-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9962,
+     "ops": [
+      {
+       "id": "mode",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "mode",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "shoes",
+       "op": "numwork",
+       "startMs": 800,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        130
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "5",
+         ",",
+         "6",
+         ",",
+         "6",
+         ",",
+         "6",
+         ",",
+         "7"
+        ]
+       ]
+      },
+      {
+       "id": "count1",
+       "op": "circle",
+       "startMs": 2800,
+       "endMs": 3300,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        260,
+        140
+       ],
+       "r": 25
+      },
+      {
+       "id": "count2",
+       "op": "circle",
+       "startMs": 3200,
+       "endMs": 3700,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        345,
+        140
+       ],
+       "r": 25
+      },
+      {
+       "id": "count3",
+       "op": "circle",
+       "startMs": 3600,
+       "endMs": 4100,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        430,
+        140
+       ],
+       "r": 25
+      },
+      {
+       "id": "three",
+       "op": "text",
+       "startMs": 4400,
+       "endMs": 5500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        345,
+        260
+       ],
+       "text": "three times",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "result",
+       "op": "numwork",
+       "startMs": 6000,
+       "endMs": 7400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        265,
+        340
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "mode",
+         "=",
+         "6"
+        ]
+       ]
+      },
+      {
+       "id": "often",
+       "op": "label",
+       "startMs": 7700,
+       "endMs": 9000,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        540,
+        150
+       ],
+       "text": "most often",
+       "to": [
+        450,
+        140
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch13-t02-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9536,
+     "ops": [
+      {
+       "id": "extreme",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "extreme value",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "scale",
+       "op": "line",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 1,
+       "from": [
+        90,
+        180
+       ],
+       "to": [
+        710,
+        180
+       ]
+      },
+      {
+       "id": "cluster",
+       "op": "ellipse",
+       "startMs": 1600,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        340,
+        180
+       ],
+       "rx": 110,
+       "ry": 35
+      },
+      {
+       "id": "outlier",
+       "op": "circle",
+       "startMs": 2300,
+       "endMs": 2800,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        650,
+        180
+       ],
+       "r": 18
+      },
+      {
+       "id": "pull",
+       "op": "arrow",
+       "startMs": 3000,
+       "endMs": 3900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        500,
+        240
+       ],
+       "to": [
+        640,
+        205
+       ]
+      },
+      {
+       "id": "mean",
+       "op": "circle",
+       "startMs": 4200,
+       "endMs": 4700,
+       "ink": "mark",
+       "weight": 2,
+       "c": [
+        540,
+        180
+       ],
+       "r": 10
+      },
+      {
+       "id": "median",
+       "op": "circle",
+       "startMs": 4700,
+       "endMs": 5200,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        340,
+        180
+       ],
+       "r": 10
+      },
+      {
+       "id": "salary",
+       "op": "text",
+       "startMs": 5600,
+       "endMs": 6200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        350
+       ],
+       "text": "salary",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "typical",
+       "op": "label",
+       "startMs": 6500,
+       "endMs": 7600,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        410
+       ],
+       "text": "typical",
+       "to": [
+        340,
+        195
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch13-t02-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "remember",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "remember",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "meanbox",
+       "op": "rect",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        55,
+        130
+       ],
+       "w": 210,
+       "h": 210,
+       "round": 10
+      },
+      {
+       "id": "meanlab",
+       "op": "text",
+       "startMs": 1200,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        160,
+        175
+       ],
+       "text": "mean",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "medbox",
+       "op": "rect",
+       "startMs": 1500,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        295,
+        130
+       ],
+       "w": 210,
+       "h": 210,
+       "round": 10
+      },
+      {
+       "id": "meaneq",
+       "op": "numwork",
+       "startMs": 1800,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        75,
+        230
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "total",
+         "÷",
+         "number"
+        ]
+       ]
+      },
+      {
+       "id": "medlab",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        175
+       ],
+       "text": "median",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "modebox",
+       "op": "rect",
+       "startMs": 2100,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        535,
+        130
+       ],
+       "w": 210,
+       "h": 210,
+       "round": 10
+      },
+      {
+       "id": "medval",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        270
+       ],
+       "text": "middle",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "modelab",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        640,
+        175
+       ],
+       "text": "mode",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "modeval",
+       "op": "text",
+       "startMs": 3100,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        640,
+        270
+       ],
+       "text": "most often",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "join",
+       "op": "arrow",
+       "startMs": 4300,
+       "endMs": 4800,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        265,
+        235
+       ],
+       "to": [
+        295,
+        235
+       ]
+      },
+      {
+       "id": "join2",
+       "op": "arrow",
+       "startMs": 4800,
+       "endMs": 5300,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        505,
+        235
+       ],
+       "to": [
+        535,
+        235
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

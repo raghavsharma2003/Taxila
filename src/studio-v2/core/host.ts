@@ -29,6 +29,7 @@ export interface MountOptions {
   motion?: "reduce" | "full";
   dpr?: number;                                // pin the backing-store ratio (disables adaptive resolution)
   teacher?: HTMLElement | null;                // the in-house 2D/3D rig element for the PiP safe zone (never a portrait)
+  pip?: boolean;                               // false: no PiP element at all (the live lesson shows her face above the stage); the safe zone stays
   audio?: Record<string, string>;              // explainer narration line id → audio url (host-measured timing in spec)
   onMessage?: (m: StudioMessage) => void;
   fault?: "boot" | "transient" | "permanent";  // test builds only: injected engine faults
@@ -92,9 +93,10 @@ export function mountStudio(slot: HTMLElement, def: EngineDef, opts: MountOption
   const pip = document.createElement("div"); pip.className = "sv2-pip";
   if (opts.teacher) pip.appendChild(opts.teacher);
   else { pip.classList.add("placeholder"); pip.innerHTML = '<div class="ring"></div><span>AI teacher</span>'; }
+  if (opts.pip === false) pip.style.display = "none";
   const hudEl = document.createElement("div"); hudEl.className = "sv2-hud";
   const taskEl = document.createElement("div"); taskEl.className = "sv2-task hidden";
-  taskEl.innerHTML = '<span class="ico"><svg viewBox="0 0 16 16" fill="none" stroke="#3DDC97" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3L13 4.5"/></svg></span><span class="step"></span><span class="goal"></span>';
+  taskEl.innerHTML = '<span class="ico"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3L13 4.5"/></svg></span><span class="step"></span><span class="goal"></span>';
   const capEl = document.createElement("div"); capEl.className = "sv2-captions off";
   const progEl = document.createElement("div"); progEl.className = "sv2-progress hidden"; progEl.innerHTML = "<i></i>";
   stage.append(canvas, boardCanvas, label, pip, hudEl, taskEl, capEl, progEl);

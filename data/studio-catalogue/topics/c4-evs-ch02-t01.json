@@ -1,0 +1,1640 @@
+{
+ "topicId": "c4-evs-ch02-t01",
+ "title": "Places and services in a neighbourhood",
+ "chapter": "Exploring Our Neighbourhood",
+ "subject": "evs",
+ "class": 4,
+ "topicType": "T3",
+ "plan": {
+  "game": "map-route@1",
+  "hint": "route mode on a grid map with landmarks (compass steering), then a turns round"
+ },
+ "game": {
+  "archetype": "map-route@1",
+  "spec": {
+   "archetype": "map-route@1",
+   "skills": [
+    "c4-evs-ch02-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "thread": "Drag the thread along the road",
+    "round": "Round",
+    "done": "places",
+    "go": "FLY",
+    "undo": "UNDO",
+    "coach": "Plan the route, then FLY",
+    "runDone": "Route complete",
+    "fwd": "forward",
+    "left": "left",
+    "right": "right",
+    "km": "km",
+    "scale": "1 square =",
+    "measure": "Measure the map distance",
+    "lat": "lat",
+    "lon": "long",
+    "drop": "Drop the pin",
+    "fly": "Fly to",
+    "set": "SET",
+    "N": "N",
+    "S": "S",
+    "E": "E",
+    "W": "W",
+    "blocked": "BLOCKED",
+    "arrived": "ARRIVED"
+   },
+   "title": "Neighbourhood Map",
+   "rounds": [
+    {
+     "mode": "route",
+     "title": "Drone to the clinic",
+     "sub": "steer around the school",
+     "w": 10,
+     "h": 6,
+     "blocks": [
+      [
+       4,
+       1
+      ],
+      [
+       4,
+       2
+      ],
+      [
+       4,
+       3
+      ],
+      [
+       4,
+       4
+      ],
+      [
+       7,
+       0
+      ],
+      [
+       7,
+       1
+      ],
+      [
+       7,
+       2
+      ]
+     ],
+     "places": [
+      {
+       "at": [
+        8,
+        3
+       ],
+       "label": "Hospital"
+      },
+      {
+       "at": [
+        2,
+        1
+       ],
+       "label": "School",
+       "glyph": "school"
+      },
+      {
+       "at": [
+        1,
+        5
+       ],
+       "label": "Park",
+       "glyph": "tree"
+      }
+     ],
+     "start": [
+      0,
+      3
+     ],
+     "goal": 0,
+     "steer": "compass",
+     "maxSteps": 18,
+     "targets": "c4-evs-ch02-t01-m3"
+    },
+    {
+     "mode": "route",
+     "title": "Turn at each corner",
+     "sub": "reach the post office",
+     "w": 9,
+     "h": 5,
+     "blocks": [
+      [
+       3,
+       0
+      ],
+      [
+       3,
+       1
+      ],
+      [
+       3,
+       2
+      ],
+      [
+       6,
+       2
+      ],
+      [
+       6,
+       3
+      ]
+     ],
+     "places": [
+      {
+       "at": [
+        8,
+        4
+       ],
+       "label": "PostOffice",
+       "glyph": "map"
+      },
+      {
+       "at": [
+        1,
+        1
+       ],
+       "label": "Market",
+       "glyph": "shop"
+      }
+     ],
+     "start": [
+      0,
+      0
+     ],
+     "goal": 0,
+     "steer": "turns",
+     "maxSteps": 20,
+     "targets": "c4-evs-ch02-t01-m2"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 2,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c4-evs-ch02-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Neighbourhood Helpers",
+   "accent": "mint",
+   "targets": "c4-evs-ch02-t01-m1",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "row",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Neighbourhood Helpers"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "A bank only locks money in a safe"
+      },
+      {
+       "id": "bank",
+       "type": "node",
+       "text": "Bank",
+       "sub": "public place",
+       "glyph": "bank",
+       "color": "mint"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "post",
+       "type": "node",
+       "text": "Post office",
+       "sub": "letters, parcels",
+       "glyph": "letter",
+       "color": "ion"
+      },
+      {
+       "id": "bank2",
+       "type": "node",
+       "text": "Bank",
+       "sub": "savings, loans",
+       "glyph": "bank",
+       "color": "mint"
+      },
+      {
+       "id": "hospital",
+       "type": "node",
+       "text": "Hospital",
+       "sub": "treats the sick",
+       "color": "sci"
+      },
+      {
+       "id": "police",
+       "type": "node",
+       "text": "Police station",
+       "sub": "keeps people safe",
+       "glyph": "shield",
+       "color": "amber"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "split",
+     "els": [
+      {
+       "id": "public",
+       "type": "node",
+       "text": "Public places",
+       "sub": "for everyone",
+       "glyph": "group",
+       "color": "sun"
+      },
+      {
+       "id": "care",
+       "type": "node",
+       "text": "Care",
+       "sub": "clean and safe",
+       "glyph": "recycle",
+       "color": "mint"
+      },
+      {
+       "id": "map",
+       "type": "label",
+       "text": "Maps show places and directions",
+       "x": 120,
+       "y": 480,
+       "color": "ion"
+      },
+      {
+       "id": "m1",
+       "type": "arrow",
+       "from": "public",
+       "to": "care",
+       "text": "use carefully"
+      },
+      {
+       "id": "m2",
+       "type": "arrow",
+       "from": "care",
+       "to": "public",
+       "text": "for all"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "row",
+     "els": [
+      {
+       "id": "optpost",
+       "type": "node",
+       "text": "Post office",
+       "glyph": "letter",
+       "color": "ion"
+      },
+      {
+       "id": "optbank",
+       "type": "node",
+       "text": "Bank",
+       "glyph": "bank",
+       "color": "mint"
+      },
+      {
+       "id": "opthospital",
+       "type": "node",
+       "text": "Hospital",
+       "color": "sci"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "A neighbourhood has public places that serve everyone.",
+    "L2": "The post office sends letters and parcels, and it can keep savings.",
+    "L3": "A bank keeps money safe, gives loans, and pays interest to savers.",
+    "L4": "A hospital treats sick people, while the police help keep people safe.",
+    "L5": "A bank is not only a locked safe. It can also lend money to people who need a loan.",
+    "L6": "Public places are for everyone, so we must use them carefully and keep them clean.",
+    "L7": "A map uses symbols and directions to show where neighbourhood places are.",
+    "L8": "Now check: which place can keep savings and give a loan?"
+   },
+   "narration": {
+    "L1": {
+     "text": "A neighbourhood has public places that serve everyone.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "The post office sends letters and parcels, and it can keep savings.",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "A bank keeps money safe, gives loans, and pays interest to savers.",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "A hospital treats sick people, while the police help keep people safe.",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "A bank is not only a locked safe. It can also lend money to people who need a loan.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Public places are for everyone, so we must use them carefully and keep them clean.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "A map uses symbols and directions to show where neighbourhood places are.",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Now check: which place can keep savings and give a loan?",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      },
+      {
+       "at": 0.6,
+       "do": "show",
+       "dur": 0.8,
+       "target": "bank"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "post"
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 1,
+       "target": "post"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "bank2"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "hospital"
+      },
+      {
+       "at": 0.6,
+       "do": "show",
+       "dur": 0.7,
+       "target": "police"
+      },
+      {
+       "at": 1.2,
+       "do": "highlight",
+       "dur": 1,
+       "target": [
+        "hospital",
+        "police"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "myth"
+      },
+      {
+       "at": 1,
+       "do": "bust",
+       "dur": 1.2,
+       "target": "myth"
+      },
+      {
+       "at": 1.2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "bank"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "public"
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.8,
+       "target": "care"
+      },
+      {
+       "at": 1.4,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "m1",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "map"
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.8,
+       "target": "m2"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "optpost",
+        "optbank",
+        "opthospital"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which place can keep savings and give a loan?",
+    "options": [
+     "optpost",
+     "optbank",
+     "opthospital"
+    ],
+    "answer": "optbank"
+   }
+  },
+  "repairs": [
+   "glyph",
+   "arrow:ends",
+   "arrow:ends",
+   "arrow:ends",
+   "arrow:ends",
+   "glyph",
+   "cue:target",
+   "cue:target",
+   "src"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 32
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-evs-ch02-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4004,
+     "ops": [
+      {
+       "id": "nb",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        245
+       ],
+       "rx": 270,
+       "ry": 150
+      },
+      {
+       "id": "nh",
+       "op": "text",
+       "startMs": 300,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        80
+       ],
+       "text": "neighbourhood",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "pp",
+       "op": "rect",
+       "startMs": 1100,
+       "endMs": 1700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        120,
+        180
+       ],
+       "w": 150,
+       "h": 100
+      },
+      {
+       "id": "pl",
+       "op": "text",
+       "startMs": 1600,
+       "endMs": 2300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        195,
+        235
+       ],
+       "text": "public places",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "s1",
+       "op": "line",
+       "startMs": 2400,
+       "endMs": 2800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        270,
+        230
+       ],
+       "to": [
+        340,
+        230
+       ]
+      },
+      {
+       "id": "s2",
+       "op": "line",
+       "startMs": 2400,
+       "endMs": 2800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        460,
+        230
+       ],
+       "to": [
+        530,
+        230
+       ]
+      },
+      {
+       "id": "ev",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        420
+       ],
+       "text": "serve everyone",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-evs-ch02-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "post",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        90,
+        150
+       ],
+       "w": 210,
+       "h": 170
+      },
+      {
+       "id": "postlabel",
+       "op": "text",
+       "startMs": 500,
+       "endMs": 1100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        195,
+        135
+       ],
+       "text": "post office",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "letter",
+       "op": "text",
+       "startMs": 1300,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        125,
+        205
+       ],
+       "text": "letters",
+       "size": "s"
+      },
+      {
+       "id": "parcel",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        125,
+        245
+       ],
+       "text": "parcels",
+       "size": "s"
+      },
+      {
+       "id": "save",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 2900,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        125,
+        285
+       ],
+       "text": "savings",
+       "size": "s"
+      },
+      {
+       "id": "pa",
+       "op": "arrow",
+       "startMs": 3100,
+       "endMs": 3800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        300,
+        220
+       ],
+       "to": [
+        420,
+        220
+       ]
+      },
+      {
+       "id": "everyone2",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        520,
+        220
+       ],
+       "text": "everyone",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-evs-ch02-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "bank",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        90,
+        130
+       ],
+       "w": 230,
+       "h": 190
+      },
+      {
+       "id": "banklabel",
+       "op": "text",
+       "startMs": 500,
+       "endMs": 1000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        205,
+        115
+       ],
+       "text": "bank",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "safe",
+       "op": "text",
+       "startMs": 1100,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        125,
+        180
+       ],
+       "text": "money safe",
+       "size": "s"
+      },
+      {
+       "id": "loan",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        125,
+        225
+       ],
+       "text": "loans",
+       "size": "m"
+      },
+      {
+       "id": "interest",
+       "op": "text",
+       "startMs": 2600,
+       "endMs": 3300,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        125,
+        270
+       ],
+       "text": "interest",
+       "size": "m"
+      },
+      {
+       "id": "saver",
+       "op": "text",
+       "startMs": 3400,
+       "endMs": 4000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        480,
+        180
+       ],
+       "text": "savers",
+       "size": "m"
+      },
+      {
+       "id": "pay",
+       "op": "arrow",
+       "startMs": 4100,
+       "endMs": 5000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        320,
+        270
+       ],
+       "to": [
+        450,
+        200
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-evs-ch02-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "hospital",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        70,
+        120
+       ],
+       "w": 250,
+       "h": 180
+      },
+      {
+       "id": "hoslabel",
+       "op": "text",
+       "startMs": 500,
+       "endMs": 1000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        195,
+        105
+       ],
+       "text": "hospital",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "sick",
+       "op": "text",
+       "startMs": 1200,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        115,
+        205
+       ],
+       "text": "sick people",
+       "size": "m"
+      },
+      {
+       "id": "treat",
+       "op": "arrow",
+       "startMs": 2000,
+       "endMs": 2700,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        325,
+        210
+       ],
+       "to": [
+        420,
+        210
+       ]
+      },
+      {
+       "id": "police",
+       "op": "rect",
+       "startMs": 2800,
+       "endMs": 3600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        470,
+        120
+       ],
+       "w": 250,
+       "h": 180
+      },
+      {
+       "id": "policelabel",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        595,
+        105
+       ],
+       "text": "police",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "safepeople",
+       "op": "text",
+       "startMs": 4200,
+       "endMs": 5400,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        595,
+        205
+       ],
+       "text": "keep people safe",
+       "size": "s",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-evs-ch02-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "bank2",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        250,
+        80
+       ],
+       "w": 300,
+       "h": 170
+      },
+      {
+       "id": "bank2label",
+       "op": "text",
+       "startMs": 500,
+       "endMs": 1000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        65
+       ],
+       "text": "bank",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "safe2",
+       "op": "text",
+       "startMs": 1200,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        145
+       ],
+       "text": "locked safe",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "notonly",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        290
+       ],
+       "text": "not only",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "lend",
+       "op": "arrow",
+       "startMs": 3000,
+       "endMs": 3900,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        400,
+        250
+       ],
+       "to": [
+        400,
+        350
+       ]
+      },
+      {
+       "id": "lendtext",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        385
+       ],
+       "text": "lend money",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "need",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 6200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        435
+       ],
+       "text": "people who need a loan",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "loan2",
+       "op": "highlight",
+       "startMs": 6500,
+       "endMs": 7600,
+       "ink": "mark",
+       "weight": 2,
+       "target": "lendtext",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-evs-ch02-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "public",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        80
+       ],
+       "text": "Public places",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "all",
+       "op": "ellipse",
+       "startMs": 1000,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        220
+       ],
+       "rx": 250,
+       "ry": 100
+      },
+      {
+       "id": "everyone3",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        220
+       ],
+       "text": "everyone",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "carefully",
+       "op": "text",
+       "startMs": 2900,
+       "endMs": 3700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        220,
+        365
+       ],
+       "text": "carefully",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "clean",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4600,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        580,
+        365
+       ],
+       "text": "clean",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "arrowcare",
+       "op": "arrow",
+       "startMs": 4700,
+       "endMs": 5500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        270
+       ],
+       "to": [
+        220,
+        335
+       ]
+      },
+      {
+       "id": "arrowclean",
+       "op": "arrow",
+       "startMs": 5500,
+       "endMs": 6300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        270
+       ],
+       "to": [
+        580,
+        335
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-evs-ch02-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "map",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        80,
+        80
+       ],
+       "w": 640,
+       "h": 340
+      },
+      {
+       "id": "road1",
+       "op": "line",
+       "startMs": 900,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        120,
+        170
+       ],
+       "to": [
+        680,
+        350
+       ]
+      },
+      {
+       "id": "road2",
+       "op": "line",
+       "startMs": 1400,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        220,
+        380
+       ],
+       "to": [
+        570,
+        110
+       ]
+      },
+      {
+       "id": "postsymbol",
+       "op": "circle",
+       "startMs": 2200,
+       "endMs": 2700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        230,
+        210
+       ],
+       "r": 18
+      },
+      {
+       "id": "posttext",
+       "op": "text",
+       "startMs": 2600,
+       "endMs": 3400,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        230,
+        255
+       ],
+       "text": "post office",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "banksymbol",
+       "op": "rect",
+       "startMs": 3000,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        500,
+        260
+       ],
+       "w": 42,
+       "h": 36
+      },
+      {
+       "id": "banktext",
+       "op": "text",
+       "startMs": 3400,
+       "endMs": 3900,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        520,
+        320
+       ],
+       "text": "bank",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "directions",
+       "op": "text",
+       "startMs": 4100,
+       "endMs": 5300,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        460
+       ],
+       "text": "symbols  directions",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-evs-ch02-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "question",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        80
+       ],
+       "text": "which place?",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "bankchoice",
+       "op": "rect",
+       "startMs": 1000,
+       "endMs": 1800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        190,
+        145
+       ],
+       "w": 420,
+       "h": 170
+      },
+      {
+       "id": "bankchoice2",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        195
+       ],
+       "text": "bank",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "savings8",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        245
+       ],
+       "text": "savings",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "loan8",
+       "op": "text",
+       "startMs": 3200,
+       "endMs": 3800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        285
+       ],
+       "text": "loan",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "answer",
+       "op": "highlight",
+       "startMs": 4000,
+       "endMs": 5100,
+       "ink": "good",
+       "weight": 2,
+       "target": "bankchoice",
+       "style": "circle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "12 steps",
+   "prompt": "to Hospital"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "12 steps",
+   "prompt": "to PostOffice"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

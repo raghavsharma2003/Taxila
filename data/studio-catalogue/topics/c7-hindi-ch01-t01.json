@@ -1,0 +1,1465 @@
+{
+ "topicId": "c7-hindi-ch01-t01",
+ "title": "माँ, कह एक कहानी",
+ "chapter": "माँ, कह एक कहानी",
+ "subject": "hindi",
+ "class": 7,
+ "topicType": "T1",
+ "plan": {
+  "game": "beat-line@1",
+  "hint": "beat and rhyme rounds (Hindi: matra round on a doha/chaupai line)"
+ },
+ "game": {
+  "archetype": "beat-line@1",
+  "spec": {
+   "archetype": "beat-line@1",
+   "skills": [
+    "c7-hindi-ch01-t01"
+   ],
+   "lang": "hi",
+   "strings": {
+    "round": "चक्र",
+    "onBeat": "ताल पर",
+    "combo": "लगातार ताल",
+    "tap": "ताल पर थपकी दो",
+    "catch": "तुक वाला शब्द पकड़ो",
+    "mark": "छोटी या बड़ी?",
+    "short": "छोटी मात्रा",
+    "long": "बड़ी मात्रा",
+    "practice": "अभ्यास पंक्ति",
+    "runDone": "कविता पूरी हुई",
+    "perfect": "बिलकुल ताल पर",
+    "early": "जल्दी",
+    "late": "देर से",
+    "meter": "मात्रा"
+   },
+   "title": "माँ, कह एक कहानी",
+   "bpm": 76,
+   "lines": [
+    {
+     "text": "टूटा पंख, थकी-सी आँखें, नन्ही गौरैया हारी;",
+     "beats": [
+      1,
+      4
+     ]
+    },
+    {
+     "text": "दाना-पानी देकर उसको, मुनिया ने जान उबारी।",
+     "beats": [
+      1,
+      4
+     ]
+    }
+   ],
+   "rounds": [
+    {
+     "mode": "beat",
+     "title": "ताल पर बोलो",
+     "sub": "हर पंक्ति की ताल पकड़ो",
+     "lines": [
+      0,
+      1
+     ]
+    },
+    {
+     "mode": "rhyme",
+     "title": "तुक पकड़ो",
+     "sub": "मिलती ध्वनि वाला शब्द चुनो",
+     "items": [
+      {
+       "cue": "‘रक्षक’ के साथ तुक मिलने वाला शब्द चुनो।",
+       "options": [
+        "भक्षक",
+        "हंस",
+        "दया"
+       ],
+       "answer": "भक्षक",
+       "src": "c7-hindi-ch01-t01-i03"
+      },
+      {
+       "cue": "‘दया’ के साथ तुक मिलने वाला शब्द चुनो।",
+       "options": [
+        "न्याय",
+        "तीर",
+        "हंस"
+       ],
+       "answer": "न्याय",
+       "src": "c7-hindi-ch01-t01-i11"
+      }
+     ]
+    },
+    {
+     "mode": "matra",
+     "title": "मात्रा भरो",
+     "sub": "हर अक्षर को छोटी या बड़ी कहो",
+     "lines": [
+      0,
+      1
+     ]
+    }
+   ]
+  },
+  "repairs": [
+   "targets"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-hindi-ch01-t01"
+   ],
+   "lang": "hi",
+   "strings": {
+    "again": "फिर दिखाएँ",
+    "yourTurn": "अब आपकी बारी",
+    "check": "जाँचें",
+    "right": "सही",
+    "look": "फिर देखें",
+    "myth": "मिथक",
+    "busted": "गलत बात",
+    "order": "क्रम में चुनें"
+   },
+   "title": "माँ, कह एक कहानी",
+   "accent": "amber",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "row",
+     "els": [
+      {
+       "id": "ttl",
+       "type": "title",
+       "text": "माँ, कह एक कहानी"
+      },
+      {
+       "id": "child",
+       "type": "node",
+       "text": "बच्चा",
+       "sub": "कहानी माँगता है",
+       "glyph": "person",
+       "color": "amber"
+      },
+      {
+       "id": "mother",
+       "type": "node",
+       "text": "माँ",
+       "sub": "कहानी सुनाती है",
+       "glyph": "person",
+       "color": "mint"
+      },
+      {
+       "id": "ask",
+       "type": "arrow",
+       "from": "child",
+       "to": "mother",
+       "text": "कहानी"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "split",
+     "els": [
+      {
+       "id": "hans",
+       "type": "node",
+       "text": "हंस",
+       "sub": "घायल पक्षी",
+       "glyph": "bird",
+       "color": "ion"
+      },
+      {
+       "id": "arrow",
+       "type": "node",
+       "text": "तीर",
+       "sub": "दर्द देता है",
+       "glyph": "pick",
+       "color": "volt"
+      },
+      {
+       "id": "siddh",
+       "type": "node",
+       "text": "सिद्धार्थ",
+       "sub": "बचाता है",
+       "glyph": "shield",
+       "color": "mint"
+      },
+      {
+       "id": "hit",
+       "type": "arrow",
+       "from": "arrow",
+       "to": "hans",
+       "text": "लगता है"
+      },
+      {
+       "id": "save",
+       "type": "arrow",
+       "from": "siddh",
+       "to": "hans",
+       "text": "बचाता है"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "पहले तीर मारने वाले का हक़"
+      },
+      {
+       "id": "bad",
+       "type": "label",
+       "text": "भक्षक",
+       "x": 120,
+       "y": 300,
+       "color": "volt"
+      },
+      {
+       "id": "good",
+       "type": "label",
+       "text": "रक्षक",
+       "x": 650,
+       "y": 300,
+       "color": "mint"
+      },
+      {
+       "id": "reason",
+       "type": "label",
+       "text": "दया और न्याय",
+       "x": 350,
+       "y": 450,
+       "color": "amber"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "column",
+     "els": [
+      {
+       "id": "rule",
+       "type": "title",
+       "text": "रक्षक का हक़ बड़ा"
+      },
+      {
+       "id": "care",
+       "type": "node",
+       "text": "रक्षा",
+       "sub": "जीवन और दया",
+       "glyph": "shield",
+       "color": "mint"
+      },
+      {
+       "id": "harm",
+       "type": "node",
+       "text": "चोट",
+       "sub": "दर्द पहुँचाना",
+       "glyph": "lightning",
+       "color": "volt"
+      },
+      {
+       "id": "result",
+       "type": "label",
+       "text": "हंस रक्षक को",
+       "x": 350,
+       "y": 500,
+       "color": "amber"
+      }
+     ]
+    },
+    {
+     "id": "s5",
+     "layout": "row",
+     "els": [
+      {
+       "id": "q",
+       "type": "title",
+       "text": "अब आपकी बारी"
+      },
+      {
+       "id": "o1",
+       "type": "label",
+       "text": "रक्षक",
+       "x": 100,
+       "y": 350,
+       "color": "mint"
+      },
+      {
+       "id": "o2",
+       "type": "label",
+       "text": "भक्षक",
+       "x": 350,
+       "y": 350,
+       "color": "volt"
+      },
+      {
+       "id": "o3",
+       "type": "label",
+       "text": "शिकारी",
+       "x": 600,
+       "y": 350,
+       "color": "ion"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "बच्चा माँ से कहानी सुनाने की प्यार भरी ज़िद करता है।",
+    "L2": "माँ की कहानी में एक हंस को तीर लगता है और वह घायल होकर गिर पड़ता है।",
+    "L3": "सिद्धार्थ उस हंस को बचाता है, लेकिन शिकारी उसे अपना बताता है।",
+    "L4": "मिथक है कि हंस उसी का है जिसने पहले तीर मारा।",
+    "L5": "यह गलत है, क्योंकि पहले चोट पहुँचाने से किसी का हक़ नहीं बनता।",
+    "L6": "न्याय कहता है कि हंस बचाने वाले रक्षक को मिले, क्योंकि रक्षक का हक़ भक्षक से बड़ा है।",
+    "L7": "यह कहानी दया और करुणा सिखाती है: जीवन बचाना, चोट पहुँचाने से बड़ा काम है।"
+   },
+   "narration": {
+    "L1": {
+     "text": "बच्चा माँ से कहानी सुनाने की प्यार भरी ज़िद करता है।",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "माँ की कहानी में एक हंस को तीर लगता है और वह घायल होकर गिर पड़ता है।",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "सिद्धार्थ उस हंस को बचाता है, लेकिन शिकारी उसे अपना बताता है।",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "मिथक है कि हंस उसी का है जिसने पहले तीर मारा।",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "यह गलत है, क्योंकि पहले चोट पहुँचाने से किसी का हक़ नहीं बनता।",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "न्याय कहता है कि हंस बचाने वाले रक्षक को मिले, क्योंकि रक्षक का हक़ भक्षक से बड़ा है।",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "यह कहानी दया और करुणा सिखाती है: जीवन बचाना, चोट पहुँचाने से बड़ा काम है।",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.3,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "ttl"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "child",
+        "mother",
+        "ask"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "hans"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "arrow",
+        "hit"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "siddh",
+        "save"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "save",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "bust",
+       "dur": 1.2,
+       "target": "myth"
+      },
+      {
+       "at": 1.2,
+       "do": "show",
+       "dur": 0.6,
+       "target": [
+        "bad",
+        "good"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "rule",
+        "care",
+        "harm"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.8,
+       "target": "result"
+      },
+      {
+       "at": 1.6,
+       "do": "highlight",
+       "dur": 1,
+       "target": "care"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0,
+     "scene": "s5",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "q"
+      },
+      {
+       "at": 0.7,
+       "do": "interactive",
+       "dur": 1
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "हंस किसके पास रहना चाहिए?",
+    "options": [
+     "o1",
+     "o2",
+     "o3"
+    ],
+    "answer": "o1",
+    "src": "c7-hindi-ch01-t01-i05"
+   }
+  },
+  "repairs": [
+   "targets"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 30
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-hindi-ch01-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "child",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        220,
+        210
+       ],
+       "r": 42
+      },
+      {
+       "id": "mother",
+       "op": "circle",
+       "startMs": 500,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        580,
+        210
+       ],
+       "r": 42
+      },
+      {
+       "id": "ask",
+       "op": "arrow",
+       "startMs": 1400,
+       "endMs": 2300,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        275,
+        210
+       ],
+       "to": [
+        525,
+        210
+       ]
+      },
+      {
+       "id": "childlabel",
+       "op": "label",
+       "startMs": 2300,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        220,
+        285
+       ],
+       "text": "बच्चा",
+       "to": [
+        220,
+        250
+       ]
+      },
+      {
+       "id": "motherlabel",
+       "op": "label",
+       "startMs": 2900,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        580,
+        285
+       ],
+       "text": "माँ",
+       "to": [
+        580,
+        250
+       ]
+      },
+      {
+       "id": "story",
+       "op": "text",
+       "startMs": 3600,
+       "endMs": 4500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        390
+       ],
+       "text": "कहानी",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-hindi-ch01-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "swan",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        390,
+        270
+       ],
+       "rx": 100,
+       "ry": 48
+      },
+      {
+       "id": "neck",
+       "op": "stroke",
+       "startMs": 700,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         455,
+         260
+        ],
+        [
+         490,
+         220
+        ],
+        [
+         475,
+         180
+        ]
+       ]
+      },
+      {
+       "id": "arrow",
+       "op": "arrow",
+       "startMs": 1800,
+       "endMs": 3100,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        650,
+        130
+       ],
+       "to": [
+        430,
+        250
+       ]
+      },
+      {
+       "id": "wound",
+       "op": "circle",
+       "startMs": 3100,
+       "endMs": 3700,
+       "ink": "mark",
+       "weight": 2,
+       "c": [
+        430,
+        250
+       ],
+       "r": 13
+      },
+      {
+       "id": "fall",
+       "op": "arrow",
+       "startMs": 4000,
+       "endMs": 5000,
+       "ink": "soft",
+       "weight": 2,
+       "from": [
+        390,
+        325
+       ],
+       "to": [
+        390,
+        410
+       ]
+      },
+      {
+       "id": "hans",
+       "op": "label",
+       "startMs": 5200,
+       "endMs": 5700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        350,
+        465
+       ],
+       "text": "हंस",
+       "to": [
+        390,
+        315
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-hindi-ch01-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "siddharth",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        180,
+        180
+       ],
+       "r": 38
+      },
+      {
+       "id": "savearrow",
+       "op": "arrow",
+       "startMs": 700,
+       "endMs": 1600,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        230,
+        200
+       ],
+       "to": [
+        350,
+        280
+       ]
+      },
+      {
+       "id": "shield",
+       "op": "ellipse",
+       "startMs": 1400,
+       "endMs": 2300,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        390,
+        290
+       ],
+       "rx": 125,
+       "ry": 70
+      },
+      {
+       "id": "slabel",
+       "op": "label",
+       "startMs": 2400,
+       "endMs": 3100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        250
+       ],
+       "text": "सिद्धार्थ",
+       "to": [
+        180,
+        220
+       ]
+      },
+      {
+       "id": "hunter",
+       "op": "circle",
+       "startMs": 3000,
+       "endMs": 3600,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        650,
+        180
+       ],
+       "r": 38
+      },
+      {
+       "id": "claim",
+       "op": "arrow",
+       "startMs": 3700,
+       "endMs": 4600,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        610,
+        205
+       ],
+       "to": [
+        500,
+        280
+       ]
+      },
+      {
+       "id": "hunterlabel",
+       "op": "label",
+       "startMs": 4600,
+       "endMs": 5200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        650,
+        250
+       ],
+       "text": "शिकारी",
+       "to": [
+        650,
+        220
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-hindi-ch01-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "arrowmark",
+       "op": "arrow",
+       "startMs": 0,
+       "endMs": 1300,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        170,
+        170
+       ],
+       "to": [
+        600,
+        330
+       ]
+      },
+      {
+       "id": "swanmark",
+       "op": "ellipse",
+       "startMs": 1000,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        600,
+        330
+       ],
+       "rx": 90,
+       "ry": 42
+      },
+      {
+       "id": "myth",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        120
+       ],
+       "text": "मिथक",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "same",
+       "op": "arrow",
+       "startMs": 2800,
+       "endMs": 3800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        170
+       ],
+       "to": [
+        400,
+        300
+       ]
+      },
+      {
+       "id": "owner",
+       "op": "label",
+       "startMs": 3900,
+       "endMs": 4600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        430
+       ],
+       "text": "उसी का",
+       "to": [
+        400,
+        350
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-hindi-ch01-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "wrong",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        220,
+        130
+       ],
+       "text": "गलत",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "strike",
+       "op": "stroke",
+       "startMs": 800,
+       "endMs": 1400,
+       "ink": "mark",
+       "weight": 2,
+       "points": [
+        [
+         150,
+         145
+        ],
+        [
+         290,
+         145
+        ]
+       ]
+      },
+      {
+       "id": "hurt",
+       "op": "arrow",
+       "startMs": 1600,
+       "endMs": 2700,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        180,
+        270
+       ],
+       "to": [
+        380,
+        270
+       ]
+      },
+      {
+       "id": "no",
+       "op": "stroke",
+       "startMs": 2700,
+       "endMs": 3200,
+       "ink": "mark",
+       "weight": 2,
+       "points": [
+        [
+         365,
+         245
+        ],
+        [
+         395,
+         295
+        ]
+       ]
+      },
+      {
+       "id": "right",
+       "op": "text",
+       "startMs": 3200,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        600,
+        270
+       ],
+       "text": "不",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "hak",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 4900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        420
+       ],
+       "text": "हक़",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-hindi-ch01-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "scale",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        400,
+        120
+       ],
+       "to": [
+        400,
+        400
+       ]
+      },
+      {
+       "id": "leftpan",
+       "op": "line",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        210,
+        270
+       ],
+       "to": [
+        400,
+        270
+       ]
+      },
+      {
+       "id": "rightpan",
+       "op": "line",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        400,
+        270
+       ],
+       "to": [
+        590,
+        270
+       ]
+      },
+      {
+       "id": "rakshak",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2300,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        210,
+        220
+       ],
+       "text": "रक्षक",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "bhakshak",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        590,
+        220
+       ],
+       "text": "भक्षक",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "save",
+       "op": "arrow",
+       "startMs": 2600,
+       "endMs": 3400,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        210,
+        300
+       ],
+       "to": [
+        300,
+        300
+       ]
+      },
+      {
+       "id": "hurt",
+       "op": "arrow",
+       "startMs": 2600,
+       "endMs": 3400,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        590,
+        300
+       ],
+       "to": [
+        500,
+        300
+       ]
+      },
+      {
+       "id": "justice",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 5200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        450
+       ],
+       "text": "न्याय",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "greater",
+       "op": "highlight",
+       "startMs": 5600,
+       "endMs": 6500,
+       "ink": "good",
+       "weight": 2,
+       "target": "rakshak",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-hindi-ch01-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "heart",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        250,
+        190
+       ],
+       "r": 55
+      },
+      {
+       "id": "care",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1600,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        250,
+        290
+       ],
+       "text": "दया",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "compassion",
+       "op": "text",
+       "startMs": 1200,
+       "endMs": 2000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        550,
+        290
+       ],
+       "text": "करुणा",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "life",
+       "op": "circle",
+       "startMs": 2300,
+       "endMs": 2800,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        250,
+        400
+       ],
+       "r": 25
+      },
+      {
+       "id": "savearrow",
+       "op": "arrow",
+       "startMs": 3000,
+       "endMs": 4100,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        300,
+        390
+       ],
+       "to": [
+        500,
+        390
+       ]
+      },
+      {
+       "id": "harm",
+       "op": "stroke",
+       "startMs": 3000,
+       "endMs": 3700,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         560,
+         350
+        ],
+        [
+         620,
+         430
+        ]
+       ]
+      },
+      {
+       "id": "bigger",
+       "op": "text",
+       "startMs": 4600,
+       "endMs": 5400,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        120
+       ],
+       "text": "बड़ा",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "b0:*",
+   "key": "पंख, · नन्ही",
+   "prompt": "stressed words in: टूटा पंख, थकी-सी आँखें, नन्ही गौरैया हारी;"
+  },
+  {
+   "itemId": "b1:*",
+   "key": "देकर · ने",
+   "prompt": "stressed words in: दाना-पानी देकर उसको, मुनिया ने जान उबारी।"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "भक्षक",
+   "prompt": "‘रक्षक’ के साथ तुक मिलने वाला शब्द चुनो। [भक्षक / हंस / दया]",
+   "src": "c7-hindi-ch01-t01-i03"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "न्याय",
+   "prompt": "‘दया’ के साथ तुक मिलने वाला शब्द चुनो। [न्याय / तीर / हंस]",
+   "src": "c7-hindi-ch01-t01-i11"
+  },
+  {
+   "itemId": "m0:*",
+   "key": "2221122222222222",
+   "prompt": "मात्रा: टूटा पंख, थकी-सी आँखें, नन्ही गौरैया हारी;"
+  },
+  {
+   "itemId": "m1:*",
+   "key": "2222211112112221122",
+   "prompt": "मात्रा: दाना-पानी देकर उसको, मुनिया ने जान उबारी।"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

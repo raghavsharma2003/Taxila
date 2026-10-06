@@ -1,0 +1,1962 @@
+{
+ "topicId": "c7-sst-ch08-t01",
+ "title": "How the Land Becomes Sacred",
+ "chapter": "How the Land Becomes Sacred",
+ "subject": "sst",
+ "class": 7,
+ "topicType": "T3",
+ "plan": {
+  "game": "story-rail@1",
+  "hint": "cause mode: why the land becomes sacred (rivers, mountains, groves)"
+ },
+ "game": {
+  "archetype": "story-rail@1",
+  "spec": {
+   "archetype": "story-rail@1",
+   "skills": [
+    "c7-sst-ch08-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "picked": "coupled",
+    "streak": "streak",
+    "next": "What happens next?",
+    "effect": "What does this lead to?",
+    "who": "Who said this?",
+    "runDone": "Line complete",
+    "order": "your train",
+    "right": "Coupled",
+    "wrong": "Not this one",
+    "coach": "Tap a wagon before the train reaches the fork"
+   },
+   "title": "Sacred Land Journeys",
+   "rounds": [
+    {
+     "mode": "sequence",
+     "title": "Pilgrimage connects",
+     "sub": "couple the journey's effects",
+     "cards": [
+      {
+       "id": "e1",
+       "text": "Pilgrims travel far",
+       "glyph": "map",
+       "src": "c7-sst-ch08-t01-i06"
+      },
+      {
+       "id": "e2",
+       "text": "People meet across regions",
+       "glyph": "group",
+       "src": "c7-sst-ch08-t01-i06"
+      },
+      {
+       "id": "e3",
+       "text": "Stories and songs are shared",
+       "glyph": "music",
+       "src": "c7-sst-ch08-t01-i06"
+      },
+      {
+       "id": "e4",
+       "text": "Food and languages spread",
+       "glyph": "plate",
+       "src": "c7-sst-ch08-t01-i06"
+      },
+      {
+       "id": "e5",
+       "text": "Traders follow the routes",
+       "glyph": "shop",
+       "src": "c7-sst-ch08-t01-i06"
+      },
+      {
+       "id": "e6",
+       "text": "The land feels connected",
+       "glyph": "globe",
+       "src": "c7-sst-ch08-t01-i06"
+      }
+     ],
+     "speed": 0.9
+    }
+   ]
+  },
+  "repairs": [
+   "string:card.text",
+   "string:card.text",
+   "round:too-few-pairs"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-sst-ch08-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "How the Land Becomes Sacred",
+   "accent": "amber",
+   "targets": "c7-sst-ch08-t01-m1",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "How the Land Becomes Sacred"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Only temples can be sacred"
+      },
+      {
+       "id": "river",
+       "type": "node",
+       "text": "River",
+       "sub": "natural feature",
+       "glyph": "river",
+       "color": "sci"
+      },
+      {
+       "id": "mount",
+       "type": "node",
+       "text": "Mountain",
+       "sub": "natural feature",
+       "glyph": "mountain",
+       "color": "amber"
+      },
+      {
+       "id": "grove",
+       "type": "node",
+       "text": "Sacred grove",
+       "sub": "protected nature",
+       "glyph": "tree",
+       "color": "mint"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "link",
+       "type": "node",
+       "text": "Meaning",
+       "sub": "divine or event",
+       "glyph": "spark",
+       "color": "sun"
+      },
+      {
+       "id": "place",
+       "type": "node",
+       "text": "Place",
+       "sub": "river or hill",
+       "glyph": "map",
+       "color": "amber"
+      },
+      {
+       "id": "people",
+       "type": "node",
+       "text": "People",
+       "sub": "memory and care",
+       "glyph": "group",
+       "color": "mint"
+      },
+      {
+       "id": "p1",
+       "type": "arrow",
+       "from": "place",
+       "to": "link",
+       "text": "linked"
+      },
+      {
+       "id": "p2",
+       "type": "arrow",
+       "from": "link",
+       "to": "people",
+       "text": "remembered"
+      },
+      {
+       "id": "p3",
+       "type": "arrow",
+       "from": "people",
+       "to": "place",
+       "text": "protected"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "route",
+       "type": "node",
+       "text": "Pilgrimage",
+       "sub": "long journeys",
+       "glyph": "road",
+       "color": "ion"
+      },
+      {
+       "id": "stories",
+       "type": "node",
+       "text": "Stories",
+       "glyph": "scroll",
+       "color": "sun"
+      },
+      {
+       "id": "trade",
+       "type": "node",
+       "text": "Trade",
+       "sub": "crafts and food",
+       "glyph": "shop",
+       "color": "amber"
+      },
+      {
+       "id": "connect",
+       "type": "node",
+       "text": "Connected land",
+       "sub": "many regions",
+       "glyph": "globe",
+       "color": "mint"
+      },
+      {
+       "id": "r1",
+       "type": "arrow",
+       "from": "route",
+       "to": "stories",
+       "text": "shares"
+      },
+      {
+       "id": "r2",
+       "type": "arrow",
+       "from": "route",
+       "to": "trade",
+       "text": "supports"
+      },
+      {
+       "id": "r3",
+       "type": "arrow",
+       "from": "stories",
+       "to": "connect",
+       "text": "links"
+      },
+      {
+       "id": "r4",
+       "type": "arrow",
+       "from": "trade",
+       "to": "connect",
+       "text": "links"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "kailash",
+       "type": "node",
+       "text": "Mount Kailash",
+       "glyph": "mountain",
+       "color": "amber"
+      },
+      {
+       "id": "hindu",
+       "type": "label",
+       "text": "Hindu",
+       "x": 120,
+       "y": 300,
+       "color": "sun"
+      },
+      {
+       "id": "buddhist",
+       "type": "label",
+       "text": "Buddhist",
+       "x": 320,
+       "y": 300,
+       "color": "ion"
+      },
+      {
+       "id": "jain",
+       "type": "label",
+       "text": "Jain",
+       "x": 520,
+       "y": 300,
+       "color": "mint"
+      },
+      {
+       "id": "bon",
+       "type": "label",
+       "text": "Bon",
+       "x": 720,
+       "y": 300,
+       "color": "sci"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "A place becomes sacred when people connect it with the divine, a saint, a teacher or an important event.",
+    "L2": "That place may be a river, mountain, cave, lake, spring or forest—not only a building.",
+    "L3": "People remember the meaning of a place, visit it and care for it. Sacred groves can protect trees, birds and springs.",
+    "L4": "Pilgrimage brought people from distant regions together for centuries.",
+    "L5": "Along these routes, people shared languages, stories, songs, food, crafts and trade, helping the land feel connected.",
+    "L6": "Bodh Gaya became sacred because tradition remembers the Buddha's enlightenment there, and pilgrims carried its importance across countries.",
+    "L7": "One place can matter to several traditions. Mount Kailash is revered by Hindus, Buddhists, Jains and followers of Bon.",
+    "L8": "Sacred places also need care today, because pollution and crowding can harm them."
+   },
+   "narration": {
+    "L1": {
+     "text": "A place becomes sacred when people connect it with the divine, a saint, a teacher or an important event.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L2": {
+     "text": "That place may be a river, mountain, cave, lake, spring or forest—not only a building.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L3": {
+     "text": "People remember the meaning of a place, visit it and care for it. Sacred groves can protect trees, birds and springs.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L4": {
+     "text": "Pilgrimage brought people from distant regions together for centuries.",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L5": {
+     "text": "Along these routes, people shared languages, stories, songs, food, crafts and trade, helping the land feel connected.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Bodh Gaya became sacred because tradition remembers the Buddha's enlightenment there, and pilgrims carried its importance across countries.",
+     "dur": 5.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L7": {
+     "text": "One place can matter to several traditions. Mount Kailash is revered by Hindus, Buddhists, Jains and followers of Bon.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Sacred places also need care today, because pollution and crowding can harm them.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "title"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "river",
+        "mount",
+        "grove"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "place",
+        "people"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 1,
+       "target": [
+        "p1",
+        "p2",
+        "p3"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "route"
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 1,
+       "target": "route"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "stories",
+        "trade",
+        "connect"
+       ]
+      },
+      {
+       "at": 0.9,
+       "do": "flow",
+       "dur": 1,
+       "target": [
+        "r1",
+        "r2",
+        "r3",
+        "r4"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "connect"
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 1,
+       "target": "stories"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "kailash"
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "hindu",
+        "buddhist",
+        "jain",
+        "bon"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "focus",
+       "dur": 1,
+       "target": "kailash"
+      },
+      {
+       "at": "end",
+       "do": "interactive"
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which traditions revere Mount Kailash?",
+    "options": [
+     "hindu",
+     "buddhist",
+     "jain",
+     "bon"
+    ],
+    "answer": "bon",
+    "src": "c7-sst-ch08-t01-i14"
+   }
+  },
+  "repairs": [
+   "string:stories.sub",
+   "string:kailash.sub",
+   "cue:target"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 41
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch08-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "place",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        150,
+        240
+       ],
+       "r": 65
+      },
+      {
+       "id": "divine",
+       "op": "text",
+       "startMs": 800,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        150,
+        130
+       ],
+       "text": "divine",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "saint",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 2000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        350,
+        150
+       ],
+       "text": "saint",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "teacher",
+       "op": "text",
+       "startMs": 2000,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        540,
+        150
+       ],
+       "text": "teacher",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "event",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        670,
+        240
+       ],
+       "text": "event",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "a1",
+       "op": "arrow",
+       "startMs": 3400,
+       "endMs": 3900,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        150,
+        180
+       ],
+       "to": [
+        150,
+        145
+       ]
+      },
+      {
+       "id": "a2",
+       "op": "arrow",
+       "startMs": 3900,
+       "endMs": 4400,
+       "ink": "chalk",
+       "weight": 1,
+       "from": [
+        285,
+        205
+       ],
+       "to": [
+        330,
+        165
+       ]
+      },
+      {
+       "id": "a3",
+       "op": "arrow",
+       "startMs": 4400,
+       "endMs": 4900,
+       "ink": "chalk",
+       "weight": 1,
+       "from": [
+        540,
+        190
+       ],
+       "to": [
+        540,
+        165
+       ]
+      },
+      {
+       "id": "a4",
+       "op": "arrow",
+       "startMs": 4900,
+       "endMs": 5700,
+       "ink": "chalk",
+       "weight": 1,
+       "from": [
+        215,
+        255
+       ],
+       "to": [
+        640,
+        245
+       ]
+      },
+      {
+       "id": "sacred",
+       "op": "text",
+       "startMs": 5800,
+       "endMs": 6600,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        370
+       ],
+       "text": "sacred",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "link",
+       "op": "label",
+       "startMs": 6600,
+       "endMs": 7400,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        390,
+        290
+       ],
+       "text": "connect",
+       "to": [
+        210,
+        240
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch08-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "river",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        80,
+        150
+       ],
+       "to": [
+        220,
+        210
+       ]
+      },
+      {
+       "id": "mountain",
+       "op": "polygon",
+       "startMs": 700,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         270,
+         230
+        ],
+        [
+         350,
+         100
+        ],
+        [
+         430,
+         230
+        ]
+       ]
+      },
+      {
+       "id": "cave",
+       "op": "ellipse",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        510,
+        190
+       ],
+       "rx": 65,
+       "ry": 40
+      },
+      {
+       "id": "lake",
+       "op": "ellipse",
+       "startMs": 2200,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        650,
+        270
+       ],
+       "rx": 75,
+       "ry": 35
+      },
+      {
+       "id": "spring",
+       "op": "circle",
+       "startMs": 2900,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        120,
+        370
+       ],
+       "r": 28
+      },
+      {
+       "id": "forest",
+       "op": "polygon",
+       "startMs": 3500,
+       "endMs": 4300,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         300,
+         390
+        ],
+        [
+         350,
+         300
+        ],
+        [
+         400,
+         390
+        ]
+       ]
+      },
+      {
+       "id": "rlabel",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 4700,
+       "weight": 1,
+       "at": [
+        150,
+        130
+       ],
+       "text": "river",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "mlabel",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5200,
+       "weight": 1,
+       "at": [
+        350,
+        260
+       ],
+       "text": "mountain",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "clabel",
+       "op": "text",
+       "startMs": 5200,
+       "endMs": 5600,
+       "weight": 1,
+       "at": [
+        510,
+        255
+       ],
+       "text": "cave",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "llabel",
+       "op": "text",
+       "startMs": 5600,
+       "endMs": 6000,
+       "weight": 1,
+       "at": [
+        650,
+        330
+       ],
+       "text": "lake",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "flabel",
+       "op": "text",
+       "startMs": 6000,
+       "endMs": 6500,
+       "weight": 1,
+       "at": [
+        350,
+        430
+       ],
+       "text": "forest",
+       "size": "s",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch08-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 9536,
+     "ops": [
+      {
+       "id": "visit",
+       "op": "arrow",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        100,
+        120
+       ],
+       "to": [
+        250,
+        210
+       ]
+      },
+      {
+       "id": "remember",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        100,
+        90
+       ],
+       "text": "remember",
+       "size": "m"
+      },
+      {
+       "id": "care",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2000,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        650,
+        100
+       ],
+       "text": "care",
+       "size": "m"
+      },
+      {
+       "id": "grove",
+       "op": "circle",
+       "startMs": 2100,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        280
+       ],
+       "r": 100
+      },
+      {
+       "id": "tree1",
+       "op": "polygon",
+       "startMs": 3000,
+       "endMs": 3600,
+       "ink": "good",
+       "weight": 2,
+       "points": [
+        [
+         340,
+         330
+        ],
+        [
+         365,
+         220
+        ],
+        [
+         390,
+         330
+        ]
+       ]
+      },
+      {
+       "id": "tree2",
+       "op": "polygon",
+       "startMs": 3600,
+       "endMs": 4200,
+       "ink": "good",
+       "weight": 2,
+       "points": [
+        [
+         420,
+         330
+        ],
+        [
+         445,
+         210
+        ],
+        [
+         470,
+         330
+        ]
+       ]
+      },
+      {
+       "id": "birds",
+       "op": "stroke",
+       "startMs": 4200,
+       "endMs": 4800,
+       "ink": "accent",
+       "weight": 1,
+       "points": [
+        [
+         500,
+         190
+        ],
+        [
+         510,
+         180
+        ],
+        [
+         520,
+         190
+        ],
+        [
+         530,
+         180
+        ],
+        [
+         540,
+         190
+        ]
+       ]
+      },
+      {
+       "id": "spring2",
+       "op": "ellipse",
+       "startMs": 4800,
+       "endMs": 5400,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        370
+       ],
+       "rx": 65,
+       "ry": 20
+      },
+      {
+       "id": "grovelabel",
+       "op": "text",
+       "startMs": 5400,
+       "endMs": 6100,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        150
+       ],
+       "text": "sacred groves",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "protect",
+       "op": "label",
+       "startMs": 6100,
+       "endMs": 6900,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        570,
+        320
+       ],
+       "text": "protect",
+       "to": [
+        470,
+        280
+       ]
+      },
+      {
+       "id": "birdlabel",
+       "op": "text",
+       "startMs": 6900,
+       "endMs": 7300,
+       "weight": 1,
+       "at": [
+        590,
+        190
+       ],
+       "text": "birds",
+       "size": "s"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch08-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4430,
+     "ops": [
+      {
+       "id": "left",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        120,
+        260
+       ],
+       "r": 35
+      },
+      {
+       "id": "right",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        680,
+        260
+       ],
+       "r": 35
+      },
+      {
+       "id": "route",
+       "op": "line",
+       "startMs": 600,
+       "endMs": 1400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        155,
+        260
+       ],
+       "to": [
+        645,
+        260
+       ]
+      },
+      {
+       "id": "p1",
+       "op": "circle",
+       "startMs": 1400,
+       "endMs": 1700,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        280,
+        260
+       ],
+       "r": 10
+      },
+      {
+       "id": "p2",
+       "op": "circle",
+       "startMs": 1700,
+       "endMs": 2000,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        400,
+        260
+       ],
+       "r": 10
+      },
+      {
+       "id": "p3",
+       "op": "circle",
+       "startMs": 2000,
+       "endMs": 2300,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        520,
+        260
+       ],
+       "r": 10
+      },
+      {
+       "id": "pilgrimage",
+       "op": "text",
+       "startMs": 2400,
+       "endMs": 3200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        170
+       ],
+       "text": "pilgrimage",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "distant",
+       "op": "text",
+       "startMs": 3200,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        350
+       ],
+       "text": "distant regions",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch08-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "route2",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        100,
+        250
+       ],
+       "to": [
+        700,
+        250
+       ]
+      },
+      {
+       "id": "languages",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1500,
+       "weight": 1,
+       "at": [
+        120,
+        150
+       ],
+       "text": "languages",
+       "size": "m"
+      },
+      {
+       "id": "stories",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2000,
+       "weight": 1,
+       "at": [
+        300,
+        150
+       ],
+       "text": "stories",
+       "size": "m"
+      },
+      {
+       "id": "songs",
+       "op": "text",
+       "startMs": 2000,
+       "endMs": 2500,
+       "weight": 1,
+       "at": [
+        470,
+        150
+       ],
+       "text": "songs",
+       "size": "m"
+      },
+      {
+       "id": "food",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 2900,
+       "weight": 1,
+       "at": [
+        650,
+        150
+       ],
+       "text": "food",
+       "size": "m"
+      },
+      {
+       "id": "crafts",
+       "op": "text",
+       "startMs": 2900,
+       "endMs": 3400,
+       "weight": 1,
+       "at": [
+        250,
+        350
+       ],
+       "text": "crafts",
+       "size": "m"
+      },
+      {
+       "id": "trade",
+       "op": "text",
+       "startMs": 3400,
+       "endMs": 3800,
+       "weight": 1,
+       "at": [
+        500,
+        350
+       ],
+       "text": "trade",
+       "size": "m"
+      },
+      {
+       "id": "arrowall",
+       "op": "arrow",
+       "startMs": 3900,
+       "endMs": 4700,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        170,
+        250
+       ],
+       "to": [
+        630,
+        250
+       ]
+      },
+      {
+       "id": "connected",
+       "op": "text",
+       "startMs": 4800,
+       "endMs": 5700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        430
+       ],
+       "text": "connected",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch08-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "bodhgaya",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        280
+       ],
+       "r": 70
+      },
+      {
+       "id": "buddha",
+       "op": "text",
+       "startMs": 800,
+       "endMs": 1500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        170
+       ],
+       "text": "Buddha",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "enlightenment",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        390
+       ],
+       "text": "enlightenment",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "pilgrims",
+       "op": "arrow",
+       "startMs": 2400,
+       "endMs": 3200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        120,
+        120
+       ],
+       "to": [
+        350,
+        250
+       ]
+      },
+      {
+       "id": "countries",
+       "op": "arrow",
+       "startMs": 3200,
+       "endMs": 4000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        680,
+        120
+       ],
+       "to": [
+        450,
+        250
+       ]
+      },
+      {
+       "id": "countrylabel",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 4600,
+       "weight": 1,
+       "at": [
+        400,
+        80
+       ],
+       "text": "countries",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "importance",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 5700,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        470
+       ],
+       "text": "importance",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch08-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "kailash",
+       "op": "polygon",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         330,
+         330
+        ],
+        [
+         400,
+         120
+        ],
+        [
+         470,
+         330
+        ]
+       ]
+      },
+      {
+       "id": "mountlabel",
+       "op": "text",
+       "startMs": 1000,
+       "endMs": 1800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        370
+       ],
+       "text": "Mount Kailash",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "hindus",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2400,
+       "weight": 1,
+       "at": [
+        170,
+        150
+       ],
+       "text": "Hindus",
+       "size": "m"
+      },
+      {
+       "id": "buddhists",
+       "op": "text",
+       "startMs": 2400,
+       "endMs": 3000,
+       "weight": 1,
+       "at": [
+        620,
+        150
+       ],
+       "text": "Buddhists",
+       "size": "m"
+      },
+      {
+       "id": "jains",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3400,
+       "weight": 1,
+       "at": [
+        180,
+        430
+       ],
+       "text": "Jains",
+       "size": "m"
+      },
+      {
+       "id": "bon",
+       "op": "text",
+       "startMs": 3400,
+       "endMs": 3800,
+       "weight": 1,
+       "at": [
+        620,
+        430
+       ],
+       "text": "Bon",
+       "size": "m"
+      },
+      {
+       "id": "h1",
+       "op": "arrow",
+       "startMs": 4000,
+       "endMs": 4600,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        220,
+        170
+       ],
+       "to": [
+        350,
+        230
+       ]
+      },
+      {
+       "id": "h2",
+       "op": "arrow",
+       "startMs": 4600,
+       "endMs": 5200,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        580,
+        170
+       ],
+       "to": [
+        450,
+        230
+       ]
+      },
+      {
+       "id": "h3",
+       "op": "arrow",
+       "startMs": 5200,
+       "endMs": 5800,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        230,
+        410
+       ],
+       "to": [
+        350,
+        300
+       ]
+      },
+      {
+       "id": "h4",
+       "op": "arrow",
+       "startMs": 5800,
+       "endMs": 6400,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        570,
+        410
+       ],
+       "to": [
+        450,
+        300
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch08-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "sacredplace",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        230
+       ],
+       "r": 90
+      },
+      {
+       "id": "pollution",
+       "op": "text",
+       "startMs": 800,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        160,
+        120
+       ],
+       "text": "pollution",
+       "size": "m"
+      },
+      {
+       "id": "crowding",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 2000,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        640,
+        120
+       ],
+       "text": "crowding",
+       "size": "m"
+      },
+      {
+       "id": "pollute",
+       "op": "stroke",
+       "startMs": 2100,
+       "endMs": 2800,
+       "ink": "mark",
+       "weight": 2,
+       "points": [
+        [
+         120,
+         350
+        ],
+        [
+         170,
+         330
+        ],
+        [
+         220,
+         350
+        ],
+        [
+         270,
+         330
+        ]
+       ]
+      },
+      {
+       "id": "crowd1",
+       "op": "circle",
+       "startMs": 2800,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        330,
+        380
+       ],
+       "r": 18
+      },
+      {
+       "id": "crowd2",
+       "op": "circle",
+       "startMs": 3200,
+       "endMs": 3600,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        400,
+        380
+       ],
+       "r": 18
+      },
+      {
+       "id": "crowd3",
+       "op": "circle",
+       "startMs": 3600,
+       "endMs": 4000,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        470,
+        380
+       ],
+       "r": 18
+      },
+      {
+       "id": "harm",
+       "op": "arrow",
+       "startMs": 4000,
+       "endMs": 4700,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        180,
+        180
+       ],
+       "to": [
+        350,
+        220
+       ]
+      },
+      {
+       "id": "caretoday",
+       "op": "text",
+       "startMs": 4800,
+       "endMs": 5500,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        470
+       ],
+       "text": "care today",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "People meet across regions",
+   "prompt": "sequence: after/for \"Pilgrims travel far\"",
+   "src": "c7-sst-ch08-t01-i06"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "Stories and songs are shared",
+   "prompt": "sequence: after/for \"People meet across regions\"",
+   "src": "c7-sst-ch08-t01-i06"
+  },
+  {
+   "itemId": "r1:2",
+   "key": "Food and languages spread",
+   "prompt": "sequence: after/for \"Stories and songs are shared\"",
+   "src": "c7-sst-ch08-t01-i06"
+  },
+  {
+   "itemId": "r1:3",
+   "key": "Traders follow the routes",
+   "prompt": "sequence: after/for \"Food and languages spread\"",
+   "src": "c7-sst-ch08-t01-i06"
+  },
+  {
+   "itemId": "r1:4",
+   "key": "The land feels connected",
+   "prompt": "sequence: after/for \"Traders follow the routes\"",
+   "src": "c7-sst-ch08-t01-i06"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

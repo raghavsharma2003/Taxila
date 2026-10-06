@@ -1,0 +1,2115 @@
+{
+ "topicId": "c6-science-ch09-t01",
+ "title": "Handpicking, threshing, winnowing, sieving",
+ "chapter": "Methods of Separation in Everyday Life",
+ "subject": "science",
+ "class": 6,
+ "topicType": "T5",
+ "plan": {
+  "game": "heat-lab@1",
+  "hint": "separate mode: handpick, winnow, sieve (grain, husk, stones, flour)"
+ },
+ "game": {
+  "archetype": "heat-lab@1",
+  "spec": {
+   "archetype": "heat-lab@1",
+   "skills": [
+    "c6-science-ch09-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "done": "right",
+    "heat": "HEAT",
+    "lock": "LOCK",
+    "run": "RUN",
+    "first": "falls first",
+    "last": "last",
+    "land": "land",
+    "sea": "sea",
+    "hour": "time",
+    "seaBreeze": "→ to land",
+    "landBreeze": "← to sea",
+    "keepCool": "keep it cool",
+    "keepWarm": "keep it warm",
+    "runDone": "Lab closed",
+    "caught": "caught",
+    "passed": "passed",
+    "keep": "keep which?",
+    "target": "get",
+    "steps": "steps",
+    "reset": "start again",
+    "black": "black",
+    "dark": "dark",
+    "white": "white",
+    "shiny": "shiny",
+    "copper": "copper",
+    "aluminium": "aluminium",
+    "iron": "iron",
+    "steel": "steel",
+    "glass": "glass",
+    "wood": "wood",
+    "plastic": "plastic",
+    "stones": "stones",
+    "rice": "rice",
+    "flour": "flour",
+    "husk": "husk",
+    "sand": "sand",
+    "salt": "salt",
+    "sugar": "sugar",
+    "sawdust": "sawdust",
+    "chalk": "chalk",
+    "handpick": "pick out",
+    "sieve": "sieve",
+    "winnow": "winnow",
+    "magnet": "magnet",
+    "water": "add water",
+    "filter": "filter",
+    "evaporate": "evaporate",
+    "wet": "in water"
+   },
+   "title": "Heat & Matter Lab",
+   "rounds": [
+    {
+     "mode": "separate",
+     "title": "Clean the dal",
+     "sub": "choose the useful part",
+     "mix": [
+      "rice",
+      "stones"
+     ],
+     "target": "rice",
+     "maxSteps": 1
+    },
+    {
+     "mode": "separate",
+     "title": "Clean the grain",
+     "sub": "choose the steps in order",
+     "mix": [
+      "rice",
+      "husk",
+      "stones"
+     ],
+     "target": "rice",
+     "maxSteps": 3,
+     "targets": "c6-science-ch09-t01-m1"
+    },
+    {
+     "mode": "separate",
+     "title": "Sort the flour",
+     "sub": "choose a suitable method",
+     "mix": [
+      "flour",
+      "stones"
+     ],
+     "target": "flour",
+     "maxSteps": 1,
+     "targets": "c6-science-ch09-t01-m3"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c6-science-ch09-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Choose the right separator",
+   "accent": "sci",
+   "targets": "c6-science-ch09-t01-m1",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "row",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Choose the right separator"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "One method separates every mixture"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "mix",
+       "type": "node",
+       "text": "Mixture",
+       "glyph": "group",
+       "color": "sci"
+      },
+      {
+       "id": "hand",
+       "type": "node",
+       "text": "Handpicking",
+       "sub": "colour, shape",
+       "glyph": "hand",
+       "color": "mint"
+      },
+      {
+       "id": "thresh",
+       "type": "node",
+       "text": "Threshing",
+       "sub": "stalks, grain",
+       "glyph": "wheat",
+       "color": "amber"
+      },
+      {
+       "id": "winnow",
+       "type": "node",
+       "text": "Winnowing",
+       "sub": "light, heavy",
+       "glyph": "wind",
+       "color": "ion"
+      },
+      {
+       "id": "sieve",
+       "type": "node",
+       "text": "Sieving",
+       "sub": "different sizes",
+       "glyph": "ruler",
+       "color": "sun"
+      },
+      {
+       "id": "mh",
+       "type": "arrow",
+       "from": "mix",
+       "to": "hand"
+      },
+      {
+       "id": "mt",
+       "type": "arrow",
+       "from": "mix",
+       "to": "thresh",
+       "text": "stalks"
+      },
+      {
+       "id": "mw",
+       "type": "arrow",
+       "from": "mix",
+       "to": "winnow",
+       "text": "weight"
+      },
+      {
+       "id": "ms",
+       "type": "arrow",
+       "from": "mix",
+       "to": "sieve",
+       "text": "size"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "rice",
+       "type": "node",
+       "text": "Rice mix",
+       "glyph": "wheat",
+       "color": "sun"
+      },
+      {
+       "id": "husks",
+       "type": "node",
+       "text": "Husk",
+       "glyph": "leaf",
+       "color": "amber"
+      },
+      {
+       "id": "stones",
+       "type": "node",
+       "text": "Stones",
+       "glyph": "mountain",
+       "color": "sci"
+      },
+      {
+       "id": "grain",
+       "type": "node",
+       "text": "Clean rice",
+       "glyph": "wheat",
+       "color": "mint"
+      },
+      {
+       "id": "wa",
+       "type": "arrow",
+       "from": "rice",
+       "to": "husks",
+       "text": "winnow"
+      },
+      {
+       "id": "ha",
+       "type": "arrow",
+       "from": "rice",
+       "to": "stones",
+       "text": "handpick"
+      },
+      {
+       "id": "ga",
+       "type": "arrow",
+       "from": "rice",
+       "to": "grain",
+       "text": "useful part"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "split",
+     "els": [
+      {
+       "id": "wind",
+       "type": "glyph",
+       "name": "wind",
+       "size": 120,
+       "color": "ion"
+      },
+      {
+       "id": "heavy",
+       "type": "label",
+       "text": "Heavy grain",
+       "color": "mint"
+      },
+      {
+       "id": "light",
+       "type": "label",
+       "text": "Light husk",
+       "color": "amber"
+      },
+      {
+       "id": "near",
+       "type": "label",
+       "text": "Falls nearby",
+       "color": "mint"
+      },
+      {
+       "id": "far",
+       "type": "label",
+       "text": "Blows farther",
+       "color": "amber"
+      },
+      {
+       "id": "wf",
+       "type": "arrow",
+       "from": "wind",
+       "to": "light",
+       "text": "carries"
+      },
+      {
+       "id": "wn",
+       "type": "arrow",
+       "from": "wind",
+       "to": "heavy",
+       "text": "not far"
+      }
+     ]
+    },
+    {
+     "id": "s5",
+     "layout": "row",
+     "els": [
+      {
+       "id": "check",
+       "type": "title",
+       "text": "Choose by the difference"
+      },
+      {
+       "id": "opt1",
+       "type": "label",
+       "text": "Handpicking",
+       "color": "mint"
+      },
+      {
+       "id": "opt2",
+       "type": "label",
+       "text": "Winnowing",
+       "color": "ion"
+      },
+      {
+       "id": "opt3",
+       "type": "label",
+       "text": "Sieving",
+       "color": "sun"
+      },
+      {
+       "id": "opt4",
+       "type": "label",
+       "text": "Threshing",
+       "color": "amber"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Mixtures are separated to remove unwanted parts or get useful parts.",
+    "L2": "There is no single method for every mixture. Choose the method that matches the difference between the parts.",
+    "L3": "Handpicking uses visible differences such as colour, shape or size. Threshing beats or crushes stalks to free the grain.",
+    "L4": "Winnowing lets a mixture fall in moving air. The lighter husk blows farther, while the heavier grain falls nearby.",
+    "L5": "Sieving uses particle size. Fine flour passes through, while larger pebbles or bran stay in the sieve.",
+    "L6": "For rice, husk and small stones, winnow the husk first, then handpick the stones. Check what remains and sieve fine dust if needed.",
+    "L7": "Different differences can require different methods in turn. The useful part is left clean.",
+    "L8": "Now choose the method for removing small stones from a plate of dal."
+   },
+   "narration": {},
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.6,
+       "target": "mix"
+      },
+      {
+       "at": 1.2,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "hand",
+        "thresh",
+        "winnow",
+        "sieve"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "hand"
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "mh",
+       "to": 1
+      },
+      {
+       "at": 1.5,
+       "do": "highlight",
+       "dur": 1,
+       "target": "thresh"
+      },
+      {
+       "at": 2.4,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "mt",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "wind",
+        "heavy",
+        "light",
+        "near",
+        "far"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "wf",
+       "to": 1
+      },
+      {
+       "at": 1.5,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "wn",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "sieve"
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "ms",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "rice"
+      },
+      {
+       "at": 0.6,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "wa",
+       "to": 1
+      },
+      {
+       "at": 1.4,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "ha",
+       "to": 1
+      },
+      {
+       "at": 2.2,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "grain"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1.4,
+       "target": [
+        "hand",
+        "thresh",
+        "winnow",
+        "sieve"
+       ]
+      },
+      {
+       "at": 1.5,
+       "do": "camera",
+       "dur": 1,
+       "zoom": 1.05
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s5",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "check"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "opt1",
+        "opt2",
+        "opt3",
+        "opt4"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive"
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which method removes small stones from a plate of dal?",
+    "options": [
+     "opt1",
+     "opt2",
+     "opt3",
+     "opt4"
+    ],
+    "answer": "opt1",
+    "src": "c6-science-ch09-t01-i01"
+   }
+  },
+  "repairs": [
+   "string:mh.text",
+   "cue:target",
+   "cue:target"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 63
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch09-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "mix",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        170,
+        180
+       ],
+       "r": 75
+      },
+      {
+       "id": "part1",
+       "op": "circle",
+       "startMs": 500,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        145,
+        155
+       ],
+       "r": 15,
+       "fill": "accent"
+      },
+      {
+       "id": "part2",
+       "op": "rect",
+       "startMs": 700,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        145
+       ],
+       "w": 28,
+       "h": 28,
+       "fill": "soft"
+      },
+      {
+       "id": "part3",
+       "op": "polygon",
+       "startMs": 900,
+       "endMs": 1300,
+       "ink": "mark",
+       "weight": 1,
+       "points": [
+        [
+         135,
+         215
+        ],
+        [
+         155,
+         195
+        ],
+        [
+         175,
+         215
+        ]
+       ],
+       "fill": "mark"
+      },
+      {
+       "id": "labmix",
+       "op": "text",
+       "startMs": 1300,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        170,
+        285
+       ],
+       "text": "mixture",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "arrow1",
+       "op": "arrow",
+       "startMs": 1800,
+       "endMs": 2600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        260,
+        180
+       ],
+       "to": [
+        440,
+        120
+       ]
+      },
+      {
+       "id": "use",
+       "op": "text",
+       "startMs": 2400,
+       "endMs": 3000,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        535,
+        115
+       ],
+       "text": "useful parts",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "arrow2",
+       "op": "arrow",
+       "startMs": 2700,
+       "endMs": 3500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        260,
+        210
+       ],
+       "to": [
+        440,
+        270
+       ]
+      },
+      {
+       "id": "remove",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 4000,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        535,
+        275
+       ],
+       "text": "unwanted parts",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "check",
+       "op": "highlight",
+       "startMs": 4100,
+       "endMs": 4800,
+       "ink": "good",
+       "weight": 2,
+       "target": "use",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch09-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "title",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "method",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "mix2",
+       "op": "circle",
+       "startMs": 600,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        150,
+        210
+       ],
+       "r": 62
+      },
+      {
+       "id": "qmark",
+       "op": "text",
+       "startMs": 1000,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        150,
+        215
+       ],
+       "text": "?",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "arrowsize",
+       "op": "arrow",
+       "startMs": 1600,
+       "endMs": 2400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        230,
+        150
+       ],
+       "to": [
+        390,
+        110
+       ]
+      },
+      {
+       "id": "size",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        505,
+        105
+       ],
+       "text": "size",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "arrowcolour",
+       "op": "arrow",
+       "startMs": 2500,
+       "endMs": 3300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        230,
+        210
+       ],
+       "to": [
+        390,
+        210
+       ]
+      },
+      {
+       "id": "colour",
+       "op": "text",
+       "startMs": 3100,
+       "endMs": 3600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        505,
+        205
+       ],
+       "text": "colour",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "arrowweight",
+       "op": "arrow",
+       "startMs": 3400,
+       "endMs": 4200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        230,
+        270
+       ],
+       "to": [
+        390,
+        310
+       ]
+      },
+      {
+       "id": "weight",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 4500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        505,
+        305
+       ],
+       "text": "weight",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "select",
+       "op": "rect",
+       "startMs": 5000,
+       "endMs": 5800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        355,
+        70
+       ],
+       "w": 245,
+       "h": 285,
+       "round": 12
+      },
+      {
+       "id": "match",
+       "op": "text",
+       "startMs": 5900,
+       "endMs": 6800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        480,
+        395
+       ],
+       "text": "match difference",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch09-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "hand",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        150,
+        65
+       ],
+       "text": "handpicking",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "stones",
+       "op": "polygon",
+       "startMs": 700,
+       "endMs": 1200,
+       "ink": "accent",
+       "weight": 1,
+       "points": [
+        [
+         95,
+         170
+        ],
+        [
+         120,
+         145
+        ],
+        [
+         150,
+         165
+        ],
+        [
+         135,
+         195
+        ],
+        [
+         105,
+         195
+        ]
+       ],
+       "fill": "accent"
+      },
+      {
+       "id": "pick",
+       "op": "arrow",
+       "startMs": 1200,
+       "endMs": 2100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        220,
+        115
+       ],
+       "to": [
+        145,
+        170
+       ]
+      },
+      {
+       "id": "colour",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        105,
+        250
+       ],
+       "text": "colour",
+       "size": "m"
+      },
+      {
+       "id": "shape",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        250,
+        250
+       ],
+       "text": "shape",
+       "size": "m"
+      },
+      {
+       "id": "size",
+       "op": "text",
+       "startMs": 2900,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        390,
+        250
+       ],
+       "text": "size",
+       "size": "m"
+      },
+      {
+       "id": "thresh",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        590,
+        65
+       ],
+       "text": "threshing",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "stalk",
+       "op": "line",
+       "startMs": 4200,
+       "endMs": 4700,
+       "ink": "soft",
+       "weight": 3,
+       "from": [
+        535,
+        180
+       ],
+       "to": [
+        650,
+        120
+       ]
+      },
+      {
+       "id": "grain",
+       "op": "circle",
+       "startMs": 4500,
+       "endMs": 5000,
+       "ink": "good",
+       "weight": 1,
+       "c": [
+        580,
+        205
+       ],
+       "r": 12,
+       "fill": "good"
+      },
+      {
+       "id": "beat",
+       "op": "arrow",
+       "startMs": 5000,
+       "endMs": 5900,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        700,
+        125
+       ],
+       "to": [
+        610,
+        190
+       ]
+      },
+      {
+       "id": "free",
+       "op": "label",
+       "startMs": 6000,
+       "endMs": 6700,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        650,
+        290
+       ],
+       "text": "grain",
+       "to": [
+        580,
+        205
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch09-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "wind",
+       "op": "arrow",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        120,
+        155
+       ],
+       "to": [
+        690,
+        155
+       ]
+      },
+      {
+       "id": "drop",
+       "op": "arrow",
+       "startMs": 800,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        280,
+        80
+       ],
+       "to": [
+        280,
+        330
+       ]
+      },
+      {
+       "id": "husk",
+       "op": "polygon",
+       "startMs": 1800,
+       "endMs": 2300,
+       "ink": "soft",
+       "weight": 1,
+       "points": [
+        [
+         470,
+         150
+        ],
+        [
+         500,
+         140
+        ],
+        [
+         520,
+         165
+        ],
+        [
+         490,
+         180
+        ]
+       ],
+       "fill": "soft"
+      },
+      {
+       "id": "grain",
+       "op": "circle",
+       "startMs": 2100,
+       "endMs": 2600,
+       "ink": "good",
+       "weight": 1,
+       "c": [
+        330,
+        350
+       ],
+       "r": 18,
+       "fill": "good"
+      },
+      {
+       "id": "far",
+       "op": "arrow",
+       "startMs": 2500,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        480,
+        160
+       ],
+       "to": [
+        680,
+        110
+       ]
+      },
+      {
+       "id": "near",
+       "op": "arrow",
+       "startMs": 3000,
+       "endMs": 3800,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        330,
+        330
+       ],
+       "to": [
+        350,
+        390
+       ]
+      },
+      {
+       "id": "lhusk",
+       "op": "text",
+       "startMs": 3700,
+       "endMs": 4200,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        650,
+        90
+       ],
+       "text": "husk",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "lgrain",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 4500,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        350,
+        440
+       ],
+       "text": "grain",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "air",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5200,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        400,
+        110
+       ],
+       "text": "moving air",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch09-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "sieve",
+       "op": "polygon",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         210,
+         150
+        ],
+        [
+         590,
+         150
+        ],
+        [
+         540,
+         245
+        ],
+        [
+         260,
+         245
+        ]
+       ]
+      },
+      {
+       "id": "mesh",
+       "op": "line",
+       "startMs": 700,
+       "endMs": 1200,
+       "ink": "soft",
+       "weight": 2,
+       "from": [
+        260,
+        205
+       ],
+       "to": [
+        540,
+        205
+       ],
+       "dashed": true
+      },
+      {
+       "id": "flour",
+       "op": "circle",
+       "startMs": 1200,
+       "endMs": 1600,
+       "ink": "soft",
+       "weight": 1,
+       "c": [
+        340,
+        120
+       ],
+       "r": 10,
+       "fill": "soft"
+      },
+      {
+       "id": "pass",
+       "op": "arrow",
+       "startMs": 1500,
+       "endMs": 2500,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        340,
+        125
+       ],
+       "to": [
+        350,
+        300
+       ]
+      },
+      {
+       "id": "pebble",
+       "op": "circle",
+       "startMs": 1800,
+       "endMs": 2300,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        450,
+        120
+       ],
+       "r": 22,
+       "fill": "accent"
+      },
+      {
+       "id": "stay",
+       "op": "arrow",
+       "startMs": 2300,
+       "endMs": 3000,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        450,
+        125
+       ],
+       "to": [
+        450,
+        185
+       ]
+      },
+      {
+       "id": "fine",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3600,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        350,
+        355
+       ],
+       "text": "fine flour",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "large",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4300,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        450,
+        275
+       ],
+       "text": "large pebbles",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "bran",
+       "op": "text",
+       "startMs": 4400,
+       "endMs": 4900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        610,
+        205
+       ],
+       "text": "bran",
+       "size": "m"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch09-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 10387,
+     "ops": [
+      {
+       "id": "rice",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "good",
+       "weight": 1,
+       "c": [
+        150,
+        180
+       ],
+       "r": 45,
+       "fill": "good"
+      },
+      {
+       "id": "husk",
+       "op": "polygon",
+       "startMs": 300,
+       "endMs": 800,
+       "ink": "soft",
+       "weight": 1,
+       "points": [
+        [
+         205,
+         165
+        ],
+        [
+         230,
+         145
+        ],
+        [
+         250,
+         170
+        ],
+        [
+         225,
+         190
+        ]
+       ],
+       "fill": "soft"
+      },
+      {
+       "id": "stone",
+       "op": "circle",
+       "startMs": 500,
+       "endMs": 1000,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        190,
+        220
+       ],
+       "r": 18,
+       "fill": "accent"
+      },
+      {
+       "id": "winnow",
+       "op": "arrow",
+       "startMs": 1000,
+       "endMs": 2000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        280,
+        180
+       ],
+       "to": [
+        410,
+        120
+       ]
+      },
+      {
+       "id": "lhusk",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2400,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        470,
+        110
+       ],
+       "text": "husk",
+       "size": "m"
+      },
+      {
+       "id": "hand",
+       "op": "arrow",
+       "startMs": 2300,
+       "endMs": 3300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        280,
+        220
+       ],
+       "to": [
+        420,
+        270
+       ]
+      },
+      {
+       "id": "lstone",
+       "op": "text",
+       "startMs": 3200,
+       "endMs": 3900,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        500,
+        275
+       ],
+       "text": "small stones",
+       "size": "m"
+      },
+      {
+       "id": "sieve",
+       "op": "polygon",
+       "startMs": 4000,
+       "endMs": 4700,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         550,
+         190
+        ],
+        [
+         745,
+         190
+        ],
+        [
+         720,
+         255
+        ],
+        [
+         575,
+         255
+        ]
+       ]
+      },
+      {
+       "id": "dust",
+       "op": "circle",
+       "startMs": 4500,
+       "endMs": 4900,
+       "ink": "soft",
+       "weight": 1,
+       "c": [
+        640,
+        155
+       ],
+       "r": 8,
+       "fill": "soft"
+      },
+      {
+       "id": "dustpass",
+       "op": "arrow",
+       "startMs": 4800,
+       "endMs": 5800,
+       "ink": "soft",
+       "weight": 2,
+       "from": [
+        640,
+        160
+       ],
+       "to": [
+        640,
+        300
+       ]
+      },
+      {
+       "id": "check",
+       "op": "text",
+       "startMs": 6200,
+       "endMs": 6900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        160,
+        390
+       ],
+       "text": "check",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "riceleft",
+       "op": "label",
+       "startMs": 6900,
+       "endMs": 7600,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        160,
+        440
+       ],
+       "text": "rice",
+       "target": "rice"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch09-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "diff1",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        150,
+        90
+       ],
+       "text": "light",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "diff2",
+       "op": "text",
+       "startMs": 400,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        90
+       ],
+       "text": "colour",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "diff3",
+       "op": "text",
+       "startMs": 800,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        650,
+        90
+       ],
+       "text": "size",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "step1",
+       "op": "arrow",
+       "startMs": 1300,
+       "endMs": 2100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        150,
+        125
+       ],
+       "to": [
+        150,
+        250
+       ]
+      },
+      {
+       "id": "step2",
+       "op": "arrow",
+       "startMs": 1700,
+       "endMs": 2500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        125
+       ],
+       "to": [
+        400,
+        250
+       ]
+      },
+      {
+       "id": "step3",
+       "op": "arrow",
+       "startMs": 2100,
+       "endMs": 2900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        650,
+        125
+       ],
+       "to": [
+        650,
+        250
+       ]
+      },
+      {
+       "id": "turn",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        320
+       ],
+       "text": "in turn",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "clean",
+       "op": "rect",
+       "startMs": 3900,
+       "endMs": 4600,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        270,
+        370
+       ],
+       "w": 260,
+       "h": 65,
+       "round": 12
+      },
+      {
+       "id": "useful",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5200,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        412
+       ],
+       "text": "useful part",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "highlight",
+       "op": "highlight",
+       "startMs": 5300,
+       "endMs": 6200,
+       "ink": "good",
+       "weight": 2,
+       "target": "clean",
+       "style": "pulse"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch09-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "plate",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        250
+       ],
+       "rx": 250,
+       "ry": 125
+      },
+      {
+       "id": "dal",
+       "op": "circle",
+       "startMs": 600,
+       "endMs": 1100,
+       "ink": "good",
+       "weight": 1,
+       "c": [
+        330,
+        230
+       ],
+       "r": 28,
+       "fill": "good"
+      },
+      {
+       "id": "dal2",
+       "op": "circle",
+       "startMs": 800,
+       "endMs": 1300,
+       "ink": "good",
+       "weight": 1,
+       "c": [
+        430,
+        270
+       ],
+       "r": 28,
+       "fill": "good"
+      },
+      {
+       "id": "stone1",
+       "op": "circle",
+       "startMs": 1000,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        510,
+        215
+       ],
+       "r": 18,
+       "fill": "accent"
+      },
+      {
+       "id": "stone2",
+       "op": "circle",
+       "startMs": 1200,
+       "endMs": 1600,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        470,
+        310
+       ],
+       "r": 15,
+       "fill": "accent"
+      },
+      {
+       "id": "question",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        75
+       ],
+       "text": "small stones",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "choice",
+       "op": "arrow",
+       "startMs": 2500,
+       "endMs": 3600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        105
+       ],
+       "to": [
+        505,
+        195
+       ]
+      },
+      {
+       "id": "method",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4400,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        610,
+        190
+       ],
+       "text": "handpicking",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "circlechoice",
+       "op": "highlight",
+       "startMs": 4500,
+       "endMs": 5600,
+       "ink": "good",
+       "weight": 2,
+       "target": "method",
+       "style": "circle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1",
+   "key": "handpick",
+   "prompt": "rice from rice+stones"
+  },
+  {
+   "itemId": "r2",
+   "key": "handpick → sieve",
+   "prompt": "rice from rice+husk+stones"
+  },
+  {
+   "itemId": "r3",
+   "key": "handpick",
+   "prompt": "flour from flour+stones"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ },
+ "firstCheck": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "Round 2 answer sequence 'handpick → sieve' is wrong. According to the kit (items i09, workedExample), the correct order for rice+husk+stones is winnow first to remove husk, then handpick stones; sieving is optional only for fine dust. The computed key says handpick→sieve, which omits winnowing and would not remove the light husk.",
+    "severity": "high"
+   },
+   {
+    "where": "game",
+    "what": "Round 3 answer 'handpick' is incorrect. For flour and stones of different sizes, sieving is the appropriate method (kit item i04). Handpicking could work but is not the intended method; the kit specifies sieving for flour+stones. Additionally, the round's own target (c6-science-ch09-t01-m3) is about sieving by size, so the answer should be sieve, not handpick.",
+    "severity": "high"
+   }
+  ],
+  "verdict": "fail",
+  "model": "DeepSeek-V4-Flash"
+ },
+ "regens": 2
+}

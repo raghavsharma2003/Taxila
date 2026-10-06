@@ -1,0 +1,1632 @@
+{
+ "topicId": "c7-english-ch13-t01",
+ "title": "A Homage to Our Brave Soldiers",
+ "chapter": "A Homage to Our Brave Soldiers",
+ "subject": "english",
+ "class": 7,
+ "topicType": "T2",
+ "plan": {
+  "game": "story-rail@1",
+  "hint": "sequence, cause and who modes from the lesson's events and speakers"
+ },
+ "game": {
+  "archetype": "story-rail@1",
+  "spec": {
+   "archetype": "story-rail@1",
+   "skills": [
+    "c7-english-ch13-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "picked": "coupled",
+    "streak": "streak",
+    "next": "What happens next?",
+    "effect": "What does this lead to?",
+    "who": "Who said this?",
+    "runDone": "Line complete",
+    "order": "your train",
+    "right": "Coupled",
+    "wrong": "Not this one",
+    "coach": "Tap a wagon before the train reaches the fork"
+   },
+   "title": "A Homage to Brave Soldiers",
+   "rounds": [
+    {
+     "mode": "sequence",
+     "title": "Follow the talk",
+     "sub": "couple the events in order",
+     "cards": [
+      {
+       "id": "e1",
+       "text": "Priya asks about silence",
+       "glyph": "person",
+       "src": "c7-english-ch13-t01-i01"
+      },
+      {
+       "id": "e2",
+       "text": "Grandpa explains homage",
+       "glyph": "temple",
+       "src": "c7-english-ch13-t01-i03"
+      },
+      {
+       "id": "e3",
+       "text": "Priya asks about his service",
+       "glyph": "person",
+       "src": "c7-english-ch13-t01-i02"
+      },
+      {
+       "id": "e4",
+       "text": "Grandpa served in mountains",
+       "glyph": "mountain",
+       "src": "c7-english-ch13-t01-i02"
+      },
+      {
+       "id": "e5",
+       "text": "He honours his comrades",
+       "glyph": "group",
+       "src": "c7-english-ch13-t01-i08"
+      }
+     ],
+     "speed": 0.9
+    },
+    {
+     "mode": "cause",
+     "title": "Cause and effect",
+     "sub": "match each cause to its result",
+     "pairs": [
+      {
+       "cause": {
+        "id": "c1",
+        "text": "Soldiers gave their lives",
+        "glyph": "shield",
+        "src": "c7-english-ch13-t01-i01"
+       },
+       "effect": {
+        "id": "f1",
+        "text": "People show them homage",
+        "glyph": "temple",
+        "src": "c7-english-ch13-t01-i03"
+       }
+      },
+      {
+       "cause": {
+        "id": "c2",
+        "text": "Grandpa served in mountains",
+        "glyph": "mountain",
+        "src": "c7-english-ch13-t01-i02"
+       },
+       "effect": {
+        "id": "f2",
+        "text": "He is proud of comrades",
+        "glyph": "group",
+        "src": "c7-english-ch13-t01-i04"
+       }
+      },
+      {
+       "cause": {
+        "id": "c3",
+        "text": "Priya asks about silence",
+        "glyph": "person",
+        "src": "c7-english-ch13-t01-i01"
+       },
+       "effect": {
+        "id": "f3",
+        "text": "Grandpa explains homage",
+        "glyph": "temple",
+        "src": "c7-english-ch13-t01-i01"
+       }
+      }
+     ],
+     "speed": 0.85,
+     "targets": "c7-english-ch13-t01-m-pronoun-no-shift"
+    },
+    {
+     "mode": "who",
+     "title": "Who said it?",
+     "sub": "send each line to its speaker",
+     "speakers": [
+      {
+       "id": "priya",
+       "name": "Priya",
+       "glyph": "person"
+      },
+      {
+       "id": "grandpa",
+       "name": "Grandpa",
+       "glyph": "group"
+      }
+     ],
+     "lines": [
+      {
+       "id": "w1",
+       "text": "Why do we stand silent?",
+       "speaker": "priya",
+       "src": "c7-english-ch13-t01-i01"
+      },
+      {
+       "id": "w2",
+       "text": "To pay homage to soldiers.",
+       "speaker": "grandpa",
+       "src": "c7-english-ch13-t01-i01"
+      },
+      {
+       "id": "w3",
+       "text": "Were you a soldier too?",
+       "speaker": "priya",
+       "src": "c7-english-ch13-t01-i01"
+      },
+      {
+       "id": "w4",
+       "text": "I served in the mountains.",
+       "speaker": "grandpa",
+       "src": "c7-english-ch13-t01-i02"
+      }
+     ],
+     "speed": 0.8
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-english-ch13-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Right",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "BUSTED",
+    "order": "Tap them in order"
+   },
+   "title": "Honour and Report Speech",
+   "accent": "amber",
+   "targets": "c7-english-ch13-t01-m-pronoun-no-shift",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Honour and sacrifice"
+      },
+      {
+       "id": "mem",
+       "type": "node",
+       "text": "Memorial",
+       "sub": "silent respect",
+       "glyph": "pillar",
+       "color": "amber"
+      },
+      {
+       "id": "sold",
+       "type": "node",
+       "text": "Soldiers",
+       "sub": "gave their lives",
+       "glyph": "shield",
+       "color": "sci"
+      },
+      {
+       "id": "hom",
+       "type": "node",
+       "text": "Homage",
+       "sub": "special honour",
+       "glyph": "crown",
+       "color": "sun"
+      },
+      {
+       "id": "sac",
+       "type": "node",
+       "text": "Sacrifice",
+       "sub": "giving for others",
+       "color": "mint"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "mem",
+       "to": "hom",
+       "text": "shows"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "hom",
+       "to": "sold",
+       "text": "honours"
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "sold",
+       "to": "sac",
+       "text": "includes"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "direct",
+       "type": "node",
+       "text": "I am proud",
+       "sub": "Grandpa's words",
+       "glyph": "person",
+       "color": "ion"
+      },
+      {
+       "id": "said",
+       "type": "node",
+       "text": "Grandpa said",
+       "sub": "reporting verb",
+       "glyph": "note",
+       "color": "amber"
+      },
+      {
+       "id": "reported",
+       "type": "node",
+       "text": "He was proud",
+       "sub": "reported speech",
+       "glyph": "book",
+       "color": "mint"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "I stays I in reported speech"
+      },
+      {
+       "id": "a4",
+       "type": "arrow",
+       "from": "direct",
+       "to": "said",
+       "text": "report"
+      },
+      {
+       "id": "a5",
+       "type": "arrow",
+       "from": "said",
+       "to": "reported",
+       "text": "change"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "At a war memorial, people stand silent to honour soldiers who gave their lives for us.",
+    "L2": "Homage means special respect or honour. Sacrifice means giving something important for others.",
+    "L3": "Grandpa served in the mountains for twenty years, and he is proud of his comrades.",
+    "L4": "Now let us report his words: Grandpa said, “I am proud of my comrades.”",
+    "L5": "In reported speech, I changes to he because Grandpa is speaking about himself.",
+    "L6": "The tense also steps back: am becomes was. So we say, “Grandpa said that he was proud of his comrades.”",
+    "L7": "Remembering soldiers is about service, teamwork, and sacrifice, not the excitement of fighting.",
+    "L8": "Your turn: choose the correct report of Grandpa’s words."
+   },
+   "narration": {
+    "L1": {
+     "text": "At a war memorial, people stand silent to honour soldiers who gave their lives for us.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "Homage means special respect or honour. Sacrifice means giving something important for others.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "Grandpa served in the mountains for twenty years, and he is proud of his comrades.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "Now let us report his words: Grandpa said, “I am proud of my comrades.”",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "In reported speech, I changes to he because Grandpa is speaking about himself.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "The tense also steps back: am becomes was. So we say, “Grandpa said that he was proud of his comrades.”",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Remembering soldiers is about service, teamwork, and sacrifice, not the excitement of fighting.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Your turn: choose the correct report of Grandpa’s words.",
+     "dur": 2,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "title"
+      },
+      {
+       "at": 0.4,
+       "do": "show",
+       "dur": 0.6,
+       "target": "mem"
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "a1",
+        "hom"
+       ]
+      },
+      {
+       "at": 1.4,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "a1",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "hom"
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "a2",
+        "sold",
+        "a3",
+        "sac"
+       ]
+      },
+      {
+       "at": 1.5,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "a2",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "sold"
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 1,
+       "target": "sac"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "direct"
+      },
+      {
+       "at": 0.7,
+       "do": "show",
+       "dur": 0.7,
+       "target": "said"
+      },
+      {
+       "at": 1.3,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "a4",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "myth"
+      },
+      {
+       "at": 0.8,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      },
+      {
+       "at": 1.8,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "reported"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "reported"
+      },
+      {
+       "at": 0.7,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "a5",
+       "to": 1
+      },
+      {
+       "at": 1.5,
+       "do": "highlight",
+       "dur": 1,
+       "target": "reported"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "sac"
+      },
+      {
+       "at": 1,
+       "do": "camera",
+       "dur": 1.5,
+       "zoom": 1.05
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "interactive",
+       "dur": 1
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which report correctly changes Grandpa's words?",
+    "options": [
+     "direct",
+     "reported",
+     "myth"
+    ],
+    "answer": "reported",
+    "src": "c7-english-ch13-t01-i04"
+   }
+  },
+  "repairs": [
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 28
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch13-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "mem",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        250,
+        100
+       ],
+       "w": 300,
+       "h": 250,
+       "fill": "soft"
+      },
+      {
+       "id": "cross",
+       "op": "line",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        400,
+        130
+       ],
+       "to": [
+        400,
+        320
+       ]
+      },
+      {
+       "id": "bar",
+       "op": "line",
+       "startMs": 1100,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        330,
+        180
+       ],
+       "to": [
+        470,
+        180
+       ]
+      },
+      {
+       "id": "people",
+       "op": "circle",
+       "startMs": 1800,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        170,
+        350
+       ],
+       "r": 22
+      },
+      {
+       "id": "people2",
+       "op": "circle",
+       "startMs": 2100,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        230,
+        350
+       ],
+       "r": 22
+      },
+      {
+       "id": "people3",
+       "op": "circle",
+       "startMs": 2400,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        290,
+        350
+       ],
+       "r": 22
+      },
+      {
+       "id": "silent",
+       "op": "label",
+       "startMs": 3000,
+       "endMs": 3700,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        180,
+        410
+       ],
+       "text": "silent",
+       "to": [
+        230,
+        350
+       ]
+      },
+      {
+       "id": "honour",
+       "op": "label",
+       "startMs": 3900,
+       "endMs": 4600,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        560,
+        180
+       ],
+       "text": "honour",
+       "to": [
+        500,
+        180
+       ]
+      },
+      {
+       "id": "soldiers",
+       "op": "label",
+       "startMs": 4700,
+       "endMs": 5500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        150,
+        450
+       ],
+       "text": "soldiers",
+       "to": [
+        290,
+        350
+       ]
+      },
+      {
+       "id": "lives",
+       "op": "label",
+       "startMs": 5600,
+       "endMs": 6800,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        560,
+        300
+       ],
+       "text": "gave their lives",
+       "to": [
+        400,
+        320
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch13-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "homage",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        150,
+        100
+       ],
+       "text": "homage",
+       "size": "l"
+      },
+      {
+       "id": "hdef",
+       "op": "label",
+       "startMs": 800,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        180
+       ],
+       "text": "special respect",
+       "to": [
+        220,
+        130
+       ]
+      },
+      {
+       "id": "sac",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        520,
+        100
+       ],
+       "text": "sacrifice",
+       "size": "l"
+      },
+      {
+       "id": "sdef",
+       "op": "label",
+       "startMs": 2700,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        520,
+        180
+       ],
+       "text": "giving something",
+       "to": [
+        570,
+        130
+       ]
+      },
+      {
+       "id": "others",
+       "op": "label",
+       "startMs": 3700,
+       "endMs": 4600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        540,
+        240
+       ],
+       "text": "for others",
+       "to": [
+        570,
+        180
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch13-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "grandpa",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        130,
+        130
+       ],
+       "r": 38
+      },
+      {
+       "id": "mountains",
+       "op": "polygon",
+       "startMs": 700,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         250,
+         300
+        ],
+        [
+         350,
+         150
+        ],
+        [
+         450,
+         300
+        ],
+        [
+         520,
+         190
+        ],
+        [
+         650,
+         300
+        ]
+       ]
+      },
+      {
+       "id": "mountlabel",
+       "op": "label",
+       "startMs": 1500,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        360,
+        340
+       ],
+       "text": "mountains",
+       "to": [
+        400,
+        230
+       ]
+      },
+      {
+       "id": "served",
+       "op": "label",
+       "startMs": 2400,
+       "endMs": 3100,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        90,
+        220
+       ],
+       "text": "served",
+       "to": [
+        130,
+        170
+       ]
+      },
+      {
+       "id": "twenty",
+       "op": "text",
+       "startMs": 3200,
+       "endMs": 4300,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        120,
+        400
+       ],
+       "text": "twenty years",
+       "size": "m"
+      },
+      {
+       "id": "proud",
+       "op": "label",
+       "startMs": 4400,
+       "endMs": 5100,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        570,
+        100
+       ],
+       "text": "proud",
+       "to": [
+        130,
+        130
+       ]
+      },
+      {
+       "id": "comrades",
+       "op": "label",
+       "startMs": 5100,
+       "endMs": 6100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        570,
+        160
+       ],
+       "text": "comrades",
+       "to": [
+        130,
+        130
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch13-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "quote",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        90
+       ],
+       "w": 620,
+       "h": 190
+      },
+      {
+       "id": "grandpa2",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1700,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        130,
+        125
+       ],
+       "text": "Grandpa said",
+       "size": "m"
+      },
+      {
+       "id": "iam",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        150,
+        200
+       ],
+       "text": "I am proud",
+       "size": "l"
+      },
+      {
+       "id": "my",
+       "op": "text",
+       "startMs": 2800,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        430,
+        200
+       ],
+       "text": "my comrades",
+       "size": "l"
+      },
+      {
+       "id": "speech",
+       "op": "arrow",
+       "startMs": 4000,
+       "endMs": 4700,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        360,
+        300
+       ],
+       "to": [
+        360,
+        250
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch13-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "i",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        180,
+        120
+       ],
+       "text": "I",
+       "size": "l"
+      },
+      {
+       "id": "he",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        570,
+        120
+       ],
+       "text": "he",
+       "size": "l"
+      },
+      {
+       "id": "pronoun",
+       "op": "arrow",
+       "startMs": 1300,
+       "endMs": 2200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        220,
+        120
+       ],
+       "to": [
+        540,
+        120
+       ]
+      },
+      {
+       "id": "grandpa3",
+       "op": "label",
+       "startMs": 2300,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        350,
+        190
+       ],
+       "text": "Grandpa speaking",
+       "to": [
+        350,
+        120
+       ]
+      },
+      {
+       "id": "himself",
+       "op": "label",
+       "startMs": 3500,
+       "endMs": 4700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        320,
+        270
+       ],
+       "text": "about himself",
+       "to": [
+        570,
+        120
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch13-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 9111,
+     "ops": [
+      {
+       "id": "am",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        150,
+        110
+       ],
+       "text": "am",
+       "size": "l"
+      },
+      {
+       "id": "was",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        570,
+        110
+       ],
+       "text": "was",
+       "size": "l"
+      },
+      {
+       "id": "back",
+       "op": "arrow",
+       "startMs": 1400,
+       "endMs": 2300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        210,
+        110
+       ],
+       "to": [
+        530,
+        110
+       ]
+      },
+      {
+       "id": "tense",
+       "op": "label",
+       "startMs": 2400,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        330,
+        180
+       ],
+       "text": "tense steps back",
+       "to": [
+        390,
+        110
+       ]
+      },
+      {
+       "id": "report",
+       "op": "numwork",
+       "startMs": 3700,
+       "endMs": 6000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        110,
+        280
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "Grandp",
+         "said",
+         "that",
+         "he",
+         "was",
+         "proud"
+        ]
+       ]
+      },
+      {
+       "id": "comrades2",
+       "op": "text",
+       "startMs": 6000,
+       "endMs": 6900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        570,
+        280
+       ],
+       "text": "comrades",
+       "size": "m"
+      },
+      {
+       "id": "correct",
+       "op": "highlight",
+       "startMs": 7000,
+       "endMs": 8200,
+       "ink": "good",
+       "weight": 2,
+       "target": "report",
+       "style": "underline"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch13-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "service",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        180,
+        170
+       ],
+       "r": 70
+      },
+      {
+       "id": "serviceword",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        170
+       ],
+       "text": "service",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "team",
+       "op": "circle",
+       "startMs": 1300,
+       "endMs": 2000,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        170
+       ],
+       "r": 70
+      },
+      {
+       "id": "teamword",
+       "op": "text",
+       "startMs": 2000,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        170
+       ],
+       "text": "teamwork",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "sacrifice2",
+       "op": "circle",
+       "startMs": 2700,
+       "endMs": 3400,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        620,
+        170
+       ],
+       "r": 70
+      },
+      {
+       "id": "sacword",
+       "op": "text",
+       "startMs": 3400,
+       "endMs": 4200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        620,
+        170
+       ],
+       "text": "sacrifice",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch13-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4430,
+     "ops": [
+      {
+       "id": "turn",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        100
+       ],
+       "text": "Your turn",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "optiona",
+       "op": "rect",
+       "startMs": 2000,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        120,
+        270
+       ],
+       "w": 250,
+       "h": 80
+      },
+      {
+       "id": "optionb",
+       "op": "rect",
+       "startMs": 2400,
+       "endMs": 3100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        430,
+        270
+       ],
+       "w": 250,
+       "h": 80
+      },
+      {
+       "id": "question",
+       "op": "text",
+       "startMs": 3200,
+       "endMs": 3900,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        400,
+        420
+       ],
+       "text": "report",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "Grandpa explains homage",
+   "prompt": "sequence: after/for \"Priya asks about silence\"",
+   "src": "c7-english-ch13-t01-i03"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "Priya asks about his service",
+   "prompt": "sequence: after/for \"Grandpa explains homage\"",
+   "src": "c7-english-ch13-t01-i02"
+  },
+  {
+   "itemId": "r1:2",
+   "key": "Grandpa served in mountains",
+   "prompt": "sequence: after/for \"Priya asks about his service\"",
+   "src": "c7-english-ch13-t01-i02"
+  },
+  {
+   "itemId": "r1:3",
+   "key": "He honours his comrades",
+   "prompt": "sequence: after/for \"Grandpa served in mountains\"",
+   "src": "c7-english-ch13-t01-i08"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "People show them homage",
+   "prompt": "cause: after/for \"Soldiers gave their lives\"",
+   "src": "c7-english-ch13-t01-i03"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "He is proud of comrades",
+   "prompt": "cause: after/for \"Grandpa served in mountains\"",
+   "src": "c7-english-ch13-t01-i04"
+  },
+  {
+   "itemId": "r2:2",
+   "key": "Grandpa explains homage",
+   "prompt": "cause: after/for \"Priya asks about silence\"",
+   "src": "c7-english-ch13-t01-i01"
+  },
+  {
+   "itemId": "r3:0",
+   "key": "Priya",
+   "prompt": "who: after/for \"Why do we stand silent?\"",
+   "src": "c7-english-ch13-t01-i01"
+  },
+  {
+   "itemId": "r3:1",
+   "key": "Grandpa",
+   "prompt": "who: after/for \"To pay homage to soldiers.\"",
+   "src": "c7-english-ch13-t01-i01"
+  },
+  {
+   "itemId": "r3:2",
+   "key": "Priya",
+   "prompt": "who: after/for \"Were you a soldier too?\"",
+   "src": "c7-english-ch13-t01-i01"
+  },
+  {
+   "itemId": "r3:3",
+   "key": "Grandpa",
+   "prompt": "who: after/for \"I served in the mountains.\"",
+   "src": "c7-english-ch13-t01-i02"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ },
+ "firstCheck": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "Round r2 cause-effect: cause 'Grandpa said, I am proud.' → effect 'He was proud of comrades'. But the kit item c7-english-ch13-t01-i04 is reported speech 'Grandpa said that he was proud of his comrades.' Using the direct statement as cause and a changed version as effect misleads about reported speech.",
+    "severity": "high"
+   },
+   {
+    "where": "explainer",
+    "what": "Scene S2 arrow from 'direct' to 'said' with text 'report' suggests Grandpas words are reported as 'Grandpa said'; this is vague and could be confusing.",
+    "severity": "low"
+   },
+   {
+    "where": "explainer",
+    "what": "Task prompt 'Which report correctly changes Grandpas words?' has options 'direct', 'reported', 'myth'. The kit item c7-english-ch13-t01-i04 expects 'Grandpa said that he was proud of his comrades.' None of the options directly match; the answer 'reported' is ambiguous.",
+    "severity": "low"
+   }
+  ],
+  "verdict": "fail",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

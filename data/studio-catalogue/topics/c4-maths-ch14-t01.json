@@ -1,0 +1,1310 @@
+{
+ "topicId": "c4-maths-ch14-t01",
+ "title": "Tables and pictographs",
+ "chapter": "Data Handling",
+ "subject": "maths",
+ "class": 4,
+ "topicType": "T5",
+ "plan": {
+  "game": "pictograph@1",
+  "hint": "tally then picto modes"
+ },
+ "game": {
+  "archetype": "pictograph@1",
+  "spec": {
+   "archetype": "pictograph@1",
+   "skills": [
+    "c4-maths-ch14-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "right": "right",
+    "coach": "Tap each item as it appears",
+    "runDone": "Data done",
+    "key": "each symbol =",
+    "half": "½",
+    "check": "CHECK",
+    "trueW": "TRUE",
+    "falseW": "FALSE",
+    "total": "Total"
+   },
+   "title": "Data Desk",
+   "rounds": [
+    {
+     "mode": "tally",
+     "title": "Market tally",
+     "sub": "count each fruit",
+     "cats": [
+      {
+       "label": "Mangoes",
+       "glyph": "apple",
+       "count": 8
+      },
+      {
+       "label": "Guavas",
+       "glyph": "apple",
+       "count": 13
+      },
+      {
+       "label": "Bananas",
+       "glyph": "apple",
+       "count": 6
+      }
+     ],
+     "scale": 1,
+     "axisStart": 0,
+     "claims": [],
+     "seed": 14,
+     "speed": 1,
+     "targets": "c4-maths-ch14-t01-m-tally-four"
+    },
+    {
+     "mode": "picto",
+     "title": "Rainy days",
+     "sub": "draw rows using the key",
+     "cats": [
+      {
+       "label": "June",
+       "glyph": "cloud",
+       "count": 15
+      },
+      {
+       "label": "July",
+       "glyph": "cloud",
+       "count": 25
+      },
+      {
+       "label": "August",
+       "glyph": "cloud",
+       "count": 20
+      }
+     ],
+     "scale": 5,
+     "axisStart": 0,
+     "claims": [],
+     "seed": 27,
+     "speed": 1,
+     "targets": "c4-maths-ch14-t01-m-count-pictures"
+    },
+    {
+     "mode": "picto",
+     "title": "Half a symbol",
+     "sub": "show each number clearly",
+     "cats": [
+      {
+       "label": "Mango",
+       "glyph": "apple",
+       "count": 14
+      },
+      {
+       "label": "Guava",
+       "glyph": "apple",
+       "count": 10
+      },
+      {
+       "label": "Banana",
+       "glyph": "apple",
+       "count": 6
+      }
+     ],
+     "scale": 4,
+     "axisStart": 0,
+     "claims": [],
+     "seed": 39,
+     "speed": 0.9,
+     "targets": "c4-maths-ch14-t01-m-half-picture"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 2,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c4-maths-ch14-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Read a pictograph",
+   "accent": "mint",
+   "targets": "c4-maths-ch14-t01-m-count-pictures",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Read a pictograph"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Count pictures only"
+      },
+      {
+       "id": "key",
+       "type": "label",
+       "text": "Key: 1 cloud = 5 days",
+       "x": 80,
+       "y": 300,
+       "color": "mint"
+      },
+      {
+       "id": "clouds",
+       "type": "label",
+       "text": "4 clouds",
+       "x": 600,
+       "y": 300,
+       "color": "ion"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "step1",
+       "type": "node",
+       "text": "Key",
+       "sub": "1 = 5",
+       "color": "mint"
+      },
+      {
+       "id": "step2",
+       "type": "node",
+       "text": "Pictures",
+       "sub": "4",
+       "color": "ion"
+      },
+      {
+       "id": "step3",
+       "type": "node",
+       "text": "Multiply",
+       "sub": "4 × 5",
+       "color": "amber"
+      },
+      {
+       "id": "step4",
+       "type": "node",
+       "text": "Answer",
+       "sub": "20 days",
+       "color": "sun"
+      },
+      {
+       "id": "arr1",
+       "type": "arrow",
+       "from": "step1",
+       "to": "step2",
+       "text": "read"
+      },
+      {
+       "id": "arr2",
+       "type": "arrow",
+       "from": "step2",
+       "to": "step3",
+       "text": "multiply"
+      },
+      {
+       "id": "arr3",
+       "type": "arrow",
+       "from": "step3",
+       "to": "step4",
+       "text": "find"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "column",
+     "els": [
+      {
+       "id": "prompt",
+       "type": "title",
+       "text": "Choose the answer"
+      },
+      {
+       "id": "o20",
+       "type": "label",
+       "text": "20 rainy days",
+       "x": 100,
+       "y": 300,
+       "color": "mint"
+      },
+      {
+       "id": "o4",
+       "type": "label",
+       "text": "4 rainy days",
+       "x": 100,
+       "y": 370,
+       "color": "amber"
+      },
+      {
+       "id": "o9",
+       "type": "label",
+       "text": "9 rainy days",
+       "x": 100,
+       "y": 440,
+       "color": "ion"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "A pictograph uses pictures to show data in a simple way.",
+    "L2": "First, read the key. It tells us how many things one picture stands for.",
+    "L3": "Here, one cloud picture stands for five rainy days.",
+    "L4": "July has four cloud pictures, so we multiply four by five.",
+    "L5": "Four times five is twenty, so July had twenty rainy days.",
+    "L6": "A half picture also matters: it stands for half of the key's number.",
+    "L7": "Do not count pictures alone. Use the key, then multiply."
+   },
+   "narration": {},
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "key"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "clouds"
+      },
+      {
+       "at": 0.3,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "key"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "step1",
+        "step2"
+       ]
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "arr1",
+        "arr2",
+        "step3"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 0.5,
+       "target": "arr2",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "arr3",
+        "step4"
+       ]
+      },
+      {
+       "at": 0.4,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "step4"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "myth"
+      },
+      {
+       "at": 0.5,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "prompt",
+        "o20",
+        "o4",
+        "o9"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Four cloud pictures stand for how many rainy days?",
+    "options": [
+     "o20",
+     "o4",
+     "o9"
+    ],
+    "answer": "o20",
+    "src": "c4-maths-ch14-t01-i01"
+   }
+  },
+  "repairs": [],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 39
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch14-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "title",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "pictograph",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "pic1",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        220,
+        220
+       ],
+       "r": 38
+      },
+      {
+       "id": "pic2",
+       "op": "circle",
+       "startMs": 1500,
+       "endMs": 2100,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        220
+       ],
+       "r": 38
+      },
+      {
+       "id": "pic3",
+       "op": "circle",
+       "startMs": 2100,
+       "endMs": 2700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        580,
+        220
+       ],
+       "r": 38
+      },
+      {
+       "id": "data",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        340
+       ],
+       "text": "data",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "simple",
+       "op": "text",
+       "startMs": 3800,
+       "endMs": 4300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        400
+       ],
+       "text": "simple",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch14-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "keybox",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        100
+       ],
+       "w": 600,
+       "h": 180,
+       "round": 12
+      },
+      {
+       "id": "keylabel",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        150,
+        145
+       ],
+       "text": "key",
+       "size": "l"
+      },
+      {
+       "id": "keypic",
+       "op": "circle",
+       "startMs": 1600,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        300,
+        205
+       ],
+       "r": 34
+      },
+      {
+       "id": "stands",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        390,
+        215
+       ],
+       "text": "stands for",
+       "size": "m"
+      },
+      {
+       "id": "things",
+       "op": "text",
+       "startMs": 3100,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        560,
+        215
+       ],
+       "text": "things",
+       "size": "m"
+      },
+      {
+       "id": "read",
+       "op": "arrow",
+       "startMs": 4000,
+       "endMs": 4700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        165,
+        165
+       ],
+       "to": [
+        285,
+        190
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch14-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 4430,
+     "ops": [
+      {
+       "id": "cloud",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        220,
+        220
+       ],
+       "rx": 70,
+       "ry": 42
+      },
+      {
+       "id": "cloud2",
+       "op": "circle",
+       "startMs": 400,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        175,
+        220
+       ],
+       "r": 28
+      },
+      {
+       "id": "cloud3",
+       "op": "circle",
+       "startMs": 700,
+       "endMs": 1100,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        265,
+        220
+       ],
+       "r": 28
+      },
+      {
+       "id": "one",
+       "op": "text",
+       "startMs": 1300,
+       "endMs": 2000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        220,
+        320
+       ],
+       "text": "one cloud",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "five",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 3000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        500,
+        220
+       ],
+       "text": "five",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "stands2",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        500,
+        280
+       ],
+       "text": "rainy days",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "equals",
+       "op": "arrow",
+       "startMs": 3400,
+       "endMs": 4100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        310,
+        220
+       ],
+       "to": [
+        445,
+        220
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch14-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "july",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        100,
+        90
+       ],
+       "text": "July",
+       "size": "l"
+      },
+      {
+       "id": "jc1",
+       "op": "circle",
+       "startMs": 700,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        180,
+        200
+       ],
+       "r": 34
+      },
+      {
+       "id": "jc2",
+       "op": "circle",
+       "startMs": 1200,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        280,
+        200
+       ],
+       "r": 34
+      },
+      {
+       "id": "jc3",
+       "op": "circle",
+       "startMs": 1700,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        380,
+        200
+       ],
+       "r": 34
+      },
+      {
+       "id": "jc4",
+       "op": "circle",
+       "startMs": 2200,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        480,
+        200
+       ],
+       "r": 34
+      },
+      {
+       "id": "multiply",
+       "op": "numwork",
+       "startMs": 3000,
+       "endMs": 4200,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        190,
+        330
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "four",
+         "×",
+         "five"
+        ]
+       ]
+      },
+      {
+       "id": "julyarrow",
+       "op": "arrow",
+       "startMs": 4300,
+       "endMs": 5000,
+       "ink": "accent",
+       "weight": 1,
+       "from": [
+        300,
+        110
+       ],
+       "to": [
+        330,
+        165
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch14-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "equation",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        170,
+        130
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "four",
+         "×",
+         "five",
+         "=",
+         "twenty"
+        ]
+       ]
+      },
+      {
+       "id": "resultbox",
+       "op": "rect",
+       "startMs": 1900,
+       "endMs": 2500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        490,
+        105
+       ],
+       "w": 190,
+       "h": 80,
+       "round": 10
+      },
+      {
+       "id": "twenty",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        585,
+        158
+       ],
+       "text": "twenty",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "july2",
+       "op": "text",
+       "startMs": 3400,
+       "endMs": 4000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        160,
+        310
+       ],
+       "text": "July",
+       "size": "l"
+      },
+      {
+       "id": "days",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 4700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        310
+       ],
+       "text": "rainy days",
+       "size": "m"
+      },
+      {
+       "id": "twenty2",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 5100,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        580,
+        310
+       ],
+       "text": "twenty",
+       "size": "l"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch14-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "halfcloud",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        180,
+        190
+       ],
+       "rx": 38,
+       "ry": 42
+      },
+      {
+       "id": "halfmark",
+       "op": "line",
+       "startMs": 1000,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        180,
+        150
+       ],
+       "to": [
+        180,
+        230
+       ]
+      },
+      {
+       "id": "halftext",
+       "op": "text",
+       "startMs": 1600,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        300
+       ],
+       "text": "half picture",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "keynum",
+       "op": "text",
+       "startMs": 2600,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        470,
+        170
+       ],
+       "text": "key",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "halfkey",
+       "op": "arrow",
+       "startMs": 3400,
+       "endMs": 4200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        220,
+        190
+       ],
+       "to": [
+        400,
+        190
+       ]
+      },
+      {
+       "id": "halfresult",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5300,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        470,
+        300
+       ],
+       "text": "half",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch14-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "pictures",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        160,
+        100
+       ],
+       "text": "pictures",
+       "size": "l"
+      },
+      {
+       "id": "alone",
+       "op": "text",
+       "startMs": 800,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        500,
+        100
+       ],
+       "text": "alone",
+       "size": "l"
+      },
+      {
+       "id": "cross",
+       "op": "line",
+       "startMs": 1600,
+       "endMs": 2300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        145,
+        80
+       ],
+       "to": [
+        555,
+        125
+       ]
+      },
+      {
+       "id": "usekey",
+       "op": "text",
+       "startMs": 2400,
+       "endMs": 3200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        160,
+        250
+       ],
+       "text": "use key",
+       "size": "l"
+      },
+      {
+       "id": "multiply2",
+       "op": "numwork",
+       "startMs": 3000,
+       "endMs": 4300,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        420,
+        240
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "pictur",
+         "×",
+         "key"
+        ]
+       ]
+      },
+      {
+       "id": "finalarrow",
+       "op": "arrow",
+       "startMs": 3900,
+       "endMs": 4700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        320,
+        275
+       ],
+       "to": [
+        395,
+        275
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "8",
+   "prompt": "tally: Mangoes"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "13",
+   "prompt": "tally: Guavas"
+  },
+  {
+   "itemId": "r1:2",
+   "key": "6",
+   "prompt": "tally: Bananas"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "3 symbols",
+   "prompt": "picto: June"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "5 symbols",
+   "prompt": "picto: July"
+  },
+  {
+   "itemId": "r2:2",
+   "key": "4 symbols",
+   "prompt": "picto: August"
+  },
+  {
+   "itemId": "r3:0",
+   "key": "3.5 symbols",
+   "prompt": "picto: Mango"
+  },
+  {
+   "itemId": "r3:1",
+   "key": "2.5 symbols",
+   "prompt": "picto: Guava"
+  },
+  {
+   "itemId": "r3:2",
+   "key": "1.5 symbols",
+   "prompt": "picto: Banana"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

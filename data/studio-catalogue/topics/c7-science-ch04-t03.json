@@ -1,0 +1,1889 @@
+{
+ "topicId": "c7-science-ch04-t03",
+ "title": "Uses of non-metals",
+ "chapter": "The World of Metals and Non-metals",
+ "subject": "science",
+ "class": 7,
+ "topicType": "T3",
+ "plan": {
+  "game": "sort-storm@1",
+  "hint": "tools tester / magnet / flame: metals and non-metals (byProp); uses"
+ },
+ "game": {
+  "archetype": "sort-storm@1",
+  "spec": {
+   "archetype": "sort-storm@1",
+   "skills": [
+    "c7-science-ch04-t03"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "sorted": "sorted",
+    "tests": "tests",
+    "coach": "Test it, then sort it",
+    "runDone": "Belt cleared",
+    "missed": "missed",
+    "why": "because",
+    "yes": "yes",
+    "no": "no",
+    "magnetic": "magnetic",
+    "light": "light",
+    "floats": "floats",
+    "conducts": "conducts",
+    "burns": "burns",
+    "starch": "starch",
+    "tMagnet": "Magnet",
+    "tTorch": "Torch",
+    "tTank": "Water",
+    "tTester": "Circuit",
+    "tFlame": "Flame",
+    "tIodine": "Iodine",
+    "tPaper": "Paper",
+    "tBiuret": "Copper test",
+    "tTurmeric": "Turmeric",
+    "tLitmus": "Litmus",
+    "tRose": "China rose",
+    "fat": "fat",
+    "protein": "protein",
+    "acidity": "acidity",
+    "acid": "acid",
+    "base": "base",
+    "neutral": "neutral"
+   },
+   "title": "Non-metal mission",
+   "rounds": [
+    {
+     "title": "Flame test",
+     "sub": "Test which fuels can burn",
+     "byProp": "burns",
+     "bins": [
+      {
+       "id": "yes",
+       "label": "Burns",
+       "glyph": "fire"
+      },
+      {
+       "id": "no",
+       "label": "Does not burn",
+       "glyph": "cloud"
+      }
+     ],
+     "tools": [
+      "flame"
+     ],
+     "items": [
+      {
+       "id": "oxygen",
+       "text": "Oxygen",
+       "glyph": "wind",
+       "bin": "yes",
+       "props": {
+        "burns": "yes"
+       },
+       "src": "c7-science-ch04-t03-i07"
+      },
+      {
+       "id": "hydrogen",
+       "text": "Hydrogen",
+       "glyph": "wind",
+       "bin": "yes",
+       "props": {
+        "burns": "yes"
+       },
+       "src": "c7-science-ch04-t03-i09"
+      },
+      {
+       "id": "coal",
+       "text": "Coal",
+       "glyph": "pick",
+       "bin": "yes",
+       "props": {
+        "burns": "yes"
+       },
+       "src": "c7-science-ch04-t03-i02"
+      },
+      {
+       "id": "nitrogen",
+       "text": "Nitrogen",
+       "glyph": "wind",
+       "bin": "no",
+       "props": {
+        "burns": "no"
+       },
+       "src": "c7-science-ch04-t03-i03"
+      },
+      {
+       "id": "chlorine",
+       "text": "Chlorine",
+       "glyph": "drop",
+       "bin": "no",
+       "props": {
+        "burns": "no"
+       },
+       "src": "c7-science-ch04-t03-i06"
+      },
+      {
+       "id": "helium",
+       "text": "Helium",
+       "bin": "no",
+       "props": {
+        "burns": "no"
+       }
+      }
+     ],
+     "speed": 0.85
+    }
+   ]
+  },
+  "repairs": [
+   "string:bin.label",
+   "item:bin",
+   "item:id",
+   "string:item.text",
+   "item:bin",
+   "string:item.text",
+   "string:item.text",
+   "round:items"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-science-ch04-t03"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Right",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "BUSTED",
+    "order": "Tap them in order"
+   },
+   "title": "Why non-metals matter",
+   "accent": "sci",
+   "targets": "c7-science-ch04-t03-m1",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Why non-metals matter"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Non-metals are useless"
+      },
+      {
+       "id": "use",
+       "type": "label",
+       "text": "Essential uses",
+       "x": 620,
+       "y": 250,
+       "color": "mint"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "oxygen",
+       "type": "node",
+       "text": "Oxygen",
+       "sub": "breathing",
+       "glyph": "lungs",
+       "color": "sci"
+      },
+      {
+       "id": "carbon",
+       "type": "node",
+       "text": "Carbon",
+       "sub": "food and pencils",
+       "color": "ion"
+      },
+      {
+       "id": "nitrogen",
+       "type": "node",
+       "text": "Nitrogen",
+       "sub": "plants and chips",
+       "glyph": "wheat",
+       "color": "mint"
+      },
+      {
+       "id": "chlorine",
+       "type": "node",
+       "text": "Chlorine",
+       "sub": "kills germs",
+       "glyph": "drop",
+       "color": "amber"
+      },
+      {
+       "id": "air",
+       "type": "node",
+       "text": "Air",
+       "sub": "21% oxygen",
+       "glyph": "wind",
+       "color": "ion"
+      },
+      {
+       "id": "soil",
+       "type": "node",
+       "text": "Soil",
+       "sub": "nitrogen compounds",
+       "glyph": "leaf",
+       "color": "mint"
+      },
+      {
+       "id": "chips",
+       "type": "node",
+       "text": "Chips packet",
+       "sub": "keeps fresh",
+       "glyph": "plate",
+       "color": "sun"
+      },
+      {
+       "id": "water",
+       "type": "node",
+       "text": "Drinking water",
+       "sub": "safe to drink",
+       "glyph": "jug",
+       "color": "amber"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "oxygen",
+       "to": "air",
+       "text": "breathing"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "nitrogen",
+       "to": "soil",
+       "text": "plant proteins"
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "nitrogen",
+       "to": "chips",
+       "text": "freshness"
+      },
+      {
+       "id": "a4",
+       "type": "arrow",
+       "from": "chlorine",
+       "to": "water",
+       "text": "kills germs"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Non-metals are not useless. They do important jobs in living things and in everyday life.",
+    "L2": "Here is the myth: metals do all the important jobs. That is not true.",
+    "L3": "Oxygen helps living things release energy from food, and it also supports burning.",
+    "L4": "A healthy person gets enough oxygen from air, which contains about 21 percent oxygen. A patient with weak lungs may need oxygen from a cylinder.",
+    "L5": "Carbon is part of food, our bodies and wood. Graphite in a pencil and diamond are forms of carbon.",
+    "L6": "Nitrogen makes up about 78 percent of air, but plants use nitrogen compounds from soil to make proteins.",
+    "L7": "Nitrogen gas fills chips packets to help keep chips fresh, while chlorine kills germs in drinking water.",
+    "L8": "So non-metals are essential: they support life, protect health and help us use familiar products."
+   },
+   "narration": {
+    "L1": {
+     "text": "Non-metals are not useless. They do important jobs in living things and in everyday life.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "Here is the myth: metals do all the important jobs. That is not true.",
+     "dur": 2.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "Oxygen helps living things release energy from food, and it also supports burning.",
+     "dur": 2.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "A healthy person gets enough oxygen from air, which contains about 21 percent oxygen. A patient with weak lungs may need oxygen from a cylinder.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "Carbon is part of food, our bodies and wood. Graphite in a pencil and diamond are forms of carbon.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Nitrogen makes up about 78 percent of air, but plants use nitrogen compounds from soil to make proteins.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Nitrogen gas fills chips packets to help keep chips fresh, while chlorine kills germs in drinking water.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "So non-metals are essential: they support life, protect health and help us use familiar products.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": "use"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      },
+      {
+       "at": 1,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "oxygen"
+      },
+      {
+       "at": 0.7,
+       "do": "show",
+       "dur": 0.7,
+       "target": "a1"
+      },
+      {
+       "at": 1.2,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "a1",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "air"
+      },
+      {
+       "at": 0.6,
+       "do": "highlight",
+       "dur": 1,
+       "target": "air"
+      },
+      {
+       "at": 1.5,
+       "do": "highlight",
+       "dur": 1,
+       "target": "oxygen"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "carbon"
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 1,
+       "target": "carbon"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "nitrogen"
+      },
+      {
+       "at": 0.6,
+       "do": "show",
+       "dur": 0.7,
+       "target": "soil"
+      },
+      {
+       "at": 1.2,
+       "do": "show",
+       "dur": 0.7,
+       "target": "a2"
+      },
+      {
+       "at": 1.7,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "a2",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "chips"
+      },
+      {
+       "at": 0.6,
+       "do": "show",
+       "dur": 0.7,
+       "target": "chlorine"
+      },
+      {
+       "at": 1.2,
+       "do": "show",
+       "dur": 0.7,
+       "target": "water"
+      },
+      {
+       "at": 1.8,
+       "do": "show",
+       "dur": 0.6,
+       "target": "a3"
+      },
+      {
+       "at": 2.2,
+       "do": "show",
+       "dur": 0.6,
+       "target": "a4"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 0.6,
+       "target": "oxygen"
+      },
+      {
+       "at": 0.6,
+       "do": "highlight",
+       "dur": 0.6,
+       "target": "carbon"
+      },
+      {
+       "at": 1.2,
+       "do": "highlight",
+       "dur": 0.6,
+       "target": "nitrogen"
+      },
+      {
+       "at": 1.8,
+       "do": "highlight",
+       "dur": 0.6,
+       "target": "chlorine"
+      },
+      {
+       "at": "end",
+       "do": "interactive"
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which non-metal helps plants make proteins through compounds in soil?",
+    "options": [
+     "oxygen",
+     "carbon",
+     "nitrogen",
+     "chlorine"
+    ],
+    "answer": "nitrogen",
+    "src": "c7-science-ch04-t03-i05"
+   }
+  },
+  "repairs": [
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 28
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch04-t03-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "title",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "Non-metals",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "left",
+       "op": "rect",
+       "startMs": 900,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        145
+       ],
+       "w": 260,
+       "h": 180
+      },
+      {
+       "id": "right",
+       "op": "rect",
+       "startMs": 900,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        450,
+        145
+       ],
+       "w": 260,
+       "h": 180
+      },
+      {
+       "id": "jobs",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        220,
+        185
+       ],
+       "text": "important jobs",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "life",
+       "op": "text",
+       "startMs": 2800,
+       "endMs": 3600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        580,
+        185
+       ],
+       "text": "living things",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "everyday",
+       "op": "text",
+       "startMs": 3700,
+       "endMs": 4500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        580,
+        260
+       ],
+       "text": "everyday life",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "arrow1",
+       "op": "arrow",
+       "startMs": 4700,
+       "endMs": 5500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        350,
+        235
+       ],
+       "to": [
+        445,
+        235
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch04-t03-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "myth",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "myth",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "metals",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        170,
+        170
+       ],
+       "text": "metals",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "alljobs",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        170,
+        245
+       ],
+       "text": "all important jobs",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "cross",
+       "op": "line",
+       "startMs": 2700,
+       "endMs": 3400,
+       "ink": "accent",
+       "weight": 3,
+       "from": [
+        70,
+        125
+       ],
+       "to": [
+        270,
+        275
+       ]
+      },
+      {
+       "id": "nottrue",
+       "op": "text",
+       "startMs": 3600,
+       "endMs": 4500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        560,
+        205
+       ],
+       "text": "not true",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "nonmetals",
+       "op": "text",
+       "startMs": 4600,
+       "endMs": 5300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        560,
+        285
+       ],
+       "text": "non-metals",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "arrow2",
+       "op": "arrow",
+       "startMs": 5400,
+       "endMs": 6200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        300,
+        205
+       ],
+       "to": [
+        450,
+        245
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch04-t03-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "oxygen",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        60
+       ],
+       "text": "oxygen",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "food",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        130,
+        180
+       ],
+       "text": "food",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "energy",
+       "op": "text",
+       "startMs": 1600,
+       "endMs": 2200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        180
+       ],
+       "text": "energy",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "arrow3",
+       "op": "arrow",
+       "startMs": 2300,
+       "endMs": 2900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        200,
+        180
+       ],
+       "to": [
+        330,
+        180
+       ]
+      },
+      {
+       "id": "burning",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        650,
+        180
+       ],
+       "text": "burning",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "arrow4",
+       "op": "arrow",
+       "startMs": 3800,
+       "endMs": 4400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        500,
+        180
+       ],
+       "to": [
+        590,
+        180
+       ]
+      },
+      {
+       "id": "label",
+       "op": "text",
+       "startMs": 4600,
+       "endMs": 5400,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        330
+       ],
+       "text": "release energy",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch04-t03-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 11238,
+     "ops": [
+      {
+       "id": "air",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        130,
+        65
+       ],
+       "text": "air",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "oxygen21",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        130,
+        140
+       ],
+       "text": "21 percent oxygen",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "healthy",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        130,
+        225
+       ],
+       "text": "healthy person",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "arrow5",
+       "op": "arrow",
+       "startMs": 2600,
+       "endMs": 3200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        130,
+        260
+       ],
+       "to": [
+        130,
+        315
+       ]
+      },
+      {
+       "id": "enough",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 4100,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        130,
+        370
+       ],
+       "text": "enough oxygen",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "cylinder",
+       "op": "rect",
+       "startMs": 4300,
+       "endMs": 5200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        500,
+        125
+       ],
+       "w": 110,
+       "h": 250
+      },
+      {
+       "id": "cyltext",
+       "op": "text",
+       "startMs": 5300,
+       "endMs": 6000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        555,
+        220
+       ],
+       "text": "oxygen",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "patient",
+       "op": "text",
+       "startMs": 6100,
+       "endMs": 6700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        680,
+        115
+       ],
+       "text": "patient",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "weak",
+       "op": "text",
+       "startMs": 6800,
+       "endMs": 7500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        680,
+        175
+       ],
+       "text": "weak lungs",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "tube",
+       "op": "line",
+       "startMs": 7600,
+       "endMs": 8200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        610,
+        250
+       ],
+       "to": [
+        680,
+        250
+       ]
+      },
+      {
+       "id": "arrow6",
+       "op": "arrow",
+       "startMs": 8300,
+       "endMs": 9000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        610,
+        250
+       ],
+       "to": [
+        680,
+        250
+       ]
+      },
+      {
+       "id": "needs",
+       "op": "text",
+       "startMs": 9200,
+       "endMs": 10000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        560,
+        420
+       ],
+       "text": "needs oxygen",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch04-t03-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "carbon",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "carbon",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "food2",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        170
+       ],
+       "text": "food",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "body",
+       "op": "text",
+       "startMs": 1600,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        280,
+        170
+       ],
+       "text": "bodies",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "wood",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        440,
+        170
+       ],
+       "text": "wood",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "forms",
+       "op": "text",
+       "startMs": 3200,
+       "endMs": 4000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        290
+       ],
+       "text": "forms of carbon",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "graphite",
+       "op": "text",
+       "startMs": 4200,
+       "endMs": 4900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        230,
+        380
+       ],
+       "text": "graphite",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "pencil",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 5500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        230,
+        435
+       ],
+       "text": "pencil",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "diamond",
+       "op": "text",
+       "startMs": 5700,
+       "endMs": 6400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        590,
+        380
+       ],
+       "text": "diamond",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "arrow7",
+       "op": "arrow",
+       "startMs": 6500,
+       "endMs": 7100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        320
+       ],
+       "to": [
+        230,
+        360
+       ]
+      },
+      {
+       "id": "arrow8",
+       "op": "arrow",
+       "startMs": 7200,
+       "endMs": 7800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        320
+       ],
+       "to": [
+        590,
+        360
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch04-t03-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "nitrogen",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "nitrogen",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "air78",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        150,
+        155
+       ],
+       "text": "78 percent of air",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "soil",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        155
+       ],
+       "text": "soil",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "compounds",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        230
+       ],
+       "text": "nitrogen compounds",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "arrow9",
+       "op": "arrow",
+       "startMs": 3500,
+       "endMs": 4200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        150,
+        190
+       ],
+       "to": [
+        330,
+        220
+       ]
+      },
+      {
+       "id": "arrow10",
+       "op": "arrow",
+       "startMs": 4300,
+       "endMs": 4900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        270
+       ],
+       "to": [
+        400,
+        330
+       ]
+      },
+      {
+       "id": "plants",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 5500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        370
+       ],
+       "text": "plants",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "proteins",
+       "op": "text",
+       "startMs": 5700,
+       "endMs": 6400,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        440
+       ],
+       "text": "proteins",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch04-t03-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "nitrogen2",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        190,
+        55
+       ],
+       "text": "nitrogen gas",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "packet",
+       "op": "rect",
+       "startMs": 900,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        80,
+        140
+       ],
+       "w": 220,
+       "h": 150
+      },
+      {
+       "id": "chips",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        190,
+        205
+       ],
+       "text": "chips",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "fresh",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3100,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        190,
+        345
+       ],
+       "text": "fresh",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "chlorine",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 4000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        610,
+        55
+       ],
+       "text": "chlorine",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "water",
+       "op": "ellipse",
+       "startMs": 4200,
+       "endMs": 5000,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        610,
+        210
+       ],
+       "rx": 130,
+       "ry": 70
+      },
+      {
+       "id": "drinking",
+       "op": "text",
+       "startMs": 5100,
+       "endMs": 5900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        610,
+        210
+       ],
+       "text": "drinking water",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "germs",
+       "op": "text",
+       "startMs": 6000,
+       "endMs": 6500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        610,
+        345
+       ],
+       "text": "germs",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "crossgerms",
+       "op": "line",
+       "startMs": 6600,
+       "endMs": 7100,
+       "ink": "good",
+       "weight": 3,
+       "from": [
+        565,
+        315
+       ],
+       "to": [
+        655,
+        375
+       ]
+      },
+      {
+       "id": "crossgerms2",
+       "op": "line",
+       "startMs": 7100,
+       "endMs": 7600,
+       "ink": "good",
+       "weight": 3,
+       "from": [
+        655,
+        315
+       ],
+       "to": [
+        565,
+        375
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch04-t03-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "essential",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "Non-metals essential",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "life2",
+       "op": "rect",
+       "startMs": 1100,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        70,
+        150
+       ],
+       "w": 200,
+       "h": 150
+      },
+      {
+       "id": "life3",
+       "op": "text",
+       "startMs": 2000,
+       "endMs": 2700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        170,
+        225
+       ],
+       "text": "support life",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "health",
+       "op": "rect",
+       "startMs": 2800,
+       "endMs": 3600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        300,
+        150
+       ],
+       "w": 200,
+       "h": 150
+      },
+      {
+       "id": "health2",
+       "op": "text",
+       "startMs": 3700,
+       "endMs": 4500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        225
+       ],
+       "text": "protect health",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "products",
+       "op": "rect",
+       "startMs": 4600,
+       "endMs": 5400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        530,
+        150
+       ],
+       "w": 200,
+       "h": 150
+      },
+      {
+       "id": "products2",
+       "op": "text",
+       "startMs": 5500,
+       "endMs": 6400,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        630,
+        225
+       ],
+       "text": "familiar products",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "final",
+       "op": "arrow",
+       "startMs": 6400,
+       "endMs": 6900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        345
+       ],
+       "to": [
+        400,
+        420
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:oxygen",
+   "key": "Burns",
+   "prompt": "Oxygen → which of [Burns | Does not burn] props {\"burns\":\"yes\"}",
+   "src": "c7-science-ch04-t03-i07"
+  },
+  {
+   "itemId": "r1:hydrogen",
+   "key": "Burns",
+   "prompt": "Hydrogen → which of [Burns | Does not burn] props {\"burns\":\"yes\"}",
+   "src": "c7-science-ch04-t03-i09"
+  },
+  {
+   "itemId": "r1:coal",
+   "key": "Burns",
+   "prompt": "Coal → which of [Burns | Does not burn] props {\"burns\":\"yes\"}",
+   "src": "c7-science-ch04-t03-i02"
+  },
+  {
+   "itemId": "r1:nitrogen",
+   "key": "Does not burn",
+   "prompt": "Nitrogen → which of [Burns | Does not burn] props {\"burns\":\"no\"}",
+   "src": "c7-science-ch04-t03-i03"
+  },
+  {
+   "itemId": "r1:chlorine",
+   "key": "Does not burn",
+   "prompt": "Chlorine → which of [Burns | Does not burn] props {\"burns\":\"no\"}",
+   "src": "c7-science-ch04-t03-i06"
+  },
+  {
+   "itemId": "r1:helium",
+   "key": "Does not burn",
+   "prompt": "Helium → which of [Burns | Does not burn] props {\"burns\":\"no\"}"
+  }
+ ],
+ "check": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "Oxygen is classified as 'Burns', which is factually incorrect; oxygen supports burning but does not itself burn. This could mislead children into thinking oxygen is flammable.",
+    "severity": "high"
+   }
+  ],
+  "verdict": "fail",
+  "model": "DeepSeek-V4-Flash"
+ },
+ "firstCheck": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "Round 3 item 'Graphite pencil' is sorted into 'Food safety' bin, but the kit item (c7-science-ch04-t03-i02) is about pencil lead (graphite), which is a writing material, not related to food safety. This is a factual mismatch: pencil lead is not a food safety item.",
+    "severity": "high"
+   }
+  ],
+  "verdict": "fail",
+  "model": "DeepSeek-V4-Flash"
+ },
+ "regens": 2
+}

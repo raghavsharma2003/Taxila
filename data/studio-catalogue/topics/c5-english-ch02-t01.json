@@ -1,0 +1,2113 @@
+{
+ "topicId": "c5-english-ch02-t01",
+ "title": "Gone with the Scooter",
+ "chapter": "Gone with the Scooter",
+ "subject": "english",
+ "class": 5,
+ "topicType": "T3",
+ "plan": {
+  "game": "story-rail@1",
+  "hint": "sequence, cause and who modes from the lesson's events and speakers"
+ },
+ "game": {
+  "archetype": "story-rail@1",
+  "spec": {
+   "archetype": "story-rail@1",
+   "skills": [
+    "c5-english-ch02-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "picked": "coupled",
+    "streak": "streak",
+    "next": "What happens next?",
+    "effect": "What does this lead to?",
+    "who": "Who said this?",
+    "runDone": "Line complete",
+    "order": "your train",
+    "right": "Coupled",
+    "wrong": "Not this one",
+    "coach": "Tap a wagon before the train reaches the fork"
+   },
+   "title": "Gone with the Scooter",
+   "rounds": [
+    {
+     "mode": "sequence",
+     "title": "The scooter ride",
+     "sub": "couple the events in order",
+     "cards": [
+      {
+       "id": "e1",
+       "text": "Dadaji parked the scooter",
+       "glyph": "car",
+       "src": "c5-english-ch02-t01-i02"
+      },
+      {
+       "id": "e2",
+       "text": "Dadaji went for jalebis",
+       "glyph": "shop",
+       "src": "c5-english-ch02-t01-i02"
+      },
+      {
+       "id": "e3",
+       "text": "Chintu pressed the button",
+       "glyph": "hand",
+       "src": "c5-english-ch02-t01-i02"
+      },
+      {
+       "id": "e4",
+       "text": "The scooter rolled downhill",
+       "glyph": "car",
+       "src": "c5-english-ch02-t01-i02"
+      },
+      {
+       "id": "e5",
+       "text": "It stopped in the hay",
+       "glyph": "wheat",
+       "src": "c5-english-ch02-t01-i02"
+      }
+     ],
+     "speed": 0.9,
+     "targets": "c5-english-ch02-t01-m-sequence"
+    },
+    {
+     "mode": "cause",
+     "title": "What led to what?",
+     "sub": "match each cause to its effect",
+     "pairs": [
+      {
+       "cause": {
+        "id": "c1",
+        "text": "Chintu pressed the button",
+        "glyph": "hand",
+        "src": "c5-english-ch02-t01-i03"
+       },
+       "effect": {
+        "id": "f1",
+        "text": "The scooter started moving",
+        "glyph": "car",
+        "src": "c5-english-ch02-t01-i03"
+       }
+      },
+      {
+       "cause": {
+        "id": "c2",
+        "text": "The scooter rolled downhill",
+        "glyph": "car",
+        "src": "c5-english-ch02-t01-i02"
+       },
+       "effect": {
+        "id": "f2",
+        "text": "It stopped in the hay",
+        "glyph": "wheat",
+        "src": "c5-english-ch02-t01-i02"
+       }
+      },
+      {
+       "cause": {
+        "id": "c3",
+        "text": "Chintu might be hurt",
+        "glyph": "shield",
+        "src": "c5-english-ch02-t01-i07"
+       },
+       "effect": {
+        "id": "f3",
+        "text": "Dadaji came running",
+        "glyph": "person",
+        "src": "c5-english-ch02-t01-i07"
+       }
+      }
+     ],
+     "speed": 0.85,
+     "targets": "c5-english-ch02-t01-m-past-tense"
+    },
+    {
+     "mode": "who",
+     "title": "Who said it?",
+     "sub": "send each line to its speaker",
+     "speakers": [
+      {
+       "id": "dadaji",
+       "name": "Dadaji",
+       "glyph": "person"
+      },
+      {
+       "id": "chintu",
+       "name": "Chintu",
+       "glyph": "person"
+      }
+     ],
+     "lines": [
+      {
+       "id": "w1",
+       "text": "Next time, we ride together",
+       "speaker": "dadaji",
+       "src": "c5-english-ch02-t01-i12"
+      },
+      {
+       "id": "w2",
+       "text": "With helmets",
+       "speaker": "dadaji",
+       "src": "c5-english-ch02-t01-i12"
+      },
+      {
+       "id": "w3",
+       "text": "Vroom!",
+       "speaker": "chintu",
+       "src": "c5-english-ch02-t01-i03"
+      }
+     ],
+     "speed": 0.8
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c5-english-ch02-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Right",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "BUSTED",
+    "order": "Tap them in order"
+   },
+   "title": "Gone with the Scooter",
+   "accent": "sun",
+   "targets": "c5-english-ch02-t01-m-past-tense",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Gone with the Scooter"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Every past action adds -ed"
+      },
+      {
+       "id": "past",
+       "type": "label",
+       "text": "Tell what happened",
+       "x": 540,
+       "y": 300,
+       "color": "sun"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "park",
+       "type": "node",
+       "text": "Dadaji parked",
+       "sub": "near fair",
+       "x": 120,
+       "y": 280,
+       "color": "mint"
+      },
+      {
+       "id": "press",
+       "type": "node",
+       "text": "Chintu pressed",
+       "sub": "the button",
+       "glyph": "hand",
+       "x": 370,
+       "y": 280,
+       "color": "sun"
+      },
+      {
+       "id": "roll",
+       "type": "node",
+       "text": "scooter rolled",
+       "sub": "down slope",
+       "glyph": "road",
+       "x": 620,
+       "y": 280,
+       "color": "ion"
+      },
+      {
+       "id": "stop",
+       "type": "node",
+       "text": "scooter stopped",
+       "sub": "in hay",
+       "glyph": "wheat",
+       "x": 850,
+       "y": 280,
+       "color": "amber"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "park",
+       "to": "press",
+       "text": "then"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "press",
+       "to": "roll",
+       "text": "next"
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "roll",
+       "to": "stop",
+       "text": "finally"
+      },
+      {
+       "id": "verbs",
+       "type": "label",
+       "text": "Past-tense verbs",
+       "x": 380,
+       "y": 470,
+       "color": "sun"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "e1",
+       "type": "node",
+       "text": "Parked",
+       "sub": "Dadaji",
+       "color": "mint"
+      },
+      {
+       "id": "e2",
+       "type": "node",
+       "text": "Pressed",
+       "sub": "Chintu",
+       "glyph": "hand",
+       "color": "sun"
+      },
+      {
+       "id": "e3",
+       "type": "node",
+       "text": "Rolled",
+       "sub": "slope",
+       "glyph": "road",
+       "color": "ion"
+      },
+      {
+       "id": "e4",
+       "type": "node",
+       "text": "Stopped",
+       "sub": "hay",
+       "glyph": "wheat",
+       "color": "amber"
+      },
+      {
+       "id": "orderlabel",
+       "type": "label",
+       "text": "What happened first?",
+       "x": 360,
+       "y": 500,
+       "color": "sun"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "This story is an unexpected adventure with a scooter.",
+    "L2": "To retell it, put the main events in order.",
+    "L3": "First, Dadaji parked the scooter near the village fair and went to buy jalebis.",
+    "L4": "Then Chintu pressed the start button.",
+    "L5": "Next, the scooter rolled down the slope.",
+    "L6": "Finally, it stopped in a pile of hay.",
+    "L7": "Use past-tense verbs because these events already happened.",
+    "L8": "Some verbs add -ed: roll becomes rolled.",
+    "L9": "But some verbs change shape: run becomes ran, and go becomes went.",
+    "L10": "Dadaji came running because he was worried about Chintu.",
+    "L11": "At the end, Dadaji shows care for Chintu's safety."
+   },
+   "narration": {
+    "L1": {
+     "text": "This story is an unexpected adventure with a scooter.",
+     "dur": 2,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "To retell it, put the main events in order.",
+     "dur": 2,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "First, Dadaji parked the scooter near the village fair and went to buy jalebis.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "Then Chintu pressed the start button.",
+     "dur": 1.6,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "Next, the scooter rolled down the slope.",
+     "dur": 1.8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Finally, it stopped in a pile of hay.",
+     "dur": 1.8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Use past-tense verbs because these events already happened.",
+     "dur": 2.2,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Some verbs add -ed: roll becomes rolled.",
+     "dur": 1.8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L9": {
+     "text": "But some verbs change shape: run becomes ran, and go becomes went.",
+     "dur": 2.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L10": {
+     "text": "Dadaji came running because he was worried about Chintu.",
+     "dur": 2.2,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L11": {
+     "text": "At the end, Dadaji shows care for Chintu's safety.",
+     "dur": 1.8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "title"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "past"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "park"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.5,
+       "target": "a1"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "press"
+      },
+      {
+       "at": 0.5,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "a1",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "roll"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.5,
+       "target": "a2"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "stop"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.5,
+       "target": "a3"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "verbs"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "roll"
+      }
+     ]
+    },
+    {
+     "line": "L9",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L10",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "focus",
+       "dur": 1,
+       "target": "park"
+      }
+     ]
+    },
+    {
+     "line": "L11",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "e1",
+        "e2",
+        "e3",
+        "e4"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive"
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "order",
+    "prompt": "Tap the events in the order they happened.",
+    "items": [
+     "e1",
+     "e2",
+     "e3",
+     "e4"
+    ],
+    "src": "c5-english-ch02-t01-i02"
+   }
+  },
+  "repairs": [
+   "glyph",
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "passes": 2,
+  "seconds": 27
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "Dadaji went for jalebis",
+   "prompt": "sequence: after/for \"Dadaji parked the scooter\"",
+   "src": "c5-english-ch02-t01-i02"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "Chintu pressed the button",
+   "prompt": "sequence: after/for \"Dadaji went for jalebis\"",
+   "src": "c5-english-ch02-t01-i02"
+  },
+  {
+   "itemId": "r1:2",
+   "key": "The scooter rolled downhill",
+   "prompt": "sequence: after/for \"Chintu pressed the button\"",
+   "src": "c5-english-ch02-t01-i02"
+  },
+  {
+   "itemId": "r1:3",
+   "key": "It stopped in the hay",
+   "prompt": "sequence: after/for \"The scooter rolled downhill\"",
+   "src": "c5-english-ch02-t01-i02"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "The scooter started moving",
+   "prompt": "cause: after/for \"Chintu pressed the button\"",
+   "src": "c5-english-ch02-t01-i03"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "It stopped in the hay",
+   "prompt": "cause: after/for \"The scooter rolled downhill\"",
+   "src": "c5-english-ch02-t01-i02"
+  },
+  {
+   "itemId": "r2:2",
+   "key": "Dadaji came running",
+   "prompt": "cause: after/for \"Chintu might be hurt\"",
+   "src": "c5-english-ch02-t01-i07"
+  },
+  {
+   "itemId": "r3:0",
+   "key": "Dadaji",
+   "prompt": "who: after/for \"Next time, we ride together\"",
+   "src": "c5-english-ch02-t01-i12"
+  },
+  {
+   "itemId": "r3:1",
+   "key": "Dadaji",
+   "prompt": "who: after/for \"With helmets\"",
+   "src": "c5-english-ch02-t01-i12"
+  },
+  {
+   "itemId": "r3:2",
+   "key": "Chintu",
+   "prompt": "who: after/for \"Vroom!\"",
+   "src": "c5-english-ch02-t01-i03"
+  }
+ ],
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-english-ch02-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4430,
+     "ops": [
+      {
+       "id": "title",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "unexpected adventure",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "scooter",
+       "op": "ellipse",
+       "startMs": 700,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        260
+       ],
+       "rx": 150,
+       "ry": 55
+      },
+      {
+       "id": "wheel1",
+       "op": "circle",
+       "startMs": 1300,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        300,
+        340
+       ],
+       "r": 35
+      },
+      {
+       "id": "wheel2",
+       "op": "circle",
+       "startMs": 1300,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        500,
+        340
+       ],
+       "r": 35
+      },
+      {
+       "id": "handle",
+       "op": "line",
+       "startMs": 1700,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        400,
+        210
+       ],
+       "to": [
+        400,
+        130
+       ]
+      },
+      {
+       "id": "scooterlabel",
+       "op": "label",
+       "startMs": 2200,
+       "endMs": 2800,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        420
+       ],
+       "text": "scooter",
+       "to": [
+        400,
+        340
+       ]
+      },
+      {
+       "id": "adventure",
+       "op": "arrow",
+       "startMs": 2900,
+       "endMs": 3700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        560,
+        250
+       ],
+       "to": [
+        690,
+        170
+       ]
+      },
+      {
+       "id": "unexpected",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4300,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        680,
+        140
+       ],
+       "text": "unexpected",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-english-ch02-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 4430,
+     "ops": [
+      {
+       "id": "first",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        100,
+        220
+       ],
+       "r": 35
+      },
+      {
+       "id": "t1",
+       "op": "text",
+       "startMs": 500,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        100,
+        300
+       ],
+       "text": "First",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "then",
+       "op": "circle",
+       "startMs": 700,
+       "endMs": 1200,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        300,
+        220
+       ],
+       "r": 35
+      },
+      {
+       "id": "a1",
+       "op": "arrow",
+       "startMs": 900,
+       "endMs": 1400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        140,
+        220
+       ],
+       "to": [
+        260,
+        220
+       ]
+      },
+      {
+       "id": "t2",
+       "op": "text",
+       "startMs": 1200,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        300,
+        300
+       ],
+       "text": "Then",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "next",
+       "op": "circle",
+       "startMs": 1400,
+       "endMs": 1900,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        500,
+        220
+       ],
+       "r": 35
+      },
+      {
+       "id": "a2",
+       "op": "arrow",
+       "startMs": 1600,
+       "endMs": 2100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        340,
+        220
+       ],
+       "to": [
+        460,
+        220
+       ]
+      },
+      {
+       "id": "t3",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        500,
+        300
+       ],
+       "text": "Next",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "finally",
+       "op": "circle",
+       "startMs": 2100,
+       "endMs": 2600,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        700,
+        220
+       ],
+       "r": 35
+      },
+      {
+       "id": "a3",
+       "op": "arrow",
+       "startMs": 2300,
+       "endMs": 2800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        540,
+        220
+       ],
+       "to": [
+        660,
+        220
+       ]
+      },
+      {
+       "id": "t4",
+       "op": "text",
+       "startMs": 2600,
+       "endMs": 3100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        700,
+        300
+       ],
+       "text": "Finally",
+       "size": "s",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-english-ch02-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "park",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        90
+       ],
+       "text": "parked",
+       "size": "m"
+      },
+      {
+       "id": "scoot",
+       "op": "ellipse",
+       "startMs": 500,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        120,
+        190
+       ],
+       "rx": 75,
+       "ry": 28
+      },
+      {
+       "id": "village",
+       "op": "text",
+       "startMs": 1100,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        300,
+        90
+       ],
+       "text": "village fair",
+       "size": "m"
+      },
+      {
+       "id": "fair",
+       "op": "polygon",
+       "startMs": 1600,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         270,
+         190
+        ],
+        [
+         330,
+         190
+        ],
+        [
+         300,
+         130
+        ]
+       ]
+      },
+      {
+       "id": "dadaji",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        90,
+        300
+       ],
+       "text": "Dadaji",
+       "size": "m"
+      },
+      {
+       "id": "buy",
+       "op": "text",
+       "startMs": 2800,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        300,
+        300
+       ],
+       "text": "buy",
+       "size": "m"
+      },
+      {
+       "id": "jalebi",
+       "op": "circle",
+       "startMs": 3300,
+       "endMs": 3900,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        520,
+        280
+       ],
+       "r": 45
+      },
+      {
+       "id": "jalebis",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        520,
+        370
+       ],
+       "text": "jalebis",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "leave",
+       "op": "arrow",
+       "startMs": 4600,
+       "endMs": 5200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        180,
+        190
+       ],
+       "to": [
+        250,
+        190
+       ]
+      },
+      {
+       "id": "order",
+       "op": "label",
+       "startMs": 5200,
+       "endMs": 5800,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        650,
+        180
+       ],
+       "text": "First",
+       "to": [
+        580,
+        180
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-english-ch02-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 3153,
+     "ops": [
+      {
+       "id": "chintu",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        130,
+        150
+       ],
+       "text": "Chintu",
+       "size": "m"
+      },
+      {
+       "id": "button",
+       "op": "circle",
+       "startMs": 500,
+       "endMs": 1000,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        180
+       ],
+       "r": 35
+      },
+      {
+       "id": "start",
+       "op": "text",
+       "startMs": 1000,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        250
+       ],
+       "text": "start",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "press",
+       "op": "arrow",
+       "startMs": 1400,
+       "endMs": 2200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        300,
+        150
+       ],
+       "to": [
+        370,
+        180
+       ]
+      },
+      {
+       "id": "pressed",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 3000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        330
+       ],
+       "text": "pressed",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-english-ch02-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 3579,
+     "ops": [
+      {
+       "id": "slope",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        120,
+        150
+       ],
+       "to": [
+        650,
+        350
+       ]
+      },
+      {
+       "id": "scooter2",
+       "op": "ellipse",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        250,
+        195
+       ],
+       "rx": 65,
+       "ry": 24
+      },
+      {
+       "id": "roll",
+       "op": "arrow",
+       "startMs": 1200,
+       "endMs": 2500,
+       "ink": "mark",
+       "weight": 3,
+       "from": [
+        300,
+        220
+       ],
+       "to": [
+        600,
+        330
+       ]
+      },
+      {
+       "id": "rolled",
+       "op": "text",
+       "startMs": 2400,
+       "endMs": 3200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        470,
+        270
+       ],
+       "text": "rolled",
+       "size": "m"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-english-ch02-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 4004,
+     "ops": [
+      {
+       "id": "hay",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        620,
+        350
+       ],
+       "rx": 120,
+       "ry": 60
+      },
+      {
+       "id": "haylines",
+       "op": "stroke",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 1,
+       "points": [
+        [
+         540,
+         350
+        ],
+        [
+         590,
+         310
+        ],
+        [
+         640,
+         350
+        ],
+        [
+         690,
+         310
+        ]
+       ]
+      },
+      {
+       "id": "stoparrow",
+       "op": "arrow",
+       "startMs": 1200,
+       "endMs": 2200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        500,
+        300
+       ],
+       "to": [
+        600,
+        340
+       ]
+      },
+      {
+       "id": "stopped",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 3000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        620,
+        440
+       ],
+       "text": "stopped",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "haylabel",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        620,
+        270
+       ],
+       "text": "hay",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-english-ch02-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4004,
+     "ops": [
+      {
+       "id": "past",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        80
+       ],
+       "text": "past-tense verbs",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "happened",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        160
+       ],
+       "text": "already happened",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "went",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        150,
+        290
+       ],
+       "text": "went",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "pressed2",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        350,
+        290
+       ],
+       "text": "pressed",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "rolled2",
+       "op": "text",
+       "startMs": 2600,
+       "endMs": 3100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        550,
+        290
+       ],
+       "text": "rolled",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "stopped2",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        700,
+        390
+       ],
+       "text": "stopped",
+       "size": "s",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-english-ch02-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 3579,
+     "ops": [
+      {
+       "id": "rollword",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        150,
+        150
+       ],
+       "text": "roll",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "plus",
+       "op": "text",
+       "startMs": 500,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        270,
+        150
+       ],
+       "text": "+",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "ed",
+       "op": "text",
+       "startMs": 800,
+       "endMs": 1300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        350,
+        150
+       ],
+       "text": "-ed",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "equals",
+       "op": "text",
+       "startMs": 1200,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        450,
+        150
+       ],
+       "text": "=",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "rolledword",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        600,
+        150
+       ],
+       "text": "rolled",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "underline",
+       "op": "line",
+       "startMs": 2200,
+       "endMs": 2800,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        560,
+        175
+       ],
+       "to": [
+        680,
+        175
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L9",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-english-ch02-t01-wb-L9",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "runword",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        150,
+        130
+       ],
+       "text": "run",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "ranword",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        150,
+        260
+       ],
+       "text": "ran",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "runarrow",
+       "op": "arrow",
+       "startMs": 1200,
+       "endMs": 1800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        150,
+        170
+       ],
+       "to": [
+        150,
+        220
+       ]
+      },
+      {
+       "id": "goword",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        130
+       ],
+       "text": "go",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "wentword",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        260
+       ],
+       "text": "went",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "goarrow",
+       "op": "arrow",
+       "startMs": 3000,
+       "endMs": 3600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        170
+       ],
+       "to": [
+        400,
+        220
+       ]
+      },
+      {
+       "id": "and",
+       "op": "text",
+       "startMs": 3700,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        275,
+        390
+       ],
+       "text": "and",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "change",
+       "op": "arrow",
+       "startMs": 4000,
+       "endMs": 4700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        225,
+        390
+       ],
+       "to": [
+        325,
+        390
+       ]
+      },
+      {
+       "id": "wentlabel",
+       "op": "label",
+       "startMs": 4500,
+       "endMs": 5300,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        510,
+        390
+       ],
+       "text": "went",
+       "to": [
+        430,
+        390
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L10",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-english-ch02-t01-wb-L10",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4430,
+     "ops": [
+      {
+       "id": "dadaji2",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        120,
+        100
+       ],
+       "text": "Dadaji",
+       "size": "m"
+      },
+      {
+       "id": "came",
+       "op": "text",
+       "startMs": 500,
+       "endMs": 1000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        300,
+        100
+       ],
+       "text": "came",
+       "size": "m"
+      },
+      {
+       "id": "running",
+       "op": "arrow",
+       "startMs": 900,
+       "endMs": 1800,
+       "ink": "mark",
+       "weight": 3,
+       "from": [
+        220,
+        220
+       ],
+       "to": [
+        570,
+        220
+       ]
+      },
+      {
+       "id": "runningword",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        290
+       ],
+       "text": "running",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "worried",
+       "op": "circle",
+       "startMs": 2200,
+       "endMs": 2900,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        650,
+        150
+       ],
+       "r": 55
+      },
+      {
+       "id": "worriedword",
+       "op": "text",
+       "startMs": 2900,
+       "endMs": 3600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        650,
+        240
+       ],
+       "text": "worried",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "because",
+       "op": "text",
+       "startMs": 3600,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        410
+       ],
+       "text": "because",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L11",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-english-ch02-t01-wb-L11",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 4430,
+     "ops": [
+      {
+       "id": "end",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "At the end",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "careheart",
+       "op": "circle",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        220
+       ],
+       "r": 70
+      },
+      {
+       "id": "care",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 2000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        330
+       ],
+       "text": "care",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "chintu2",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        220,
+        420
+       ],
+       "text": "Chintu",
+       "size": "m"
+      },
+      {
+       "id": "safety",
+       "op": "text",
+       "startMs": 2800,
+       "endMs": 3500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        580,
+        420
+       ],
+       "text": "safety",
+       "size": "m"
+      },
+      {
+       "id": "carearrow",
+       "op": "arrow",
+       "startMs": 3400,
+       "endMs": 4200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        300,
+        420
+       ],
+       "to": [
+        500,
+        420
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

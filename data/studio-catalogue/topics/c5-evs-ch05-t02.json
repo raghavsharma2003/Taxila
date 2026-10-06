@@ -1,0 +1,2006 @@
+{
+ "topicId": "c5-evs-ch05-t02",
+ "title": "National symbols and the Republic",
+ "chapter": "Our Vibrant Country",
+ "subject": "evs",
+ "class": 5,
+ "topicType": "T1",
+ "plan": {
+  "game": "era-drop@1",
+  "hint": "place and order: national symbols and Republic dates (1947, 1950)"
+ },
+ "game": {
+  "archetype": "era-drop@1",
+  "spec": {
+   "archetype": "era-drop@1",
+   "skills": [
+    "c5-evs-ch05-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "landed": "landed",
+    "precision": "precision",
+    "coach": "Drag the dock along the timeline",
+    "first": "Which came first?",
+    "runDone": "Timeline complete",
+    "offBy": "off by",
+    "years": "years",
+    "exact": "SPOT ON",
+    "century": "century",
+    "bce": "BCE",
+    "ce": "CE",
+    "earlier": "EARLIER"
+   },
+   "title": "Symbols and the Republic",
+   "axis": {
+    "min": 1800,
+    "max": 2100
+   },
+   "rounds": [
+    {
+     "mode": "place",
+     "title": "Drop the big dates",
+     "sub": "Place each event on the timeline",
+     "ticks": 50,
+     "speed": 0.8,
+     "tol": 8,
+     "items": [
+      {
+       "text": "India became free",
+       "value": 1947,
+       "src": "c5-evs-ch05-t02-i07"
+      },
+      {
+       "text": "India became a republic",
+       "value": 1950,
+       "src": "c5-evs-ch05-t02-i07"
+      }
+     ]
+    },
+    {
+     "mode": "century",
+     "title": "Find the century",
+     "sub": "Place each event in its century",
+     "ticks": 0,
+     "speed": 0.95,
+     "tol": 10,
+     "items": [
+      {
+       "text": "India became free",
+       "value": 1947,
+       "src": "c5-evs-ch05-t02-i07"
+      },
+      {
+       "text": "India became a republic",
+       "value": 1950,
+       "src": "c5-evs-ch05-t02-i07"
+      },
+      {
+       "text": "Flag has a Chakra",
+       "value": 1950,
+       "src": "c5-evs-ch05-t02-i04"
+      }
+     ]
+    },
+    {
+     "mode": "order",
+     "title": "Which came first?",
+     "sub": "Compare the two Republic dates",
+     "ticks": 0,
+     "speed": 1.1,
+     "tol": 3,
+     "items": [
+      {
+       "text": "Independence Day",
+       "value": 1947,
+       "src": "c5-evs-ch05-t02-i07"
+      },
+      {
+       "text": "Republic Day",
+       "value": 1950,
+       "src": "c5-evs-ch05-t02-i07"
+      }
+     ],
+     "targets": "c5-evs-ch05-t02-m2"
+    }
+   ]
+  },
+  "repairs": [
+   "ticks:dense"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c5-evs-ch05-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Correct",
+    "look": "Look closely",
+    "myth": "MYTH",
+    "busted": "BUSTED",
+    "order": "Put in order"
+   },
+   "title": "Symbols and the Republic",
+   "accent": "amber",
+   "targets": "c5-evs-ch05-t02-m3",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "row",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Symbols and the Republic"
+      },
+      {
+       "id": "flag",
+       "type": "node",
+       "text": "Tricolour flag",
+       "color": "amber"
+      },
+      {
+       "id": "emblem",
+       "type": "node",
+       "text": "National emblem",
+       "sub": "truth triumphs",
+       "glyph": "crown",
+       "color": "sun"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "saffron",
+       "type": "label",
+       "text": "Saffron: courage",
+       "color": "amber"
+      },
+      {
+       "id": "white",
+       "type": "label",
+       "text": "White: peace",
+       "color": "ion"
+      },
+      {
+       "id": "green",
+       "type": "label",
+       "text": "Green: growth",
+       "color": "mint"
+      },
+      {
+       "id": "chakra",
+       "type": "node",
+       "text": "Ashoka Chakra",
+       "sub": "24 spokes",
+       "glyph": "wheel",
+       "color": "ion"
+      },
+      {
+       "id": "f1",
+       "type": "arrow",
+       "from": "saffron",
+       "to": "chakra",
+       "text": "flag",
+       "bend": 0
+      },
+      {
+       "id": "f2",
+       "type": "arrow",
+       "from": "white",
+       "to": "chakra",
+       "text": "flag",
+       "bend": 0
+      },
+      {
+       "id": "f3",
+       "type": "arrow",
+       "from": "green",
+       "to": "chakra",
+       "text": "flag",
+       "bend": 0
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "lion",
+       "type": "node",
+       "text": "Four lions",
+       "sub": "Ashoka Capital",
+       "color": "sun"
+      },
+      {
+       "id": "wheel",
+       "type": "node",
+       "text": "Dharma Chakra",
+       "sub": "law",
+       "glyph": "wheel",
+       "color": "ion"
+      },
+      {
+       "id": "truth",
+       "type": "label",
+       "text": "Satyameva Jayate",
+       "color": "amber"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "lion",
+       "to": "wheel",
+       "text": "above",
+       "bend": 0
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "wheel",
+       "to": "truth",
+       "text": "below",
+       "bend": 0
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "split",
+     "els": [
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "A king born into the job rules a republic"
+      },
+      {
+       "id": "vote",
+       "type": "node",
+       "text": "People vote",
+       "sub": "choose leaders",
+       "glyph": "ballot",
+       "color": "mint"
+      },
+      {
+       "id": "republic",
+       "type": "node",
+       "text": "Republic",
+       "sub": "26 January 1950",
+       "glyph": "group",
+       "color": "ion"
+      },
+      {
+       "id": "v1",
+       "type": "arrow",
+       "from": "vote",
+       "to": "republic",
+       "text": "chooses",
+       "bend": 0
+      }
+     ]
+    },
+    {
+     "id": "s5",
+     "layout": "row",
+     "els": [
+      {
+       "id": "free",
+       "type": "node",
+       "text": "Independence",
+       "sub": "15 August 1947",
+       "glyph": "shield",
+       "color": "sun"
+      },
+      {
+       "id": "constitution",
+       "type": "node",
+       "text": "Republic",
+       "sub": "26 January 1950",
+       "glyph": "book",
+       "color": "ion"
+      },
+      {
+       "id": "d1",
+       "type": "arrow",
+       "from": "free",
+       "to": "constitution",
+       "bend": 0
+      }
+     ]
+    },
+    {
+     "id": "s6",
+     "layout": "row",
+     "els": [
+      {
+       "id": "tiger",
+       "type": "node",
+       "text": "Tiger",
+       "sub": "national animal",
+       "glyph": "insect",
+       "color": "amber"
+      },
+      {
+       "id": "peacock",
+       "type": "node",
+       "text": "Peacock",
+       "sub": "national bird",
+       "glyph": "bird",
+       "color": "ion"
+      },
+      {
+       "id": "lotus",
+       "type": "node",
+       "text": "Lotus",
+       "sub": "national flower",
+       "glyph": "flower",
+       "color": "mint"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "India has national symbols that help us understand our country.",
+    "L2": "The flag has saffron, white and green bands, with a navy-blue Ashoka Chakra in the middle.",
+    "L3": "Saffron stands for courage and strength, white for peace and truth, and green for growth and fertile land.",
+    "L4": "The Ashoka Chakra has 24 spokes. It stands for the wheel of law and moving forward.",
+    "L5": "The national emblem comes from the Lion Capital of Ashoka at Sarnath. Four lions sit back to back, and below them are the words Satyameva Jayate: Truth alone triumphs.",
+    "L6": "India became free on 15 August 1947. On 26 January 1950, the Constitution came into force and India became a republic.",
+    "L7": "In a republic, people choose their leaders by voting. A king or queen does not rule just because they were born into the job.",
+    "L8": "Remember three symbols: the tiger is our national animal, the peacock our national bird, and the lotus our national flower."
+   },
+   "narration": {
+    "L1": {
+     "text": "India has national symbols that help us understand our country.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "The flag has saffron, white and green bands, with a navy-blue Ashoka Chakra in the middle.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "Saffron stands for courage and strength, white for peace and truth, and green for growth and fertile land.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "The Ashoka Chakra has 24 spokes. It stands for the wheel of law and moving forward.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "The national emblem comes from the Lion Capital of Ashoka at Sarnath. Four lions sit back to back, and below them are the words Satyameva Jayate: Truth alone triumphs.",
+     "dur": 10,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "India became free on 15 August 1947. On 26 January 1950, the Constitution came into force and India became a republic.",
+     "dur": 9,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "In a republic, people choose their leaders by voting. A king or queen does not rule just because they were born into the job.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Remember three symbols: the tiger is our national animal, the peacock our national bird, and the lotus our national flower.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "title"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "flag",
+        "emblem"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "saffron",
+        "white",
+        "green",
+        "chakra"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 2,
+       "target": [
+        "saffron",
+        "white",
+        "green"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "count",
+       "dur": 2,
+       "target": "chakra",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "lion",
+        "wheel",
+        "truth"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 1,
+       "target": "a2",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s5",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "free",
+        "constitution"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 2,
+       "target": "constitution"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "myth"
+      },
+      {
+       "at": 1,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      },
+      {
+       "at": 2,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "vote",
+        "republic"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s6",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "tiger",
+        "peacock",
+        "lotus"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive",
+       "dur": 1
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which symbol is India's national animal?",
+    "options": [
+     "tiger",
+     "peacock",
+     "lotus"
+    ],
+    "answer": "tiger",
+    "src": "c5-evs-ch05-t02-i01"
+   }
+  },
+  "repairs": [
+   "glyph",
+   "string:flag.sub",
+   "glyph",
+   "string:d1.text"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 65
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch05-t02-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "title",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "India",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "symbols",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        125
+       ],
+       "text": "national symbols",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "flag",
+       "op": "rect",
+       "startMs": 1500,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        150,
+        190
+       ],
+       "w": 220,
+       "h": 130,
+       "fill": "accent"
+      },
+      {
+       "id": "emblem",
+       "op": "circle",
+       "startMs": 2100,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        500,
+        255
+       ],
+       "r": 58
+      },
+      {
+       "id": "animal",
+       "op": "text",
+       "startMs": 2800,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        500,
+        380
+       ],
+       "text": "tiger",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "bird",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 4000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        610,
+        380
+       ],
+       "text": "peacock",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "flower",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        690,
+        440
+       ],
+       "text": "lotus",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch05-t02-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "saffron",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        120,
+        120
+       ],
+       "w": 560,
+       "h": 80,
+       "fill": "accent"
+      },
+      {
+       "id": "white",
+       "op": "rect",
+       "startMs": 700,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        200
+       ],
+       "w": 560,
+       "h": 80,
+       "fill": "soft"
+      },
+      {
+       "id": "green",
+       "op": "rect",
+       "startMs": 1400,
+       "endMs": 2400,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        120,
+        280
+       ],
+       "w": 560,
+       "h": 80,
+       "fill": "good"
+      },
+      {
+       "id": "chakra",
+       "op": "circle",
+       "startMs": 2300,
+       "endMs": 3300,
+       "ink": "mark",
+       "weight": 2,
+       "c": [
+        400,
+        240
+       ],
+       "r": 38
+      },
+      {
+       "id": "spoke1",
+       "op": "line",
+       "startMs": 3200,
+       "endMs": 3500,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        400,
+        202
+       ],
+       "to": [
+        400,
+        278
+       ]
+      },
+      {
+       "id": "spoke2",
+       "op": "line",
+       "startMs": 3400,
+       "endMs": 3700,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        362,
+        240
+       ],
+       "to": [
+        438,
+        240
+       ]
+      },
+      {
+       "id": "spoke3",
+       "op": "line",
+       "startMs": 3600,
+       "endMs": 3900,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        373,
+        213
+       ],
+       "to": [
+        427,
+        267
+       ]
+      },
+      {
+       "id": "spoke4",
+       "op": "line",
+       "startMs": 3800,
+       "endMs": 4100,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        427,
+        213
+       ],
+       "to": [
+        373,
+        267
+       ]
+      },
+      {
+       "id": "lab1",
+       "op": "label",
+       "startMs": 4100,
+       "endMs": 4600,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        700,
+        160
+       ],
+       "text": "saffron",
+       "to": [
+        650,
+        160
+       ]
+      },
+      {
+       "id": "lab2",
+       "op": "label",
+       "startMs": 4500,
+       "endMs": 5000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        700,
+        240
+       ],
+       "text": "white",
+       "to": [
+        650,
+        240
+       ]
+      },
+      {
+       "id": "lab3",
+       "op": "label",
+       "startMs": 4900,
+       "endMs": 5400,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        700,
+        320
+       ],
+       "text": "green",
+       "to": [
+        650,
+        320
+       ]
+      },
+      {
+       "id": "lab4",
+       "op": "label",
+       "startMs": 5400,
+       "endMs": 6200,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        480,
+        240
+       ],
+       "text": "Ashoka Chakra",
+       "to": [
+        440,
+        240
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch05-t02-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "courage",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        140,
+        100
+       ],
+       "text": "courage",
+       "size": "m"
+      },
+      {
+       "id": "strength",
+       "op": "text",
+       "startMs": 600,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        140,
+        150
+       ],
+       "text": "strength",
+       "size": "m"
+      },
+      {
+       "id": "peace",
+       "op": "text",
+       "startMs": 1200,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        360,
+        100
+       ],
+       "text": "peace",
+       "size": "m"
+      },
+      {
+       "id": "truth",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        360,
+        150
+       ],
+       "text": "truth",
+       "size": "m"
+      },
+      {
+       "id": "growth",
+       "op": "text",
+       "startMs": 2400,
+       "endMs": 3300,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        590,
+        100
+       ],
+       "text": "growth",
+       "size": "m"
+      },
+      {
+       "id": "land",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 4000,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        590,
+        150
+       ],
+       "text": "fertile land",
+       "size": "m"
+      },
+      {
+       "id": "a1",
+       "op": "arrow",
+       "startMs": 4100,
+       "endMs": 4600,
+       "ink": "accent",
+       "weight": 1,
+       "from": [
+        260,
+        130
+       ],
+       "to": [
+        310,
+        130
+       ]
+      },
+      {
+       "id": "a2",
+       "op": "arrow",
+       "startMs": 4500,
+       "endMs": 5000,
+       "ink": "chalk",
+       "weight": 1,
+       "from": [
+        480,
+        130
+       ],
+       "to": [
+        530,
+        130
+       ]
+      },
+      {
+       "id": "a3",
+       "op": "arrow",
+       "startMs": 4900,
+       "endMs": 5400,
+       "ink": "good",
+       "weight": 1,
+       "from": [
+        700,
+        130
+       ],
+       "to": [
+        740,
+        130
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch05-t02-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "chakraBig",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 1300,
+       "ink": "mark",
+       "weight": 2,
+       "c": [
+        300,
+        240
+       ],
+       "r": 120
+      },
+      {
+       "id": "r1",
+       "op": "line",
+       "startMs": 1000,
+       "endMs": 1400,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        300,
+        120
+       ],
+       "to": [
+        300,
+        360
+       ]
+      },
+      {
+       "id": "r2",
+       "op": "line",
+       "startMs": 1200,
+       "endMs": 1600,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        180,
+        240
+       ],
+       "to": [
+        420,
+        240
+       ]
+      },
+      {
+       "id": "r3",
+       "op": "line",
+       "startMs": 1400,
+       "endMs": 1800,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        215,
+        155
+       ],
+       "to": [
+        385,
+        325
+       ]
+      },
+      {
+       "id": "r4",
+       "op": "line",
+       "startMs": 1600,
+       "endMs": 2000,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        385,
+        155
+       ],
+       "to": [
+        215,
+        325
+       ]
+      },
+      {
+       "id": "spokes",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 3400,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        540,
+        190
+       ],
+       "text": "24 spokes",
+       "size": "l"
+      },
+      {
+       "id": "law",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        540,
+        270
+       ],
+       "text": "wheel of law",
+       "size": "m"
+      },
+      {
+       "id": "forward",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5700,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        540,
+        330
+       ],
+       "text": "moving forward",
+       "size": "m"
+      },
+      {
+       "id": "move",
+       "op": "arrow",
+       "startMs": 5900,
+       "endMs": 6900,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        540,
+        390
+       ],
+       "to": [
+        700,
+        390
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch05-t02-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 12940,
+     "ops": [
+      {
+       "id": "emblemTitle",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "national emblem",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "base",
+       "op": "rect",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        220,
+        330
+       ],
+       "w": 360,
+       "h": 35
+      },
+      {
+       "id": "lion1",
+       "op": "circle",
+       "startMs": 1400,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        300,
+        225
+       ],
+       "r": 48
+      },
+      {
+       "id": "lion2",
+       "op": "circle",
+       "startMs": 1700,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        205
+       ],
+       "r": 48
+      },
+      {
+       "id": "lion3",
+       "op": "circle",
+       "startMs": 2000,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        500,
+        225
+       ],
+       "r": 48
+      },
+      {
+       "id": "lionLabel",
+       "op": "label",
+       "startMs": 2700,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        610,
+        205
+       ],
+       "text": "four lions",
+       "to": [
+        500,
+        225
+       ]
+      },
+      {
+       "id": "sarnath",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 4000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        390
+       ],
+       "text": "Sarnath",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "wheel",
+       "op": "circle",
+       "startMs": 3900,
+       "endMs": 4500,
+       "ink": "mark",
+       "weight": 1,
+       "c": [
+        400,
+        300
+       ],
+       "r": 28
+      },
+      {
+       "id": "horse",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        285,
+        300
+       ],
+       "text": "horse",
+       "size": "s"
+      },
+      {
+       "id": "bull",
+       "op": "text",
+       "startMs": 4900,
+       "endMs": 5600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        515,
+        300
+       ],
+       "text": "bull",
+       "size": "s"
+      },
+      {
+       "id": "motto",
+       "op": "text",
+       "startMs": 6000,
+       "endMs": 7600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        455
+       ],
+       "text": "Satyameva Jayate",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "truthAlone",
+       "op": "text",
+       "startMs": 7800,
+       "endMs": 9300,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        480
+       ],
+       "text": "Truth alone triumphs",
+       "size": "s",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch05-t02-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9536,
+     "ops": [
+      {
+       "id": "freeDate",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        150,
+        110
+       ],
+       "text": "15 August 1947",
+       "size": "l"
+      },
+      {
+       "id": "free",
+       "op": "text",
+       "startMs": 1200,
+       "endMs": 1900,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        150,
+        170
+       ],
+       "text": "free",
+       "size": "m"
+      },
+      {
+       "id": "arrowDate",
+       "op": "arrow",
+       "startMs": 2000,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 1,
+       "from": [
+        270,
+        140
+       ],
+       "to": [
+        510,
+        140
+       ]
+      },
+      {
+       "id": "constitutionDate",
+       "op": "text",
+       "startMs": 2800,
+       "endMs": 4300,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        560,
+        110
+       ],
+       "text": "26 January 1950",
+       "size": "l"
+      },
+      {
+       "id": "constitution",
+       "op": "text",
+       "startMs": 4100,
+       "endMs": 5000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        560,
+        170
+       ],
+       "text": "Constitution",
+       "size": "m"
+      },
+      {
+       "id": "republic",
+       "op": "text",
+       "startMs": 5200,
+       "endMs": 6400,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        300
+       ],
+       "text": "republic",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "came",
+       "op": "arrow",
+       "startMs": 6500,
+       "endMs": 7200,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        400,
+        210
+       ],
+       "to": [
+        400,
+        275
+       ]
+      },
+      {
+       "id": "law",
+       "op": "text",
+       "startMs": 7300,
+       "endMs": 8500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        390
+       ],
+       "text": "came into force",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch05-t02-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 10813,
+     "ops": [
+      {
+       "id": "republicTitle",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "republic",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "people",
+       "op": "circle",
+       "startMs": 1000,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        190,
+        220
+       ],
+       "r": 42
+      },
+      {
+       "id": "people2",
+       "op": "circle",
+       "startMs": 1300,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        290,
+        220
+       ],
+       "r": 42
+      },
+      {
+       "id": "people3",
+       "op": "circle",
+       "startMs": 1600,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        240,
+        300
+       ],
+       "r": 42
+      },
+      {
+       "id": "voting",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 3300,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        240,
+        390
+       ],
+       "text": "voting",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "voteArrow",
+       "op": "arrow",
+       "startMs": 3400,
+       "endMs": 4400,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        300,
+        300
+       ],
+       "to": [
+        470,
+        220
+       ]
+      },
+      {
+       "id": "leaders",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 5200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        550,
+        220
+       ],
+       "text": "leaders",
+       "size": "m"
+      },
+      {
+       "id": "king",
+       "op": "circle",
+       "startMs": 5400,
+       "endMs": 6000,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        650,
+        320
+       ],
+       "r": 38
+      },
+      {
+       "id": "queen",
+       "op": "text",
+       "startMs": 6000,
+       "endMs": 7200,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        650,
+        390
+       ],
+       "text": "king or queen",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "cross",
+       "op": "line",
+       "startMs": 7300,
+       "endMs": 8000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        590,
+        290
+       ],
+       "to": [
+        710,
+        410
+       ]
+      },
+      {
+       "id": "born",
+       "op": "text",
+       "startMs": 8200,
+       "endMs": 9000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        650,
+        455
+       ],
+       "text": "born",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch05-t02-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9111,
+     "ops": [
+      {
+       "id": "remember",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "Remember three symbols",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "tiger",
+       "op": "circle",
+       "startMs": 1200,
+       "endMs": 2000,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        150,
+        220
+       ],
+       "r": 70
+      },
+      {
+       "id": "tigerText",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2700,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        150,
+        330
+       ],
+       "text": "tiger",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "peacock",
+       "op": "ellipse",
+       "startMs": 2400,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        220
+       ],
+       "rx": 65,
+       "ry": 85
+      },
+      {
+       "id": "peacockText",
+       "op": "text",
+       "startMs": 3200,
+       "endMs": 4100,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        330
+       ],
+       "text": "peacock",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "lotus",
+       "op": "polygon",
+       "startMs": 4000,
+       "endMs": 5100,
+       "ink": "mark",
+       "weight": 2,
+       "points": [
+        [
+         580,
+         270
+        ],
+        [
+         610,
+         190
+        ],
+        [
+         650,
+         270
+        ],
+        [
+         690,
+         190
+        ],
+        [
+         720,
+         270
+        ],
+        [
+         650,
+         320
+        ]
+       ]
+      },
+      {
+       "id": "lotusText",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 5800,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        650,
+        370
+       ],
+       "text": "lotus",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "aTiger",
+       "op": "arrow",
+       "startMs": 6000,
+       "endMs": 6800,
+       "ink": "chalk",
+       "weight": 1,
+       "from": [
+        220,
+        220
+       ],
+       "to": [
+        300,
+        220
+       ]
+      },
+      {
+       "id": "aPeacock",
+       "op": "arrow",
+       "startMs": 6600,
+       "endMs": 7400,
+       "ink": "chalk",
+       "weight": 1,
+       "from": [
+        470,
+        220
+       ],
+       "to": [
+        550,
+        220
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "1947 CE",
+   "prompt": "India became free",
+   "src": "c5-evs-ch05-t02-i07"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "1950 CE",
+   "prompt": "India became a republic",
+   "src": "c5-evs-ch05-t02-i07"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "20th century CE",
+   "prompt": "India became free",
+   "src": "c5-evs-ch05-t02-i07"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "20th century CE",
+   "prompt": "India became a republic",
+   "src": "c5-evs-ch05-t02-i07"
+  },
+  {
+   "itemId": "r2:2",
+   "key": "20th century CE",
+   "prompt": "Flag has a Chakra",
+   "src": "c5-evs-ch05-t02-i04"
+  },
+  {
+   "itemId": "r3:0",
+   "key": "Independence Day",
+   "prompt": "earlier: Independence Day (1947 CE) vs Republic Day (1950 CE)"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

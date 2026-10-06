@@ -1,0 +1,1357 @@
+{
+ "topicId": "c4-maths-ch13-t02",
+ "title": "Dividing larger numbers",
+ "chapter": "The Transport Museum",
+ "subject": "maths",
+ "class": 4,
+ "topicType": "T4",
+ "plan": {
+  "game": "dukaan@1",
+  "hint": "pack mode: crates of k (full / all, remainders)"
+ },
+ "game": {
+  "archetype": "dukaan@1",
+  "spec": null,
+  "repairs": [
+   "failed after 3 attempts"
+  ],
+  "lastFeedback": "the spec was rejected and replaced by the default (pack:too-many-crates; round:jobs; pack:too-many-crates; round:jobs; num:n; pack:too-many-crates; round:jobs; fallback-default; unknown kit id \"c5-maths-ch09-t02-m-always-drop\" (use one of: c4-maths-ch13-t02, c4-maths-ch13-t02-m-digitwise, c4-maths-ch13-t02-m-drop-zero-quotient, c4-maths-ch13-t02-m-remainder-ignored-in-story, c4-maths-ch13-t02-i01, c4-maths-ch13-t02-i02, c4-maths-ch13-t02-i03, c4-maths-ch13-t02-i04, c4-maths-ch13-t02-i05, c4-maths-ch13-t02-i06, c4-maths-ch13-t02-i07, c4-maths-ch13-t02-i08, c4-maths-ch13-t02-i09, c4-maths-ch13-t",
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "passes": 2
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c4-maths-ch13-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Correct",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "BUSTED",
+    "order": "Tap in order"
+   },
+   "title": "Share 96 equally",
+   "accent": "mint",
+   "targets": "c4-maths-ch13-t02-m-digitwise",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "row",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Dividing larger numbers"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Divide each digit separately"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "split",
+     "els": [
+      {
+       "id": "problem",
+       "type": "label",
+       "text": "96 ÷ 4",
+       "x": 100,
+       "y": 250
+      },
+      {
+       "id": "tens",
+       "type": "node",
+       "text": "9 tens",
+       "sub": "share first",
+       "glyph": "coin",
+       "x": 280,
+       "y": 250,
+       "color": "amber"
+      },
+      {
+       "id": "left",
+       "type": "node",
+       "text": "1 ten left",
+       "sub": "change it",
+       "glyph": "coin",
+       "x": 500,
+       "y": 250,
+       "color": "sun"
+      },
+      {
+       "id": "ones",
+       "type": "node",
+       "text": "16 ones",
+       "sub": "10 + 6",
+       "glyph": "coin",
+       "x": 720,
+       "y": 250,
+       "color": "mint"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "tens",
+       "to": "left",
+       "text": "share"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "left",
+       "to": "ones",
+       "text": "change"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "share",
+       "type": "bar",
+       "parts": 4,
+       "shaded": 1,
+       "x": 100,
+       "y": 300,
+       "w": 700,
+       "text": "24 each"
+      },
+      {
+       "id": "answer",
+       "type": "node",
+       "text": "24",
+       "sub": "each child",
+       "glyph": "coin",
+       "x": 450,
+       "y": 190,
+       "color": "mint"
+      },
+      {
+       "id": "check",
+       "type": "label",
+       "text": "4 × 24 = 96",
+       "x": 390,
+       "y": 430,
+       "color": "ion"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "row",
+     "els": [
+      {
+       "id": "wrong",
+       "type": "myth",
+       "text": "96 ÷ 4 = 24 by separate digits"
+      },
+      {
+       "id": "right",
+       "type": "label",
+       "text": "Share tens, then ones",
+       "x": 300,
+       "y": 300,
+       "color": "mint"
+      },
+      {
+       "id": "zero",
+       "type": "label",
+       "text": "Place value matters",
+       "x": 300,
+       "y": 370,
+       "color": "amber"
+      }
+     ]
+    },
+    {
+     "id": "s5",
+     "layout": "row",
+     "els": [
+      {
+       "id": "q",
+       "type": "label",
+       "text": "Choose the answer",
+       "x": 300,
+       "y": 180
+      },
+      {
+       "id": "o21",
+       "type": "node",
+       "text": "21",
+       "sub": "option",
+       "glyph": "question",
+       "x": 220,
+       "y": 330,
+       "color": "amber"
+      },
+      {
+       "id": "o24",
+       "type": "node",
+       "text": "24",
+       "sub": "option",
+       "glyph": "question",
+       "x": 500,
+       "y": 330,
+       "color": "mint"
+      },
+      {
+       "id": "o30",
+       "type": "node",
+       "text": "30",
+       "sub": "option",
+       "glyph": "question",
+       "x": 780,
+       "y": 330,
+       "color": "amber"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "We will share 96 rupees equally among 4 children.",
+    "L2": "Share the tens first. Nine tens gives each child two tens, with one ten left.",
+    "L3": "Change the leftover ten into ten ones. Ten plus six makes sixteen ones.",
+    "L4": "Share sixteen ones among four children. Each child gets four ones.",
+    "L5": "So each child gets two tens and four ones: 24 rupees.",
+    "L6": "Check by multiplying back: four times 24 equals 96.",
+    "L7": "Do not divide each digit separately. The leftover ten must join the ones."
+   },
+   "narration": {
+    "L1": {
+     "text": "We will share 96 rupees equally among 4 children.",
+     "dur": 2,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "Share the tens first. Nine tens gives each child two tens, with one ten left.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "Change the leftover ten into ten ones. Ten plus six makes sixteen ones.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "Share sixteen ones among four children. Each child gets four ones.",
+     "dur": 2.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "So each child gets two tens and four ones: 24 rupees.",
+     "dur": 2.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Check by multiplying back: four times 24 equals 96.",
+     "dur": 2.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Do not divide each digit separately. The leftover ten must join the ones.",
+     "dur": 2.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.3,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "title"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "tens"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.6,
+       "target": "left"
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "a1",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "left"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.7,
+       "target": "ones"
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "a2",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.3,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "share"
+      },
+      {
+       "at": 0.5,
+       "do": "highlight",
+       "dur": 1,
+       "target": "share"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.3,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "answer"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.3,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "check"
+      },
+      {
+       "at": 0.6,
+       "do": "highlight",
+       "dur": 1,
+       "target": "check"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.2,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "wrong"
+      },
+      {
+       "at": 0.5,
+       "do": "bust",
+       "dur": 1,
+       "target": "wrong"
+      },
+      {
+       "at": 1.2,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "right",
+        "zero"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive"
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Tap the amount each child receives.",
+    "options": [
+     "o21",
+     "o24",
+     "o30"
+    ],
+    "answer": "o24",
+    "src": "c4-maths-ch13-t02-i01"
+   }
+  },
+  "repairs": [],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 21
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch13-t02-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4430,
+     "ops": [
+      {
+       "id": "problem",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        180,
+        90
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "96",
+         "÷",
+         "4"
+        ]
+       ]
+      },
+      {
+       "id": "rupees",
+       "op": "text",
+       "startMs": 1100,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        90
+       ],
+       "text": "rupees",
+       "size": "m"
+      },
+      {
+       "id": "children",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        155
+       ],
+       "text": "4 children",
+       "size": "m"
+      },
+      {
+       "id": "share",
+       "op": "arrow",
+       "startMs": 2100,
+       "endMs": 2900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        330,
+        105
+       ],
+       "to": [
+        470,
+        105
+       ]
+      },
+      {
+       "id": "equal",
+       "op": "text",
+       "startMs": 2900,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        260
+       ],
+       "text": "equally",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "four-circles",
+       "op": "circle",
+       "startMs": 3500,
+       "endMs": 3800,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        220,
+        390
+       ],
+       "r": 35
+      },
+      {
+       "id": "four-circles-2",
+       "op": "circle",
+       "startMs": 3650,
+       "endMs": 3950,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        340,
+        390
+       ],
+       "r": 35
+      },
+      {
+       "id": "four-circles-3",
+       "op": "circle",
+       "startMs": 3800,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        460,
+        390
+       ],
+       "r": 35
+      },
+      {
+       "id": "four-circles-4",
+       "op": "circle",
+       "startMs": 3950,
+       "endMs": 4250,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        580,
+        390
+       ],
+       "r": 35
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch13-t02-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "tens",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        80
+       ],
+       "text": "9 tens",
+       "size": "l"
+      },
+      {
+       "id": "tens-share",
+       "op": "numwork",
+       "startMs": 700,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        140
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "9",
+         "÷",
+         "4",
+         "=",
+         "2"
+        ]
+       ]
+      },
+      {
+       "id": "each-tens",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2500,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        90,
+        220
+       ],
+       "text": "2 tens each",
+       "size": "m"
+      },
+      {
+       "id": "used-tens",
+       "op": "numwork",
+       "startMs": 2500,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        285
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "2",
+         "×",
+         "4",
+         "=",
+         "8"
+        ]
+       ]
+      },
+      {
+       "id": "left-ten",
+       "op": "text",
+       "startMs": 3400,
+       "endMs": 4300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        90,
+        365
+       ],
+       "text": "1 ten left",
+       "size": "m"
+      },
+      {
+       "id": "ten-box",
+       "op": "rect",
+       "startMs": 4300,
+       "endMs": 5000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        130
+       ],
+       "w": 70,
+       "h": 210
+      },
+      {
+       "id": "ten-label",
+       "op": "label",
+       "startMs": 5000,
+       "endMs": 5700,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        500,
+        220
+       ],
+       "text": "1 ten",
+       "to": [
+        435,
+        220
+       ]
+      },
+      {
+       "id": "share-arrow",
+       "op": "arrow",
+       "startMs": 5700,
+       "endMs": 6500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        210,
+        175
+       ],
+       "to": [
+        390,
+        175
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch13-t02-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "change",
+       "op": "arrow",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        430,
+        250
+       ],
+       "to": [
+        430,
+        110
+       ]
+      },
+      {
+       "id": "ten-ones",
+       "op": "numwork",
+       "startMs": 900,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        180,
+        100
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "1 ten",
+         "=",
+         "10 one"
+        ]
+       ]
+      },
+      {
+       "id": "six",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        210
+       ],
+       "text": "6 ones",
+       "size": "m"
+      },
+      {
+       "id": "plus",
+       "op": "numwork",
+       "startMs": 2700,
+       "endMs": 4000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        180,
+        270
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "10",
+         "＋",
+         "6",
+         "=",
+         "16"
+        ]
+       ]
+      },
+      {
+       "id": "sixteen",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 4700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        180,
+        360
+       ],
+       "text": "16 ones",
+       "size": "l"
+      },
+      {
+       "id": "join",
+       "op": "arrow",
+       "startMs": 4700,
+       "endMs": 5600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        290,
+        300
+       ],
+       "to": [
+        430,
+        300
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch13-t02-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "sixteen-share",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        100
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "16",
+         "÷",
+         "4",
+         "=",
+         "4"
+        ]
+       ]
+      },
+      {
+       "id": "ones",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        120,
+        190
+       ],
+       "text": "ones",
+       "size": "m"
+      },
+      {
+       "id": "child1",
+       "op": "circle",
+       "startMs": 1900,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        250,
+        350
+       ],
+       "r": 35
+      },
+      {
+       "id": "child2",
+       "op": "circle",
+       "startMs": 2200,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        390,
+        350
+       ],
+       "r": 35
+      },
+      {
+       "id": "child3",
+       "op": "circle",
+       "startMs": 2500,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        530,
+        350
+       ],
+       "r": 35
+      },
+      {
+       "id": "child4",
+       "op": "circle",
+       "startMs": 2800,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        670,
+        350
+       ],
+       "r": 35
+      },
+      {
+       "id": "each-four",
+       "op": "label",
+       "startMs": 3200,
+       "endMs": 4200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        440
+       ],
+       "text": "4 ones"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch13-t02-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "tens-ones",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        100
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "2 tens",
+         "＋",
+         "4 ones",
+         "=",
+         "24"
+        ]
+       ]
+      },
+      {
+       "id": "answer",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2600,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        210
+       ],
+       "text": "24 rupees",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "place-tens",
+       "op": "label",
+       "startMs": 2600,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        190,
+        300
+       ],
+       "text": "2 tens",
+       "to": [
+        200,
+        125
+       ]
+      },
+      {
+       "id": "place-ones",
+       "op": "label",
+       "startMs": 3500,
+       "endMs": 4400,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        570,
+        300
+       ],
+       "text": "4 ones",
+       "to": [
+        330,
+        125
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch13-t02-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 4430,
+     "ops": [
+      {
+       "id": "check",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        100,
+        80
+       ],
+       "text": "Check",
+       "size": "l"
+      },
+      {
+       "id": "multiply",
+       "op": "numwork",
+       "startMs": 600,
+       "endMs": 1900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        130,
+        160
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "4",
+         "×",
+         "24",
+         "=",
+         "96"
+        ]
+       ]
+      },
+      {
+       "id": "back-arrow",
+       "op": "arrow",
+       "startMs": 1900,
+       "endMs": 2700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        500,
+        175
+       ],
+       "to": [
+        650,
+        175
+       ]
+      },
+      {
+       "id": "four-times",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        130,
+        270
+       ],
+       "text": "four times 24",
+       "size": "m"
+      },
+      {
+       "id": "equals-96",
+       "op": "label",
+       "startMs": 3400,
+       "endMs": 4100,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        500,
+        300
+       ],
+       "text": "96"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch13-t02-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "warning",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        60
+       ],
+       "text": "Do not divide each digit",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "wrong",
+       "op": "numwork",
+       "startMs": 900,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        140
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "9",
+         "÷",
+         "4"
+        ],
+        [
+         "6",
+         "÷",
+         "4"
+        ]
+       ]
+      },
+      {
+       "id": "wrong-mark",
+       "op": "stroke",
+       "startMs": 2200,
+       "endMs": 2800,
+       "ink": "accent",
+       "weight": 3,
+       "points": [
+        [
+         90,
+         120
+        ],
+        [
+         300,
+         270
+        ]
+       ]
+      },
+      {
+       "id": "leftover",
+       "op": "text",
+       "startMs": 2800,
+       "endMs": 3600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        100,
+        330
+       ],
+       "text": "leftover ten",
+       "size": "m"
+      },
+      {
+       "id": "join-arrow",
+       "op": "arrow",
+       "startMs": 3600,
+       "endMs": 4500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        300,
+        350
+       ],
+       "to": [
+        500,
+        350
+       ]
+      },
+      {
+       "id": "ones-join",
+       "op": "numwork",
+       "startMs": 4500,
+       "endMs": 5700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        500,
+        130
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "10",
+         "＋",
+         "6",
+         "=",
+         "16"
+        ]
+       ]
+      },
+      {
+       "id": "share-ones",
+       "op": "text",
+       "startMs": 5700,
+       "endMs": 6100,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        500,
+        250
+       ],
+       "text": "share ones",
+       "size": "m"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ }
+}

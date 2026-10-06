@@ -1,0 +1,1585 @@
+{
+ "topicId": "c6-maths-ch01-t01",
+ "title": "Number sequences: odd, even, triangular, square, cube",
+ "chapter": "Patterns in Mathematics",
+ "subject": "maths",
+ "class": 6,
+ "topicType": "T3",
+ "plan": {
+  "game": "rule-machine@1",
+  "hint": "seq and build modes: number patterns and growing patterns"
+ },
+ "game": {
+  "archetype": "rule-machine@1",
+  "spec": {
+   "archetype": "rule-machine@1",
+   "skills": [
+    "c6-maths-ch01-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "built": "machines",
+    "run": "RUN",
+    "want": "order",
+    "got": "made",
+    "coach": "Tap tiles to build the rule, then RUN",
+    "runDone": "All orders are filled",
+    "step": "step",
+    "predict": "step",
+    "inverse": "run it backwards",
+    "target": "target",
+    "steps": "steps",
+    "pick": "Pick a start",
+    "works": "WORKS",
+    "fix": "Check the rule for every input"
+   },
+   "title": "Pattern Machine",
+   "rounds": [
+    {
+     "mode": "build",
+     "title": "Odd number orders",
+     "sub": "one rule for every order",
+     "rule": [
+      "+2"
+     ],
+     "inputs": [
+      1,
+      3,
+      5,
+      7
+     ],
+     "tiles": [
+      "+2",
+      "×2",
+      "+3"
+     ],
+     "targets": "c6-maths-ch01-t01-m-first-two"
+    },
+    {
+     "mode": "seq",
+     "title": "Square dot pattern",
+     "sub": "find the count at a step",
+     "pattern": "dots-square",
+     "rule": [
+      "²"
+     ],
+     "tiles": [
+      "²",
+      "×2",
+      "+2"
+     ],
+     "ask": 5,
+     "targets": "c6-maths-ch01-t01-m-square-double"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c6-maths-ch01-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "How number sequences grow",
+   "accent": "ion",
+   "targets": "c6-maths-ch01-t01-m-first-two",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "How number sequences grow"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "1, 3 must continue 5, 7"
+      },
+      {
+       "id": "rule",
+       "type": "label",
+       "text": "A rule guides every term",
+       "x": 540,
+       "y": 300,
+       "color": "ion"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "odd",
+       "type": "node",
+       "text": "Odd",
+       "sub": "add 2",
+       "glyph": "spark",
+       "color": "amber"
+      },
+      {
+       "id": "tri",
+       "type": "node",
+       "text": "Triangular",
+       "sub": "add 1,2,3...",
+       "color": "mint"
+      },
+      {
+       "id": "oddseq",
+       "type": "bars",
+       "values": [
+        1,
+        3,
+        5,
+        7
+       ],
+       "labels": [
+        "1",
+        "3",
+        "5",
+        "7"
+       ],
+       "unit": "terms"
+      },
+      {
+       "id": "triseq",
+       "type": "bars",
+       "values": [
+        1,
+        3,
+        6,
+        10
+       ],
+       "labels": [
+        "1",
+        "3",
+        "6",
+        "10"
+       ],
+       "unit": "terms"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "square",
+       "type": "node",
+       "text": "Square",
+       "sub": "n × n",
+       "glyph": "ruler",
+       "color": "sci"
+      },
+      {
+       "id": "cube",
+       "type": "node",
+       "text": "Cube",
+       "sub": "n × n × n",
+       "color": "mint"
+      },
+      {
+       "id": "power",
+       "type": "node",
+       "text": "Powers of 2",
+       "sub": "double each time",
+       "glyph": "lightning",
+       "color": "amber"
+      },
+      {
+       "id": "sqseq",
+       "type": "bars",
+       "values": [
+        1,
+        4,
+        9,
+        16,
+        25
+       ],
+       "labels": [
+        "1",
+        "4",
+        "9",
+        "16",
+        "25"
+       ],
+       "unit": "squares"
+      },
+      {
+       "id": "cubeseq",
+       "type": "bars",
+       "values": [
+        1,
+        8,
+        27,
+        64
+       ],
+       "labels": [
+        "1",
+        "8",
+        "27",
+        "64"
+       ],
+       "unit": "cubes"
+      },
+      {
+       "id": "pseq",
+       "type": "bars",
+       "values": [
+        1,
+        2,
+        4,
+        8,
+        16
+       ],
+       "labels": [
+        "1",
+        "2",
+        "4",
+        "8",
+        "16"
+       ],
+       "unit": "terms"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "column",
+     "els": [
+      {
+       "id": "checktitle",
+       "type": "title",
+       "text": "Your turn"
+      },
+      {
+       "id": "opt13",
+       "type": "label",
+       "text": "13 and 15",
+       "x": 200,
+       "y": 280,
+       "color": "mint"
+      },
+      {
+       "id": "opt12",
+       "type": "label",
+       "text": "12 and 14",
+       "x": 200,
+       "y": 350,
+       "color": "amber"
+      },
+      {
+       "id": "opt15",
+       "type": "label",
+       "text": "15 and 17",
+       "x": 200,
+       "y": 420,
+       "color": "sci"
+      },
+      {
+       "id": "opt22",
+       "type": "label",
+       "text": "22 and 24",
+       "x": 200,
+       "y": 490,
+       "color": "ion"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "A sequence is a list of numbers made by a rule.",
+    "L2": "The first two terms do not decide the whole sequence. The rule must work for every term.",
+    "L3": "Odd numbers start at 1 and add 2 each time. Even numbers start at 2 and also add 2.",
+    "L4": "Triangular numbers use growing additions: add 1, then 2, then 3, then 4.",
+    "L5": "Square numbers are n times n, so the sequence is 1, 4, 9, 16, 25.",
+    "L6": "Cube numbers are n times n times n. Powers of 2 double each time.",
+    "L7": "Saying the rule in words helps you find any term, without listing every earlier term.",
+    "L8": "Now use the odd-number rule to choose the next two terms after 11."
+   },
+   "narration": {
+    "L1": {
+     "text": "A sequence is a list of numbers made by a rule.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "The first two terms do not decide the whole sequence. The rule must work for every term.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "Odd numbers start at 1 and add 2 each time. Even numbers start at 2 and also add 2.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "Triangular numbers use growing additions: add 1, then 2, then 3, then 4.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "Square numbers are n times n, so the sequence is 1, 4, 9, 16, 25.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Cube numbers are n times n times n. Powers of 2 double each time.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Saying the rule in words helps you find any term, without listing every earlier term.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Now use the odd-number rule to choose the next two terms after 11.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "title"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "myth"
+      },
+      {
+       "at": 2,
+       "do": "bust",
+       "dur": 1.5,
+       "target": "myth"
+      },
+      {
+       "at": 3.5,
+       "do": "show",
+       "dur": 1,
+       "target": "rule"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.5,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "odd",
+        "oddseq"
+       ]
+      },
+      {
+       "at": 2.5,
+       "do": "highlight",
+       "dur": 1,
+       "target": "oddseq"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.5,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "tri",
+        "triseq"
+       ]
+      },
+      {
+       "at": 2.5,
+       "do": "highlight",
+       "dur": 1,
+       "target": "triseq"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.5,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "square",
+        "sqseq"
+       ]
+      },
+      {
+       "at": 1.5,
+       "do": "highlight",
+       "dur": 1.5,
+       "target": "sqseq"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.5,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "cube",
+        "cubeseq",
+        "power",
+        "pseq"
+       ]
+      },
+      {
+       "at": 2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "cubeseq"
+      },
+      {
+       "at": 3.5,
+       "do": "highlight",
+       "dur": 1,
+       "target": "pseq"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.5,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "focus",
+       "dur": 1,
+       "target": [
+        "square",
+        "cube",
+        "power"
+       ]
+      },
+      {
+       "at": 3,
+       "do": "camera",
+       "dur": 2,
+       "zoom": 1.05
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "checktitle"
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "opt13",
+        "opt12",
+        "opt15",
+        "opt22"
+       ]
+      },
+      {
+       "at": 3,
+       "do": "interactive",
+       "dur": 1
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "What are the next two odd numbers after 11?",
+    "options": [
+     "opt13",
+     "opt12",
+     "opt15",
+     "opt22"
+    ],
+    "answer": "opt13",
+    "src": "c6-maths-ch01-t01-i01"
+   }
+  },
+  "repairs": [
+   "glyph",
+   "glyph",
+   "arrow:dangling",
+   "arrow:dangling",
+   "cue:target",
+   "cue:target"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 54
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch01-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "title",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "sequence",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "list",
+       "op": "numwork",
+       "startMs": 900,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        110,
+        180
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "1",
+         "→",
+         "2",
+         "→",
+         "3",
+         "→",
+         "4"
+        ]
+       ]
+      },
+      {
+       "id": "rule",
+       "op": "arrow",
+       "startMs": 2300,
+       "endMs": 3300,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        180,
+        260
+       ],
+       "to": [
+        620,
+        260
+       ]
+      },
+      {
+       "id": "rulelabel",
+       "op": "label",
+       "startMs": 3300,
+       "endMs": 3900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        245
+       ],
+       "text": "rule",
+       "to": [
+        400,
+        260
+       ]
+      },
+      {
+       "id": "listlabel",
+       "op": "label",
+       "startMs": 3900,
+       "endMs": 4700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        340
+       ],
+       "text": "list of numbers",
+       "to": [
+        400,
+        190
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch01-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "terms",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        130
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "1",
+         "→",
+         "3",
+         "→",
+         "5",
+         "→",
+         "7"
+        ]
+       ]
+      },
+      {
+       "id": "wrong",
+       "op": "stroke",
+       "startMs": 1900,
+       "endMs": 2700,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         150,
+         210
+        ],
+        [
+         230,
+         250
+        ],
+        [
+         310,
+         210
+        ]
+       ]
+      },
+      {
+       "id": "whole",
+       "op": "rect",
+       "startMs": 3000,
+       "endMs": 3900,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        80,
+        100
+       ],
+       "w": 620,
+       "h": 100,
+       "round": 10
+      },
+      {
+       "id": "rule",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 4700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        290
+       ],
+       "text": "rule",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "every",
+       "op": "label",
+       "startMs": 4800,
+       "endMs": 5700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        365
+       ],
+       "text": "every term",
+       "to": [
+        400,
+        155
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch01-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "odd",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 2000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        80,
+        110
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "odd",
+         "1",
+         "→",
+         "3",
+         "→",
+         "5",
+         "→",
+         "7"
+        ]
+       ]
+      },
+      {
+       "id": "oddplus",
+       "op": "label",
+       "startMs": 2100,
+       "endMs": 2900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        250,
+        180
+       ],
+       "text": "add 2",
+       "to": [
+        250,
+        135
+       ]
+      },
+      {
+       "id": "even",
+       "op": "numwork",
+       "startMs": 3000,
+       "endMs": 5000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        80,
+        280
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "even",
+         "2",
+         "→",
+         "4",
+         "→",
+         "6",
+         "→",
+         "8"
+        ]
+       ]
+      },
+      {
+       "id": "evenplus",
+       "op": "label",
+       "startMs": 5100,
+       "endMs": 5900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        250,
+        350
+       ],
+       "text": "add 2",
+       "to": [
+        250,
+        305
+       ]
+      },
+      {
+       "id": "oddstart",
+       "op": "circle",
+       "startMs": 6000,
+       "endMs": 6700,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        145,
+        135
+       ],
+       "r": 24
+      },
+      {
+       "id": "evenstart",
+       "op": "circle",
+       "startMs": 6800,
+       "endMs": 7500,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        145,
+        305
+       ],
+       "r": 24
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch01-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "tri",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "Triangular numbers",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "terms",
+       "op": "numwork",
+       "startMs": 1000,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        170
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "1",
+         "→",
+         "3",
+         "→",
+         "6",
+         "→",
+         "10",
+         "→",
+         "15"
+        ]
+       ]
+      },
+      {
+       "id": "adds",
+       "op": "numwork",
+       "startMs": 2900,
+       "endMs": 4300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        150,
+        290
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "+1",
+         "→",
+         "+2",
+         "→",
+         "+3",
+         "→",
+         "+4"
+        ]
+       ]
+      },
+      {
+       "id": "grow",
+       "op": "arrow",
+       "startMs": 4400,
+       "endMs": 5200,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        620,
+        290
+       ],
+       "to": [
+        700,
+        220
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch01-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "squaretitle",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        60
+       ],
+       "text": "Square numbers",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "formula",
+       "op": "numwork",
+       "startMs": 900,
+       "endMs": 1700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        240,
+        130
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "n",
+         "×",
+         "n"
+        ]
+       ]
+      },
+      {
+       "id": "seq",
+       "op": "numwork",
+       "startMs": 1800,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        80,
+        250
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "1",
+         "→",
+         "4",
+         "→",
+         "9",
+         "→",
+         "16",
+         "→",
+         "25"
+        ]
+       ]
+      },
+      {
+       "id": "n1",
+       "op": "label",
+       "startMs": 4000,
+       "endMs": 4400,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        120,
+        340
+       ],
+       "text": "1",
+       "to": [
+        120,
+        270
+       ]
+      },
+      {
+       "id": "n2",
+       "op": "label",
+       "startMs": 4400,
+       "endMs": 4800,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        260,
+        340
+       ],
+       "text": "4",
+       "to": [
+        260,
+        270
+       ]
+      },
+      {
+       "id": "n3",
+       "op": "label",
+       "startMs": 4800,
+       "endMs": 5200,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        340
+       ],
+       "text": "9",
+       "to": [
+        400,
+        270
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch01-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "cube",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        60
+       ],
+       "text": "Cube numbers",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "cubeformula",
+       "op": "numwork",
+       "startMs": 800,
+       "endMs": 1700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        180,
+        130
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "n",
+         "×",
+         "n",
+         "×",
+         "n"
+        ]
+       ]
+      },
+      {
+       "id": "cubeSeq",
+       "op": "numwork",
+       "startMs": 1800,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        80,
+        230
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "1",
+         "→",
+         "8",
+         "→",
+         "27",
+         "→",
+         "64",
+         "→",
+         "125"
+        ]
+       ]
+      },
+      {
+       "id": "powers",
+       "op": "text",
+       "startMs": 3600,
+       "endMs": 4400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        350
+       ],
+       "text": "Powers of 2",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "double",
+       "op": "numwork",
+       "startMs": 4400,
+       "endMs": 5900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        130,
+        410
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "1",
+         "→",
+         "2",
+         "→",
+         "4",
+         "→",
+         "8",
+         "→",
+         "16"
+        ]
+       ]
+      },
+      {
+       "id": "dblabel",
+       "op": "label",
+       "startMs": 5900,
+       "endMs": 6400,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        650,
+        400
+       ],
+       "text": "double",
+       "to": [
+        610,
+        410
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch01-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "words",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "rule in words",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "rule",
+       "op": "text",
+       "startMs": 1100,
+       "endMs": 1900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        150
+       ],
+       "text": "add 2",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "terms",
+       "op": "numwork",
+       "startMs": 2000,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        260
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "1",
+         "→",
+         "3",
+         "→",
+         "5",
+         "→",
+         "7"
+        ]
+       ]
+      },
+      {
+       "id": "any",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4400,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        380
+       ],
+       "text": "any term",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "arrow",
+       "op": "arrow",
+       "startMs": 4500,
+       "endMs": 5300,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        400,
+        190
+       ],
+       "to": [
+        400,
+        250
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch01-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "oddtitle",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        65
+       ],
+       "text": "odd numbers",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "given",
+       "op": "numwork",
+       "startMs": 900,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        170
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "1",
+         "→",
+         "3",
+         "→",
+         "5",
+         "→",
+         "7",
+         "→",
+         "9",
+         "→",
+         "11"
+        ]
+       ]
+      },
+      {
+       "id": "rule",
+       "op": "label",
+       "startMs": 2600,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        285
+       ],
+       "text": "add 2",
+       "to": [
+        400,
+        185
+       ]
+      },
+      {
+       "id": "next",
+       "op": "numwork",
+       "startMs": 3600,
+       "endMs": 5100,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        250,
+        370
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "11",
+         "+2",
+         "=",
+         "13",
+         "+2",
+         "=",
+         "15"
+        ]
+       ]
+      },
+      {
+       "id": "circle",
+       "op": "circle",
+       "startMs": 5200,
+       "endMs": 5800,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        400,
+        385
+       ],
+       "r": 24
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1",
+   "key": "+2",
+   "prompt": "inputs 1,3,5,7 → 3,5,7,9"
+  },
+  {
+   "itemId": "r2",
+   "key": "²",
+   "prompt": "dots-square: 1,4,9"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

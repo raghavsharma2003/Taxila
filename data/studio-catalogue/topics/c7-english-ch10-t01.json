@@ -1,0 +1,1763 @@
+{
+ "topicId": "c7-english-ch10-t01",
+ "title": "The Tunnel",
+ "chapter": "The Tunnel",
+ "subject": "english",
+ "class": 7,
+ "topicType": "T3",
+ "plan": {
+  "game": "story-rail@1",
+  "hint": "sequence, cause and who modes from the lesson's events and speakers"
+ },
+ "game": {
+  "archetype": "story-rail@1",
+  "spec": {
+   "archetype": "story-rail@1",
+   "skills": [
+    "c7-english-ch10-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "picked": "coupled",
+    "streak": "streak",
+    "next": "What happens next?",
+    "effect": "What does this lead to?",
+    "who": "Who said this?",
+    "runDone": "Line complete",
+    "order": "your train",
+    "right": "Coupled",
+    "wrong": "Not this one",
+    "coach": "Tap a wagon before the train reaches the fork"
+   },
+   "title": "The Tunnel",
+   "rounds": [
+    {
+     "mode": "sequence",
+     "title": "The dark tunnel",
+     "sub": "couple the story events",
+     "cards": [
+      {
+       "id": "e1",
+       "text": "Ravi waits by the tunnel",
+       "glyph": "person"
+      },
+      {
+       "id": "e2",
+       "text": "Two yellow eyes glow",
+       "glyph": "eye"
+      },
+      {
+       "id": "e3",
+       "text": "Ravi sees a leopard",
+       "src": "c7-english-ch10-t01-i03"
+      },
+      {
+       "id": "e4",
+       "text": "The evening train arrives",
+       "glyph": "train",
+       "src": "c7-english-ch10-t01-i01"
+      },
+      {
+       "id": "e5",
+       "text": "The leopard slips away",
+       "glyph": "wind",
+       "src": "c7-english-ch10-t01-i10"
+      }
+     ],
+     "speed": 0.95
+    },
+    {
+     "mode": "cause",
+     "title": "Cause and effect",
+     "sub": "match each event to its result",
+     "pairs": [
+      {
+       "cause": {
+        "id": "c1",
+        "text": "Two yellow eyes glow",
+        "glyph": "eye",
+        "src": "c7-english-ch10-t01-i03"
+       },
+       "effect": {
+        "id": "f1",
+        "text": "Ravi sees a wild leopard",
+        "glyph": "fish",
+        "src": "c7-english-ch10-t01-i03"
+       }
+      },
+      {
+       "cause": {
+        "id": "c3",
+        "text": "Ravi meets the leopard safely",
+        "glyph": "person",
+        "src": "c7-english-ch10-t01-i12"
+       },
+       "effect": {
+        "id": "f3",
+        "text": "He hopes to see it again",
+        "glyph": "eye",
+        "src": "c7-english-ch10-t01-i12"
+       }
+      }
+     ],
+     "speed": 0.85,
+     "targets": "c7-english-ch10-t01-m-leopard-villain"
+    },
+    {
+     "mode": "who",
+     "title": "Who is speaking?",
+     "sub": "send each line to its speaker",
+     "speakers": [
+      {
+       "id": "ravi",
+       "name": "Ravi",
+       "glyph": "person"
+      },
+      {
+       "id": "leopard",
+       "name": "Leopard",
+       "glyph": "fish"
+      }
+     ],
+     "lines": [
+      {
+       "id": "w1",
+       "text": "I am waiting for the train.",
+       "speaker": "ravi",
+       "src": "c7-english-ch10-t01-i01"
+      },
+      {
+       "id": "w2",
+       "text": "I avoid trouble with people.",
+       "speaker": "leopard",
+       "src": "c7-english-ch10-t01-i10"
+      },
+      {
+       "id": "w3",
+       "text": "I hope to see it again.",
+       "speaker": "ravi",
+       "src": "c7-english-ch10-t01-i12"
+      }
+     ],
+     "speed": 0.8
+    }
+   ]
+  },
+  "repairs": [
+   "glyph",
+   "string:card.text"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-english-ch10-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "The Tunnel: Clues and Choices",
+   "accent": "ion",
+   "targets": "c7-english-ch10-t01-m-leopard-villain",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "row",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "The Tunnel"
+      },
+      {
+       "id": "boy",
+       "type": "node",
+       "text": "Ravi",
+       "sub": "waits by tunnel",
+       "glyph": "person",
+       "color": "ion"
+      },
+      {
+       "id": "tunnel",
+       "type": "node",
+       "text": "dark tunnel",
+       "sub": "in the hills",
+       "glyph": "mountain",
+       "color": "sci"
+      },
+      {
+       "id": "train",
+       "type": "node",
+       "text": "evening train",
+       "sub": "approaching",
+       "glyph": "train",
+       "color": "amber"
+      },
+      {
+       "id": "leopard",
+       "type": "node",
+       "text": "leopard",
+       "sub": "yellow eyes",
+       "glyph": "insect",
+       "color": "sun"
+      },
+      {
+       "id": "wait",
+       "type": "arrow",
+       "from": "boy",
+       "to": "train",
+       "text": "waits for"
+      },
+      {
+       "id": "sees",
+       "type": "arrow",
+       "from": "boy",
+       "to": "leopard",
+       "text": "sees"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "split",
+     "els": [
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "A wild animal is always the villain"
+      },
+      {
+       "id": "dark",
+       "type": "label",
+       "text": "darkness",
+       "x": 120,
+       "y": 220,
+       "color": "ion"
+      },
+      {
+       "id": "whistle",
+       "type": "label",
+       "text": "whistle shrieked",
+       "x": 120,
+       "y": 300,
+       "color": "amber"
+      },
+      {
+       "id": "suddenly",
+       "type": "label",
+       "text": "suddenly",
+       "x": 120,
+       "y": 380,
+       "color": "volt"
+      },
+      {
+       "id": "eyes",
+       "type": "node",
+       "text": "yellow eyes",
+       "sub": "before the name",
+       "glyph": "eye",
+       "color": "sun"
+      },
+      {
+       "id": "sound",
+       "type": "node",
+       "text": "sound words",
+       "sub": "hear and feel",
+       "glyph": "music",
+       "color": "sci"
+      },
+      {
+       "id": "clue1",
+       "type": "arrow",
+       "from": "dark",
+       "to": "eyes",
+       "text": "hides"
+      },
+      {
+       "id": "clue2",
+       "type": "arrow",
+       "from": "whistle",
+       "to": "sound",
+       "text": "makes heard"
+      },
+      {
+       "id": "clue3",
+       "type": "arrow",
+       "from": "suddenly",
+       "to": "eyes",
+       "text": "surprises"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "column",
+     "els": [
+      {
+       "id": "grammar",
+       "type": "title",
+       "text": "Articles"
+      },
+      {
+       "id": "newowl",
+       "type": "label",
+       "text": "an owl",
+       "x": 160,
+       "y": 230,
+       "color": "mint"
+      },
+      {
+       "id": "newleo",
+       "type": "label",
+       "text": "a leopard",
+       "x": 160,
+       "y": 300,
+       "color": "mint"
+      },
+      {
+       "id": "knownowl",
+       "type": "label",
+       "text": "the owl",
+       "x": 160,
+       "y": 370,
+       "color": "amber"
+      },
+      {
+       "id": "knowntun",
+       "type": "label",
+       "text": "the tunnel",
+       "x": 160,
+       "y": 440,
+       "color": "amber"
+      },
+      {
+       "id": "rule",
+       "type": "node",
+       "text": "new or known",
+       "sub": "choose the article",
+       "glyph": "book",
+       "color": "ion"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "In The Tunnel, Ravi waits near a dark tunnel for the evening train.",
+    "L2": "He sees a leopard there, and the glowing eyes make the moment mysterious.",
+    "L3": "The darkness, distant sounds, and the word “suddenly” build suspense.",
+    "L4": "Words such as “shrieked” and “roared” help us hear the scene and feel its power.",
+    "L5": "The leopard is not a villain. It avoids trouble and returns to its home in the forest.",
+    "L6": "Articles help us show whether a noun is new or already known.",
+    "L7": "We say “an owl” and “a leopard”; later, we say “the owl” and “the leopard.”",
+    "L8": "Now choose the phrase with the correct article for owl."
+   },
+   "narration": {
+    "L1": {
+     "text": "In The Tunnel, Ravi waits near a dark tunnel for the evening train.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L2": {
+     "text": "He sees a leopard there, and the glowing eyes make the moment mysterious.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L3": {
+     "text": "The darkness, distant sounds, and the word “suddenly” build suspense.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L4": {
+     "text": "Words such as “shrieked” and “roared” help us hear the scene and feel its power.",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L5": {
+     "text": "The leopard is not a villain. It avoids trouble and returns to its home in the forest.",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Articles help us show whether a noun is new or already known.",
+     "dur": 2.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L7": {
+     "text": "We say “an owl” and “a leopard”; later, we say “the owl” and “the leopard.”",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Now choose the phrase with the correct article for owl.",
+     "dur": 2,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "title"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.6,
+       "target": "boy"
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.6,
+       "target": "tunnel"
+      },
+      {
+       "at": 1.6,
+       "do": "show",
+       "dur": 0.6,
+       "target": "train"
+      },
+      {
+       "at": 2,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "wait",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "leopard"
+      },
+      {
+       "at": 0.6,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "sees",
+       "to": 1
+      },
+      {
+       "at": 1.3,
+       "do": "highlight",
+       "dur": 1,
+       "target": "leopard"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "dark",
+        "whistle",
+        "suddenly"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.8,
+       "target": "eyes"
+      },
+      {
+       "at": 1.5,
+       "do": "flow",
+       "dur": 0.8,
+       "target": [
+        "clue1",
+        "clue2",
+        "clue3"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "sound"
+      },
+      {
+       "at": 0.7,
+       "do": "highlight",
+       "dur": 1,
+       "target": "whistle"
+      },
+      {
+       "at": 1.7,
+       "do": "highlight",
+       "dur": 1,
+       "target": "sound"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.5,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "myth"
+      },
+      {
+       "at": 0.9,
+       "do": "bust",
+       "dur": 1.2,
+       "target": "myth"
+      },
+      {
+       "at": 2.1,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "eyes"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "grammar"
+      },
+      {
+       "at": 0.6,
+       "do": "show",
+       "dur": 0.7,
+       "target": "rule"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "newowl",
+        "newleo"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "knownowl",
+        "knowntun"
+       ]
+      },
+      {
+       "at": 2,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "newowl"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "interactive",
+       "dur": 0.5
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which phrase uses the correct article for owl?",
+    "options": [
+     "newowl",
+     "newleo",
+     "knownowl"
+    ],
+    "answer": "newowl",
+    "src": "c7-english-ch10-t01-i06"
+   }
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg",
+  "seconds": 28
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch10-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "tunnel",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        230,
+        150
+       ],
+       "w": 340,
+       "h": 220,
+       "fill": "soft"
+      },
+      {
+       "id": "dark",
+       "op": "rect",
+       "startMs": 700,
+       "endMs": 1500,
+       "ink": "ink",
+       "weight": 2,
+       "at": [
+        290,
+        190
+       ],
+       "w": 220,
+       "h": 180,
+       "fill": "ink"
+      },
+      {
+       "id": "ravi",
+       "op": "circle",
+       "startMs": 1200,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        150,
+        330
+       ],
+       "r": 24
+      },
+      {
+       "id": "train",
+       "op": "rect",
+       "startMs": 1700,
+       "endMs": 2400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        610,
+        300
+       ],
+       "w": 120,
+       "h": 55
+      },
+      {
+       "id": "rail1",
+       "op": "line",
+       "startMs": 2200,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 1,
+       "from": [
+        570,
+        370
+       ],
+       "to": [
+        760,
+        370
+       ]
+      },
+      {
+       "id": "rail2",
+       "op": "line",
+       "startMs": 2400,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 1,
+       "from": [
+        570,
+        390
+       ],
+       "to": [
+        760,
+        390
+       ]
+      },
+      {
+       "id": "wait",
+       "op": "label",
+       "startMs": 2900,
+       "endMs": 3400,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        90,
+        410
+       ],
+       "text": "waits",
+       "to": [
+        150,
+        330
+       ]
+      },
+      {
+       "id": "tunnelword",
+       "op": "label",
+       "startMs": 3400,
+       "endMs": 4000,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        330,
+        130
+       ],
+       "text": "tunnel",
+       "to": [
+        400,
+        150
+       ]
+      },
+      {
+       "id": "evening",
+       "op": "label",
+       "startMs": 4000,
+       "endMs": 4800,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        625,
+        280
+       ],
+       "text": "evening train",
+       "to": [
+        670,
+        300
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch10-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "eyes1",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        365,
+        260
+       ],
+       "r": 10,
+       "fill": "accent"
+      },
+      {
+       "id": "eyes2",
+       "op": "circle",
+       "startMs": 300,
+       "endMs": 1100,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        435,
+        260
+       ],
+       "r": 10,
+       "fill": "accent"
+      },
+      {
+       "id": "leopard",
+       "op": "ellipse",
+       "startMs": 1000,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        315
+       ],
+       "rx": 105,
+       "ry": 55
+      },
+      {
+       "id": "spots",
+       "op": "circle",
+       "startMs": 1500,
+       "endMs": 1900,
+       "ink": "mark",
+       "weight": 1,
+       "c": [
+        350,
+        310
+       ],
+       "r": 8
+      },
+      {
+       "id": "spots2",
+       "op": "circle",
+       "startMs": 1700,
+       "endMs": 2100,
+       "ink": "mark",
+       "weight": 1,
+       "c": [
+        450,
+        330
+       ],
+       "r": 8
+      },
+      {
+       "id": "leopardword",
+       "op": "label",
+       "startMs": 2200,
+       "endMs": 2900,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        455,
+        400
+       ],
+       "text": "leopard",
+       "to": [
+        440,
+        350
+       ]
+      },
+      {
+       "id": "mystery",
+       "op": "label",
+       "startMs": 3200,
+       "endMs": 4000,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        570,
+        220
+       ],
+       "text": "mysterious",
+       "to": [
+        435,
+        260
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch10-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "darkness",
+       "op": "label",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        100,
+        120
+       ],
+       "text": "darkness",
+       "to": [
+        290,
+        190
+       ]
+      },
+      {
+       "id": "sound",
+       "op": "arrow",
+       "startMs": 700,
+       "endMs": 1500,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        650,
+        160
+       ],
+       "to": [
+        520,
+        240
+       ]
+      },
+      {
+       "id": "distant",
+       "op": "label",
+       "startMs": 1200,
+       "endMs": 2100,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        590,
+        130
+       ],
+       "text": "distant sounds",
+       "to": [
+        600,
+        180
+       ]
+      },
+      {
+       "id": "suddenly",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 3000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        450
+       ],
+       "text": "suddenly",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "suspense",
+       "op": "label",
+       "startMs": 3200,
+       "endMs": 4100,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        580,
+        430
+       ],
+       "text": "suspense",
+       "to": [
+        500,
+        450
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch10-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "shrieked",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        130,
+        130
+       ],
+       "text": "shrieked",
+       "size": "l"
+      },
+      {
+       "id": "shriekarrow",
+       "op": "arrow",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        240,
+        155
+       ],
+       "to": [
+        330,
+        230
+       ]
+      },
+      {
+       "id": "roared",
+       "op": "text",
+       "startMs": 1600,
+       "endMs": 2500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        560,
+        130
+       ],
+       "text": "roared",
+       "size": "l"
+      },
+      {
+       "id": "roararrow",
+       "op": "arrow",
+       "startMs": 2400,
+       "endMs": 3100,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        600,
+        155
+       ],
+       "to": [
+        490,
+        300
+       ]
+      },
+      {
+       "id": "hear",
+       "op": "label",
+       "startMs": 3500,
+       "endMs": 4200,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        150,
+        420
+       ],
+       "text": "hear",
+       "to": [
+        270,
+        250
+       ]
+      },
+      {
+       "id": "power",
+       "op": "label",
+       "startMs": 4300,
+       "endMs": 5000,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        600,
+        420
+       ],
+       "text": "power",
+       "to": [
+        500,
+        320
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch10-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "notvillain",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1100,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        90
+       ],
+       "text": "not a villain",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "cross",
+       "op": "line",
+       "startMs": 1000,
+       "endMs": 1500,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        270,
+        75
+       ],
+       "to": [
+        530,
+        105
+       ]
+      },
+      {
+       "id": "avoid",
+       "op": "arrow",
+       "startMs": 1800,
+       "endMs": 2800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        315
+       ],
+       "to": [
+        260,
+        390
+       ]
+      },
+      {
+       "id": "trouble",
+       "op": "label",
+       "startMs": 2700,
+       "endMs": 3700,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        150,
+        420
+       ],
+       "text": "avoids trouble",
+       "to": [
+        260,
+        390
+       ]
+      },
+      {
+       "id": "forest",
+       "op": "polygon",
+       "startMs": 3600,
+       "endMs": 4700,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         570,
+         330
+        ],
+        [
+         610,
+         250
+        ],
+        [
+         650,
+         330
+        ],
+        [
+         690,
+         240
+        ],
+        [
+         735,
+         330
+        ]
+       ],
+       "fill": "soft"
+      },
+      {
+       "id": "home",
+       "op": "label",
+       "startMs": 4700,
+       "endMs": 5400,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        650,
+        390
+       ],
+       "text": "home",
+       "to": [
+        650,
+        330
+       ]
+      },
+      {
+       "id": "forestword",
+       "op": "label",
+       "startMs": 5400,
+       "endMs": 6200,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        620,
+        210
+       ],
+       "text": "forest",
+       "to": [
+        650,
+        260
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch10-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "noun",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        100
+       ],
+       "text": "noun",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "new",
+       "op": "rect",
+       "startMs": 900,
+       "endMs": 1700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        100,
+        190
+       ],
+       "w": 220,
+       "h": 110
+      },
+      {
+       "id": "newword",
+       "op": "label",
+       "startMs": 1700,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        210,
+        245
+       ],
+       "text": "new",
+       "to": [
+        210,
+        190
+       ]
+      },
+      {
+       "id": "known",
+       "op": "rect",
+       "startMs": 2300,
+       "endMs": 3100,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        480,
+        190
+       ],
+       "w": 220,
+       "h": 110
+      },
+      {
+       "id": "knownword",
+       "op": "label",
+       "startMs": 3100,
+       "endMs": 4000,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        590,
+        245
+       ],
+       "text": "already known",
+       "to": [
+        590,
+        190
+       ]
+      },
+      {
+       "id": "arrownew",
+       "op": "arrow",
+       "startMs": 4000,
+       "endMs": 4500,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        400,
+        130
+       ],
+       "to": [
+        210,
+        190
+       ]
+      },
+      {
+       "id": "arrowknown",
+       "op": "arrow",
+       "startMs": 4500,
+       "endMs": 5000,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        400,
+        130
+       ],
+       "to": [
+        590,
+        190
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch10-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "anowl",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        90,
+        130
+       ],
+       "text": "an owl",
+       "size": "l"
+      },
+      {
+       "id": "aleopard",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        90,
+        230
+       ],
+       "text": "a leopard",
+       "size": "l"
+      },
+      {
+       "id": "theowl",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 3100,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        500,
+        130
+       ],
+       "text": "the owl",
+       "size": "l"
+      },
+      {
+       "id": "theleopard",
+       "op": "text",
+       "startMs": 3100,
+       "endMs": 4200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        500,
+        230
+       ],
+       "text": "the leopard",
+       "size": "l"
+      },
+      {
+       "id": "vowel",
+       "op": "label",
+       "startMs": 4300,
+       "endMs": 4800,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        280,
+        130
+       ],
+       "text": "owl",
+       "to": [
+        220,
+        130
+       ]
+      },
+      {
+       "id": "newlabel",
+       "op": "label",
+       "startMs": 4800,
+       "endMs": 5300,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        280,
+        230
+       ],
+       "text": "new",
+       "to": [
+        220,
+        230
+       ]
+      },
+      {
+       "id": "knownlabel",
+       "op": "label",
+       "startMs": 5300,
+       "endMs": 5900,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        680,
+        180
+       ],
+       "text": "known",
+       "to": [
+        620,
+        180
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch10-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "choose",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        100
+       ],
+       "text": "choose",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "phrase",
+       "op": "rect",
+       "startMs": 900,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        130,
+        190
+       ],
+       "w": 540,
+       "h": 100
+      },
+      {
+       "id": "owlphrase",
+       "op": "label",
+       "startMs": 1600,
+       "endMs": 2300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        240
+       ],
+       "text": "___ owl",
+       "to": [
+        400,
+        240
+       ]
+      },
+      {
+       "id": "anchoice",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3400,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        180,
+        370
+       ],
+       "text": "an",
+       "size": "l"
+      },
+      {
+       "id": "arrowchoice",
+       "op": "arrow",
+       "startMs": 3400,
+       "endMs": 4100,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        250,
+        360
+       ],
+       "to": [
+        360,
+        290
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "Two yellow eyes glow",
+   "prompt": "sequence: after/for \"Ravi waits by the tunnel\""
+  },
+  {
+   "itemId": "r1:1",
+   "key": "Ravi sees a leopard",
+   "prompt": "sequence: after/for \"Two yellow eyes glow\"",
+   "src": "c7-english-ch10-t01-i03"
+  },
+  {
+   "itemId": "r1:2",
+   "key": "The evening train arrives",
+   "prompt": "sequence: after/for \"Ravi sees a leopard\"",
+   "src": "c7-english-ch10-t01-i01"
+  },
+  {
+   "itemId": "r1:3",
+   "key": "The leopard slips away",
+   "prompt": "sequence: after/for \"The evening train arrives\"",
+   "src": "c7-english-ch10-t01-i10"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "Ravi sees a wild leopard",
+   "prompt": "cause: after/for \"Two yellow eyes glow\"",
+   "src": "c7-english-ch10-t01-i03"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "He hopes to see it again",
+   "prompt": "cause: after/for \"Ravi meets the leopard safely\"",
+   "src": "c7-english-ch10-t01-i12"
+  },
+  {
+   "itemId": "r3:0",
+   "key": "Ravi",
+   "prompt": "who: after/for \"I am waiting for the train.\"",
+   "src": "c7-english-ch10-t01-i01"
+  },
+  {
+   "itemId": "r3:1",
+   "key": "Leopard",
+   "prompt": "who: after/for \"I avoid trouble with people.\"",
+   "src": "c7-english-ch10-t01-i10"
+  },
+  {
+   "itemId": "r3:2",
+   "key": "Ravi",
+   "prompt": "who: after/for \"I hope to see it again.\"",
+   "src": "c7-english-ch10-t01-i12"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ },
+ "firstCheck": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "Round 1 (sequence) uses cards 'Ravi waits by the tunnel' and 'The evening train arrives' both with src=c7-english-ch10-t01-i01, but that kit item is about the train arriving, not about waiting. This is a factual mismatch: the kit item's answer is 'The evening train', not 'Ravi waits by the tunnel'.",
+    "severity": "high"
+   },
+   {
+    "where": "explainer",
+    "what": "Scene s3 includes a label text 'a owl, an leopard' which is grammatically wrong and not supported by the kit; the kit correctly teaches 'a leopard, an owl'. This could confuse children.",
+    "severity": "high"
+   },
+   {
+    "where": "explainer",
+    "what": "Task answer 'aowl' is ambiguous; the options are 'aowl', 'aleop', 'theowl' but the expected answer is 'an owl, a leopard' according to the kit. The label does not match the answer format.",
+    "severity": "low"
+   }
+  ],
+  "verdict": "fail",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

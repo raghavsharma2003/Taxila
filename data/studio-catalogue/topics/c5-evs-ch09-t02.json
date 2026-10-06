@@ -1,0 +1,1890 @@
+{
+ "topicId": "c5-evs-ch09-t02",
+ "title": "Seasons and changes in nature",
+ "chapter": "Rhythms of Nature",
+ "subject": "evs",
+ "class": 5,
+ "topicType": "T3",
+ "plan": {
+  "game": "sky-lab@1",
+  "hint": "season mode (longest, shortest, equal, summer north/south)"
+ },
+ "game": {
+  "archetype": "sky-lab@1",
+  "spec": {
+   "archetype": "sky-lab@1",
+   "skills": [
+    "c5-evs-ch09-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "done": "Well done",
+    "lock": "LOCK",
+    "spin": "Drag to spin the Earth",
+    "sun": "Sun",
+    "noon": "noon",
+    "midnight": "midnight",
+    "sunrise": "sunrise",
+    "sunset": "sunset",
+    "localTime": "time in",
+    "north": "North Pole",
+    "dayLength": "day length",
+    "sunHigh": "noon Sun height",
+    "distance": "Earth–Sun distance",
+    "orbit": "Drag the Earth along its orbit",
+    "longest": "longest day",
+    "shortest": "shortest day",
+    "equal": "equal day and night",
+    "summerNorth": "summer in the north",
+    "summerSouth": "summer in the south",
+    "solar": "solar eclipse",
+    "lunar": "lunar eclipse",
+    "moon": "Moon",
+    "date": "date",
+    "night": "night",
+    "stillStar": "Tap the still star",
+    "pointer": "Find the pointer",
+    "join": "Join the stars",
+    "polaris": "Pole Star",
+    "wrongWay": "The Earth spins west to east",
+    "runDone": "Sky closed",
+    "hours": "hours",
+    "months": "Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec",
+    "saptarishi": "Saptarishi",
+    "cassiopeia": "Cassiopeia",
+    "new": "new moon",
+    "waxingCrescent": "waxing crescent",
+    "firstQuarter": "first quarter",
+    "waxingGibbous": "waxing gibbous",
+    "full": "full moon",
+    "waningGibbous": "waning gibbous",
+    "lastQuarter": "last quarter",
+    "waningCrescent": "waning crescent",
+    "fromEarth": "seen from Earth",
+    "place": "Place the Moon"
+   },
+   "title": "Seasons and Sky",
+   "rounds": [
+    {
+     "mode": "daynight",
+     "title": "Spin the Earth",
+     "sub": "watch day and night change",
+     "city": "Delhi",
+     "lon": 77.2,
+     "ask": "noon",
+     "tolH": 1
+    },
+    {
+     "mode": "season",
+     "title": "Follow the orbit",
+     "sub": "find the longest day",
+     "ask": "longest",
+     "targets": "c5-evs-ch09-t02-m1"
+    },
+    {
+     "mode": "season",
+     "title": "Two halves of Earth",
+     "sub": "compare two places",
+     "ask": "summerSouth",
+     "targets": "c5-evs-ch09-t02-m2"
+    },
+    {
+     "mode": "season",
+     "title": "Read the daylight",
+     "sub": "find the shortest day",
+     "ask": "shortest"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c5-evs-ch09-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Why do seasons change?",
+   "accent": "sun",
+   "targets": "c5-evs-ch09-t02-m1",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Why do seasons change?"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Closer to the Sun means summer"
+      },
+      {
+       "id": "sun",
+       "type": "glyph",
+       "name": "sun",
+       "x": 180,
+       "y": 330,
+       "size": 140,
+       "color": "sun"
+      },
+      {
+       "id": "earth",
+       "type": "glyph",
+       "name": "earth",
+       "x": 760,
+       "y": 330,
+       "size": 140,
+       "color": "ion"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "sun2",
+       "type": "node",
+       "text": "Sun",
+       "sub": "light source",
+       "glyph": "sun",
+       "color": "sun"
+      },
+      {
+       "id": "jun",
+       "type": "node",
+       "text": "June",
+       "sub": "summer",
+       "glyph": "earth",
+       "color": "amber"
+      },
+      {
+       "id": "dec",
+       "type": "node",
+       "text": "December",
+       "sub": "winter",
+       "glyph": "earth",
+       "color": "ion"
+      },
+      {
+       "id": "tilt",
+       "type": "label",
+       "text": "Earth's axis is tilted",
+       "x": 390,
+       "y": 160,
+       "color": "volt"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "sun2",
+       "to": "jun",
+       "text": "direct light"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "sun2",
+       "to": "dec",
+       "text": "slanting light"
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "jun",
+       "to": "dec",
+       "text": "year"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "summer",
+       "type": "node",
+       "text": "Summer",
+       "sub": "long days",
+       "glyph": "sun",
+       "color": "sun"
+      },
+      {
+       "id": "monsoon",
+       "type": "node",
+       "text": "Monsoon",
+       "sub": "frogs appear",
+       "glyph": "rain",
+       "color": "sci"
+      },
+      {
+       "id": "winter",
+       "type": "node",
+       "text": "Winter",
+       "sub": "birds arrive",
+       "glyph": "bird",
+       "color": "ion"
+      },
+      {
+       "id": "spring",
+       "type": "node",
+       "text": "Spring",
+       "sub": "new growth",
+       "glyph": "flower",
+       "color": "mint"
+      },
+      {
+       "id": "seasonflow",
+       "type": "arrow",
+       "from": "summer",
+       "to": "monsoon",
+       "text": "changes"
+      },
+      {
+       "id": "seasonflow2",
+       "type": "arrow",
+       "from": "monsoon",
+       "to": "winter",
+       "text": "changes"
+      },
+      {
+       "id": "seasonflow3",
+       "type": "arrow",
+       "from": "winter",
+       "to": "spring",
+       "text": "changes"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "row",
+     "els": [
+      {
+       "id": "q",
+       "type": "label",
+       "text": "Which statement is correct?",
+       "x": 300,
+       "y": 150,
+       "color": "volt"
+      },
+      {
+       "id": "opt1",
+       "type": "node",
+       "text": "Tilt",
+       "sub": "causes seasons",
+       "glyph": "compass",
+       "color": "mint"
+      },
+      {
+       "id": "opt2",
+       "type": "node",
+       "text": "Distance",
+       "sub": "causes seasons",
+       "glyph": "ruler",
+       "color": "amber"
+      },
+      {
+       "id": "opt3",
+       "type": "node",
+       "text": "Same season",
+       "sub": "everywhere",
+       "glyph": "globe",
+       "color": "ion"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "India has summer, the monsoon, autumn, winter and spring.",
+    "L2": "Seasons are not caused by Earth being closer to the Sun.",
+    "L3": "Earth's axis is tilted as Earth travels around the Sun each year.",
+    "L4": "In June, our half leans towards the Sun, so sunlight falls more directly.",
+    "L5": "The days are longer too, giving more hours of heating.",
+    "L6": "In December, our half leans away, so light slants and days are shorter.",
+    "L7": "The Earth is actually closest to the Sun in early January, during India's winter.",
+    "L8": "Seasons also bring changes in nature: frogs appear in monsoon and many birds arrive in winter.",
+    "L9": "Tap the statement that explains why seasons change."
+   },
+   "narration": {},
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.5,
+       "target": "summer"
+      },
+      {
+       "at": 0.4,
+       "do": "show",
+       "dur": 0.5,
+       "target": "monsoon"
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.5,
+       "target": "winter"
+      },
+      {
+       "at": 1.2,
+       "do": "show",
+       "dur": 0.5,
+       "target": "spring"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "myth"
+      },
+      {
+       "at": 0.8,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "tilt"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.6,
+       "target": "sun2"
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.6,
+       "target": "jun"
+      },
+      {
+       "at": 1.1,
+       "do": "show",
+       "dur": 0.6,
+       "target": "dec"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "a1"
+      },
+      {
+       "at": 0.5,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "a1",
+       "to": 1
+      },
+      {
+       "at": 1.3,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "jun"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "jun"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "a2"
+      },
+      {
+       "at": 0.5,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "a2",
+       "to": 1
+      },
+      {
+       "at": 1.2,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "dec"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "a3"
+      },
+      {
+       "at": 0.7,
+       "do": "focus",
+       "dur": 0.8,
+       "target": "dec"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "monsoon"
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "winter"
+      }
+     ]
+    },
+    {
+     "line": "L9",
+     "gap": 0,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "q"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.5,
+       "target": "opt1"
+      },
+      {
+       "at": 0.9,
+       "do": "show",
+       "dur": 0.5,
+       "target": "opt2"
+      },
+      {
+       "at": 1.3,
+       "do": "show",
+       "dur": 0.5,
+       "target": "opt3"
+      },
+      {
+       "at": "end",
+       "do": "interactive"
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Tap the statement that explains why seasons change.",
+    "options": [
+     "opt1",
+     "opt2",
+     "opt3"
+    ],
+    "answer": "opt1",
+    "src": "c5-evs-ch09-t02-i12"
+   }
+  },
+  "repairs": [],
+  "attempts": 2,
+  "model": "taxila-fast-bg",
+  "passes": 2,
+  "seconds": 52
+ },
+ "keys": [
+  {
+   "itemId": "r1",
+   "key": "Delhi at 12:00 (spin +120°)",
+   "prompt": "watch day and night change"
+  },
+  {
+   "itemId": "r2",
+   "key": "day 172",
+   "prompt": "find the longest day"
+  },
+  {
+   "itemId": "r3",
+   "key": "day 355",
+   "prompt": "compare two places"
+  },
+  {
+   "itemId": "r4",
+   "key": "day 355",
+   "prompt": "find the shortest day"
+  }
+ ],
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch09-t02-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4430,
+     "ops": [
+      {
+       "id": "sun",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        100
+       ],
+       "r": 42,
+       "fill": "accent"
+      },
+      {
+       "id": "orbit",
+       "op": "ellipse",
+       "startMs": 350,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        255
+       ],
+       "rx": 285,
+       "ry": 150
+      },
+      {
+       "id": "earth",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        685,
+        255
+       ],
+       "r": 24
+      },
+      {
+       "id": "l1",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        35
+       ],
+       "text": "India",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "l2",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        110,
+        430
+       ],
+       "text": "summer",
+       "size": "m"
+      },
+      {
+       "id": "l3",
+       "op": "text",
+       "startMs": 2250,
+       "endMs": 2750,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        250,
+        430
+       ],
+       "text": "monsoon",
+       "size": "m"
+      },
+      {
+       "id": "l4",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        430
+       ],
+       "text": "autumn",
+       "size": "m"
+      },
+      {
+       "id": "l5",
+       "op": "text",
+       "startMs": 3150,
+       "endMs": 3650,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        535,
+        430
+       ],
+       "text": "winter",
+       "size": "m"
+      },
+      {
+       "id": "l6",
+       "op": "text",
+       "startMs": 3600,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        680,
+        430
+       ],
+       "text": "spring",
+       "size": "m"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch09-t02-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "sun",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        245
+       ],
+       "r": 48,
+       "fill": "accent"
+      },
+      {
+       "id": "earth",
+       "op": "circle",
+       "startMs": 500,
+       "endMs": 950,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        180,
+        245
+       ],
+       "r": 34
+      },
+      {
+       "id": "near",
+       "op": "arrow",
+       "startMs": 1000,
+       "endMs": 1600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        225,
+        245
+       ],
+       "to": [
+        335,
+        245
+       ]
+      },
+      {
+       "id": "far",
+       "op": "arrow",
+       "startMs": 1650,
+       "endMs": 2250,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        365,
+        245
+       ],
+       "to": [
+        225,
+        245
+       ]
+      },
+      {
+       "id": "axis",
+       "op": "line",
+       "startMs": 2300,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        160,
+        220
+       ],
+       "to": [
+        200,
+        270
+       ]
+      },
+      {
+       "id": "wrong",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3600,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        400,
+        390
+       ],
+       "text": "closer to Sun",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "cross1",
+       "op": "line",
+       "startMs": 3650,
+       "endMs": 4100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        300,
+        360
+       ],
+       "to": [
+        500,
+        420
+       ]
+      },
+      {
+       "id": "cross2",
+       "op": "line",
+       "startMs": 4100,
+       "endMs": 4550,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        500,
+        360
+       ],
+       "to": [
+        300,
+        420
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch09-t02-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "sun",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 550,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        245
+       ],
+       "r": 44,
+       "fill": "accent"
+      },
+      {
+       "id": "orbit",
+       "op": "ellipse",
+       "startMs": 400,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        245
+       ],
+       "rx": 300,
+       "ry": 165
+      },
+      {
+       "id": "earth",
+       "op": "circle",
+       "startMs": 950,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        675,
+        245
+       ],
+       "r": 32
+      },
+      {
+       "id": "axis",
+       "op": "line",
+       "startMs": 1450,
+       "endMs": 2100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        660,
+        215
+       ],
+       "to": [
+        690,
+        275
+       ]
+      },
+      {
+       "id": "travel",
+       "op": "arrow",
+       "startMs": 2200,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        610,
+        125
+       ],
+       "to": [
+        700,
+        180
+       ]
+      },
+      {
+       "id": "l1",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3650,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "Earth axis tilted",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "l2",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4350,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        455
+       ],
+       "text": "year",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch09-t02-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "sun",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        130,
+        240
+       ],
+       "r": 50,
+       "fill": "accent"
+      },
+      {
+       "id": "earth",
+       "op": "circle",
+       "startMs": 500,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        610,
+        250
+       ],
+       "r": 90
+      },
+      {
+       "id": "axis",
+       "op": "line",
+       "startMs": 1100,
+       "endMs": 1800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        580,
+        170
+       ],
+       "to": [
+        640,
+        330
+       ]
+      },
+      {
+       "id": "lean",
+       "op": "arrow",
+       "startMs": 1800,
+       "endMs": 2400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        565,
+        205
+       ],
+       "to": [
+        520,
+        155
+       ]
+      },
+      {
+       "id": "ray1",
+       "op": "line",
+       "startMs": 2400,
+       "endMs": 3000,
+       "ink": "accent",
+       "weight": 1,
+       "from": [
+        175,
+        215
+       ],
+       "to": [
+        545,
+        220
+       ]
+      },
+      {
+       "id": "ray2",
+       "op": "line",
+       "startMs": 2900,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 1,
+       "from": [
+        175,
+        240
+       ],
+       "to": [
+        545,
+        240
+       ]
+      },
+      {
+       "id": "ray3",
+       "op": "line",
+       "startMs": 3400,
+       "endMs": 4000,
+       "ink": "accent",
+       "weight": 1,
+       "from": [
+        175,
+        265
+       ],
+       "to": [
+        545,
+        260
+       ]
+      },
+      {
+       "id": "l1",
+       "op": "text",
+       "startMs": 4100,
+       "endMs": 4600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        610,
+        110
+       ],
+       "text": "June",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "l2",
+       "op": "text",
+       "startMs": 4650,
+       "endMs": 5250,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        610,
+        390
+       ],
+       "text": "direct sunlight",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch09-t02-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "day",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        130,
+        250
+       ],
+       "to": [
+        670,
+        250
+       ]
+      },
+      {
+       "id": "sunrise",
+       "op": "circle",
+       "startMs": 650,
+       "endMs": 950,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        130,
+        250
+       ],
+       "r": 10
+      },
+      {
+       "id": "sunset",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1200,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        670,
+        250
+       ],
+       "r": 10
+      },
+      {
+       "id": "hours",
+       "op": "numwork",
+       "startMs": 1300,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        220,
+        300
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "longer",
+         "days",
+         "=",
+         "more",
+         "heatin"
+        ]
+       ]
+      },
+      {
+       "id": "heat1",
+       "op": "arrow",
+       "startMs": 2700,
+       "endMs": 3300,
+       "ink": "accent",
+       "weight": 1,
+       "from": [
+        300,
+        230
+       ],
+       "to": [
+        300,
+        180
+       ]
+      },
+      {
+       "id": "heat2",
+       "op": "arrow",
+       "startMs": 3150,
+       "endMs": 3750,
+       "ink": "accent",
+       "weight": 1,
+       "from": [
+        400,
+        230
+       ],
+       "to": [
+        400,
+        180
+       ]
+      },
+      {
+       "id": "heat3",
+       "op": "arrow",
+       "startMs": 3600,
+       "endMs": 4200,
+       "ink": "accent",
+       "weight": 1,
+       "from": [
+        500,
+        230
+       ],
+       "to": [
+        500,
+        180
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch09-t02-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "sun",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        130,
+        240
+       ],
+       "r": 50,
+       "fill": "accent"
+      },
+      {
+       "id": "earth",
+       "op": "circle",
+       "startMs": 500,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        610,
+        250
+       ],
+       "r": 90
+      },
+      {
+       "id": "axis",
+       "op": "line",
+       "startMs": 1100,
+       "endMs": 1800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        580,
+        170
+       ],
+       "to": [
+        640,
+        330
+       ]
+      },
+      {
+       "id": "lean",
+       "op": "arrow",
+       "startMs": 1800,
+       "endMs": 2400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        640,
+        295
+       ],
+       "to": [
+        690,
+        340
+       ]
+      },
+      {
+       "id": "ray1",
+       "op": "line",
+       "startMs": 2400,
+       "endMs": 3000,
+       "ink": "accent",
+       "weight": 1,
+       "from": [
+        175,
+        205
+       ],
+       "to": [
+        545,
+        220
+       ]
+      },
+      {
+       "id": "ray2",
+       "op": "line",
+       "startMs": 2900,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 1,
+       "from": [
+        175,
+        240
+       ],
+       "to": [
+        545,
+        240
+       ]
+      },
+      {
+       "id": "ray3",
+       "op": "line",
+       "startMs": 3400,
+       "endMs": 4000,
+       "ink": "accent",
+       "weight": 1,
+       "from": [
+        175,
+        275
+       ],
+       "to": [
+        545,
+        260
+       ]
+      },
+      {
+       "id": "l1",
+       "op": "text",
+       "startMs": 4100,
+       "endMs": 4700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        610,
+        110
+       ],
+       "text": "December",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "l2",
+       "op": "text",
+       "startMs": 4750,
+       "endMs": 5350,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        610,
+        390
+       ],
+       "text": "shorter days",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch09-t02-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "sun",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        245
+       ],
+       "r": 48,
+       "fill": "accent"
+      },
+      {
+       "id": "orbit",
+       "op": "ellipse",
+       "startMs": 500,
+       "endMs": 1150,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        245
+       ],
+       "rx": 270,
+       "ry": 145
+      },
+      {
+       "id": "earth",
+       "op": "circle",
+       "startMs": 1000,
+       "endMs": 1450,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        150,
+        245
+       ],
+       "r": 30
+      },
+      {
+       "id": "jan",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        150,
+        310
+       ],
+       "text": "January",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "winter",
+       "op": "text",
+       "startMs": 2150,
+       "endMs": 2650,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        150,
+        350
+       ],
+       "text": "winter",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "near",
+       "op": "highlight",
+       "startMs": 2800,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 2,
+       "target": "earth",
+       "style": "circle"
+      },
+      {
+       "id": "fact",
+       "op": "text",
+       "startMs": 3700,
+       "endMs": 4400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        430
+       ],
+       "text": "closest to Sun",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch09-t02-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "rain",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        100,
+        120
+       ],
+       "to": [
+        100,
+        350
+       ]
+      },
+      {
+       "id": "r1",
+       "op": "line",
+       "startMs": 500,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 1,
+       "from": [
+        80,
+        160
+       ],
+       "to": [
+        120,
+        200
+       ]
+      },
+      {
+       "id": "r2",
+       "op": "line",
+       "startMs": 850,
+       "endMs": 1250,
+       "ink": "accent",
+       "weight": 1,
+       "from": [
+        80,
+        220
+       ],
+       "to": [
+        120,
+        260
+       ]
+      },
+      {
+       "id": "frog",
+       "op": "ellipse",
+       "startMs": 1300,
+       "endMs": 1900,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        210,
+        350
+       ],
+       "rx": 55,
+       "ry": 28
+      },
+      {
+       "id": "f1",
+       "op": "circle",
+       "startMs": 1800,
+       "endMs": 2100,
+       "ink": "good",
+       "weight": 1,
+       "c": [
+        190,
+        330
+       ],
+       "r": 7
+      },
+      {
+       "id": "bird",
+       "op": "ellipse",
+       "startMs": 2700,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        570,
+        220
+       ],
+       "rx": 55,
+       "ry": 28
+      },
+      {
+       "id": "wing",
+       "op": "arrow",
+       "startMs": 3350,
+       "endMs": 3900,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        570,
+        220
+       ],
+       "to": [
+        520,
+        180
+       ]
+      },
+      {
+       "id": "l1",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 4550,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        210,
+        420
+       ],
+       "text": "monsoon",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "l2",
+       "op": "text",
+       "startMs": 4600,
+       "endMs": 5150,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        570,
+        300
+       ],
+       "text": "winter",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "l3",
+       "op": "text",
+       "startMs": 5600,
+       "endMs": 6300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        80
+       ],
+       "text": "nature changes",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L9",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch09-t02-wb-L9",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4004,
+     "ops": [
+      {
+       "id": "prompt",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        65
+       ],
+       "text": "why seasons change",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "box1",
+       "op": "rect",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        80,
+        150
+       ],
+       "w": 280,
+       "h": 150,
+       "round": 12
+      },
+      {
+       "id": "box2",
+       "op": "rect",
+       "startMs": 950,
+       "endMs": 1550,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        440,
+        150
+       ],
+       "w": 280,
+       "h": 150,
+       "round": 12
+      },
+      {
+       "id": "choice1",
+       "op": "text",
+       "startMs": 1600,
+       "endMs": 2200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        220,
+        220
+       ],
+       "text": "tilted axis",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "choice2",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2500,
+       "ink": "soft",
+       "weight": 2,
+       "at": [
+        580,
+        220
+       ],
+       "text": "closer to Sun",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "tap",
+       "op": "highlight",
+       "startMs": 2700,
+       "endMs": 3500,
+       "ink": "good",
+       "weight": 2,
+       "target": "box1",
+       "style": "pulse"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "check": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "The third round uses mode 'season' with ask 'summerSouth' and targets misconception m2 (not every place has the same season), but then ask:'shortest' is used twice—once for round 3 and again for round 4. However, the actual issue is that the kit says when it is summer in India it is winter in Australia (item i08). The round asks 'compare two places' with 'summerSouth' which likely expects the correct answer (day 355, the day when the southern hemisphere has summer). That is fine. But checking: round 3's answer is keyed as 'day 355'. That is the same as round 4's key. That is acceptable if the same day is the answer to both questions (the longest day in the north is the shortest in the south). However, round 3's ask is 'summerSouth' and the key says day 355, which is the southern summer solstice (approx Dec 21-22). That matches the kit (item i08: December in Delhi is winter, Sydney summer). So no factual error in content."
+   },
+   {
+    "where": "game",
+    "what": "Round 4's ask is 'shortest' and key is day 355. That is correct (shortest day in the north is the winter solstice). No problem."
+   },
+   {
+    "where": "explainer",
+    "what": "Explainer scene s3 omits 'autumn' in the season flow, which contradicts the kit's list of five main seasons. The text L1 includes it, but the visual cycle skips from Monsoon directly to Winter.",
+    "severity": "low"
+   }
+  ],
+  "verdict": "fail",
+  "model": "DeepSeek-V4-Flash"
+ },
+ "regens": 2
+}

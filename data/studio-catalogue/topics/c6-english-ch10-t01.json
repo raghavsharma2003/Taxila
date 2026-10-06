@@ -1,0 +1,1837 @@
+{
+ "topicId": "c6-english-ch10-t01",
+ "title": "Change of Heart",
+ "chapter": "Change of Heart",
+ "subject": "english",
+ "class": 6,
+ "topicType": "T3",
+ "plan": {
+  "game": "story-rail@1",
+  "hint": "sequence, cause and who modes from the lesson's events and speakers"
+ },
+ "game": {
+  "archetype": "story-rail@1",
+  "spec": {
+   "archetype": "story-rail@1",
+   "skills": [
+    "c6-english-ch10-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "picked": "coupled",
+    "streak": "streak",
+    "next": "What happens next?",
+    "effect": "What does this lead to?",
+    "who": "Who said this?",
+    "runDone": "Line complete",
+    "order": "your train",
+    "right": "Coupled",
+    "wrong": "Not this one",
+    "coach": "Tap a wagon before the train reaches the fork"
+   },
+   "title": "Change of Heart",
+   "rounds": [
+    {
+     "mode": "sequence",
+     "title": "Prabhat's journey",
+     "sub": "couple the events in order",
+     "cards": [
+      {
+       "id": "e1",
+       "text": "Prabhat fears losing",
+       "glyph": "person",
+       "src": "c6-english-ch10-t01-i01"
+      },
+      {
+       "id": "e2",
+       "text": "He prepares very hard",
+       "glyph": "book",
+       "src": "c6-english-ch10-t01-i05"
+      },
+      {
+       "id": "e3",
+       "text": "Surya plays brilliantly",
+       "glyph": "star"
+      },
+      {
+       "id": "e4",
+       "text": "Prabhat changes the scoreboard",
+       "glyph": "note",
+       "src": "c6-english-ch10-t01-i03"
+      },
+      {
+       "id": "e5",
+       "text": "The win keeps him awake",
+       "glyph": "moon",
+       "src": "c6-english-ch10-t01-i04"
+      },
+      {
+       "id": "e6",
+       "text": "Prabhat gains sporting spirit",
+       "src": "c6-english-ch10-t01-i08"
+      }
+     ],
+     "speed": 0.9,
+     "targets": "c6-english-ch10-t01-m-winning-is-joy"
+    },
+    {
+     "mode": "cause",
+     "title": "What led to what?",
+     "sub": "match each cause to its effect",
+     "pairs": [
+      {
+       "cause": {
+        "id": "c1",
+        "text": "Prabhat could not bear losing",
+        "glyph": "person",
+        "src": "c6-english-ch10-t01-i01"
+       },
+       "effect": {
+        "id": "f1",
+        "text": "He played only when sure",
+        "glyph": "shield"
+       }
+      },
+      {
+       "cause": {
+        "id": "c2",
+        "text": "He changed the scoreboard",
+        "glyph": "note",
+        "src": "c6-english-ch10-t01-i03"
+       },
+       "effect": {
+        "id": "f2",
+        "text": "The win did not make him happy",
+        "glyph": "moon",
+        "src": "c6-english-ch10-t01-i04"
+       }
+      },
+      {
+       "cause": {
+        "id": "c3",
+        "text": "Surya enjoyed every game"
+       },
+       "effect": {
+        "id": "f3",
+        "text": "Prabhat changed his feelings",
+        "src": "c6-english-ch10-t01-i07"
+       }
+      }
+     ],
+     "speed": 0.82,
+     "targets": "c6-english-ch10-t01-m-change-sudden"
+    },
+    {
+     "mode": "who",
+     "title": "Who said it?",
+     "sub": "send each line to its speaker",
+     "speakers": [
+      {
+       "id": "prabhat",
+       "name": "Prabhat",
+       "glyph": "person"
+      },
+      {
+       "id": "surya",
+       "name": "Surya",
+       "glyph": "star"
+      }
+     ],
+     "lines": [
+      {
+       "id": "w1",
+       "text": "I could not bear losing.",
+       "speaker": "prabhat",
+       "src": "c6-english-ch10-t01-i01"
+      },
+      {
+       "id": "w2",
+       "text": "I enjoy every game.",
+       "speaker": "surya",
+       "src": "c6-english-ch10-t01-i06"
+      },
+      {
+       "id": "w3",
+       "text": "A game should be enjoyed.",
+       "speaker": "prabhat",
+       "src": "c6-english-ch10-t01-i07"
+      }
+     ],
+     "speed": 0.8
+    }
+   ]
+  },
+  "repairs": [
+   "glyph",
+   "glyph",
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c6-english-ch10-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Prabhat's Change of Heart",
+   "accent": "amber",
+   "targets": "c6-english-ch10-t01-m-winning-is-joy",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Change of Heart"
+      },
+      {
+       "id": "prabhat",
+       "type": "node",
+       "text": "Prabhat",
+       "sub": "must win",
+       "glyph": "person",
+       "color": "amber"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Winning always makes you happy"
+      },
+      {
+       "id": "loss",
+       "type": "label",
+       "text": "Could not bear losing",
+       "x": 80,
+       "y": 430,
+       "color": "volt"
+      },
+      {
+       "id": "cheat",
+       "type": "label",
+       "text": "Cheated to win",
+       "x": 610,
+       "y": 430,
+       "color": "amber"
+      },
+      {
+       "id": "p1",
+       "type": "arrow",
+       "from": "loss",
+       "to": "cheat",
+       "text": "so",
+       "bend": 0
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "match",
+       "type": "title",
+       "text": "The badminton match"
+      },
+      {
+       "id": "surya",
+       "type": "node",
+       "text": "Surya",
+       "sub": "plays brilliantly",
+       "glyph": "ballot",
+       "color": "mint"
+      },
+      {
+       "id": "score",
+       "type": "node",
+       "text": "Prabhat",
+       "sub": "keeps score",
+       "glyph": "note",
+       "color": "amber"
+      },
+      {
+       "id": "board",
+       "type": "node",
+       "text": "Scoreboard",
+       "sub": "changed",
+       "glyph": "ruler",
+       "color": "volt"
+      },
+      {
+       "id": "win",
+       "type": "node",
+       "text": "Win",
+       "sub": "felt empty",
+       "glyph": "crown",
+       "color": "sci"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "score",
+       "to": "board",
+       "text": "changes",
+       "bend": 0
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "board",
+       "to": "win",
+       "text": "cheats",
+       "bend": 0
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "surya",
+       "to": "win",
+       "text": "loses",
+       "bend": 0
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "night",
+       "type": "node",
+       "text": "Prabhat",
+       "sub": "cannot sleep",
+       "glyph": "moon",
+       "color": "sci"
+      },
+      {
+       "id": "watch",
+       "type": "node",
+       "text": "Watches Surya",
+       "sub": "for days",
+       "glyph": "eye",
+       "color": "ion"
+      },
+      {
+       "id": "joy",
+       "type": "node",
+       "text": "Enjoys games",
+       "sub": "win or lose",
+       "glyph": "spark",
+       "color": "mint"
+      },
+      {
+       "id": "learn",
+       "type": "node",
+       "text": "New idea",
+       "sub": "enjoy the game",
+       "glyph": "bulb",
+       "color": "amber"
+      },
+      {
+       "id": "b1",
+       "type": "arrow",
+       "from": "night",
+       "to": "watch",
+       "text": "then",
+       "bend": 0
+      },
+      {
+       "id": "b2",
+       "type": "arrow",
+       "from": "watch",
+       "to": "joy",
+       "text": "sees",
+       "bend": 0
+      },
+      {
+       "id": "b3",
+       "type": "arrow",
+       "from": "joy",
+       "to": "learn",
+       "text": "learns",
+       "bend": 0
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "split",
+     "els": [
+      {
+       "id": "proof",
+       "type": "title",
+       "text": "The change"
+      },
+      {
+       "id": "old",
+       "type": "label",
+       "text": "Must win",
+       "x": 80,
+       "y": 360,
+       "color": "volt"
+      },
+      {
+       "id": "new",
+       "type": "label",
+       "text": "Sporting spirit",
+       "x": 610,
+       "y": 360,
+       "color": "mint"
+      },
+      {
+       "id": "arrow",
+       "type": "arrow",
+       "from": "old",
+       "to": "new",
+       "text": "changes",
+       "bend": 0
+      },
+      {
+       "id": "play",
+       "type": "node",
+       "text": "Prabhat",
+       "sub": "jokes and plays",
+       "glyph": "person",
+       "color": "mint"
+      },
+      {
+       "id": "fair",
+       "type": "node",
+       "text": "Fair play",
+       "sub": "enjoys games",
+       "glyph": "balance",
+       "color": "amber"
+      },
+      {
+       "id": "learn1",
+       "type": "label",
+       "text": "Winning is all",
+       "x": 70,
+       "y": 500,
+       "color": "volt"
+      },
+      {
+       "id": "learn2",
+       "type": "label",
+       "text": "Enjoy the game",
+       "x": 370,
+       "y": 500,
+       "color": "mint"
+      },
+      {
+       "id": "learn3",
+       "type": "label",
+       "text": "Cheat to win",
+       "x": 680,
+       "y": 500,
+       "color": "sci"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "At first, Prabhat could not bear losing, so he played only when sure of winning.",
+    "L2": "In the badminton match, Surya played brilliantly while Prabhat kept the score.",
+    "L3": "When Surya looked away, Prabhat changed the scoreboard and won by cheating.",
+    "L4": "The win felt empty. Prabhat could not sleep, and Surya did not even feel bad about losing.",
+    "L5": "Prabhat then watched Surya enjoy every game, whether he won or lost.",
+    "L6": "Prabhat realised that a game should be enjoyed for its own sake, not only for the score.",
+    "L7": "His actions showed the change: he played, joked and gained a great sporting spirit.",
+    "L8": "That is why the story is called Change of Heart. Now choose what Prabhat learnt."
+   },
+   "narration": {
+    "L1": {
+     "text": "At first, Prabhat could not bear losing, so he played only when sure of winning.",
+     "dur": 4.2,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L2": {
+     "text": "In the badminton match, Surya played brilliantly while Prabhat kept the score.",
+     "dur": 3.8,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L3": {
+     "text": "When Surya looked away, Prabhat changed the scoreboard and won by cheating.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L4": {
+     "text": "The win felt empty. Prabhat could not sleep, and Surya did not even feel bad about losing.",
+     "dur": 4.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L5": {
+     "text": "Prabhat then watched Surya enjoy every game, whether he won or lost.",
+     "dur": 3.8,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Prabhat realised that a game should be enjoyed for its own sake, not only for the score.",
+     "dur": 4.2,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L7": {
+     "text": "His actions showed the change: he played, joked and gained a great sporting spirit.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L8": {
+     "text": "That is why the story is called Change of Heart. Now choose what Prabhat learnt.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "title"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "prabhat",
+        "loss"
+       ]
+      },
+      {
+       "at": 1.2,
+       "do": "show",
+       "dur": 0.7,
+       "target": "cheat"
+      },
+      {
+       "at": 1.5,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "p1",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "surya",
+        "score"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 1,
+       "target": "surya"
+      },
+      {
+       "at": 1.5,
+       "do": "show",
+       "dur": 0.6,
+       "target": "board"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "a1",
+       "to": 1
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "a2",
+       "to": 1
+      },
+      {
+       "at": 1.4,
+       "do": "show",
+       "dur": 0.7,
+       "target": "win"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "win"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "night",
+        "watch"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "b1",
+       "to": 1
+      },
+      {
+       "at": 1.5,
+       "do": "show",
+       "dur": 0.7,
+       "target": "joy"
+      },
+      {
+       "at": 2,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "b2",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "joy"
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.8,
+       "target": "learn"
+      },
+      {
+       "at": 1.6,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "b3",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "old",
+        "new"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "arrow",
+       "to": 1
+      },
+      {
+       "at": 1.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "play",
+        "fair"
+       ]
+      },
+      {
+       "at": 2.2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "new"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "camera",
+       "dur": 1.5,
+       "zoom": 1.05
+      },
+      {
+       "at": 1.5,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "learn1",
+        "learn2",
+        "learn3"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "What did Prabhat learn from watching Surya?",
+    "options": [
+     "learn1",
+     "learn2",
+     "learn3"
+    ],
+    "answer": "learn2",
+    "src": "c6-english-ch10-t01-i07"
+   }
+  },
+  "repairs": [
+   "cue:target",
+   "cue:target"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 36
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-english-ch10-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "p1",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        250,
+        210
+       ],
+       "r": 75
+      },
+      {
+       "id": "p1label",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        250,
+        315
+       ],
+       "text": "Prabhat",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "loss",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2100,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        500,
+        150
+       ],
+       "text": "losing",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "cross",
+       "op": "line",
+       "startMs": 2100,
+       "endMs": 2400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        450,
+        110
+       ],
+       "to": [
+        550,
+        190
+       ]
+      },
+      {
+       "id": "cross2",
+       "op": "line",
+       "startMs": 2400,
+       "endMs": 2700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        550,
+        110
+       ],
+       "to": [
+        450,
+        190
+       ]
+      },
+      {
+       "id": "sure",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3900,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        250,
+        400
+       ],
+       "text": "sure of winning",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "arrow1",
+       "op": "arrow",
+       "startMs": 3900,
+       "endMs": 4500,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        250,
+        350
+       ],
+       "to": [
+        250,
+        275
+       ]
+      },
+      {
+       "id": "play",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        250,
+        455
+       ],
+       "text": "played",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-english-ch10-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "surya",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        180,
+        190
+       ],
+       "r": 65
+      },
+      {
+       "id": "slabel",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        285
+       ],
+       "text": "Surya",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "shuttle",
+       "op": "ellipse",
+       "startMs": 1200,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        170
+       ],
+       "rx": 38,
+       "ry": 18
+      },
+      {
+       "id": "brilliantly",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2400,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        230
+       ],
+       "text": "brilliantly",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "prabhat",
+       "op": "circle",
+       "startMs": 2400,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        620,
+        190
+       ],
+       "r": 65
+      },
+      {
+       "id": "plabel",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        620,
+        285
+       ],
+       "text": "Prabhat",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "score",
+       "op": "rect",
+       "startMs": 3500,
+       "endMs": 4300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        530,
+        350
+       ],
+       "w": 180,
+       "h": 80,
+       "round": 8
+      },
+      {
+       "id": "scorelabel",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 4800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        620,
+        395
+       ],
+       "text": "score",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-english-ch10-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "away",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        160,
+        100
+       ],
+       "text": "looked away",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "change",
+       "op": "arrow",
+       "startMs": 900,
+       "endMs": 1700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        300,
+        140
+       ],
+       "to": [
+        525,
+        375
+       ]
+      },
+      {
+       "id": "changed",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2300,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        120
+       ],
+       "text": "changed",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "cheat",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 3000,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        250
+       ],
+       "text": "cheating",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "win",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 3900,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        620,
+        465
+       ],
+       "text": "won",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-english-ch10-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "empty",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "soft",
+       "weight": 2,
+       "c": [
+        210,
+        180
+       ],
+       "r": 70
+      },
+      {
+       "id": "emptylabel",
+       "op": "text",
+       "startMs": 800,
+       "endMs": 1300,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        210,
+        275
+       ],
+       "text": "empty",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "sleep",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2400,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        210,
+        350
+       ],
+       "text": "could not sleep",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "moon",
+       "op": "circle",
+       "startMs": 2500,
+       "endMs": 3100,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        580,
+        145
+       ],
+       "r": 42
+      },
+      {
+       "id": "surya",
+       "op": "text",
+       "startMs": 3100,
+       "endMs": 3600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        580,
+        235
+       ],
+       "text": "Surya",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "bad",
+       "op": "text",
+       "startMs": 3600,
+       "endMs": 4800,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        580,
+        320
+       ],
+       "text": "did not even feel bad",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "losing",
+       "op": "text",
+       "startMs": 4800,
+       "endMs": 5300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        580,
+        405
+       ],
+       "text": "losing",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-english-ch10-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "watch",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        190,
+        190
+       ],
+       "r": 65
+      },
+      {
+       "id": "watchlabel",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        190,
+        285
+       ],
+       "text": "watched",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "surya",
+       "op": "circle",
+       "startMs": 1300,
+       "endMs": 2000,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        570,
+        190
+       ],
+       "r": 65
+      },
+      {
+       "id": "slabel",
+       "op": "text",
+       "startMs": 2000,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        570,
+        285
+       ],
+       "text": "Surya",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "game",
+       "op": "ellipse",
+       "startMs": 2600,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        380,
+        380
+       ],
+       "rx": 150,
+       "ry": 55
+      },
+      {
+       "id": "enjoy",
+       "op": "text",
+       "startMs": 3400,
+       "endMs": 4100,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        380,
+        385
+       ],
+       "text": "enjoy",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "winlose",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 5000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        380,
+        465
+       ],
+       "text": "won or lost",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-english-ch10-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "realised",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        120,
+        90
+       ],
+       "text": "realised",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "game2",
+       "op": "ellipse",
+       "startMs": 900,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        390,
+        230
+       ],
+       "rx": 170,
+       "ry": 75
+      },
+      {
+       "id": "enjoy2",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2500,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        390,
+        235
+       ],
+       "text": "enjoyed",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "own",
+       "op": "text",
+       "startMs": 2600,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        390,
+        340
+       ],
+       "text": "own sake",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "notonly",
+       "op": "text",
+       "startMs": 3400,
+       "endMs": 4000,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        390,
+        420
+       ],
+       "text": "not only",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "score2",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 4500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        390,
+        465
+       ],
+       "text": "score",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-english-ch10-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "play",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        210,
+        190
+       ],
+       "rx": 125,
+       "ry": 65
+      },
+      {
+       "id": "played",
+       "op": "text",
+       "startMs": 800,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        210,
+        190
+       ],
+       "text": "played",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "joked",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 2000,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        190
+       ],
+       "text": "joked",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "badminton",
+       "op": "text",
+       "startMs": 2000,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        270
+       ],
+       "text": "badminton",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "spirit",
+       "op": "circle",
+       "startMs": 2800,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        600,
+        190
+       ],
+       "r": 70
+      },
+      {
+       "id": "sporting",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4400,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        600,
+        285
+       ],
+       "text": "sporting spirit",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "great",
+       "op": "text",
+       "startMs": 4400,
+       "endMs": 5000,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        600,
+        370
+       ],
+       "text": "great",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-english-ch10-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "title",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        90
+       ],
+       "text": "Change of Heart",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "heart",
+       "op": "circle",
+       "startMs": 1300,
+       "endMs": 2100,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        250,
+        245
+       ],
+       "r": 75
+      },
+      {
+       "id": "change",
+       "op": "arrow",
+       "startMs": 2100,
+       "endMs": 2900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        340,
+        245
+       ],
+       "to": [
+        460,
+        245
+       ]
+      },
+      {
+       "id": "prabhat",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        600,
+        190
+       ],
+       "text": "Prabhat",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "learnt",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4100,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        600,
+        270
+       ],
+       "text": "learnt",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "choose",
+       "op": "rect",
+       "startMs": 4400,
+       "endMs": 5300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        180,
+        370
+       ],
+       "w": 440,
+       "h": 70,
+       "round": 10
+      },
+      {
+       "id": "question",
+       "op": "text",
+       "startMs": 5300,
+       "endMs": 6200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        413
+       ],
+       "text": "what Prabhat learnt",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "He prepares very hard",
+   "prompt": "sequence: after/for \"Prabhat fears losing\"",
+   "src": "c6-english-ch10-t01-i05"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "Surya plays brilliantly",
+   "prompt": "sequence: after/for \"He prepares very hard\""
+  },
+  {
+   "itemId": "r1:2",
+   "key": "Prabhat changes the scoreboard",
+   "prompt": "sequence: after/for \"Surya plays brilliantly\"",
+   "src": "c6-english-ch10-t01-i03"
+  },
+  {
+   "itemId": "r1:3",
+   "key": "The win keeps him awake",
+   "prompt": "sequence: after/for \"Prabhat changes the scoreboard\"",
+   "src": "c6-english-ch10-t01-i04"
+  },
+  {
+   "itemId": "r1:4",
+   "key": "Prabhat gains sporting spirit",
+   "prompt": "sequence: after/for \"The win keeps him awake\"",
+   "src": "c6-english-ch10-t01-i08"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "He played only when sure",
+   "prompt": "cause: after/for \"Prabhat could not bear losing\""
+  },
+  {
+   "itemId": "r2:1",
+   "key": "The win did not make him happy",
+   "prompt": "cause: after/for \"He changed the scoreboard\"",
+   "src": "c6-english-ch10-t01-i04"
+  },
+  {
+   "itemId": "r2:2",
+   "key": "Prabhat changed his feelings",
+   "prompt": "cause: after/for \"Surya enjoyed every game\"",
+   "src": "c6-english-ch10-t01-i07"
+  },
+  {
+   "itemId": "r3:0",
+   "key": "Prabhat",
+   "prompt": "who: after/for \"I could not bear losing.\"",
+   "src": "c6-english-ch10-t01-i01"
+  },
+  {
+   "itemId": "r3:1",
+   "key": "Surya",
+   "prompt": "who: after/for \"I enjoy every game.\"",
+   "src": "c6-english-ch10-t01-i06"
+  },
+  {
+   "itemId": "r3:2",
+   "key": "Prabhat",
+   "prompt": "who: after/for \"A game should be enjoyed.\"",
+   "src": "c6-english-ch10-t01-i07"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

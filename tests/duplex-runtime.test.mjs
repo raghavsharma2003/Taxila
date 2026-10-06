@@ -414,9 +414,14 @@ test("overlap classifier: echo keeps talking; a voice after her yes/no question 
   assert.equal(c.cls, "continuer");
   // still voicing at 300 ms mid-clause: undecided (stay ducked) under the default; the eager ablation yields
   assert.equal(classifyOverlap(f, { voicing: true, f0SlopeStPerS: null }, NEUTRAL_CONTEXT).decided, false);
-  const prev = OVERLAP.earlyVoicedZ;
+  // p1-duplex (2026-10-06): a raised mid-clause onset still voicing under the sustain waits too (the hush covers it); real
+  // adult continuers ("yeah", "mm-hmm") start that way (AMI dev)
+  assert.equal(classifyOverlap({ ...f, onsetF0Rel: 0.9 }, { voicing: true, f0SlopeStPerS: null }, NEUTRAL_CONTEXT).decided, false);
+  assert.equal(classifyOverlap({ ...f, onsetF0Rel: 0.9, durMs: 650 }, { voicing: true, f0SlopeStPerS: null }, NEUTRAL_CONTEXT).yieldReason, "barge_in");
+  const prev = OVERLAP.earlyVoicedZ, prevWait = OVERLAP.waitForSustain;
   OVERLAP.earlyVoicedZ = 1.0;
-  try { assert.equal(classifyOverlap(f, { voicing: true, f0SlopeStPerS: null }, NEUTRAL_CONTEXT).yieldReason, "barge_in"); } finally { OVERLAP.earlyVoicedZ = prev; }
+  OVERLAP.waitForSustain = false;
+  try { assert.equal(classifyOverlap(f, { voicing: true, f0SlopeStPerS: null }, NEUTRAL_CONTEXT).yieldReason, "barge_in"); } finally { OVERLAP.earlyVoicedZ = prev; OVERLAP.waitForSustain = prevWait; }
   // words confirm later: a number over her number question folds in
   const fold = classifyOverlap({ ...f, words: "बारह", lexicalKind: "continuer" }, { voicing: false, f0SlopeStPerS: null }, CLOSED_INT);
   assert.equal(fold.yieldReason, "fold_in");

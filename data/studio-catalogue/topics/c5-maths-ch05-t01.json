@@ -1,0 +1,1584 @@
+{
+ "topicId": "c5-maths-ch05-t01",
+ "title": "Kilometres, metres and centimetres",
+ "chapter": "Far and Near",
+ "subject": "maths",
+ "class": 5,
+ "topicType": "T4",
+ "plan": {
+  "game": "instrument@1",
+  "hint": "cut mode with km+m and m+cm targets"
+ },
+ "game": {
+  "archetype": "instrument@1",
+  "spec": {
+   "archetype": "instrument@1",
+   "skills": [
+    "c5-maths-ch05-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "measured": "measured",
+    "precision": "precision",
+    "hold": "Hold steady",
+    "release": "Release",
+    "cut": "Tap to cut",
+    "set": "Set",
+    "am": "a.m.",
+    "pm": "p.m.",
+    "tapAt": "Tap when it reads",
+    "runDone": "Bench clear",
+    "offBy": "off by",
+    "exact": "EXACT",
+    "after": "after",
+    "minutes": "min",
+    "balanced": "BALANCED",
+    "heavy": "parcel heavier",
+    "light": "weights heavier"
+   },
+   "title": "Instrument Bench",
+   "rounds": [
+    {
+     "mode": "cut",
+     "title": "Cut a small length",
+     "sub": "use the cm rule",
+     "items": [
+      {
+       "target": 325,
+       "show": "m+cm"
+      },
+      {
+       "target": 475,
+       "show": "m+cm"
+      }
+     ],
+     "scaleMax": 1000,
+     "minor": 10,
+     "tol": 2,
+     "speed": 1
+    },
+    {
+     "mode": "cut",
+     "title": "Cut a long length",
+     "sub": "use the cm rule",
+     "items": [
+      {
+       "target": 205000,
+       "show": "km+m"
+      },
+      {
+       "target": 304000,
+       "show": "km+m"
+      }
+     ],
+     "scaleMax": 400000,
+     "minor": 4000,
+     "tol": 50,
+     "speed": 0.9,
+     "targets": "c5-maths-ch05-t01-m-mixed-concat"
+    }
+   ]
+  },
+  "repairs": [
+   "minor:too-dense"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c5-maths-ch05-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Right",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "BUSTED",
+    "order": "Tap in order"
+   },
+   "title": "Kilometres, metres and centimetres",
+   "accent": "ion",
+   "targets": "c5-maths-ch05-t01-m-mixed-concat",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Kilometres, metres and centimetres"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "2 km 50 m = 250 m"
+      },
+      {
+       "id": "mythTag",
+       "type": "label",
+       "text": "MYTH",
+       "x": 120,
+       "y": 300,
+       "color": "amber"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "km",
+       "type": "node",
+       "text": "Kilometre",
+       "sub": "1 km",
+       "glyph": "road",
+       "x": 160,
+       "y": 320,
+       "color": "ion"
+      },
+      {
+       "id": "m",
+       "type": "node",
+       "text": "Metre",
+       "sub": "1,000 m",
+       "glyph": "ruler",
+       "x": 500,
+       "y": 220,
+       "color": "sci"
+      },
+      {
+       "id": "cm",
+       "type": "node",
+       "text": "Centimetre",
+       "sub": "100 cm",
+       "glyph": "ruler",
+       "x": 500,
+       "y": 440,
+       "color": "mint"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "km",
+       "to": "m",
+       "text": "×1,000",
+       "bend": 0
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "m",
+       "to": "cm",
+       "text": "×100",
+       "bend": 0
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "m",
+       "to": "km",
+       "text": "÷1,000",
+       "bend": 0
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "work",
+       "type": "bar",
+       "parts": 4,
+       "shaded": 3,
+       "x": 100,
+       "y": 250,
+       "w": 500,
+       "text": "4,000 + 85"
+      },
+      {
+       "id": "answer",
+       "type": "label",
+       "text": "4 km 85 m = 4,085 m",
+       "x": 170,
+       "y": 370,
+       "color": "sun"
+      },
+      {
+       "id": "cmOpt",
+       "type": "label",
+       "text": "cm",
+       "x": 140,
+       "y": 500,
+       "color": "mint"
+      },
+      {
+       "id": "mOpt",
+       "type": "label",
+       "text": "m",
+       "x": 430,
+       "y": 500,
+       "color": "sci"
+      },
+      {
+       "id": "kmOpt",
+       "type": "label",
+       "text": "km",
+       "x": 720,
+       "y": 500,
+       "color": "ion"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "We use kilometres, metres and centimetres to measure length. The right unit depends on the size of the thing or distance.",
+    "L2": "Here is a common mistake: joining mixed-unit numbers side by side. Two kilometres and fifty metres is not 250 metres.",
+    "L3": "Remember the steps between units: one kilometre is 1,000 metres, and one metre is 100 centimetres.",
+    "L4": "When we change to a smaller unit, the number gets bigger. So 3 kilometres becomes 3,000 metres.",
+    "L5": "For mixed units, change the big unit first, then add the rest. Two kilometres becomes 2,000 metres, and 2,000 plus 50 is 2,050 metres.",
+    "L6": "In the worked example, 4 kilometres becomes 4,000 metres. Add 85 metres to get 4,085 metres; the zero holds the empty hundreds place.",
+    "L7": "Choose centimetres for small things, metres for rooms and buildings, and kilometres for distances between places.",
+    "L8": "Your turn: which unit would you use for the length of a pencil?"
+   },
+   "narration": {
+    "L1": {
+     "text": "We use kilometres, metres and centimetres to measure length. The right unit depends on the size of the thing or distance.",
+     "dur": 5.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L2": {
+     "text": "Here is a common mistake: joining mixed-unit numbers side by side. Two kilometres and fifty metres is not 250 metres.",
+     "dur": 5.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L3": {
+     "text": "Remember the steps between units: one kilometre is 1,000 metres, and one metre is 100 centimetres.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L4": {
+     "text": "When we change to a smaller unit, the number gets bigger. So 3 kilometres becomes 3,000 metres.",
+     "dur": 4.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L5": {
+     "text": "For mixed units, change the big unit first, then add the rest. Two kilometres becomes 2,000 metres, and 2,000 plus 50 is 2,050 metres.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L6": {
+     "text": "In the worked example, 4 kilometres becomes 4,000 metres. Add 85 metres to get 4,085 metres; the zero holds the empty hundreds place.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Choose centimetres for small things, metres for rooms and buildings, and kilometres for distances between places.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Your turn: which unit would you use for the length of a pencil?",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "title"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      },
+      {
+       "at": 0.8,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "km",
+        "m",
+        "cm"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "a1",
+        "a2"
+       ]
+      },
+      {
+       "at": 1.2,
+       "do": "flow",
+       "dur": 0.7,
+       "target": [
+        "a1",
+        "a2"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "m"
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.6,
+       "target": "a1"
+      },
+      {
+       "at": 1.2,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "a1",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "work"
+      },
+      {
+       "at": 0.7,
+       "do": "count",
+       "dur": 1,
+       "target": "work",
+       "to": 1
+      },
+      {
+       "at": 1.5,
+       "do": "highlight",
+       "dur": 1,
+       "target": "answer"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "work"
+      },
+      {
+       "at": 0.5,
+       "do": "highlight",
+       "dur": 1.2,
+       "target": "answer"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "cmOpt",
+        "mOpt",
+        "kmOpt"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "focus",
+       "dur": 1,
+       "target": "cmOpt"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which unit is best for the length of a pencil?",
+    "options": [
+     "cmOpt",
+     "mOpt",
+     "kmOpt"
+    ],
+    "answer": "cmOpt",
+    "src": "c5-maths-ch05-t01-i10"
+   }
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg",
+  "seconds": 45
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch05-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9536,
+     "ops": [
+      {
+       "id": "title",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "length",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "km",
+       "op": "circle",
+       "startMs": 1000,
+       "endMs": 1800,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        150,
+        220
+       ],
+       "r": 55
+      },
+      {
+       "id": "kmtext",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        150,
+        225
+       ],
+       "text": "kilometres",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "m",
+       "op": "circle",
+       "startMs": 2700,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        220
+       ],
+       "r": 55
+      },
+      {
+       "id": "mtext",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        225
+       ],
+       "text": "metres",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "cm",
+       "op": "circle",
+       "startMs": 4300,
+       "endMs": 5100,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        650,
+        220
+       ],
+       "r": 55
+      },
+      {
+       "id": "cmtext",
+       "op": "text",
+       "startMs": 5100,
+       "endMs": 5800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        650,
+        225
+       ],
+       "text": "centimetres",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "s1",
+       "op": "arrow",
+       "startMs": 6200,
+       "endMs": 6800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        205,
+        220
+       ],
+       "to": [
+        345,
+        220
+       ]
+      },
+      {
+       "id": "s2",
+       "op": "arrow",
+       "startMs": 6800,
+       "endMs": 7400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        455,
+        220
+       ],
+       "to": [
+        595,
+        220
+       ]
+      },
+      {
+       "id": "size",
+       "op": "text",
+       "startMs": 7600,
+       "endMs": 8100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        370
+       ],
+       "text": "size",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "choice",
+       "op": "text",
+       "startMs": 8200,
+       "endMs": 9000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        425
+       ],
+       "text": "right unit",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch05-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 9111,
+     "ops": [
+      {
+       "id": "mixed",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        170,
+        100
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "2",
+         "km",
+         "+",
+         "50",
+         "m"
+        ]
+       ]
+      },
+      {
+       "id": "wrong",
+       "op": "numwork",
+       "startMs": 2100,
+       "endMs": 4000,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        170,
+        210
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "2",
+         "km",
+         "50",
+         "m"
+        ],
+        [
+         "250",
+         "m"
+        ]
+       ]
+      },
+      {
+       "id": "cross",
+       "op": "line",
+       "startMs": 4200,
+       "endMs": 4800,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        155,
+        285
+       ],
+       "to": [
+        475,
+        285
+       ]
+      },
+      {
+       "id": "not",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 5500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        520,
+        255
+       ],
+       "text": "not",
+       "size": "l"
+      },
+      {
+       "id": "correct",
+       "op": "numwork",
+       "startMs": 5700,
+       "endMs": 7600,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        170,
+        350
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "2",
+         "km",
+         "50",
+         "m",
+         "≠",
+         "250",
+         "m"
+        ]
+       ]
+      },
+      {
+       "id": "mixedlabel",
+       "op": "label",
+       "startMs": 7800,
+       "endMs": 8600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        545,
+        375
+       ],
+       "text": "mixed-unit",
+       "to": [
+        430,
+        375
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch05-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "steps",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        120,
+        180
+       ],
+       "to": [
+        680,
+        180
+       ]
+      },
+      {
+       "id": "kmstep",
+       "op": "text",
+       "startMs": 1200,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        250,
+        130
+       ],
+       "text": "1 km = 1,000 m",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "mstep",
+       "op": "text",
+       "startMs": 2800,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        550,
+        130
+       ],
+       "text": "1 m = 100 cm",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "a1",
+       "op": "arrow",
+       "startMs": 4200,
+       "endMs": 5000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        300,
+        180
+       ],
+       "to": [
+        480,
+        180
+       ]
+      },
+      {
+       "id": "a2",
+       "op": "arrow",
+       "startMs": 5200,
+       "endMs": 5800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        600,
+        180
+       ],
+       "to": [
+        680,
+        180
+       ]
+      },
+      {
+       "id": "units",
+       "op": "text",
+       "startMs": 6000,
+       "endMs": 7000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        330
+       ],
+       "text": "km   m   cm",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch05-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "small",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "smaller unit",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "grow",
+       "op": "arrow",
+       "startMs": 1100,
+       "endMs": 1800,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        400,
+        130
+       ],
+       "to": [
+        400,
+        210
+       ]
+      },
+      {
+       "id": "bigger",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        250
+       ],
+       "text": "bigger number",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "calc",
+       "op": "numwork",
+       "startMs": 3100,
+       "endMs": 5200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        190,
+        340
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "3",
+         "km",
+         "=",
+         "3,000",
+         "m"
+        ]
+       ]
+      },
+      {
+       "id": "highlight3",
+       "op": "highlight",
+       "startMs": 5500,
+       "endMs": 6400,
+       "ink": "accent",
+       "weight": 2,
+       "target": "calc",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch05-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 10813,
+     "ops": [
+      {
+       "id": "bigfirst",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "big unit first",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "convert",
+       "op": "numwork",
+       "startMs": 1200,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        150
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "2",
+         "km",
+         "=",
+         "2,000",
+         "m"
+        ]
+       ]
+      },
+      {
+       "id": "add",
+       "op": "numwork",
+       "startMs": 3400,
+       "endMs": 5600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        280
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "2,000",
+         "+",
+         "50",
+         "=",
+         "2,050"
+        ]
+       ]
+      },
+      {
+       "id": "answer",
+       "op": "text",
+       "startMs": 6000,
+       "endMs": 7000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        430
+       ],
+       "text": "2,050 m",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "arrowadd",
+       "op": "arrow",
+       "startMs": 7400,
+       "endMs": 8200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        310,
+        320
+       ],
+       "to": [
+        500,
+        320
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch05-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 10387,
+     "ops": [
+      {
+       "id": "work",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        80
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "4",
+         "km",
+         "=",
+         "4,000",
+         "m"
+        ]
+       ]
+      },
+      {
+       "id": "add85",
+       "op": "numwork",
+       "startMs": 2200,
+       "endMs": 4300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        200
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "4,000",
+         "+",
+         "85",
+         "=",
+         "4,085"
+        ]
+       ]
+      },
+      {
+       "id": "column",
+       "op": "numwork",
+       "startMs": 4700,
+       "endMs": 7000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        150,
+        330
+       ],
+       "layout": "column_add",
+       "rows": [
+        [
+         "4",
+         "0",
+         "0",
+         "0"
+        ],
+        [
+         "+",
+         "",
+         "",
+         "8",
+         "5"
+        ],
+        [
+         "4",
+         "0",
+         "8",
+         "5"
+        ]
+       ]
+      },
+      {
+       "id": "zero",
+       "op": "highlight",
+       "startMs": 7300,
+       "endMs": 8300,
+       "ink": "accent",
+       "weight": 2,
+       "target": "column",
+       "style": "circle"
+      },
+      {
+       "id": "place",
+       "op": "text",
+       "startMs": 8400,
+       "endMs": 9600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        560,
+        375
+       ],
+       "text": "empty hundreds",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch05-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "smallthing",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        150,
+        80
+       ],
+       "text": "small things",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "cmchoice",
+       "op": "circle",
+       "startMs": 800,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        150,
+        190
+       ],
+       "r": 55
+      },
+      {
+       "id": "cmtext2",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2100,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        150,
+        195
+       ],
+       "text": "cm",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "room",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        80
+       ],
+       "text": "rooms and buildings",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "mchoice",
+       "op": "circle",
+       "startMs": 3400,
+       "endMs": 4100,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        190
+       ],
+       "r": 55
+      },
+      {
+       "id": "mtext2",
+       "op": "text",
+       "startMs": 4100,
+       "endMs": 4600,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        195
+       ],
+       "text": "m",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "between",
+       "op": "text",
+       "startMs": 4800,
+       "endMs": 5800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        650,
+        80
+       ],
+       "text": "between places",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "kmchoice",
+       "op": "circle",
+       "startMs": 5900,
+       "endMs": 6600,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        650,
+        190
+       ],
+       "r": 55
+      },
+      {
+       "id": "kmtext2",
+       "op": "text",
+       "startMs": 6600,
+       "endMs": 7100,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        650,
+        195
+       ],
+       "text": "km",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch05-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "turn",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        80
+       ],
+       "text": "your turn",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "pencil",
+       "op": "polygon",
+       "startMs": 1200,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         220,
+         240
+        ],
+        [
+         570,
+         240
+        ],
+        [
+         610,
+         270
+        ],
+        [
+         570,
+         300
+        ],
+        [
+         220,
+         300
+        ]
+       ]
+      },
+      {
+       "id": "tip",
+       "op": "line",
+       "startMs": 2600,
+       "endMs": 3100,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        220,
+        240
+       ],
+       "to": [
+        180,
+        270
+       ]
+      },
+      {
+       "id": "length",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        370
+       ],
+       "text": "length?",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "choices",
+       "op": "text",
+       "startMs": 4600,
+       "endMs": 5600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        440
+       ],
+       "text": "cm   m   km",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "325 mm",
+   "prompt": "cut: 0 m 32.5 cm"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "475 mm",
+   "prompt": "cut: 0 m 47.5 cm"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "205000 mm",
+   "prompt": "cut: 0 km 205 m"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "304000 mm",
+   "prompt": "cut: 0 km 304 m"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

@@ -1,0 +1,1776 @@
+{
+ "topicId": "c7-maths-ch01-t01",
+ "title": "Lakhs and crores",
+ "chapter": "Large Numbers Around Us",
+ "subject": "maths",
+ "class": 7,
+ "topicType": "T4",
+ "plan": {
+  "game": "vault-heist@1",
+  "hint": "place-value vault codes (Indian system)"
+ },
+ "game": {
+  "archetype": "vault-heist@1",
+  "spec": {
+   "archetype": "vault-heist@1",
+   "skills": [
+    "c7-maths-ch01-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "coach": "Tap place-value blocks to load the vault",
+    "round": "Vault",
+    "target": "TARGET",
+    "loaded": "loaded",
+    "over": "over by",
+    "under": "short by",
+    "cracked": "VAULT OPEN",
+    "regroup": "REGROUPED",
+    "runDone": "Heist complete",
+    "words": "say it",
+    "time": "laser"
+   },
+   "system": "indian",
+   "belt": 1,
+   "rounds": [
+    {
+     "target": 425000,
+     "seconds": 35,
+     "show": "words",
+     "denoms": [
+      1,
+      10,
+      100,
+      1000,
+      10000,
+      100000
+     ]
+    },
+    {
+     "target": 500000,
+     "seconds": 40,
+     "show": "digits",
+     "denoms": [
+      1000,
+      100000
+     ],
+     "targets": "c7-maths-ch01-t01-m-intl-commas"
+    },
+    {
+     "target": 100000,
+     "seconds": 50,
+     "show": "digits",
+     "denoms": [
+      100,
+      1000,
+      10000,
+      100000
+     ]
+    }
+   ]
+  },
+  "repairs": [
+   "round-target"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-maths-ch01-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Right",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "BUSTED",
+    "order": "Tap in order"
+   },
+   "title": "Lakhs and crores",
+   "accent": "amber",
+   "targets": "c7-maths-ch01-t01-m-crore-million",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "row",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Lakhs and crores"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "1 crore = 1 million"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "thou",
+       "type": "node",
+       "text": "Thousand",
+       "sub": "1,000",
+       "glyph": "coin",
+       "color": "ion"
+      },
+      {
+       "id": "lakh",
+       "type": "node",
+       "text": "Lakh",
+       "sub": "1,00,000",
+       "glyph": "coin",
+       "color": "amber"
+      },
+      {
+       "id": "crore",
+       "type": "node",
+       "text": "Crore",
+       "sub": "1,00,00,000",
+       "glyph": "coin",
+       "color": "sun"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "thou",
+       "to": "lakh",
+       "text": "100 thousand"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "lakh",
+       "to": "crore",
+       "text": "100 lakh"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "split",
+     "els": [
+      {
+       "id": "example",
+       "type": "label",
+       "text": "7,03,50,000",
+       "x": 120,
+       "y": 250,
+       "color": "amber"
+      },
+      {
+       "id": "million",
+       "type": "label",
+       "text": "70.35 million",
+       "x": 600,
+       "y": 250,
+       "color": "ion"
+      },
+      {
+       "id": "comma",
+       "type": "label",
+       "text": "Indian: 7,03,50,000",
+       "x": 120,
+       "y": 350,
+       "color": "amber"
+      },
+      {
+       "id": "same",
+       "type": "label",
+       "text": "Same number",
+       "x": 600,
+       "y": 350,
+       "color": "mint"
+      },
+      {
+       "id": "optA",
+       "type": "label",
+       "text": "1 million",
+       "x": 180,
+       "y": 470,
+       "color": "ion"
+      },
+      {
+       "id": "optB",
+       "type": "label",
+       "text": "10 million",
+       "x": 480,
+       "y": 470,
+       "color": "sun"
+      },
+      {
+       "id": "optC",
+       "type": "label",
+       "text": "100 million",
+       "x": 780,
+       "y": 470,
+       "color": "ion"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "After thousands come lakhs and crores in the Indian system.",
+    "L2": "One lakh is 1,00,000, and one crore is 1,00,00,000.",
+    "L3": "One lakh equals 100 thousand. One crore equals 100 lakh, or 10 million.",
+    "L4": "So the belief that one crore equals one million is not true. One crore is ten million.",
+    "L5": "In Indian commas, group the first three digits from the right, then group digits in pairs.",
+    "L6": "For example, seven crore three lakh fifty thousand is 7,03,50,000.",
+    "L7": "Regrouping in threes gives 70,350,000, or 70.35 million.",
+    "L8": "The commas and names change between systems, but the number itself stays the same.",
+    "L9": "Now tap the value equal to one crore."
+   },
+   "narration": {
+    "L1": {
+     "text": "After thousands come lakhs and crores in the Indian system.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "One lakh is 1,00,000, and one crore is 1,00,00,000.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "One lakh equals 100 thousand. One crore equals 100 lakh, or 10 million.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "So the belief that one crore equals one million is not true. One crore is ten million.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "In Indian commas, group the first three digits from the right, then group digits in pairs.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "For example, seven crore three lakh fifty thousand is 7,03,50,000.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Regrouping in threes gives 70,350,000, or 70.35 million.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "The commas and names change between systems, but the number itself stays the same.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L9": {
+     "text": "Now tap the value equal to one crore.",
+     "dur": 2,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.3,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "title"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "thou",
+        "lakh",
+        "crore"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "a1",
+        "a2"
+       ]
+      },
+      {
+       "at": 0.5,
+       "do": "flow",
+       "dur": 0.7,
+       "target": [
+        "a1",
+        "a2"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.3,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "myth"
+      },
+      {
+       "at": 0.5,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.3,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "comma"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.3,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "example"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.3,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "million"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0.3,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "same"
+      }
+     ]
+    },
+    {
+     "line": "L9",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "optA",
+        "optB",
+        "optC"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which value equals one crore?",
+    "options": [
+     "optA",
+     "optB",
+     "optC"
+    ],
+    "answer": "optB",
+    "src": "c7-maths-ch01-t01-i05"
+   }
+  },
+  "repairs": [],
+  "attempts": 2,
+  "model": "taxila-fast-bg",
+  "passes": 2,
+  "seconds": 29
+ },
+ "keys": [],
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch01-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "title",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "Indian system",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "thousand",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        180
+       ],
+       "text": "thousands",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "arrow1",
+       "op": "arrow",
+       "startMs": 1300,
+       "endMs": 1800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        190,
+        180
+       ],
+       "to": [
+        285,
+        180
+       ]
+      },
+      {
+       "id": "lakh",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        350,
+        180
+       ],
+       "text": "lakhs",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "arrow2",
+       "op": "arrow",
+       "startMs": 2400,
+       "endMs": 2900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        420,
+        180
+       ],
+       "to": [
+        515,
+        180
+       ]
+      },
+      {
+       "id": "crore",
+       "op": "text",
+       "startMs": 2900,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        590,
+        180
+       ],
+       "text": "crores",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "place1",
+       "op": "rect",
+       "startMs": 3500,
+       "endMs": 3950,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        90,
+        260
+       ],
+       "w": 140,
+       "h": 70,
+       "round": 10
+      },
+      {
+       "id": "place2",
+       "op": "rect",
+       "startMs": 3950,
+       "endMs": 4400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        280,
+        260
+       ],
+       "w": 140,
+       "h": 70,
+       "round": 10
+      },
+      {
+       "id": "place3",
+       "op": "rect",
+       "startMs": 4400,
+       "endMs": 4855,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        470,
+        260
+       ],
+       "w": 140,
+       "h": 70,
+       "round": 10
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch01-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 4430,
+     "ops": [
+      {
+       "id": "lakhnum",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        80,
+        100
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "1",
+         "lakh",
+         "=",
+         "1,00,0"
+        ]
+       ]
+      },
+      {
+       "id": "croreword",
+       "op": "text",
+       "startMs": 1300,
+       "endMs": 1800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        120,
+        220
+       ],
+       "text": "crore",
+       "size": "m"
+      },
+      {
+       "id": "crore_num",
+       "op": "numwork",
+       "startMs": 1800,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        80,
+        270
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "1",
+         "crore",
+         "=",
+         "1,00,0"
+        ]
+       ]
+      },
+      {
+       "id": "markl",
+       "op": "highlight",
+       "startMs": 3300,
+       "endMs": 3800,
+       "ink": "good",
+       "weight": 2,
+       "target": "lakhnum",
+       "style": "circle"
+      },
+      {
+       "id": "markc",
+       "op": "highlight",
+       "startMs": 3800,
+       "endMs": 4430,
+       "ink": "good",
+       "weight": 2,
+       "target": "crore_num",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch01-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "lakh_eq",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        80,
+        100
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "1",
+         "lakh",
+         "=",
+         "100",
+         "thousa"
+        ]
+       ]
+      },
+      {
+       "id": "crore_lakh",
+       "op": "numwork",
+       "startMs": 1500,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        80,
+        210
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "1",
+         "crore",
+         "=",
+         "100",
+         "lakh"
+        ]
+       ]
+      },
+      {
+       "id": "crore_million",
+       "op": "numwork",
+       "startMs": 2900,
+       "endMs": 4300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        80,
+        320
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "1",
+         "crore",
+         "=",
+         "10",
+         "millio"
+        ]
+       ]
+      },
+      {
+       "id": "h1",
+       "op": "highlight",
+       "startMs": 4300,
+       "endMs": 4800,
+       "ink": "good",
+       "weight": 2,
+       "target": "lakh_eq",
+       "style": "underline"
+      },
+      {
+       "id": "h2",
+       "op": "highlight",
+       "startMs": 4800,
+       "endMs": 5300,
+       "ink": "good",
+       "weight": 2,
+       "target": "crore_lakh",
+       "style": "underline"
+      },
+      {
+       "id": "h3",
+       "op": "highlight",
+       "startMs": 5300,
+       "endMs": 6132,
+       "ink": "good",
+       "weight": 2,
+       "target": "crore_million",
+       "style": "underline"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch01-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "wrong",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        80,
+        100
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "1",
+         "crore",
+         "=",
+         "1",
+         "millio"
+        ]
+       ]
+      },
+      {
+       "id": "cross",
+       "op": "line",
+       "startMs": 1400,
+       "endMs": 1900,
+       "ink": "accent",
+       "weight": 3,
+       "from": [
+        70,
+        90
+       ],
+       "to": [
+        470,
+        160
+       ]
+      },
+      {
+       "id": "nottrue",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        540,
+        130
+       ],
+       "text": "not true",
+       "size": "m"
+      },
+      {
+       "id": "right",
+       "op": "numwork",
+       "startMs": 2500,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        80,
+        270
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "1",
+         "crore",
+         "=",
+         "10",
+         "millio"
+        ]
+       ]
+      },
+      {
+       "id": "ten",
+       "op": "circle",
+       "startMs": 4100,
+       "endMs": 4700,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        480,
+        300
+       ],
+       "r": 42
+      },
+      {
+       "id": "equals",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        580,
+        300
+       ],
+       "text": "10 million",
+       "size": "m"
+      },
+      {
+       "id": "arrowright",
+       "op": "arrow",
+       "startMs": 5500,
+       "endMs": 6000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        500,
+        300
+       ],
+       "to": [
+        550,
+        300
+       ]
+      },
+      {
+       "id": "finalmark",
+       "op": "highlight",
+       "startMs": 6000,
+       "endMs": 7834,
+       "ink": "good",
+       "weight": 2,
+       "target": "right",
+       "style": "underline"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch01-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "heading",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "Indian commas",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "digits",
+       "op": "numwork",
+       "startMs": 700,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        130
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "1",
+         "2",
+         "3",
+         "4",
+         "5",
+         "6",
+         "7",
+         "8"
+        ]
+       ]
+      },
+      {
+       "id": "first",
+       "op": "line",
+       "startMs": 1800,
+       "endMs": 2300,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        300,
+        110
+       ],
+       "to": [
+        300,
+        220
+       ]
+      },
+      {
+       "id": "pair1",
+       "op": "line",
+       "startMs": 2300,
+       "endMs": 2800,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        420,
+        110
+       ],
+       "to": [
+        420,
+        220
+       ]
+      },
+      {
+       "id": "pair2",
+       "op": "line",
+       "startMs": 2800,
+       "endMs": 3300,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        540,
+        110
+       ],
+       "to": [
+        540,
+        220
+       ]
+      },
+      {
+       "id": "comma_num",
+       "op": "numwork",
+       "startMs": 3300,
+       "endMs": 4500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        270
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "12,34,"
+        ]
+       ]
+      },
+      {
+       "id": "firstlabel",
+       "op": "label",
+       "startMs": 4500,
+       "endMs": 5200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        250,
+        240
+       ],
+       "text": "3 digits",
+       "to": [
+        300,
+        220
+       ]
+      },
+      {
+       "id": "pairslabel",
+       "op": "label",
+       "startMs": 5200,
+       "endMs": 6100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        500,
+        240
+       ],
+       "text": "pairs",
+       "to": [
+        480,
+        220
+       ]
+      },
+      {
+       "id": "brace",
+       "op": "arrow",
+       "startMs": 6100,
+       "endMs": 6700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        600,
+        300
+       ],
+       "to": [
+        680,
+        300
+       ]
+      },
+      {
+       "id": "rule",
+       "op": "text",
+       "startMs": 6700,
+       "endMs": 7409,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        700,
+        300
+       ],
+       "text": "pairs",
+       "size": "m"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch01-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "crorepart",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        80,
+        90
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "7",
+         "crore"
+        ]
+       ]
+      },
+      {
+       "id": "lakhpart",
+       "op": "numwork",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        80,
+        160
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "3",
+         "lakh"
+        ]
+       ]
+      },
+      {
+       "id": "thousandpart",
+       "op": "numwork",
+       "startMs": 1300,
+       "endMs": 2000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        80,
+        230
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "50",
+         "thousa"
+        ]
+       ]
+      },
+      {
+       "id": "plus1",
+       "op": "text",
+       "startMs": 2000,
+       "endMs": 2200,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        260,
+        125
+       ],
+       "text": "+",
+       "size": "m"
+      },
+      {
+       "id": "plus2",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 2400,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        260,
+        195
+       ],
+       "text": "+",
+       "size": "m"
+      },
+      {
+       "id": "answer",
+       "op": "numwork",
+       "startMs": 2400,
+       "endMs": 3800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        350,
+        170
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "7,03,5"
+        ]
+       ]
+      },
+      {
+       "id": "answerhl",
+       "op": "highlight",
+       "startMs": 3800,
+       "endMs": 4855,
+       "ink": "good",
+       "weight": 2,
+       "target": "answer",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch01-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 4004,
+     "ops": [
+      {
+       "id": "indian",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        70,
+        100
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "7,03,5"
+        ]
+       ]
+      },
+      {
+       "id": "regroup",
+       "op": "arrow",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        300,
+        135
+       ],
+       "to": [
+        390,
+        135
+       ]
+      },
+      {
+       "id": "international",
+       "op": "numwork",
+       "startMs": 1500,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        410,
+        100
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "70,350"
+        ]
+       ]
+      },
+      {
+       "id": "millioneq",
+       "op": "numwork",
+       "startMs": 2500,
+       "endMs": 3600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        170,
+        280
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "70,350",
+         "=",
+         "70.35",
+         "millio"
+        ]
+       ]
+      },
+      {
+       "id": "same",
+       "op": "highlight",
+       "startMs": 3600,
+       "endMs": 4004,
+       "ink": "good",
+       "weight": 2,
+       "target": "millioneq",
+       "style": "underline"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch01-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "indianhead",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        180,
+        80
+       ],
+       "text": "Indian",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "intlhead",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        610,
+        80
+       ],
+       "text": "International",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "indiannum",
+       "op": "numwork",
+       "startMs": 700,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        70,
+        160
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "7,03,5"
+        ]
+       ]
+      },
+      {
+       "id": "intlnum",
+       "op": "numwork",
+       "startMs": 700,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        430,
+        160
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "70,350"
+        ]
+       ]
+      },
+      {
+       "id": "change1",
+       "op": "line",
+       "startMs": 1800,
+       "endMs": 2400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        300,
+        190
+       ],
+       "to": [
+        410,
+        190
+       ]
+      },
+      {
+       "id": "change2",
+       "op": "line",
+       "startMs": 2400,
+       "endMs": 3000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        300,
+        230
+       ],
+       "to": [
+        410,
+        230
+       ]
+      },
+      {
+       "id": "samearrow",
+       "op": "arrow",
+       "startMs": 3000,
+       "endMs": 3600,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        400,
+        330
+       ],
+       "to": [
+        400,
+        270
+       ]
+      },
+      {
+       "id": "sameword",
+       "op": "text",
+       "startMs": 3600,
+       "endMs": 4500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        390
+       ],
+       "text": "same number",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "hlleft",
+       "op": "highlight",
+       "startMs": 4500,
+       "endMs": 5200,
+       "ink": "good",
+       "weight": 2,
+       "target": "indiannum",
+       "style": "circle"
+      },
+      {
+       "id": "hlright",
+       "op": "highlight",
+       "startMs": 5200,
+       "endMs": 6557,
+       "ink": "good",
+       "weight": 2,
+       "target": "intlnum",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L9",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch01-t01-wb-L9",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4004,
+     "ops": [
+      {
+       "id": "prompt",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "tap: 1 crore",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "choice1",
+       "op": "rect",
+       "startMs": 900,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        80,
+        150
+       ],
+       "w": 270,
+       "h": 90,
+       "round": 12
+      },
+      {
+       "id": "choice2",
+       "op": "rect",
+       "startMs": 900,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        450,
+        150
+       ],
+       "w": 270,
+       "h": 90,
+       "round": 12
+      },
+      {
+       "id": "choice1num",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        215,
+        205
+       ],
+       "text": "1,00,00,000",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "choice2num",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        585,
+        205
+       ],
+       "text": "1,00,000",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "tap",
+       "op": "circle",
+       "startMs": 2500,
+       "endMs": 3200,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        215,
+        195
+       ],
+       "r": 62
+      },
+      {
+       "id": "correct",
+       "op": "text",
+       "startMs": 3200,
+       "endMs": 4004,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        350
+       ],
+       "text": "1,00,00,000",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "check": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "Round 2 has target 500000 and show digits but denoms include 100000 which would require 5 of that denomination; however the round does not name a kit item or retell a kit scenario; it just uses new numbers which is allowed. No factual contradiction with kit.",
+    "severity": "low"
+   },
+   {
+    "where": "game",
+    "what": "Round 1 target 425000, show words, denoms up to 100000; this computes to 4*100000 + 2*10000 + 5*1000 = 425000, correct. No issue.",
+    "severity": "low"
+   },
+   {
+    "where": "game",
+    "what": "Round 2 targets 'c7-maths-ch01-t01-m-intl-commas' which is a misconception but the round only uses that as target string, not as content; the round itself does not misplace commas. No problem.",
+    "severity": "low"
+   },
+   {
+    "where": "game",
+    "what": "Round 3 target 100000, show digits, denoms 100,1000,10000,100000; this would be 1*100000 = 100000, correct. No issue.",
+    "severity": "low"
+   },
+   {
+    "where": "explainer",
+    "what": "The explainer scene s3 has option labels '1 million', '10 million', '100 million' and asks 'Which value equals one crore?' with answer 'optB' (10 million). This matches kit item i05 and i12 which state 1 crore = 10 million. No issue.",
+    "severity": "low"
+   },
+   {
+    "where": "explainer",
+    "what": "The explainer text L4 says 'the belief that one crore equals one million is not true. One crore is ten million.' This is factually correct per kit. No issue.",
+    "severity": "low"
+   },
+   {
+    "where": "explainer",
+    "what": "The explainer shows 7,03,50,000 and 70.35 million, matching kit's worked example. No issue.",
+    "severity": "low"
+   }
+  ],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

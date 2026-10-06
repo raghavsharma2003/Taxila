@@ -147,6 +147,16 @@ export const OVERLAP = {
    * (an adult on the TV, a parent): no hush, no yield on its words or its length. 0 = off. [E, TaxilaFDB TRAIN]
    */
   notChildSemitones: 5,
+  /** A burst too short to read its own pitch inherits the last attribution made within this long (p1-duplex). [E, TRAIN] */
+  attributionCarryMs: 2000 as Ms,
+  /** An acoustic-only yield waits for the burst to end or reach sustainedMs (the hush covers the wait). (p1-duplex, AMI dev) */
+  waitForSustain: true,
+  /**
+   * A burst whose opening median YIN f0 is at or above this is a steady tone, not a voice (p1-duplex 2026-10-06: a cooker
+   * whistle aliases to 485-618 Hz, median 573, on 1,980/1,980 synthetic frames; child speech f0 on TaxilaFDB TRAIN p99 513
+   * Hz, 1.4% of frames >= 500). 0 = off. [E]
+   */
+  toneF0Hz: 540,
   /** Removed echo words count as echo evidence only while the mic is within this many dB of her echo estimate. [E] */
   echoNearDb: 10,
   /**

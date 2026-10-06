@@ -1,0 +1,1501 @@
+{
+ "topicId": "c5-maths-ch13-t02",
+ "title": "Factors",
+ "chapter": "Animal Jumps",
+ "subject": "maths",
+ "class": 5,
+ "topicType": "T3",
+ "plan": {
+  "game": "sieve-storm@1",
+  "hint": "rule factor (factors of a number), then cfactor"
+ },
+ "game": {
+  "archetype": "sieve-storm@1",
+  "spec": {
+   "archetype": "sieve-storm@1",
+   "skills": [
+    "c5-maths-ch13-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "slashed": "right calls",
+    "combo": "combo",
+    "coach": "Swipe the numbers that fit the rule",
+    "runDone": "Storm over",
+    "prime": "prime",
+    "composite": "composite",
+    "even": "even",
+    "odd": "odd",
+    "multipleOf": "multiples of",
+    "commonOf": "common multiples of",
+    "factorOf": "factors of",
+    "cfactorOf": "common factors of",
+    "divisibleBy": "divisible by",
+    "coprimeWith": "co-prime with",
+    "square": "square numbers",
+    "palindrome": "palindromes",
+    "slipped": "slipped",
+    "wrongCut": "not this one",
+    "and": "and"
+   },
+   "title": "Animal Jumps: Factor Storm",
+   "rounds": [
+    {
+     "rule": "factor",
+     "a": 20,
+     "title": "Pair the factors",
+     "sub": "Test in order and pair them",
+     "lo": 2,
+     "hi": 20,
+     "count": 12,
+     "hitRate": 0.5,
+     "seed": 1427,
+     "speed": 0.8,
+     "targets": "c5-maths-ch13-t02-m-one-and-self"
+    },
+    {
+     "rule": "cfactor",
+     "a": 24,
+     "b": 36,
+     "title": "Shared factor pairs",
+     "sub": "Find factors shared by both",
+     "lo": 2,
+     "hi": 24,
+     "count": 14,
+     "hitRate": 0.4,
+     "seed": 3816,
+     "speed": 1.05,
+     "targets": "c5-maths-ch13-t02-m-miss-pairs"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c5-maths-ch13-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "BUSTED",
+    "order": "Tap them in order"
+   },
+   "title": "Find factors by pairing",
+   "accent": "mint",
+   "targets": "c5-maths-ch13-t02-m-miss-pairs",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "row",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Find factors by pairing"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Factors can be listed at random"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "num",
+       "type": "node",
+       "text": "28",
+       "sub": "target number",
+       "color": "mint"
+      },
+      {
+       "id": "p1",
+       "type": "node",
+       "text": "1 × 28",
+       "sub": "pair",
+       "glyph": "balance",
+       "color": "ion"
+      },
+      {
+       "id": "p2",
+       "type": "node",
+       "text": "2 × 14",
+       "sub": "pair",
+       "glyph": "balance",
+       "color": "ion"
+      },
+      {
+       "id": "p3",
+       "type": "node",
+       "text": "4 × 7",
+       "sub": "pair",
+       "glyph": "balance",
+       "color": "ion"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "num",
+       "to": "p1",
+       "text": "start"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "p1",
+       "to": "p2",
+       "text": "test next"
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "p2",
+       "to": "p3",
+       "text": "test next"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "factors",
+       "type": "bar",
+       "parts": 6,
+       "shaded": 6
+      },
+      {
+       "id": "stop",
+       "type": "node",
+       "text": "Stop",
+       "sub": "pairs repeat",
+       "glyph": "clock",
+       "color": "amber"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "row",
+     "els": [
+      {
+       "id": "q",
+       "type": "title",
+       "text": "Which pair works?"
+      },
+      {
+       "id": "o1",
+       "type": "node",
+       "text": "3 × 28",
+       "sub": "not exact",
+       "glyph": "question",
+       "color": "amber"
+      },
+      {
+       "id": "o2",
+       "type": "node",
+       "text": "4 × 7",
+       "sub": "exact",
+       "color": "mint"
+      },
+      {
+       "id": "o3",
+       "type": "node",
+       "text": "5 × 6",
+       "sub": "not exact",
+       "glyph": "question",
+       "color": "amber"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "A factor divides a number exactly, with nothing left over.",
+    "L2": "To find every factor of 28, test numbers in order and make multiplication pairs.",
+    "L3": "Start with 1: one times 28 equals 28. Then 2 times 14 equals 28.",
+    "L4": "Three does not divide 28, but 4 times 7 does.",
+    "L5": "The factors are 1, 2, 4, 7, 14 and 28. One and the number itself are included.",
+    "L6": "After 6 times 6, factor pairs repeat the other way round, so stop looking.",
+    "L7": "Do not list factors at random. Pairing helps you find every one without missing any."
+   },
+   "narration": {
+    "L1": {
+     "text": "A factor divides a number exactly, with nothing left over.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L2": {
+     "text": "To find every factor of 28, test numbers in order and make multiplication pairs.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L3": {
+     "text": "Start with 1: one times 28 equals 28. Then 2 times 14 equals 28.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L4": {
+     "text": "Three does not divide 28, but 4 times 7 does.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L5": {
+     "text": "The factors are 1, 2, 4, 7, 14 and 28. One and the number itself are included.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L6": {
+     "text": "After 6 times 6, factor pairs repeat the other way round, so stop looking.",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Do not list factors at random. Pairing helps you find every one without missing any.",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0.2,
+       "do": "show",
+       "dur": 0.6,
+       "target": "num"
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "p1",
+        "p2",
+        "p3"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "a1",
+       "to": 1
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "a2",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "p3"
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "a3",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "factors"
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 1,
+       "target": "factors"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "stop"
+      },
+      {
+       "at": 0.8,
+       "do": "focus",
+       "dur": 1,
+       "target": "stop"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "myth"
+      },
+      {
+       "at": 0.8,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      },
+      {
+       "at": 2,
+       "do": "interactive",
+       "dur": 0.5
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which pair multiplies to make 28?",
+    "options": [
+     "o1",
+     "o2",
+     "o3"
+    ],
+    "answer": "o2",
+    "src": "c5-maths-ch13-t02-i12"
+   }
+  },
+  "repairs": [
+   "glyph",
+   "string:factors.text",
+   "glyph",
+   "cue:target"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 29
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch13-t02-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "factorBox",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        70,
+        90
+       ],
+       "w": 660,
+       "h": 260,
+       "round": 12
+      },
+      {
+       "id": "number",
+       "op": "text",
+       "startMs": 500,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        135
+       ],
+       "text": "number",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "divArrow",
+       "op": "arrow",
+       "startMs": 1300,
+       "endMs": 2100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        215,
+        175
+       ],
+       "to": [
+        215,
+        275
+       ]
+      },
+      {
+       "id": "factor",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        215,
+        320
+       ],
+       "text": "factor",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "remainder",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3600,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        585,
+        320
+       ],
+       "text": "nothing left over",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "divideLine",
+       "op": "line",
+       "startMs": 3000,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        255,
+        225
+       ],
+       "to": [
+        545,
+        225
+       ]
+      },
+      {
+       "id": "exact",
+       "op": "text",
+       "startMs": 3700,
+       "endMs": 4500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        410
+       ],
+       "text": "divides exactly",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch13-t02-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "title28",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        65
+       ],
+       "text": "28",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "testArrow",
+       "op": "arrow",
+       "startMs": 700,
+       "endMs": 1500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        120,
+        130
+       ],
+       "to": [
+        120,
+        390
+       ]
+      },
+      {
+       "id": "order",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        175,
+        150
+       ],
+       "text": "test numbers in order",
+       "size": "m"
+      },
+      {
+       "id": "pair1",
+       "op": "numwork",
+       "startMs": 1800,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        260,
+        190
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "1",
+         "×",
+         "28",
+         "=",
+         "28"
+        ]
+       ]
+      },
+      {
+       "id": "pair2",
+       "op": "numwork",
+       "startMs": 2900,
+       "endMs": 4000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        260,
+        255
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "2",
+         "×",
+         "14",
+         "=",
+         "28"
+        ]
+       ]
+      },
+      {
+       "id": "pairBrace",
+       "op": "line",
+       "startMs": 4000,
+       "endMs": 4900,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        245,
+        180
+       ],
+       "to": [
+        245,
+        325
+       ]
+      },
+      {
+       "id": "pairs",
+       "op": "text",
+       "startMs": 4900,
+       "endMs": 6100,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        390
+       ],
+       "text": "multiplication pairs",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch13-t02-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "start1",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        110,
+        105
+       ],
+       "text": "Start with 1",
+       "size": "m"
+      },
+      {
+       "id": "eq1",
+       "op": "numwork",
+       "startMs": 700,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        160
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "1",
+         "×",
+         "28",
+         "=",
+         "28"
+        ]
+       ]
+      },
+      {
+       "id": "eq2",
+       "op": "numwork",
+       "startMs": 1900,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        245
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "2",
+         "×",
+         "14",
+         "=",
+         "28"
+        ]
+       ]
+      },
+      {
+       "id": "pairMark1",
+       "op": "circle",
+       "startMs": 3000,
+       "endMs": 3700,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        145,
+        185
+       ],
+       "r": 25
+      },
+      {
+       "id": "pairMark2",
+       "op": "circle",
+       "startMs": 3700,
+       "endMs": 4400,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        145,
+        270
+       ],
+       "r": 25
+      },
+      {
+       "id": "equals28",
+       "op": "text",
+       "startMs": 4400,
+       "endMs": 5000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        385
+       ],
+       "text": "28",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch13-t02-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "three",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        130
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "3",
+         "×",
+         "?",
+         "≠",
+         "28"
+        ]
+       ]
+      },
+      {
+       "id": "noDivide",
+       "op": "text",
+       "startMs": 1000,
+       "endMs": 1900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        170,
+        205
+       ],
+       "text": "does not divide",
+       "size": "m"
+      },
+      {
+       "id": "fourPair",
+       "op": "numwork",
+       "startMs": 2000,
+       "endMs": 3200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        100,
+        285
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "4",
+         "×",
+         "7",
+         "=",
+         "28"
+        ]
+       ]
+      },
+      {
+       "id": "check4",
+       "op": "circle",
+       "startMs": 3000,
+       "endMs": 3700,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        145,
+        315
+       ],
+       "r": 25
+      },
+      {
+       "id": "check7",
+       "op": "circle",
+       "startMs": 3300,
+       "endMs": 4000,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        265,
+        315
+       ],
+       "r": 25
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch13-t02-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "factorList",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        85,
+        125
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "1",
+         ",",
+         "2",
+         ",",
+         "4",
+         ",",
+         "7",
+         ",",
+         "14",
+         ",",
+         "28"
+        ]
+       ]
+      },
+      {
+       "id": "listUnderline",
+       "op": "line",
+       "startMs": 2100,
+       "endMs": 2900,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        85,
+        180
+       ],
+       "to": [
+        690,
+        180
+       ]
+      },
+      {
+       "id": "onePair",
+       "op": "numwork",
+       "startMs": 2900,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        245
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "1",
+         "×",
+         "28",
+         "=",
+         "28"
+        ]
+       ]
+      },
+      {
+       "id": "twoPair",
+       "op": "numwork",
+       "startMs": 3900,
+       "endMs": 5100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        320
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "2",
+         "×",
+         "14",
+         "=",
+         "28"
+        ]
+       ]
+      },
+      {
+       "id": "fourPair",
+       "op": "numwork",
+       "startMs": 4900,
+       "endMs": 6100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        395
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "4",
+         "×",
+         "7",
+         "=",
+         "28"
+        ]
+       ]
+      },
+      {
+       "id": "included",
+       "op": "text",
+       "startMs": 6100,
+       "endMs": 7300,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        560,
+        255
+       ],
+       "text": "1 and 28 included",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch13-t02-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "sixPair",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        110,
+        125
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "6",
+         "×",
+         "6"
+        ]
+       ]
+      },
+      {
+       "id": "afterSix",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        330,
+        145
+       ],
+       "text": "after 6 × 6",
+       "size": "m"
+      },
+      {
+       "id": "pairForward",
+       "op": "arrow",
+       "startMs": 1800,
+       "endMs": 2800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        145,
+        205
+       ],
+       "to": [
+        610,
+        205
+       ]
+      },
+      {
+       "id": "pairBack",
+       "op": "arrow",
+       "startMs": 2600,
+       "endMs": 3600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        610,
+        255
+       ],
+       "to": [
+        145,
+        255
+       ]
+      },
+      {
+       "id": "stop",
+       "op": "text",
+       "startMs": 4800,
+       "endMs": 5700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        410
+       ],
+       "text": "stop looking",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch13-t02-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "randomCross",
+       "op": "stroke",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         105,
+         125
+        ],
+        [
+         260,
+         205
+        ],
+        [
+         105,
+         205
+        ],
+        [
+         260,
+         125
+        ]
+       ]
+      },
+      {
+       "id": "random",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        185,
+        260
+       ],
+       "text": "at random",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "orderedArrow",
+       "op": "arrow",
+       "startMs": 1500,
+       "endMs": 2500,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        350,
+        125
+       ],
+       "to": [
+        650,
+        125
+       ]
+      },
+      {
+       "id": "ordered",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 2900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        500,
+        175
+       ],
+       "text": "in order",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "pairA",
+       "op": "numwork",
+       "startMs": 2900,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        350,
+        245
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "1",
+         "×",
+         "28",
+         "=",
+         "28"
+        ]
+       ]
+      },
+      {
+       "id": "pairB",
+       "op": "numwork",
+       "startMs": 3900,
+       "endMs": 5100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        350,
+        325
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "2",
+         "×",
+         "14",
+         "=",
+         "28"
+        ]
+       ]
+      },
+      {
+       "id": "complete",
+       "op": "text",
+       "startMs": 5200,
+       "endMs": 6100,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        500,
+        430
+       ],
+       "text": "every one",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 16 factor 20?"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 20 factor 20?"
+  },
+  {
+   "itemId": "r1:2",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 13 factor 20?"
+  },
+  {
+   "itemId": "r1:3",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 10 factor 20?"
+  },
+  {
+   "itemId": "r1:4",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 4 factor 20?"
+  },
+  {
+   "itemId": "r1:5",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 2 factor 20?"
+  },
+  {
+   "itemId": "r1:6",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 5 factor 20?"
+  },
+  {
+   "itemId": "r1:7",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 2 factor 20?"
+  },
+  {
+   "itemId": "r1:8",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 10 factor 20?"
+  },
+  {
+   "itemId": "r1:9",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 3 factor 20?"
+  },
+  {
+   "itemId": "r1:10",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 7 factor 20?"
+  },
+  {
+   "itemId": "r1:11",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 4 factor 20?"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 15 cfactor 24 36?"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 12 cfactor 24 36?"
+  },
+  {
+   "itemId": "r2:2",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 22 cfactor 24 36?"
+  },
+  {
+   "itemId": "r2:3",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 2 cfactor 24 36?"
+  },
+  {
+   "itemId": "r2:4",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 6 cfactor 24 36?"
+  },
+  {
+   "itemId": "r2:5",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 17 cfactor 24 36?"
+  },
+  {
+   "itemId": "r2:6",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 6 cfactor 24 36?"
+  },
+  {
+   "itemId": "r2:7",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 11 cfactor 24 36?"
+  },
+  {
+   "itemId": "r2:8",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 6 cfactor 24 36?"
+  },
+  {
+   "itemId": "r2:9",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 9 cfactor 24 36?"
+  },
+  {
+   "itemId": "r2:10",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 14 cfactor 24 36?"
+  },
+  {
+   "itemId": "r2:11",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 7 cfactor 24 36?"
+  },
+  {
+   "itemId": "r2:12",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 20 cfactor 24 36?"
+  },
+  {
+   "itemId": "r2:13",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 3 cfactor 24 36?"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

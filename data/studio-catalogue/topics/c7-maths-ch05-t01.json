@@ -1,0 +1,1266 @@
+{
+ "topicId": "c7-maths-ch05-t01",
+ "title": "Intersecting lines and vertically opposite angles",
+ "chapter": "Parallel and Intersecting Lines",
+ "subject": "maths",
+ "class": 7,
+ "topicType": "T3",
+ "plan": {
+  "game": "geo-forge@1",
+  "hint": "parallel and perpendicular challenges; angle challenges"
+ },
+ "game": {
+  "archetype": "geo-forge@1",
+  "spec": {
+   "archetype": "geo-forge@1",
+   "skills": [
+    "c7-maths-ch05-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "built": "built",
+    "check": "CHECK",
+    "undo": "UNDO",
+    "coach": "Tap pins to place corners; tap the first pin to close",
+    "runDone": "Blueprints done",
+    "perimeter": "perimeter",
+    "area": "area",
+    "units": "units",
+    "sq": "sq units",
+    "polygon": "sides",
+    "sticks": "Pick three sticks",
+    "rigid": "Brace it: it must not wobble",
+    "parallel": "Through the dot, parallel to the line",
+    "perpendicular": "Through the dot, at right angles",
+    "equidistant": "Place a pin the same distance from each dot",
+    "angle": "Make an angle of",
+    "right": "right-angled triangle",
+    "isosceles": "isosceles triangle",
+    "scalene": "scalene triangle",
+    "obtuse": "obtuse-angled triangle",
+    "acute": "acute-angled triangle",
+    "square": "square",
+    "rectangle": "rectangle",
+    "parallelogram": "parallelogram",
+    "rhombus": "rhombus",
+    "trapezium": "trapezium",
+    "kite": "kite",
+    "any": "shape",
+    "triangle": "triangle",
+    "make": "Make a",
+    "withArea": "with area",
+    "withPerim": "with perimeter",
+    "noTriangle": "Pick three that CANNOT close",
+    "wobbles": "WOBBLES",
+    "holds": "HOLDS",
+    "closes": "CLOSES",
+    "gap": "GAP",
+    "time": "time"
+   },
+   "title": "Crossing Lines Lab",
+   "rounds": [
+    {
+     "title": "Guide the lines",
+     "sub": "draw through each marked dot",
+     "time": 45,
+     "challenges": [
+      {
+       "kind": "parallel",
+       "line": [
+        [
+         2,
+         1
+        ],
+        [
+         8,
+         1
+        ]
+       ],
+       "through": [
+        4,
+        4
+       ]
+      },
+      {
+       "kind": "perpendicular",
+       "line": [
+        [
+         2,
+         1
+        ],
+        [
+         8,
+         1
+        ]
+       ],
+       "through": [
+        9,
+        4
+       ]
+      }
+     ]
+    },
+    {
+     "title": "Find the partner",
+     "sub": "build the crossing angles",
+     "time": 50,
+     "challenges": [
+      {
+       "kind": "angle",
+       "deg": 65,
+       "tol": 3
+      },
+      {
+       "kind": "angle",
+       "deg": 115,
+       "tol": 3
+      }
+     ],
+     "targets": "c7-maths-ch05-t01-m-above-below"
+    },
+    {
+     "title": "Check the crossing",
+     "sub": "use the straight-line rule",
+     "time": 60,
+     "challenges": [
+      {
+       "kind": "angle",
+       "deg": 40,
+       "tol": 3
+      },
+      {
+       "kind": "angle",
+       "deg": 68,
+       "tol": 3
+      },
+      {
+       "kind": "angle",
+       "deg": 72,
+       "tol": 3
+      }
+     ],
+     "targets": "c7-maths-ch05-t01-m-linear-90"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-maths-ch05-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Crossing lines",
+   "accent": "ion",
+   "targets": "c7-maths-ch05-t01-m-above-below",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Crossing lines"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Opposite means above and below"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "free",
+     "els": [
+      {
+       "id": "a",
+       "type": "angle",
+       "deg": 72,
+       "rot": 0,
+       "x": 500,
+       "y": 300,
+       "r": 120
+      },
+      {
+       "id": "b",
+       "type": "angle",
+       "deg": 108,
+       "rot": 90,
+       "x": 500,
+       "y": 300,
+       "r": 120
+      },
+      {
+       "id": "c",
+       "type": "angle",
+       "deg": 72,
+       "rot": 180,
+       "x": 500,
+       "y": 300,
+       "r": 120
+      },
+      {
+       "id": "d",
+       "type": "angle",
+       "deg": 108,
+       "rot": 180,
+       "x": 500,
+       "y": 300,
+       "r": 120
+      },
+      {
+       "id": "pair",
+       "type": "label",
+       "text": "linear pair",
+       "x": 120,
+       "y": 500
+      },
+      {
+       "id": "opposite",
+       "type": "label",
+       "text": "vertically opposite",
+       "x": 650,
+       "y": 120
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "one",
+       "type": "node",
+       "text": "72°",
+       "sub": "given",
+       "glyph": "ruler",
+       "color": "ion"
+      },
+      {
+       "id": "two",
+       "type": "node",
+       "text": "108°",
+       "sub": "180° − 72°",
+       "glyph": "balance",
+       "color": "amber"
+      },
+      {
+       "id": "three",
+       "type": "node",
+       "text": "72°",
+       "sub": "opposite",
+       "glyph": "mirror",
+       "color": "mint"
+      },
+      {
+       "id": "four",
+       "type": "node",
+       "text": "108°",
+       "sub": "opposite",
+       "glyph": "mirror",
+       "color": "amber"
+      },
+      {
+       "id": "n1",
+       "type": "arrow",
+       "from": "one",
+       "to": "two",
+       "text": "linear pair"
+      },
+      {
+       "id": "n2",
+       "type": "arrow",
+       "from": "one",
+       "to": "three",
+       "text": "equal"
+      },
+      {
+       "id": "n3",
+       "type": "arrow",
+       "from": "two",
+       "to": "four",
+       "text": "equal"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "row",
+     "els": [
+      {
+       "id": "optA",
+       "type": "node",
+       "text": "72°",
+       "sub": "choice A",
+       "glyph": "question",
+       "color": "ion"
+      },
+      {
+       "id": "optB",
+       "type": "node",
+       "text": "108°",
+       "sub": "choice B",
+       "glyph": "question",
+       "color": "amber"
+      },
+      {
+       "id": "optC",
+       "type": "node",
+       "text": "90°",
+       "sub": "choice C",
+       "glyph": "question",
+       "color": "sci"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "When two straight lines cross, they make four angles at one meeting point.",
+    "L2": "Angles next to each other on a straight line form a linear pair, so they add to 180 degrees.",
+    "L3": "Vertically opposite means across the crossing point, not simply above and below.",
+    "L4": "Across angles are equal because each makes a linear pair with the same neighbouring angle.",
+    "L5": "If one angle is 72 degrees, its opposite is 72 degrees, and each neighbour is 180 minus 72, or 108 degrees.",
+    "L6": "So the four angles are 72 degrees, 108 degrees, 72 degrees and 108 degrees.",
+    "L7": "Now choose the angle vertically opposite to 72 degrees."
+   },
+   "narration": {
+    "L1": {
+     "text": "When two straight lines cross, they make four angles at one meeting point.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "Angles next to each other on a straight line form a linear pair, so they add to 180 degrees.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "Vertically opposite means across the crossing point, not simply above and below.",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "Across angles are equal because each makes a linear pair with the same neighbouring angle.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "If one angle is 72 degrees, its opposite is 72 degrees, and each neighbour is 180 minus 72, or 108 degrees.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "So the four angles are 72 degrees, 108 degrees, 72 degrees and 108 degrees.",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Now choose the angle vertically opposite to 72 degrees.",
+     "dur": 2.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "a",
+        "b",
+        "c",
+        "d"
+       ]
+      },
+      {
+       "at": 0.5,
+       "do": "highlight",
+       "dur": 1,
+       "target": "pair"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      },
+      {
+       "at": 1,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": []
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "one",
+        "two"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "n1",
+       "to": 1
+      },
+      {
+       "at": 1.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "three",
+        "four"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1.5,
+       "target": [
+        "one",
+        "two",
+        "three",
+        "four"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "optA",
+        "optB",
+        "optC"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which choice is vertically opposite to the given angle?",
+    "options": [
+     "optA",
+     "optB",
+     "optC"
+    ],
+    "answer": "optA",
+    "src": "c7-maths-ch05-t01-i02"
+   }
+  },
+  "repairs": [
+   "clamp:rot",
+   "arrow:dangling",
+   "arrow:dangling",
+   "cue:target"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 29
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 4,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch05-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "v1",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        400,
+        90
+       ],
+       "to": [
+        400,
+        410
+       ]
+      },
+      {
+       "id": "v2",
+       "op": "line",
+       "startMs": 500,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        180,
+        250
+       ],
+       "to": [
+        620,
+        250
+       ]
+      },
+      {
+       "id": "l1",
+       "op": "label",
+       "startMs": 4700,
+       "endMs": 5200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        420,
+        145
+       ],
+       "text": "angle",
+       "to": [
+        415,
+        155
+       ]
+      },
+      {
+       "id": "l2",
+       "op": "text",
+       "startMs": 5200,
+       "endMs": 6132,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        465
+       ],
+       "text": "4 angles",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 4,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch05-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "lp",
+       "op": "label",
+       "startMs": 2100,
+       "endMs": 3100,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        500,
+        135
+       ],
+       "text": "linear pair",
+       "to": [
+        480,
+        170
+       ]
+      },
+      {
+       "id": "eq1",
+       "op": "numwork",
+       "startMs": 3000,
+       "endMs": 5000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        50
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "angle",
+         "+",
+         "angle",
+         "=",
+         "180°"
+        ]
+       ]
+      },
+      {
+       "id": "t1",
+       "op": "text",
+       "startMs": 7200,
+       "endMs": 8685,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        470
+       ],
+       "text": "straight line: 180°",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch05-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "al",
+       "op": "label",
+       "startMs": 900,
+       "endMs": 1700,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        535,
+        145
+       ],
+       "text": "across",
+       "to": [
+        500,
+        190
+       ]
+      },
+      {
+       "id": "ar",
+       "op": "arrow",
+       "startMs": 1700,
+       "endMs": 2500,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        520,
+        145
+       ],
+       "to": [
+        430,
+        220
+       ]
+      },
+      {
+       "id": "not",
+       "op": "text",
+       "startMs": 2600,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        465
+       ],
+       "text": "not above / below",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "c1",
+       "op": "circle",
+       "startMs": 3900,
+       "endMs": 4500,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        250
+       ],
+       "r": 9
+      },
+      {
+       "id": "ct",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5706,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        290
+       ],
+       "text": "meeting point",
+       "size": "s",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 6,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch05-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "eq2",
+       "op": "numwork",
+       "startMs": 1500,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        55
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "across",
+         "angle",
+         "=",
+         "across",
+         "angle"
+        ]
+       ]
+      },
+      {
+       "id": "lp2",
+       "op": "label",
+       "startMs": 4300,
+       "endMs": 5400,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        515,
+        330
+       ],
+       "text": "same neighbour",
+       "to": [
+        450,
+        290
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch05-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 9536,
+     "ops": [
+      {
+       "id": "g72",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        270,
+        145
+       ],
+       "text": "72°",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "opp72",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        530,
+        355
+       ],
+       "text": "72°",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "sub",
+       "op": "numwork",
+       "startMs": 2100,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        120,
+        55
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "180°",
+         "−",
+         "72°",
+         "=",
+         "108°"
+        ]
+       ]
+      },
+      {
+       "id": "n108a",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 5200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        530,
+        145
+       ],
+       "text": "108°",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "n108b",
+       "op": "text",
+       "startMs": 5200,
+       "endMs": 6100,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        270,
+        355
+       ],
+       "text": "108°",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "ar1",
+       "op": "arrow",
+       "startMs": 6200,
+       "endMs": 7000,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        310,
+        150
+       ],
+       "to": [
+        470,
+        330
+       ]
+      },
+      {
+       "id": "ar2",
+       "op": "arrow",
+       "startMs": 7000,
+       "endMs": 7800,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        490,
+        150
+       ],
+       "to": [
+        310,
+        330
+       ]
+      },
+      {
+       "id": "eq3",
+       "op": "numwork",
+       "startMs": 7900,
+       "endMs": 9536,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        205,
+        430
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "72°",
+         "+",
+         "108°",
+         "=",
+         "180°"
+        ]
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch05-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "f1",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        270,
+        145
+       ],
+       "text": "72°",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "f2",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        530,
+        145
+       ],
+       "text": "108°",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "f3",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        530,
+        355
+       ],
+       "text": "72°",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "f4",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 3000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        270,
+        355
+       ],
+       "text": "108°",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "sum",
+       "op": "numwork",
+       "startMs": 3300,
+       "endMs": 5200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        155,
+        430
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "72°",
+         "+",
+         "108°",
+         "+",
+         "72°",
+         "+",
+         "108°",
+         "=",
+         "360°"
+        ]
+       ]
+      },
+      {
+       "id": "ring",
+       "op": "circle",
+       "startMs": 5200,
+       "endMs": 6557,
+       "ink": "soft",
+       "weight": 1,
+       "c": [
+        400,
+        250
+       ],
+       "r": 175
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 2,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch05-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 4430,
+     "ops": [
+      {
+       "id": "across2",
+       "op": "arrow",
+       "startMs": 1100,
+       "endMs": 2200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        300,
+        150
+       ],
+       "to": [
+        500,
+        330
+       ]
+      },
+      {
+       "id": "ans",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        600,
+        330
+       ],
+       "text": "opposite",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "{\"kind\":\"parallel\",\"line\":[[2,1],[8,1]],\"through\":[4,4]}",
+   "prompt": "parallel"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "{\"kind\":\"perpendicular\",\"line\":[[2,1],[8,1]],\"through\":[9,4]}",
+   "prompt": "perpendicular"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "{\"kind\":\"angle\",\"deg\":65,\"tol\":3}",
+   "prompt": "angle"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "{\"kind\":\"angle\",\"deg\":115,\"tol\":3}",
+   "prompt": "angle"
+  },
+  {
+   "itemId": "r3:0",
+   "key": "{\"kind\":\"angle\",\"deg\":40,\"tol\":3}",
+   "prompt": "angle"
+  },
+  {
+   "itemId": "r3:1",
+   "key": "{\"kind\":\"angle\",\"deg\":68,\"tol\":3}",
+   "prompt": "angle"
+  },
+  {
+   "itemId": "r3:2",
+   "key": "{\"kind\":\"angle\",\"deg\":72,\"tol\":3}",
+   "prompt": "angle"
+  }
+ ],
+ "check": {
+  "issues": [
+   {
+    "where": "explainer",
+    "what": "Task prompt says 'Which choice is vertically opposite to the given angle?' and lists three options with subtext 'choice A', 'choice B', 'choice C'. But in the scene els, optA is 72°, optB is 108°, optC is 90°. The correct answer (vertically opposite to 72°) is 72°, which is optA. This matches the kit item i02, which asks for the vertically opposite angle, and the kit answer is 65° (or in this case 72°). However, the prompt reveals the answer by labeling optA's subtext as 'choice A' but does not give away the answer directly. This is acceptable. No issue.",
+    "severity": "low"
+   }
+  ],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

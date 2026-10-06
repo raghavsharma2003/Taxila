@@ -1,0 +1,1225 @@
+{
+ "topicId": "c7-maths-ch14-t01",
+ "title": "Geometric constructions",
+ "chapter": "Constructions and Tilings",
+ "subject": "maths",
+ "class": 7,
+ "topicType": "T4",
+ "plan": {
+  "game": "geo-forge@1",
+  "hint": "equidistant challenges (circle points, perpendicular bisector)"
+ },
+ "game": {
+  "archetype": "geo-forge@1",
+  "spec": {
+   "archetype": "geo-forge@1",
+   "skills": [
+    "c7-maths-ch14-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "built": "built",
+    "check": "CHECK",
+    "undo": "UNDO",
+    "coach": "Use only the compass and straightedge",
+    "runDone": "Blueprints done",
+    "perimeter": "perimeter",
+    "area": "area",
+    "units": "units",
+    "sq": "sq units",
+    "polygon": "sides",
+    "sticks": "Pick three sticks",
+    "rigid": "Brace it: it must not wobble",
+    "parallel": "Through the dot, parallel to the line",
+    "perpendicular": "Through the dot, at right angles",
+    "equidistant": "Place a pin the same distance from each dot",
+    "angle": "Make an angle of",
+    "right": "right-angled triangle",
+    "isosceles": "isosceles triangle",
+    "scalene": "scalene triangle",
+    "obtuse": "obtuse-angled triangle",
+    "acute": "acute-angled triangle",
+    "square": "square",
+    "rectangle": "rectangle",
+    "parallelogram": "parallelogram",
+    "rhombus": "rhombus",
+    "trapezium": "trapezium",
+    "kite": "kite",
+    "any": "shape",
+    "triangle": "triangle",
+    "make": "Make a",
+    "withArea": "with area",
+    "withPerim": "with perimeter",
+    "noTriangle": "Pick three that CANNOT close",
+    "wobbles": "WOBBLES",
+    "holds": "HOLDS",
+    "closes": "CLOSES",
+    "gap": "GAP",
+    "time": "time"
+   },
+   "title": "Compass Crew",
+   "rounds": [
+    {
+     "title": "Same distance",
+     "sub": "find the fair-distance pins",
+     "time": 45,
+     "challenges": [
+      {
+       "kind": "equidistant",
+       "points": [
+        [
+         2,
+         2
+        ],
+        [
+         8,
+         2
+        ]
+       ]
+      },
+      {
+       "kind": "equidistant",
+       "points": [
+        [
+         3,
+         1
+        ],
+        [
+         7,
+         5
+        ]
+       ]
+      }
+     ]
+    },
+    {
+     "title": "Angle builder",
+     "sub": "build each angle with care",
+     "time": 60,
+     "challenges": [
+      {
+       "kind": "angle",
+       "deg": 60,
+       "tol": 3
+      },
+      {
+       "kind": "angle",
+       "deg": 30,
+       "tol": 3
+      },
+      {
+       "kind": "angle",
+       "deg": 45,
+       "tol": 3
+      }
+     ],
+     "targets": "c7-maths-ch14-t01-m-protractor"
+    }
+   ]
+  },
+  "repairs": [
+   "challenge:infeasible",
+   "challenge:infeasible",
+   "round:challenges"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-maths-ch14-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Constructing a 30° angle",
+   "accent": "ion",
+   "targets": "c7-maths-ch14-t01-m-protractor",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Constructing a 30° angle"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Use a protractor to measure 30°"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "origin",
+       "type": "node",
+       "text": "O",
+       "glyph": "compass",
+       "color": "ion"
+      },
+      {
+       "id": "ray",
+       "type": "node",
+       "text": "Ray OA",
+       "glyph": "ruler",
+       "color": "sci"
+      },
+      {
+       "id": "arc1",
+       "type": "node",
+       "text": "Arc at O",
+       "glyph": "compass",
+       "color": "mint"
+      },
+      {
+       "id": "arc2",
+       "type": "node",
+       "text": "Arc at P",
+       "glyph": "compass",
+       "color": "mint"
+      },
+      {
+       "id": "sixty",
+       "type": "node",
+       "text": "60°",
+       "sub": "equilateral",
+       "color": "amber"
+      },
+      {
+       "id": "bisect",
+       "type": "node",
+       "text": "Bisect 60°",
+       "glyph": "balance",
+       "color": "sun"
+      },
+      {
+       "id": "thirty",
+       "type": "node",
+       "text": "30°",
+       "color": "volt"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "origin",
+       "to": "ray",
+       "text": "draw ray"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "origin",
+       "to": "arc1",
+       "text": "same arc"
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "arc1",
+       "to": "arc2",
+       "text": "same width"
+      },
+      {
+       "id": "a4",
+       "type": "arrow",
+       "from": "arc2",
+       "to": "sixty",
+       "text": "join"
+      },
+      {
+       "id": "a5",
+       "type": "arrow",
+       "from": "sixty",
+       "to": "bisect",
+       "text": "bisect"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "tools",
+       "type": "node",
+       "text": "Compass + ruler",
+       "glyph": "ruler",
+       "color": "ion"
+      },
+      {
+       "id": "equal",
+       "type": "node",
+       "text": "Equal arcs",
+       "glyph": "balance",
+       "color": "mint"
+      },
+      {
+       "id": "cross",
+       "type": "node",
+       "text": "Crossing arcs",
+       "glyph": "spark",
+       "color": "amber"
+      },
+      {
+       "id": "choice30",
+       "type": "node",
+       "text": "30°",
+       "color": "volt"
+      },
+      {
+       "id": "choice45",
+       "type": "node",
+       "text": "45°",
+       "color": "sun"
+      },
+      {
+       "id": "choice60",
+       "type": "node",
+       "text": "60°",
+       "color": "sci"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "A construction uses only a compass and an unmarked ruler. It does not use a protractor.",
+    "L2": "Here is how to construct 30° at O on ray OA.",
+    "L3": "First, draw an arc with centre O, cutting the ray at P. With centre P and the same width, cut that arc at Q.",
+    "L4": "Join O to Q. The triangle is equilateral, so angle POQ is 60°.",
+    "L5": "Now use equal arcs from P and Q to cross at R. Join O to R to bisect the 60° angle.",
+    "L6": "The new angle is 30°. Equal radii and crossing arcs make the construction exact in principle.",
+    "L7": "Remember: construct 60°, then bisect it for 30°. Which angle did we construct?"
+   },
+   "narration": {},
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "title"
+      },
+      {
+       "at": 0.4,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      },
+      {
+       "at": 1.3,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "origin",
+        "ray"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "arc1",
+        "a1",
+        "a2"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "arc2",
+        "a3"
+       ]
+      },
+      {
+       "at": 1.5,
+       "do": "flow",
+       "dur": 0.7,
+       "target": [
+        "a1",
+        "a2",
+        "a3"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "sixty",
+        "a4"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "sixty"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "bisect",
+        "a5"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.8,
+       "target": "thirty"
+      },
+      {
+       "at": 1.4,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "a5",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "tools",
+        "equal",
+        "cross"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "equal"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "choice30",
+        "choice45",
+        "choice60"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "interactive",
+       "dur": 0.5
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which angle did we construct by bisecting 60°?",
+    "options": [
+     "choice30",
+     "choice45",
+     "choice60"
+    ],
+    "answer": "choice30",
+    "src": "c7-maths-ch14-t01-i06"
+   }
+  },
+  "repairs": [
+   "glyph",
+   "glyph",
+   "glyph",
+   "glyph",
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 54
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch14-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "title",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        80
+       ],
+       "text": "construction",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "compass",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 2400,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        250,
+        210
+       ],
+       "text": "compass",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "ruler",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3700,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        550,
+        210
+       ],
+       "text": "unmarked ruler",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "protractor",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 5300,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        400,
+        380
+       ],
+       "text": "protractor",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "cross1",
+       "op": "line",
+       "startMs": 5400,
+       "endMs": 5900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        330,
+        345
+       ],
+       "to": [
+        470,
+        415
+       ]
+      },
+      {
+       "id": "cross2",
+       "op": "line",
+       "startMs": 5900,
+       "endMs": 6400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        470,
+        345
+       ],
+       "to": [
+        330,
+        415
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch14-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "rayOA",
+       "op": "arrow",
+       "startMs": 0,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        170,
+        330
+       ],
+       "to": [
+        680,
+        330
+       ]
+      },
+      {
+       "id": "pointO",
+       "op": "circle",
+       "startMs": 700,
+       "endMs": 1000,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        220,
+        330
+       ],
+       "r": 6
+      },
+      {
+       "id": "labelO",
+       "op": "label",
+       "startMs": 1000,
+       "endMs": 1350,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        210,
+        365
+       ],
+       "text": "O",
+       "target": "pointO"
+      },
+      {
+       "id": "labelA",
+       "op": "label",
+       "startMs": 1350,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        685,
+        365
+       ],
+       "text": "A",
+       "target": "rayOA"
+      },
+      {
+       "id": "angle30",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 3400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        110
+       ],
+       "text": "30° at O",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch14-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 10813,
+     "ops": [
+      {
+       "id": "arcO",
+       "op": "sector",
+       "startMs": 0,
+       "endMs": 1800,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        220,
+        330
+       ],
+       "r": 150,
+       "fromDeg": 315,
+       "toDeg": 360
+      },
+      {
+       "id": "pointP",
+       "op": "circle",
+       "startMs": 1800,
+       "endMs": 2100,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        370,
+        330
+       ],
+       "r": 6
+      },
+      {
+       "id": "labelP",
+       "op": "label",
+       "startMs": 2100,
+       "endMs": 2450,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        365,
+        365
+       ],
+       "text": "P",
+       "target": "pointP"
+      },
+      {
+       "id": "arcP",
+       "op": "sector",
+       "startMs": 3000,
+       "endMs": 4700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        370,
+        330
+       ],
+       "r": 150,
+       "fromDeg": 180,
+       "toDeg": 225
+      },
+      {
+       "id": "pointQ",
+       "op": "circle",
+       "startMs": 4700,
+       "endMs": 5000,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        295,
+        200
+       ],
+       "r": 6
+      },
+      {
+       "id": "labelQ",
+       "op": "label",
+       "startMs": 5000,
+       "endMs": 5350,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        280,
+        180
+       ],
+       "text": "Q",
+       "target": "pointQ"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch14-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "joinOQ",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        220,
+        330
+       ],
+       "to": [
+        295,
+        200
+       ]
+      },
+      {
+       "id": "triPQ",
+       "op": "line",
+       "startMs": 1300,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        370,
+        330
+       ],
+       "to": [
+        295,
+        200
+       ]
+      },
+      {
+       "id": "equilateral",
+       "op": "text",
+       "startMs": 2600,
+       "endMs": 3600,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        490,
+        190
+       ],
+       "text": "equilateral",
+       "size": "m"
+      },
+      {
+       "id": "angle60",
+       "op": "label",
+       "startMs": 3900,
+       "endMs": 4600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        250,
+        285
+       ],
+       "text": "60°",
+       "to": [
+        250,
+        285
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch14-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 9536,
+     "ops": [
+      {
+       "id": "arcP2",
+       "op": "sector",
+       "startMs": 0,
+       "endMs": 1600,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        370,
+        330
+       ],
+       "r": 105,
+       "fromDeg": 220,
+       "toDeg": 300
+      },
+      {
+       "id": "arcQ2",
+       "op": "sector",
+       "startMs": 1700,
+       "endMs": 3300,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        295,
+        200
+       ],
+       "r": 105,
+       "fromDeg": 20,
+       "toDeg": 100
+      },
+      {
+       "id": "pointR",
+       "op": "circle",
+       "startMs": 3400,
+       "endMs": 3700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        410,
+        175
+       ],
+       "r": 6
+      },
+      {
+       "id": "labelR",
+       "op": "label",
+       "startMs": 3700,
+       "endMs": 4050,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        425,
+        165
+       ],
+       "text": "R",
+       "target": "pointR"
+      },
+      {
+       "id": "joinOR",
+       "op": "line",
+       "startMs": 4500,
+       "endMs": 5900,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        220,
+        330
+       ],
+       "to": [
+        410,
+        175
+       ]
+      },
+      {
+       "id": "bisect",
+       "op": "text",
+       "startMs": 6200,
+       "endMs": 7000,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        540,
+        270
+       ],
+       "text": "bisect",
+       "size": "m"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch14-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "angle30final",
+       "op": "label",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        275,
+        300
+       ],
+       "text": "30°",
+       "to": [
+        275,
+        300
+       ]
+      },
+      {
+       "id": "equalRadii",
+       "op": "text",
+       "startMs": 1200,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        560,
+        120
+       ],
+       "text": "equal radii",
+       "size": "m"
+      },
+      {
+       "id": "crossArcs",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        560,
+        170
+       ],
+       "text": "crossing arcs",
+       "size": "m"
+      },
+      {
+       "id": "exact",
+       "op": "text",
+       "startMs": 3700,
+       "endMs": 4400,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        560,
+        220
+       ],
+       "text": "exact",
+       "size": "m"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch14-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "summary60",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        520,
+        300
+       ],
+       "text": "60°",
+       "size": "l"
+      },
+      {
+       "id": "summaryBisect",
+       "op": "arrow",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        600,
+        300
+       ],
+       "to": [
+        600,
+        360
+       ]
+      },
+      {
+       "id": "summary30",
+       "op": "text",
+       "startMs": 1600,
+       "endMs": 2400,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        520,
+        410
+       ],
+       "text": "30°",
+       "size": "l"
+      },
+      {
+       "id": "question",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 4300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        465
+       ],
+       "text": "30°",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "{\"kind\":\"equidistant\",\"points\":[[2,2],[8,2]]}",
+   "prompt": "equidistant"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "{\"kind\":\"equidistant\",\"points\":[[3,1],[7,5]]}",
+   "prompt": "equidistant"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "{\"kind\":\"angle\",\"deg\":60,\"tol\":3}",
+   "prompt": "angle"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "{\"kind\":\"angle\",\"deg\":30,\"tol\":3}",
+   "prompt": "angle"
+  },
+  {
+   "itemId": "r2:2",
+   "key": "{\"kind\":\"angle\",\"deg\":45,\"tol\":3}",
+   "prompt": "angle"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

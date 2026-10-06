@@ -1,0 +1,883 @@
+{
+ "id": "p1-fdb-r2-train-f9b",
+ "world": {
+  "herAct": true,
+  "childLevel": true
+ },
+ "date": "2026-10-06",
+ "runtimeHash": "401d0bbd06c7",
+ "split": "train",
+ "splitVersion": "taxilafdb-split/2026-10-04",
+ "streams": 96,
+ "arms": [
+  "stage-a"
+ ],
+ "lanes": [
+  "FAST",
+  "D4",
+  "MAI_HOME"
+ ],
+ "set": null,
+ "label": "SIMULATED (TaxilaFDB L1: TTS child-like voices, mixed echo/noise, reactive STT model). Not children, not real speech.",
+ "seconds": 4,
+ "nErrors": 0,
+ "errors": [],
+ "table": {
+  "stage-a@FAST": {
+   "streams": 96,
+   "scenarios": 24,
+   "M1_pauseTakeover": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M2_thinkingCutoff": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M2_thinkingCutoffAudible": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M2_turnCutoff": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M2_byClass": {},
+   "M1_byClass": {},
+   "M5_earlyInSpeech": {
+    "k": 1,
+    "n": 48,
+    "rate": 0.021,
+    "ci95": [
+     0,
+     0.063
+    ]
+   },
+   "M3_gapDecision": {
+    "n": 38,
+    "p50": 350,
+    "p90": 899,
+    "ci95p50": [
+     300,
+     390
+    ],
+    "ci95p90": [
+     456,
+     1180
+    ],
+    "mean": 436
+   },
+   "M3_gapAudible": {
+    "n": 38,
+    "p50": 670,
+    "p90": 3027,
+    "ci95p50": [
+     574,
+     809
+    ],
+    "ci95p90": [
+     810,
+     3231
+    ],
+    "mean": 1075
+   },
+   "M3_firstAudioPath": {
+    "warm_uptake": 31,
+    "cold": 7
+   },
+   "M3_gapEither": {
+    "n": 0,
+    "p50": null,
+    "p90": null,
+    "ci95p50": [
+     null,
+     null
+    ]
+   },
+   "M4_missedRespond": {
+    "k": 10,
+    "n": 48,
+    "rate": 0.208,
+    "ci95": [
+     0.063,
+     0.354
+    ]
+   },
+   "liveOverEnd": {
+    "k": 2,
+    "n": 48,
+    "rate": 0.042,
+    "ci95": [
+     0,
+     0.104
+    ]
+   },
+   "M6_nodsPerS": null,
+   "M6_nodMidWord": null,
+   "M6_closedAnswerNods": 0,
+   "M7_yieldLatency": {
+    "n": 0,
+    "p50": null,
+    "p90": null,
+    "ci95p50": [
+     null,
+     null
+    ]
+   },
+   "M7_yieldSuccess": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M8_keepTalkingStrict": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M8_keepTalkingLenient": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M9_falseYield": {
+    "k": 27,
+    "n": 48,
+    "rate": 0.563,
+    "ci95": [
+     0.313,
+     0.813
+    ]
+   },
+   "M9_falseTurnTaking": {
+    "k": 8,
+    "n": 48,
+    "rate": 0.167,
+    "ci95": [
+     0.021,
+     0.333
+    ]
+   },
+   "M10_cutInRecall": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M10_cutInRecallByReason": {},
+   "M10_cutInPrecision": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M10_outOfPolicy": 0,
+   "M10_driftInfeasibleStreams": 0,
+   "M11_verdictOnRepaired": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M11_repairCollision": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M12_holdViolation": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M13_detected": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M13_detectAfterSegEnd": {
+    "n": 0,
+    "p50": null,
+    "p90": null,
+    "ci95p50": [
+     null,
+     null
+    ]
+   },
+   "M13_nonSafetySpeechAfterDistress": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M13_safeguardOverChild": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M13_falseSafety": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M14_echoSelfTrigger": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M15_reactsPerS": 0.898,
+   "P1_stopLatency": {
+    "n": 0,
+    "of": 0,
+    "p50": null,
+    "p90": null,
+    "within200": 0
+   },
+   "P1_continuerHushed": {
+    "k": 0,
+    "n": 0
+   },
+   "P1_backgroundHushed": {
+    "k": 33,
+    "n": 48
+   }
+  },
+  "stage-a@D4": {
+   "streams": 96,
+   "scenarios": 24,
+   "M1_pauseTakeover": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M2_thinkingCutoff": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M2_thinkingCutoffAudible": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M2_turnCutoff": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M2_byClass": {},
+   "M1_byClass": {},
+   "M5_earlyInSpeech": {
+    "k": 0,
+    "n": 48,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "M3_gapDecision": {
+    "n": 35,
+    "p50": 1130,
+    "p90": 1452,
+    "ci95p50": [
+     995,
+     1240
+    ],
+    "ci95p90": [
+     1236,
+     1680
+    ],
+    "mean": 1144
+   },
+   "M3_gapAudible": {
+    "n": 35,
+    "p50": 1459,
+    "p90": 2577,
+    "ci95p50": [
+     1318,
+     1621
+    ],
+    "ci95p90": [
+     1574,
+     3518
+    ],
+    "mean": 1651
+   },
+   "M3_firstAudioPath": {
+    "warm_uptake": 31,
+    "cold": 2,
+    "draft": 2
+   },
+   "M3_gapEither": {
+    "n": 0,
+    "p50": null,
+    "p90": null,
+    "ci95p50": [
+     null,
+     null
+    ]
+   },
+   "M4_missedRespond": {
+    "k": 13,
+    "n": 48,
+    "rate": 0.271,
+    "ci95": [
+     0.083,
+     0.479
+    ]
+   },
+   "liveOverEnd": {
+    "k": 1,
+    "n": 48,
+    "rate": 0.021,
+    "ci95": [
+     0,
+     0.063
+    ]
+   },
+   "M6_nodsPerS": null,
+   "M6_nodMidWord": null,
+   "M6_closedAnswerNods": 0,
+   "M7_yieldLatency": {
+    "n": 0,
+    "p50": null,
+    "p90": null,
+    "ci95p50": [
+     null,
+     null
+    ]
+   },
+   "M7_yieldSuccess": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M8_keepTalkingStrict": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M8_keepTalkingLenient": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M9_falseYield": {
+    "k": 28,
+    "n": 48,
+    "rate": 0.583,
+    "ci95": [
+     0.333,
+     0.813
+    ]
+   },
+   "M9_falseTurnTaking": {
+    "k": 8,
+    "n": 48,
+    "rate": 0.167,
+    "ci95": [
+     0.021,
+     0.333
+    ]
+   },
+   "M10_cutInRecall": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M10_cutInRecallByReason": {},
+   "M10_cutInPrecision": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M10_outOfPolicy": 0,
+   "M10_driftInfeasibleStreams": 0,
+   "M11_verdictOnRepaired": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M11_repairCollision": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M12_holdViolation": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M13_detected": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M13_detectAfterSegEnd": {
+    "n": 0,
+    "p50": null,
+    "p90": null,
+    "ci95p50": [
+     null,
+     null
+    ]
+   },
+   "M13_nonSafetySpeechAfterDistress": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M13_safeguardOverChild": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M13_falseSafety": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M14_echoSelfTrigger": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M15_reactsPerS": 0.828,
+   "P1_stopLatency": {
+    "n": 0,
+    "of": 0,
+    "p50": null,
+    "p90": null,
+    "within200": 0
+   },
+   "P1_continuerHushed": {
+    "k": 0,
+    "n": 0
+   },
+   "P1_backgroundHushed": {
+    "k": 36,
+    "n": 48
+   }
+  },
+  "stage-a@MAI_HOME": {
+   "streams": 96,
+   "scenarios": 24,
+   "M1_pauseTakeover": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M2_thinkingCutoff": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M2_thinkingCutoffAudible": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M2_turnCutoff": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M2_byClass": {},
+   "M1_byClass": {},
+   "M5_earlyInSpeech": {
+    "k": 0,
+    "n": 48,
+    "rate": 0,
+    "ci95": [
+     0,
+     0
+    ]
+   },
+   "M3_gapDecision": {
+    "n": 38,
+    "p50": 335,
+    "p90": 1195,
+    "ci95p50": [
+     300,
+     450
+    ],
+    "ci95p90": [
+     450,
+     1870
+    ],
+    "mean": 518
+   },
+   "M3_gapAudible": {
+    "n": 38,
+    "p50": 628,
+    "p90": 2380,
+    "ci95p50": [
+     591,
+     725
+    ],
+    "ci95p90": [
+     729,
+     3019
+    ],
+    "mean": 986
+   },
+   "M3_firstAudioPath": {
+    "warm_uptake": 34,
+    "cold": 4
+   },
+   "M3_gapEither": {
+    "n": 0,
+    "p50": null,
+    "p90": null,
+    "ci95p50": [
+     null,
+     null
+    ]
+   },
+   "M4_missedRespond": {
+    "k": 10,
+    "n": 48,
+    "rate": 0.208,
+    "ci95": [
+     0.042,
+     0.396
+    ]
+   },
+   "liveOverEnd": {
+    "k": 1,
+    "n": 48,
+    "rate": 0.021,
+    "ci95": [
+     0,
+     0.063
+    ]
+   },
+   "M6_nodsPerS": null,
+   "M6_nodMidWord": null,
+   "M6_closedAnswerNods": 0,
+   "M7_yieldLatency": {
+    "n": 0,
+    "p50": null,
+    "p90": null,
+    "ci95p50": [
+     null,
+     null
+    ]
+   },
+   "M7_yieldSuccess": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M8_keepTalkingStrict": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M8_keepTalkingLenient": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M9_falseYield": {
+    "k": 26,
+    "n": 48,
+    "rate": 0.542,
+    "ci95": [
+     0.292,
+     0.792
+    ]
+   },
+   "M9_falseTurnTaking": {
+    "k": 8,
+    "n": 48,
+    "rate": 0.167,
+    "ci95": [
+     0.021,
+     0.333
+    ]
+   },
+   "M10_cutInRecall": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M10_cutInRecallByReason": {},
+   "M10_cutInPrecision": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M10_outOfPolicy": 0,
+   "M10_driftInfeasibleStreams": 0,
+   "M11_verdictOnRepaired": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M11_repairCollision": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M12_holdViolation": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M13_detected": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M13_detectAfterSegEnd": {
+    "n": 0,
+    "p50": null,
+    "p90": null,
+    "ci95p50": [
+     null,
+     null
+    ]
+   },
+   "M13_nonSafetySpeechAfterDistress": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M13_safeguardOverChild": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M13_falseSafety": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M14_echoSelfTrigger": {
+    "k": 0,
+    "n": 0,
+    "rate": null,
+    "ci95": [
+     null,
+     null
+    ]
+   },
+   "M15_reactsPerS": 0.87,
+   "P1_stopLatency": {
+    "n": 0,
+    "of": 0,
+    "p50": null,
+    "p90": null,
+    "within200": 0
+   },
+   "P1_continuerHushed": {
+    "k": 0,
+    "n": 0
+   },
+   "P1_backgroundHushed": {
+    "k": 35,
+    "n": 48
+   }
+  }
+ }
+}

@@ -4,7 +4,7 @@
 //
 // The field mapping below is the best reading of turn.js on 2026-10-05; W2-E (owner of turn.js) confirms it when P4 is
 // applied. Every read is defensive: a missing field yields a want of null (nothing new on stage), never a throw.
-import { hostFor, setOutcomeHook, setRetireHook } from "./seam-bridge.js";
+import { hostFor, setOutcomeHook, setRetireHook, setForgetHook, setVerdictHook, seamLesson } from "./seam-bridge.js";
 import { revealPoint } from "./adapters.js";
 import { requestFromText } from "./sources.js";
 
@@ -30,16 +30,18 @@ export function stagecraftPointFor(x) {
   const beat = x.prev?.beat?.type ?? "explain";
   if (beat !== v.beat) { v.shownBeat = []; v.beat = beat; }
   const kind = !x.moduleOnly ? requestFromText(x.childText ?? "") : null;
-  if (kind) v.request = { kind, seq: turnSeq };
+  // a board ask is answered by the whiteboard this turn (policy holds): it is never kept as a standing request
+  if (kind && kind !== "board_request") v.request = { kind, seq: turnSeq };
   const mis = x.misconception ?? null;
   if (mis?.state === "active" && v.revealedAt[mis.id] == null) v.revealedAt[mis.id] = turnSeq - 1;
   const band = { 1: "B1", 2: "B1", 3: "B2", 4: "B2", 5: "B3", 6: "B3", 7: "B4", 8: "B4", 9: "B4" }[x.child?.class_level] ?? "B3";
   const lang = { hi: "hi", en: "en" }[x.child?.language_pref] ?? "hinglish";
   const topicId = x.lesson.topic_id;
   const skillId = x.kit?.skills?.[0]?.id ?? `${topicId}-s1`;
-  return revealPoint({ lessonId: x.lesson.id, turnSeq, safety: !!x.safety, beat, beatChanged: v.shownBeat.length === 0, topicId, skillId, classLevel: x.child?.class_level,
+  const rest = stageRest(x.lesson.id, x.state, x.now ?? Date.now());
+  return revealPoint({ lessonId: x.lesson.id, turnSeq, safety: !!x.safety, beat, beatChanged: v.shownBeat.length === 0, topicId, skillId, classLevel: x.child?.class_level, ...rest,
     band, lang, kitHash: String(x.kit?.version ?? x.kit?.topicId ?? "kit"), misconception: mis ? { ...mis, revealedTurn: v.revealedAt[mis.id] ?? null } : null,
-    contrasted: v.contrasted, request: v.request, offerAccepted: null, board: { onStage: v.onStage, wrongCount: v.wrong, complete: v.right >= 3 }, signal: x.signal ?? {},
+    contrasted: v.contrasted, request: kind === "board_request" ? { kind, seq: turnSeq } : v.request, offerAccepted: null, board: { onStage: v.onStage, wrongCount: v.wrong, complete: v.right >= 3 }, signal: x.signal ?? {},
     lastPolicyRevealTurn: v.lastReveal, shownThisBeat: v.shownBeat, phase: "committed", at: x.now ?? Date.now() }, { catalog: host.cfg.catalog });
 }
 
@@ -64,3 +66,39 @@ export function noteBoardVerdict(lessonId, verdict) { const v = views.get(lesson
 
 setOutcomeHook(noteOutcome);
 setRetireHook(noteKernelRetired);
+setForgetHook(forgetLesson);
+setVerdictHook(noteBoardVerdict);
+
+// ───────────── ship5 p4-content: the stage's busy share, the time since the last visual, and flow ─────────────
+// Read from the seam's OWN stage (server/studio/seam.js lesson state: every piece, Wave 2 and Stagecraft, and every
+// whiteboard), sampled once per point. A piece counts as busy from its reveal until it retires (sampled at the next
+// point); a whiteboard counts for its drawing's length. Never reads the portfolio (lossless rule L1 holds: these are
+// facts of what the child saw, the same in every arm).
+const BOARD_BUSY_MS = 8000;
+/** @returns {{ busyShare?: number, teachingMs?: number, lastVisualAgoMs?: number, inFlow?: boolean }} */
+export function stageRest(lessonId, state, now = Date.now()) {
+  const L = seamLesson(lessonId);
+  if (!L) return {};
+  const v = kernelView(lessonId);
+  v.busy ??= new Map();               // intentId → [start, end|null]
+  let lastVisual = -Infinity;
+  for (const p of L.pieces?.values?.() ?? []) {
+    const start = Number(p.revealedAt);
+    if (!Number.isFinite(start)) continue;
+    lastVisual = Math.max(lastVisual, start);
+    const board = p.kind === "whiteboard";
+    const visible = p.state === "revealed" || p.state === "in_use";
+    const span = v.busy.get(p.intentId);
+    if (board) { const len = Number(p.artifact?.script?.durationMs) || BOARD_BUSY_MS; v.busy.set(p.intentId, [start, start + Math.min(len, 20_000)]); continue; }
+    if (!span) v.busy.set(p.intentId, [start, visible ? null : now]);
+    else if (span[1] == null && !visible) span[1] = now;
+  }
+  const startedAt = Number(L.startedAt) || now;
+  const teachingMs = Math.max(0, now - startedAt);
+  let busy = 0, open = false;
+  for (const [a, b] of v.busy.values()) { busy += Math.max(0, Math.min(b ?? now, now) - Math.max(a, startedAt)); if (b == null || b > now) open = true; }
+  const skill = state?.lastMove?.skillId;
+  const hist = skill ? state?.history?.[skill] ?? [] : [];
+  const inFlow = hist.length >= 2 && hist.slice(-2).every((o) => o === "correct");
+  return { busyShare: teachingMs > 0 ? Math.min(1, busy / teachingMs) : 0, teachingMs, lastVisualAgoMs: open ? 0 : Number.isFinite(lastVisual) ? now - lastVisual : teachingMs, inFlow };
+}

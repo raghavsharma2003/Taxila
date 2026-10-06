@@ -1,0 +1,1840 @@
+{
+ "topicId": "c4-maths-ch14-t02",
+ "title": "Simple bar graphs",
+ "chapter": "Data Handling",
+ "subject": "maths",
+ "class": 4,
+ "topicType": "T5",
+ "plan": {
+  "game": "pictograph@1",
+  "hint": "bars mode with a scale; claims round including a misleading axis"
+ },
+ "game": {
+  "archetype": "pictograph@1",
+  "spec": {
+   "archetype": "pictograph@1",
+   "skills": [
+    "c4-maths-ch14-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "right": "right",
+    "coach": "Read the scale and compare the bars",
+    "runDone": "Data done",
+    "key": "each symbol =",
+    "half": "½",
+    "check": "CHECK",
+    "trueW": "TRUE",
+    "falseW": "FALSE",
+    "total": "Total"
+   },
+   "title": "Data Desk",
+   "rounds": [
+    {
+     "mode": "bars",
+     "title": "School canteen",
+     "sub": "drag each bar to its value",
+     "cats": [
+      {
+       "label": "Samosa",
+       "glyph": "plate",
+       "count": 10
+      },
+      {
+       "label": "Idli",
+       "glyph": "plate",
+       "count": 20
+      },
+      {
+       "label": "Poha",
+       "glyph": "plate",
+       "count": 15
+      },
+      {
+       "label": "Dosa",
+       "glyph": "plate",
+       "count": 25
+      }
+     ],
+     "scale": 5,
+     "axisStart": 0,
+     "claims": [],
+     "seed": 14,
+     "speed": 1,
+     "targets": "c4-maths-ch14-t02-m-count-squares"
+    },
+    {
+     "mode": "picto",
+     "title": "Fruit baskets",
+     "sub": "draw rows using the key",
+     "cats": [
+      {
+       "label": "Mango",
+       "glyph": "apple",
+       "count": 10
+      },
+      {
+       "label": "Guava",
+       "glyph": "apple",
+       "count": 15
+      },
+      {
+       "label": "Banana",
+       "glyph": "apple",
+       "count": 20
+      }
+     ],
+     "scale": 5,
+     "axisStart": 0,
+     "claims": [],
+     "seed": 27,
+     "speed": 1
+    },
+    {
+     "mode": "claims",
+     "title": "Check the chart",
+     "sub": "read the scale before judging",
+     "cats": [
+      {
+       "label": "Asha",
+       "glyph": "person",
+       "count": 12
+      },
+      {
+       "label": "Bilal",
+       "glyph": "person",
+       "count": 8
+      },
+      {
+       "label": "Chitra",
+       "glyph": "person",
+       "count": 15
+      },
+      {
+       "label": "Dev",
+       "glyph": "person",
+       "count": 5
+      }
+     ],
+     "scale": 5,
+     "axisStart": 5,
+     "claims": [
+      {
+       "kind": "more",
+       "a": 2,
+       "b": 1
+      },
+      {
+       "kind": "diff",
+       "a": 0,
+       "b": 3,
+       "value": 7
+      },
+      {
+       "kind": "total",
+       "a": 0,
+       "b": 0,
+       "value": 40
+      },
+      {
+       "kind": "twice",
+       "a": 2,
+       "b": 1
+      }
+     ],
+     "seed": 39,
+     "speed": 1,
+     "targets": "c4-maths-ch14-t02-m-between-marks"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 2,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c4-maths-ch14-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Right",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "BUSTED",
+    "order": "Tap them in order"
+   },
+   "title": "Read a bar graph",
+   "accent": "ion",
+   "targets": "c4-maths-ch14-t02-m-width-as-value",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Read a bar graph"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "A wider bar means more"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "column",
+     "els": [
+      {
+       "id": "scale",
+       "type": "axis",
+       "min": 0,
+       "max": 40,
+       "step": 5,
+       "unit": "votes",
+       "scale": "linear",
+       "y": 500
+      },
+      {
+       "id": "m0",
+       "type": "mark",
+       "axis": "scale",
+       "value": 0,
+       "text": "0",
+       "color": "ion"
+      },
+      {
+       "id": "m5",
+       "type": "mark",
+       "axis": "scale",
+       "value": 5,
+       "text": "5",
+       "color": "ion"
+      },
+      {
+       "id": "m10",
+       "type": "mark",
+       "axis": "scale",
+       "value": 10,
+       "text": "10",
+       "color": "ion"
+      },
+      {
+       "id": "m15",
+       "type": "mark",
+       "axis": "scale",
+       "value": 15,
+       "text": "15",
+       "color": "ion"
+      },
+      {
+       "id": "m20",
+       "type": "mark",
+       "axis": "scale",
+       "value": 20,
+       "text": "20",
+       "color": "ion"
+      },
+      {
+       "id": "m25",
+       "type": "mark",
+       "axis": "scale",
+       "value": 25,
+       "text": "25",
+       "color": "ion"
+      },
+      {
+       "id": "bar25",
+       "type": "bar",
+       "parts": 8,
+       "shaded": 5,
+       "x": 180,
+       "y": 300,
+       "w": 420,
+       "text": "25 votes"
+      },
+      {
+       "id": "height",
+       "type": "label",
+       "text": "height gives value",
+       "x": 620,
+       "y": 300,
+       "color": "mint"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "mon",
+       "type": "node",
+       "text": "Monday",
+       "sub": "25 kites",
+       "color": "ion"
+      },
+      {
+       "id": "tue",
+       "type": "node",
+       "text": "Tuesday",
+       "sub": "40 kites",
+       "color": "amber"
+      },
+      {
+       "id": "more",
+       "type": "node",
+       "text": "15 more",
+       "sub": "40 − 25",
+       "glyph": "ruler",
+       "color": "mint"
+      },
+      {
+       "id": "compare1",
+       "type": "arrow",
+       "from": "mon",
+       "to": "more",
+       "text": "compare"
+      },
+      {
+       "id": "compare2",
+       "type": "arrow",
+       "from": "tue",
+       "to": "more",
+       "text": "subtract"
+      },
+      {
+       "id": "bars",
+       "type": "bars",
+       "values": [
+        25,
+        40
+       ],
+       "labels": [
+        "Mon",
+        "Tue"
+       ],
+       "unit": "kites"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "row",
+     "els": [
+      {
+       "id": "asha",
+       "type": "node",
+       "text": "Asha",
+       "sub": "12 votes",
+       "glyph": "person",
+       "color": "ion"
+      },
+      {
+       "id": "bilal",
+       "type": "node",
+       "text": "Bilal",
+       "sub": "8 votes",
+       "glyph": "person",
+       "color": "amber"
+      },
+      {
+       "id": "choice",
+       "type": "label",
+       "text": "Tap the taller value",
+       "x": 400,
+       "y": 300,
+       "color": "mint"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "A bar graph shows numbers with bars. Read the scale before reading a bar.",
+    "L2": "Here is a myth: a wider bar means more. Not true—the height gives the value, while width does not matter.",
+    "L3": "This scale goes up in fives. So each step is 5, not 1.",
+    "L4": "A bar reaching 25 shows 25. If it stops halfway between two marks, read the number halfway between them.",
+    "L5": "To compare two bars, read both values first. Then subtract the smaller from the bigger.",
+    "L6": "In the kite example, Tuesday has 40 and Monday has 25. Forty minus twenty-five is 15, so Tuesday has 15 more.",
+    "L7": "Now check your reading. Which bar shows the larger number: Asha's 12 or Bilal's 8?"
+   },
+   "narration": {
+    "L1": {
+     "text": "A bar graph shows numbers with bars. Read the scale before reading a bar.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "Here is a myth: a wider bar means more. Not true—the height gives the value, while width does not matter.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "This scale goes up in fives. So each step is 5, not 1.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "A bar reaching 25 shows 25. If it stops halfway between two marks, read the number halfway between them.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "To compare two bars, read both values first. Then subtract the smaller from the bigger.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "In the kite example, Tuesday has 40 and Monday has 25. Forty minus twenty-five is 15, so Tuesday has 15 more.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Now check your reading. Which bar shows the larger number: Asha's 12 or Bilal's 8?",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      },
+      {
+       "at": 1,
+       "do": "focus",
+       "dur": 1,
+       "target": "title"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      },
+      {
+       "at": 2,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "scale"
+      },
+      {
+       "at": 0.6,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "m0",
+        "m5",
+        "m10",
+        "m15",
+        "m20",
+        "m25"
+       ]
+      },
+      {
+       "at": 2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "scale"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "bar25"
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.6,
+       "target": "height"
+      },
+      {
+       "at": 2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "bar25"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "mon",
+        "tue",
+        "bars"
+       ]
+      },
+      {
+       "at": 1.2,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "compare1",
+        "compare2"
+       ]
+      },
+      {
+       "at": 2,
+       "do": "flow",
+       "dur": 0.8,
+       "target": [
+        "compare1",
+        "compare2"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "tue"
+      },
+      {
+       "at": 1.2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "more"
+      },
+      {
+       "at": 2.5,
+       "do": "count",
+       "dur": 1,
+       "target": "more",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "asha",
+        "bilal",
+        "choice"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "focus",
+       "dur": 1,
+       "target": "asha"
+      },
+      {
+       "at": "end",
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which bar shows the larger number?",
+    "options": [
+     "asha",
+     "bilal"
+    ],
+    "answer": "asha",
+    "src": "c4-maths-ch14-t02-i02"
+   }
+  },
+  "repairs": [
+   "glyph",
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 42
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch14-t02-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "axis",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        100,
+        420
+       ],
+       "to": [
+        100,
+        90
+       ]
+      },
+      {
+       "id": "base",
+       "op": "line",
+       "startMs": 500,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        100,
+        420
+       ],
+       "to": [
+        700,
+        420
+       ]
+      },
+      {
+       "id": "bar1",
+       "op": "rect",
+       "startMs": 1200,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        180,
+        300
+       ],
+       "w": 70,
+       "h": 120,
+       "fill": "soft"
+      },
+      {
+       "id": "bar2",
+       "op": "rect",
+       "startMs": 1800,
+       "endMs": 2800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        300,
+        220
+       ],
+       "w": 70,
+       "h": 200,
+       "fill": "soft"
+      },
+      {
+       "id": "bar3",
+       "op": "rect",
+       "startMs": 2400,
+       "endMs": 3400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        420,
+        150
+       ],
+       "w": 70,
+       "h": 270,
+       "fill": "soft"
+      },
+      {
+       "id": "scale",
+       "op": "label",
+       "startMs": 3500,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        55,
+        100
+       ],
+       "text": "scale",
+       "to": [
+        100,
+        100
+       ]
+      },
+      {
+       "id": "bars",
+       "op": "label",
+       "startMs": 4100,
+       "endMs": 4700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        650,
+        455
+       ],
+       "text": "bars",
+       "to": [
+        610,
+        420
+       ]
+      },
+      {
+       "id": "read",
+       "op": "arrow",
+       "startMs": 4800,
+       "endMs": 5700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        730,
+        110
+       ],
+       "to": [
+        730,
+        390
+       ]
+      },
+      {
+       "id": "value",
+       "op": "label",
+       "startMs": 5700,
+       "endMs": 6400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        735,
+        250
+       ],
+       "text": "numbers",
+       "to": [
+        700,
+        250
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch14-t02-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 9111,
+     "ops": [
+      {
+       "id": "wide",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 1200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        130,
+        330
+       ],
+       "w": 220,
+       "h": 90,
+       "fill": "soft"
+      },
+      {
+       "id": "narrow",
+       "op": "rect",
+       "startMs": 1000,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        450,
+        180
+       ],
+       "w": 70,
+       "h": 240,
+       "fill": "soft"
+      },
+      {
+       "id": "myth",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 3000,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        240,
+        80
+       ],
+       "text": "myth",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "wrong",
+       "op": "line",
+       "startMs": 3000,
+       "endMs": 3500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        205,
+        305
+       ],
+       "to": [
+        275,
+        395
+       ]
+      },
+      {
+       "id": "wrong2",
+       "op": "line",
+       "startMs": 3300,
+       "endMs": 3800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        275,
+        305
+       ],
+       "to": [
+        205,
+        395
+       ]
+      },
+      {
+       "id": "height",
+       "op": "label",
+       "startMs": 4000,
+       "endMs": 4700,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        535,
+        145
+       ],
+       "text": "height",
+       "to": [
+        520,
+        185
+       ]
+      },
+      {
+       "id": "width",
+       "op": "label",
+       "startMs": 4700,
+       "endMs": 5400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        240,
+        450
+       ],
+       "text": "width",
+       "to": [
+        240,
+        420
+       ]
+      },
+      {
+       "id": "doesnot",
+       "op": "text",
+       "startMs": 5500,
+       "endMs": 6500,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        390,
+        80
+       ],
+       "text": "does not matter",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "heightmark",
+       "op": "arrow",
+       "startMs": 6700,
+       "endMs": 7600,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        520,
+        390
+       ],
+       "to": [
+        520,
+        190
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch14-t02-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "axis3",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        130,
+        420
+       ],
+       "to": [
+        130,
+        90
+       ]
+      },
+      {
+       "id": "step1",
+       "op": "line",
+       "startMs": 500,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 1,
+       "from": [
+        120,
+        360
+       ],
+       "to": [
+        140,
+        360
+       ]
+      },
+      {
+       "id": "step2",
+       "op": "line",
+       "startMs": 800,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 1,
+       "from": [
+        120,
+        300
+       ],
+       "to": [
+        140,
+        300
+       ]
+      },
+      {
+       "id": "step3",
+       "op": "line",
+       "startMs": 1100,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 1,
+       "from": [
+        120,
+        240
+       ],
+       "to": [
+        140,
+        240
+       ]
+      },
+      {
+       "id": "step4",
+       "op": "line",
+       "startMs": 1400,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 1,
+       "from": [
+        120,
+        180
+       ],
+       "to": [
+        140,
+        180
+       ]
+      },
+      {
+       "id": "step5",
+       "op": "line",
+       "startMs": 1700,
+       "endMs": 2000,
+       "ink": "chalk",
+       "weight": 1,
+       "from": [
+        120,
+        120
+       ],
+       "to": [
+        140,
+        120
+       ]
+      },
+      {
+       "id": "five",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 2800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        180,
+        100
+       ],
+       "text": "5",
+       "size": "l"
+      },
+      {
+       "id": "scale5",
+       "op": "label",
+       "startMs": 2800,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        210,
+        150
+       ],
+       "text": "scale",
+       "to": [
+        135,
+        180
+       ]
+      },
+      {
+       "id": "not1",
+       "op": "text",
+       "startMs": 3800,
+       "endMs": 4500,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        390,
+        100
+       ],
+       "text": "not 1",
+       "size": "l"
+      },
+      {
+       "id": "arrow5",
+       "op": "arrow",
+       "startMs": 4600,
+       "endMs": 5600,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        250,
+        330
+       ],
+       "to": [
+        250,
+        170
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch14-t02-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "bar25",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 1200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        170,
+        190
+       ],
+       "w": 90,
+       "h": 230,
+       "fill": "soft"
+      },
+      {
+       "id": "mark25",
+       "op": "line",
+       "startMs": 1000,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 1,
+       "from": [
+        145,
+        190
+       ],
+       "to": [
+        285,
+        190
+       ]
+      },
+      {
+       "id": "num25",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 2000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        300,
+        195
+       ],
+       "text": "25",
+       "size": "l"
+      },
+      {
+       "id": "barhalf",
+       "op": "rect",
+       "startMs": 2300,
+       "endMs": 3400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        430,
+        245
+       ],
+       "w": 90,
+       "h": 175,
+       "fill": "soft"
+      },
+      {
+       "id": "marka",
+       "op": "line",
+       "startMs": 3200,
+       "endMs": 3600,
+       "ink": "chalk",
+       "weight": 1,
+       "from": [
+        405,
+        245
+       ],
+       "to": [
+        545,
+        245
+       ]
+      },
+      {
+       "id": "markb",
+       "op": "line",
+       "startMs": 3500,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 1,
+       "from": [
+        405,
+        190
+       ],
+       "to": [
+        545,
+        190
+       ]
+      },
+      {
+       "id": "half",
+       "op": "label",
+       "startMs": 4000,
+       "endMs": 4800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        565,
+        225
+       ],
+       "text": "halfway",
+       "to": [
+        520,
+        218
+       ]
+      },
+      {
+       "id": "between",
+       "op": "arrow",
+       "startMs": 4800,
+       "endMs": 5600,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        520,
+        240
+       ],
+       "to": [
+        520,
+        195
+       ]
+      },
+      {
+       "id": "readhalf",
+       "op": "text",
+       "startMs": 5800,
+       "endMs": 6800,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        100
+       ],
+       "text": "halfway between",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch14-t02-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "barA",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 1100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        170,
+        210
+       ],
+       "w": 90,
+       "h": 210,
+       "fill": "soft"
+      },
+      {
+       "id": "barB",
+       "op": "rect",
+       "startMs": 900,
+       "endMs": 2000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        430,
+        290
+       ],
+       "w": 90,
+       "h": 130,
+       "fill": "soft"
+      },
+      {
+       "id": "readA",
+       "op": "arrow",
+       "startMs": 2200,
+       "endMs": 2800,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        215,
+        190
+       ],
+       "to": [
+        215,
+        215
+       ]
+      },
+      {
+       "id": "readB",
+       "op": "arrow",
+       "startMs": 2800,
+       "endMs": 3400,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        475,
+        270
+       ],
+       "to": [
+        475,
+        295
+       ]
+      },
+      {
+       "id": "both",
+       "op": "text",
+       "startMs": 3400,
+       "endMs": 4200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        330,
+        90
+       ],
+       "text": "both values",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "minus",
+       "op": "numwork",
+       "startMs": 4300,
+       "endMs": 5400,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        250,
+        350
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "bigger",
+         "−",
+         "smalle"
+        ]
+       ]
+      },
+      {
+       "id": "compare",
+       "op": "label",
+       "startMs": 5500,
+       "endMs": 6200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        300,
+        250
+       ],
+       "text": "compare",
+       "to": [
+        330,
+        230
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch14-t02-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 9536,
+     "ops": [
+      {
+       "id": "monday",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 1100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        160,
+        250
+       ],
+       "w": 90,
+       "h": 170,
+       "fill": "soft"
+      },
+      {
+       "id": "tuesday",
+       "op": "rect",
+       "startMs": 900,
+       "endMs": 2100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        420,
+        145
+       ],
+       "w": 90,
+       "h": 275,
+       "fill": "soft"
+      },
+      {
+       "id": "monlabel",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        205,
+        450
+       ],
+       "text": "Monday",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "tuelabel",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        465,
+        450
+       ],
+       "text": "Tuesday",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "mon25",
+       "op": "label",
+       "startMs": 2900,
+       "endMs": 3500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        270,
+        255
+       ],
+       "text": "25",
+       "to": [
+        250,
+        255
+       ]
+      },
+      {
+       "id": "tue40",
+       "op": "label",
+       "startMs": 3300,
+       "endMs": 3900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        530,
+        150
+       ],
+       "text": "40",
+       "to": [
+        510,
+        150
+       ]
+      },
+      {
+       "id": "equation",
+       "op": "numwork",
+       "startMs": 4300,
+       "endMs": 5700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        220,
+        80
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "40",
+         "−",
+         "25",
+         "=",
+         "15"
+        ]
+       ]
+      },
+      {
+       "id": "more",
+       "op": "text",
+       "startMs": 6000,
+       "endMs": 6900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        480
+       ],
+       "text": "15 more",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "kites",
+       "op": "text",
+       "startMs": 7100,
+       "endMs": 7700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        115
+       ],
+       "text": "kites",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch14-t02-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "asha",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 1100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        170,
+        180
+       ],
+       "w": 80,
+       "h": 240,
+       "fill": "soft"
+      },
+      {
+       "id": "bilal",
+       "op": "rect",
+       "startMs": 900,
+       "endMs": 2000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        450,
+        260
+       ],
+       "w": 80,
+       "h": 160,
+       "fill": "soft"
+      },
+      {
+       "id": "ashaLabel",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        210,
+        450
+       ],
+       "text": "Asha",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "bilalLabel",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        490,
+        450
+       ],
+       "text": "Bilal",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "asha12",
+       "op": "label",
+       "startMs": 2900,
+       "endMs": 3500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        275,
+        185
+       ],
+       "text": "12",
+       "to": [
+        250,
+        185
+       ]
+      },
+      {
+       "id": "bilal8",
+       "op": "label",
+       "startMs": 3300,
+       "endMs": 3800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        555,
+        265
+       ],
+       "text": "8",
+       "to": [
+        530,
+        265
+       ]
+      },
+      {
+       "id": "larger",
+       "op": "arrow",
+       "startMs": 4100,
+       "endMs": 5000,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        300,
+        160
+       ],
+       "to": [
+        210,
+        185
+       ]
+      },
+      {
+       "id": "question",
+       "op": "text",
+       "startMs": 5100,
+       "endMs": 6000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        90
+       ],
+       "text": "larger number",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "10",
+   "prompt": "bars: Samosa"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "20",
+   "prompt": "bars: Idli"
+  },
+  {
+   "itemId": "r1:2",
+   "key": "15",
+   "prompt": "bars: Poha"
+  },
+  {
+   "itemId": "r1:3",
+   "key": "25",
+   "prompt": "bars: Dosa"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "2 symbols",
+   "prompt": "picto: Mango"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "3 symbols",
+   "prompt": "picto: Guava"
+  },
+  {
+   "itemId": "r2:2",
+   "key": "4 symbols",
+   "prompt": "picto: Banana"
+  },
+  {
+   "itemId": "r3:0",
+   "key": "true",
+   "prompt": "Chitra > Bilal"
+  },
+  {
+   "itemId": "r3:1",
+   "key": "true",
+   "prompt": "Asha − Dev = 7"
+  },
+  {
+   "itemId": "r3:2",
+   "key": "true",
+   "prompt": "Total = 40"
+  },
+  {
+   "itemId": "r3:3",
+   "key": "false",
+   "prompt": "Chitra = 2 × Bilal"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ },
+ "firstCheck": {
+  "issues": [
+   {
+    "where": "game round 3 (Check the chart)",
+    "what": "Round names kit item src (Asha, Bilal, Chitra, Dev) and uses the same votes (12,8,15,5) but claims 'Chitra is twice Bilal' – that is 2×8=16, not 15, so the claim is false. The kit item does not state this relationship; the round introduces a factually incorrect comparison.",
+    "severity": "high"
+   },
+   {
+    "where": "explainer scene s3 and L6",
+    "what": "The worked example and L6 refer to 'kites' and Monday 25, Tuesday 40, but the kit's worked example uses the same numbers and also compares them. The explainer's bar heights, labels 'Mon' and 'Tue' and the calculation 40−25=15 exactly match the kit's worked example. Since the kit is a verified source, repeating its example is not a problem. No issue here.",
+    "severity": "low"
+   }
+  ],
+  "verdict": "fail",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

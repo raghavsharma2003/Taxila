@@ -1,0 +1,1664 @@
+{
+ "topicId": "c5-maths-ch14-t02",
+ "title": "Reading distances on a map",
+ "chapter": "Maps and Locations",
+ "subject": "maths",
+ "class": 5,
+ "topicType": "T4",
+ "plan": {
+  "game": "map-route@1",
+  "hint": "scale mode: distances between places with a km-per-square scale (and one thread round on a winding road)"
+ },
+ "game": {
+  "archetype": "map-route@1",
+  "spec": {
+   "archetype": "map-route@1",
+   "skills": [
+    "c5-maths-ch14-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "thread": "Drag the thread along the road from A to B",
+    "round": "Round",
+    "done": "distances",
+    "go": "FLY",
+    "undo": "UNDO",
+    "coach": "Measure the map, then use the scale",
+    "runDone": "Map room closed",
+    "fwd": "forward",
+    "left": "left",
+    "right": "right",
+    "km": "km",
+    "scale": "1 square =",
+    "measure": "Drag the tape between the two places, then set the distance",
+    "lat": "lat",
+    "lon": "long",
+    "drop": "Tap where the pin goes",
+    "fly": "Fly to",
+    "set": "SET",
+    "N": "N",
+    "S": "S",
+    "E": "E",
+    "W": "W",
+    "blocked": "BLOCKED",
+    "arrived": "ARRIVED"
+   },
+   "title": "Map Room",
+   "rounds": [
+    {
+     "mode": "scale",
+     "title": "Measure the map",
+     "sub": "use the scale to find the real distance",
+     "w": 8,
+     "h": 6,
+     "places": [
+      {
+       "at": [
+        1,
+        1
+       ],
+       "label": "School",
+       "glyph": "school"
+      },
+      {
+       "at": [
+        5,
+        3
+       ],
+       "label": "Market",
+       "glyph": "shop"
+      }
+     ],
+     "from": 0,
+     "to": 1,
+     "kmPerSquare": 0.5,
+     "tol": 0.1
+    },
+    {
+     "mode": "thread",
+     "title": "Map",
+     "sub": "lay the thread along the whole road",
+     "w": 8,
+     "h": 6,
+     "curve": [
+      [
+       1,
+       1
+      ],
+      [
+       2,
+       1
+      ],
+      [
+       2,
+       2
+      ],
+      [
+       3,
+       2
+      ],
+      [
+       3,
+       3
+      ],
+      [
+       4,
+       3
+      ],
+      [
+       5,
+       3
+      ]
+     ],
+     "kmPerSquare": 0.5,
+     "tolPct": 8,
+     "targets": "c5-maths-ch14-t02-m-straight-line-route"
+    }
+   ]
+  },
+  "repairs": [
+   "string:round.title"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c5-maths-ch14-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Correct",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "BUSTED",
+    "order": "Tap in order"
+   },
+   "title": "Reading map distances",
+   "accent": "mint",
+   "targets": "c5-maths-ch14-t02-m-add-scale",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "row",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Reading map distances"
+      },
+      {
+       "id": "map",
+       "type": "node",
+       "text": "Map",
+       "sub": "small drawing",
+       "glyph": "map",
+       "color": "mint"
+      },
+      {
+       "id": "place",
+       "type": "node",
+       "text": "Real place",
+       "sub": "big distance",
+       "glyph": "school",
+       "color": "ion"
+      },
+      {
+       "id": "link",
+       "type": "arrow",
+       "from": "map",
+       "to": "place",
+       "text": "scale"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "split",
+     "els": [
+      {
+       "id": "scale",
+       "type": "label",
+       "text": "1 cm = 10 m",
+       "x": 120,
+       "y": 280,
+       "color": "amber"
+      },
+      {
+       "id": "length",
+       "type": "label",
+       "text": "6 cm on map",
+       "x": 120,
+       "y": 350,
+       "color": "mint"
+      },
+      {
+       "id": "real",
+       "type": "label",
+       "text": "60 m in real life",
+       "x": 600,
+       "y": 350,
+       "color": "ion"
+      },
+      {
+       "id": "multiply",
+       "type": "arrow",
+       "from": "length",
+       "to": "real",
+       "text": "multiply"
+      },
+      {
+       "id": "bar",
+       "type": "bar",
+       "parts": 6,
+       "shaded": 6,
+       "x": 120,
+       "y": 420,
+       "w": 600,
+       "text": "6 cm"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "column",
+     "els": [
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Add 5 cm + 10 m = 15 m",
+       "x": 100,
+       "y": 220
+      },
+      {
+       "id": "correct",
+       "type": "node",
+       "text": "5 × 10 = 50 m",
+       "sub": "multiply",
+       "glyph": "ruler",
+       "color": "sun"
+      },
+      {
+       "id": "wrong",
+       "type": "node",
+       "text": "15 m",
+       "sub": "not correct",
+       "glyph": "question",
+       "color": "volt"
+      },
+      {
+       "id": "bust",
+       "type": "arrow",
+       "from": "wrong",
+       "to": "correct",
+       "text": "busted"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "row",
+     "els": [
+      {
+       "id": "route",
+       "type": "node",
+       "text": "Bending road",
+       "sub": "measure route",
+       "glyph": "road",
+       "color": "mint"
+      },
+      {
+       "id": "straight",
+       "type": "node",
+       "text": "Straight line",
+       "sub": "shorter",
+       "glyph": "compass",
+       "color": "amber"
+      },
+      {
+       "id": "routeArrow",
+       "type": "arrow",
+       "from": "route",
+       "to": "straight",
+       "text": "compare"
+      }
+     ]
+    },
+    {
+     "id": "s5",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "question",
+       "type": "title",
+       "text": "Your turn"
+      },
+      {
+       "id": "opt20",
+       "type": "label",
+       "text": "20 m",
+       "x": 120,
+       "y": 300,
+       "color": "ion"
+      },
+      {
+       "id": "opt2",
+       "type": "label",
+       "text": "2 m",
+       "x": 350,
+       "y": 300,
+       "color": "volt"
+      },
+      {
+       "id": "opt12",
+       "type": "label",
+       "text": "12 m",
+       "x": 580,
+       "y": 300,
+       "color": "amber"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "A map is a small drawing of a much bigger place.",
+    "L2": "The scale tells us how much real distance one centimetre stands for.",
+    "L3": "To find real distance, multiply the map length by the scale.",
+    "L4": "For example, 6 centimetres times 10 metres gives 60 metres.",
+    "L5": "The answer is a real distance in metres or kilometres, not centimetres.",
+    "L6": "Here is a common mistake: adding the map length and the scale.",
+    "L7": "That is wrong. Five centimetres times 10 metres is 50 metres, not 15 metres.",
+    "L8": "For a bending road, measure along the road because it is longer than a straight line.",
+    "L9": "Now use the scale to answer the question."
+   },
+   "narration": {
+    "L1": {
+     "text": "A map is a small drawing of a much bigger place.",
+     "dur": 2,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "The scale tells us how much real distance one centimetre stands for.",
+     "dur": 2.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "To find real distance, multiply the map length by the scale.",
+     "dur": 2.2,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "For example, 6 centimetres times 10 metres gives 60 metres.",
+     "dur": 2.2,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "The answer is a real distance in metres or kilometres, not centimetres.",
+     "dur": 2.3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Here is a common mistake: adding the map length and the scale.",
+     "dur": 2.2,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "That is wrong. Five centimetres times 10 metres is 50 metres, not 15 metres.",
+     "dur": 2.8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "For a bending road, measure along the road because it is longer than a straight line.",
+     "dur": 2.8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L9": {
+     "text": "Now use the scale to answer the question.",
+     "dur": 1.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.3,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "title"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "map",
+        "place",
+        "link"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "scale"
+      },
+      {
+       "at": 0.5,
+       "do": "highlight",
+       "dur": 1,
+       "target": "scale"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "length",
+        "real",
+        "multiply"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "multiply",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "bar"
+      },
+      {
+       "at": 0.7,
+       "do": "highlight",
+       "dur": 1,
+       "target": "real"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "real"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.3,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.3,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "wrong",
+        "correct",
+        "bust"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0.3,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "route",
+        "straight",
+        "routeArrow"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 1,
+       "target": "route"
+      }
+     ]
+    },
+    {
+     "line": "L9",
+     "gap": 0,
+     "scene": "s5",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.5,
+       "target": "question"
+      },
+      {
+       "at": 0.5,
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "On a map, 1 cm stands for 10 m. What does 2 cm stand for?",
+    "options": [
+     "opt20",
+     "opt2",
+     "opt12"
+    ],
+    "answer": "opt20",
+    "src": "c5-maths-ch14-t02-i01"
+   }
+  },
+  "repairs": [],
+  "attempts": 2,
+  "model": "taxila-fast-bg",
+  "seconds": 24
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch14-t02-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "map1",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        110
+       ],
+       "w": 260,
+       "h": 220,
+       "round": 8
+      },
+      {
+       "id": "map2",
+       "op": "polygon",
+       "startMs": 900,
+       "endMs": 1900,
+       "ink": "mark",
+       "weight": 2,
+       "points": [
+        [
+         150,
+         270
+        ],
+        [
+         210,
+         180
+        ],
+        [
+         280,
+         230
+        ],
+        [
+         340,
+         140
+        ],
+        [
+         360,
+         290
+        ]
+       ]
+      },
+      {
+       "id": "map3",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        250,
+        365
+       ],
+       "text": "map",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "place",
+       "op": "rect",
+       "startMs": 2500,
+       "endMs": 3400,
+       "ink": "soft",
+       "weight": 2,
+       "at": [
+        500,
+        80
+       ],
+       "w": 180,
+       "h": 300,
+       "round": 8
+      },
+      {
+       "id": "big",
+       "op": "text",
+       "startMs": 3400,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        590,
+        420
+       ],
+       "text": "bigger place",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "scalea",
+       "op": "arrow",
+       "startMs": 4100,
+       "endMs": 4700,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        390,
+        210
+       ],
+       "to": [
+        490,
+        210
+       ]
+      },
+      {
+       "id": "small",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5281,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        250,
+        75
+       ],
+       "text": "small drawing",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch14-t02-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "scaleLine",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        130,
+        180
+       ],
+       "to": [
+        330,
+        180
+       ]
+      },
+      {
+       "id": "onecm",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        230,
+        145
+       ],
+       "text": "1 cm",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "stands",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        180
+       ],
+       "text": "stands for",
+       "size": "m"
+      },
+      {
+       "id": "real",
+       "op": "line",
+       "startMs": 2200,
+       "endMs": 3000,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        500,
+        180
+       ],
+       "to": [
+        680,
+        180
+       ]
+      },
+      {
+       "id": "metres",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        590,
+        145
+       ],
+       "text": "real distance",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "scaleLabel",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 4700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        280
+       ],
+       "text": "scale",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch14-t02-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "formula",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        120
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "real",
+         "distan",
+         "=",
+         "map",
+         "length",
+         "×",
+         "scale"
+        ]
+       ]
+      },
+      {
+       "id": "mapBox",
+       "op": "rect",
+       "startMs": 2400,
+       "endMs": 3200,
+       "ink": "soft",
+       "weight": 2,
+       "at": [
+        90,
+        250
+       ],
+       "w": 180,
+       "h": 100,
+       "round": 8
+      },
+      {
+       "id": "scaleBox",
+       "op": "rect",
+       "startMs": 2400,
+       "endMs": 3200,
+       "ink": "soft",
+       "weight": 2,
+       "at": [
+        530,
+        250
+       ],
+       "w": 180,
+       "h": 100,
+       "round": 8
+      },
+      {
+       "id": "multiply",
+       "op": "arrow",
+       "startMs": 3300,
+       "endMs": 4000,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        280,
+        300
+       ],
+       "to": [
+        520,
+        300
+       ]
+      },
+      {
+       "id": "mapText",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 4600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        180,
+        305
+       ],
+       "text": "map length",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "scaleText",
+       "op": "text",
+       "startMs": 4600,
+       "endMs": 5281,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        620,
+        305
+       ],
+       "text": "scale",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch14-t02-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "exampleEq",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        110
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "6",
+         "cm",
+         "×",
+         "10",
+         "m",
+         "=",
+         "60",
+         "m"
+        ]
+       ]
+      },
+      {
+       "id": "six",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        150,
+        235
+       ],
+       "text": "6 centimetres",
+       "size": "m"
+      },
+      {
+       "id": "ten",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        430,
+        235
+       ],
+       "text": "10 metres",
+       "size": "m"
+      },
+      {
+       "id": "sixty",
+       "op": "highlight",
+       "startMs": 3700,
+       "endMs": 4855,
+       "ink": "good",
+       "weight": 2,
+       "target": "exampleEq",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch14-t02-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "answer",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        150,
+        120
+       ],
+       "text": "answer",
+       "size": "l"
+      },
+      {
+       "id": "meters",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        150,
+        220
+       ],
+       "text": "metres",
+       "size": "l"
+      },
+      {
+       "id": "or",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        350,
+        220
+       ],
+       "text": "or",
+       "size": "m"
+      },
+      {
+       "id": "kilometres",
+       "op": "text",
+       "startMs": 2400,
+       "endMs": 3400,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        470,
+        220
+       ],
+       "text": "kilometres",
+       "size": "l"
+      },
+      {
+       "id": "notcm",
+       "op": "text",
+       "startMs": 3600,
+       "endMs": 4500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        300,
+        350
+       ],
+       "text": "not centimetres",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "underline",
+       "op": "line",
+       "startMs": 4500,
+       "endMs": 5000,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        180,
+        245
+       ],
+       "to": [
+        300,
+        245
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch14-t02-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "mistakeTitle",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        85
+       ],
+       "text": "common mistake",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "wrongEq",
+       "op": "numwork",
+       "startMs": 1100,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        160,
+        170
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "map",
+         "length",
+         "+",
+         "scale"
+        ]
+       ]
+      },
+      {
+       "id": "plusMark",
+       "op": "circle",
+       "startMs": 2400,
+       "endMs": 3000,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        350,
+        195
+       ],
+       "r": 30
+      },
+      {
+       "id": "wrongArrow",
+       "op": "arrow",
+       "startMs": 3100,
+       "endMs": 3900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        210
+       ],
+       "to": [
+        600,
+        210
+       ]
+      },
+      {
+       "id": "wrongLabel",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        600,
+        275
+       ],
+       "text": "adding",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch14-t02-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "rightEq",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 2200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        90,
+        110
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "5",
+         "cm",
+         "×",
+         "10",
+         "m",
+         "=",
+         "50",
+         "m"
+        ]
+       ]
+      },
+      {
+       "id": "wrongEq2",
+       "op": "numwork",
+       "startMs": 2300,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        245
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "5",
+         "cm",
+         "+",
+         "10",
+         "m",
+         "=",
+         "15",
+         "m"
+        ]
+       ]
+      },
+      {
+       "id": "wrongCross",
+       "op": "line",
+       "startMs": 3900,
+       "endMs": 4400,
+       "ink": "accent",
+       "weight": 3,
+       "from": [
+        570,
+        275
+       ],
+       "to": [
+        700,
+        275
+       ]
+      },
+      {
+       "id": "not15",
+       "op": "text",
+       "startMs": 4400,
+       "endMs": 5300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        600,
+        340
+       ],
+       "text": "not 15 metres",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "correctMark",
+       "op": "highlight",
+       "startMs": 5300,
+       "endMs": 6557,
+       "ink": "good",
+       "weight": 2,
+       "target": "rightEq",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch14-t02-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "road",
+       "op": "stroke",
+       "startMs": 0,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 3,
+       "points": [
+        [
+         100,
+         380
+        ],
+        [
+         180,
+         300
+        ],
+        [
+         260,
+         330
+        ],
+        [
+         340,
+         210
+        ],
+        [
+         430,
+         250
+        ],
+        [
+         520,
+         130
+        ],
+        [
+         680,
+         170
+        ]
+       ]
+      },
+      {
+       "id": "straight",
+       "op": "line",
+       "startMs": 2200,
+       "endMs": 3300,
+       "ink": "soft",
+       "weight": 2,
+       "from": [
+        100,
+        380
+       ],
+       "to": [
+        680,
+        170
+       ]
+      },
+      {
+       "id": "roadLabel",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 4200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        390,
+        185
+       ],
+       "text": "bending road",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "straightLabel",
+       "op": "text",
+       "startMs": 4200,
+       "endMs": 5000,
+       "ink": "soft",
+       "weight": 2,
+       "at": [
+        390,
+        395
+       ],
+       "text": "straight line",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "measureArrow",
+       "op": "arrow",
+       "startMs": 5000,
+       "endMs": 6000,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        250,
+        325
+       ],
+       "to": [
+        400,
+        235
+       ],
+       "bend": 1
+      },
+      {
+       "id": "measureLabel",
+       "op": "text",
+       "startMs": 6000,
+       "endMs": 7409,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        460
+       ],
+       "text": "measure along road",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L9",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch14-t02-wb-L9",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4004,
+     "ops": [
+      {
+       "id": "question",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        100
+       ],
+       "text": "use the scale",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "scaleBox2",
+       "op": "rect",
+       "startMs": 1000,
+       "endMs": 1800,
+       "ink": "soft",
+       "weight": 2,
+       "at": [
+        120,
+        180
+       ],
+       "w": 220,
+       "h": 120,
+       "round": 8
+      },
+      {
+       "id": "scaleWord",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        230,
+        240
+       ],
+       "text": "scale",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "answerArrow",
+       "op": "arrow",
+       "startMs": 2500,
+       "endMs": 3300,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        350,
+        240
+       ],
+       "to": [
+        650,
+        240
+       ]
+      },
+      {
+       "id": "answerPrompt",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 4004,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        650,
+        320
+       ],
+       "text": "answer",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "2.2 km",
+   "prompt": "School→Market at 0.5 km/square"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "3.1 km",
+   "prompt": "road length at 0.5 km/square"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ },
+ "firstCheck": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "Round 1 states scale is 10 km per square, but kit item c5-maths-ch14-t02-i01 uses 1 cm = 10 m. A person walking 60 km is unrealistic for a school map and unsuitable for a 9-15 year old (scale and distance are physically unrealistic for the story context).",
+    "severity": "high"
+   }
+  ],
+  "verdict": "fail",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

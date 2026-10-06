@@ -1,0 +1,1872 @@
+{
+ "topicId": "c6-hindi-ch03-t01",
+ "title": "पहली बूँद",
+ "chapter": "पहली बूँद",
+ "subject": "hindi",
+ "class": 6,
+ "topicType": "T1",
+ "plan": {
+  "game": "beat-line@1",
+  "hint": "beat and rhyme rounds (Hindi: matra round on a doha/chaupai line)"
+ },
+ "game": {
+  "archetype": "beat-line@1",
+  "spec": {
+   "archetype": "beat-line@1",
+   "skills": [
+    "c6-hindi-ch03-t01"
+   ],
+   "lang": "hi",
+   "strings": {
+    "round": "दौर",
+    "onBeat": "ताल पर",
+    "combo": "लगातार ताल",
+    "tap": "ताल पर थपकी दो",
+    "catch": "तुक पकड़ो",
+    "mark": "लघु या गुरु?",
+    "short": "लघु",
+    "long": "गुरु",
+    "practice": "अभ्यास पंक्ति",
+    "runDone": "कविता पूरी हुई",
+    "perfect": "सही ताल",
+    "early": "जल्दी",
+    "late": "देर से",
+    "meter": "मात्रा"
+   },
+   "title": "पहली बूँद",
+   "bpm": 76,
+   "lines": [
+    {
+     "text": "टप से गिरी जो पहली बूँद",
+     "beats": [
+      1,
+      3,
+      5
+     ],
+     "own": true
+    },
+    {
+     "text": "धरती की लंबी प्यास बुझी",
+     "beats": [
+      1,
+      3
+     ],
+     "own": true
+    }
+   ],
+   "rounds": [
+    {
+     "mode": "beat",
+     "title": "ताल पर बोलो",
+     "sub": "पहली बूँद की ताल पकड़ो",
+     "lines": [
+      0
+     ]
+    },
+    {
+     "mode": "rhyme",
+     "title": "तुक पकड़ो",
+     "sub": "सही मिलती ध्वनि चुनो",
+     "items": [
+      {
+       "cue": "सही शब्द चुनो: पहली ____ सूखी धरती पर गिरी।",
+       "options": [
+        "बूँद",
+        "बुंद",
+        "बूद"
+       ],
+       "answer": "बूँद",
+       "src": "c6-hindi-ch03-t01-i04"
+      },
+      {
+       "cue": "पंक्ति पूरी करो: बूँद ____ चमकी।",
+       "options": [
+        "मोती-सी",
+        "बहुत",
+        "सूखी"
+       ],
+       "answer": "मोती-सी",
+       "src": "c6-hindi-ch03-t01-i06"
+      },
+      {
+       "cue": "सही शब्द चुनो: बीज से निकला नन्हा ____।",
+       "options": [
+        "अंकुर",
+        "जलधर",
+        "बादल"
+       ],
+       "answer": "अंकुर",
+       "src": "c6-hindi-ch03-t01-i11"
+      }
+     ]
+    },
+    {
+     "mode": "matra",
+     "title": "मात्रा भरो",
+     "sub": "हर अक्षर की मात्रा पहचानो",
+     "lines": [
+      0
+     ]
+    }
+   ]
+  },
+  "repairs": [
+   "line:beats",
+   "line:beats",
+   "targets"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c6-hindi-ch03-t01"
+   ],
+   "lang": "hi",
+   "strings": {
+    "again": "फिर दिखाएँ",
+    "yourTurn": "अब आपकी बारी",
+    "check": "जाँचें",
+    "right": "सही है",
+    "look": "फिर देखें",
+    "myth": "भ्रम",
+    "busted": "गलत बात",
+    "order": "क्रम में दबाएँ"
+   },
+   "title": "पहली बूँद",
+   "accent": "sci",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "पहली बूँद"
+      },
+      {
+       "id": "drop",
+       "type": "glyph",
+       "name": "drop",
+       "x": 250,
+       "y": 300,
+       "size": 150,
+       "color": "sci"
+      },
+      {
+       "id": "earth",
+       "type": "glyph",
+       "name": "earth",
+       "x": 750,
+       "y": 350,
+       "size": 180,
+       "color": "amber"
+      },
+      {
+       "id": "dry",
+       "type": "label",
+       "text": "सूखी धरती",
+       "x": 650,
+       "y": 500,
+       "color": "amber"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "‘बूद’ भी सही शब्द है"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "d",
+       "type": "node",
+       "text": "पहली बूँद",
+       "sub": "सूखी धरती पर",
+       "glyph": "drop",
+       "x": 160,
+       "y": 330,
+       "color": "sci"
+      },
+      {
+       "id": "thirst",
+       "type": "node",
+       "text": "लंबी प्यास",
+       "sub": "धरती की",
+       "glyph": "earth",
+       "x": 430,
+       "y": 330,
+       "color": "amber"
+      },
+      {
+       "id": "sprout",
+       "type": "node",
+       "text": "अंकुर",
+       "sub": "नन्हे पौधे",
+       "glyph": "seed",
+       "x": 700,
+       "y": 330,
+       "color": "mint"
+      },
+      {
+       "id": "life",
+       "type": "node",
+       "text": "नया जीवन",
+       "sub": "शुरुआत",
+       "glyph": "flower",
+       "x": 900,
+       "y": 330,
+       "color": "sun"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "d",
+       "to": "thirst",
+       "text": "बुझाती है"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "thirst",
+       "to": "sprout",
+       "text": "अंकुर फूटते"
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "sprout",
+       "to": "life",
+       "text": "जीवन आता"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "prompt",
+       "type": "title",
+       "text": "सही वर्तनी चुनो"
+      },
+      {
+       "id": "opt1",
+       "type": "node",
+       "text": "बूँद",
+       "sub": "ऊ और ँ",
+       "glyph": "drop",
+       "x": 220,
+       "y": 330,
+       "color": "mint"
+      },
+      {
+       "id": "opt2",
+       "type": "node",
+       "text": "बुंद",
+       "sub": "गलत मात्रा",
+       "glyph": "drop",
+       "x": 500,
+       "y": 330,
+       "color": "amber"
+      },
+      {
+       "id": "opt3",
+       "type": "node",
+       "text": "बूद",
+       "sub": "चंद्रबिंदु नहीं",
+       "glyph": "drop",
+       "x": 780,
+       "y": 330,
+       "color": "volt"
+      },
+      {
+       "id": "mark",
+       "type": "label",
+       "text": "पहली बूँद",
+       "x": 420,
+       "y": 500,
+       "color": "sci"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "कविता पहली बूँद के सूखी धरती पर गिरने की बात करती है।",
+    "L2": "धरती को कवि प्यासी और जीवित दिखाता है, इसलिए बूँद से उसका सुख-दुख महसूस होता है।",
+    "L3": "पहली बूँद धरती की लंबी प्यास बुझाती है।",
+    "L4": "इसके बाद बीजों से अंकुर फूटते हैं और नया जीवन शुरू होता है।",
+    "L5": "‘बूँद मोती-सी चमकी’ में बूँद की तुलना मोती से की गई है।",
+    "L6": "‘सी’ तुलना का शब्द है, इसलिए यह उपमा है।",
+    "L7": "एक वर्तनी ध्यान से देखो: सही शब्द ‘बूँद’ है, बड़े ऊ और चंद्रबिंदु के साथ।",
+    "L8": "चंद्रबिंदु हटाकर ‘बूद’ लिखना या बोलना सही नहीं है।",
+    "L9": "अब सही वर्तनी चुनकर अपनी समझ जाँचो।"
+   },
+   "narration": {
+    "L1": {
+     "text": "कविता पहली बूँद के सूखी धरती पर गिरने की बात करती है।",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L2": {
+     "text": "धरती को कवि प्यासी और जीवित दिखाता है, इसलिए बूँद से उसका सुख-दुख महसूस होता है।",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L3": {
+     "text": "पहली बूँद धरती की लंबी प्यास बुझाती है।",
+     "dur": 2.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L4": {
+     "text": "इसके बाद बीजों से अंकुर फूटते हैं और नया जीवन शुरू होता है।",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L5": {
+     "text": "‘बूँद मोती-सी चमकी’ में बूँद की तुलना मोती से की गई है।",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L6": {
+     "text": "‘सी’ तुलना का शब्द है, इसलिए यह उपमा है।",
+     "dur": 2.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L7": {
+     "text": "एक वर्तनी ध्यान से देखो: सही शब्द ‘बूँद’ है, बड़े ऊ और चंद्रबिंदु के साथ।",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L8": {
+     "text": "चंद्रबिंदु हटाकर ‘बूद’ लिखना या बोलना सही नहीं है।",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L9": {
+     "text": "अब सही वर्तनी चुनकर अपनी समझ जाँचो।",
+     "dur": 2,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "title"
+      },
+      {
+       "at": 0.4,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "drop",
+        "earth",
+        "dry"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1.2,
+       "target": "earth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "d"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.6,
+       "target": "thirst"
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "a1",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "sprout",
+        "a2"
+       ]
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "life",
+        "a3"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 0.8,
+       "target": [
+        "a2",
+        "a3"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "d"
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "sprout"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "focus",
+       "dur": 0.8,
+       "target": "a2"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L9",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "prompt",
+        "opt1",
+        "opt2",
+        "opt3"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive"
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "सही वर्तनी वाला शब्द चुनो।",
+    "options": [
+     "opt1",
+     "opt2",
+     "opt3"
+    ],
+    "answer": "opt1",
+    "src": "c6-hindi-ch03-t01-i04"
+   }
+  },
+  "repairs": [
+   "targets"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "passes": 2,
+  "seconds": 31
+ },
+ "keys": [
+  {
+   "itemId": "b0:*",
+   "key": "से · जो · बूँद",
+   "prompt": "stressed words in: टप से गिरी जो पहली बूँद"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "बूँद",
+   "prompt": "सही शब्द चुनो: पहली ____ सूखी धरती पर गिरी। [बूँद / बुंद / बूद]",
+   "src": "c6-hindi-ch03-t01-i04"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "मोती-सी",
+   "prompt": "पंक्ति पूरी करो: बूँद ____ चमकी। [मोती-सी / बहुत / सूखी]",
+   "src": "c6-hindi-ch03-t01-i06"
+  },
+  {
+   "itemId": "r2:2",
+   "key": "अंकुर",
+   "prompt": "सही शब्द चुनो: बीज से निकला नन्हा ____। [अंकुर / जलधर / बादल]",
+   "src": "c6-hindi-ch03-t01-i11"
+  },
+  {
+   "itemId": "m0:*",
+   "key": "11212211221",
+   "prompt": "मात्रा: टप से गिरी जो पहली बूँद"
+  }
+ ],
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-hindi-ch03-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "sky",
+       "op": "stroke",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "soft",
+       "weight": 2,
+       "points": [
+        [
+         100,
+         100
+        ],
+        [
+         180,
+         80
+        ],
+        [
+         260,
+         100
+        ],
+        [
+         340,
+         80
+        ],
+        [
+         420,
+         100
+        ],
+        [
+         500,
+         80
+        ],
+        [
+         580,
+         100
+        ],
+        [
+         660,
+         80
+        ]
+       ]
+      },
+      {
+       "id": "drop",
+       "op": "ellipse",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        145
+       ],
+       "rx": 22,
+       "ry": 38,
+       "fill": "accent"
+      },
+      {
+       "id": "fall",
+       "op": "arrow",
+       "startMs": 1500,
+       "endMs": 2400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        190
+       ],
+       "to": [
+        400,
+        310
+       ]
+      },
+      {
+       "id": "earth",
+       "op": "ellipse",
+       "startMs": 2200,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        390
+       ],
+       "rx": 270,
+       "ry": 65
+      },
+      {
+       "id": "dry",
+       "op": "stroke",
+       "startMs": 3300,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         180,
+         385
+        ],
+        [
+         240,
+         370
+        ],
+        [
+         300,
+         390
+        ],
+        [
+         360,
+         370
+        ],
+        [
+         420,
+         390
+        ],
+        [
+         480,
+         370
+        ],
+        [
+         540,
+         390
+        ],
+        [
+         610,
+         380
+        ]
+       ]
+      },
+      {
+       "id": "t1",
+       "op": "text",
+       "startMs": 4100,
+       "endMs": 4700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        455
+       ],
+       "text": "सूखी धरती",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "t2",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "पहली बूँद",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-hindi-ch03-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "earth2",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        330
+       ],
+       "rx": 270,
+       "ry": 70
+      },
+      {
+       "id": "face",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        315
+       ],
+       "r": 48
+      },
+      {
+       "id": "eye1",
+       "op": "circle",
+       "startMs": 1700,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        382,
+        305
+       ],
+       "r": 5,
+       "fill": "chalk"
+      },
+      {
+       "id": "eye2",
+       "op": "circle",
+       "startMs": 1900,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        418,
+        305
+       ],
+       "r": 5,
+       "fill": "chalk"
+      },
+      {
+       "id": "mouth",
+       "op": "stroke",
+       "startMs": 2100,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         380,
+         335
+        ],
+        [
+         400,
+         345
+        ],
+        [
+         420,
+         335
+        ]
+       ]
+      },
+      {
+       "id": "rain",
+       "op": "arrow",
+       "startMs": 2500,
+       "endMs": 3300,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        400,
+        100
+       ],
+       "to": [
+        400,
+        250
+       ]
+      },
+      {
+       "id": "thirst",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4100,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        400,
+        425
+       ],
+       "text": "प्यासी",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "life",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 4900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        465
+       ],
+       "text": "जीवित",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-hindi-ch03-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4004,
+     "ops": [
+      {
+       "id": "earth3",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        350
+       ],
+       "rx": 260,
+       "ry": 65
+      },
+      {
+       "id": "drop3",
+       "op": "ellipse",
+       "startMs": 500,
+       "endMs": 1000,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        100
+       ],
+       "rx": 20,
+       "ry": 34,
+       "fill": "accent"
+      },
+      {
+       "id": "fall3",
+       "op": "arrow",
+       "startMs": 1000,
+       "endMs": 1800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        145
+       ],
+       "to": [
+        400,
+        275
+       ]
+      },
+      {
+       "id": "thirstline",
+       "op": "stroke",
+       "startMs": 1500,
+       "endMs": 2300,
+       "ink": "soft",
+       "weight": 2,
+       "points": [
+        [
+         210,
+         345
+        ],
+        [
+         270,
+         335
+        ],
+        [
+         330,
+         345
+        ],
+        [
+         390,
+         335
+        ],
+        [
+         450,
+         345
+        ],
+        [
+         510,
+         335
+        ],
+        [
+         570,
+         345
+        ]
+       ]
+      },
+      {
+       "id": "relief",
+       "op": "arrow",
+       "startMs": 2300,
+       "endMs": 3000,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        400,
+        320
+       ],
+       "to": [
+        400,
+        385
+       ]
+      },
+      {
+       "id": "label3",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        455
+       ],
+       "text": "लंबी प्यास",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "dropword",
+       "op": "text",
+       "startMs": 3600,
+       "endMs": 3950,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "पहली बूँद",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-hindi-ch03-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "soil",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        410
+       ],
+       "rx": 270,
+       "ry": 45
+      },
+      {
+       "id": "seed1",
+       "op": "ellipse",
+       "startMs": 700,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        330,
+        390
+       ],
+       "rx": 18,
+       "ry": 10
+      },
+      {
+       "id": "seed2",
+       "op": "ellipse",
+       "startMs": 900,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        470,
+        390
+       ],
+       "rx": 18,
+       "ry": 10
+      },
+      {
+       "id": "sprout1",
+       "op": "stroke",
+       "startMs": 1700,
+       "endMs": 2800,
+       "ink": "good",
+       "weight": 2,
+       "points": [
+        [
+         330,
+         390
+        ],
+        [
+         330,
+         340
+        ],
+        [
+         315,
+         320
+        ],
+        [
+         330,
+         340
+        ],
+        [
+         345,
+         320
+        ]
+       ]
+      },
+      {
+       "id": "sprout2",
+       "op": "stroke",
+       "startMs": 2200,
+       "endMs": 3300,
+       "ink": "good",
+       "weight": 2,
+       "points": [
+        [
+         470,
+         390
+        ],
+        [
+         470,
+         335
+        ],
+        [
+         455,
+         315
+        ],
+        [
+         470,
+         335
+        ],
+        [
+         485,
+         315
+        ]
+       ]
+      },
+      {
+       "id": "arrowlife",
+       "op": "arrow",
+       "startMs": 3400,
+       "endMs": 4100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        275
+       ],
+       "to": [
+        400,
+        200
+       ]
+      },
+      {
+       "id": "a1",
+       "op": "text",
+       "startMs": 4100,
+       "endMs": 4700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        150
+       ],
+       "text": "अंकुर",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "a2",
+       "op": "text",
+       "startMs": 4800,
+       "endMs": 5700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        80
+       ],
+       "text": "नया जीवन",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-hindi-ch03-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "drop5",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        250,
+        220
+       ],
+       "rx": 28,
+       "ry": 48,
+       "fill": "accent"
+      },
+      {
+       "id": "shine1",
+       "op": "line",
+       "startMs": 800,
+       "endMs": 1200,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        238,
+        190
+       ],
+       "to": [
+        255,
+        175
+       ]
+      },
+      {
+       "id": "pearl",
+       "op": "circle",
+       "startMs": 1400,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        550,
+        220
+       ],
+       "r": 48,
+       "fill": "soft"
+      },
+      {
+       "id": "shine2",
+       "op": "line",
+       "startMs": 2200,
+       "endMs": 2600,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        535,
+        195
+       ],
+       "to": [
+        555,
+        180
+       ]
+      },
+      {
+       "id": "compare",
+       "op": "arrow",
+       "startMs": 2700,
+       "endMs": 3600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        305,
+        220
+       ],
+       "to": [
+        490,
+        220
+       ]
+      },
+      {
+       "id": "w1",
+       "op": "text",
+       "startMs": 3600,
+       "endMs": 4100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        250,
+        320
+       ],
+       "text": "बूँद",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "w2",
+       "op": "text",
+       "startMs": 4100,
+       "endMs": 4600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        550,
+        320
+       ],
+       "text": "मोती",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "w3",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        390
+       ],
+       "text": "मोती-सी",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-hindi-ch03-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 4430,
+     "ops": [
+      {
+       "id": "u1",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        170,
+        160
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "बूँद",
+         "=",
+         "उपमेय"
+        ]
+       ]
+      },
+      {
+       "id": "u2",
+       "op": "numwork",
+       "startMs": 900,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        170,
+        230
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "मोती",
+         "=",
+         "उपमान"
+        ]
+       ]
+      },
+      {
+       "id": "u3",
+       "op": "numwork",
+       "startMs": 1800,
+       "endMs": 2800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        170,
+        300
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "सी",
+         "=",
+         "तुलना"
+        ]
+       ]
+      },
+      {
+       "id": "upar",
+       "op": "text",
+       "startMs": 2900,
+       "endMs": 3700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        400
+       ],
+       "text": "उपमा",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "h1",
+       "op": "highlight",
+       "startMs": 3600,
+       "endMs": 4300,
+       "ink": "mark",
+       "weight": 2,
+       "target": "u3",
+       "style": "underline"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-hindi-ch03-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "word",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        120
+       ],
+       "text": "बूँद",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "longu",
+       "op": "line",
+       "startMs": 1100,
+       "endMs": 1700,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        370,
+        145
+       ],
+       "to": [
+        430,
+        145
+       ]
+      },
+      {
+       "id": "parts",
+       "op": "numwork",
+       "startMs": 2500,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        220,
+        260
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "बूँद",
+         "=",
+         "ब",
+         "＋",
+         "ऊ",
+         "＋",
+         "ँद"
+        ]
+       ]
+      },
+      {
+       "id": "big",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 4700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        390
+       ],
+       "text": "बड़े ऊ",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "chandra",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5600,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        440
+       ],
+       "text": "चंद्रबिंदु",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "correct",
+       "op": "highlight",
+       "startMs": 5700,
+       "endMs": 6700,
+       "ink": "good",
+       "weight": 2,
+       "target": "word",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-hindi-ch03-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4430,
+     "ops": [
+      {
+       "id": "wrong",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        250,
+        150
+       ],
+       "text": "बूद",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "cross",
+       "op": "line",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "mark",
+       "weight": 3,
+       "from": [
+        190,
+        105
+       ],
+       "to": [
+        310,
+        190
+       ]
+      },
+      {
+       "id": "cross2",
+       "op": "line",
+       "startMs": 1100,
+       "endMs": 1700,
+       "ink": "mark",
+       "weight": 3,
+       "from": [
+        310,
+        105
+       ],
+       "to": [
+        190,
+        190
+       ]
+      },
+      {
+       "id": "right",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        550,
+        150
+       ],
+       "text": "बूँद",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "check",
+       "op": "highlight",
+       "startMs": 2800,
+       "endMs": 3800,
+       "ink": "good",
+       "weight": 2,
+       "target": "right",
+       "style": "circle"
+      },
+      {
+       "id": "note",
+       "op": "text",
+       "startMs": 3800,
+       "endMs": 4300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        330
+       ],
+       "text": "चंद्रबिंदु",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L9",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-hindi-ch03-t01-wb-L9",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 3579,
+     "ops": [
+      {
+       "id": "q",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        100
+       ],
+       "text": "सही वर्तनी",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "opt1",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        250,
+        220
+       ],
+       "text": "बूद",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "opt2",
+       "op": "text",
+       "startMs": 1200,
+       "endMs": 1800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        550,
+        220
+       ],
+       "text": "बूँद",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "box1",
+       "op": "rect",
+       "startMs": 1800,
+       "endMs": 2300,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        185,
+        175
+       ],
+       "w": 130,
+       "h": 75,
+       "round": 12
+      },
+      {
+       "id": "box2",
+       "op": "rect",
+       "startMs": 2100,
+       "endMs": 2600,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        485,
+        175
+       ],
+       "w": 130,
+       "h": 75,
+       "round": 12
+      },
+      {
+       "id": "choose",
+       "op": "arrow",
+       "startMs": 2600,
+       "endMs": 3300,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        400,
+        330
+       ],
+       "to": [
+        550,
+        260
+       ]
+      },
+      {
+       "id": "final",
+       "op": "highlight",
+       "startMs": 3200,
+       "endMs": 3500,
+       "ink": "good",
+       "weight": 2,
+       "target": "opt2",
+       "style": "circle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

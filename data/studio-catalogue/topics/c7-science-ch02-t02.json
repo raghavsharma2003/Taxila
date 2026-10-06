@@ -1,0 +1,2016 @@
+{
+ "topicId": "c7-science-ch02-t02",
+ "title": "Neutralisation in daily life",
+ "chapter": "Exploring Substances: Acidic, Basic, and Neutral",
+ "subject": "science",
+ "class": 7,
+ "topicType": "T3",
+ "plan": {
+  "game": "fair-test@1",
+  "hint": "drip mode (neutralisation with an indicator) and predict rounds"
+ },
+ "game": {
+  "archetype": "fair-test@1",
+  "spec": {
+   "archetype": "fair-test@1",
+   "skills": [
+    "c7-science-ch02-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "run": "RUN",
+    "day": "day",
+    "predict": "Tap every setup that will show it",
+    "design": "Make it a fair test",
+    "conclude": "Which factor matters?",
+    "notMatter": "Which factor does NOT matter?",
+    "fair": "FAIR TEST",
+    "unfair": "NOT FAIR",
+    "runDone": "Lab closed",
+    "correct": "right calls",
+    "drip": "Hold to add drops; stop when it turns",
+    "drops": "drops",
+    "neutral": "NEUTRAL",
+    "hint": "change only one thing"
+   },
+   "title": "Neutralisation in daily life",
+   "model": "dissolving",
+   "rounds": [
+    {
+     "mode": "predict",
+     "title": "Predict the change",
+     "sub": "which glass is neutralised?",
+     "setups": [
+      {
+       "stir": "yes",
+       "temp": "cold",
+       "grain": "lump"
+      },
+      {
+       "stir": "yes",
+       "temp": "cold",
+       "grain": "powder"
+      },
+      {
+       "stir": "no",
+       "temp": "cold",
+       "grain": "lump"
+      }
+     ],
+     "src": "c7-science-ch02-t02-i06",
+     "targets": "c7-science-ch02-t02-m2"
+    },
+    {
+     "mode": "drip",
+     "title": "Watch the colour",
+     "sub": "add base to the acid slowly",
+     "acid": 12,
+     "indicator": "rose",
+     "targets": "c7-science-ch02-t02-m3"
+    }
+   ]
+  },
+  "repairs": [
+   "conclude:needs-exactly-one-key"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-science-ch02-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Neutralisation in daily life",
+   "accent": "sci",
+   "targets": "c7-science-ch02-t02-m2",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Neutralisation"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Water neutralises acid"
+      },
+      {
+       "id": "acid",
+       "type": "node",
+       "text": "Acid",
+       "sub": "acidic",
+       "glyph": "beaker",
+       "color": "sci"
+      },
+      {
+       "id": "base",
+       "type": "node",
+       "text": "Base",
+       "sub": "basic",
+       "glyph": "pot",
+       "color": "mint"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "acid2",
+       "type": "node",
+       "text": "Acid",
+       "sub": "acidic",
+       "glyph": "beaker",
+       "color": "sci"
+      },
+      {
+       "id": "base2",
+       "type": "node",
+       "text": "Base",
+       "sub": "basic",
+       "glyph": "pot",
+       "color": "mint"
+      },
+      {
+       "id": "salt",
+       "type": "node",
+       "text": "Salt",
+       "sub": "product",
+       "glyph": "spark",
+       "color": "amber"
+      },
+      {
+       "id": "water",
+       "type": "node",
+       "text": "Water",
+       "sub": "product",
+       "glyph": "drop",
+       "color": "ion"
+      },
+      {
+       "id": "heat",
+       "type": "node",
+       "text": "Heat",
+       "sub": "given out",
+       "glyph": "fire",
+       "color": "sun"
+      },
+      {
+       "id": "mix",
+       "type": "arrow",
+       "from": "acid2",
+       "to": "salt",
+       "text": "reacts"
+      },
+      {
+       "id": "mix2",
+       "type": "arrow",
+       "from": "base2",
+       "to": "water",
+       "text": "reacts"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "hib",
+       "type": "node",
+       "text": "Hibiscus",
+       "sub": "indicator",
+       "glyph": "flower",
+       "color": "sci"
+      },
+      {
+       "id": "pink",
+       "type": "label",
+       "text": "Pink: acid",
+       "x": 160,
+       "y": 280,
+       "color": "sci"
+      },
+      {
+       "id": "neutral",
+       "type": "label",
+       "text": "No pink: neutral",
+       "x": 430,
+       "y": 280,
+       "color": "amber"
+      },
+      {
+       "id": "green",
+       "type": "label",
+       "text": "Green: extra base",
+       "x": 700,
+       "y": 280,
+       "color": "mint"
+      },
+      {
+       "id": "acidmix",
+       "type": "node",
+       "text": "Lemon juice",
+       "sub": "acid",
+       "glyph": "apple",
+       "color": "sci"
+      },
+      {
+       "id": "bicarb",
+       "type": "node",
+       "text": "Baking soda",
+       "sub": "base",
+       "glyph": "pot",
+       "color": "mint"
+      },
+      {
+       "id": "ind1",
+       "type": "arrow",
+       "from": "acidmix",
+       "to": "hib",
+       "text": "turns pink"
+      },
+      {
+       "id": "ind2",
+       "type": "arrow",
+       "from": "bicarb",
+       "to": "hib",
+       "text": "add slowly"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "home",
+       "type": "node",
+       "text": "Antacid",
+       "sub": "stomach acid",
+       "glyph": "stomach",
+       "color": "amber"
+      },
+      {
+       "id": "bite",
+       "type": "node",
+       "text": "Ant bite",
+       "sub": "formic acid",
+       "glyph": "insect",
+       "color": "sci"
+      },
+      {
+       "id": "soil",
+       "type": "node",
+       "text": "Acidic soil",
+       "sub": "add lime",
+       "glyph": "leaf",
+       "color": "mint"
+      },
+      {
+       "id": "tooth",
+       "type": "node",
+       "text": "Toothpaste",
+       "sub": "mouth acids",
+       "glyph": "shield",
+       "color": "ion"
+      },
+      {
+       "id": "A",
+       "type": "node",
+       "text": "Glass A",
+       "sub": "water added",
+       "glyph": "jug",
+       "color": "sci"
+      },
+      {
+       "id": "B",
+       "type": "node",
+       "text": "Glass B",
+       "sub": "baking soda",
+       "glyph": "beaker",
+       "color": "mint"
+      },
+      {
+       "id": "farm",
+       "type": "arrow",
+       "from": "soil",
+       "to": "B",
+       "text": "base helps"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Neutralisation happens when an acid and a base cancel each other's effect.",
+    "L2": "They form salt and water, and heat is given out. Adding plain water only dilutes an acid.",
+    "L3": "Here is the indicator test. Hibiscus water is pink in an acid.",
+    "L4": "As baking soda solution is added, the pink fades when the acid is neutralised. Extra base makes it green.",
+    "L5": "So the myth that water neutralises acid is not true. A base is needed to neutralise it.",
+    "L6": "For acidity after a meal, an antacid such as milk of magnesia is a mild base that neutralises extra stomach acid.",
+    "L7": "Baking soda can neutralise formic acid from an ant bite, and lime can neutralise acidic soil.",
+    "L8": "Now compare the two glasses. Tap the one whose lemon juice has been neutralised."
+   },
+   "narration": {
+    "L1": {
+     "text": "Neutralisation happens when an acid and a base cancel each other's effect.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "They form salt and water, and heat is given out. Adding plain water only dilutes an acid.",
+     "dur": 9,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "Here is the indicator test. Hibiscus water is pink in an acid.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "As baking soda solution is added, the pink fades when the acid is neutralised. Extra base makes it green.",
+     "dur": 10,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "So the myth that water neutralises acid is not true. A base is needed to neutralise it.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "For acidity after a meal, an antacid such as milk of magnesia is a mild base that neutralises extra stomach acid.",
+     "dur": 10,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Baking soda can neutralise formic acid from an ant bite, and lime can neutralise acidic soil.",
+     "dur": 9,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Now compare the two glasses. Tap the one whose lemon juice has been neutralised.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "acid",
+        "base"
+       ]
+      },
+      {
+       "at": 1.5,
+       "do": "flow",
+       "dur": 0.8,
+       "target": [
+        "acid",
+        "base"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "acid2",
+        "base2"
+       ]
+      },
+      {
+       "at": 0.7,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "salt",
+        "water",
+        "heat"
+       ]
+      },
+      {
+       "at": 1.5,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "mix",
+        "mix2"
+       ]
+      },
+      {
+       "at": 3,
+       "do": "highlight",
+       "dur": 1,
+       "target": "heat"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.9,
+       "target": [
+        "hib",
+        "acidmix",
+        "ind1",
+        "pink"
+       ]
+      },
+      {
+       "at": 1.5,
+       "do": "highlight",
+       "dur": 1,
+       "target": "pink"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.9,
+       "target": [
+        "bicarb",
+        "ind2",
+        "neutral",
+        "green"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 1,
+       "target": "ind2",
+       "to": 1
+      },
+      {
+       "at": 2.5,
+       "do": "highlight",
+       "dur": 1,
+       "target": "green"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "myth"
+      },
+      {
+       "at": 1,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      },
+      {
+       "at": 2.2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "base"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "home"
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 1.2,
+       "target": "home"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "bite",
+        "soil"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.8,
+       "target": "farm"
+      },
+      {
+       "at": 2,
+       "do": "highlight",
+       "dur": 1,
+       "target": [
+        "bite",
+        "soil"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "A",
+        "B"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "interactive",
+       "dur": 0.5
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which glass has lemon juice that has been neutralised?",
+    "options": [
+     "A",
+     "B"
+    ],
+    "answer": "B",
+    "src": "c7-science-ch02-t02-i06"
+   }
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg",
+  "seconds": 71
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch02-t02-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "acid",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        180,
+        220
+       ],
+       "r": 75,
+       "fill": "accent"
+      },
+      {
+       "id": "base",
+       "op": "circle",
+       "startMs": 500,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        620,
+        220
+       ],
+       "r": 75,
+       "fill": "soft"
+      },
+      {
+       "id": "acidLabel",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        180,
+        220
+       ],
+       "text": "acid",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "baseLabel",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        620,
+        220
+       ],
+       "text": "base",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "join",
+       "op": "arrow",
+       "startMs": 1900,
+       "endMs": 2900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        270,
+        220
+       ],
+       "to": [
+        530,
+        220
+       ]
+      },
+      {
+       "id": "neutral",
+       "op": "circle",
+       "startMs": 3000,
+       "endMs": 3900,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        400,
+        220
+       ],
+       "r": 92
+      },
+      {
+       "id": "neutralLabel",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        220
+       ],
+       "text": "neutralisation",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "effect",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        350
+       ],
+       "text": "cancel effect",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch02-t02-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "salt",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        115,
+        120
+       ],
+       "w": 210,
+       "h": 100,
+       "round": 15
+      },
+      {
+       "id": "saltLabel",
+       "op": "text",
+       "startMs": 800,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        220,
+        175
+       ],
+       "text": "salt",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "water",
+       "op": "ellipse",
+       "startMs": 1000,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        580,
+        170
+       ],
+       "rx": 110,
+       "ry": 55
+      },
+      {
+       "id": "waterLabel",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        580,
+        170
+       ],
+       "text": "water",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "heat",
+       "op": "stroke",
+       "startMs": 2400,
+       "endMs": 3300,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         390,
+         320
+        ],
+        [
+         410,
+         285
+        ],
+        [
+         430,
+         320
+        ],
+        [
+         450,
+         285
+        ]
+       ]
+      },
+      {
+       "id": "heatLabel",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 3700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        420,
+        360
+       ],
+       "text": "heat",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "waterDrop",
+       "op": "arrow",
+       "startMs": 4100,
+       "endMs": 5000,
+       "ink": "soft",
+       "weight": 2,
+       "from": [
+        210,
+        420
+       ],
+       "to": [
+        210,
+        280
+       ]
+      },
+      {
+       "id": "dilute",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 5900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        210,
+        455
+       ],
+       "text": "dilutes acid",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "acidStay",
+       "op": "circle",
+       "startMs": 5900,
+       "endMs": 6600,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        590,
+        390
+       ],
+       "r": 48
+      },
+      {
+       "id": "acidStayLabel",
+       "op": "text",
+       "startMs": 6600,
+       "endMs": 7000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        590,
+        390
+       ],
+       "text": "acid",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch02-t02-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "glass",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        250,
+        100
+       ],
+       "w": 300,
+       "h": 270,
+       "round": 20
+      },
+      {
+       "id": "hibiscus",
+       "op": "ellipse",
+       "startMs": 900,
+       "endMs": 1700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        300
+       ],
+       "rx": 125,
+       "ry": 45,
+       "fill": "accent"
+      },
+      {
+       "id": "hibiscusLabel",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        300
+       ],
+       "text": "hibiscus water",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "acidArrow",
+       "op": "arrow",
+       "startMs": 2500,
+       "endMs": 3400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        120,
+        220
+       ],
+       "to": [
+        245,
+        220
+       ]
+      },
+      {
+       "id": "acidLabel",
+       "op": "text",
+       "startMs": 3400,
+       "endMs": 3800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        110,
+        190
+       ],
+       "text": "acid",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "pinkLabel",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 4500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        410
+       ],
+       "text": "pink",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch02-t02-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "soda",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        70,
+        90
+       ],
+       "w": 180,
+       "h": 100,
+       "round": 15
+      },
+      {
+       "id": "sodaLabel",
+       "op": "text",
+       "startMs": 800,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        160,
+        140
+       ],
+       "text": "baking soda",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "addArrow",
+       "op": "arrow",
+       "startMs": 1500,
+       "endMs": 2400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        250,
+        140
+       ],
+       "to": [
+        330,
+        220
+       ]
+      },
+      {
+       "id": "fade",
+       "op": "ellipse",
+       "startMs": 2500,
+       "endMs": 3500,
+       "ink": "soft",
+       "weight": 2,
+       "c": [
+        400,
+        270
+       ],
+       "rx": 135,
+       "ry": 55,
+       "fill": "soft"
+      },
+      {
+       "id": "fadeLabel",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        270
+       ],
+       "text": "pink fades",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "neutralised",
+       "op": "text",
+       "startMs": 4200,
+       "endMs": 4700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        365
+       ],
+       "text": "neutralised",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "extraArrow",
+       "op": "arrow",
+       "startMs": 5000,
+       "endMs": 5900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        550,
+        220
+       ],
+       "to": [
+        680,
+        140
+       ]
+      },
+      {
+       "id": "green",
+       "op": "circle",
+       "startMs": 5900,
+       "endMs": 6800,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        680,
+        140
+       ],
+       "r": 58,
+       "fill": "good"
+      },
+      {
+       "id": "greenLabel",
+       "op": "text",
+       "startMs": 6800,
+       "endMs": 7300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        680,
+        140
+       ],
+       "text": "green",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "extraBase",
+       "op": "text",
+       "startMs": 7300,
+       "endMs": 8000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        680,
+        235
+       ],
+       "text": "extra base",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch02-t02-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "water",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "soft",
+       "weight": 2,
+       "c": [
+        190,
+        210
+       ],
+       "rx": 105,
+       "ry": 65
+      },
+      {
+       "id": "waterLabel",
+       "op": "text",
+       "startMs": 800,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        190,
+        210
+       ],
+       "text": "water",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "acid",
+       "op": "circle",
+       "startMs": 1300,
+       "endMs": 2000,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        190,
+        350
+       ],
+       "r": 50,
+       "fill": "accent"
+      },
+      {
+       "id": "acidLabel",
+       "op": "text",
+       "startMs": 2000,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        190,
+        350
+       ],
+       "text": "acid",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "notArrow",
+       "op": "line",
+       "startMs": 2500,
+       "endMs": 3300,
+       "ink": "mark",
+       "weight": 3,
+       "from": [
+        130,
+        130
+       ],
+       "to": [
+        250,
+        390
+       ]
+      },
+      {
+       "id": "notLabel",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 4100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        190,
+        450
+       ],
+       "text": "not neutralised",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "base",
+       "op": "rect",
+       "startMs": 4300,
+       "endMs": 5100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        500,
+        170
+       ],
+       "w": 180,
+       "h": 110,
+       "fill": "soft",
+       "round": 15
+      },
+      {
+       "id": "baseLabel",
+       "op": "text",
+       "startMs": 5100,
+       "endMs": 5500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        590,
+        225
+       ],
+       "text": "base",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "neutralArrow",
+       "op": "arrow",
+       "startMs": 5600,
+       "endMs": 6600,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        300,
+        350
+       ],
+       "to": [
+        500,
+        225
+       ]
+      },
+      {
+       "id": "neutralLabel",
+       "op": "text",
+       "startMs": 6600,
+       "endMs": 7200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        590,
+        340
+       ],
+       "text": "neutralise",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch02-t02-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9536,
+     "ops": [
+      {
+       "id": "stomach",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        260,
+        250
+       ],
+       "rx": 120,
+       "ry": 145
+      },
+      {
+       "id": "stomachLabel",
+       "op": "text",
+       "startMs": 1000,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        260,
+        250
+       ],
+       "text": "stomach",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "stomachAcid",
+       "op": "ellipse",
+       "startMs": 1500,
+       "endMs": 2300,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        260,
+        305
+       ],
+       "rx": 80,
+       "ry": 40,
+       "fill": "accent"
+      },
+      {
+       "id": "acidLabel",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        260,
+        305
+       ],
+       "text": "stomach acid",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "antacid",
+       "op": "rect",
+       "startMs": 3000,
+       "endMs": 3800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        520,
+        120
+       ],
+       "w": 190,
+       "h": 100,
+       "round": 15
+      },
+      {
+       "id": "antacidLabel",
+       "op": "text",
+       "startMs": 3800,
+       "endMs": 4300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        615,
+        165
+       ],
+       "text": "antacid",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "milk",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 5000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        615,
+        255
+       ],
+       "text": "milk of magnesia",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "mildBase",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 5500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        615,
+        305
+       ],
+       "text": "mild base",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "react",
+       "op": "arrow",
+       "startMs": 5600,
+       "endMs": 6700,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        520,
+        230
+       ],
+       "to": [
+        370,
+        285
+       ]
+      },
+      {
+       "id": "neutralise",
+       "op": "text",
+       "startMs": 6700,
+       "endMs": 7200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        370
+       ],
+       "text": "neutralises",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "ease",
+       "op": "text",
+       "startMs": 7400,
+       "endMs": 8100,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        440
+       ],
+       "text": "burning eases",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch02-t02-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "bite",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        150,
+        170
+       ],
+       "r": 55,
+       "fill": "accent"
+      },
+      {
+       "id": "biteLabel",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        150,
+        170
+       ],
+       "text": "ant bite",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "formic",
+       "op": "text",
+       "startMs": 1200,
+       "endMs": 1800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        150,
+        265
+       ],
+       "text": "formic acid",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "soda",
+       "op": "rect",
+       "startMs": 1900,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        70,
+        330
+       ],
+       "w": 160,
+       "h": 75,
+       "round": 12
+      },
+      {
+       "id": "sodaLabel",
+       "op": "text",
+       "startMs": 2600,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        150,
+        368
+       ],
+       "text": "baking soda",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "soil",
+       "op": "ellipse",
+       "startMs": 3000,
+       "endMs": 3800,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        610,
+        180
+       ],
+       "rx": 130,
+       "ry": 55,
+       "fill": "accent"
+      },
+      {
+       "id": "soilLabel",
+       "op": "text",
+       "startMs": 3800,
+       "endMs": 4400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        610,
+        180
+       ],
+       "text": "acidic soil",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "lime",
+       "op": "rect",
+       "startMs": 4500,
+       "endMs": 5200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        530,
+        320
+       ],
+       "w": 160,
+       "h": 75,
+       "round": 12
+      },
+      {
+       "id": "limeLabel",
+       "op": "text",
+       "startMs": 5200,
+       "endMs": 5600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        610,
+        358
+       ],
+       "text": "lime",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "sodaArrow",
+       "op": "arrow",
+       "startMs": 5600,
+       "endMs": 6400,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        230,
+        365
+       ],
+       "to": [
+        300,
+        210
+       ]
+      },
+      {
+       "id": "limeArrow",
+       "op": "arrow",
+       "startMs": 5700,
+       "endMs": 6500,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        530,
+        350
+       ],
+       "to": [
+        610,
+        240
+       ]
+      },
+      {
+       "id": "neutralise",
+       "op": "text",
+       "startMs": 6500,
+       "endMs": 7100,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        455
+       ],
+       "text": "neutralise",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch02-t02-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "glass1",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        120
+       ],
+       "w": 220,
+       "h": 270,
+       "round": 18
+      },
+      {
+       "id": "glass2",
+       "op": "rect",
+       "startMs": 500,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        480,
+        120
+       ],
+       "w": 220,
+       "h": 270,
+       "round": 18
+      },
+      {
+       "id": "lemon1",
+       "op": "ellipse",
+       "startMs": 1200,
+       "endMs": 2000,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        210,
+        325
+       ],
+       "rx": 85,
+       "ry": 38,
+       "fill": "accent"
+      },
+      {
+       "id": "lemon2",
+       "op": "ellipse",
+       "startMs": 1500,
+       "endMs": 2300,
+       "ink": "soft",
+       "weight": 2,
+       "c": [
+        590,
+        325
+       ],
+       "rx": 85,
+       "ry": 38,
+       "fill": "soft"
+      },
+      {
+       "id": "lemonLabel1",
+       "op": "text",
+       "startMs": 2000,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        210,
+        325
+       ],
+       "text": "lemon juice",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "lemonLabel2",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        590,
+        325
+       ],
+       "text": "lemon juice",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "tap1",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        210,
+        80
+       ],
+       "text": "tap",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "tap2",
+       "op": "text",
+       "startMs": 3400,
+       "endMs": 3800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        590,
+        80
+       ],
+       "text": "tap",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "neutralised",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 4600,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        590,
+        430
+       ],
+       "text": "neutralised",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "target",
+       "op": "highlight",
+       "startMs": 4700,
+       "endMs": 5700,
+       "ink": "good",
+       "weight": 2,
+       "target": "glass2",
+       "style": "circle"
+      },
+      {
+       "id": "choice",
+       "op": "text",
+       "startMs": 5700,
+       "endMs": 6300,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        400,
+        470
+       ],
+       "text": "tap one",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1",
+   "key": "1:no 2:dissolves 3:no",
+   "prompt": "dissolving: {\"stir\":\"yes\",\"temp\":\"cold\",\"grain\":\"lump\"} | {\"stir\":\"yes\",\"temp\":\"cold\",\"grain\":\"powder\"} | {\"stir\":\"no\",\"temp\":\"cold\",\"grain\":\"lump\"}",
+   "src": "c7-science-ch02-t02-i06"
+  },
+  {
+   "itemId": "r2",
+   "key": "12 drops",
+   "prompt": "neutralise 12 drops acid"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

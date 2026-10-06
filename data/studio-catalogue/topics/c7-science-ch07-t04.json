@@ -1,0 +1,1804 @@
+{
+ "topicId": "c7-science-ch07-t04",
+ "title": "The water cycle and groundwater",
+ "chapter": "Heat Transfer in Nature",
+ "subject": "science",
+ "class": 7,
+ "topicType": "T3",
+ "plan": {
+  "game": "phase-shift@1",
+  "hint": "Phase Shift: states of water, evaporation and condensation, factors"
+ },
+ "game": {
+  "archetype": "phase-shift@1",
+  "spec": {
+   "archetype": "phase-shift@1",
+   "skills": [
+    "c7-science-ch07-t04"
+   ],
+   "lang": "en",
+   "strings": {
+    "step": "Step",
+    "heat": "HEAT",
+    "cool": "COOL",
+    "fan": "FAN",
+    "lid": "COLD LID",
+    "temp": "TEMP",
+    "ice": "ice",
+    "water": "water",
+    "vapour": "vapour",
+    "plateau": "Watch the change",
+    "boiling": "Keep it safe",
+    "invisible": "vapour · invisible",
+    "predict": "First, predict",
+    "done": "Done",
+    "noBoil": "do not boil"
+   },
+   "start": 20,
+   "steps": [
+    {
+     "kind": "goal",
+     "goal": "evaporate",
+     "arg": 0.15,
+     "tMax": 40,
+     "text": "Warm the water so some changes into vapour, like Sun on a pond."
+    },
+    {
+     "kind": "probe",
+     "probe": "steam"
+    },
+    {
+     "kind": "goal",
+     "goal": "condense",
+     "arg": 0.1,
+     "tMax": 40,
+     "text": "Cool the vapour until tiny droplets form, like cloud droplets."
+    },
+    {
+     "kind": "probe",
+     "probe": "glass"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-science-ch07-t04"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "From rain to groundwater",
+   "accent": "sci",
+   "targets": "c7-science-ch07-t04-m1",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "row",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "From rain to groundwater"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Groundwater is a big underground lake"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "sea",
+       "type": "node",
+       "text": "Sea and soil",
+       "glyph": "drop",
+       "color": "sci"
+      },
+      {
+       "id": "air",
+       "type": "node",
+       "text": "Water vapour",
+       "glyph": "wind",
+       "color": "ion"
+      },
+      {
+       "id": "cloud",
+       "type": "node",
+       "text": "Clouds",
+       "glyph": "cloud",
+       "color": "ion"
+      },
+      {
+       "id": "rain",
+       "type": "node",
+       "text": "Rain",
+       "glyph": "rain",
+       "color": "sci"
+      },
+      {
+       "id": "tree",
+       "type": "node",
+       "text": "Tree leaves",
+       "glyph": "tree",
+       "color": "mint"
+      },
+      {
+       "id": "evap",
+       "type": "arrow",
+       "from": "sea",
+       "to": "air",
+       "text": "evaporation"
+      },
+      {
+       "id": "trans",
+       "type": "arrow",
+       "from": "tree",
+       "to": "air",
+       "text": "transpiration"
+      },
+      {
+       "id": "cond",
+       "type": "arrow",
+       "from": "air",
+       "to": "cloud",
+       "text": "condensation"
+      },
+      {
+       "id": "precip",
+       "type": "arrow",
+       "from": "cloud",
+       "to": "rain",
+       "text": "precipitation"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "split",
+     "els": [
+      {
+       "id": "land",
+       "type": "node",
+       "text": "Field soil",
+       "glyph": "leaf",
+       "color": "mint"
+      },
+      {
+       "id": "gaps",
+       "type": "node",
+       "text": "Gaps in soil",
+       "sub": "sand and rock",
+       "glyph": "mountain",
+       "color": "amber"
+      },
+      {
+       "id": "gw",
+       "type": "node",
+       "text": "Groundwater",
+       "sub": "pores and cracks",
+       "glyph": "drop",
+       "color": "sci"
+      },
+      {
+       "id": "table",
+       "type": "node",
+       "text": "Water table",
+       "sub": "top water level",
+       "glyph": "ruler",
+       "color": "ion"
+      },
+      {
+       "id": "well",
+       "type": "node",
+       "text": "Village well",
+       "glyph": "jug",
+       "color": "sun"
+      },
+      {
+       "id": "infil",
+       "type": "arrow",
+       "from": "land",
+       "to": "gaps",
+       "text": "infiltration"
+      },
+      {
+       "id": "down",
+       "type": "arrow",
+       "from": "gaps",
+       "to": "gw",
+       "text": "seeps down"
+      },
+      {
+       "id": "wellin",
+       "type": "arrow",
+       "from": "gw",
+       "to": "well",
+       "text": "seeps into"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "row",
+     "els": [
+      {
+       "id": "open",
+       "type": "node",
+       "text": "Open soil",
+       "glyph": "leaf",
+       "color": "mint"
+      },
+      {
+       "id": "pit",
+       "type": "node",
+       "text": "Recharge pit",
+       "glyph": "pot",
+       "color": "sci"
+      },
+      {
+       "id": "pump",
+       "type": "node",
+       "text": "Pumping",
+       "glyph": "tap",
+       "color": "amber"
+      },
+      {
+       "id": "recharge",
+       "type": "arrow",
+       "from": "open",
+       "to": "pit",
+       "text": "soaks in"
+      },
+      {
+       "id": "concrete",
+       "type": "node",
+       "text": "Concrete",
+       "glyph": "road",
+       "color": "volt"
+      }
+     ]
+    },
+    {
+     "id": "s5",
+     "layout": "row",
+     "els": [
+      {
+       "id": "qtitle",
+       "type": "title",
+       "text": "Check the process"
+      },
+      {
+       "id": "opt1",
+       "type": "label",
+       "text": "evaporation"
+      },
+      {
+       "id": "opt2",
+       "type": "label",
+       "text": "infiltration"
+      },
+      {
+       "id": "opt3",
+       "type": "label",
+       "text": "transpiration"
+      },
+      {
+       "id": "opt4",
+       "type": "label",
+       "text": "runoff"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Water keeps moving through a cycle. The Sun's heat evaporates water from seas, rivers and soil.",
+    "L2": "Plants also release water vapour from their leaves. This process is called transpiration.",
+    "L3": "The vapour rises, cools and condenses into tiny droplets. These droplets form clouds.",
+    "L4": "Rain, snow or hail falls from clouds. Some water runs over land, while some seeps into soil by infiltration.",
+    "L5": "It moves through gaps in sand and gravel and cracks in rock. Water filling these spaces is groundwater, not a big underground lake.",
+    "L6": "The water table is the top of the water-filled layer. A well below it can collect groundwater.",
+    "L7": "Open soil, trees, ponds and recharge pits help water soak in. If pumping is greater than recharge, the water table falls.",
+    "L8": "Now check yourself: which process names rainwater seeping down into the ground?"
+   },
+   "narration": {
+    "L1": {
+     "text": "Water keeps moving through a cycle. The Sun's heat evaporates water from seas, rivers and soil.",
+     "dur": 5.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L2": {
+     "text": "Plants also release water vapour from their leaves. This process is called transpiration.",
+     "dur": 4.8,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L3": {
+     "text": "The vapour rises, cools and condenses into tiny droplets. These droplets form clouds.",
+     "dur": 4.8,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L4": {
+     "text": "Rain, snow or hail falls from clouds. Some water runs over land, while some seeps into soil by infiltration.",
+     "dur": 5.8,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L5": {
+     "text": "It moves through gaps in sand and gravel and cracks in rock. Water filling these spaces is groundwater, not a big underground lake.",
+     "dur": 6.2,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L6": {
+     "text": "The water table is the top of the water-filled layer. A well below it can collect groundwater.",
+     "dur": 5.2,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Open soil, trees, ponds and recharge pits help water soak in. If pumping is greater than recharge, the water table falls.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Now check yourself: which process names rainwater seeping down into the ground?",
+     "dur": 3.8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      },
+      {
+       "at": 2,
+       "do": "show",
+       "dur": 0.6,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.5,
+       "target": "tree"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "sea",
+        "air",
+        "evap",
+        "trans"
+       ]
+      },
+      {
+       "at": 1.2,
+       "do": "flow",
+       "dur": 0.7,
+       "target": [
+        "evap",
+        "trans"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "cloud",
+        "cond"
+       ]
+      },
+      {
+       "at": 0.5,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "cond",
+       "to": 1
+      },
+      {
+       "at": 1.5,
+       "do": "highlight",
+       "dur": 1,
+       "target": "cloud"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "rain",
+        "precip"
+       ]
+      },
+      {
+       "at": 0.6,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "precip",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "gaps",
+        "infil",
+        "down"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 0.8,
+       "target": [
+        "infil",
+        "down"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "gw",
+        "table",
+        "well",
+        "wellin"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 1,
+       "target": "table"
+      },
+      {
+       "at": 2,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "wellin",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "open",
+        "pit",
+        "recharge"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "recharge",
+       "to": 1
+      },
+      {
+       "at": 1.8,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "pump",
+        "concrete"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s5",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "qtitle",
+        "opt1",
+        "opt2",
+        "opt3",
+        "opt4"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive"
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which process names rainwater seeping down into the ground?",
+    "options": [
+     "opt1",
+     "opt2",
+     "opt3",
+     "opt4"
+    ],
+    "answer": "opt2",
+    "src": "c7-science-ch07-t04-i13"
+   }
+  },
+  "repairs": [
+   "string:fall.text",
+   "arrow:dangling",
+   "cue:target",
+   "cue:target",
+   "cue:target"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 46
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch07-t04-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "sun",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        110,
+        90
+       ],
+       "r": 42,
+       "fill": "accent"
+      },
+      {
+       "id": "sunlabel",
+       "op": "text",
+       "startMs": 500,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        110,
+        155
+       ],
+       "text": "Sun",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "sea",
+       "op": "ellipse",
+       "startMs": 800,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        410
+       ],
+       "rx": 250,
+       "ry": 45
+      },
+      {
+       "id": "waterlabel",
+       "op": "text",
+       "startMs": 1200,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        465
+       ],
+       "text": "seas, rivers, soil",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "heat",
+       "op": "arrow",
+       "startMs": 1800,
+       "endMs": 2800,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        145,
+        120
+       ],
+       "to": [
+        330,
+        345
+       ]
+      },
+      {
+       "id": "evap",
+       "op": "arrow",
+       "startMs": 2600,
+       "endMs": 3700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        365
+       ],
+       "to": [
+        400,
+        190
+       ]
+      },
+      {
+       "id": "evaplabel",
+       "op": "label",
+       "startMs": 3500,
+       "endMs": 4300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        455,
+        265
+       ],
+       "text": "evaporates",
+       "to": [
+        405,
+        270
+       ]
+      },
+      {
+       "id": "cycle",
+       "op": "arrow",
+       "startMs": 4400,
+       "endMs": 5700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        570,
+        220
+       ],
+       "to": [
+        650,
+        360
+       ]
+      },
+      {
+       "id": "cyclelabel",
+       "op": "text",
+       "startMs": 5700,
+       "endMs": 6300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        650,
+        190
+       ],
+       "text": "cycle",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch07-t04-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "plant",
+       "op": "polygon",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         185,
+         390
+        ],
+        [
+         220,
+         250
+        ],
+        [
+         255,
+         390
+        ]
+       ]
+      },
+      {
+       "id": "leaf1",
+       "op": "ellipse",
+       "startMs": 700,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        205,
+        315
+       ],
+       "rx": 42,
+       "ry": 18
+      },
+      {
+       "id": "leaf2",
+       "op": "ellipse",
+       "startMs": 900,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        235,
+        350
+       ],
+       "rx": 42,
+       "ry": 18
+      },
+      {
+       "id": "vapour",
+       "op": "arrow",
+       "startMs": 1500,
+       "endMs": 2600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        220,
+        265
+       ],
+       "to": [
+        220,
+        150
+       ]
+      },
+      {
+       "id": "vapourlabel",
+       "op": "label",
+       "startMs": 2500,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        285,
+        190
+       ],
+       "text": "water vapour",
+       "to": [
+        225,
+        190
+       ]
+      },
+      {
+       "id": "trans",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 5000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        100
+       ],
+       "text": "transpiration",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch07-t04-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "rise",
+       "op": "arrow",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        250
+       ],
+       "to": [
+        400,
+        100
+       ]
+      },
+      {
+       "id": "cool",
+       "op": "arrow",
+       "startMs": 900,
+       "endMs": 1700,
+       "ink": "accent",
+       "weight": 1,
+       "from": [
+        450,
+        120
+       ],
+       "to": [
+        520,
+        150
+       ]
+      },
+      {
+       "id": "cloud",
+       "op": "ellipse",
+       "startMs": 1300,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        525,
+        125
+       ],
+       "rx": 115,
+       "ry": 42
+      },
+      {
+       "id": "drop1",
+       "op": "circle",
+       "startMs": 2300,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        470,
+        205
+       ],
+       "r": 9
+      },
+      {
+       "id": "drop2",
+       "op": "circle",
+       "startMs": 2500,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        520,
+        220
+       ],
+       "r": 9
+      },
+      {
+       "id": "drop3",
+       "op": "circle",
+       "startMs": 2700,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        570,
+        205
+       ],
+       "r": 9
+      },
+      {
+       "id": "condense",
+       "op": "label",
+       "startMs": 3200,
+       "endMs": 4200,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        570,
+        285
+       ],
+       "text": "condenses",
+       "to": [
+        525,
+        160
+       ]
+      },
+      {
+       "id": "cloudlabel",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 4800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        525,
+        75
+       ],
+       "text": "clouds",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch07-t04-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "rain",
+       "op": "arrow",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        430,
+        170
+       ],
+       "to": [
+        430,
+        300
+       ]
+      },
+      {
+       "id": "land",
+       "op": "polygon",
+       "startMs": 900,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         80,
+         350
+        ],
+        [
+         250,
+         320
+        ],
+        [
+         430,
+         340
+        ],
+        [
+         700,
+         315
+        ],
+        [
+         700,
+         470
+        ],
+        [
+         80,
+         470
+        ]
+       ]
+      },
+      {
+       "id": "rainlabel",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        430,
+        275
+       ],
+       "text": "rain, snow, hail",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "runoff",
+       "op": "arrow",
+       "startMs": 2700,
+       "endMs": 4100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        260,
+        350
+       ],
+       "to": [
+        650,
+        390
+       ]
+      },
+      {
+       "id": "runlabel",
+       "op": "label",
+       "startMs": 4100,
+       "endMs": 5200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        470,
+        445
+       ],
+       "text": "runs over land",
+       "to": [
+        470,
+        400
+       ]
+      },
+      {
+       "id": "infil",
+       "op": "arrow",
+       "startMs": 5300,
+       "endMs": 6500,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        350,
+        350
+       ],
+       "to": [
+        350,
+        455
+       ]
+      },
+      {
+       "id": "inflabel",
+       "op": "label",
+       "startMs": 6500,
+       "endMs": 7600,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        375,
+        405
+       ],
+       "text": "infiltration",
+       "to": [
+        350,
+        410
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch07-t04-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 10387,
+     "ops": [
+      {
+       "id": "sand",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        300
+       ],
+       "w": 210,
+       "h": 140,
+       "fill": "soft"
+      },
+      {
+       "id": "gravel",
+       "op": "circle",
+       "startMs": 700,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        180,
+        350
+       ],
+       "r": 18
+      },
+      {
+       "id": "rock",
+       "op": "polygon",
+       "startMs": 1000,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         390,
+         300
+        ],
+        [
+         650,
+         320
+        ],
+        [
+         690,
+         440
+        ],
+        [
+         420,
+         430
+        ]
+       ]
+      },
+      {
+       "id": "gap1",
+       "op": "circle",
+       "startMs": 1700,
+       "endMs": 2100,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        245,
+        390
+       ],
+       "r": 8
+      },
+      {
+       "id": "gap2",
+       "op": "circle",
+       "startMs": 1900,
+       "endMs": 2300,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        515,
+        370
+       ],
+       "r": 8
+      },
+      {
+       "id": "move",
+       "op": "arrow",
+       "startMs": 2300,
+       "endMs": 3600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        280,
+        260
+       ],
+       "to": [
+        500,
+        350
+       ]
+      },
+      {
+       "id": "sandlabel",
+       "op": "text",
+       "startMs": 3600,
+       "endMs": 4400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        205,
+        280
+       ],
+       "text": "sand and gravel",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "rocklabel",
+       "op": "text",
+       "startMs": 4400,
+       "endMs": 5300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        545,
+        285
+       ],
+       "text": "cracks in rock",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "groundlabel",
+       "op": "label",
+       "startMs": 5800,
+       "endMs": 6900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        550,
+        465
+       ],
+       "text": "groundwater",
+       "to": [
+        520,
+        390
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch07-t04-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "layer",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        270
+       ],
+       "w": 560,
+       "h": 170,
+       "fill": "soft"
+      },
+      {
+       "id": "table",
+       "op": "line",
+       "startMs": 1100,
+       "endMs": 1800,
+       "ink": "accent",
+       "weight": 3,
+       "from": [
+        120,
+        270
+       ],
+       "to": [
+        680,
+        270
+       ]
+      },
+      {
+       "id": "tablelabel",
+       "op": "label",
+       "startMs": 1800,
+       "endMs": 2900,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        500,
+        245
+       ],
+       "text": "water table",
+       "to": [
+        500,
+        270
+       ]
+      },
+      {
+       "id": "well",
+       "op": "rect",
+       "startMs": 3000,
+       "endMs": 4200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        300,
+        190
+       ],
+       "w": 55,
+       "h": 220
+      },
+      {
+       "id": "wellwater",
+       "op": "ellipse",
+       "startMs": 4000,
+       "endMs": 4500,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        327,
+        380
+       ],
+       "rx": 25,
+       "ry": 12
+      },
+      {
+       "id": "collect",
+       "op": "arrow",
+       "startMs": 4500,
+       "endMs": 5600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        327,
+        360
+       ],
+       "to": [
+        327,
+        220
+       ]
+      },
+      {
+       "id": "welllabel",
+       "op": "text",
+       "startMs": 5600,
+       "endMs": 6200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        327,
+        155
+       ],
+       "text": "well",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch07-t04-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 9536,
+     "ops": [
+      {
+       "id": "soilopen",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        80,
+        300
+       ],
+       "w": 150,
+       "h": 120
+      },
+      {
+       "id": "tree",
+       "op": "line",
+       "startMs": 700,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        300,
+        420
+       ],
+       "to": [
+        300,
+        270
+       ]
+      },
+      {
+       "id": "treecrown",
+       "op": "circle",
+       "startMs": 1000,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        300,
+        250
+       ],
+       "r": 65
+      },
+      {
+       "id": "pond",
+       "op": "ellipse",
+       "startMs": 1400,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        500,
+        390
+       ],
+       "rx": 85,
+       "ry": 28
+      },
+      {
+       "id": "pit",
+       "op": "rect",
+       "startMs": 1900,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        650,
+        330
+       ],
+       "w": 80,
+       "h": 80
+      },
+      {
+       "id": "soak1",
+       "op": "arrow",
+       "startMs": 2600,
+       "endMs": 3400,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        150,
+        420
+       ],
+       "to": [
+        150,
+        465
+       ]
+      },
+      {
+       "id": "soak2",
+       "op": "arrow",
+       "startMs": 3000,
+       "endMs": 3800,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        500,
+        410
+       ],
+       "to": [
+        500,
+        465
+       ]
+      },
+      {
+       "id": "recharge",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        100
+       ],
+       "text": "recharge",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "pump",
+       "op": "arrow",
+       "startMs": 5000,
+       "endMs": 6200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        680,
+        420
+       ],
+       "to": [
+        680,
+        240
+       ]
+      },
+      {
+       "id": "fall",
+       "op": "arrow",
+       "startMs": 6500,
+       "endMs": 7400,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        560,
+        270
+       ],
+       "to": [
+        560,
+        350
+       ]
+      },
+      {
+       "id": "falllabel",
+       "op": "text",
+       "startMs": 7400,
+       "endMs": 8500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        560,
+        390
+       ],
+       "text": "water table falls",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch07-t04-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "question",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        120
+       ],
+       "text": "which process",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "rainpoint",
+       "op": "circle",
+       "startMs": 1000,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        300,
+        260
+       ],
+       "r": 18
+      },
+      {
+       "id": "down",
+       "op": "arrow",
+       "startMs": 1400,
+       "endMs": 2500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        300,
+        280
+       ],
+       "to": [
+        300,
+        410
+       ]
+      },
+      {
+       "id": "ground",
+       "op": "line",
+       "startMs": 2500,
+       "endMs": 3100,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        180,
+        420
+       ],
+       "to": [
+        620,
+        420
+       ]
+      },
+      {
+       "id": "answer",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        470
+       ],
+       "text": "infiltration",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "answerhi",
+       "op": "highlight",
+       "startMs": 4700,
+       "endMs": 5500,
+       "ink": "good",
+       "weight": 2,
+       "target": "answer",
+       "style": "circle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

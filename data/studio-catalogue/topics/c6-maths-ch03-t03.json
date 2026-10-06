@@ -1,0 +1,1554 @@
+{
+ "topicId": "c6-maths-ch03-t03",
+ "title": "Number patterns and the Collatz conjecture",
+ "chapter": "Number Play",
+ "subject": "maths",
+ "class": 6,
+ "topicType": "T5",
+ "plan": {
+  "game": "rule-machine@1",
+  "hint": "explore mode (Collatz / reverse-and-add) plus a seq round"
+ },
+ "game": {
+  "archetype": "rule-machine@1",
+  "spec": {
+   "archetype": "rule-machine@1",
+   "skills": [
+    "c6-maths-ch03-t03"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "built": "machines",
+    "run": "RUN",
+    "want": "order",
+    "got": "made",
+    "coach": "Tap tiles to fill the machine, then RUN",
+    "runDone": "Factory closed",
+    "step": "step",
+    "predict": "step",
+    "inverse": "run it backwards",
+    "target": "target",
+    "steps": "steps",
+    "pick": "Pick a start",
+    "works": "WORKS",
+    "fix": "not for every input"
+   },
+   "title": "Collatz Number Play",
+   "rounds": [
+    {
+     "mode": "explore",
+     "title": "Use the Collatz rule",
+     "sub": "even: halve; odd: ×3 then +1",
+     "machine": "collatz",
+     "lo": 6,
+     "hi": 14,
+     "minSteps": 2,
+     "targets": "c6-maths-ch03-t03-m-rule-mixup"
+    },
+    {
+     "mode": "explore",
+     "title": "Does every trail end?",
+     "sub": "evidence is not proof",
+     "machine": "collatz",
+     "lo": 9,
+     "hi": 27,
+     "minSteps": 10,
+     "targets": "c6-maths-ch03-t03-m-all-known"
+    }
+   ]
+  },
+  "repairs": [
+   "seq:rule-does-not-match-pattern"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c6-maths-ch03-t03"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "The Collatz game",
+   "accent": "ion",
+   "targets": "c6-maths-ch03-t03-m-bigger-longer",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "The Collatz game"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Bigger numbers always take longer"
+      },
+      {
+       "id": "mythmark",
+       "type": "label",
+       "text": "MYTH",
+       "x": 650,
+       "y": 260,
+       "color": "amber"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "even",
+       "type": "node",
+       "text": "Even n",
+       "sub": "halve",
+       "color": "ion"
+      },
+      {
+       "id": "odd",
+       "type": "node",
+       "text": "Odd n",
+       "sub": "3n + 1",
+       "glyph": "spark",
+       "color": "amber"
+      },
+      {
+       "id": "repeat",
+       "type": "node",
+       "text": "Repeat",
+       "sub": "until 1",
+       "glyph": "gear",
+       "color": "mint"
+      },
+      {
+       "id": "e1",
+       "type": "arrow",
+       "from": "even",
+       "to": "repeat",
+       "text": "n ÷ 2"
+      },
+      {
+       "id": "e2",
+       "type": "arrow",
+       "from": "odd",
+       "to": "repeat",
+       "text": "3n + 1"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "nine",
+       "type": "node",
+       "text": "9",
+       "sub": "odd",
+       "color": "amber"
+      },
+      {
+       "id": "twentyeight",
+       "type": "node",
+       "text": "28",
+       "sub": "even",
+       "color": "ion"
+      },
+      {
+       "id": "fourteen",
+       "type": "node",
+       "text": "14",
+       "sub": "even",
+       "color": "ion"
+      },
+      {
+       "id": "seven",
+       "type": "node",
+       "text": "7",
+       "sub": "odd",
+       "color": "amber"
+      },
+      {
+       "id": "one",
+       "type": "node",
+       "text": "1",
+       "sub": "stop",
+       "color": "mint"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "nine",
+       "to": "twentyeight",
+       "text": "3n + 1"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "twentyeight",
+       "to": "fourteen",
+       "text": "÷ 2"
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "fourteen",
+       "to": "seven",
+       "text": "÷ 2"
+      },
+      {
+       "id": "a4",
+       "type": "arrow",
+       "from": "seven",
+       "to": "one",
+       "text": "keep rule"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "row",
+     "els": [
+      {
+       "id": "sevensteps",
+       "type": "node",
+       "text": "7",
+       "sub": "16 steps",
+       "glyph": "ruler",
+       "color": "amber"
+      },
+      {
+       "id": "thirtysteps",
+       "type": "node",
+       "text": "32",
+       "sub": "5 steps",
+       "glyph": "ruler",
+       "color": "ion"
+      },
+      {
+       "id": "loopone",
+       "type": "node",
+       "text": "1",
+       "sub": "then loop",
+       "color": "mint"
+      },
+      {
+       "id": "loopfour",
+       "type": "node",
+       "text": "4",
+       "sub": "4, 2, 1",
+       "color": "mint"
+      },
+      {
+       "id": "c1",
+       "type": "arrow",
+       "from": "loopone",
+       "to": "loopfour",
+       "text": "continue"
+      },
+      {
+       "id": "c2",
+       "type": "arrow",
+       "from": "loopfour",
+       "to": "loopone",
+       "text": "repeat"
+      }
+     ]
+    },
+    {
+     "id": "s5",
+     "layout": "split",
+     "els": [
+      {
+       "id": "claim",
+       "type": "node",
+       "text": "Conjecture",
+       "sub": "not proved",
+       "glyph": "question",
+       "color": "amber"
+      },
+      {
+       "id": "evidence",
+       "type": "node",
+       "text": "Many checks",
+       "sub": "evidence",
+       "color": "ion"
+      },
+      {
+       "id": "proof",
+       "type": "node",
+       "text": "Proof",
+       "sub": "still needed",
+       "glyph": "book",
+       "color": "mint"
+      },
+      {
+       "id": "choice7",
+       "type": "label",
+       "text": "7 takes more steps",
+       "x": 180,
+       "y": 360,
+       "color": "amber"
+      },
+      {
+       "id": "choice32",
+       "type": "label",
+       "text": "32 takes more steps",
+       "x": 580,
+       "y": 360,
+       "color": "ion"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "The Collatz game repeats one simple rule. Every starting number gets checked by its parity.",
+    "L2": "For an even number, divide by 2. For an odd number, multiply by 3 and add 1.",
+    "L3": "Starting at 9 gives 28, 14, and 7. Continuing the rule eventually reaches 1.",
+    "L4": "After 1, the sequence loops 4, 2, 1, 4, 2, 1. The rule can keep repeating.",
+    "L5": "A bigger starting number does not always take more steps. Seven takes 16 steps, but 32 takes only 5.",
+    "L6": "People have tried many starting numbers, and every one tried reaches 1. But this is not a proof.",
+    "L7": "The Collatz conjecture says every number reaches 1. It is still an unsolved problem.",
+    "L8": "Now choose which starting number takes more steps to reach 1."
+   },
+   "narration": {},
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "title"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "even",
+        "odd",
+        "repeat"
+       ]
+      },
+      {
+       "at": 0.5,
+       "do": "flow",
+       "dur": 0.7,
+       "target": [
+        "e1",
+        "e2"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.5,
+       "target": "nine"
+      },
+      {
+       "at": 0.4,
+       "do": "show",
+       "dur": 0.6,
+       "target": [
+        "a1",
+        "twentyeight"
+       ]
+      },
+      {
+       "at": 0.9,
+       "do": "show",
+       "dur": 0.6,
+       "target": [
+        "a2",
+        "fourteen"
+       ]
+      },
+      {
+       "at": 1.4,
+       "do": "show",
+       "dur": 0.6,
+       "target": [
+        "a3",
+        "seven"
+       ]
+      },
+      {
+       "at": 1.9,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "a4",
+        "one"
+       ]
+      },
+      {
+       "at": 2.4,
+       "do": "flow",
+       "dur": 0.8,
+       "target": [
+        "a1",
+        "a2",
+        "a3",
+        "a4"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "loopone",
+        "loopfour"
+       ]
+      },
+      {
+       "at": 0.5,
+       "do": "flow",
+       "dur": 0.8,
+       "target": [
+        "c1",
+        "c2"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.5,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "sevensteps",
+        "thirtysteps"
+       ]
+      },
+      {
+       "at": 0.6,
+       "do": "highlight",
+       "dur": 1,
+       "target": "sevensteps"
+      },
+      {
+       "at": 1.7,
+       "do": "highlight",
+       "dur": 1,
+       "target": "thirtysteps"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s5",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "evidence"
+      },
+      {
+       "at": 0.6,
+       "do": "show",
+       "dur": 0.8,
+       "target": "claim"
+      },
+      {
+       "at": 1.4,
+       "do": "highlight",
+       "dur": 1,
+       "target": "evidence"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s5",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "proof"
+      },
+      {
+       "at": 0.6,
+       "do": "highlight",
+       "dur": 1.2,
+       "target": "claim"
+      },
+      {
+       "at": 1.8,
+       "do": "highlight",
+       "dur": 1,
+       "target": "proof"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s5",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "choice7",
+        "choice32"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which starting number takes more steps to reach 1?",
+    "options": [
+     "choice7",
+     "choice32"
+    ],
+    "answer": "choice7",
+    "src": "c6-maths-ch03-t03-i03"
+   }
+  },
+  "repairs": [
+   "glyph",
+   "glyph",
+   "glyph",
+   "glyph",
+   "glyph",
+   "glyph",
+   "glyph",
+   "glyph",
+   "glyph",
+   "cue:target"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 59
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch03-t03-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "title",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "Collatz game",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "rule",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        130
+       ],
+       "text": "one simple rule",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "check",
+       "op": "circle",
+       "startMs": 1800,
+       "endMs": 2800,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        270
+       ],
+       "r": 72
+      },
+      {
+       "id": "parity",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 3200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        275
+       ],
+       "text": "parity",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "start",
+       "op": "text",
+       "startMs": 3400,
+       "endMs": 4500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        120,
+        390
+       ],
+       "text": "starting number",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "arrow",
+       "op": "arrow",
+       "startMs": 4300,
+       "endMs": 5200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        220,
+        380
+       ],
+       "to": [
+        320,
+        300
+       ]
+      },
+      {
+       "id": "checked",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 6000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        590,
+        390
+       ],
+       "text": "checked",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch03-t03-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "even",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        205,
+        145
+       ],
+       "r": 78
+      },
+      {
+       "id": "evenlabel",
+       "op": "text",
+       "startMs": 500,
+       "endMs": 1200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        205,
+        140
+       ],
+       "text": "even",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "evenrule",
+       "op": "numwork",
+       "startMs": 1300,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        105,
+        260
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "even",
+         "÷",
+         "2"
+        ]
+       ]
+      },
+      {
+       "id": "odd",
+       "op": "circle",
+       "startMs": 2700,
+       "endMs": 3600,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        595,
+        145
+       ],
+       "r": 78
+      },
+      {
+       "id": "oddlabel",
+       "op": "text",
+       "startMs": 3200,
+       "endMs": 3900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        595,
+        140
+       ],
+       "text": "odd",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "oddrule",
+       "op": "numwork",
+       "startMs": 4000,
+       "endMs": 5600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        455,
+        260
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "odd",
+         "×",
+         "3",
+         "+",
+         "1"
+        ]
+       ]
+      },
+      {
+       "id": "split",
+       "op": "line",
+       "startMs": 5900,
+       "endMs": 6800,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        400,
+        80
+       ],
+       "to": [
+        400,
+        390
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch03-t03-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "seq",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        55,
+        110
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "9",
+         "→",
+         "28",
+         "→",
+         "14",
+         "→",
+         "7"
+        ]
+       ]
+      },
+      {
+       "id": "more",
+       "op": "arrow",
+       "startMs": 2300,
+       "endMs": 3000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        575,
+        145
+       ],
+       "to": [
+        690,
+        145
+       ]
+      },
+      {
+       "id": "one",
+       "op": "circle",
+       "startMs": 3100,
+       "endMs": 3800,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        720,
+        145
+       ],
+       "r": 35
+      },
+      {
+       "id": "oneText",
+       "op": "text",
+       "startMs": 3400,
+       "endMs": 3900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        720,
+        153
+       ],
+       "text": "1",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "eventual",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 4900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        280
+       ],
+       "text": "eventually",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "path",
+       "op": "arrow",
+       "startMs": 5000,
+       "endMs": 6200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        130,
+        350
+       ],
+       "to": [
+        650,
+        350
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch03-t03-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "loop",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        70,
+        115
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "1",
+         "→",
+         "4",
+         "→",
+         "2",
+         "→",
+         "1"
+        ]
+       ]
+      },
+      {
+       "id": "looparrow",
+       "op": "arrow",
+       "startMs": 2300,
+       "endMs": 3700,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        430,
+        115
+       ],
+       "to": [
+        120,
+        180
+       ]
+      },
+      {
+       "id": "repeat",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        300
+       ],
+       "text": "repeat",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "rulekeep",
+       "op": "text",
+       "startMs": 5100,
+       "endMs": 6400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        390
+       ],
+       "text": "keep repeating",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch03-t03-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "big",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "bigger ≠ more steps",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "seven",
+       "op": "numwork",
+       "startMs": 1400,
+       "endMs": 2700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        100,
+        150
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "7",
+         "→",
+         "16",
+         "steps"
+        ]
+       ]
+      },
+      {
+       "id": "thirtytwo",
+       "op": "numwork",
+       "startMs": 3000,
+       "endMs": 4300,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        100,
+        280
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "32",
+         "→",
+         "5",
+         "steps"
+        ]
+       ]
+      },
+      {
+       "id": "compare",
+       "op": "arrow",
+       "startMs": 4700,
+       "endMs": 5700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        500,
+        210
+       ],
+       "to": [
+        500,
+        330
+       ]
+      },
+      {
+       "id": "note",
+       "op": "text",
+       "startMs": 6000,
+       "endMs": 7000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        440
+       ],
+       "text": "not always",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch03-t03-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "many",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "many starting numbers",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "cases",
+       "op": "circle",
+       "startMs": 1400,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        225
+       ],
+       "r": 105
+      },
+      {
+       "id": "tried",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        230
+       ],
+       "text": "every one tried",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "toone",
+       "op": "arrow",
+       "startMs": 3200,
+       "endMs": 4000,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        400,
+        340
+       ],
+       "to": [
+        400,
+        390
+       ]
+      },
+      {
+       "id": "one",
+       "op": "text",
+       "startMs": 4100,
+       "endMs": 4700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        440
+       ],
+       "text": "1",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "evidence",
+       "op": "text",
+       "startMs": 5200,
+       "endMs": 6100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        485
+       ],
+       "text": "evidence",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "notproof",
+       "op": "text",
+       "startMs": 6400,
+       "endMs": 7400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        620,
+        485
+       ],
+       "text": "not proof",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch03-t03-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "conj",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        75
+       ],
+       "text": "Collatz conjecture",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "claim",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        175
+       ],
+       "text": "every number → 1",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "question",
+       "op": "circle",
+       "startMs": 3000,
+       "endMs": 3900,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        290
+       ],
+       "r": 75
+      },
+      {
+       "id": "unsolved",
+       "op": "text",
+       "startMs": 3400,
+       "endMs": 4500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        295
+       ],
+       "text": "unsolved",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "line",
+       "op": "line",
+       "startMs": 4700,
+       "endMs": 5500,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        260,
+        410
+       ],
+       "to": [
+        540,
+        410
+       ]
+      },
+      {
+       "id": "still",
+       "op": "text",
+       "startMs": 5600,
+       "endMs": 6200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        455
+       ],
+       "text": "still",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch03-t03-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "choose",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "choose",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "start",
+       "op": "text",
+       "startMs": 1100,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        220,
+        190
+       ],
+       "text": "starting number",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "steps",
+       "op": "text",
+       "startMs": 1200,
+       "endMs": 2000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        580,
+        190
+       ],
+       "text": "steps",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "arrow",
+       "op": "arrow",
+       "startMs": 2200,
+       "endMs": 3000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        330,
+        190
+       ],
+       "to": [
+        470,
+        190
+       ]
+      },
+      {
+       "id": "more",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 4500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        330
+       ],
+       "text": "more steps",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1",
+   "key": "start with ≥ 2 steps",
+   "prompt": "collatz 6-14"
+  },
+  {
+   "itemId": "r2",
+   "key": "start with ≥ 10 steps",
+   "prompt": "collatz 9-27"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ },
+ "firstCheck": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "Round 2 'Matchstick Squares' is not about the Collatz conjecture; the kit's items all target Collatz sequences. The round introduces a different pattern rule (sticks-squares) with no connection to the kit's content or topic.",
+    "severity": "high"
+   }
+  ],
+  "verdict": "fail",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

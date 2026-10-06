@@ -1,0 +1,1854 @@
+{
+ "topicId": "c6-science-ch03-t04",
+ "title": "Food miles",
+ "chapter": "Mindful Eating: A Path to a Healthy Body",
+ "subject": "science",
+ "class": 6,
+ "topicType": "T5",
+ "plan": {
+  "game": "map-route@1",
+  "hint": "scale mode: distances between places with a km-per-square scale (and one thread round on a winding road)"
+ },
+ "game": {
+  "archetype": "map-route@1",
+  "spec": {
+   "archetype": "map-route@1",
+   "skills": [
+    "c6-science-ch03-t04"
+   ],
+   "lang": "en",
+   "strings": {
+    "thread": "Drag the thread along the food journey",
+    "round": "Round",
+    "done": "journeys",
+    "go": "FLY",
+    "undo": "UNDO",
+    "coach": "Measure the whole journey from source to plate",
+    "runDone": "Map room closed",
+    "fwd": "forward",
+    "left": "left",
+    "right": "right",
+    "km": "km",
+    "scale": "1 square =",
+    "measure": "Drag the tape between the two places, then set the distance",
+    "lat": "lat",
+    "lon": "long",
+    "drop": "Tap where the pin goes",
+    "fly": "Fly to",
+    "set": "SET",
+    "N": "N",
+    "S": "S",
+    "E": "E",
+    "W": "W",
+    "blocked": "BLOCKED",
+    "arrived": "ARRIVED"
+   },
+   "title": "Food Miles Map",
+   "rounds": [
+    {
+     "mode": "scale",
+     "title": "Measure food miles",
+     "sub": "measure from source to where it is eaten",
+     "w": 10,
+     "h": 6,
+     "places": [
+      {
+       "at": [
+        1,
+        1
+       ],
+       "label": "Assam",
+       "glyph": "leaf"
+      },
+      {
+       "at": [
+        9,
+        5
+       ],
+       "label": "Jaipur",
+       "glyph": "house"
+      }
+     ],
+     "from": 0,
+     "to": 1,
+     "kmPerSquare": 200,
+     "tol": 80,
+     "targets": "c6-science-ch03-t04-m3"
+    },
+    {
+     "mode": "thread",
+     "title": "Straighten the journey",
+     "sub": "trace a winding food journey",
+     "w": 10,
+     "h": 6,
+     "curve": [
+      [
+       0.5,
+       3
+      ],
+      [
+       1,
+       2
+      ],
+      [
+       2,
+       4
+      ],
+      [
+       3,
+       1
+      ],
+      [
+       4,
+       3
+      ],
+      [
+       5,
+       2
+      ],
+      [
+       6,
+       4
+      ],
+      [
+       7,
+       1
+      ],
+      [
+       8,
+       3
+      ],
+      [
+       9,
+       2
+      ]
+     ],
+     "kmPerSquare": 20,
+     "tolPct": 10,
+     "targets": "c6-science-ch03-t04-m1"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c6-science-ch03-t04"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Food miles",
+   "accent": "mint",
+   "targets": "c6-science-ch03-t04-m3",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Food miles"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Food miles are only shop to home"
+      },
+      {
+       "id": "plate",
+       "type": "glyph",
+       "name": "plate",
+       "x": 760,
+       "y": 300,
+       "size": 120,
+       "color": "mint"
+      },
+      {
+       "id": "home",
+       "type": "label",
+       "text": "Plate",
+       "x": 790,
+       "y": 430,
+       "color": "mint"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "farm",
+       "type": "node",
+       "text": "Farm",
+       "sub": "grown here",
+       "glyph": "wheat",
+       "color": "mint"
+      },
+      {
+       "id": "market",
+       "type": "node",
+       "text": "Market",
+       "sub": "sold here",
+       "glyph": "shop",
+       "color": "amber"
+      },
+      {
+       "id": "plate2",
+       "type": "node",
+       "text": "Plate",
+       "sub": "eaten here",
+       "glyph": "plate",
+       "color": "sun"
+      },
+      {
+       "id": "journey1",
+       "type": "arrow",
+       "from": "farm",
+       "to": "market",
+       "text": "travels"
+      },
+      {
+       "id": "journey2",
+       "type": "arrow",
+       "from": "market",
+       "to": "plate2",
+       "text": "travels"
+      },
+      {
+       "id": "fm",
+       "type": "label",
+       "text": "Whole journey",
+       "x": 380,
+       "y": 500,
+       "color": "ion"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "split",
+     "els": [
+      {
+       "id": "far",
+       "type": "node",
+       "text": "Apple",
+       "sub": "Shimla",
+       "glyph": "apple",
+       "color": "amber"
+      },
+      {
+       "id": "near",
+       "type": "node",
+       "text": "Spinach",
+       "sub": "near Delhi",
+       "glyph": "leaf",
+       "color": "mint"
+      },
+      {
+       "id": "farbar",
+       "type": "bar",
+       "parts": 24,
+       "shaded": 24,
+       "x": 80,
+       "y": 390,
+       "w": 650,
+       "text": "about 350 km"
+      },
+      {
+       "id": "nearbar",
+       "type": "bar",
+       "parts": 2,
+       "shaded": 2,
+       "x": 80,
+       "y": 500,
+       "w": 650,
+       "text": "about 20 km"
+      },
+      {
+       "id": "compare",
+       "type": "label",
+       "text": "Compare distance",
+       "x": 80,
+       "y": 300,
+       "color": "ion"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "row",
+     "els": [
+      {
+       "id": "local",
+       "type": "node",
+       "text": "Local",
+       "sub": "less travel",
+       "glyph": "leaf",
+       "color": "mint"
+      },
+      {
+       "id": "fuel",
+       "type": "node",
+       "text": "Fuel",
+       "sub": "less used",
+       "glyph": "battery",
+       "color": "amber"
+      },
+      {
+       "id": "fresh",
+       "type": "node",
+       "text": "Fresher",
+       "sub": "usually",
+       "glyph": "spark",
+       "color": "sun"
+      },
+      {
+       "id": "support",
+       "type": "node",
+       "text": "Farmers",
+       "sub": "nearby",
+       "glyph": "person",
+       "color": "ion"
+      },
+      {
+       "id": "aLocal",
+       "type": "arrow",
+       "from": "local",
+       "to": "fuel",
+       "text": "can mean"
+      },
+      {
+       "id": "aFresh",
+       "type": "arrow",
+       "from": "local",
+       "to": "fresh",
+       "text": "often"
+      },
+      {
+       "id": "aSupport",
+       "type": "arrow",
+       "from": "local",
+       "to": "support",
+       "text": "supports"
+      },
+      {
+       "id": "qApple",
+       "type": "node",
+       "text": "Apple",
+       "sub": "Shimla",
+       "glyph": "apple",
+       "color": "amber"
+      },
+      {
+       "id": "qBanana",
+       "type": "node",
+       "text": "Banana",
+       "sub": "20 km away",
+       "color": "mint"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Food miles are the distance food travels from where it is grown or made to where it is eaten.",
+    "L2": "Food miles count the whole journey, not only the trip from the shop to your home.",
+    "L3": "A longer journey usually burns more fuel, adding more air pollution. Cold storage and packaging may add energy, cost and waste.",
+    "L4": "Let us compare apples from Shimla with spinach from a farm near Delhi, for a family in Delhi.",
+    "L5": "The apples travel about 350 kilometres, while the spinach travels about 20 kilometres. The apples go more than 15 times as far.",
+    "L6": "So local and seasonal food usually travels less, is fresher and supports nearby farmers.",
+    "L7": "Read labels and ask sellers where food comes from. Distance matters, but how food is grown and stored matters too.",
+    "L8": "Which food used less fuel to reach the Chennai market: an apple from Himachal Pradesh or a banana from a farm 20 kilometres away?"
+   },
+   "narration": {
+    "L1": {
+     "text": "Food miles are the distance food travels from where it is grown or made to where it is eaten.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "Food miles count the whole journey, not only the trip from the shop to your home.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "A longer journey usually burns more fuel, adding more air pollution. Cold storage and packaging may add energy, cost and waste.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "Let us compare apples from Shimla with spinach from a farm near Delhi, for a family in Delhi.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "The apples travel about 350 kilometres, while the spinach travels about 20 kilometres. The apples go more than 15 times as far.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "So local and seasonal food usually travels less, is fresher and supports nearby farmers.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Read labels and ask sellers where food comes from. Distance matters, but how food is grown and stored matters too.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Which food used less fuel to reach the Chennai market: an apple from Himachal Pradesh or a banana from a farm 20 kilometres away?",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": "plate"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      },
+      {
+       "at": 1,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "farm",
+        "journey1",
+        "market",
+        "journey2",
+        "plate2"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 0.8,
+       "target": [
+        "journey1",
+        "journey2"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "far",
+        "near",
+        "compare"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "farbar",
+        "nearbar"
+       ]
+      },
+      {
+       "at": 1.2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "farbar"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "local",
+        "fuel",
+        "fresh",
+        "support"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 0.7,
+       "target": [
+        "aLocal",
+        "aFresh",
+        "aSupport"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "local"
+      },
+      {
+       "at": 1.2,
+       "do": "focus",
+       "dur": 0.8,
+       "target": "support"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "qApple",
+        "qBanana"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which food used less fuel to reach the Chennai market?",
+    "options": [
+     "qApple",
+     "qBanana"
+    ],
+    "answer": "qBanana",
+    "src": "c6-science-ch03-t04-i03"
+   }
+  },
+  "repairs": [
+   "clamp:parts",
+   "clamp:shaded",
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 44
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch03-t04-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "farm",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        70,
+        180
+       ],
+       "w": 150,
+       "h": 100,
+       "fill": "soft"
+      },
+      {
+       "id": "grow",
+       "op": "text",
+       "startMs": 1000,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        145,
+        235
+       ],
+       "text": "grown",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "food",
+       "op": "circle",
+       "startMs": 1600,
+       "endMs": 2300,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        230
+       ],
+       "r": 45,
+       "fill": "accent"
+      },
+      {
+       "id": "eat",
+       "op": "rect",
+       "startMs": 2300,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        590,
+        180
+       ],
+       "w": 140,
+       "h": 100,
+       "fill": "soft"
+      },
+      {
+       "id": "eatl",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        660,
+        235
+       ],
+       "text": "eaten",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "path",
+       "op": "arrow",
+       "startMs": 4000,
+       "endMs": 5000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        225,
+        230
+       ],
+       "to": [
+        355,
+        230
+       ]
+      },
+      {
+       "id": "path2",
+       "op": "arrow",
+       "startMs": 5000,
+       "endMs": 6000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        445,
+        230
+       ],
+       "to": [
+        585,
+        230
+       ]
+      },
+      {
+       "id": "miles",
+       "op": "text",
+       "startMs": 6200,
+       "endMs": 7000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        120
+       ],
+       "text": "food miles",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch03-t04-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "shop",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        170
+       ],
+       "w": 130,
+       "h": 90,
+       "fill": "soft"
+      },
+      {
+       "id": "home",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        570,
+        170
+       ],
+       "w": 130,
+       "h": 90,
+       "fill": "soft"
+      },
+      {
+       "id": "shopt",
+       "op": "text",
+       "startMs": 800,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        165,
+        220
+       ],
+       "text": "shop",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "homet",
+       "op": "text",
+       "startMs": 800,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        635,
+        220
+       ],
+       "text": "home",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "short",
+       "op": "arrow",
+       "startMs": 1800,
+       "endMs": 3000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        235,
+        215
+       ],
+       "to": [
+        565,
+        215
+       ]
+      },
+      {
+       "id": "whole",
+       "op": "arrow",
+       "startMs": 3300,
+       "endMs": 4700,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        165,
+        160
+       ],
+       "to": [
+        635,
+        160
+       ]
+      },
+      {
+       "id": "journey",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 6000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        110
+       ],
+       "text": "whole journey",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch03-t04-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 9536,
+     "ops": [
+      {
+       "id": "truck",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        70,
+        190
+       ],
+       "w": 150,
+       "h": 75,
+       "fill": "soft"
+      },
+      {
+       "id": "fuel",
+       "op": "text",
+       "startMs": 800,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        145,
+        230
+       ],
+       "text": "fuel",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "long",
+       "op": "arrow",
+       "startMs": 1400,
+       "endMs": 2600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        250,
+        225
+       ],
+       "to": [
+        520,
+        225
+       ]
+      },
+      {
+       "id": "smoke",
+       "op": "stroke",
+       "startMs": 2700,
+       "endMs": 3400,
+       "ink": "soft",
+       "weight": 2,
+       "points": [
+        [
+         275,
+         180
+        ],
+        [
+         290,
+         155
+        ],
+        [
+         280,
+         130
+        ],
+        [
+         300,
+         105
+        ]
+       ]
+      },
+      {
+       "id": "pollution",
+       "op": "text",
+       "startMs": 3400,
+       "endMs": 4100,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        85
+       ],
+       "text": "air pollution",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "cold",
+       "op": "rect",
+       "startMs": 4200,
+       "endMs": 5000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        540,
+        170
+       ],
+       "w": 110,
+       "h": 70,
+       "fill": "soft"
+      },
+      {
+       "id": "coldt",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 5700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        595,
+        210
+       ],
+       "text": "cold storage",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "pack",
+       "op": "rect",
+       "startMs": 5700,
+       "endMs": 6400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        665,
+        170
+       ],
+       "w": 80,
+       "h": 70,
+       "fill": "soft"
+      },
+      {
+       "id": "packt",
+       "op": "text",
+       "startMs": 6400,
+       "endMs": 7200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        705,
+        210
+       ],
+       "text": "packaging",
+       "size": "s",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch03-t04-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "shimla",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        150,
+        130
+       ],
+       "r": 38,
+       "fill": "accent"
+      },
+      {
+       "id": "shimlat",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        150,
+        195
+       ],
+       "text": "Shimla",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "delhi",
+       "op": "circle",
+       "startMs": 1300,
+       "endMs": 2000,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        650,
+        350
+       ],
+       "r": 38,
+       "fill": "soft"
+      },
+      {
+       "id": "delhit",
+       "op": "text",
+       "startMs": 2000,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        650,
+        415
+       ],
+       "text": "Delhi",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "apple",
+       "op": "text",
+       "startMs": 2600,
+       "endMs": 3200,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        150,
+        90
+       ],
+       "text": "apples",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "spinach",
+       "op": "text",
+       "startMs": 3200,
+       "endMs": 3800,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        300,
+        365
+       ],
+       "text": "spinach",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "routea",
+       "op": "arrow",
+       "startMs": 3900,
+       "endMs": 5000,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        180,
+        150
+       ],
+       "to": [
+        610,
+        330
+       ]
+      },
+      {
+       "id": "farmnear",
+       "op": "rect",
+       "startMs": 5000,
+       "endMs": 5700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        270,
+        300
+       ],
+       "w": 110,
+       "h": 60,
+       "fill": "soft"
+      },
+      {
+       "id": "farmnearlabel",
+       "op": "text",
+       "startMs": 5700,
+       "endMs": 6300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        325,
+        330
+       ],
+       "text": "farm",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "routeb",
+       "op": "arrow",
+       "startMs": 6300,
+       "endMs": 7300,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        385,
+        330
+       ],
+       "to": [
+        610,
+        350
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch03-t04-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 9962,
+     "ops": [
+      {
+       "id": "apples",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        110,
+        100
+       ],
+       "text": "apples",
+       "size": "m"
+      },
+      {
+       "id": "spinach",
+       "op": "text",
+       "startMs": 600,
+       "endMs": 1200,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        110,
+        300
+       ],
+       "text": "spinach",
+       "size": "m"
+      },
+      {
+       "id": "a350",
+       "op": "arrow",
+       "startMs": 1400,
+       "endMs": 2600,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        210,
+        110
+       ],
+       "to": [
+        650,
+        110
+       ]
+      },
+      {
+       "id": "d350",
+       "op": "text",
+       "startMs": 2600,
+       "endMs": 3400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        430,
+        80
+       ],
+       "text": "350 km",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "s20",
+       "op": "arrow",
+       "startMs": 3500,
+       "endMs": 4500,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        210,
+        310
+       ],
+       "to": [
+        350,
+        310
+       ]
+      },
+      {
+       "id": "d20",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        280,
+        280
+       ],
+       "text": "20 km",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "far",
+       "op": "text",
+       "startMs": 7400,
+       "endMs": 8500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        390
+       ],
+       "text": "more than 15 times",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch03-t04-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "local",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        180,
+        210
+       ],
+       "r": 55,
+       "fill": "good"
+      },
+      {
+       "id": "localt",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        180,
+        290
+       ],
+       "text": "local",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "season",
+       "op": "circle",
+       "startMs": 1300,
+       "endMs": 2000,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        210
+       ],
+       "r": 55,
+       "fill": "soft"
+      },
+      {
+       "id": "seasont",
+       "op": "text",
+       "startMs": 2000,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        290
+       ],
+       "text": "seasonal",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "less",
+       "op": "arrow",
+       "startMs": 2800,
+       "endMs": 3500,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        245,
+        210
+       ],
+       "to": [
+        330,
+        210
+       ]
+      },
+      {
+       "id": "fresh",
+       "op": "text",
+       "startMs": 3700,
+       "endMs": 4300,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        590,
+        180
+       ],
+       "text": "fresher",
+       "size": "m"
+      },
+      {
+       "id": "farmers",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 5200,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        590,
+        240
+       ],
+       "text": "nearby farmers",
+       "size": "m"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch03-t04-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 9111,
+     "ops": [
+      {
+       "id": "label",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        130
+       ],
+       "w": 250,
+       "h": 150,
+       "fill": "soft"
+      },
+      {
+       "id": "labelt",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        215,
+        175
+       ],
+       "text": "label",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "source",
+       "op": "text",
+       "startMs": 1600,
+       "endMs": 2400,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        120,
+        225
+       ],
+       "text": "where food comes from",
+       "size": "s"
+      },
+      {
+       "id": "seller",
+       "op": "circle",
+       "startMs": 2500,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        570,
+        210
+       ],
+       "r": 48,
+       "fill": "soft"
+      },
+      {
+       "id": "sellert",
+       "op": "text",
+       "startMs": 3200,
+       "endMs": 3800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        570,
+        285
+       ],
+       "text": "seller",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "ask",
+       "op": "arrow",
+       "startMs": 3900,
+       "endMs": 5000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        345,
+        205
+       ],
+       "to": [
+        515,
+        205
+       ]
+      },
+      {
+       "id": "distance",
+       "op": "text",
+       "startMs": 5400,
+       "endMs": 6200,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        170,
+        400
+       ],
+       "text": "distance matters",
+       "size": "m"
+      },
+      {
+       "id": "growstore",
+       "op": "text",
+       "startMs": 6500,
+       "endMs": 7400,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        500,
+        400
+       ],
+       "text": "grown + stored",
+       "size": "m"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch03-t04-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 10813,
+     "ops": [
+      {
+       "id": "market",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        300,
+        350
+       ],
+       "w": 200,
+       "h": 70,
+       "fill": "soft"
+      },
+      {
+       "id": "markett",
+       "op": "text",
+       "startMs": 800,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        390
+       ],
+       "text": "Chennai market",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "hima",
+       "op": "circle",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        140,
+        110
+       ],
+       "r": 40,
+       "fill": "accent"
+      },
+      {
+       "id": "himat",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 3100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        140,
+        175
+       ],
+       "text": "Himachal Pradesh",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "apple",
+       "op": "text",
+       "startMs": 3100,
+       "endMs": 3700,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        140,
+        75
+       ],
+       "text": "apple",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "farm",
+       "op": "rect",
+       "startMs": 3700,
+       "endMs": 4500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        600,
+        100
+       ],
+       "w": 120,
+       "h": 70,
+       "fill": "good"
+      },
+      {
+       "id": "farmt",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5100,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        660,
+        135
+       ],
+       "text": "farm",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "banana",
+       "op": "text",
+       "startMs": 5100,
+       "endMs": 5700,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        660,
+        85
+       ],
+       "text": "banana",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "farroute",
+       "op": "arrow",
+       "startMs": 5800,
+       "endMs": 7000,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        180,
+        130
+       ],
+       "to": [
+        300,
+        350
+       ]
+      },
+      {
+       "id": "nearroute",
+       "op": "arrow",
+       "startMs": 7000,
+       "endMs": 7900,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        600,
+        170
+       ],
+       "to": [
+        500,
+        350
+       ]
+      },
+      {
+       "id": "near20",
+       "op": "text",
+       "startMs": 7900,
+       "endMs": 8500,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        560,
+        280
+       ],
+       "text": "20 km",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "1788.9 km",
+   "prompt": "Assam→Jaipur at 200 km/square"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "396.5 km",
+   "prompt": "road length at 20 km/square"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

@@ -1,0 +1,1910 @@
+{
+ "topicId": "c4-evs-ch07-t02",
+ "title": "Spinners and moving toys",
+ "chapter": "How Things Work",
+ "subject": "evs",
+ "class": 4,
+ "topicType": "T3",
+ "plan": {
+  "game": "motion-lab@1",
+  "hint": "race mode: toys that move (how far in how long); drive round"
+ },
+ "game": {
+  "archetype": "motion-lab@1",
+  "spec": {
+   "archetype": "motion-lab@1",
+   "skills": [
+    "c4-evs-ch07-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "done": "right",
+    "length": "length",
+    "mass": "mass",
+    "release": "SWING",
+    "stop": "STOP",
+    "lock": "LOCK",
+    "period": "one swing",
+    "swings": "swings",
+    "timer": "timer",
+    "run": "RUN",
+    "hold": "HOLD to drive",
+    "target": "target",
+    "yours": "yours",
+    "runDone": "Lab closed",
+    "coach": "Try it and watch the motion",
+    "speed": "speed",
+    "time": "time",
+    "distance": "distance",
+    "train": "toy",
+    "you": "you",
+    "together": "TOGETHER",
+    "early": "too early",
+    "late": "too late"
+   },
+   "title": "Moving Toys Lab",
+   "rounds": [
+    {
+     "mode": "race",
+     "title": "Toy car race",
+     "sub": "a toy car covers 60 m in 10 s",
+     "ask": "speed",
+     "d": 60,
+     "t": 10,
+     "unitD": "m",
+     "unitT": "s",
+     "tolPct": 5,
+     "targets": "c4-evs-ch07-t02-m1"
+    },
+    {
+     "mode": "drive",
+     "title": "Drive the motion",
+     "sub": "push, roll, slow, and stop",
+     "pts": [
+      [
+       0,
+       0
+      ],
+      [
+       4,
+       20
+      ],
+      [
+       7,
+       20
+      ],
+      [
+       11,
+       60
+      ]
+     ],
+     "vmax": 12,
+     "tol": 6,
+     "targets": "c4-evs-ch07-t02-m2"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c4-evs-ch07-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Why does a phirki spin?",
+   "accent": "mint",
+   "targets": "c4-evs-ch07-t02-m2",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Why does a phirki spin?"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "The push inside gets used up"
+      },
+      {
+       "id": "still",
+       "type": "node",
+       "text": "Still phirki",
+       "sub": "No moving air",
+       "glyph": "wind",
+       "color": "ion"
+      },
+      {
+       "id": "moving",
+       "type": "node",
+       "text": "Moving air",
+       "sub": "A push",
+       "glyph": "wind",
+       "color": "mint"
+      },
+      {
+       "id": "spin",
+       "type": "node",
+       "text": "Spins",
+       "sub": "Blades turn",
+       "glyph": "wheel",
+       "color": "sun"
+      },
+      {
+       "id": "p1",
+       "type": "arrow",
+       "from": "moving",
+       "to": "spin",
+       "text": "pushes"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "run",
+       "type": "node",
+       "text": "Run faster",
+       "sub": "More air",
+       "glyph": "person",
+       "color": "mint"
+      },
+      {
+       "id": "blades",
+       "type": "node",
+       "text": "Bent blades",
+       "sub": "Catch air",
+       "glyph": "wind",
+       "color": "sun"
+      },
+      {
+       "id": "fast",
+       "type": "node",
+       "text": "Faster spin",
+       "sub": "Stronger push",
+       "glyph": "wheel",
+       "color": "amber"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "run",
+       "to": "blades",
+       "text": "air rushes"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "blades",
+       "to": "fast",
+       "text": "turns"
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "run",
+       "to": "fast",
+       "text": "stronger"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "long",
+       "type": "node",
+       "text": "Long wings",
+       "sub": "Catches more air",
+       "glyph": "wind",
+       "color": "mint"
+      },
+      {
+       "id": "short",
+       "type": "node",
+       "text": "Short wings",
+       "sub": "Catches less air",
+       "glyph": "wind",
+       "color": "amber"
+      },
+      {
+       "id": "same",
+       "type": "node",
+       "text": "Same paper",
+       "sub": "Compare fairly",
+       "color": "ion"
+      },
+      {
+       "id": "prompt",
+       "type": "label",
+       "text": "Which falls more slowly?",
+       "x": 120,
+       "y": 120,
+       "color": "sun"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "A phirki needs a push or pull to start moving.",
+    "L2": "Moving air pushes its blades and makes them turn.",
+    "L3": "When you hold it still in calm air, it does not spin.",
+    "L4": "When you run, air rushes against the blades.",
+    "L5": "The blades are bent, so the air push turns them round.",
+    "L6": "Run faster and the air push is stronger, so the phirki spins faster.",
+    "L7": "A moving thing does not stop because its push gets used up.",
+    "L8": "Friction from the air and the ground slows moving things until they stop.",
+    "L9": "With the same paper, longer wings catch more air and fall more slowly."
+   },
+   "narration": {
+    "L1": {
+     "text": "A phirki needs a push or pull to start moving.",
+     "dur": 2,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L2": {
+     "text": "Moving air pushes its blades and makes them turn.",
+     "dur": 2,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L3": {
+     "text": "When you hold it still in calm air, it does not spin.",
+     "dur": 2.2,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L4": {
+     "text": "When you run, air rushes against the blades.",
+     "dur": 1.8,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L5": {
+     "text": "The blades are bent, so the air push turns them round.",
+     "dur": 2.2,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Run faster and the air push is stronger, so the phirki spins faster.",
+     "dur": 2.8,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L7": {
+     "text": "A moving thing does not stop because its push gets used up.",
+     "dur": 2.4,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Friction from the air and the ground slows moving things until they stop.",
+     "dur": 2.8,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L9": {
+     "text": "With the same paper, longer wings catch more air and fall more slowly.",
+     "dur": 2.5,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.3,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "title"
+      },
+      {
+       "at": 0.4,
+       "do": "show",
+       "dur": 0.6,
+       "target": "still"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.3,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "moving"
+      },
+      {
+       "at": 0.4,
+       "do": "show",
+       "dur": 0.5,
+       "target": "p1"
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "p1",
+       "to": 1
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.6,
+       "target": "spin"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.3,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "still"
+      },
+      {
+       "at": 0.5,
+       "do": "hide",
+       "dur": 0.5,
+       "target": "moving"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "run"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.6,
+       "target": "blades"
+      },
+      {
+       "at": 0.9,
+       "do": "show",
+       "dur": 0.5,
+       "target": "a1"
+      },
+      {
+       "at": 1.2,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "a1",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1.2,
+       "target": "blades"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.5,
+       "target": "a2"
+      },
+      {
+       "at": 0.9,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "a2",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "fast"
+      },
+      {
+       "at": 0.4,
+       "do": "show",
+       "dur": 0.5,
+       "target": "a3"
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "a3",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.3,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "myth"
+      },
+      {
+       "at": 0.5,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "fast"
+      }
+     ]
+    },
+    {
+     "line": "L9",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.5,
+       "target": "long"
+      },
+      {
+       "at": 0.4,
+       "do": "show",
+       "dur": 0.5,
+       "target": "short"
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.5,
+       "target": "same"
+      },
+      {
+       "at": "end",
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Using the same paper, which spinner falls more slowly?",
+    "options": [
+     "long",
+     "short",
+     "same"
+    ],
+    "answer": "long",
+    "src": "c4-evs-ch07-t02-i04"
+   }
+  },
+  "repairs": [
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 24
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-evs-ch07-t02-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "hub",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        390,
+        250
+       ],
+       "r": 28
+      },
+      {
+       "id": "blade1",
+       "op": "polygon",
+       "startMs": 400,
+       "endMs": 1000,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         390,
+         225
+        ],
+        [
+         300,
+         170
+        ],
+        [
+         285,
+         185
+        ],
+        [
+         375,
+         245
+        ]
+       ]
+      },
+      {
+       "id": "blade2",
+       "op": "polygon",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         415,
+         250
+        ],
+        [
+         485,
+         160
+        ],
+        [
+         500,
+         175
+        ],
+        [
+         430,
+         265
+        ]
+       ]
+      },
+      {
+       "id": "blade3",
+       "op": "polygon",
+       "startMs": 1400,
+       "endMs": 2000,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         390,
+         275
+        ],
+        [
+         475,
+         340
+        ],
+        [
+         460,
+         355
+        ],
+        [
+         375,
+         285
+        ]
+       ]
+      },
+      {
+       "id": "push",
+       "op": "arrow",
+       "startMs": 2400,
+       "endMs": 3400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        170,
+        250
+       ],
+       "to": [
+        285,
+        250
+       ]
+      },
+      {
+       "id": "pushlabel",
+       "op": "label",
+       "startMs": 3000,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        210,
+        225
+       ],
+       "text": "push",
+       "to": [
+        245,
+        250
+       ]
+      },
+      {
+       "id": "pull",
+       "op": "arrow",
+       "startMs": 3400,
+       "endMs": 4300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        610,
+        250
+       ],
+       "to": [
+        500,
+        250
+       ]
+      },
+      {
+       "id": "pulllabel",
+       "op": "label",
+       "startMs": 3900,
+       "endMs": 4400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        545,
+        225
+       ],
+       "text": "pull",
+       "to": [
+        555,
+        250
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-evs-ch07-t02-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 4430,
+     "ops": [
+      {
+       "id": "air1",
+       "op": "arrow",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        80,
+        140
+       ],
+       "to": [
+        285,
+        210
+       ]
+      },
+      {
+       "id": "air2",
+       "op": "arrow",
+       "startMs": 500,
+       "endMs": 1300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        80,
+        250
+       ],
+       "to": [
+        285,
+        250
+       ]
+      },
+      {
+       "id": "air3",
+       "op": "arrow",
+       "startMs": 1000,
+       "endMs": 1800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        80,
+        360
+       ],
+       "to": [
+        285,
+        290
+       ]
+      },
+      {
+       "id": "movingair",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        90,
+        105
+       ],
+       "text": "moving air",
+       "size": "m"
+      },
+      {
+       "id": "turnarrow",
+       "op": "arrow",
+       "startMs": 2400,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        390,
+        170
+       ],
+       "to": [
+        500,
+        250
+       ],
+       "bend": 1
+      },
+      {
+       "id": "turnlabel",
+       "op": "label",
+       "startMs": 3500,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        500,
+        315
+       ],
+       "text": "turn",
+       "to": [
+        450,
+        285
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-evs-ch07-t02-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "calm",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        110,
+        105
+       ],
+       "text": "calm air",
+       "size": "m"
+      },
+      {
+       "id": "airx1",
+       "op": "line",
+       "startMs": 700,
+       "endMs": 1100,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        100,
+        160
+       ],
+       "to": [
+        210,
+        160
+       ],
+       "dashed": true
+      },
+      {
+       "id": "airx2",
+       "op": "line",
+       "startMs": 900,
+       "endMs": 1300,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        100,
+        220
+       ],
+       "to": [
+        210,
+        220
+       ],
+       "dashed": true
+      },
+      {
+       "id": "airx3",
+       "op": "line",
+       "startMs": 1100,
+       "endMs": 1500,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        100,
+        280
+       ],
+       "to": [
+        210,
+        280
+       ],
+       "dashed": true
+      },
+      {
+       "id": "stillmark",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        560,
+        245
+       ],
+       "text": "still",
+       "size": "l"
+      },
+      {
+       "id": "cross1",
+       "op": "line",
+       "startMs": 2500,
+       "endMs": 3000,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        540,
+        190
+       ],
+       "to": [
+        620,
+        300
+       ]
+      },
+      {
+       "id": "cross2",
+       "op": "line",
+       "startMs": 3000,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        620,
+        190
+       ],
+       "to": [
+        540,
+        300
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-evs-ch07-t02-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 4004,
+     "ops": [
+      {
+       "id": "runner",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 400,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        105,
+        330
+       ],
+       "r": 18
+      },
+      {
+       "id": "body",
+       "op": "line",
+       "startMs": 350,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        105,
+        348
+       ],
+       "to": [
+        105,
+        410
+       ]
+      },
+      {
+       "id": "leg1",
+       "op": "line",
+       "startMs": 600,
+       "endMs": 950,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        105,
+        380
+       ],
+       "to": [
+        65,
+        420
+       ]
+      },
+      {
+       "id": "leg2",
+       "op": "line",
+       "startMs": 850,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        105,
+        380
+       ],
+       "to": [
+        145,
+        420
+       ]
+      },
+      {
+       "id": "rush1",
+       "op": "arrow",
+       "startMs": 1300,
+       "endMs": 2100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        190,
+        250
+       ],
+       "to": [
+        330,
+        220
+       ]
+      },
+      {
+       "id": "rush2",
+       "op": "arrow",
+       "startMs": 1700,
+       "endMs": 2500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        190,
+        320
+       ],
+       "to": [
+        330,
+        270
+       ]
+      },
+      {
+       "id": "against",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        205,
+        180
+       ],
+       "text": "air rushes",
+       "size": "m"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-evs-ch07-t02-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "bend1",
+       "op": "stroke",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         300,
+         170
+        ],
+        [
+         330,
+         185
+        ],
+        [
+         360,
+         220
+        ]
+       ]
+      },
+      {
+       "id": "bend2",
+       "op": "stroke",
+       "startMs": 500,
+       "endMs": 1100,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         485,
+         160
+        ],
+        [
+         470,
+         195
+        ],
+        [
+         430,
+         240
+        ]
+       ]
+      },
+      {
+       "id": "airpush1",
+       "op": "arrow",
+       "startMs": 1300,
+       "endMs": 2100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        150,
+        170
+       ],
+       "to": [
+        290,
+        205
+       ]
+      },
+      {
+       "id": "airpush2",
+       "op": "arrow",
+       "startMs": 1700,
+       "endMs": 2500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        150,
+        330
+       ],
+       "to": [
+        290,
+        290
+       ]
+      },
+      {
+       "id": "round1",
+       "op": "arrow",
+       "startMs": 2700,
+       "endMs": 3900,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        350,
+        130
+       ],
+       "to": [
+        500,
+        210
+       ],
+       "bend": 1
+      },
+      {
+       "id": "round2",
+       "op": "arrow",
+       "startMs": 3500,
+       "endMs": 4700,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        500,
+        290
+       ],
+       "to": [
+        370,
+        370
+       ],
+       "bend": 1
+      },
+      {
+       "id": "bentlabel",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        545,
+        125
+       ],
+       "text": "bent",
+       "size": "m"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-evs-ch07-t02-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "fast1",
+       "op": "arrow",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        100,
+        150
+       ],
+       "to": [
+        300,
+        205
+       ]
+      },
+      {
+       "id": "fast2",
+       "op": "arrow",
+       "startMs": 400,
+       "endMs": 1100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        100,
+        250
+       ],
+       "to": [
+        300,
+        250
+       ]
+      },
+      {
+       "id": "fast3",
+       "op": "arrow",
+       "startMs": 800,
+       "endMs": 1500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        100,
+        350
+       ],
+       "to": [
+        300,
+        295
+       ]
+      },
+      {
+       "id": "strong",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        110,
+        105
+       ],
+       "text": "stronger",
+       "size": "m"
+      },
+      {
+       "id": "spin1",
+       "op": "arrow",
+       "startMs": 2200,
+       "endMs": 3400,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        365,
+        145
+       ],
+       "to": [
+        500,
+        220
+       ],
+       "bend": 1
+      },
+      {
+       "id": "spin2",
+       "op": "arrow",
+       "startMs": 3100,
+       "endMs": 4300,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        500,
+        280
+       ],
+       "to": [
+        380,
+        365
+       ],
+       "bend": 1
+      },
+      {
+       "id": "faster",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 5000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        545,
+        205
+       ],
+       "text": "faster",
+       "size": "l"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-evs-ch07-t02-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "movearrow",
+       "op": "arrow",
+       "startMs": 0,
+       "endMs": 1500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        110,
+        250
+       ],
+       "to": [
+        520,
+        250
+       ]
+      },
+      {
+       "id": "moving",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        110,
+        200
+       ],
+       "text": "moving",
+       "size": "m"
+      },
+      {
+       "id": "usedup",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 2800,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        270,
+        320
+       ],
+       "text": "used up",
+       "size": "m"
+      },
+      {
+       "id": "crossused",
+       "op": "line",
+       "startMs": 2800,
+       "endMs": 3200,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        260,
+        300
+       ],
+       "to": [
+        350,
+        350
+       ]
+      },
+      {
+       "id": "crossused2",
+       "op": "line",
+       "startMs": 3200,
+       "endMs": 3600,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        350,
+        300
+       ],
+       "to": [
+        260,
+        350
+       ]
+      },
+      {
+       "id": "continuearrow",
+       "op": "arrow",
+       "startMs": 3700,
+       "endMs": 4700,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        520,
+        250
+       ],
+       "to": [
+        680,
+        250
+       ]
+      },
+      {
+       "id": "pushlabel7",
+       "op": "label",
+       "startMs": 4700,
+       "endMs": 5200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        535,
+        205
+       ],
+       "text": "push",
+       "to": [
+        560,
+        250
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-evs-ch07-t02-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "ground",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        90,
+        390
+       ],
+       "to": [
+        700,
+        390
+       ]
+      },
+      {
+       "id": "airfric",
+       "op": "arrow",
+       "startMs": 900,
+       "endMs": 1700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        520,
+        150
+       ],
+       "to": [
+        470,
+        230
+       ]
+      },
+      {
+       "id": "groundfric",
+       "op": "arrow",
+       "startMs": 1300,
+       "endMs": 2100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        650,
+        365
+       ],
+       "to": [
+        560,
+        365
+       ]
+      },
+      {
+       "id": "fric1",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 2550,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        510,
+        125
+       ],
+       "text": "air",
+       "size": "m"
+      },
+      {
+       "id": "fric2",
+       "op": "text",
+       "startMs": 2550,
+       "endMs": 3100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        570,
+        335
+       ],
+       "text": "ground",
+       "size": "m"
+      },
+      {
+       "id": "slowarrow",
+       "op": "arrow",
+       "startMs": 3200,
+       "endMs": 4200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        120,
+        300
+       ],
+       "to": [
+        390,
+        300
+       ]
+      },
+      {
+       "id": "slow",
+       "op": "text",
+       "startMs": 4200,
+       "endMs": 4700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        210,
+        250
+       ],
+       "text": "slows",
+       "size": "m"
+      },
+      {
+       "id": "stopbox",
+       "op": "rect",
+       "startMs": 4700,
+       "endMs": 5300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        450,
+        275
+       ],
+       "w": 90,
+       "h": 55,
+       "round": 10
+      },
+      {
+       "id": "stop",
+       "op": "text",
+       "startMs": 5300,
+       "endMs": 5800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        495,
+        310
+       ],
+       "text": "stop",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L9",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-evs-ch07-t02-wb-L9",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "sheetlong",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        150
+       ],
+       "w": 250,
+       "h": 35,
+       "fill": "soft",
+       "round": 4
+      },
+      {
+       "id": "sheetshort",
+       "op": "rect",
+       "startMs": 500,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        300
+       ],
+       "w": 120,
+       "h": 35,
+       "fill": "soft",
+       "round": 4
+      },
+      {
+       "id": "airlong1",
+       "op": "arrow",
+       "startMs": 1200,
+       "endMs": 1900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        60,
+        120
+       ],
+       "to": [
+        100,
+        165
+       ]
+      },
+      {
+       "id": "airlong2",
+       "op": "arrow",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        60,
+        215
+       ],
+       "to": [
+        100,
+        175
+       ]
+      },
+      {
+       "id": "airshort",
+       "op": "arrow",
+       "startMs": 1900,
+       "endMs": 2500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        60,
+        320
+       ],
+       "to": [
+        100,
+        320
+       ]
+      },
+      {
+       "id": "longlabel",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        170,
+        125
+       ],
+       "text": "longer wings",
+       "size": "m"
+      },
+      {
+       "id": "falllong",
+       "op": "arrow",
+       "startMs": 3300,
+       "endMs": 4500,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        225,
+        200
+       ],
+       "to": [
+        225,
+        375
+       ]
+      },
+      {
+       "id": "fallshort",
+       "op": "arrow",
+       "startMs": 3800,
+       "endMs": 4500,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        160,
+        350
+       ],
+       "to": [
+        160,
+        425
+       ]
+      },
+      {
+       "id": "slowfall",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        275,
+        420
+       ],
+       "text": "fall slowly",
+       "size": "m"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1",
+   "key": "6 m/s",
+   "prompt": "speed?"
+  },
+  {
+   "itemId": "r2",
+   "key": "non-uniform",
+   "prompt": "follow the graph"
+  }
+ ],
+ "check": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "Round 1: The kit item does not mention toy car covering 60 m in 10 s; the numbers are new and correct, so no issue.",
+    "severity": "low"
+   },
+   {
+    "where": "explainer",
+    "what": "The explainer includes a task question 'Which falls more slowly?' with options 'long', 'short', 'same' and answer 'long', which matches kit item c4-evs-ch07-t02-i04 exactly. No issue.",
+    "severity": "low"
+   },
+   {
+    "where": "explainer",
+    "what": "Scene s3 shows long wings and short wings but does not name the kit item or change kit facts. The content is correct and suitable.",
+    "severity": "low"
+   }
+  ],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ },
+ "firstCheck": {
+  "issues": [
+   {
+    "where": "explainer",
+    "what": "The source kit item i04 asks which falls more slowly, the explainer repeats the same content but the text says 'falls sooner' and 'falls slowly' inconsistently. More critically, the explainer's scene 'short wings falls sooner' contradicts the kit item i04 which says long wings fall more slowly; this is not a new number change but a direct misstatement of the fact from the kit.",
+    "severity": "high"
+   }
+  ],
+  "verdict": "fail",
+  "model": "DeepSeek-V4-Flash"
+ },
+ "regens": 2
+}

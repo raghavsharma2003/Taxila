@@ -1,0 +1,2569 @@
+{
+ "topicId": "c6-science-ch10-t03",
+ "title": "Life cycles of plants and animals",
+ "chapter": "Living Creatures: Exploring their Characteristics",
+ "subject": "science",
+ "class": 6,
+ "topicType": "T1",
+ "plan": {
+  "game": "story-rail@1",
+  "hint": "sequence mode: stages of a plant and an animal life cycle (frog / butterfly / mosquito)"
+ },
+ "game": {
+  "archetype": "story-rail@1",
+  "spec": {
+   "archetype": "story-rail@1",
+   "skills": [
+    "c6-science-ch10-t03"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "picked": "coupled",
+    "streak": "streak",
+    "next": "What happens next?",
+    "effect": "What does this lead to?",
+    "who": "Who said this?",
+    "runDone": "Life cycle complete",
+    "order": "your train",
+    "right": "Coupled",
+    "wrong": "Not this one",
+    "coach": "Tap a wagon before the train reaches the fork"
+   },
+   "title": "Life Cycle Rail",
+   "rounds": [
+    {
+     "mode": "sequence",
+     "title": "Plant journey",
+     "sub": "couple the stages in order",
+     "cards": [
+      {
+       "id": "p1",
+       "text": "Seed",
+       "glyph": "seed",
+       "src": "c6-science-ch10-t03-i03"
+      },
+      {
+       "id": "p2",
+       "text": "Germination",
+       "glyph": "rain",
+       "src": "c6-science-ch10-t03-i03"
+      },
+      {
+       "id": "p3",
+       "text": "Seedling",
+       "glyph": "leaf",
+       "src": "c6-science-ch10-t03-i03"
+      },
+      {
+       "id": "p4",
+       "text": "Adult plant",
+       "glyph": "tree",
+       "src": "c6-science-ch10-t03-i03"
+      },
+      {
+       "id": "p5",
+       "text": "Flowers",
+       "glyph": "flower",
+       "src": "c6-science-ch10-t03-i03"
+      },
+      {
+       "id": "p6",
+       "text": "Fruit with seeds",
+       "glyph": "apple",
+       "src": "c6-science-ch10-t03-i03"
+      }
+     ],
+     "speed": 0.95
+    },
+    {
+     "mode": "sequence",
+     "title": "Pond journey",
+     "sub": "couple the frog stages in order",
+     "cards": [
+      {
+       "id": "f1",
+       "text": "Eggs in water",
+       "glyph": "drop",
+       "src": "c6-science-ch10-t03-i02"
+      },
+      {
+       "id": "f2",
+       "text": "Tadpole",
+       "glyph": "fish",
+       "src": "c6-science-ch10-t03-i02"
+      },
+      {
+       "id": "f3",
+       "text": "Tadpole with legs",
+       "glyph": "fish",
+       "src": "c6-science-ch10-t03-i05"
+      },
+      {
+       "id": "f4",
+       "text": "Froglet",
+       "glyph": "insect",
+       "src": "c6-science-ch10-t03-i02"
+      },
+      {
+       "id": "f5",
+       "text": "Adult frog",
+       "src": "c6-science-ch10-t03-i02"
+      }
+     ],
+     "speed": 0.85,
+     "targets": "c6-science-ch10-t03-m1"
+    },
+    {
+     "mode": "cause",
+     "title": "Mosquito clues",
+     "sub": "match each cause to its effect",
+     "pairs": [
+      {
+       "cause": {
+        "id": "m1",
+        "text": "Water stays in an old tyre",
+        "glyph": "wheel",
+        "src": "c6-science-ch10-t03-i04"
+       },
+       "effect": {
+        "id": "e1",
+        "text": "Larvae and pupae grow there",
+        "glyph": "insect",
+        "src": "c6-science-ch10-t03-i04"
+       }
+      },
+      {
+       "cause": {
+        "id": "m2",
+        "text": "A mosquito lays eggs",
+        "glyph": "insect",
+        "src": "c6-science-ch10-t03-i11"
+       },
+       "effect": {
+        "id": "e2",
+        "text": "The cycle starts in water",
+        "glyph": "drop",
+        "src": "c6-science-ch10-t03-i11"
+       }
+      }
+     ],
+     "speed": 0.8
+    }
+   ]
+  },
+  "repairs": [
+   "glyph",
+   "string:card.text"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c6-science-ch10-t03"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Life cycles: stages that repeat",
+   "accent": "sci",
+   "targets": "c6-science-ch10-t03-m1",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Life cycles: stages that repeat"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "A tadpole and frog are different animals"
+      },
+      {
+       "id": "cycle",
+       "type": "node",
+       "text": "Life cycle",
+       "sub": "stages repeat",
+       "color": "sci"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "seed",
+       "type": "node",
+       "text": "Seed",
+       "glyph": "seed",
+       "color": "amber"
+      },
+      {
+       "id": "germ",
+       "type": "node",
+       "text": "Germination",
+       "sub": "starts growth",
+       "glyph": "spark",
+       "color": "sun"
+      },
+      {
+       "id": "seedling",
+       "type": "node",
+       "text": "Seedling",
+       "glyph": "leaf",
+       "color": "mint"
+      },
+      {
+       "id": "plant",
+       "type": "node",
+       "text": "Adult plant",
+       "glyph": "tree",
+       "color": "sci"
+      },
+      {
+       "id": "flowers",
+       "type": "node",
+       "text": "Flowers",
+       "glyph": "flower",
+       "color": "sun"
+      },
+      {
+       "id": "fruit",
+       "type": "node",
+       "text": "Fruit + seeds",
+       "glyph": "apple",
+       "color": "amber"
+      },
+      {
+       "id": "p1",
+       "type": "arrow",
+       "from": "seed",
+       "to": "germ",
+       "text": "germinates"
+      },
+      {
+       "id": "p2",
+       "type": "arrow",
+       "from": "germ",
+       "to": "seedling",
+       "text": "grows"
+      },
+      {
+       "id": "p3",
+       "type": "arrow",
+       "from": "seedling",
+       "to": "plant",
+       "text": "grows"
+      },
+      {
+       "id": "p4",
+       "type": "arrow",
+       "from": "plant",
+       "to": "flowers",
+       "text": "flowers"
+      },
+      {
+       "id": "p5",
+       "type": "arrow",
+       "from": "flowers",
+       "to": "fruit",
+       "text": "makes fruit"
+      },
+      {
+       "id": "p6",
+       "type": "arrow",
+       "from": "fruit",
+       "to": "seed",
+       "text": "new seeds"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "megg",
+       "type": "node",
+       "text": "Egg",
+       "sub": "still water",
+       "glyph": "drop",
+       "color": "sci"
+      },
+      {
+       "id": "mlarva",
+       "type": "node",
+       "text": "Larva",
+       "sub": "water",
+       "glyph": "insect",
+       "color": "mint"
+      },
+      {
+       "id": "mpupa",
+       "type": "node",
+       "text": "Pupa",
+       "sub": "water",
+       "glyph": "insect",
+       "color": "amber"
+      },
+      {
+       "id": "madult",
+       "type": "node",
+       "text": "Adult mosquito",
+       "sub": "air",
+       "glyph": "insect",
+       "color": "ion"
+      },
+      {
+       "id": "m1",
+       "type": "arrow",
+       "from": "megg",
+       "to": "mlarva",
+       "text": "hatches"
+      },
+      {
+       "id": "m2",
+       "type": "arrow",
+       "from": "mlarva",
+       "to": "mpupa",
+       "text": "changes"
+      },
+      {
+       "id": "m3",
+       "type": "arrow",
+       "from": "mpupa",
+       "to": "madult",
+       "text": "emerges"
+      },
+      {
+       "id": "m4",
+       "type": "arrow",
+       "from": "madult",
+       "to": "megg",
+       "text": "lays eggs"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "fegg",
+       "type": "node",
+       "text": "Eggs",
+       "sub": "in water",
+       "glyph": "drop",
+       "color": "sci"
+      },
+      {
+       "id": "tad",
+       "type": "node",
+       "text": "Tadpole",
+       "sub": "gills, tail",
+       "glyph": "fish",
+       "color": "ion"
+      },
+      {
+       "id": "legs",
+       "type": "node",
+       "text": "Tadpole + legs",
+       "sub": "tail shrinks",
+       "glyph": "fish",
+       "color": "mint"
+      },
+      {
+       "id": "froglet",
+       "type": "node",
+       "text": "Froglet",
+       "sub": "lungs form",
+       "color": "amber"
+      },
+      {
+       "id": "frog",
+       "type": "node",
+       "text": "Adult frog",
+       "sub": "land and water",
+       "color": "sci"
+      },
+      {
+       "id": "f1",
+       "type": "arrow",
+       "from": "fegg",
+       "to": "tad",
+       "text": "hatches"
+      },
+      {
+       "id": "f2",
+       "type": "arrow",
+       "from": "tad",
+       "to": "legs",
+       "text": "legs appear"
+      },
+      {
+       "id": "f3",
+       "type": "arrow",
+       "from": "legs",
+       "to": "froglet",
+       "text": "tail shrinks"
+      },
+      {
+       "id": "f4",
+       "type": "arrow",
+       "from": "froglet",
+       "to": "frog",
+       "text": "becomes adult"
+      },
+      {
+       "id": "f5",
+       "type": "arrow",
+       "from": "frog",
+       "to": "fegg",
+       "text": "lays eggs"
+      }
+     ]
+    },
+    {
+     "id": "s5",
+     "layout": "row",
+     "els": [
+      {
+       "id": "checkTitle",
+       "type": "title",
+       "text": "Check the mosquito cycle"
+      },
+      {
+       "id": "ordEgg",
+       "type": "label",
+       "text": "Egg",
+       "x": 160,
+       "y": 300
+      },
+      {
+       "id": "ordLarva",
+       "type": "label",
+       "text": "Larva",
+       "x": 340,
+       "y": 300
+      },
+      {
+       "id": "ordPupa",
+       "type": "label",
+       "text": "Pupa",
+       "x": 520,
+       "y": 300
+      },
+      {
+       "id": "ordAdult",
+       "type": "label",
+       "text": "Adult",
+       "x": 700,
+       "y": 300
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "A life cycle is the series of stages a living thing passes through. It ends with an adult that can reproduce, so the cycle repeats.",
+    "L2": "A seed first germinates, then becomes a seedling. The seedling grows into an adult plant that makes flowers, fruits and new seeds.",
+    "L3": "A mosquito has four separate stages: egg, larva, pupa and adult. Eggs are laid on still water, and larvae and pupae live there.",
+    "L4": "A frog begins as eggs in water. The tadpole has gills and a tail, then legs appear, the tail shrinks and lungs form.",
+    "L5": "The froglet becomes an adult frog that lives on land and in water. The adult lays eggs again.",
+    "L6": "A tadpole and an adult frog are the same animal at different stages. This big change in body form is called metamorphosis.",
+    "L7": "Now put the mosquito stages in their life-cycle order."
+   },
+   "narration": {
+    "L1": {
+     "text": "A life cycle is the series of stages a living thing passes through. It ends with an adult that can reproduce, so the cycle repeats.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L2": {
+     "text": "A seed first germinates, then becomes a seedling. The seedling grows into an adult plant that makes flowers, fruits and new seeds.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L3": {
+     "text": "A mosquito has four separate stages: egg, larva, pupa and adult. Eggs are laid on still water, and larvae and pupae live there.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L4": {
+     "text": "A frog begins as eggs in water. The tadpole has gills and a tail, then legs appear, the tail shrinks and lungs form.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L5": {
+     "text": "The froglet becomes an adult frog that lives on land and in water. The adult lays eggs again.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L6": {
+     "text": "A tadpole and an adult frog are the same animal at different stages. This big change in body form is called metamorphosis.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Now put the mosquito stages in their life-cycle order.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.8,
+       "target": "cycle"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "seed",
+        "germ"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "p1",
+       "to": 1
+      },
+      {
+       "at": 2,
+       "do": "show",
+       "dur": 1.2,
+       "target": [
+        "seedling",
+        "plant",
+        "flowers",
+        "fruit"
+       ]
+      },
+      {
+       "at": 3,
+       "do": "flow",
+       "dur": 1.2,
+       "target": [
+        "p2",
+        "p3",
+        "p4",
+        "p5",
+        "p6"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "megg"
+      },
+      {
+       "at": 0.6,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "mlarva",
+        "mpupa",
+        "madult"
+       ]
+      },
+      {
+       "at": 1.8,
+       "do": "flow",
+       "dur": 1.4,
+       "target": [
+        "m1",
+        "m2",
+        "m3",
+        "m4"
+       ],
+       "to": 1
+      },
+      {
+       "at": 3.2,
+       "do": "highlight",
+       "dur": 1,
+       "target": [
+        "megg",
+        "mlarva",
+        "mpupa"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "fegg",
+        "tad"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "legs",
+        "froglet"
+       ]
+      },
+      {
+       "at": 2.2,
+       "do": "flow",
+       "dur": 1.2,
+       "target": [
+        "f1",
+        "f2",
+        "f3",
+        "f4"
+       ],
+       "to": 1
+      },
+      {
+       "at": 3.6,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "froglet"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "frog"
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "f5",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "myth"
+      },
+      {
+       "at": 1,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      },
+      {
+       "at": 2.2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "cycle"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0,
+     "scene": "s5",
+     "cues": [
+      {
+       "at": 0,
+       "do": "interactive",
+       "dur": 0.5
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "order",
+    "prompt": "Put the mosquito stages in the order they happen.",
+    "items": [
+     "ordEgg",
+     "ordLarva",
+     "ordPupa",
+     "ordAdult"
+    ],
+    "src": "c6-science-ch10-t03-i01"
+   }
+  },
+  "repairs": [
+   "glyph",
+   "glyph",
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 51
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch10-t03-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 11238,
+     "ops": [
+      {
+       "id": "cycle",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        250
+       ],
+       "r": 150
+      },
+      {
+       "id": "s1",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        100
+       ],
+       "r": 28
+      },
+      {
+       "id": "s2",
+       "op": "circle",
+       "startMs": 1500,
+       "endMs": 2000,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        550,
+        250
+       ],
+       "r": 28
+      },
+      {
+       "id": "s3",
+       "op": "circle",
+       "startMs": 2100,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        400
+       ],
+       "r": 28
+      },
+      {
+       "id": "s4",
+       "op": "circle",
+       "startMs": 2700,
+       "endMs": 3200,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        250,
+        250
+       ],
+       "r": 28
+      },
+      {
+       "id": "a1",
+       "op": "arrow",
+       "startMs": 3500,
+       "endMs": 4100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        428,
+        105
+       ],
+       "to": [
+        525,
+        230
+       ]
+      },
+      {
+       "id": "a2",
+       "op": "arrow",
+       "startMs": 4200,
+       "endMs": 4800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        550,
+        278
+       ],
+       "to": [
+        425,
+        370
+       ]
+      },
+      {
+       "id": "a3",
+       "op": "arrow",
+       "startMs": 4900,
+       "endMs": 5500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        372,
+        390
+       ],
+       "to": [
+        275,
+        275
+       ]
+      },
+      {
+       "id": "a4",
+       "op": "arrow",
+       "startMs": 5600,
+       "endMs": 6200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        250,
+        222
+       ],
+       "to": [
+        375,
+        110
+       ]
+      },
+      {
+       "id": "t1",
+       "op": "label",
+       "startMs": 6500,
+       "endMs": 7000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        78
+       ],
+       "text": "start",
+       "to": [
+        400,
+        100
+       ]
+      },
+      {
+       "id": "t2",
+       "op": "label",
+       "startMs": 7000,
+       "endMs": 7500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        590,
+        250
+       ],
+       "text": "stages",
+       "to": [
+        550,
+        250
+       ]
+      },
+      {
+       "id": "t3",
+       "op": "label",
+       "startMs": 7500,
+       "endMs": 8000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        440
+       ],
+       "text": "adult",
+       "to": [
+        400,
+        400
+       ]
+      },
+      {
+       "id": "t4",
+       "op": "label",
+       "startMs": 8000,
+       "endMs": 8500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        250
+       ],
+       "text": "reproduce",
+       "to": [
+        250,
+        250
+       ]
+      },
+      {
+       "id": "repeat",
+       "op": "text",
+       "startMs": 9000,
+       "endMs": 9800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        485
+       ],
+       "text": "cycle repeats",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch10-t03-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9962,
+     "ops": [
+      {
+       "id": "seed",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        90,
+        250
+       ],
+       "r": 30
+      },
+      {
+       "id": "germ",
+       "op": "arrow",
+       "startMs": 700,
+       "endMs": 1200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        125,
+        250
+       ],
+       "to": [
+        190,
+        250
+       ]
+      },
+      {
+       "id": "germtext",
+       "op": "text",
+       "startMs": 1100,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        150,
+        220
+       ],
+       "text": "germination",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "seedling",
+       "op": "polygon",
+       "startMs": 1800,
+       "endMs": 2400,
+       "ink": "good",
+       "weight": 2,
+       "points": [
+        [
+         220,
+         280
+        ],
+        [
+         240,
+         220
+        ],
+        [
+         260,
+         280
+        ]
+       ]
+      },
+      {
+       "id": "a1",
+       "op": "arrow",
+       "startMs": 2500,
+       "endMs": 3000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        270,
+        250
+       ],
+       "to": [
+        335,
+        250
+       ]
+      },
+      {
+       "id": "adult",
+       "op": "stroke",
+       "startMs": 3100,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         370,
+         280
+        ],
+        [
+         370,
+         180
+        ],
+        [
+         370,
+         280
+        ],
+        [
+         330,
+         230
+        ],
+        [
+         410,
+         230
+        ],
+        [
+         350,
+         205
+        ],
+        [
+         390,
+         205
+        ]
+       ]
+      },
+      {
+       "id": "a2",
+       "op": "arrow",
+       "startMs": 4000,
+       "endMs": 4500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        420,
+        250
+       ],
+       "to": [
+        485,
+        250
+       ]
+      },
+      {
+       "id": "flowers",
+       "op": "circle",
+       "startMs": 4600,
+       "endMs": 5100,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        530,
+        210
+       ],
+       "r": 24
+      },
+      {
+       "id": "fruits",
+       "op": "circle",
+       "startMs": 5200,
+       "endMs": 5700,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        530,
+        290
+       ],
+       "r": 24
+      },
+      {
+       "id": "a3",
+       "op": "arrow",
+       "startMs": 5800,
+       "endMs": 6400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        555,
+        250
+       ],
+       "to": [
+        650,
+        250
+       ]
+      },
+      {
+       "id": "newseeds",
+       "op": "circle",
+       "startMs": 6500,
+       "endMs": 7100,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        690,
+        250
+       ],
+       "r": 28
+      },
+      {
+       "id": "labs",
+       "op": "label",
+       "startMs": 7100,
+       "endMs": 7500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        90,
+        300
+       ],
+       "text": "seed",
+       "to": [
+        90,
+        250
+       ]
+      },
+      {
+       "id": "labseedling",
+       "op": "label",
+       "startMs": 7500,
+       "endMs": 7900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        240,
+        320
+       ],
+       "text": "seedling",
+       "to": [
+        240,
+        280
+       ]
+      },
+      {
+       "id": "labadult",
+       "op": "label",
+       "startMs": 7900,
+       "endMs": 8400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        370,
+        150
+       ],
+       "text": "adult plant",
+       "to": [
+        370,
+        180
+       ]
+      },
+      {
+       "id": "labf",
+       "op": "label",
+       "startMs": 8400,
+       "endMs": 8800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        530,
+        170
+       ],
+       "text": "flowers",
+       "to": [
+        530,
+        210
+       ]
+      },
+      {
+       "id": "labfr",
+       "op": "label",
+       "startMs": 8800,
+       "endMs": 9200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        530,
+        340
+       ],
+       "text": "fruits",
+       "to": [
+        530,
+        290
+       ]
+      },
+      {
+       "id": "labn",
+       "op": "label",
+       "startMs": 9200,
+       "endMs": 9600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        690,
+        300
+       ],
+       "text": "new seeds",
+       "to": [
+        690,
+        250
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch10-t03-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 10387,
+     "ops": [
+      {
+       "id": "water",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        350
+       ],
+       "rx": 330,
+       "ry": 90,
+       "fill": "soft"
+      },
+      {
+       "id": "egg",
+       "op": "circle",
+       "startMs": 1000,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        150,
+        300
+       ],
+       "r": 32
+      },
+      {
+       "id": "larva",
+       "op": "stroke",
+       "startMs": 1800,
+       "endMs": 2500,
+       "ink": "good",
+       "weight": 2,
+       "points": [
+        [
+         300,
+         320
+        ],
+        [
+         320,
+         280
+        ],
+        [
+         340,
+         320
+        ],
+        [
+         360,
+         280
+        ],
+        [
+         380,
+         320
+        ]
+       ]
+      },
+      {
+       "id": "pupa",
+       "op": "ellipse",
+       "startMs": 2800,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        500,
+        300
+       ],
+       "rx": 25,
+       "ry": 40
+      },
+      {
+       "id": "adult",
+       "op": "stroke",
+       "startMs": 3700,
+       "endMs": 4500,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         650,
+         300
+        ],
+        [
+         650,
+         220
+        ],
+        [
+         620,
+         180
+        ],
+        [
+         650,
+         220
+        ],
+        [
+         680,
+         180
+        ],
+        [
+         650,
+         220
+        ],
+        [
+         700,
+         250
+        ]
+       ]
+      },
+      {
+       "id": "a1",
+       "op": "arrow",
+       "startMs": 4600,
+       "endMs": 5100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        185,
+        300
+       ],
+       "to": [
+        280,
+        300
+       ]
+      },
+      {
+       "id": "a2",
+       "op": "arrow",
+       "startMs": 5200,
+       "endMs": 5700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        390,
+        300
+       ],
+       "to": [
+        465,
+        300
+       ]
+      },
+      {
+       "id": "a3",
+       "op": "arrow",
+       "startMs": 5800,
+       "endMs": 6400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        535,
+        300
+       ],
+       "to": [
+        615,
+        250
+       ]
+      },
+      {
+       "id": "le",
+       "op": "label",
+       "startMs": 6500,
+       "endMs": 6900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        150,
+        260
+       ],
+       "text": "egg",
+       "to": [
+        150,
+        300
+       ]
+      },
+      {
+       "id": "ll",
+       "op": "label",
+       "startMs": 6900,
+       "endMs": 7300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        340,
+        365
+       ],
+       "text": "larva",
+       "to": [
+        340,
+        320
+       ]
+      },
+      {
+       "id": "lp",
+       "op": "label",
+       "startMs": 7300,
+       "endMs": 7700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        500,
+        250
+       ],
+       "text": "pupa",
+       "to": [
+        500,
+        300
+       ]
+      },
+      {
+       "id": "la",
+       "op": "label",
+       "startMs": 7700,
+       "endMs": 8100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        650,
+        150
+       ],
+       "text": "adult",
+       "to": [
+        650,
+        220
+       ]
+      },
+      {
+       "id": "still",
+       "op": "text",
+       "startMs": 8300,
+       "endMs": 9000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        455
+       ],
+       "text": "still water",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch10-t03-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 10387,
+     "ops": [
+      {
+       "id": "pond",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        370
+       ],
+       "rx": 330,
+       "ry": 85,
+       "fill": "soft"
+      },
+      {
+       "id": "eggs",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        130,
+        350
+       ],
+       "r": 34
+      },
+      {
+       "id": "tail",
+       "op": "stroke",
+       "startMs": 1700,
+       "endMs": 2400,
+       "ink": "good",
+       "weight": 2,
+       "points": [
+        [
+         300,
+         350
+        ],
+        [
+         350,
+         320
+        ],
+        [
+         400,
+         350
+        ],
+        [
+         450,
+         320
+        ],
+        [
+         500,
+         350
+        ]
+       ]
+      },
+      {
+       "id": "body",
+       "op": "ellipse",
+       "startMs": 1700,
+       "endMs": 2400,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        360,
+        350
+       ],
+       "rx": 55,
+       "ry": 32
+      },
+      {
+       "id": "gills",
+       "op": "label",
+       "startMs": 2500,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        350,
+        285
+       ],
+       "text": "gills",
+       "to": [
+        350,
+        320
+       ]
+      },
+      {
+       "id": "legs",
+       "op": "line",
+       "startMs": 3300,
+       "endMs": 3900,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        470,
+        350
+       ],
+       "to": [
+        470,
+        400
+       ]
+      },
+      {
+       "id": "legs2",
+       "op": "line",
+       "startMs": 3900,
+       "endMs": 4500,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        410,
+        350
+       ],
+       "to": [
+        410,
+        400
+       ]
+      },
+      {
+       "id": "shrink",
+       "op": "arrow",
+       "startMs": 4600,
+       "endMs": 5200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        500,
+        320
+       ],
+       "to": [
+        550,
+        300
+       ]
+      },
+      {
+       "id": "lungs",
+       "op": "circle",
+       "startMs": 5400,
+       "endMs": 6000,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        625,
+        300
+       ],
+       "r": 42
+      },
+      {
+       "id": "le",
+       "op": "label",
+       "startMs": 6200,
+       "endMs": 6600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        130,
+        300
+       ],
+       "text": "eggs",
+       "to": [
+        130,
+        350
+       ]
+      },
+      {
+       "id": "lt",
+       "op": "label",
+       "startMs": 6600,
+       "endMs": 7100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        360,
+        425
+       ],
+       "text": "tadpole",
+       "to": [
+        360,
+        380
+       ]
+      },
+      {
+       "id": "ll",
+       "op": "label",
+       "startMs": 7100,
+       "endMs": 7500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        440,
+        440
+       ],
+       "text": "legs",
+       "to": [
+        440,
+        400
+       ]
+      },
+      {
+       "id": "ltail",
+       "op": "label",
+       "startMs": 7500,
+       "endMs": 8000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        550,
+        270
+       ],
+       "text": "tail shrinks",
+       "to": [
+        550,
+        300
+       ]
+      },
+      {
+       "id": "llungs",
+       "op": "label",
+       "startMs": 8000,
+       "endMs": 8400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        625,
+        250
+       ],
+       "text": "lungs",
+       "to": [
+        625,
+        300
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch10-t03-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "froglet",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        220,
+        250
+       ],
+       "rx": 55,
+       "ry": 35
+      },
+      {
+       "id": "fl1",
+       "op": "line",
+       "startMs": 700,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        180,
+        275
+       ],
+       "to": [
+        150,
+        315
+       ]
+      },
+      {
+       "id": "fl2",
+       "op": "line",
+       "startMs": 1100,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        260,
+        275
+       ],
+       "to": [
+        290,
+        315
+       ]
+      },
+      {
+       "id": "adultfrog",
+       "op": "ellipse",
+       "startMs": 1800,
+       "endMs": 2600,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        500,
+        250
+       ],
+       "rx": 75,
+       "ry": 50
+      },
+      {
+       "id": "eye1",
+       "op": "circle",
+       "startMs": 2600,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        475,
+        215
+       ],
+       "r": 8
+      },
+      {
+       "id": "eye2",
+       "op": "circle",
+       "startMs": 2900,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        525,
+        215
+       ],
+       "r": 8
+      },
+      {
+       "id": "land",
+       "op": "line",
+       "startMs": 3300,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        350,
+        350
+       ],
+       "to": [
+        700,
+        350
+       ]
+      },
+      {
+       "id": "water2",
+       "op": "ellipse",
+       "startMs": 3900,
+       "endMs": 4500,
+       "ink": "soft",
+       "weight": 2,
+       "c": [
+        500,
+        410
+       ],
+       "rx": 180,
+       "ry": 35
+      },
+      {
+       "id": "al",
+       "op": "label",
+       "startMs": 4600,
+       "endMs": 5000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        220,
+        190
+       ],
+       "text": "froglet",
+       "to": [
+        220,
+        250
+       ]
+      },
+      {
+       "id": "aa",
+       "op": "label",
+       "startMs": 5000,
+       "endMs": 5500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        500,
+        160
+       ],
+       "text": "adult frog",
+       "to": [
+        500,
+        200
+       ]
+      },
+      {
+       "id": "hab",
+       "op": "text",
+       "startMs": 5600,
+       "endMs": 6300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        500,
+        470
+       ],
+       "text": "land and water",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "lay",
+       "op": "arrow",
+       "startMs": 6600,
+       "endMs": 7200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        560,
+        230
+       ],
+       "to": [
+        650,
+        180
+       ]
+      },
+      {
+       "id": "eggsagain",
+       "op": "circle",
+       "startMs": 7200,
+       "endMs": 7800,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        680,
+        160
+       ],
+       "r": 25
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch10-t03-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 9962,
+     "ops": [
+      {
+       "id": "tad",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        180,
+        260
+       ],
+       "rx": 70,
+       "ry": 35
+      },
+      {
+       "id": "tadtail",
+       "op": "stroke",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "good",
+       "weight": 2,
+       "points": [
+        [
+         230,
+         260
+        ],
+        [
+         280,
+         220
+        ],
+        [
+         320,
+         260
+        ]
+       ]
+      },
+      {
+       "id": "adult2",
+       "op": "ellipse",
+       "startMs": 1500,
+       "endMs": 2300,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        570,
+        260
+       ],
+       "rx": 85,
+       "ry": 55
+      },
+      {
+       "id": "leg1",
+       "op": "line",
+       "startMs": 2300,
+       "endMs": 2800,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        530,
+        295
+       ],
+       "to": [
+        500,
+        350
+       ]
+      },
+      {
+       "id": "leg2",
+       "op": "line",
+       "startMs": 2800,
+       "endMs": 3300,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        610,
+        295
+       ],
+       "to": [
+        640,
+        350
+       ]
+      },
+      {
+       "id": "same",
+       "op": "arrow",
+       "startMs": 3500,
+       "endMs": 4200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        260,
+        180
+       ],
+       "to": [
+        490,
+        180
+       ]
+      },
+      {
+       "id": "sameLabel",
+       "op": "text",
+       "startMs": 4200,
+       "endMs": 4900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        375,
+        150
+       ],
+       "text": "same animal",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "change",
+       "op": "arrow",
+       "startMs": 5000,
+       "endMs": 5700,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        330,
+        300
+       ],
+       "to": [
+        470,
+        300
+       ]
+      },
+      {
+       "id": "met",
+       "op": "text",
+       "startMs": 6000,
+       "endMs": 7000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        400
+       ],
+       "text": "metamorphosis",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "h1",
+       "op": "highlight",
+       "startMs": 7200,
+       "endMs": 7900,
+       "ink": "mark",
+       "weight": 2,
+       "target": "tad",
+       "style": "circle"
+      },
+      {
+       "id": "h2",
+       "op": "highlight",
+       "startMs": 7900,
+       "endMs": 8600,
+       "ink": "mark",
+       "weight": 2,
+       "target": "adult2",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch10-t03-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4430,
+     "ops": [
+      {
+       "id": "title",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "mosquito life cycle",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "e",
+       "op": "rect",
+       "startMs": 700,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        80,
+        190
+       ],
+       "w": 120,
+       "h": 80,
+       "round": 12
+      },
+      {
+       "id": "l",
+       "op": "rect",
+       "startMs": 1200,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        250,
+        190
+       ],
+       "w": 120,
+       "h": 80,
+       "round": 12
+      },
+      {
+       "id": "p",
+       "op": "rect",
+       "startMs": 1700,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        420,
+        190
+       ],
+       "w": 120,
+       "h": 80,
+       "round": 12
+      },
+      {
+       "id": "a",
+       "op": "rect",
+       "startMs": 2200,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        590,
+        190
+       ],
+       "w": 120,
+       "h": 80,
+       "round": 12
+      },
+      {
+       "id": "te",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        140,
+        240
+       ],
+       "text": "egg",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "tl",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        310,
+        240
+       ],
+       "text": "larva",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "tp",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 3600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        480,
+        240
+       ],
+       "text": "pupa",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "ta",
+       "op": "text",
+       "startMs": 3600,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        650,
+        240
+       ],
+       "text": "adult",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "a1",
+       "op": "arrow",
+       "startMs": 3900,
+       "endMs": 4100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        200,
+        230
+       ],
+       "to": [
+        250,
+        230
+       ]
+      },
+      {
+       "id": "a2",
+       "op": "arrow",
+       "startMs": 4100,
+       "endMs": 4300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        370,
+        230
+       ],
+       "to": [
+        420,
+        230
+       ]
+      },
+      {
+       "id": "a3",
+       "op": "arrow",
+       "startMs": 4300,
+       "endMs": 4430,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        540,
+        230
+       ],
+       "to": [
+        590,
+        230
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "Germination",
+   "prompt": "sequence: after/for \"Seed\"",
+   "src": "c6-science-ch10-t03-i03"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "Seedling",
+   "prompt": "sequence: after/for \"Germination\"",
+   "src": "c6-science-ch10-t03-i03"
+  },
+  {
+   "itemId": "r1:2",
+   "key": "Adult plant",
+   "prompt": "sequence: after/for \"Seedling\"",
+   "src": "c6-science-ch10-t03-i03"
+  },
+  {
+   "itemId": "r1:3",
+   "key": "Flowers",
+   "prompt": "sequence: after/for \"Adult plant\"",
+   "src": "c6-science-ch10-t03-i03"
+  },
+  {
+   "itemId": "r1:4",
+   "key": "Fruit with seeds",
+   "prompt": "sequence: after/for \"Flowers\"",
+   "src": "c6-science-ch10-t03-i03"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "Tadpole",
+   "prompt": "sequence: after/for \"Eggs in water\"",
+   "src": "c6-science-ch10-t03-i02"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "Tadpole with legs",
+   "prompt": "sequence: after/for \"Tadpole\"",
+   "src": "c6-science-ch10-t03-i05"
+  },
+  {
+   "itemId": "r2:2",
+   "key": "Froglet",
+   "prompt": "sequence: after/for \"Tadpole with legs\"",
+   "src": "c6-science-ch10-t03-i02"
+  },
+  {
+   "itemId": "r2:3",
+   "key": "Adult frog",
+   "prompt": "sequence: after/for \"Froglet\"",
+   "src": "c6-science-ch10-t03-i02"
+  },
+  {
+   "itemId": "r3:0",
+   "key": "Larvae and pupae grow there",
+   "prompt": "cause: after/for \"Water stays in an old tyre\"",
+   "src": "c6-science-ch10-t03-i04"
+  },
+  {
+   "itemId": "r3:1",
+   "key": "The cycle starts in water",
+   "prompt": "cause: after/for \"A mosquito lays eggs\"",
+   "src": "c6-science-ch10-t03-i11"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ },
+ "firstCheck": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "Round 'Pond journey' uses a card 'Tadpole with legs' (src c6-science-ch10-t03-i05) which is not a direct sequence step in the kit's item i02; the kit's i05 asks a prediction about a tadpole with tiny back legs, but the round includes it as a named stage, which is factually correct per kit expectations and not a contradiction. However, the glyph 'fish' for 'Tadpole with legs' is same as for 'Tadpole', which is not a factual issue.",
+    "severity": "low"
+   },
+   {
+    "where": "game",
+    "what": "Round 'Pond journey' card 'Froglet' has glyph 'insect' which is inappropriate for a frog (amphibian); not a factual error about content but unsuitable representation for children (misleading).",
+    "severity": "low"
+   },
+   {
+    "where": "explainer",
+    "what": "Scene s2 cycle arrow from 'seed' to 'sprout' says 'germinates', but card sequence in game round r1 includes 'Germination' as a separate stage; the explainer omits 'Germination' as a distinct node, merging it into the arrow. The kit expectation states 'germination' as a stage. This is a mismatch with kit content.",
+    "severity": "high"
+   },
+   {
+    "where": "explainer",
+    "what": "Scene s3 combines mosquito and frog cycles in one cycle layout but does not label them distinctly; it shows 'Adult mosquito' arrow to 'Eggs' then continues to 'Frog eggs' without separation, creating confusion.",
+    "severity": "high"
+   },
+   {
+    "where": "explainer",
+    "what": "Scene s3 includes 'Frog eggs' as a node in the same cycle as mosquito stages, but the arrows connect 'Adult mosquito' to 'Eggs' and then to 'Frog eggs' — this is factually wrong mixing two different life cycles.",
+    "severity": "high"
+   }
+  ],
+  "verdict": "fail",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

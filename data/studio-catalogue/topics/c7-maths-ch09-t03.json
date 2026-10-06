@@ -1,0 +1,1517 @@
+{
+ "topicId": "c7-maths-ch09-t03",
+ "title": "Angles of isosceles and equilateral triangles",
+ "chapter": "Geometric Twins",
+ "subject": "maths",
+ "class": 7,
+ "topicType": "T3",
+ "plan": {
+  "game": "geo-forge@1",
+  "hint": "triangle challenges by type (scalene, isosceles, equilateral, right, obtuse)"
+ },
+ "game": {
+  "archetype": "geo-forge@1",
+  "spec": {
+   "archetype": "geo-forge@1",
+   "skills": [
+    "c7-maths-ch09-t03"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "built": "built",
+    "check": "CHECK",
+    "undo": "UNDO",
+    "coach": "Tap pins to place corners; tap the first pin to close",
+    "runDone": "Blueprints done",
+    "perimeter": "perimeter",
+    "area": "area",
+    "units": "units",
+    "sq": "sq units",
+    "polygon": "sides",
+    "sticks": "Pick three sticks",
+    "rigid": "Brace it: it must not wobble",
+    "parallel": "Through the dot, parallel to the line",
+    "perpendicular": "Through the dot, at right angles",
+    "equidistant": "Place a pin the same distance from each dot",
+    "angle": "Make an angle of",
+    "right": "right-angled triangle",
+    "isosceles": "isosceles triangle",
+    "scalene": "scalene triangle",
+    "obtuse": "obtuse-angled triangle",
+    "acute": "acute-angled triangle",
+    "square": "square",
+    "rectangle": "rectangle",
+    "parallelogram": "parallelogram",
+    "rhombus": "rhombus",
+    "trapezium": "trapezium",
+    "kite": "kite",
+    "any": "shape",
+    "triangle": "triangle",
+    "make": "Make a",
+    "withArea": "with area",
+    "withPerim": "with perimeter",
+    "noTriangle": "Pick three that CANNOT close",
+    "wobbles": "WOBBLES",
+    "holds": "HOLDS",
+    "closes": "CLOSES",
+    "gap": "GAP",
+    "time": "time"
+   },
+   "title": "Triangle Angle Forge",
+   "rounds": [
+    {
+     "title": "Spot the twins",
+     "sub": "build triangles by type",
+     "time": 45,
+     "challenges": [
+      {
+       "kind": "triangle",
+       "type": "right"
+      },
+      {
+       "kind": "triangle",
+       "type": "isosceles"
+      }
+     ],
+     "targets": "c7-maths-ch09-t03-m-only-equilateral"
+    },
+    {
+     "title": "Match the angles",
+     "sub": "use equal base angles",
+     "time": 60,
+     "challenges": [
+      {
+       "kind": "angle",
+       "deg": 60,
+       "tol": 2
+      },
+      {
+       "kind": "angle",
+       "deg": 65,
+       "tol": 2
+      },
+      {
+       "kind": "angle",
+       "deg": 40,
+       "tol": 2
+      }
+     ],
+     "targets": "c7-maths-ch09-t03-m-wrong-pair"
+    },
+    {
+     "title": "Roof shapes",
+     "sub": "try right and wide triangles",
+     "time": 75,
+     "challenges": [
+      {
+       "kind": "triangle",
+       "type": "right"
+      },
+      {
+       "kind": "triangle",
+       "type": "obtuse"
+      },
+      {
+       "kind": "triangle",
+       "type": "acute"
+      },
+      {
+       "kind": "triangle",
+       "type": "scalene"
+      }
+     ],
+     "targets": "c7-maths-ch09-t03-m-iso-acute"
+    }
+   ]
+  },
+  "repairs": [
+   "enum:type"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-maths-ch09-t03"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Angles of geometric twins",
+   "accent": "ion",
+   "targets": "c7-maths-ch09-t03-m-wrong-pair",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Angles of geometric twins"
+      },
+      {
+       "id": "tri",
+       "type": "node",
+       "text": "Isosceles",
+       "sub": "two equal sides",
+       "color": "ion"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Equal angles sit next to equal sides"
+      },
+      {
+       "id": "eq",
+       "type": "label",
+       "text": "equal sides",
+       "x": 200,
+       "y": 400,
+       "color": "mint"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "p",
+       "type": "node",
+       "text": "Apex X",
+       "sub": "top angle",
+       "glyph": "spark",
+       "color": "amber"
+      },
+      {
+       "id": "q",
+       "type": "node",
+       "text": "Base Y",
+       "sub": "base angle",
+       "color": "ion"
+      },
+      {
+       "id": "r",
+       "type": "node",
+       "text": "Base Z",
+       "sub": "base angle",
+       "color": "ion"
+      },
+      {
+       "id": "m",
+       "type": "node",
+       "text": "Midpoint",
+       "sub": "base midpoint",
+       "glyph": "ruler",
+       "color": "mint"
+      },
+      {
+       "id": "d",
+       "type": "arrow",
+       "from": "p",
+       "to": "m",
+       "text": "join"
+      },
+      {
+       "id": "c1",
+       "type": "arrow",
+       "from": "q",
+       "to": "r",
+       "text": "equal"
+      },
+      {
+       "id": "c2",
+       "type": "arrow",
+       "from": "p",
+       "to": "q",
+       "text": "opposite"
+      },
+      {
+       "id": "c3",
+       "type": "arrow",
+       "from": "p",
+       "to": "r",
+       "text": "opposite"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "checktitle",
+       "type": "title",
+       "text": "Check the equal angles"
+      },
+      {
+       "id": "opt1",
+       "type": "node",
+       "text": "X and Y",
+       "sub": "choose pair",
+       "glyph": "question",
+       "color": "amber"
+      },
+      {
+       "id": "opt2",
+       "type": "node",
+       "text": "Y and Z",
+       "sub": "choose pair",
+       "glyph": "question",
+       "color": "mint"
+      },
+      {
+       "id": "opt3",
+       "type": "node",
+       "text": "X and Z",
+       "sub": "choose pair",
+       "glyph": "question",
+       "color": "amber"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "An isosceles triangle has two equal sides.",
+    "L2": "The equal angles are opposite those equal sides, so they are the two base angles.",
+    "L3": "For triangle XYZ, XY equals XZ. Therefore angle Y equals angle Z.",
+    "L4": "To see why, join the apex X to the midpoint of the base.",
+    "L5": "The two smaller triangles have equal sides, equal half-bases, and a shared line.",
+    "L6": "They are congruent by SSS, so their matching base angles are equal.",
+    "L7": "The angle sum then finds the remaining angle.",
+    "L8": "For example, if each base angle is 52 degrees, angle X is 76 degrees."
+   },
+   "narration": {
+    "L1": {
+     "text": "An isosceles triangle has two equal sides.",
+     "dur": 2,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "The equal angles are opposite those equal sides, so they are the two base angles.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "For triangle XYZ, XY equals XZ. Therefore angle Y equals angle Z.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "To see why, join the apex X to the midpoint of the base.",
+     "dur": 2.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "The two smaller triangles have equal sides, equal half-bases, and a shared line.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "They are congruent by SSS, so their matching base angles are equal.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "The angle sum then finds the remaining angle.",
+     "dur": 2,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "For example, if each base angle is 52 degrees, angle X is 76 degrees.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.3,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "title"
+      },
+      {
+       "at": 0.4,
+       "do": "show",
+       "dur": 0.8,
+       "target": "tri"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.5,
+       "target": "eq"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.6,
+       "target": "myth"
+      },
+      {
+       "at": 1.2,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "p",
+        "q",
+        "r"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": [
+        "q",
+        "r"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "m"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": "d"
+      },
+      {
+       "at": 1.2,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "d",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": [
+        "p",
+        "q",
+        "r",
+        "m"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "c1"
+      },
+      {
+       "at": 0.5,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "c1",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "focus",
+       "dur": 0.8,
+       "target": "p"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "checktitle",
+        "opt1",
+        "opt2",
+        "opt3"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive"
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which pair names the two equal base angles?",
+    "options": [
+     "opt1",
+     "opt2",
+     "opt3"
+    ],
+    "answer": "opt2",
+    "src": "c7-maths-ch09-t03-i04"
+   }
+  },
+  "repairs": [
+   "glyph",
+   "glyph",
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 25
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "{\"kind\":\"triangle\",\"type\":\"right\"}",
+   "prompt": "triangle"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "{\"kind\":\"triangle\",\"type\":\"isosceles\"}",
+   "prompt": "triangle"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "{\"kind\":\"angle\",\"deg\":60,\"tol\":2}",
+   "prompt": "angle"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "{\"kind\":\"angle\",\"deg\":65,\"tol\":2}",
+   "prompt": "angle"
+  },
+  {
+   "itemId": "r2:2",
+   "key": "{\"kind\":\"angle\",\"deg\":40,\"tol\":2}",
+   "prompt": "angle"
+  },
+  {
+   "itemId": "r3:0",
+   "key": "{\"kind\":\"triangle\",\"type\":\"right\"}",
+   "prompt": "triangle"
+  },
+  {
+   "itemId": "r3:1",
+   "key": "{\"kind\":\"triangle\",\"type\":\"obtuse\"}",
+   "prompt": "triangle"
+  },
+  {
+   "itemId": "r3:2",
+   "key": "{\"kind\":\"triangle\",\"type\":\"acute\"}",
+   "prompt": "triangle"
+  },
+  {
+   "itemId": "r3:3",
+   "key": "{\"kind\":\"triangle\",\"type\":\"scalene\"}",
+   "prompt": "triangle"
+  }
+ ],
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch09-t03-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 3579,
+     "ops": [
+      {
+       "id": "tri1",
+       "op": "polygon",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         400,
+         80
+        ],
+        [
+         180,
+         400
+        ],
+        [
+         620,
+         400
+        ]
+       ]
+      },
+      {
+       "id": "x1",
+       "op": "text",
+       "startMs": 1100,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        55
+       ],
+       "text": "equal",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "mark1",
+       "op": "line",
+       "startMs": 1500,
+       "endMs": 1800,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        270,
+        240
+       ],
+       "to": [
+        290,
+        252
+       ]
+      },
+      {
+       "id": "mark2",
+       "op": "line",
+       "startMs": 1800,
+       "endMs": 2100,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        510,
+        240
+       ],
+       "to": [
+        490,
+        252
+       ]
+      },
+      {
+       "id": "side1",
+       "op": "label",
+       "startMs": 2100,
+       "endMs": 2500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        265,
+        245
+       ],
+       "text": "equal",
+       "to": [
+        270,
+        250
+       ]
+      },
+      {
+       "id": "side2",
+       "op": "label",
+       "startMs": 2500,
+       "endMs": 2900,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        535,
+        245
+       ],
+       "text": "equal",
+       "to": [
+        510,
+        250
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch09-t03-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "angy",
+       "op": "sector",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        180,
+        400
+       ],
+       "r": 55,
+       "fromDeg": 290,
+       "toDeg": 350
+      },
+      {
+       "id": "angz",
+       "op": "sector",
+       "startMs": 900,
+       "endMs": 1800,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        620,
+        400
+       ],
+       "r": 55,
+       "fromDeg": 190,
+       "toDeg": 250
+      },
+      {
+       "id": "base1",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 2800,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        180,
+        465
+       ],
+       "text": "base angle",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "base2",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3700,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        620,
+        465
+       ],
+       "text": "base angle",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "equalang",
+       "op": "text",
+       "startMs": 4200,
+       "endMs": 5000,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        455
+       ],
+       "text": "equal angles",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch09-t03-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "tri3",
+       "op": "polygon",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         400,
+         70
+        ],
+        [
+         170,
+         410
+        ],
+        [
+         630,
+         410
+        ]
+       ]
+      },
+      {
+       "id": "vx",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        45
+       ],
+       "text": "X",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "vy",
+       "op": "text",
+       "startMs": 1200,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        145,
+        425
+       ],
+       "text": "Y",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "vz",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        655,
+        425
+       ],
+       "text": "Z",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "eq3",
+       "op": "numwork",
+       "startMs": 2100,
+       "endMs": 3200,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        220,
+        120
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "XY",
+         "=",
+         "XZ"
+        ]
+       ]
+      },
+      {
+       "id": "ang3",
+       "op": "numwork",
+       "startMs": 3500,
+       "endMs": 5000,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        220,
+        190
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "angle",
+         "Y",
+         "=",
+         "angle",
+         "Z"
+        ]
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch09-t03-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "tri4",
+       "op": "polygon",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         400,
+         70
+        ],
+        [
+         170,
+         410
+        ],
+        [
+         630,
+         410
+        ]
+       ]
+      },
+      {
+       "id": "xm4",
+       "op": "line",
+       "startMs": 1100,
+       "endMs": 2300,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        400,
+        70
+       ],
+       "to": [
+        400,
+        410
+       ]
+      },
+      {
+       "id": "mid4",
+       "op": "circle",
+       "startMs": 2400,
+       "endMs": 2900,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        400,
+        410
+       ],
+       "r": 7
+      },
+      {
+       "id": "apex4",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        45
+       ],
+       "text": "X",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "midlabel4",
+       "op": "label",
+       "startMs": 3500,
+       "endMs": 4400,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        430,
+        385
+       ],
+       "text": "midpoint",
+       "to": [
+        400,
+        410
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch09-t03-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "xy5",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        400,
+        70
+       ],
+       "to": [
+        170,
+        410
+       ]
+      },
+      {
+       "id": "xz5",
+       "op": "line",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        400,
+        70
+       ],
+       "to": [
+        630,
+        410
+       ]
+      },
+      {
+       "id": "ym5",
+       "op": "line",
+       "startMs": 1400,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        170,
+        410
+       ],
+       "to": [
+        400,
+        410
+       ]
+      },
+      {
+       "id": "mz5",
+       "op": "line",
+       "startMs": 2100,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        400,
+        410
+       ],
+       "to": [
+        630,
+        410
+       ]
+      },
+      {
+       "id": "shared5",
+       "op": "label",
+       "startMs": 3200,
+       "endMs": 4100,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        430,
+        220
+       ],
+       "text": "shared line",
+       "to": [
+        400,
+        240
+       ]
+      },
+      {
+       "id": "halves5",
+       "op": "label",
+       "startMs": 4200,
+       "endMs": 5300,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        285,
+        440
+       ],
+       "text": "equal half-bases",
+       "to": [
+        285,
+        410
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch09-t03-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "cong6",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1200,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        210,
+        120
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "triang",
+         "1",
+         "=",
+         "triang",
+         "2"
+        ]
+       ]
+      },
+      {
+       "id": "sss6",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        205
+       ],
+       "text": "SSS",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "angleft6",
+       "op": "sector",
+       "startMs": 2500,
+       "endMs": 3200,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        170,
+        410
+       ],
+       "r": 48,
+       "fromDeg": 290,
+       "toDeg": 350
+      },
+      {
+       "id": "angright6",
+       "op": "sector",
+       "startMs": 3200,
+       "endMs": 3900,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        630,
+        410
+       ],
+       "r": 48,
+       "fromDeg": 190,
+       "toDeg": 250
+      },
+      {
+       "id": "equal6",
+       "op": "numwork",
+       "startMs": 4100,
+       "endMs": 5500,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        230,
+        285
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "base",
+         "angle",
+         "=",
+         "base",
+         "angle"
+        ]
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch09-t03-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4004,
+     "ops": [
+      {
+       "id": "sum7",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        190,
+        120
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "angle",
+         "X",
+         "+",
+         "angle",
+         "Y",
+         "+",
+         "angle",
+         "Z",
+         "=",
+         "180°"
+        ]
+       ]
+      },
+      {
+       "id": "find7",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 3100,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        260
+       ],
+       "text": "remaining angle",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "arrow7",
+       "op": "arrow",
+       "startMs": 3200,
+       "endMs": 3800,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        400,
+        290
+       ],
+       "to": [
+        400,
+        350
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch09-t03-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "ex8",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        170,
+        100
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "angle",
+         "Y",
+         "=",
+         "52°"
+        ],
+        [
+         "angle",
+         "Z",
+         "=",
+         "52°"
+        ]
+       ]
+      },
+      {
+       "id": "sum8",
+       "op": "numwork",
+       "startMs": 2000,
+       "endMs": 3600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        170,
+        235
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "angle",
+         "X",
+         "+",
+         "52°",
+         "+",
+         "52°",
+         "=",
+         "180°"
+        ]
+       ]
+      },
+      {
+       "id": "calc8",
+       "op": "numwork",
+       "startMs": 3800,
+       "endMs": 5000,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        170,
+        320
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "angle",
+         "X",
+         "=",
+         "180°",
+         "−",
+         "104°"
+        ]
+       ]
+      },
+      {
+       "id": "ans8",
+       "op": "numwork",
+       "startMs": 5200,
+       "endMs": 6400,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        170,
+        405
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "angle",
+         "X",
+         "=",
+         "76°"
+        ]
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "check": {
+  "issues": [
+   {
+    "where": "explainer",
+    "what": "The prompt 'Which pair names the two equal base angles?' appears directly above the options, giving away the answer. 'opt2' is named 'Y and Z' and labeled 'base angle' in scene s2, making it obvious.",
+    "severity": "high"
+   }
+  ],
+  "verdict": "fail",
+  "model": "DeepSeek-V4-Flash"
+ },
+ "firstCheck": {
+  "issues": [
+   {
+    "where": "explainer",
+    "what": "The answer 'qr' is given away in the prompt: the options list 'qr' explicitly as an option for the tap task, and the correct answer is 'qr'. Students can simply match the answer without understanding.",
+    "severity": "high"
+   }
+  ],
+  "verdict": "fail",
+  "model": "DeepSeek-V4-Flash"
+ },
+ "regens": 2
+}

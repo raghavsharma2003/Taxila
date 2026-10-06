@@ -1,0 +1,1826 @@
+{
+ "topicId": "c7-maths-ch13-t03",
+ "title": "Visualising data",
+ "chapter": "Connecting the Dots...",
+ "subject": "maths",
+ "class": 7,
+ "topicType": "T5",
+ "plan": {
+  "game": "pictograph@1",
+  "hint": "bars mode with a scale; claims round including a misleading axis"
+ },
+ "game": {
+  "archetype": "pictograph@1",
+  "spec": {
+   "archetype": "pictograph@1",
+   "skills": [
+    "c7-maths-ch13-t03"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "right": "right",
+    "coach": "Take a careful look",
+    "runDone": "Data done",
+    "key": "Each symbol =",
+    "half": "half",
+    "check": "CHECK",
+    "trueW": "TRUE",
+    "falseW": "FALSE",
+    "total": "Total"
+   },
+   "title": "Data Desk",
+   "rounds": [
+    {
+     "mode": "tally",
+     "title": "Count game choices",
+     "sub": "tap each choice as it arrives",
+     "cats": [
+      {
+       "label": "Cricket",
+       "count": 12
+      },
+      {
+       "label": "Kho-kho",
+       "glyph": "person",
+       "count": 5
+      },
+      {
+       "label": "Badminton",
+       "count": 7
+      },
+      {
+       "label": "Football",
+       "count": 6
+      }
+     ],
+     "scale": 1,
+     "axisStart": 0,
+     "claims": [],
+     "seed": 13,
+     "speed": 1
+    },
+    {
+     "mode": "bars",
+     "title": "Rainfall bars",
+     "sub": "use equal steps on the axis",
+     "cats": [
+      {
+       "label": "June",
+       "glyph": "cloud",
+       "count": 120
+      },
+      {
+       "label": "July",
+       "glyph": "cloud",
+       "count": 180
+      },
+      {
+       "label": "August",
+       "glyph": "cloud",
+       "count": 150
+      }
+     ],
+     "scale": 20,
+     "axisStart": 0,
+     "claims": [],
+     "seed": 27,
+     "speed": 0.9
+    },
+    {
+     "mode": "claims",
+     "title": "Check the chart",
+     "sub": "the axis starts above zero",
+     "cats": [
+      {
+       "label": "Brand X",
+       "glyph": "phone",
+       "count": 50
+      },
+      {
+       "label": "Brand Y",
+       "glyph": "phone",
+       "count": 48
+      }
+     ],
+     "scale": 5,
+     "axisStart": 45,
+     "claims": [
+      {
+       "kind": "more",
+       "a": 0,
+       "b": 1
+      },
+      {
+       "kind": "twice",
+       "a": 0,
+       "b": 1
+      },
+      {
+       "kind": "diff",
+       "a": 0,
+       "b": 1,
+       "value": 2
+      },
+      {
+       "kind": "total",
+       "a": 0,
+       "b": 1,
+       "value": 98
+      }
+     ],
+     "seed": 41,
+     "speed": 0.8,
+     "targets": "c7-maths-ch13-t03-m-axis-zero"
+    }
+   ]
+  },
+  "repairs": [
+   "bars:scale-raised"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-maths-ch13-t03"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Read a double bar graph",
+   "accent": "ion",
+   "targets": "c7-maths-ch13-t03-m-scale-trust",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title1",
+       "type": "title",
+       "text": "Read a double bar graph"
+      },
+      {
+       "id": "myth1",
+       "type": "myth",
+       "text": "A graph's look is always trustworthy"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "column",
+     "els": [
+      {
+       "id": "graphTitle",
+       "type": "title",
+       "text": "Favourite games"
+      },
+      {
+       "id": "legendB",
+       "type": "node",
+       "text": "Boys",
+       "sub": "blue",
+       "color": "ion"
+      },
+      {
+       "id": "legendG",
+       "type": "node",
+       "text": "Girls",
+       "sub": "orange",
+       "color": "amber"
+      },
+      {
+       "id": "gameBars",
+       "type": "bars",
+       "values": [
+        12,
+        5,
+        7
+       ],
+       "labels": [
+        "Cricket",
+        "Kho-kho",
+        "Football"
+       ],
+       "unit": "children"
+      },
+      {
+       "id": "axis1",
+       "type": "axis",
+       "min": 0,
+       "max": 12,
+       "step": 2,
+       "unit": "children",
+       "scale": "linear",
+       "y": 500
+      },
+      {
+       "id": "double",
+       "type": "label",
+       "text": "Two bars per game",
+       "x": 300,
+       "y": 180,
+       "color": "mint"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "checkTitle",
+       "type": "title",
+       "text": "Which game has most girls?"
+      },
+      {
+       "id": "optCricket",
+       "type": "node",
+       "text": "Cricket",
+       "color": "ion"
+      },
+      {
+       "id": "optKho",
+       "type": "node",
+       "text": "Kho-kho",
+       "color": "amber"
+      },
+      {
+       "id": "optBad",
+       "type": "node",
+       "text": "Badminton",
+       "color": "mint"
+      },
+      {
+       "id": "optFoot",
+       "type": "node",
+       "text": "Football",
+       "color": "sun"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "A double bar graph uses two side-by-side bars for each category.",
+    "L2": "The legend tells us which colour belongs to each group.",
+    "L3": "Here, cricket has 12 boys and 7 girls, while badminton has 7 boys and 10 girls.",
+    "L4": "For badminton and kho-kho, girls total 19 and boys total 12. So, 7 more girls chose them.",
+    "L5": "Axis steps must be equal, so equal distances show equal amounts.",
+    "L6": "MYTH: Trust a graph without checking its scale. A cut axis can exaggerate a small difference.",
+    "L7": "Before believing a graph, read its title, labels, scale and legend, then check the actual numbers.",
+    "L8": "Now tap the game that most girls like."
+   },
+   "narration": {
+    "L1": {
+     "text": "A double bar graph uses two side-by-side bars for each category.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "The legend tells us which colour belongs to each group.",
+     "dur": 4.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "Here, cricket has 12 boys and 7 girls, while badminton has 7 boys and 10 girls.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "For badminton and kho-kho, girls total 19 and boys total 12. So, 7 more girls chose them.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "Axis steps must be equal, so equal distances show equal amounts.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "MYTH: Trust a graph without checking its scale. A cut axis can exaggerate a small difference.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Before believing a graph, read its title, labels, scale and legend, then check the actual numbers.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Now tap the game that most girls like.",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title1"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "graphTitle",
+        "legendB",
+        "legendG",
+        "double"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "gameBars"
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 1.2,
+       "target": "gameBars"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "focus",
+       "dur": 1.4,
+       "target": "gameBars"
+      },
+      {
+       "at": 1.4,
+       "do": "count",
+       "dur": 1.2,
+       "target": "gameBars",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "axis1"
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 1.2,
+       "target": "axis1"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth1"
+      },
+      {
+       "at": 1,
+       "do": "bust",
+       "dur": 1.2,
+       "target": "myth1"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "focus",
+       "dur": 1.5,
+       "target": [
+        "graphTitle",
+        "legendB",
+        "legendG",
+        "axis1"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "checkTitle"
+      },
+      {
+       "at": 0.7,
+       "do": "show",
+       "dur": 0.9,
+       "target": [
+        "optCricket",
+        "optKho",
+        "optBad",
+        "optFoot"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive"
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which game do most girls like?",
+    "options": [
+     "optCricket",
+     "optKho",
+     "optBad",
+     "optFoot"
+    ],
+    "answer": "optBad",
+    "src": "c7-maths-ch13-t03-i01"
+   }
+  },
+  "repairs": [
+   "glyph",
+   "glyph",
+   "glyph",
+   "glyph",
+   "glyph",
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 49
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch13-t03-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "axisx",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        100,
+        420
+       ],
+       "to": [
+        740,
+        420
+       ]
+      },
+      {
+       "id": "axisy",
+       "op": "line",
+       "startMs": 500,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        100,
+        420
+       ],
+       "to": [
+        100,
+        80
+       ]
+      },
+      {
+       "id": "cat1a",
+       "op": "rect",
+       "startMs": 1200,
+       "endMs": 1900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        180,
+        220
+       ],
+       "w": 35,
+       "h": 200,
+       "fill": "accent"
+      },
+      {
+       "id": "cat1b",
+       "op": "rect",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "soft",
+       "weight": 2,
+       "at": [
+        220,
+        280
+       ],
+       "w": 35,
+       "h": 140,
+       "fill": "soft"
+      },
+      {
+       "id": "cat2a",
+       "op": "rect",
+       "startMs": 2200,
+       "endMs": 2900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        390,
+        170
+       ],
+       "w": 35,
+       "h": 250,
+       "fill": "accent"
+      },
+      {
+       "id": "cat2b",
+       "op": "rect",
+       "startMs": 2500,
+       "endMs": 3200,
+       "ink": "soft",
+       "weight": 2,
+       "at": [
+        430,
+        250
+       ],
+       "w": 35,
+       "h": 170,
+       "fill": "soft"
+      },
+      {
+       "id": "cat3a",
+       "op": "rect",
+       "startMs": 3200,
+       "endMs": 3900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        600,
+        240
+       ],
+       "w": 35,
+       "h": 180,
+       "fill": "accent"
+      },
+      {
+       "id": "cat3b",
+       "op": "rect",
+       "startMs": 3500,
+       "endMs": 4200,
+       "ink": "soft",
+       "weight": 2,
+       "at": [
+        640,
+        300
+       ],
+       "w": 35,
+       "h": 120,
+       "fill": "soft"
+      },
+      {
+       "id": "dbl",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 4700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "double bar graph",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "side",
+       "op": "label",
+       "startMs": 4400,
+       "endMs": 5200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        270,
+        190
+       ],
+       "text": "side-by-side bars",
+       "to": [
+        238,
+        240
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch13-t03-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "blue",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        560,
+        110
+       ],
+       "w": 28,
+       "h": 28,
+       "fill": "accent"
+      },
+      {
+       "id": "boys",
+       "op": "text",
+       "startMs": 300,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        605,
+        132
+       ],
+       "text": "boys",
+       "size": "m"
+      },
+      {
+       "id": "orange",
+       "op": "rect",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "soft",
+       "weight": 2,
+       "at": [
+        560,
+        175
+       ],
+       "w": 28,
+       "h": 28,
+       "fill": "soft"
+      },
+      {
+       "id": "girls",
+       "op": "text",
+       "startMs": 1000,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        605,
+        197
+       ],
+       "text": "girls",
+       "size": "m"
+      },
+      {
+       "id": "leg",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        570,
+        75
+       ],
+       "text": "legend",
+       "size": "l"
+      },
+      {
+       "id": "legarrow",
+       "op": "arrow",
+       "startMs": 2500,
+       "endMs": 3300,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        610,
+        85
+       ],
+       "to": [
+        575,
+        110
+       ]
+      },
+      {
+       "id": "legarrow2",
+       "op": "arrow",
+       "startMs": 3300,
+       "endMs": 4200,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        610,
+        85
+       ],
+       "to": [
+        575,
+        175
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch13-t03-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "title",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        45
+       ],
+       "text": "favourite games",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "cricket",
+       "op": "text",
+       "startMs": 600,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        230,
+        440
+       ],
+       "text": "cricket",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "badminton",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        540,
+        440
+       ],
+       "text": "badminton",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "bars",
+       "op": "numwork",
+       "startMs": 1700,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        150,
+        100
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "boys",
+         "12"
+        ],
+        [
+         "girls",
+         "7"
+        ],
+        [
+         "boys",
+         "7"
+        ],
+        [
+         "girls",
+         "10"
+        ]
+       ]
+      },
+      {
+       "id": "cb1",
+       "op": "rect",
+       "startMs": 3000,
+       "endMs": 3900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        190,
+        220
+       ],
+       "w": 35,
+       "h": 200,
+       "fill": "accent"
+      },
+      {
+       "id": "cg1",
+       "op": "rect",
+       "startMs": 3300,
+       "endMs": 4200,
+       "ink": "soft",
+       "weight": 2,
+       "at": [
+        230,
+        300
+       ],
+       "w": 35,
+       "h": 120,
+       "fill": "soft"
+      },
+      {
+       "id": "cb2",
+       "op": "rect",
+       "startMs": 3900,
+       "endMs": 4800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        500,
+        300
+       ],
+       "w": 35,
+       "h": 120,
+       "fill": "accent"
+      },
+      {
+       "id": "cg2",
+       "op": "rect",
+       "startMs": 4200,
+       "endMs": 5100,
+       "ink": "soft",
+       "weight": 2,
+       "at": [
+        540,
+        250
+       ],
+       "w": 35,
+       "h": 170,
+       "fill": "soft"
+      },
+      {
+       "id": "nums",
+       "op": "text",
+       "startMs": 5500,
+       "endMs": 6500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        470
+       ],
+       "text": "12 7 7 10",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "legend",
+       "op": "text",
+       "startMs": 6300,
+       "endMs": 7100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        620,
+        100
+       ],
+       "text": "boys  girls",
+       "size": "s"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch13-t03-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "bd",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        90
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "girls",
+         "10",
+         "+",
+         "9",
+         "=",
+         "19"
+        ],
+        [
+         "boys",
+         "7",
+         "+",
+         "5",
+         "=",
+         "12"
+        ]
+       ]
+      },
+      {
+       "id": "diff",
+       "op": "numwork",
+       "startMs": 2300,
+       "endMs": 3800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        120,
+        230
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "19",
+         "−",
+         "12",
+         "=",
+         "7"
+        ]
+       ]
+      },
+      {
+       "id": "girlslabel",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        500,
+        180
+       ],
+       "text": "girls total 19",
+       "size": "m"
+      },
+      {
+       "id": "boyslabel",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        500,
+        230
+       ],
+       "text": "boys total 12",
+       "size": "m"
+      },
+      {
+       "id": "more",
+       "op": "text",
+       "startMs": 5600,
+       "endMs": 6800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        360
+       ],
+       "text": "7 more girls",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "check",
+       "op": "highlight",
+       "startMs": 6800,
+       "endMs": 7600,
+       "ink": "good",
+       "weight": 2,
+       "target": "diff",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch13-t03-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "axis",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        100,
+        410
+       ],
+       "to": [
+        700,
+        410
+       ]
+      },
+      {
+       "id": "tick1",
+       "op": "line",
+       "startMs": 600,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 1,
+       "from": [
+        180,
+        400
+       ],
+       "to": [
+        180,
+        420
+       ]
+      },
+      {
+       "id": "tick2",
+       "op": "line",
+       "startMs": 900,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 1,
+       "from": [
+        300,
+        400
+       ],
+       "to": [
+        300,
+        420
+       ]
+      },
+      {
+       "id": "tick3",
+       "op": "line",
+       "startMs": 1200,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 1,
+       "from": [
+        420,
+        400
+       ],
+       "to": [
+        420,
+        420
+       ]
+      },
+      {
+       "id": "tick4",
+       "op": "line",
+       "startMs": 1500,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 1,
+       "from": [
+        540,
+        400
+       ],
+       "to": [
+        540,
+        420
+       ]
+      },
+      {
+       "id": "steps",
+       "op": "arrow",
+       "startMs": 2100,
+       "endMs": 3000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        180,
+        370
+       ],
+       "to": [
+        300,
+        370
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch13-t03-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "myth",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "MYTH",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "badaxis",
+       "op": "line",
+       "startMs": 800,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        120,
+        410
+       ],
+       "to": [
+        700,
+        410
+       ]
+      },
+      {
+       "id": "cut",
+       "op": "line",
+       "startMs": 1200,
+       "endMs": 1700,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        140,
+        390
+       ],
+       "to": [
+        160,
+        410
+       ]
+      },
+      {
+       "id": "cut2",
+       "op": "line",
+       "startMs": 1400,
+       "endMs": 1900,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        165,
+        390
+       ],
+       "to": [
+        185,
+        410
+       ]
+      },
+      {
+       "id": "small",
+       "op": "rect",
+       "startMs": 2100,
+       "endMs": 2800,
+       "ink": "soft",
+       "weight": 2,
+       "at": [
+        250,
+        330
+       ],
+       "w": 55,
+       "h": 80,
+       "fill": "soft"
+      },
+      {
+       "id": "large",
+       "op": "rect",
+       "startMs": 2500,
+       "endMs": 3400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        180
+       ],
+       "w": 55,
+       "h": 230,
+       "fill": "accent"
+      },
+      {
+       "id": "diff",
+       "op": "arrow",
+       "startMs": 3600,
+       "endMs": 4500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        320,
+        330
+       ],
+       "to": [
+        395,
+        220
+       ]
+      },
+      {
+       "id": "trust",
+       "op": "text",
+       "startMs": 6500,
+       "endMs": 7200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        110
+       ],
+       "text": "check the scale",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch13-t03-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "title",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "before believing a graph",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "check1",
+       "op": "circle",
+       "startMs": 1100,
+       "endMs": 1500,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        150,
+        180
+       ],
+       "r": 38
+      },
+      {
+       "id": "t1",
+       "op": "text",
+       "startMs": 1200,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        150,
+        185
+       ],
+       "text": "title",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "check2",
+       "op": "circle",
+       "startMs": 1500,
+       "endMs": 1900,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        300,
+        180
+       ],
+       "r": 38
+      },
+      {
+       "id": "t2",
+       "op": "text",
+       "startMs": 1600,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        300,
+        185
+       ],
+       "text": "labels",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "check3",
+       "op": "circle",
+       "startMs": 1900,
+       "endMs": 2300,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        450,
+        180
+       ],
+       "r": 38
+      },
+      {
+       "id": "t3",
+       "op": "text",
+       "startMs": 2000,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        450,
+        185
+       ],
+       "text": "scale",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "check4",
+       "op": "circle",
+       "startMs": 2300,
+       "endMs": 2700,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        600,
+        180
+       ],
+       "r": 38
+      },
+      {
+       "id": "t4",
+       "op": "text",
+       "startMs": 2400,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        600,
+        185
+       ],
+       "text": "legend",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "arrow",
+       "op": "arrow",
+       "startMs": 3300,
+       "endMs": 4100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        270
+       ],
+       "to": [
+        400,
+        350
+       ]
+      },
+      {
+       "id": "actual",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 5600,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        400
+       ],
+       "text": "actual numbers",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "all",
+       "op": "highlight",
+       "startMs": 6000,
+       "endMs": 7000,
+       "ink": "good",
+       "weight": 2,
+       "target": "actual",
+       "style": "underline"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch13-t03-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4004,
+     "ops": [
+      {
+       "id": "game",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        60
+       ],
+       "text": "game",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "girls",
+       "op": "text",
+       "startMs": 500,
+       "endMs": 1100,
+       "ink": "soft",
+       "weight": 2,
+       "at": [
+        400,
+        125
+       ],
+       "text": "girls",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "choices",
+       "op": "polygon",
+       "startMs": 1300,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         150,
+         230
+        ],
+        [
+         300,
+         230
+        ],
+        [
+         275,
+         340
+        ],
+        [
+         175,
+         340
+        ]
+       ],
+       "fill": "soft"
+      },
+      {
+       "id": "choice1",
+       "op": "text",
+       "startMs": 1600,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        225,
+        290
+       ],
+       "text": "cricket",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "choices2",
+       "op": "polygon",
+       "startMs": 1900,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         500,
+         230
+        ],
+        [
+         650,
+         230
+        ],
+        [
+         625,
+         340
+        ],
+        [
+         525,
+         340
+        ]
+       ],
+       "fill": "accent"
+      },
+      {
+       "id": "choice2",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        575,
+        290
+       ],
+       "text": "badminton",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "tap",
+       "op": "circle",
+       "startMs": 3000,
+       "endMs": 3800,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        575,
+        290
+       ],
+       "r": 65
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "12",
+   "prompt": "tally: Cricket"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "5",
+   "prompt": "tally: Kho-kho"
+  },
+  {
+   "itemId": "r1:2",
+   "key": "7",
+   "prompt": "tally: Badminton"
+  },
+  {
+   "itemId": "r1:3",
+   "key": "6",
+   "prompt": "tally: Football"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "120",
+   "prompt": "bars: June"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "180",
+   "prompt": "bars: July"
+  },
+  {
+   "itemId": "r2:2",
+   "key": "150",
+   "prompt": "bars: August"
+  },
+  {
+   "itemId": "r3:0",
+   "key": "true",
+   "prompt": "Brand X > Brand Y"
+  },
+  {
+   "itemId": "r3:1",
+   "key": "false",
+   "prompt": "Brand X = 2 × Brand Y"
+  },
+  {
+   "itemId": "r3:2",
+   "key": "true",
+   "prompt": "Brand X − Brand Y = 2"
+  },
+  {
+   "itemId": "r3:3",
+   "key": "true",
+   "prompt": "Total = 98"
+  }
+ ],
+ "check": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "Round 3 mode=claims title 'Check the chart' uses only one bar per brand (single bar graph) but the kit's items c7-maths-ch13-t03-i04, i05, i09, i10 refer to double bar graphs; the kit does not contain any single-bar example with a cut axis for brands. The game's scenario (Brand X vs Brand Y with axis starting at 45) is factually inconsistent: the kit's only cut-axis example (i04, i05) is about marks or percentages, not about phone brands. However, the claim checks (more, twice, diff=2, total=98) are not contradicted by the kit; they are an allowed new scenario. The only potential issue is that the game text says 'the axis starts above zero' but the kit's misconception target is about bar heights when axis doesn't start at 0. This is consistent with the kit's expectation. No high severity issue.",
+    "severity": "low"
+   }
+  ],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

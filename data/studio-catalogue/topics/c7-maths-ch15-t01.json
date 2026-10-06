@@ -1,0 +1,1565 @@
+{
+ "topicId": "c7-maths-ch15-t01",
+ "title": "Forming equations",
+ "chapter": "Finding the Unknown",
+ "subject": "maths",
+ "class": 7,
+ "topicType": "T5",
+ "plan": {
+  "game": "balance-beam@1",
+  "hint": "Tilt: forming and solving equations"
+ },
+ "game": {
+  "archetype": "balance-beam@1",
+  "spec": {
+   "archetype": "balance-beam@1",
+   "skills": [
+    "c7-maths-ch15-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "coach": "Drag weights onto the beam",
+    "round": "Round",
+    "balanced": "BALANCED",
+    "leftHeavy": "left side heavier",
+    "rightHeavy": "right side heavier",
+    "reveal": "the bag weighs",
+    "sameBoth": "Take the same off both sides",
+    "kg": "kg",
+    "g": "g",
+    "runDone": "All level",
+    "hold": "hold it level"
+   },
+   "rounds": [
+    {
+     "mode": "lever",
+     "title": "Make it level",
+     "sub": "Match the turns on both sides",
+     "unit": "kg",
+     "left": [
+      {
+       "w": 4,
+       "d": 2
+      }
+     ],
+     "right": [
+      {
+       "w": 1,
+       "d": 2
+      }
+     ],
+     "tray": [
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "mode": "unknown",
+     "title": "Mystery bag",
+     "sub": "Balance the bags and check your number",
+     "unit": "kg",
+     "left": [
+      {
+       "w": 4,
+       "d": 2
+      }
+     ],
+     "right": [
+      {
+       "w": 1,
+       "d": 2
+      }
+     ],
+     "tray": [
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "unknown": {
+      "w": 5,
+      "d": 2,
+      "n": 1
+     },
+     "targets": "c7-maths-ch15-t01-m-letter-label"
+    },
+    {
+     "mode": "sameBoth",
+     "title": "Same on both sides",
+     "sub": "Two bags and a weight match 16 kg",
+     "unit": "kg",
+     "left": [
+      {
+       "w": 1,
+       "d": 2
+      },
+      {
+       "w": 1,
+       "d": 2
+      }
+     ],
+     "right": [
+      {
+       "w": 1,
+       "d": 2
+      },
+      {
+       "w": 1,
+       "d": 2
+      },
+      {
+       "w": 8,
+       "d": 2
+      }
+     ],
+     "tray": [],
+     "unknown": {
+      "w": 4,
+      "d": 2,
+      "n": 2
+     }
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 2,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-maths-ch15-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Turning words into equations",
+   "accent": "ion",
+   "targets": "c7-maths-ch15-t01-m-word-order",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Turning words into equations"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Write symbols in word order"
+      },
+      {
+       "id": "letter",
+       "type": "node",
+       "text": "m",
+       "sub": "unknown number",
+       "glyph": "question",
+       "color": "ion"
+      },
+      {
+       "id": "number",
+       "type": "label",
+       "text": "A letter means a number",
+       "x": 560,
+       "y": 330,
+       "color": "mint"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "phrase",
+       "type": "label",
+       "text": "5 less than twice m",
+       "x": 100,
+       "y": 300,
+       "color": "amber"
+      },
+      {
+       "id": "twice",
+       "type": "node",
+       "text": "2m",
+       "sub": "twice m",
+       "glyph": "spark",
+       "color": "ion"
+      },
+      {
+       "id": "less",
+       "type": "node",
+       "text": "2m − 5",
+       "sub": "five less",
+       "glyph": "ruler",
+       "color": "mint"
+      },
+      {
+       "id": "p1",
+       "type": "arrow",
+       "from": "phrase",
+       "to": "twice",
+       "text": "double"
+      },
+      {
+       "id": "p2",
+       "type": "arrow",
+       "from": "twice",
+       "to": "less",
+       "text": "subtract 5"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "story",
+       "type": "label",
+       "text": "Sister has 4 more than double m",
+       "x": 70,
+       "y": 250,
+       "color": "amber"
+      },
+      {
+       "id": "mnode",
+       "type": "node",
+       "text": "m",
+       "sub": "Ravi's marbles",
+       "glyph": "coin",
+       "color": "ion"
+      },
+      {
+       "id": "double",
+       "type": "node",
+       "text": "2m",
+       "sub": "double",
+       "glyph": "spark",
+       "color": "ion"
+      },
+      {
+       "id": "plus",
+       "type": "node",
+       "text": "2m + 4",
+       "sub": "4 more",
+       "glyph": "coin",
+       "color": "mint"
+      },
+      {
+       "id": "eq",
+       "type": "node",
+       "text": "= 18",
+       "sub": "sister's total",
+       "glyph": "balance",
+       "color": "amber"
+      },
+      {
+       "id": "e1",
+       "type": "arrow",
+       "from": "mnode",
+       "to": "double",
+       "text": "double"
+      },
+      {
+       "id": "e2",
+       "type": "arrow",
+       "from": "double",
+       "to": "plus",
+       "text": "add 4"
+      },
+      {
+       "id": "e3",
+       "type": "arrow",
+       "from": "plus",
+       "to": "eq",
+       "text": "equals 18"
+      },
+      {
+       "id": "check",
+       "type": "label",
+       "text": "m = 7: 14 + 4 = 18",
+       "x": 260,
+       "y": 520,
+       "color": "mint"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "row",
+     "els": [
+      {
+       "id": "checktitle",
+       "type": "title",
+       "text": "Choose the expression"
+      },
+      {
+       "id": "opA",
+       "type": "label",
+       "text": "2m − 5",
+       "x": 100,
+       "y": 350,
+       "color": "mint"
+      },
+      {
+       "id": "opB",
+       "type": "label",
+       "text": "5 − 2m",
+       "x": 350,
+       "y": 350,
+       "color": "amber"
+      },
+      {
+       "id": "opC",
+       "type": "label",
+       "text": "2 + m − 5",
+       "x": 600,
+       "y": 350,
+       "color": "volt"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "A letter can stand for an unknown number.",
+    "L2": "To form an equation, translate each phrase into an operation in the right order.",
+    "L3": "For example, 5 less than twice m means double m first, then subtract 5.",
+    "L4": "So the expression is 2m − 5, not 5 − 2m.",
+    "L5": "In a word problem, connect the operations and set the expression equal to the given total.",
+    "L6": "Ravi's sister has 4 more than double his marbles, and she has 18.",
+    "L7": "The equation is 2m + 4 = 18; checking m = 7 gives 14 + 4 = 18.",
+    "L8": "Now choose the expression that matches the phrase."
+   },
+   "narration": {
+    "L1": {
+     "text": "A letter can stand for an unknown number.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "To form an equation, translate each phrase into an operation in the right order.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "For example, 5 less than twice m means double m first, then subtract 5.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "So the expression is 2m − 5, not 5 − 2m.",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "In a word problem, connect the operations and set the expression equal to the given total.",
+     "dur": 4.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Ravi's sister has 4 more than double his marbles, and she has 18.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "The equation is 2m + 4 = 18; checking m = 7 gives 14 + 4 = 18.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Now choose the expression that matches the phrase.",
+     "dur": 2.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.3,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "title"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.7,
+       "target": "letter"
+      },
+      {
+       "at": 1.2,
+       "do": "show",
+       "dur": 0.8,
+       "target": "number"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "camera",
+       "dur": 1,
+       "zoom": 1.04
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.7,
+       "target": "phrase"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "twice"
+      },
+      {
+       "at": 0.6,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "p1",
+       "to": 1
+      },
+      {
+       "at": 1.6,
+       "do": "show",
+       "dur": 0.7,
+       "target": "less"
+      },
+      {
+       "at": 2.2,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "p2",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      },
+      {
+       "at": 0.8,
+       "do": "bust",
+       "dur": 1.2,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.3,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "story"
+      },
+      {
+       "at": 0.6,
+       "do": "show",
+       "dur": 0.6,
+       "target": "mnode"
+      },
+      {
+       "at": 1.2,
+       "do": "show",
+       "dur": 0.6,
+       "target": "double"
+      },
+      {
+       "at": 1.8,
+       "do": "show",
+       "dur": 0.6,
+       "target": "plus"
+      },
+      {
+       "at": 2.4,
+       "do": "show",
+       "dur": 0.6,
+       "target": "eq"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.3,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "story"
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "e1",
+       "to": 1
+      },
+      {
+       "at": 1.5,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "e2",
+       "to": 1
+      },
+      {
+       "at": 2.2,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "e3",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "check"
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 1.2,
+       "target": "eq"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "checktitle"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "opA",
+        "opB",
+        "opC"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive"
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which expression means 5 less than twice m?",
+    "options": [
+     "opA",
+     "opB",
+     "opC"
+    ],
+    "answer": "opA",
+    "src": "c7-maths-ch15-t01-i02"
+   }
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg",
+  "seconds": 35
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch15-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4004,
+     "ops": [
+      {
+       "id": "box",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        170,
+        150
+       ],
+       "w": 180,
+       "h": 110,
+       "round": 12
+      },
+      {
+       "id": "letter",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        260,
+        215
+       ],
+       "text": "letter",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "arrow",
+       "op": "arrow",
+       "startMs": 1700,
+       "endMs": 2500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        360,
+        205
+       ],
+       "to": [
+        540,
+        205
+       ]
+      },
+      {
+       "id": "unknown",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        635,
+        215
+       ],
+       "text": "unknown number",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch15-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "phrase",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        45,
+        170
+       ],
+       "w": 190,
+       "h": 80,
+       "round": 10
+      },
+      {
+       "id": "phraseText",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        140,
+        218
+       ],
+       "text": "phrase",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "opArrow",
+       "op": "arrow",
+       "startMs": 1400,
+       "endMs": 2100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        245,
+        210
+       ],
+       "to": [
+        365,
+        210
+       ]
+      },
+      {
+       "id": "operation",
+       "op": "rect",
+       "startMs": 2100,
+       "endMs": 2800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        375,
+        170
+       ],
+       "w": 170,
+       "h": 80,
+       "round": 10
+      },
+      {
+       "id": "operationText",
+       "op": "text",
+       "startMs": 2800,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        460,
+        218
+       ],
+       "text": "operation",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "eqArrow",
+       "op": "arrow",
+       "startMs": 3600,
+       "endMs": 4300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        560,
+        210
+       ],
+       "to": [
+        680,
+        210
+       ]
+      },
+      {
+       "id": "equation",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 5200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        730,
+        218
+       ],
+       "text": "equation",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch15-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "phrase",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "5 less than twice m",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "double",
+       "op": "numwork",
+       "startMs": 1300,
+       "endMs": 2500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        180,
+        170
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "m",
+         "→",
+         "2m"
+        ]
+       ]
+      },
+      {
+       "id": "subtract",
+       "op": "numwork",
+       "startMs": 2600,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        410,
+        170
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "2m",
+         "−",
+         "5"
+        ]
+       ]
+      },
+      {
+       "id": "orderArrow",
+       "op": "arrow",
+       "startMs": 3800,
+       "endMs": 4500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        300,
+        210
+       ],
+       "to": [
+        390,
+        210
+       ]
+      },
+      {
+       "id": "result",
+       "op": "numwork",
+       "startMs": 4700,
+       "endMs": 5800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        270,
+        330
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "2m",
+         "−",
+         "5"
+        ]
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch15-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "correct",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1100,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        150,
+        150
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "2m",
+         "−",
+         "5"
+        ]
+       ]
+      },
+      {
+       "id": "not",
+       "op": "text",
+       "startMs": 1300,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        185
+       ],
+       "text": "not",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "wrong",
+       "op": "numwork",
+       "startMs": 2000,
+       "endMs": 3100,
+       "ink": "soft",
+       "weight": 2,
+       "at": [
+        500,
+        150
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "5",
+         "−",
+         "2m"
+        ]
+       ]
+      },
+      {
+       "id": "mark",
+       "op": "highlight",
+       "startMs": 3300,
+       "endMs": 4300,
+       "ink": "good",
+       "weight": 2,
+       "target": "correct",
+       "style": "underline"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch15-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "operations",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        180,
+        120
+       ],
+       "text": "operations",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "chain1",
+       "op": "arrow",
+       "startMs": 900,
+       "endMs": 1600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        180,
+        155
+       ],
+       "to": [
+        180,
+        270
+       ]
+      },
+      {
+       "id": "expression",
+       "op": "rect",
+       "startMs": 1600,
+       "endMs": 2300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        90,
+        280
+       ],
+       "w": 180,
+       "h": 80,
+       "round": 10
+      },
+      {
+       "id": "expressionText",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 3100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        180,
+        328
+       ],
+       "text": "expression",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "equal",
+       "op": "text",
+       "startMs": 3200,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        325
+       ],
+       "text": "=",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "total",
+       "op": "rect",
+       "startMs": 3700,
+       "endMs": 4400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        510,
+        280
+       ],
+       "w": 180,
+       "h": 80,
+       "round": 10
+      },
+      {
+       "id": "totalText",
+       "op": "text",
+       "startMs": 4400,
+       "endMs": 5400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        600,
+        328
+       ],
+       "text": "given total",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "connect",
+       "op": "arrow",
+       "startMs": 5600,
+       "endMs": 6500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        275,
+        320
+       ],
+       "to": [
+        495,
+        320
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch15-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "ravi",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        150,
+        100
+       ],
+       "text": "Ravi",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "m",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        150,
+        175
+       ],
+       "text": "m",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "double",
+       "op": "numwork",
+       "startMs": 1300,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        270,
+        145
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "m",
+         "→",
+         "2m"
+        ]
+       ]
+      },
+      {
+       "id": "more",
+       "op": "numwork",
+       "startMs": 2500,
+       "endMs": 3600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        450,
+        145
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "2m",
+         "+",
+         "4"
+        ]
+       ]
+      },
+      {
+       "id": "sister",
+       "op": "text",
+       "startMs": 3700,
+       "endMs": 4400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        620,
+        100
+       ],
+       "text": "sister",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "eighteen",
+       "op": "text",
+       "startMs": 4400,
+       "endMs": 5000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        620,
+        175
+       ],
+       "text": "18",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch15-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "equation",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        110,
+        120
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "2m",
+         "+",
+         "4",
+         "=",
+         "18"
+        ]
+       ]
+      },
+      {
+       "id": "check",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        90
+       ],
+       "text": "checking",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "m7",
+       "op": "numwork",
+       "startMs": 2400,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        270,
+        190
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "m",
+         "=",
+         "7"
+        ]
+       ]
+      },
+      {
+       "id": "substitute",
+       "op": "numwork",
+       "startMs": 3500,
+       "endMs": 4600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        180,
+        300
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "2m",
+         "=",
+         "14"
+        ]
+       ]
+      },
+      {
+       "id": "addcheck",
+       "op": "numwork",
+       "startMs": 4700,
+       "endMs": 6200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        430,
+        300
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "14",
+         "+",
+         "4",
+         "=",
+         "18"
+        ]
+       ]
+      },
+      {
+       "id": "circleCheck",
+       "op": "highlight",
+       "startMs": 6500,
+       "endMs": 7600,
+       "ink": "good",
+       "weight": 2,
+       "target": "addcheck",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch15-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4004,
+     "ops": [
+      {
+       "id": "phraseBox",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        160
+       ],
+       "w": 220,
+       "h": 100,
+       "round": 12
+      },
+      {
+       "id": "phrase",
+       "op": "text",
+       "startMs": 800,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        200,
+        215
+       ],
+       "text": "phrase",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "arrow",
+       "op": "arrow",
+       "startMs": 1500,
+       "endMs": 2400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        330,
+        210
+       ],
+       "to": [
+        470,
+        210
+       ]
+      },
+      {
+       "id": "expressionBox",
+       "op": "rect",
+       "startMs": 2400,
+       "endMs": 3200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        490,
+        160
+       ],
+       "w": 220,
+       "h": 100,
+       "round": 12
+      },
+      {
+       "id": "expression",
+       "op": "text",
+       "startMs": 3200,
+       "endMs": 3900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        600,
+        215
+       ],
+       "text": "expression",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

@@ -1,0 +1,1766 @@
+{
+ "topicId": "c4-maths-ch11-t02",
+ "title": "Completing symmetrical figures",
+ "chapter": "Fun with Symmetry",
+ "subject": "maths",
+ "class": 4,
+ "topicType": "T4",
+ "plan": {
+  "game": "mirror-paint@1",
+  "hint": "complete mode (rangoli halves)"
+ },
+ "game": {
+  "archetype": "mirror-paint@1",
+  "spec": {
+   "archetype": "mirror-paint@1",
+   "skills": [
+    "c4-maths-ch11-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "done": "designs",
+    "check": "CHECK",
+    "rotate": "TURN",
+    "flip": "FLIP",
+    "coach": "Paint the mirror half: tap the squares",
+    "runDone": "Studio closed",
+    "lines": "Mark every line of symmetry",
+    "turn": "How many times the same in one full turn?",
+    "twin": "Turn and flip it to fit its twin",
+    "same": "SAME",
+    "order": "order",
+    "fold": "FOLD"
+   },
+   "title": "Mirror Rangoli Studio",
+   "rounds": [
+    {
+     "mode": "complete",
+     "title": "Finish the rangoli",
+     "sub": "",
+     "size": 8,
+     "cells": [
+      [
+       3,
+       0
+      ],
+      [
+       2,
+       1
+      ],
+      [
+       3,
+       1
+      ],
+      [
+       1,
+       2
+      ],
+      [
+       3,
+       2
+      ],
+      [
+       0,
+       3
+      ],
+      [
+       2,
+       3
+      ],
+      [
+       3,
+       3
+      ],
+      [
+       1,
+       4
+      ],
+      [
+       3,
+       4
+      ]
+     ],
+     "axis": "v",
+     "time": 60
+    },
+    {
+     "mode": "complete",
+     "title": "Mirror the flower",
+     "sub": "keep every point the same distance",
+     "size": 8,
+     "cells": [
+      [
+       3,
+       0
+      ],
+      [
+       1,
+       1
+      ],
+      [
+       2,
+       1
+      ],
+      [
+       3,
+       2
+      ],
+      [
+       0,
+       3
+      ],
+      [
+       2,
+       3
+      ],
+      [
+       3,
+       3
+      ],
+      [
+       1,
+       4
+      ],
+      [
+       2,
+       5
+      ],
+      [
+       3,
+       6
+      ]
+     ],
+     "axis": "v",
+     "time": 55,
+     "targets": "c4-maths-ch11-t02-m-distance-not-kept"
+    },
+    {
+     "mode": "complete",
+     "title": "Turn the rangoli flat",
+     "sub": "the mirror line is lying across",
+     "size": 8,
+     "cells": [
+      [
+       3,
+       0
+      ],
+      [
+       2,
+       1
+      ],
+      [
+       4,
+       1
+      ],
+      [
+       1,
+       2
+      ],
+      [
+       3,
+       2
+      ],
+      [
+       5,
+       2
+      ],
+      [
+       0,
+       3
+      ],
+      [
+       2,
+       3
+      ],
+      [
+       4,
+       3
+      ],
+      [
+       6,
+       3
+      ]
+     ],
+     "axis": "h",
+     "time": 50,
+     "targets": "c4-maths-ch11-t02-m-wrong-direction"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c4-maths-ch11-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Complete a symmetrical figure",
+   "accent": "ion",
+   "targets": "c4-maths-ch11-t02-m-copy-no-flip",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Complete the other half"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Copy it and slide it across"
+      },
+      {
+       "id": "mirror",
+       "type": "label",
+       "text": "Mirror line"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "grid",
+       "type": "grid",
+       "cols": 7,
+       "rows": 4,
+       "shaded": 0,
+       "x": 120,
+       "y": 210
+      },
+      {
+       "id": "line",
+       "type": "node",
+       "text": "Mirror line",
+       "sub": "standing",
+       "glyph": "pillar",
+       "x": 500,
+       "y": 360,
+       "color": "ion"
+      },
+      {
+       "id": "pointL",
+       "type": "node",
+       "text": "Dot",
+       "sub": "3 left",
+       "glyph": "spark",
+       "x": 280,
+       "y": 300,
+       "color": "amber"
+      },
+      {
+       "id": "row2",
+       "type": "label",
+       "text": "same row",
+       "x": 590,
+       "y": 270,
+       "color": "mint"
+      },
+      {
+       "id": "across",
+       "type": "arrow",
+       "from": "pointL",
+       "to": "line",
+       "text": "count squares"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "given",
+       "type": "node",
+       "text": "Given half",
+       "sub": "left side",
+       "glyph": "leaf",
+       "x": 170,
+       "y": 320,
+       "color": "amber"
+      },
+      {
+       "id": "flip",
+       "type": "node",
+       "text": "Flip",
+       "sub": "not slide",
+       "glyph": "mirror",
+       "x": 430,
+       "y": 320,
+       "color": "ion"
+      },
+      {
+       "id": "complete",
+       "type": "node",
+       "text": "Other half",
+       "sub": "right side",
+       "glyph": "leaf",
+       "x": 700,
+       "y": 320,
+       "color": "mint"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "given",
+       "to": "flip",
+       "text": "reflect"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "flip",
+       "to": "complete",
+       "text": "same shape"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "split",
+     "els": [
+      {
+       "id": "flat",
+       "type": "node",
+       "text": "Lying line",
+       "sub": "up or down",
+       "glyph": "road",
+       "x": 180,
+       "y": 300,
+       "color": "sci"
+      },
+      {
+       "id": "on",
+       "type": "node",
+       "text": "On the line",
+       "sub": "stays put",
+       "glyph": "spark",
+       "x": 450,
+       "y": 300,
+       "color": "sun"
+      },
+      {
+       "id": "optLeft",
+       "type": "node",
+       "text": "2 left",
+       "sub": "choice",
+       "glyph": "spark",
+       "x": 740,
+       "y": 220,
+       "color": "amber"
+      },
+      {
+       "id": "optRight",
+       "type": "node",
+       "text": "2 right",
+       "sub": "choice",
+       "glyph": "spark",
+       "x": 740,
+       "y": 400,
+       "color": "mint"
+      },
+      {
+       "id": "optDown",
+       "type": "node",
+       "text": "3 below",
+       "sub": "choice",
+       "glyph": "spark",
+       "x": 740,
+       "y": 520,
+       "color": "sci"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "A symmetrical figure has two matching halves on opposite sides of a mirror line.",
+    "L2": "A common mistake is to copy a half and slide it across. That is not a mirror image.",
+    "L3": "To reflect a point, count its squares to the mirror line.",
+    "L4": "Then count the same number of squares on the other side, straight across.",
+    "L5": "With a standing line, the point stays in the same row and moves left or right.",
+    "L6": "The shape is flipped, so its size and shape match but its direction changes.",
+    "L7": "With a lying line, points move up or down. A point on the line stays where it is.",
+    "L8": "Now check the dot: it is 2 squares left of a standing line. Tap its mirror position."
+   },
+   "narration": {
+    "L1": {
+     "text": "A symmetrical figure has two matching halves on opposite sides of a mirror line.",
+     "dur": 6.5,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L2": {
+     "text": "A common mistake is to copy a half and slide it across. That is not a mirror image.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L3": {
+     "text": "To reflect a point, count its squares to the mirror line.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L4": {
+     "text": "Then count the same number of squares on the other side, straight across.",
+     "dur": 6.5,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L5": {
+     "text": "With a standing line, the point stays in the same row and moves left or right.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L6": {
+     "text": "The shape is flipped, so its size and shape match but its direction changes.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L7": {
+     "text": "With a lying line, points move up or down. A point on the line stays where it is.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Now check the dot: it is 2 squares left of a standing line. Tap its mirror position.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "title"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": "mirror"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      },
+      {
+       "at": 3,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "grid",
+        "line",
+        "pointL"
+       ]
+      },
+      {
+       "at": 2,
+       "do": "focus",
+       "dur": 1,
+       "target": "pointL"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "across"
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 1,
+       "target": "across",
+       "to": 1
+      },
+      {
+       "at": 3,
+       "do": "highlight",
+       "dur": 1,
+       "target": "row2"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "line"
+      },
+      {
+       "at": 2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "pointL"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "given",
+        "flip",
+        "complete"
+       ]
+      },
+      {
+       "at": 2,
+       "do": "flow",
+       "dur": 1,
+       "target": [
+        "a1",
+        "a2"
+       ],
+       "to": 1
+      },
+      {
+       "at": 4,
+       "do": "highlight",
+       "dur": 1,
+       "target": "complete"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "flat",
+        "on"
+       ]
+      },
+      {
+       "at": 2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "flat"
+      },
+      {
+       "at": 4,
+       "do": "highlight",
+       "dur": 1,
+       "target": "on"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "optLeft",
+        "optRight",
+        "optDown"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "interactive",
+       "dur": 1
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "A dot is 2 squares left of a standing mirror line. Where is its mirror dot?",
+    "options": [
+     "optLeft",
+     "optRight",
+     "optDown"
+    ],
+    "answer": "optRight",
+    "src": "c4-maths-ch11-t02-i01"
+   }
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg",
+  "seconds": 58
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 2,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch11-t02-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "mirror",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        400,
+        60
+       ],
+       "to": [
+        400,
+        440
+       ]
+      },
+      {
+       "id": "mirrorLabel",
+       "op": "label",
+       "startMs": 2900,
+       "endMs": 3900,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        420,
+        80
+       ],
+       "text": "mirror line",
+       "to": [
+        400,
+        100
+       ]
+      },
+      {
+       "id": "match1",
+       "op": "line",
+       "startMs": 3900,
+       "endMs": 4700,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        300,
+        120
+       ],
+       "to": [
+        500,
+        120
+       ]
+      },
+      {
+       "id": "match2",
+       "op": "line",
+       "startMs": 4700,
+       "endMs": 5500,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        340,
+        260
+       ],
+       "to": [
+        460,
+        260
+       ]
+      },
+      {
+       "id": "sym",
+       "op": "label",
+       "startMs": 5500,
+       "endMs": 6557,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        470
+       ],
+       "text": "symmetrical"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 2,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch11-t02-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "slideArrow",
+       "op": "arrow",
+       "startMs": 1200,
+       "endMs": 2300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        300,
+        220
+       ],
+       "to": [
+        520,
+        220
+       ]
+      },
+      {
+       "id": "mistake",
+       "op": "label",
+       "startMs": 3900,
+       "endMs": 5100,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        520,
+        400
+       ],
+       "text": "copy slid across"
+      },
+      {
+       "id": "notMirror",
+       "op": "label",
+       "startMs": 5200,
+       "endMs": 6500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        520,
+        440
+       ],
+       "text": "not a mirror image"
+      },
+      {
+       "id": "cross",
+       "op": "line",
+       "startMs": 6500,
+       "endMs": 7200,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        500,
+        390
+       ],
+       "to": [
+        700,
+        450
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch11-t02-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "vline",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        400,
+        70
+       ],
+       "to": [
+        400,
+        430
+       ]
+      },
+      {
+       "id": "dot",
+       "op": "circle",
+       "startMs": 700,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        280,
+        220
+       ],
+       "r": 8,
+       "fill": "chalk"
+      },
+      {
+       "id": "grid1",
+       "op": "line",
+       "startMs": 1100,
+       "endMs": 1400,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        320,
+        205
+       ],
+       "to": [
+        320,
+        235
+       ]
+      },
+      {
+       "id": "grid2",
+       "op": "line",
+       "startMs": 1400,
+       "endMs": 1700,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        350,
+        205
+       ],
+       "to": [
+        350,
+        235
+       ]
+      },
+      {
+       "id": "grid3",
+       "op": "line",
+       "startMs": 1700,
+       "endMs": 2000,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        380,
+        205
+       ],
+       "to": [
+        380,
+        235
+       ]
+      },
+      {
+       "id": "count",
+       "op": "label",
+       "startMs": 2200,
+       "endMs": 3200,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        300,
+        180
+       ],
+       "text": "squares",
+       "to": [
+        340,
+        220
+       ]
+      },
+      {
+       "id": "toLine",
+       "op": "arrow",
+       "startMs": 3300,
+       "endMs": 4300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        290,
+        220
+       ],
+       "to": [
+        390,
+        220
+       ]
+      },
+      {
+       "id": "mirrorLabel2",
+       "op": "label",
+       "startMs": 4300,
+       "endMs": 5281,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        420,
+        90
+       ],
+       "text": "mirror line",
+       "to": [
+        400,
+        110
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch11-t02-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "sameCount",
+       "op": "arrow",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        280,
+        220
+       ],
+       "to": [
+        400,
+        220
+       ]
+      },
+      {
+       "id": "otherSide",
+       "op": "arrow",
+       "startMs": 1100,
+       "endMs": 2100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        220
+       ],
+       "to": [
+        520,
+        220
+       ]
+      },
+      {
+       "id": "mirrorDot",
+       "op": "circle",
+       "startMs": 2200,
+       "endMs": 2700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        520,
+        220
+       ],
+       "r": 8,
+       "fill": "accent"
+      },
+      {
+       "id": "straight",
+       "op": "line",
+       "startMs": 2800,
+       "endMs": 3700,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        280,
+        220
+       ],
+       "to": [
+        520,
+        220
+       ]
+      },
+      {
+       "id": "same",
+       "op": "label",
+       "startMs": 3800,
+       "endMs": 4800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        350,
+        190
+       ],
+       "text": "same number"
+      },
+      {
+       "id": "other",
+       "op": "label",
+       "startMs": 4900,
+       "endMs": 6132,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        470,
+        250
+       ],
+       "text": "other side"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch11-t02-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "standing",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        400,
+        60
+       ],
+       "to": [
+        400,
+        440
+       ]
+      },
+      {
+       "id": "row1",
+       "op": "line",
+       "startMs": 800,
+       "endMs": 1200,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        100,
+        160
+       ],
+       "to": [
+        700,
+        160
+       ]
+      },
+      {
+       "id": "row2",
+       "op": "line",
+       "startMs": 1200,
+       "endMs": 1600,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        100,
+        260
+       ],
+       "to": [
+        700,
+        260
+       ]
+      },
+      {
+       "id": "row3",
+       "op": "line",
+       "startMs": 1600,
+       "endMs": 2000,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        100,
+        360
+       ],
+       "to": [
+        700,
+        360
+       ]
+      },
+      {
+       "id": "pointL",
+       "op": "circle",
+       "startMs": 2100,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        280,
+        260
+       ],
+       "r": 8,
+       "fill": "chalk"
+      },
+      {
+       "id": "pointR",
+       "op": "circle",
+       "startMs": 2500,
+       "endMs": 2900,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        520,
+        260
+       ],
+       "r": 8,
+       "fill": "accent"
+      },
+      {
+       "id": "horizontal",
+       "op": "arrow",
+       "startMs": 3000,
+       "endMs": 4200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        280,
+        260
+       ],
+       "to": [
+        520,
+        260
+       ]
+      },
+      {
+       "id": "sameRow",
+       "op": "label",
+       "startMs": 4300,
+       "endMs": 5300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        330,
+        300
+       ],
+       "text": "same row"
+      },
+      {
+       "id": "leftRight",
+       "op": "label",
+       "startMs": 5400,
+       "endMs": 6400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        320,
+        110
+       ],
+       "text": "left or right"
+      },
+      {
+       "id": "standingLabel",
+       "op": "label",
+       "startMs": 6400,
+       "endMs": 7409,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        420,
+        70
+       ],
+       "text": "standing line",
+       "to": [
+        400,
+        90
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 2,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch11-t02-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "flipArrow",
+       "op": "arrow",
+       "startMs": 2100,
+       "endMs": 2900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        360,
+        250
+       ],
+       "to": [
+        440,
+        250
+       ]
+      },
+      {
+       "id": "size",
+       "op": "label",
+       "startMs": 3000,
+       "endMs": 3900,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        190,
+        400
+       ],
+       "text": "same size"
+      },
+      {
+       "id": "shape",
+       "op": "label",
+       "startMs": 3900,
+       "endMs": 4800,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        500,
+        400
+       ],
+       "text": "same shape"
+      },
+      {
+       "id": "direction",
+       "op": "label",
+       "startMs": 4900,
+       "endMs": 6100,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        335,
+        80
+       ],
+       "text": "direction changes"
+      },
+      {
+       "id": "flip",
+       "op": "label",
+       "startMs": 6100,
+       "endMs": 6557,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        370,
+        290
+       ],
+       "text": "flipped"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch11-t02-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "lying",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        80,
+        250
+       ],
+       "to": [
+        720,
+        250
+       ]
+      },
+      {
+       "id": "col1",
+       "op": "line",
+       "startMs": 800,
+       "endMs": 1200,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        180,
+        100
+       ],
+       "to": [
+        180,
+        400
+       ]
+      },
+      {
+       "id": "col2",
+       "op": "line",
+       "startMs": 1200,
+       "endMs": 1600,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        300,
+        100
+       ],
+       "to": [
+        300,
+        400
+       ]
+      },
+      {
+       "id": "col3",
+       "op": "line",
+       "startMs": 1600,
+       "endMs": 2000,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        520,
+        100
+       ],
+       "to": [
+        520,
+        400
+       ]
+      },
+      {
+       "id": "pointUp",
+       "op": "circle",
+       "startMs": 2100,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        300,
+        150
+       ],
+       "r": 8,
+       "fill": "chalk"
+      },
+      {
+       "id": "pointDown",
+       "op": "circle",
+       "startMs": 2500,
+       "endMs": 2900,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        300,
+        350
+       ],
+       "r": 8,
+       "fill": "accent"
+      },
+      {
+       "id": "vertical",
+       "op": "arrow",
+       "startMs": 3000,
+       "endMs": 4200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        300,
+        150
+       ],
+       "to": [
+        300,
+        350
+       ]
+      },
+      {
+       "id": "onLine",
+       "op": "circle",
+       "startMs": 4300,
+       "endMs": 4700,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        520,
+        250
+       ],
+       "r": 8,
+       "fill": "good"
+      },
+      {
+       "id": "stays",
+       "op": "label",
+       "startMs": 4800,
+       "endMs": 6000,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        540,
+        290
+       ],
+       "text": "stays where it is"
+      },
+      {
+       "id": "upDown",
+       "op": "label",
+       "startMs": 6100,
+       "endMs": 7000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        330,
+        110
+       ],
+       "text": "up or down"
+      },
+      {
+       "id": "lyingLabel",
+       "op": "label",
+       "startMs": 7000,
+       "endMs": 8260,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        350,
+        270
+       ],
+       "text": "lying line",
+       "to": [
+        400,
+        250
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch11-t02-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "checkLine",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        400,
+        70
+       ],
+       "to": [
+        400,
+        430
+       ]
+      },
+      {
+       "id": "dot2",
+       "op": "circle",
+       "startMs": 800,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        280,
+        220
+       ],
+       "r": 9,
+       "fill": "chalk"
+      },
+      {
+       "id": "sq1",
+       "op": "line",
+       "startMs": 1200,
+       "endMs": 1600,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        320,
+        205
+       ],
+       "to": [
+        320,
+        235
+       ]
+      },
+      {
+       "id": "sq2",
+       "op": "line",
+       "startMs": 1600,
+       "endMs": 2000,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        360,
+        205
+       ],
+       "to": [
+        360,
+        235
+       ]
+      },
+      {
+       "id": "leftLabel",
+       "op": "label",
+       "startMs": 2100,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        210,
+        180
+       ],
+       "text": "2 squares left"
+      },
+      {
+       "id": "across",
+       "op": "arrow",
+       "startMs": 3400,
+       "endMs": 4700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        280,
+        220
+       ],
+       "to": [
+        520,
+        220
+       ]
+      },
+      {
+       "id": "tap",
+       "op": "circle",
+       "startMs": 4800,
+       "endMs": 5500,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        520,
+        220
+       ],
+       "r": 12
+      },
+      {
+       "id": "mirrorDot2",
+       "op": "circle",
+       "startMs": 5500,
+       "endMs": 6000,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        520,
+        220
+       ],
+       "r": 8,
+       "fill": "accent"
+      },
+      {
+       "id": "mirrorPosition",
+       "op": "label",
+       "startMs": 6100,
+       "endMs": 7300,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        470,
+        180
+       ],
+       "text": "mirror position",
+       "to": [
+        520,
+        220
+       ]
+      },
+      {
+       "id": "sameRow2",
+       "op": "label",
+       "startMs": 7300,
+       "endMs": 7834,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        340,
+        270
+       ],
+       "text": "same row"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1",
+   "key": "complete",
+   "prompt": "complete 8×8"
+  },
+  {
+   "itemId": "r2",
+   "key": "complete",
+   "prompt": "complete 8×8"
+  },
+  {
+   "itemId": "r3",
+   "key": "complete",
+   "prompt": "complete 8×8"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

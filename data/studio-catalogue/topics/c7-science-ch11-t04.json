@@ -1,0 +1,2045 @@
+{
+ "topicId": "c7-science-ch11-t04",
+ "title": "Pinhole camera, periscope and kaleidoscope",
+ "chapter": "Light: Shadows and Reflections",
+ "subject": "science",
+ "class": 7,
+ "topicType": "T4",
+ "plan": {
+  "game": "ray-lab@1",
+  "hint": "mirror mode periscope (walls) and pinhole mode"
+ },
+ "game": {
+  "archetype": "ray-lab@1",
+  "spec": {
+   "archetype": "ray-lab@1",
+   "skills": [
+    "c7-science-ch11-t04"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "done": "right",
+    "fire": "FIRE",
+    "lock": "LOCK",
+    "mirrors": "mirrors",
+    "target": "target",
+    "tapCell": "Tap a cell to stand a mirror",
+    "rotate": "Drag the mirror to turn it",
+    "incidence": "i",
+    "reflection": "r",
+    "screen": "screen",
+    "image": "image",
+    "object": "candle",
+    "height": "height",
+    "runDone": "Lab closed",
+    "hit": "HIT",
+    "miss": "MISSED",
+    "inverted": "upside down"
+   },
+   "title": "Ray Lab",
+   "rounds": [
+    {
+     "mode": "mirror",
+     "title": "See over the wall",
+     "sub": "use two plane mirrors",
+     "w": 7,
+     "h": 6,
+     "source": [
+      0,
+      5
+     ],
+     "dir": "E",
+     "target": [
+      6,
+      0
+     ],
+     "walls": [
+      [
+       4,
+       5
+      ],
+      [
+       4,
+       4
+      ],
+      [
+       4,
+       3
+      ],
+      [
+       5,
+       3
+      ],
+      [
+       6,
+       3
+      ]
+     ],
+     "maxMirrors": 2,
+     "targets": "c7-science-ch11-t04-m3"
+    },
+    {
+     "mode": "angle",
+     "title": "Match the rays",
+     "sub": "turn the mirror to hit the target",
+     "laser": [
+      180,
+      230
+     ],
+     "pivot": [
+      430,
+      470
+     ],
+     "goal": [
+      660,
+      240
+     ],
+     "tol": 14
+    },
+    {
+     "mode": "pinhole",
+     "title": "Pinhole camera",
+     "sub": "slide the screen to match the height",
+     "objH": 15,
+     "objD": 40,
+     "imgH": 6,
+     "tol": 0.6,
+     "targets": "c7-science-ch11-t04-m1"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-science-ch11-t04"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Light makes useful viewers",
+   "accent": "sci",
+   "targets": "c7-science-ch11-t04-m2",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Light makes useful viewers"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "A bigger hole gives a sharper picture"
+      },
+      {
+       "id": "safe",
+       "type": "label",
+       "text": "Never use the Sun",
+       "x": 650,
+       "y": 510,
+       "color": "amber"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "obj",
+       "type": "node",
+       "text": "Bright object",
+       "sub": "lit bulb",
+       "glyph": "bulb",
+       "color": "sun"
+      },
+      {
+       "id": "hole",
+       "type": "node",
+       "text": "Tiny hole",
+       "sub": "closed box",
+       "color": "sci"
+      },
+      {
+       "id": "screen",
+       "type": "node",
+       "text": "Screen",
+       "sub": "butter paper",
+       "glyph": "plate",
+       "color": "mint"
+      },
+      {
+       "id": "rTop",
+       "type": "arrow",
+       "from": "obj",
+       "to": "hole",
+       "text": "straight ray"
+      },
+      {
+       "id": "rBottom",
+       "type": "arrow",
+       "from": "hole",
+       "to": "screen",
+       "text": "crosses"
+      },
+      {
+       "id": "inv",
+       "type": "label",
+       "text": "Small, inverted image",
+       "x": 570,
+       "y": 470,
+       "color": "ion"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "column",
+     "els": [
+      {
+       "id": "big",
+       "type": "bar",
+       "parts": 4,
+       "shaded": 4,
+       "x": 120,
+       "y": 250,
+       "w": 300,
+       "text": "tiny hole"
+      },
+      {
+       "id": "bright",
+       "type": "label",
+       "text": "brighter",
+       "x": 500,
+       "y": 260,
+       "color": "sun"
+      },
+      {
+       "id": "blur",
+       "type": "label",
+       "text": "blurred",
+       "x": 500,
+       "y": 330,
+       "color": "amber"
+      },
+      {
+       "id": "near",
+       "type": "label",
+       "text": "screen nearer",
+       "x": 120,
+       "y": 470,
+       "color": "mint"
+      },
+      {
+       "id": "small",
+       "type": "label",
+       "text": "image smaller",
+       "x": 500,
+       "y": 470,
+       "color": "ion"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "topM",
+       "type": "node",
+       "text": "Top mirror",
+       "sub": "45°",
+       "glyph": "mirror",
+       "color": "sci"
+      },
+      {
+       "id": "bottomM",
+       "type": "node",
+       "text": "Bottom mirror",
+       "sub": "45°",
+       "glyph": "mirror",
+       "color": "sci"
+      },
+      {
+       "id": "eye",
+       "type": "node",
+       "text": "Eye",
+       "sub": "see over wall",
+       "glyph": "eye",
+       "color": "mint"
+      },
+      {
+       "id": "view",
+       "type": "node",
+       "text": "View above",
+       "sub": "light from above",
+       "glyph": "person",
+       "color": "sun"
+      },
+      {
+       "id": "p1",
+       "type": "arrow",
+       "from": "view",
+       "to": "topM",
+       "text": "reflects"
+      },
+      {
+       "id": "p2",
+       "type": "arrow",
+       "from": "topM",
+       "to": "bottomM",
+       "text": "down"
+      },
+      {
+       "id": "p3",
+       "type": "arrow",
+       "from": "bottomM",
+       "to": "eye",
+       "text": "reflects"
+      }
+     ]
+    },
+    {
+     "id": "s5",
+     "layout": "row",
+     "els": [
+      {
+       "id": "pieces",
+       "type": "node",
+       "text": "Coloured bits",
+       "sub": "few pieces",
+       "glyph": "spark",
+       "color": "amber"
+      },
+      {
+       "id": "mirrors",
+       "type": "node",
+       "text": "Mirror strips",
+       "sub": "60°",
+       "glyph": "mirror",
+       "color": "sci"
+      },
+      {
+       "id": "pattern",
+       "type": "node",
+       "text": "Pattern",
+       "sub": "symmetric",
+       "glyph": "flower",
+       "color": "mint"
+      },
+      {
+       "id": "k1",
+       "type": "arrow",
+       "from": "pieces",
+       "to": "mirrors",
+       "text": "reflect"
+      },
+      {
+       "id": "k2",
+       "type": "arrow",
+       "from": "mirrors",
+       "to": "pattern",
+       "text": "repeat"
+      }
+     ]
+    },
+    {
+     "id": "s6",
+     "layout": "split",
+     "els": [
+      {
+       "id": "q",
+       "type": "title",
+       "text": "Check the image"
+      },
+      {
+       "id": "upright",
+       "type": "label",
+       "text": "Upright",
+       "x": 250,
+       "y": 360,
+       "color": "amber"
+      },
+      {
+       "id": "inverted",
+       "type": "label",
+       "text": "Inverted",
+       "x": 650,
+       "y": 360,
+       "color": "mint"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "A pinhole camera is a closed box with a tiny hole and a translucent screen.",
+    "L2": "Light travels in straight lines, so rays cross at the pinhole and make a small, inverted image.",
+    "L3": "Moving the screen nearer makes the image smaller. A bigger hole makes it brighter but blurred.",
+    "L4": "That busts the myth: bigger does not mean sharper, because overlapping images blur.",
+    "L5": "A periscope uses two plane mirrors facing each other, each tilted at 45 degrees to the tube.",
+    "L6": "Light reflects down from the top mirror, then into the eye, so you can see over a wall.",
+    "L7": "A kaleidoscope uses mirror strips at 60 degrees; repeated reflections make a symmetrical pattern.",
+    "L8": "Now choose the image made by a pinhole camera, and never look at the Sun through one."
+   },
+   "narration": {
+    "L1": {
+     "text": "A pinhole camera is a closed box with a tiny hole and a translucent screen.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "Light travels in straight lines, so rays cross at the pinhole and make a small, inverted image.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "Moving the screen nearer makes the image smaller. A bigger hole makes it brighter but blurred.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "That busts the myth: bigger does not mean sharper, because overlapping images blur.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "A periscope uses two plane mirrors facing each other, each tilted at 45 degrees to the tube.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Light reflects down from the top mirror, then into the eye, so you can see over a wall.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "A kaleidoscope uses mirror strips at 60 degrees; repeated reflections make a symmetrical pattern.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Now choose the image made by a pinhole camera, and never look at the Sun through one.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "obj"
+      },
+      {
+       "at": 0.3,
+       "do": "show",
+       "dur": 0.6,
+       "target": "hole"
+      },
+      {
+       "at": 0.6,
+       "do": "show",
+       "dur": 0.6,
+       "target": "screen"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "rTop",
+        "rBottom"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 0.8,
+       "target": [
+        "rTop",
+        "rBottom"
+       ],
+       "to": 1
+      },
+      {
+       "at": 1.6,
+       "do": "show",
+       "dur": 0.8,
+       "target": "inv"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "near",
+        "small"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "bright",
+        "blur"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "myth"
+      },
+      {
+       "at": 1,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "topM",
+        "bottomM"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 1,
+       "target": [
+        "topM",
+        "bottomM"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "view",
+        "eye"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "p1",
+        "p2",
+        "p3"
+       ]
+      },
+      {
+       "at": 1.7,
+       "do": "flow",
+       "dur": 1,
+       "target": [
+        "p1",
+        "p2",
+        "p3"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s5",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "pieces",
+        "mirrors"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.7,
+       "target": "pattern"
+      },
+      {
+       "at": 1.5,
+       "do": "flow",
+       "dur": 1,
+       "target": [
+        "k1",
+        "k2"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s6",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "upright",
+        "inverted"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which image appears on a pinhole camera screen?",
+    "options": [
+     "upright",
+     "inverted"
+    ],
+    "answer": "inverted",
+    "src": "c7-science-ch11-t04-i01"
+   }
+  },
+  "repairs": [
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 41
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch11-t04-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "box",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        150,
+        130
+       ],
+       "w": 500,
+       "h": 250,
+       "round": 10
+      },
+      {
+       "id": "hole",
+       "op": "circle",
+       "startMs": 1200,
+       "endMs": 1900,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        170,
+        255
+       ],
+       "r": 9,
+       "fill": "accent"
+      },
+      {
+       "id": "screen",
+       "op": "rect",
+       "startMs": 1600,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        620,
+        145
+       ],
+       "w": 12,
+       "h": 220,
+       "fill": "soft"
+      },
+      {
+       "id": "l1",
+       "op": "label",
+       "startMs": 2400,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        150,
+        105
+       ],
+       "text": "closed box",
+       "to": [
+        300,
+        130
+       ]
+      },
+      {
+       "id": "l2",
+       "op": "label",
+       "startMs": 3300,
+       "endMs": 4300,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        75,
+        255
+       ],
+       "text": "tiny hole",
+       "to": [
+        161,
+        255
+       ]
+      },
+      {
+       "id": "l3",
+       "op": "label",
+       "startMs": 4300,
+       "endMs": 5700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        650,
+        130
+       ],
+       "text": "translucent screen",
+       "to": [
+        626,
+        190
+       ]
+      },
+      {
+       "id": "ray1",
+       "op": "line",
+       "startMs": 5000,
+       "endMs": 6200,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        180,
+        245
+       ],
+       "to": [
+        620,
+        190
+       ]
+      },
+      {
+       "id": "ray2",
+       "op": "line",
+       "startMs": 5700,
+       "endMs": 6900,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        180,
+        265
+       ],
+       "to": [
+        620,
+        320
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch11-t04-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "obj",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        95,
+        180
+       ],
+       "r": 34
+      },
+      {
+       "id": "pin",
+       "op": "circle",
+       "startMs": 500,
+       "endMs": 1100,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        300,
+        250
+       ],
+       "r": 7,
+       "fill": "accent"
+      },
+      {
+       "id": "scr",
+       "op": "rect",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        570,
+        130
+       ],
+       "w": 14,
+       "h": 240,
+       "fill": "soft"
+      },
+      {
+       "id": "topray",
+       "op": "arrow",
+       "startMs": 1200,
+       "endMs": 2400,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        95,
+        150
+       ],
+       "to": [
+        300,
+        250
+       ]
+      },
+      {
+       "id": "botray",
+       "op": "arrow",
+       "startMs": 1700,
+       "endMs": 2900,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        95,
+        210
+       ],
+       "to": [
+        300,
+        250
+       ]
+      },
+      {
+       "id": "cross1",
+       "op": "arrow",
+       "startMs": 2600,
+       "endMs": 3900,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        300,
+        250
+       ],
+       "to": [
+        570,
+        340
+       ]
+      },
+      {
+       "id": "cross2",
+       "op": "arrow",
+       "startMs": 3000,
+       "endMs": 4300,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        300,
+        250
+       ],
+       "to": [
+        570,
+        160
+       ]
+      },
+      {
+       "id": "image",
+       "op": "circle",
+       "startMs": 4200,
+       "endMs": 5200,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        577,
+        250
+       ],
+       "r": 35
+      },
+      {
+       "id": "inv",
+       "op": "label",
+       "startMs": 5200,
+       "endMs": 6800,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        620,
+        250
+       ],
+       "text": "inverted image",
+       "to": [
+        590,
+        250
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch11-t04-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "nearbox",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        150
+       ],
+       "w": 430,
+       "h": 210,
+       "round": 8
+      },
+      {
+       "id": "nearhole",
+       "op": "circle",
+       "startMs": 500,
+       "endMs": 1000,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        145,
+        255
+       ],
+       "r": 8,
+       "fill": "accent"
+      },
+      {
+       "id": "nearscreen",
+       "op": "line",
+       "startMs": 800,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        500,
+        165
+       ],
+       "to": [
+        500,
+        345
+       ]
+      },
+      {
+       "id": "small",
+       "op": "circle",
+       "startMs": 1500,
+       "endMs": 2300,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        500,
+        255
+       ],
+       "r": 22
+      },
+      {
+       "id": "move",
+       "op": "arrow",
+       "startMs": 2300,
+       "endMs": 3500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        600,
+        390
+       ],
+       "to": [
+        410,
+        390
+       ]
+      },
+      {
+       "id": "bighole",
+       "op": "circle",
+       "startMs": 3600,
+       "endMs": 4300,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        145,
+        255
+       ],
+       "r": 18,
+       "fill": "accent"
+      },
+      {
+       "id": "bright",
+       "op": "circle",
+       "startMs": 4400,
+       "endMs": 5400,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        500,
+        255
+       ],
+       "r": 45
+      },
+      {
+       "id": "blur1",
+       "op": "line",
+       "startMs": 5200,
+       "endMs": 6000,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        465,
+        220
+       ],
+       "to": [
+        535,
+        290
+       ]
+      },
+      {
+       "id": "blur2",
+       "op": "line",
+       "startMs": 5500,
+       "endMs": 6300,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        535,
+        220
+       ],
+       "to": [
+        465,
+        290
+       ]
+      },
+      {
+       "id": "l1",
+       "op": "text",
+       "startMs": 6300,
+       "endMs": 7400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        580,
+        255
+       ],
+       "text": "brighter but blurred",
+       "size": "m"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch11-t04-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "myth",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "myth",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "big",
+       "op": "circle",
+       "startMs": 700,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        180,
+        250
+       ],
+       "r": 48
+      },
+      {
+       "id": "rayA",
+       "op": "line",
+       "startMs": 1200,
+       "endMs": 2200,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        180,
+        205
+       ],
+       "to": [
+        400,
+        250
+       ]
+      },
+      {
+       "id": "rayB",
+       "op": "line",
+       "startMs": 1500,
+       "endMs": 2500,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        180,
+        295
+       ],
+       "to": [
+        400,
+        250
+       ]
+      },
+      {
+       "id": "overlap",
+       "op": "circle",
+       "startMs": 2300,
+       "endMs": 3300,
+       "ink": "soft",
+       "weight": 2,
+       "c": [
+        610,
+        250
+       ],
+       "r": 65
+      },
+      {
+       "id": "blurA",
+       "op": "line",
+       "startMs": 3000,
+       "endMs": 3900,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        565,
+        205
+       ],
+       "to": [
+        655,
+        295
+       ]
+      },
+      {
+       "id": "blurB",
+       "op": "line",
+       "startMs": 3300,
+       "endMs": 4200,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        655,
+        205
+       ],
+       "to": [
+        565,
+        295
+       ]
+      },
+      {
+       "id": "sharp",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 5000,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        420
+       ],
+       "text": "sharper",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "blurred",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        610,
+        350
+       ],
+       "text": "blur",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch11-t04-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "tube",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        130,
+        150
+       ],
+       "w": 540,
+       "h": 210,
+       "round": 8
+      },
+      {
+       "id": "mirror1",
+       "op": "line",
+       "startMs": 900,
+       "endMs": 1800,
+       "ink": "accent",
+       "weight": 3,
+       "from": [
+        180,
+        165
+       ],
+       "to": [
+        280,
+        265
+       ]
+      },
+      {
+       "id": "mirror2",
+       "op": "line",
+       "startMs": 1400,
+       "endMs": 2300,
+       "ink": "accent",
+       "weight": 3,
+       "from": [
+        520,
+        245
+       ],
+       "to": [
+        620,
+        345
+       ]
+      },
+      {
+       "id": "m1",
+       "op": "label",
+       "startMs": 2200,
+       "endMs": 3400,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        180,
+        125
+       ],
+       "text": "plane mirror",
+       "to": [
+        230,
+        215
+       ]
+      },
+      {
+       "id": "m2",
+       "op": "label",
+       "startMs": 3000,
+       "endMs": 4200,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        590,
+        380
+       ],
+       "text": "plane mirror",
+       "to": [
+        570,
+        295
+       ]
+      },
+      {
+       "id": "a1",
+       "op": "text",
+       "startMs": 3600,
+       "endMs": 4300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        245,
+        190
+       ],
+       "text": "45°",
+       "size": "m"
+      },
+      {
+       "id": "a2",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 4700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        545,
+        315
+       ],
+       "text": "45°",
+       "size": "m"
+      },
+      {
+       "id": "face",
+       "op": "arrow",
+       "startMs": 4700,
+       "endMs": 6000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        280,
+        265
+       ],
+       "to": [
+        520,
+        245
+       ]
+      },
+      {
+       "id": "ends",
+       "op": "text",
+       "startMs": 6100,
+       "endMs": 7000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        410
+       ],
+       "text": "two ends",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch11-t04-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "above",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        75
+       ],
+       "r": 28
+      },
+      {
+       "id": "down",
+       "op": "arrow",
+       "startMs": 700,
+       "endMs": 1900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        105
+       ],
+       "to": [
+        400,
+        245
+       ]
+      },
+      {
+       "id": "reflect",
+       "op": "arrow",
+       "startMs": 1800,
+       "endMs": 3000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        245
+       ],
+       "to": [
+        520,
+        345
+       ]
+      },
+      {
+       "id": "eye",
+       "op": "ellipse",
+       "startMs": 2800,
+       "endMs": 3700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        610,
+        350
+       ],
+       "rx": 32,
+       "ry": 18
+      },
+      {
+       "id": "intoeye",
+       "op": "arrow",
+       "startMs": 3300,
+       "endMs": 4300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        520,
+        345
+       ],
+       "to": [
+        580,
+        350
+       ]
+      },
+      {
+       "id": "wall",
+       "op": "rect",
+       "startMs": 4000,
+       "endMs": 4900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        250,
+        300
+       ],
+       "w": 25,
+       "h": 150
+      },
+      {
+       "id": "seeover",
+       "op": "label",
+       "startMs": 5000,
+       "endMs": 6500,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        300,
+        95
+       ],
+       "text": "see over a wall",
+       "to": [
+        300,
+        300
+       ]
+      },
+      {
+       "id": "light",
+       "op": "text",
+       "startMs": 6500,
+       "endMs": 7800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        430,
+        180
+       ],
+       "text": "Light reflects",
+       "size": "m"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch11-t04-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "tri",
+       "op": "polygon",
+       "startMs": 0,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         300,
+         150
+        ],
+        [
+         500,
+         150
+        ],
+        [
+         400,
+         323
+        ]
+       ]
+      },
+      {
+       "id": "m1",
+       "op": "line",
+       "startMs": 900,
+       "endMs": 1800,
+       "ink": "accent",
+       "weight": 3,
+       "from": [
+        300,
+        150
+       ],
+       "to": [
+        400,
+        323
+       ]
+      },
+      {
+       "id": "m2",
+       "op": "line",
+       "startMs": 1200,
+       "endMs": 2100,
+       "ink": "accent",
+       "weight": 3,
+       "from": [
+        500,
+        150
+       ],
+       "to": [
+        400,
+        323
+       ]
+      },
+      {
+       "id": "angle",
+       "op": "text",
+       "startMs": 2000,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        125
+       ],
+       "text": "60°",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "bits",
+       "op": "polygon",
+       "startMs": 2400,
+       "endMs": 3300,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         380,
+         275
+        ],
+        [
+         395,
+         260
+        ],
+        [
+         410,
+         278
+        ],
+        [
+         397,
+         292
+        ]
+       ],
+       "fill": "accent"
+      },
+      {
+       "id": "reflect1",
+       "op": "line",
+       "startMs": 3200,
+       "endMs": 4000,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        390,
+        270
+       ],
+       "to": [
+        330,
+        210
+       ]
+      },
+      {
+       "id": "reflect2",
+       "op": "line",
+       "startMs": 3500,
+       "endMs": 4300,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        405,
+        270
+       ],
+       "to": [
+        470,
+        210
+       ]
+      },
+      {
+       "id": "pattern",
+       "op": "polygon",
+       "startMs": 4300,
+       "endMs": 5500,
+       "ink": "good",
+       "weight": 2,
+       "points": [
+        [
+         170,
+         390
+        ],
+        [
+         230,
+         350
+        ],
+        [
+         290,
+         390
+        ],
+        [
+         350,
+         350
+        ],
+        [
+         410,
+         390
+        ],
+        [
+         470,
+         350
+        ],
+        [
+         530,
+         390
+        ],
+        [
+         590,
+         350
+        ],
+        [
+         650,
+         390
+        ]
+       ]
+      },
+      {
+       "id": "sym",
+       "op": "text",
+       "startMs": 5400,
+       "endMs": 6500,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        450
+       ],
+       "text": "symmetrical pattern",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch11-t04-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "choice",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        65
+       ],
+       "text": "pinhole camera",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "cam",
+       "op": "rect",
+       "startMs": 1000,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        170,
+        150
+       ],
+       "w": 300,
+       "h": 190,
+       "round": 8
+      },
+      {
+       "id": "ph",
+       "op": "circle",
+       "startMs": 1500,
+       "endMs": 2100,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        190,
+        245
+       ],
+       "r": 8,
+       "fill": "accent"
+      },
+      {
+       "id": "scr",
+       "op": "line",
+       "startMs": 1700,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        440,
+        165
+       ],
+       "to": [
+        440,
+        325
+       ]
+      },
+      {
+       "id": "sun",
+       "op": "circle",
+       "startMs": 2300,
+       "endMs": 3100,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        650,
+        180
+       ],
+       "r": 42,
+       "fill": "accent"
+      },
+      {
+       "id": "warning",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 4700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        405
+       ],
+       "text": "never look at the Sun",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "cross",
+       "op": "line",
+       "startMs": 4700,
+       "endMs": 5400,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        610,
+        140
+       ],
+       "to": [
+        690,
+        220
+       ]
+      },
+      {
+       "id": "cross2",
+       "op": "line",
+       "startMs": 5000,
+       "endMs": 5700,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        690,
+        140
+       ],
+       "to": [
+        610,
+        220
+       ]
+      },
+      {
+       "id": "smallinv",
+       "op": "circle",
+       "startMs": 5700,
+       "endMs": 6800,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        440,
+        245
+       ],
+       "r": 28
+      },
+      {
+       "id": "select",
+       "op": "highlight",
+       "startMs": 6800,
+       "endMs": 7800,
+       "ink": "good",
+       "weight": 2,
+       "target": "smallinv",
+       "style": "circle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1",
+   "key": "/@1,5 /@1,0",
+   "prompt": "use two plane mirrors"
+  },
+  {
+   "itemId": "r2",
+   "key": "179.4°",
+   "prompt": "turn the mirror to hit the target"
+  },
+  {
+   "itemId": "r3",
+   "key": "screen at 16.0 cm",
+   "prompt": "slide the screen to match the height"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

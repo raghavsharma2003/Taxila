@@ -7,7 +7,7 @@ export const SAFE = {
 };
 export const MIN = { label: 38, value: 48, stroke: 4, target: 130 };
 export const C = {
-  bg: "#0A0C12", bg1: "#10131B", bg2: "#161A24", bg3: "#1F2431", stage: "#0D1017",
+  bg: "#0A0C12", bg1: "#10131B", bg2: "#161A24", bg3: "#1F2431", stage: "#0D1017", board: "#0E1118",
   ink: "#F2F4F8", ink2: "#A9B0C0", ink3: "#848CA0",
   ion: "#8B98FF", ionDeep: "#4F5BD5", volt: "#CBFF4D", mint: "#3DDC97", amber: "#FFB547",
   sci: "#2FD3C7", sun: "#FFD27A", line: "rgba(255,255,255,.08)", line2: "rgba(255,255,255,.15)",

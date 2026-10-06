@@ -1,0 +1,1979 @@
+{
+ "topicId": "c5-evs-ch02-t02",
+ "title": "Floods and keeping rivers clean",
+ "chapter": "Journey of a River",
+ "subject": "evs",
+ "class": 5,
+ "topicType": "T3",
+ "plan": {
+  "game": "land-lab@1",
+  "hint": "river mode then flood mode"
+ },
+ "game": {
+  "archetype": "land-lab@1",
+  "spec": {
+   "archetype": "land-lab@1",
+   "skills": [
+    "c5-evs-ch02-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "done": "right",
+    "wind": "wind",
+    "sea": "sea",
+    "rain": "RAIN",
+    "storm": "STORM",
+    "lock": "LOCK",
+    "wet": "wet",
+    "dry": "dry",
+    "trees": "plant trees",
+    "spring": "spring",
+    "trace": "Trace from the spring",
+    "runDone": "Lab closed",
+    "level": "flood level",
+    "safe": "SAFE",
+    "flooded": "FLOODED",
+    "mm": "mm of rain",
+    "high": "high",
+    "low": "low",
+    "reset": "clear"
+   },
+   "title": "Land & Water Lab",
+   "rounds": [
+    {
+     "mode": "river",
+     "title": "Trace the River",
+     "sub": "follow the spring downhill",
+     "w": 9,
+     "h": 6,
+     "peaks": [
+      {
+       "x": 1,
+       "y": 1,
+       "h": 4,
+       "r": 2.2
+      },
+      {
+       "x": 6,
+       "y": 2,
+       "h": 3.2,
+       "r": 1.8
+      },
+      {
+       "x": 8,
+       "y": 5,
+       "h": 2,
+       "r": 1.2
+      }
+     ],
+     "spring": [
+      3,
+      0
+     ]
+    },
+    {
+     "mode": "flood",
+     "title": "Prepare for Rain",
+     "sub": "choose a safe place and trees",
+     "profile": [
+      10,
+      8,
+      6,
+      4,
+      2.5,
+      1,
+      0.5,
+      1,
+      2,
+      3.5,
+      5.5,
+      8
+     ],
+     "rain": 180,
+     "label": "school",
+     "glyph": "school",
+     "targets": "c5-evs-ch02-t02-m4"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c5-evs-ch02-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Right",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "BUSTED",
+    "order": "Tap them in order"
+   },
+   "title": "Floods and clean rivers",
+   "accent": "mint",
+   "targets": "c5-evs-ch02-t02-m1",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Floods and clean rivers"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "A river cleans everything"
+      },
+      {
+       "id": "river",
+       "type": "node",
+       "text": "River",
+       "sub": "water flow",
+       "glyph": "river",
+       "color": "sci"
+      },
+      {
+       "id": "waste",
+       "type": "node",
+       "text": "Waste",
+       "sub": "plastic and sewage",
+       "glyph": "recycle",
+       "color": "amber"
+      },
+      {
+       "id": "fish",
+       "type": "glyph",
+       "name": "fish",
+       "size": 120,
+       "color": "ion"
+      },
+      {
+       "id": "bad",
+       "type": "arrow",
+       "from": "waste",
+       "to": "river",
+       "text": "pollutes"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "rain",
+       "type": "node",
+       "text": "Heavy rain",
+       "sub": "more water",
+       "glyph": "rain",
+       "color": "sci"
+      },
+      {
+       "id": "roots",
+       "type": "node",
+       "text": "Trees and grass",
+       "sub": "hold soil",
+       "glyph": "tree",
+       "color": "mint"
+      },
+      {
+       "id": "drain",
+       "type": "node",
+       "text": "Blocked drain",
+       "sub": "garbage stops flow",
+       "glyph": "road",
+       "color": "amber"
+      },
+      {
+       "id": "flood",
+       "type": "node",
+       "text": "Flood",
+       "sub": "water overflows",
+       "glyph": "wave",
+       "color": "volt"
+      },
+      {
+       "id": "r1",
+       "type": "arrow",
+       "from": "rain",
+       "to": "flood",
+       "text": "adds water"
+      },
+      {
+       "id": "r2",
+       "type": "arrow",
+       "from": "roots",
+       "to": "flood",
+       "text": "slows runoff"
+      },
+      {
+       "id": "r3",
+       "type": "arrow",
+       "from": "drain",
+       "to": "flood",
+       "text": "blocks flow"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "clean",
+       "type": "node",
+       "text": "Keep clean",
+       "sub": "use bins",
+       "glyph": "recycle",
+       "color": "mint"
+      },
+      {
+       "id": "clay",
+       "type": "node",
+       "text": "Clay idols",
+       "sub": "natural clay",
+       "glyph": "pot",
+       "color": "sun"
+      },
+      {
+       "id": "tank",
+       "type": "node",
+       "text": "Immersion tank",
+       "sub": "not the river",
+       "glyph": "jug",
+       "color": "ion"
+      },
+      {
+       "id": "plant",
+       "type": "node",
+       "text": "Plant trees",
+       "sub": "help soil soak",
+       "glyph": "leaf",
+       "color": "mint"
+      },
+      {
+       "id": "safe",
+       "type": "node",
+       "text": "Stay safe",
+       "sub": "follow warnings",
+       "glyph": "shield",
+       "color": "volt"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "prompt",
+       "type": "title",
+       "text": "What helps prevent floods?"
+      },
+      {
+       "id": "o1",
+       "type": "label",
+       "text": "Keep drains clear",
+       "x": 80,
+       "y": 260,
+       "color": "mint"
+      },
+      {
+       "id": "o2",
+       "type": "label",
+       "text": "Plant trees",
+       "x": 80,
+       "y": 330,
+       "color": "mint"
+      },
+      {
+       "id": "o3",
+       "type": "label",
+       "text": "Throw plastic in river",
+       "x": 80,
+       "y": 400,
+       "color": "amber"
+      },
+      {
+       "id": "o4",
+       "type": "label",
+       "text": "Keep garbage out of water",
+       "x": 80,
+       "y": 470,
+       "color": "mint"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Floods happen when more water comes than a river, drain, or ground can hold.",
+    "L2": "Very heavy rain, overflowing rivers, and blocked drains can bring floods.",
+    "L3": "Tree roots and grass hold soil and help rain soak into the ground.",
+    "L4": "When forests are cut, rain runs off fast with mud, so floods can come quicker.",
+    "L5": "Sewage, factory waste, garbage, plastic, soap, and harmful idols make rivers dirty.",
+    "L6": "A river cannot clean away everything. Plastic and harmful chemicals stay and hurt living things downstream.",
+    "L7": "We can keep drains clear, keep waste out of water, use clay idols, and plant trees.",
+    "L8": "In a flood, stay away from flowing water and follow official warnings.",
+    "L9": "Tap the actions that help prevent floods and keep rivers clean."
+   },
+   "narration": {
+    "L1": {
+     "text": "Floods happen when more water comes than a river, drain, or ground can hold.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "Very heavy rain, overflowing rivers, and blocked drains can bring floods.",
+     "dur": 2.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "Tree roots and grass hold soil and help rain soak into the ground.",
+     "dur": 2.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "When forests are cut, rain runs off fast with mud, so floods can come quicker.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "Sewage, factory waste, garbage, plastic, soap, and harmful idols make rivers dirty.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "A river cannot clean away everything. Plastic and harmful chemicals stay and hurt living things downstream.",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "We can keep drains clear, keep waste out of water, use clay idols, and plant trees.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "In a flood, stay away from flowing water and follow official warnings.",
+     "dur": 2.3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L9": {
+     "text": "Tap the actions that help prevent floods and keep rivers clean.",
+     "dur": 2,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "rain"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.6,
+       "target": "flood"
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.6,
+       "target": "r1"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "drain"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.6,
+       "target": "r3"
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "flood"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "roots"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.6,
+       "target": "r2"
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "roots"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "r2",
+       "to": 1
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "flood"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.3,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "waste"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.6,
+       "target": "bad"
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "river"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "myth"
+      },
+      {
+       "at": 0.7,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      },
+      {
+       "at": 1.8,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "fish"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.3,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.5,
+       "target": "clean"
+      },
+      {
+       "at": 0.4,
+       "do": "show",
+       "dur": 0.5,
+       "target": "clay"
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.5,
+       "target": "tank"
+      },
+      {
+       "at": 1.2,
+       "do": "show",
+       "dur": 0.5,
+       "target": "plant"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0.3,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "safe"
+      },
+      {
+       "at": 0.7,
+       "do": "focus",
+       "dur": 0.8,
+       "target": "safe"
+      }
+     ]
+    },
+    {
+     "line": "L9",
+     "gap": 0,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Tap all the actions that help prevent floods and keep rivers clean.",
+    "options": [
+     "o1",
+     "o2",
+     "o3",
+     "o4"
+    ],
+    "answer": "o1",
+    "src": "c5-evs-ch02-t02-i01"
+   }
+  },
+  "repairs": [],
+  "attempts": 2,
+  "model": "taxila-fast-bg",
+  "passes": 2,
+  "seconds": 28
+ },
+ "keys": [
+  {
+   "itemId": "r1",
+   "key": "3,0 → 4,0 → 4,1 → 4,2 → 4,3 → 4,4 → 4,5",
+   "prompt": "trace the river"
+  },
+  {
+   "itemId": "r2",
+   "key": "above 4.5 m (2.9 m with trees)",
+   "prompt": "school"
+  }
+ ],
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch02-t02-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "river",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        300
+       ],
+       "rx": 240,
+       "ry": 55
+      },
+      {
+       "id": "water",
+       "op": "ellipse",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        400,
+        300
+       ],
+       "rx": 220,
+       "ry": 38,
+       "fill": "accent"
+      },
+      {
+       "id": "rain",
+       "op": "arrow",
+       "startMs": 1200,
+       "endMs": 2100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        180,
+        70
+       ],
+       "to": [
+        180,
+        220
+       ]
+      },
+      {
+       "id": "rain2",
+       "op": "arrow",
+       "startMs": 1500,
+       "endMs": 2400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        260,
+        70
+       ],
+       "to": [
+        260,
+        220
+       ]
+      },
+      {
+       "id": "more",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        100
+       ],
+       "text": "more water",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "hold",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        405
+       ],
+       "text": "can hold",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "flood",
+       "op": "label",
+       "startMs": 4700,
+       "endMs": 5400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        560,
+        240
+       ],
+       "text": "flood",
+       "to": [
+        520,
+        280
+       ]
+      },
+      {
+       "id": "mark",
+       "op": "highlight",
+       "startMs": 5500,
+       "endMs": 6300,
+       "ink": "accent",
+       "weight": 2,
+       "target": "water",
+       "style": "pulse"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch02-t02-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "heavy",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        110,
+        80
+       ],
+       "text": "heavy rain",
+       "size": "m"
+      },
+      {
+       "id": "overflow",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        320,
+        80
+       ],
+       "text": "overflowing rivers",
+       "size": "m"
+      },
+      {
+       "id": "blocked",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        570,
+        80
+       ],
+       "text": "blocked drains",
+       "size": "m"
+      },
+      {
+       "id": "r1",
+       "op": "arrow",
+       "startMs": 2300,
+       "endMs": 3000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        150,
+        120
+       ],
+       "to": [
+        150,
+        220
+       ]
+      },
+      {
+       "id": "r2",
+       "op": "arrow",
+       "startMs": 2600,
+       "endMs": 3300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        120
+       ],
+       "to": [
+        400,
+        220
+       ]
+      },
+      {
+       "id": "r3",
+       "op": "arrow",
+       "startMs": 2900,
+       "endMs": 3600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        650,
+        120
+       ],
+       "to": [
+        650,
+        220
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch02-t02-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "soil",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        390
+       ],
+       "rx": 280,
+       "ry": 55
+      },
+      {
+       "id": "grass1",
+       "op": "stroke",
+       "startMs": 500,
+       "endMs": 1100,
+       "ink": "good",
+       "weight": 2,
+       "points": [
+        [
+         180,
+         370
+        ],
+        [
+         170,
+         320
+        ],
+        [
+         180,
+         280
+        ]
+       ]
+      },
+      {
+       "id": "grass2",
+       "op": "stroke",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "good",
+       "weight": 2,
+       "points": [
+        [
+         260,
+         370
+        ],
+        [
+         250,
+         315
+        ],
+        [
+         265,
+         270
+        ]
+       ]
+      },
+      {
+       "id": "grass3",
+       "op": "stroke",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "good",
+       "weight": 2,
+       "points": [
+        [
+         340,
+         370
+        ],
+        [
+         330,
+         315
+        ],
+        [
+         345,
+         275
+        ]
+       ]
+      },
+      {
+       "id": "roots",
+       "op": "stroke",
+       "startMs": 1400,
+       "endMs": 2300,
+       "ink": "mark",
+       "weight": 2,
+       "points": [
+        [
+         180,
+         370
+        ],
+        [
+         210,
+         420
+        ],
+        [
+         250,
+         375
+        ],
+        [
+         290,
+         425
+        ],
+        [
+         330,
+         370
+        ]
+       ]
+      },
+      {
+       "id": "rain",
+       "op": "arrow",
+       "startMs": 2300,
+       "endMs": 3400,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        500,
+        100
+       ],
+       "to": [
+        500,
+        320
+       ]
+      },
+      {
+       "id": "soak",
+       "op": "label",
+       "startMs": 3500,
+       "endMs": 4200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        520,
+        355
+       ],
+       "text": "soak",
+       "to": [
+        500,
+        320
+       ]
+      },
+      {
+       "id": "hold",
+       "op": "label",
+       "startMs": 4300,
+       "endMs": 5100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        110,
+        250
+       ],
+       "text": "hold soil",
+       "to": [
+        210,
+        340
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch02-t02-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "forest",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        130,
+        80
+       ],
+       "text": "forests cut",
+       "size": "m"
+      },
+      {
+       "id": "stump",
+       "op": "rect",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        130,
+        230
+       ],
+       "w": 120,
+       "h": 100
+      },
+      {
+       "id": "runoff",
+       "op": "arrow",
+       "startMs": 1500,
+       "endMs": 2800,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        280,
+        150
+       ],
+       "to": [
+        500,
+        350
+       ]
+      },
+      {
+       "id": "mud",
+       "op": "ellipse",
+       "startMs": 2700,
+       "endMs": 3400,
+       "ink": "mark",
+       "weight": 1,
+       "c": [
+        520,
+        365
+       ],
+       "rx": 100,
+       "ry": 30,
+       "fill": "soft"
+      },
+      {
+       "id": "fast",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        470,
+        180
+       ],
+       "text": "runs off fast",
+       "size": "m"
+      },
+      {
+       "id": "quick",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        450
+       ],
+       "text": "floods quicker",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "mudlabel",
+       "op": "label",
+       "startMs": 5600,
+       "endMs": 6200,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        590,
+        350
+       ],
+       "text": "mud",
+       "to": [
+        550,
+        365
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch02-t02-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "river",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        300
+       ],
+       "rx": 270,
+       "ry": 70
+      },
+      {
+       "id": "sewage",
+       "op": "text",
+       "startMs": 500,
+       "endMs": 1000,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        80,
+        80
+       ],
+       "text": "sewage",
+       "size": "m"
+      },
+      {
+       "id": "waste",
+       "op": "text",
+       "startMs": 800,
+       "endMs": 1400,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        250,
+        80
+       ],
+       "text": "factory waste",
+       "size": "m"
+      },
+      {
+       "id": "garbage",
+       "op": "text",
+       "startMs": 1100,
+       "endMs": 1600,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        500,
+        80
+       ],
+       "text": "garbage",
+       "size": "m"
+      },
+      {
+       "id": "plastic",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2200,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        100,
+        430
+       ],
+       "text": "plastic",
+       "size": "m"
+      },
+      {
+       "id": "soap",
+       "op": "text",
+       "startMs": 2000,
+       "endMs": 2400,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        300,
+        430
+       ],
+       "text": "soap",
+       "size": "m"
+      },
+      {
+       "id": "idols",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 3000,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        500,
+        430
+       ],
+       "text": "harmful idols",
+       "size": "m"
+      },
+      {
+       "id": "drop1",
+       "op": "arrow",
+       "startMs": 3000,
+       "endMs": 3800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        130,
+        120
+       ],
+       "to": [
+        280,
+        260
+       ]
+      },
+      {
+       "id": "drop2",
+       "op": "arrow",
+       "startMs": 3400,
+       "endMs": 4200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        570,
+        120
+       ],
+       "to": [
+        480,
+        260
+       ]
+      },
+      {
+       "id": "dirty",
+       "op": "text",
+       "startMs": 4400,
+       "endMs": 5100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        350
+       ],
+       "text": "dirty",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch02-t02-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "filter",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        120,
+        290
+       ],
+       "to": [
+        680,
+        290
+       ],
+       "dashed": true
+      },
+      {
+       "id": "plastic2",
+       "op": "rect",
+       "startMs": 800,
+       "endMs": 1400,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        300,
+        250
+       ],
+       "w": 70,
+       "h": 35
+      },
+      {
+       "id": "chemical",
+       "op": "circle",
+       "startMs": 1100,
+       "endMs": 1600,
+       "ink": "mark",
+       "weight": 2,
+       "c": [
+        480,
+        270
+       ],
+       "r": 25
+      },
+      {
+       "id": "stay",
+       "op": "arrow",
+       "startMs": 1800,
+       "endMs": 2600,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        300,
+        250
+       ],
+       "to": [
+        300,
+        350
+       ]
+      },
+      {
+       "id": "hurt",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        250,
+        410
+       ],
+       "text": "hurt",
+       "size": "m"
+      },
+      {
+       "id": "fish",
+       "op": "ellipse",
+       "startMs": 3300,
+       "endMs": 4000,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        500,
+        370
+       ],
+       "rx": 55,
+       "ry": 25
+      },
+      {
+       "id": "downstream",
+       "op": "text",
+       "startMs": 4200,
+       "endMs": 5000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        460
+       ],
+       "text": "downstream",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "staymark",
+       "op": "highlight",
+       "startMs": 5400,
+       "endMs": 6500,
+       "ink": "accent",
+       "weight": 2,
+       "target": "plastic2",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch02-t02-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "drain",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        70,
+        170
+       ],
+       "w": 150,
+       "h": 90
+      },
+      {
+       "id": "clear",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        145,
+        310
+       ],
+       "text": "clear drains",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "bin",
+       "op": "rect",
+       "startMs": 1000,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        300,
+        170
+       ],
+       "w": 100,
+       "h": 120
+      },
+      {
+       "id": "wasteout",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2400,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        350,
+        330
+       ],
+       "text": "waste out",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "clay",
+       "op": "circle",
+       "startMs": 2000,
+       "endMs": 2700,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        535,
+        220
+       ],
+       "r": 55
+      },
+      {
+       "id": "claylabel",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        535,
+        330
+       ],
+       "text": "clay idols",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "tree",
+       "op": "stroke",
+       "startMs": 3400,
+       "endMs": 4400,
+       "ink": "good",
+       "weight": 2,
+       "points": [
+        [
+         680,
+         330
+        ],
+        [
+         680,
+         180
+        ],
+        [
+         630,
+         130
+        ],
+        [
+         680,
+         180
+        ],
+        [
+         730,
+         130
+        ]
+       ]
+      },
+      {
+       "id": "trees",
+       "op": "text",
+       "startMs": 4400,
+       "endMs": 5200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        680,
+        400
+       ],
+       "text": "plant trees",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "actions",
+       "op": "highlight",
+       "startMs": 5600,
+       "endMs": 6800,
+       "ink": "good",
+       "weight": 2,
+       "target": "drain",
+       "style": "pulse"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch02-t02-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "water",
+       "op": "polygon",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         100,
+         350
+        ],
+        [
+         250,
+         280
+        ],
+        [
+         430,
+         320
+        ],
+        [
+         700,
+         220
+        ],
+        [
+         700,
+         450
+        ],
+        [
+         100,
+         450
+        ]
+       ],
+       "fill": "soft"
+      },
+      {
+       "id": "flow",
+       "op": "arrow",
+       "startMs": 900,
+       "endMs": 1900,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        180,
+        370
+       ],
+       "to": [
+        600,
+        280
+       ]
+      },
+      {
+       "id": "away",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 3000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        390,
+        170
+       ],
+       "text": "stay away",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "warning",
+       "op": "polygon",
+       "startMs": 3000,
+       "endMs": 3700,
+       "ink": "mark",
+       "weight": 2,
+       "points": [
+        [
+         650,
+         70
+        ],
+        [
+         710,
+         170
+        ],
+        [
+         590,
+         170
+        ]
+       ]
+      },
+      {
+       "id": "official",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        400
+       ],
+       "text": "official warnings",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "follow",
+       "op": "arrow",
+       "startMs": 4700,
+       "endMs": 5400,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        400,
+        350
+       ],
+       "to": [
+        400,
+        250
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L9",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch02-t02-wb-L9",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "actions",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "actions",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "drain",
+       "op": "rect",
+       "startMs": 800,
+       "endMs": 1500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        80,
+        180
+       ],
+       "w": 130,
+       "h": 90
+      },
+      {
+       "id": "trees",
+       "op": "stroke",
+       "startMs": 1200,
+       "endMs": 2200,
+       "ink": "good",
+       "weight": 2,
+       "points": [
+        [
+         350,
+         330
+        ],
+        [
+         350,
+         190
+        ],
+        [
+         300,
+         145
+        ],
+        [
+         350,
+         190
+        ],
+        [
+         400,
+         145
+        ]
+       ]
+      },
+      {
+       "id": "river",
+       "op": "ellipse",
+       "startMs": 1600,
+       "endMs": 2300,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        600,
+        250
+       ],
+       "rx": 120,
+       "ry": 45
+      },
+      {
+       "id": "tick1",
+       "op": "label",
+       "startMs": 2500,
+       "endMs": 3100,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        210,
+        170
+       ],
+       "text": "help",
+       "to": [
+        145,
+        180
+       ]
+      },
+      {
+       "id": "tick2",
+       "op": "label",
+       "startMs": 3000,
+       "endMs": 3600,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        410,
+        350
+       ],
+       "text": "help",
+       "to": [
+        350,
+        300
+       ]
+      },
+      {
+       "id": "tick3",
+       "op": "label",
+       "startMs": 3500,
+       "endMs": 4100,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        700,
+        200
+       ],
+       "text": "help",
+       "to": [
+        650,
+        230
+       ]
+      },
+      {
+       "id": "tap",
+       "op": "highlight",
+       "startMs": 4300,
+       "endMs": 5000,
+       "ink": "accent",
+       "weight": 2,
+       "target": "actions",
+       "style": "underline"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

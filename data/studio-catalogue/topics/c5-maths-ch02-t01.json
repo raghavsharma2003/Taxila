@@ -1,0 +1,1308 @@
+{
+ "topicId": "c5-maths-ch02-t01",
+ "title": "Fractions on the number line",
+ "chapter": "Fractions",
+ "subject": "maths",
+ "class": 5,
+ "topicType": "T3",
+ "plan": {
+  "game": "catch-on-line@1",
+  "hint": "Landfall: fractions on the number line"
+ },
+ "game": {
+  "archetype": "catch-on-line@1",
+  "spec": {
+   "archetype": "catch-on-line@1",
+   "skills": [
+    "c5-maths-ch02-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "coach": "Drag to move the dock",
+    "wave": "Wave",
+    "of": "of",
+    "clear": "clear",
+    "landed": "landed",
+    "precision": "precision",
+    "chain": "chain",
+    "bestChain": "best chain",
+    "exact": "EXACT",
+    "close": "CLOSE",
+    "inside": "IN",
+    "offBy": "off by",
+    "same": "SAME SPOT",
+    "runDone": "Run complete",
+    "toughest": "Toughest"
+   },
+   "waves": [
+    {
+     "title": "Halfway stop",
+     "sub": "Split the road into two equal gaps",
+     "line": [
+      0,
+      1
+     ],
+     "ticks": 1,
+     "scaffoldTicks": 2,
+     "speed": 82,
+     "gap": 2.8,
+     "items": [
+      [
+       "1/2"
+      ],
+      [
+       "1/2"
+      ],
+      [
+       "1/2"
+      ]
+     ]
+    },
+    {
+     "title": "Quarter steps",
+     "sub": "Count equal gaps from zero",
+     "line": [
+      0,
+      1
+     ],
+     "ticks": 3,
+     "scaffoldTicks": 4,
+     "speed": 92,
+     "gap": 2.3,
+     "items": [
+      [
+       "1/4"
+      ],
+      [
+       "2/4"
+      ],
+      [
+       "3/4"
+      ],
+      [
+       "1/4"
+      ]
+     ]
+    },
+    {
+     "title": "Compare places",
+     "sub": "Small fractions can be close to zero",
+     "line": [
+      0,
+      1
+     ],
+     "ticks": 4,
+     "scaffoldTicks": 5,
+     "speed": 101,
+     "gap": 2,
+     "items": [
+      [
+       "1/5"
+      ],
+      [
+       "3/5"
+      ],
+      [
+       "2/5"
+      ],
+      [
+       "4/5"
+      ]
+     ]
+    },
+    {
+     "title": "Beyond one",
+     "sub": "The line continues past one",
+     "line": [
+      0,
+      2
+     ],
+     "ticks": 7,
+     "scaffoldTicks": 8,
+     "speed": 110,
+     "gap": 1.7,
+     "items": [
+      [
+       "5/4"
+      ],
+      [
+       "3/2"
+      ],
+      [
+       "7/4"
+      ],
+      [
+       "1/4"
+      ],
+      [
+       "4/4"
+      ]
+     ]
+    }
+   ],
+   "adapt": {
+    "slowAfterMisses": 2,
+    "slowFactor": 0.86,
+    "fastAfterChain": 4,
+    "fastFactor": 1.07,
+    "minScale": 0.7,
+    "maxScale": 1.3,
+    "scaffoldPods": 3
+   }
+  },
+  "repairs": [],
+  "attempts": 2,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c5-maths-ch02-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Fractions on the number line",
+   "accent": "ion",
+   "targets": "c5-maths-ch02-t01-m-all-less-than-one",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Fractions on a line"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Every fraction is less than 1"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "ax",
+       "type": "axis",
+       "min": 0,
+       "max": 1,
+       "step": 0.2,
+       "scale": "linear",
+       "y": 420
+      },
+      {
+       "id": "zero",
+       "type": "label",
+       "text": "0",
+       "x": 100,
+       "y": 455
+      },
+      {
+       "id": "one",
+       "type": "label",
+       "text": "1",
+       "x": 800,
+       "y": 455
+      },
+      {
+       "id": "m1",
+       "type": "mark",
+       "axis": "ax",
+       "value": 0.2,
+       "text": "1/5",
+       "color": "ion"
+      },
+      {
+       "id": "m2",
+       "type": "mark",
+       "axis": "ax",
+       "value": 0.4,
+       "text": "2/5",
+       "color": "mint"
+      },
+      {
+       "id": "m3",
+       "type": "mark",
+       "axis": "ax",
+       "value": 0.6,
+       "text": "3/5",
+       "color": "amber"
+      },
+      {
+       "id": "m4",
+       "type": "mark",
+       "axis": "ax",
+       "value": 0.8,
+       "text": "4/5",
+       "color": "sun"
+      },
+      {
+       "id": "den",
+       "type": "node",
+       "text": "Bottom: 5",
+       "sub": "equal gaps",
+       "glyph": "ruler",
+       "color": "ion"
+      },
+      {
+       "id": "num",
+       "type": "node",
+       "text": "Top: 2",
+       "sub": "gaps from 0",
+       "glyph": "compass",
+       "color": "mint"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "ax2",
+       "type": "axis",
+       "min": 0,
+       "max": 2,
+       "step": 0.25,
+       "scale": "linear",
+       "y": 420
+      },
+      {
+       "id": "p0",
+       "type": "label",
+       "text": "0",
+       "x": 80,
+       "y": 455
+      },
+      {
+       "id": "p1",
+       "type": "label",
+       "text": "1",
+       "x": 430,
+       "y": 455
+      },
+      {
+       "id": "p2",
+       "type": "label",
+       "text": "2",
+       "x": 800,
+       "y": 455
+      },
+      {
+       "id": "past",
+       "type": "node",
+       "text": "5/4",
+       "sub": "one quarter past 1",
+       "glyph": "spark",
+       "color": "amber"
+      },
+      {
+       "id": "before",
+       "type": "node",
+       "text": "before 1",
+       "sub": "less than 1",
+       "glyph": "question",
+       "color": "ion"
+      },
+      {
+       "id": "beyond",
+       "type": "node",
+       "text": "after 1",
+       "sub": "greater than 1",
+       "color": "amber"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Fractions are numbers, so they have places on a number line.",
+    "L2": "The bottom number tells how many equal gaps to make from 0 to 1.",
+    "L3": "Count gaps, not marks. Four marks between 0 and 1 make five equal gaps.",
+    "L4": "So each gap is one fifth. The top number tells how many gaps to count from 0.",
+    "L5": "To mark two fifths, count two gaps from 0. That mark is 2/5.",
+    "L6": "A fraction can also go beyond 1. If the top number is bigger than the bottom number, it lies past 1.",
+    "L7": "For example, 5/4 is one quarter past 1, so it is after 1.",
+    "L8": "Now use these ideas to choose where 5/4 belongs."
+   },
+   "narration": {
+    "L1": {
+     "text": "Fractions are numbers, so they have places on a number line.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "The bottom number tells how many equal gaps to make from 0 to 1.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "Count gaps, not marks. Four marks between 0 and 1 make five equal gaps.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "So each gap is one fifth. The top number tells how many gaps to count from 0.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "To mark two fifths, count two gaps from 0. That mark is 2/5.",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "A fraction can also go beyond 1. If the top number is bigger than the bottom number, it lies past 1.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "For example, 5/4 is one quarter past 1, so it is after 1.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Now use these ideas to choose where 5/4 belongs.",
+     "dur": 2.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.3,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "ax"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": "den"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "m1",
+        "m2",
+        "m3",
+        "m4"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 1,
+       "target": "den"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "num"
+      },
+      {
+       "at": 0.7,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "m1",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1.2,
+       "target": "m2"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      },
+      {
+       "at": 0.8,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.3,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "ax2"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": "past"
+      },
+      {
+       "at": 1.2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "beyond"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "interactive",
+       "dur": 1
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Where does 5/4 belong on the number line?",
+    "options": [
+     "before",
+     "beyond"
+    ],
+    "answer": "beyond",
+    "src": "c5-maths-ch02-t01-i04"
+   }
+  },
+  "repairs": [
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 31
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch02-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "nl1",
+       "op": "line",
+       "startMs": 300,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        100,
+        300
+       ],
+       "to": [
+        700,
+        300
+       ]
+      },
+      {
+       "id": "zero1",
+       "op": "text",
+       "startMs": 1300,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        95,
+        340
+       ],
+       "text": "0",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "one1",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        705,
+        340
+       ],
+       "text": "1",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "arrow1",
+       "op": "arrow",
+       "startMs": 2300,
+       "endMs": 2900,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        100,
+        300
+       ],
+       "to": [
+        155,
+        300
+       ]
+      },
+      {
+       "id": "frac1",
+       "op": "text",
+       "startMs": 3200,
+       "endMs": 3900,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        230
+       ],
+       "text": "fraction",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch02-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "tick2a",
+       "op": "line",
+       "startMs": 400,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        220,
+        285
+       ],
+       "to": [
+        220,
+        315
+       ]
+      },
+      {
+       "id": "tick2b",
+       "op": "line",
+       "startMs": 800,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        340,
+        285
+       ],
+       "to": [
+        340,
+        315
+       ]
+      },
+      {
+       "id": "tick2c",
+       "op": "line",
+       "startMs": 1200,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        460,
+        285
+       ],
+       "to": [
+        460,
+        315
+       ]
+      },
+      {
+       "id": "tick2d",
+       "op": "line",
+       "startMs": 1600,
+       "endMs": 2000,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        580,
+        285
+       ],
+       "to": [
+        580,
+        315
+       ]
+      },
+      {
+       "id": "bottom2",
+       "op": "text",
+       "startMs": 2400,
+       "endMs": 3200,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        180
+       ],
+       "text": "bottom number",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "five2",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 3700,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        220
+       ],
+       "text": "5",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "gaps2",
+       "op": "label",
+       "startMs": 4100,
+       "endMs": 5000,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        400,
+        390
+       ],
+       "text": "5 equal gaps"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 4,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch02-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "fivegaps",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4700,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        440
+       ],
+       "text": "5 equal gaps",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch02-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "unit4",
+       "op": "text",
+       "startMs": 500,
+       "endMs": 1100,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        280,
+        390
+       ],
+       "text": "1/5",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "unit4b",
+       "op": "text",
+       "startMs": 1100,
+       "endMs": 1700,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        520,
+        390
+       ],
+       "text": "1/5",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "top4",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 3100,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        150
+       ],
+       "text": "top number",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "count4",
+       "op": "arrow",
+       "startMs": 3500,
+       "endMs": 4500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        100,
+        260
+       ],
+       "to": [
+        340,
+        260
+       ]
+      },
+      {
+       "id": "gaps4",
+       "op": "text",
+       "startMs": 4800,
+       "endMs": 5500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        110
+       ],
+       "text": "count gaps",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch02-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "mark5",
+       "op": "line",
+       "startMs": 600,
+       "endMs": 1100,
+       "ink": "accent",
+       "weight": 3,
+       "from": [
+        340,
+        270
+       ],
+       "to": [
+        340,
+        330
+       ]
+      },
+      {
+       "id": "two5",
+       "op": "arrow",
+       "startMs": 1300,
+       "endMs": 2300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        100,
+        250
+       ],
+       "to": [
+        340,
+        250
+       ]
+      },
+      {
+       "id": "frac5",
+       "op": "text",
+       "startMs": 2600,
+       "endMs": 3300,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        340,
+        200
+       ],
+       "text": "2/5",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "circle5",
+       "op": "highlight",
+       "startMs": 3500,
+       "endMs": 4400,
+       "ink": "good",
+       "weight": 2,
+       "target": "mark5",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch02-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9536,
+     "ops": [
+      {
+       "id": "nl6",
+       "op": "line",
+       "startMs": 300,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        80,
+        300
+       ],
+       "to": [
+        720,
+        300
+       ]
+      },
+      {
+       "id": "zero6",
+       "op": "text",
+       "startMs": 1200,
+       "endMs": 1550,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        80,
+        345
+       ],
+       "text": "0",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "one6",
+       "op": "text",
+       "startMs": 1550,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        345
+       ],
+       "text": "1",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "two6",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2250,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        720,
+        345
+       ],
+       "text": "2",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "past6",
+       "op": "arrow",
+       "startMs": 2700,
+       "endMs": 3700,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        420,
+        260
+       ],
+       "to": [
+        600,
+        260
+       ]
+      },
+      {
+       "id": "pastone6",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 5700,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        560,
+        220
+       ],
+       "text": "past 1",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch02-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "qmark7",
+       "op": "line",
+       "startMs": 400,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        480,
+        285
+       ],
+       "to": [
+        480,
+        315
+       ]
+      },
+      {
+       "id": "qmark7b",
+       "op": "line",
+       "startMs": 800,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        560,
+        285
+       ],
+       "to": [
+        560,
+        315
+       ]
+      },
+      {
+       "id": "frac7",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        480,
+        230
+       ],
+       "text": "5/4",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "quarter7",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3100,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        520,
+        390
+       ],
+       "text": "1/4",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "after7",
+       "op": "highlight",
+       "startMs": 3400,
+       "endMs": 4300,
+       "ink": "good",
+       "weight": 2,
+       "target": "qmark7",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch02-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 4430,
+     "ops": [
+      {
+       "id": "candidate8",
+       "op": "text",
+       "startMs": 300,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        560,
+        180
+       ],
+       "text": "5/4",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "choose8",
+       "op": "arrow",
+       "startMs": 1100,
+       "endMs": 1900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        560,
+        220
+       ],
+       "to": [
+        560,
+        280
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ },
+ "firstCheck": {
+  "issues": [
+   {
+    "where": "explainer",
+    "what": "The task explicitly names kit item c5-maths-ch02-t01-i04 and repeats its answer. This gives away the answer in the prompt, which is unsuitable as a practice question.",
+    "severity": "high"
+   },
+   {
+    "where": "game",
+    "what": "Wave 4 (Beyond one) places 3/2 as a catchable item on a line [0,2] with 4 ticks. 3/2 = 1.5, which is at position 1.5. On a line from 0 to 2 with 4 ticks (so 5 gaps, each gap = 0.4), 1.5 corresponds to 3.75 gaps from 0, which is not at a tick. This makes the round physically impossible to catch correctly, as the fraction does not align with any tick. This contradicts the kit’s principle of counting gaps and marks on a consistent number line.",
+    "severity": "high"
+   },
+   {
+    "where": "game",
+    "what": "Wave 4 (Beyond one) places 4/3 as a catchable item on a line [0,2] with 4 ticks. 4/3 ≈ 1.333, which is not at a tick (ticks at 0, 0.4, 0.8, 1.2, 1.6, 2.0). Same alignment issue.",
+    "severity": "high"
+   }
+  ],
+  "verdict": "fail",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

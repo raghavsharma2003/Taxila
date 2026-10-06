@@ -1,0 +1,1240 @@
+{
+ "topicId": "c7-science-ch10-t02",
+ "title": "Exchange of gases through stomata",
+ "chapter": "Life Processes in Plants",
+ "subject": "science",
+ "class": 7,
+ "topicType": "T3",
+ "plan": {
+  "game": "life-lab@1",
+  "hint": "leaf mode (light and CO2 levels; goals)"
+ },
+ "game": {
+  "archetype": "life-lab@1",
+  "spec": {
+   "archetype": "life-lab@1",
+   "skills": [
+    "c7-science-ch10-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "done": "right",
+    "sugar": "sugar",
+    "water": "water",
+    "light": "light",
+    "co2": "CO2",
+    "stomata": "stomata",
+    "open": "open",
+    "closed": "closed",
+    "wilted": "WILTED",
+    "oxygen": "oxygen",
+    "pull": "Pull the diaphragm down",
+    "perMin": "per min",
+    "rest": "resting",
+    "walk": "walking",
+    "run": "running",
+    "mouth": "mouth",
+    "stomach": "stomach",
+    "small": "small intestine",
+    "large": "large intestine",
+    "saliva": "saliva",
+    "gastric": "gastric",
+    "bile": "bile",
+    "pancreatic": "pancreatic",
+    "absorbed": "absorbed",
+    "starch": "starch",
+    "protein": "protein",
+    "fat": "fat",
+    "runDone": "Lab closed",
+    "xylem": "xylem",
+    "phloem": "phloem",
+    "drops": "drops left"
+   },
+   "title": "Stomata Life Lab",
+   "rounds": [
+    {
+     "mode": "leaf",
+     "title": "Open and close",
+     "sub": "help a leaf exchange gases",
+     "light": 80,
+     "co2": 80,
+     "heat": 0.4,
+     "roots": 0.8,
+     "water0": 8,
+     "goal": 1,
+     "time": 40,
+     "transport": true,
+     "targets": "c7-science-ch10-t02-m1"
+    },
+    {
+     "mode": "leaf",
+     "title": "Save water",
+     "sub": "make sugar without wilting",
+     "light": 70,
+     "co2": 70,
+     "heat": 0.8,
+     "roots": 0.7,
+     "water0": 8,
+     "goal": 2,
+     "time": 40,
+     "transport": true
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 2,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-science-ch10-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "How leaves exchange gases",
+   "accent": "sci",
+   "targets": "c7-science-ch10-t02-m2",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "How leaves exchange gases"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "At night, no gases pass"
+      },
+      {
+       "id": "leaf",
+       "type": "glyph",
+       "name": "leaf",
+       "x": 500,
+       "y": 330,
+       "size": 180,
+       "color": "mint"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "stoma",
+       "type": "node",
+       "text": "Stoma",
+       "sub": "tiny pore",
+       "glyph": "eye",
+       "color": "sci"
+      },
+      {
+       "id": "guard",
+       "type": "node",
+       "text": "Guard cells",
+       "sub": "open and close",
+       "glyph": "shield",
+       "color": "mint"
+      },
+      {
+       "id": "lower",
+       "type": "label",
+       "text": "Mostly lower surface",
+       "x": 350,
+       "y": 500,
+       "color": "ion"
+      },
+      {
+       "id": "open",
+       "type": "arrow",
+       "from": "guard",
+       "to": "stoma",
+       "text": "controls",
+       "bend": 0
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "light",
+       "type": "node",
+       "text": "Sunlight",
+       "sub": "photosynthesis",
+       "glyph": "sun",
+       "color": "sun"
+      },
+      {
+       "id": "co2",
+       "type": "node",
+       "text": "Carbon dioxide",
+       "sub": "enters overall",
+       "glyph": "wind",
+       "color": "ion"
+      },
+      {
+       "id": "o2",
+       "type": "node",
+       "text": "Oxygen",
+       "sub": "leaves overall",
+       "glyph": "wave",
+       "color": "sci"
+      },
+      {
+       "id": "dark",
+       "type": "node",
+       "text": "Darkness",
+       "sub": "respiration",
+       "glyph": "moon",
+       "color": "volt"
+      },
+      {
+       "id": "water",
+       "type": "node",
+       "text": "Water vapour",
+       "sub": "transpiration",
+       "glyph": "drop",
+       "color": "mint"
+      },
+      {
+       "id": "in1",
+       "type": "arrow",
+       "from": "co2",
+       "to": "light",
+       "text": "enters",
+       "bend": 0
+      },
+      {
+       "id": "out1",
+       "type": "arrow",
+       "from": "light",
+       "to": "o2",
+       "text": "leaves",
+       "bend": 0
+      },
+      {
+       "id": "in2",
+       "type": "arrow",
+       "from": "dark",
+       "to": "o2",
+       "text": "oxygen in",
+       "bend": 0
+      },
+      {
+       "id": "out2",
+       "type": "arrow",
+       "from": "co2",
+       "to": "dark",
+       "bend": 0
+      },
+      {
+       "id": "vap",
+       "type": "arrow",
+       "from": "water",
+       "to": "dark",
+       "text": "escapes",
+       "bend": 0
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Leaves exchange gases through tiny pores called stomata.",
+    "L2": "A common myth says that no gases pass through stomata at night. That is not true.",
+    "L3": "Each stoma is controlled by two guard cells, which open and close it.",
+    "L4": "In sunlight, photosynthesis is faster than respiration, so carbon dioxide enters overall and oxygen leaves overall.",
+    "L5": "In darkness, photosynthesis stops but respiration continues. Oxygen enters and carbon dioxide leaves.",
+    "L6": "Water vapour also escapes through stomata. This loss is called transpiration and can cool the plant.",
+    "L7": "Now check the gas that enters a leaf at midnight."
+   },
+   "narration": {
+    "L1": {
+     "text": "Leaves exchange gases through tiny pores called stomata.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L2": {
+     "text": "A common myth says that no gases pass through stomata at night. That is not true.",
+     "dur": 9,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L3": {
+     "text": "Each stoma is controlled by two guard cells, which open and close it.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L4": {
+     "text": "In sunlight, photosynthesis is faster than respiration, so carbon dioxide enters overall and oxygen leaves overall.",
+     "dur": 11,
+     "lead": 0,
+     "tail": 0.5,
+     "pauses": []
+    },
+    "L5": {
+     "text": "In darkness, photosynthesis stops but respiration continues. Oxygen enters and carbon dioxide leaves.",
+     "dur": 10,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Water vapour also escapes through stomata. This loss is called transpiration and can cool the plant.",
+     "dur": 10,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Now check the gas that enters a leaf at midnight.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": "leaf"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      },
+      {
+       "at": 3,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "stoma"
+      },
+      {
+       "at": 0.7,
+       "do": "show",
+       "dur": 0.7,
+       "target": "guard"
+      },
+      {
+       "at": 2,
+       "do": "show",
+       "dur": 0.8,
+       "target": "open"
+      },
+      {
+       "at": 4,
+       "do": "highlight",
+       "dur": 1,
+       "target": "lower"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "light"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.9,
+       "target": [
+        "co2",
+        "o2",
+        "in1",
+        "out1"
+       ]
+      },
+      {
+       "at": 2,
+       "do": "flow",
+       "dur": 0.8,
+       "target": [
+        "in1",
+        "out1"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "dark"
+      },
+      {
+       "at": 0.7,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "in2",
+        "out2"
+       ]
+      },
+      {
+       "at": 2,
+       "do": "flow",
+       "dur": 0.8,
+       "target": [
+        "in2",
+        "out2"
+       ],
+       "to": 1
+      },
+      {
+       "at": 5,
+       "do": "highlight",
+       "dur": 1,
+       "target": "dark"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "water"
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.8,
+       "target": "vap"
+      },
+      {
+       "at": 2,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "vap",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "focus",
+       "dur": 1,
+       "target": "dark"
+      },
+      {
+       "at": 3,
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "At midnight, which gas enters the leaf through stomata?",
+    "options": [
+     "co2",
+     "o2",
+     "water"
+    ],
+    "answer": "o2",
+    "src": "c7-science-ch10-t02-i07"
+   }
+  },
+  "repairs": [
+   "string:out2.text"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 64
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch10-t02-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4004,
+     "ops": [
+      {
+       "id": "leaf",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        390,
+        250
+       ],
+       "rx": 250,
+       "ry": 140
+      },
+      {
+       "id": "pore1",
+       "op": "ellipse",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        390,
+        250
+       ],
+       "rx": 18,
+       "ry": 35
+      },
+      {
+       "id": "pore2",
+       "op": "ellipse",
+       "startMs": 1100,
+       "endMs": 1700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        450,
+        250
+       ],
+       "rx": 18,
+       "ry": 35
+      },
+      {
+       "id": "stomata",
+       "op": "label",
+       "startMs": 1700,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        420,
+        205
+       ],
+       "text": "stomata",
+       "to": [
+        420,
+        240
+       ]
+      },
+      {
+       "id": "gasin",
+       "op": "arrow",
+       "startMs": 2400,
+       "endMs": 3200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        250,
+        250
+       ],
+       "to": [
+        360,
+        250
+       ]
+      },
+      {
+       "id": "gasout",
+       "op": "arrow",
+       "startMs": 2800,
+       "endMs": 3600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        480,
+        250
+       ],
+       "to": [
+        590,
+        250
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch10-t02-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "night",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        120,
+        90
+       ],
+       "text": "night",
+       "size": "m"
+      },
+      {
+       "id": "myth",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        250,
+        90
+       ],
+       "text": "myth",
+       "size": "m"
+      },
+      {
+       "id": "cross",
+       "op": "line",
+       "startMs": 1300,
+       "endMs": 1900,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        240,
+        75
+       ],
+       "to": [
+        335,
+        105
+       ]
+      },
+      {
+       "id": "gasnight",
+       "op": "arrow",
+       "startMs": 2500,
+       "endMs": 3500,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        250,
+        250
+       ],
+       "to": [
+        360,
+        250
+       ]
+      },
+      {
+       "id": "nottrue",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 5000,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        430,
+        90
+       ],
+       "text": "not true",
+       "size": "m"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch10-t02-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "guard1",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        370,
+        250
+       ],
+       "rx": 24,
+       "ry": 55
+      },
+      {
+       "id": "guard2",
+       "op": "ellipse",
+       "startMs": 500,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        470,
+        250
+       ],
+       "rx": 24,
+       "ry": 55
+      },
+      {
+       "id": "guardlabel",
+       "op": "label",
+       "startMs": 1400,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        390,
+        350
+       ],
+       "text": "guard cells",
+       "to": [
+        420,
+        295
+       ]
+      },
+      {
+       "id": "openclose",
+       "op": "arrow",
+       "startMs": 2600,
+       "endMs": 3900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        330,
+        180
+       ],
+       "to": [
+        510,
+        180
+       ],
+       "bend": 1
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch10-t02-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "sunlight",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        100,
+        80
+       ],
+       "text": "sunlight",
+       "size": "m"
+      },
+      {
+       "id": "photosynthesis",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        100,
+        130
+       ],
+       "text": "photosynthesis",
+       "size": "m"
+      },
+      {
+       "id": "co2in",
+       "op": "arrow",
+       "startMs": 1900,
+       "endMs": 3200,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        230,
+        250
+       ],
+       "to": [
+        370,
+        250
+       ]
+      },
+      {
+       "id": "carbon",
+       "op": "label",
+       "startMs": 3200,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        210,
+        220
+       ],
+       "text": "carbon dioxide",
+       "to": [
+        300,
+        250
+       ]
+      },
+      {
+       "id": "o2out",
+       "op": "arrow",
+       "startMs": 4100,
+       "endMs": 5400,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        450,
+        250
+       ],
+       "to": [
+        620,
+        250
+       ]
+      },
+      {
+       "id": "oxygen",
+       "op": "label",
+       "startMs": 5400,
+       "endMs": 6200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        510,
+        220
+       ],
+       "text": "oxygen",
+       "to": [
+        550,
+        250
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch10-t02-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "darkness",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        100,
+        80
+       ],
+       "text": "darkness",
+       "size": "m"
+      },
+      {
+       "id": "respiration",
+       "op": "text",
+       "startMs": 800,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        100,
+        130
+       ],
+       "text": "respiration",
+       "size": "m"
+      },
+      {
+       "id": "oxygenin",
+       "op": "arrow",
+       "startMs": 2000,
+       "endMs": 3200,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        230,
+        250
+       ],
+       "to": [
+        370,
+        250
+       ]
+      },
+      {
+       "id": "carbonout",
+       "op": "arrow",
+       "startMs": 3200,
+       "endMs": 4400,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        450,
+        250
+       ],
+       "to": [
+        620,
+        250
+       ]
+      },
+      {
+       "id": "nightoxygen",
+       "op": "label",
+       "startMs": 4400,
+       "endMs": 5200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        250,
+        310
+       ],
+       "text": "oxygen enters",
+       "to": [
+        330,
+        270
+       ]
+      },
+      {
+       "id": "nightcarbon",
+       "op": "label",
+       "startMs": 4800,
+       "endMs": 5800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        480,
+        310
+       ],
+       "text": "carbon dioxide leaves",
+       "to": [
+        550,
+        270
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch10-t02-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "vapour",
+       "op": "arrow",
+       "startMs": 0,
+       "endMs": 1300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        280
+       ],
+       "to": [
+        400,
+        120
+       ]
+      },
+      {
+       "id": "water",
+       "op": "label",
+       "startMs": 1300,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        430,
+        160
+       ],
+       "text": "water vapour",
+       "to": [
+        400,
+        190
+       ]
+      },
+      {
+       "id": "transpiration",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3700,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        280,
+        350
+       ],
+       "text": "transpiration",
+       "size": "l"
+      },
+      {
+       "id": "cool",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 4700,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        300,
+        420
+       ],
+       "text": "cool",
+       "size": "m"
+      },
+      {
+       "id": "coolarrow",
+       "op": "arrow",
+       "startMs": 4700,
+       "endMs": 5700,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        400,
+        350
+       ],
+       "to": [
+        400,
+        300
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch10-t02-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "midnight",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        100,
+        80
+       ],
+       "text": "midnight",
+       "size": "l"
+      },
+      {
+       "id": "check",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        100,
+        140
+       ],
+       "text": "check gas",
+       "size": "m"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1",
+   "key": "best 12.8 sugar ≥ 1",
+   "prompt": "make 1 sugar"
+  },
+  {
+   "itemId": "r2",
+   "key": "best 9.8 sugar ≥ 2",
+   "prompt": "make 2 sugar"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ },
+ "firstCheck": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "Round 3 (mode 'gut') expects bile in the small intestine to digest fat, but the KIT on theme 'Exchange of gases through stomata' has no content about digestion. This round is unrelated to the lesson and may confuse learners.",
+    "severity": "high"
+   }
+  ],
+  "verdict": "fail",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

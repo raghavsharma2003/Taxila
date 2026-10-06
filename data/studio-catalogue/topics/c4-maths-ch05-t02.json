@@ -85,5 +85,1290 @@
   "repairs": [],
   "attempts": 1,
   "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c4-maths-ch05-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Right",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "BUSTED",
+    "order": "Tap in order"
+   },
+   "title": "Fractions in measurement",
+   "accent": "mint",
+   "targets": "c4-maths-ch05-t02-m-pieces-not-size",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Fractions in measurement"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Three-quarter means 3 pieces"
+      },
+      {
+       "id": "whole",
+       "type": "node",
+       "text": "1 kilo",
+       "sub": "1000 g",
+       "glyph": "balance",
+       "color": "mint"
+      },
+      {
+       "id": "parts",
+       "type": "bar",
+       "parts": 4,
+       "shaded": 3,
+       "x": 120,
+       "y": 360,
+       "w": 600,
+       "text": "3/4 kilo"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "kg",
+       "type": "node",
+       "text": "1 kg",
+       "sub": "1000 g",
+       "glyph": "balance",
+       "color": "mint"
+      },
+      {
+       "id": "quarter",
+       "type": "node",
+       "text": "1/4 kg",
+       "sub": "250 g",
+       "glyph": "ruler",
+       "color": "amber"
+      },
+      {
+       "id": "three",
+       "type": "node",
+       "text": "3/4 kg",
+       "sub": "750 g",
+       "glyph": "ruler",
+       "color": "sun"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "kg",
+       "to": "quarter",
+       "text": "share 4"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "quarter",
+       "to": "three",
+       "text": "take 3"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "litre",
+       "type": "node",
+       "text": "1 litre",
+       "sub": "1000 ml",
+       "glyph": "jug",
+       "color": "ion"
+      },
+      {
+       "id": "half",
+       "type": "node",
+       "text": "1/2 litre",
+       "sub": "500 ml",
+       "glyph": "jug",
+       "color": "sci"
+      },
+      {
+       "id": "metre",
+       "type": "node",
+       "text": "1 metre",
+       "sub": "100 cm",
+       "glyph": "ruler",
+       "color": "amber"
+      },
+      {
+       "id": "halfmetre",
+       "type": "node",
+       "text": "1/2 metre",
+       "sub": "50 cm",
+       "glyph": "ruler",
+       "color": "sun"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "checktitle",
+       "type": "title",
+       "text": "Quick check"
+      },
+      {
+       "id": "q",
+       "type": "node",
+       "text": "Quarter kilo?",
+       "sub": "Choose grams",
+       "glyph": "question",
+       "color": "mint"
+      },
+      {
+       "id": "o250",
+       "type": "label",
+       "text": "250 g"
+      },
+      {
+       "id": "o400",
+       "type": "label",
+       "text": "400 g"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "A fraction of a measure depends on the whole measure.",
+    "L2": "A kilo is 1000 grams, so we divide it into four equal parts for one quarter.",
+    "L3": "One quarter kilo is 1000 shared into 4, which is 250 grams.",
+    "L4": "Three quarters means 3 equal parts, not 3 pieces of any size.",
+    "L5": "Three times 250 grams is 750 grams, so three-quarter kilo is 750 grams.",
+    "L6": "The same idea works for other measures: half a litre is 500 millilitres, and half a metre is 50 centimetres.",
+    "L7": "Now check yourself: a quarter kilo is how many grams?"
+   },
+   "narration": {},
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      },
+      {
+       "at": 0.6,
+       "do": "show",
+       "dur": 0.8,
+       "target": "whole"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "myth"
+      },
+      {
+       "at": 0.8,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "kg"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "a1",
+        "quarter"
+       ]
+      },
+      {
+       "at": 1.2,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "a1",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "parts"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "three"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.7,
+       "target": "a2"
+      },
+      {
+       "at": 1.1,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "a2",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "litre",
+        "half",
+        "metre",
+        "halfmetre"
+       ]
+      },
+      {
+       "at": 1.1,
+       "do": "highlight",
+       "dur": 1,
+       "target": [
+        "half",
+        "halfmetre"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "checktitle",
+        "q",
+        "o250",
+        "o400"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive",
+       "dur": 1
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Tap the amount equal to a quarter kilo.",
+    "options": [
+     "o250",
+     "o400"
+    ],
+    "answer": "o250",
+    "src": "c4-maths-ch05-t02-i02"
+   }
+  },
+  "repairs": [],
+  "attempts": 2,
+  "model": "taxila-fast-bg",
+  "seconds": 45
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch05-t02-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "whole",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        130,
+        180
+       ],
+       "w": 540,
+       "h": 120,
+       "fill": "soft",
+       "round": 8
+      },
+      {
+       "id": "wholeLabel",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        165
+       ],
+       "text": "whole measure",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "part",
+       "op": "rect",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        130,
+        330
+       ],
+       "w": 135,
+       "h": 60,
+       "fill": "accent",
+       "round": 6
+      },
+      {
+       "id": "partArrow",
+       "op": "arrow",
+       "startMs": 2100,
+       "endMs": 2700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        195,
+        325
+       ],
+       "to": [
+        195,
+        300
+       ]
+      },
+      {
+       "id": "fractionLabel",
+       "op": "label",
+       "startMs": 2700,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        285,
+        360
+       ],
+       "text": "fraction",
+       "to": [
+        265,
+        360
+       ]
+      },
+      {
+       "id": "depend",
+       "op": "arrow",
+       "startMs": 3500,
+       "endMs": 4300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        265,
+        330
+       ],
+       "to": [
+        300,
+        260
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch05-t02-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "kgEq",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        80
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "1 kg",
+         "=",
+         "1000 g"
+        ]
+       ]
+      },
+      {
+       "id": "fourParts",
+       "op": "rect",
+       "startMs": 1400,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        210
+       ],
+       "w": 560,
+       "h": 90,
+       "round": 6
+      },
+      {
+       "id": "part1",
+       "op": "line",
+       "startMs": 2200,
+       "endMs": 2700,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        240,
+        210
+       ],
+       "to": [
+        240,
+        300
+       ]
+      },
+      {
+       "id": "part2",
+       "op": "line",
+       "startMs": 2400,
+       "endMs": 2900,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        380,
+        210
+       ],
+       "to": [
+        380,
+        300
+       ]
+      },
+      {
+       "id": "part3",
+       "op": "line",
+       "startMs": 2600,
+       "endMs": 3100,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        520,
+        210
+       ],
+       "to": [
+        520,
+        300
+       ]
+      },
+      {
+       "id": "fourLabel",
+       "op": "text",
+       "startMs": 3200,
+       "endMs": 4000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        380,
+        345
+       ],
+       "text": "4 equal parts",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "quarter",
+       "op": "text",
+       "startMs": 4100,
+       "endMs": 4900,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        170,
+        250
+       ],
+       "text": "one quarter",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "divide",
+       "op": "numwork",
+       "startMs": 5000,
+       "endMs": 6200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        410
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "1000 g",
+         "÷",
+         "4"
+        ]
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch05-t02-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "shareEq",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        90
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "1000 g",
+         "÷",
+         "4",
+         "=",
+         "250 g"
+        ]
+       ]
+      },
+      {
+       "id": "fourBox",
+       "op": "rect",
+       "startMs": 1800,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        230
+       ],
+       "w": 560,
+       "h": 80,
+       "round": 6
+      },
+      {
+       "id": "split1",
+       "op": "line",
+       "startMs": 2400,
+       "endMs": 2900,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        240,
+        230
+       ],
+       "to": [
+        240,
+        310
+       ]
+      },
+      {
+       "id": "split2",
+       "op": "line",
+       "startMs": 2500,
+       "endMs": 3000,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        380,
+        230
+       ],
+       "to": [
+        380,
+        310
+       ]
+      },
+      {
+       "id": "split3",
+       "op": "line",
+       "startMs": 2600,
+       "endMs": 3100,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        520,
+        230
+       ],
+       "to": [
+        520,
+        310
+       ]
+      },
+      {
+       "id": "answer",
+       "op": "highlight",
+       "startMs": 3500,
+       "endMs": 4700,
+       "ink": "good",
+       "weight": 2,
+       "target": "shareEq",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch05-t02-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "threeParts",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        180
+       ],
+       "w": 540,
+       "h": 100,
+       "round": 6
+      },
+      {
+       "id": "pA",
+       "op": "line",
+       "startMs": 800,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        280,
+        180
+       ],
+       "to": [
+        280,
+        280
+       ]
+      },
+      {
+       "id": "pB",
+       "op": "line",
+       "startMs": 1000,
+       "endMs": 1600,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        460,
+        180
+       ],
+       "to": [
+        460,
+        280
+       ]
+      },
+      {
+       "id": "threeLabel",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        370,
+        330
+       ],
+       "text": "3 equal parts",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "partMark1",
+       "op": "highlight",
+       "startMs": 2700,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 2,
+       "target": "pA",
+       "style": "pulse"
+      },
+      {
+       "id": "partMark2",
+       "op": "highlight",
+       "startMs": 3000,
+       "endMs": 3800,
+       "ink": "accent",
+       "weight": 2,
+       "target": "pB",
+       "style": "pulse"
+      },
+      {
+       "id": "notAny",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 5000,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        370,
+        420
+       ],
+       "text": "not 3 pieces",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch05-t02-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "timesEq",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        80
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "3",
+         "×",
+         "250 g",
+         "=",
+         "750 g"
+        ]
+       ]
+      },
+      {
+       "id": "q1",
+       "op": "rect",
+       "startMs": 1700,
+       "endMs": 2400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        100,
+        230
+       ],
+       "w": 150,
+       "h": 70,
+       "fill": "accent",
+       "round": 6
+      },
+      {
+       "id": "q2",
+       "op": "rect",
+       "startMs": 2000,
+       "endMs": 2700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        280,
+        230
+       ],
+       "w": 150,
+       "h": 70,
+       "fill": "accent",
+       "round": 6
+      },
+      {
+       "id": "q3",
+       "op": "rect",
+       "startMs": 2300,
+       "endMs": 3000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        460,
+        230
+       ],
+       "w": 150,
+       "h": 70,
+       "fill": "accent",
+       "round": 6
+      },
+      {
+       "id": "sumLabel",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 4100,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        355,
+        350
+       ],
+       "text": "750 g",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "threeQuarter",
+       "op": "text",
+       "startMs": 4400,
+       "endMs": 5400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        355,
+        430
+       ],
+       "text": "three-quarter kilo",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch05-t02-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9111,
+     "ops": [
+      {
+       "id": "litreEq",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        70,
+        70
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "1 litr",
+         "=",
+         "1000 m"
+        ]
+       ]
+      },
+      {
+       "id": "halfLitre",
+       "op": "numwork",
+       "startMs": 1200,
+       "endMs": 2500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        70,
+        145
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "half a",
+         "=",
+         "500 ml"
+        ]
+       ]
+      },
+      {
+       "id": "metreEq",
+       "op": "numwork",
+       "startMs": 2600,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        430,
+        70
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "1 metr",
+         "=",
+         "100 cm"
+        ]
+       ]
+      },
+      {
+       "id": "halfMetre",
+       "op": "numwork",
+       "startMs": 3800,
+       "endMs": 5200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        430,
+        145
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "half a",
+         "=",
+         "50 cm"
+        ]
+       ]
+      },
+      {
+       "id": "litreBar",
+       "op": "rect",
+       "startMs": 5200,
+       "endMs": 5900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        70,
+        280
+       ],
+       "w": 300,
+       "h": 55,
+       "round": 5
+      },
+      {
+       "id": "litreHalf",
+       "op": "line",
+       "startMs": 5700,
+       "endMs": 6200,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        220,
+        280
+       ],
+       "to": [
+        220,
+        335
+       ]
+      },
+      {
+       "id": "metreBar",
+       "op": "rect",
+       "startMs": 6200,
+       "endMs": 6900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        430,
+        280
+       ],
+       "w": 300,
+       "h": 55,
+       "round": 5
+      },
+      {
+       "id": "metreHalf",
+       "op": "line",
+       "startMs": 6700,
+       "endMs": 7200,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        580,
+        280
+       ],
+       "to": [
+        580,
+        335
+       ]
+      },
+      {
+       "id": "sameIdea",
+       "op": "text",
+       "startMs": 7500,
+       "endMs": 8300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        430
+       ],
+       "text": "same idea",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch05-t02-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "question",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        90
+       ],
+       "text": "quarter kilo?",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "dividePrompt",
+       "op": "numwork",
+       "startMs": 1200,
+       "endMs": 2700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        180,
+        210
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "1000 g",
+         "÷",
+         "4",
+         "=",
+         "?"
+        ]
+       ]
+      },
+      {
+       "id": "answerBox",
+       "op": "rect",
+       "startMs": 2800,
+       "endMs": 3600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        270,
+        340
+       ],
+       "w": 260,
+       "h": 70,
+       "round": 8
+      },
+      {
+       "id": "answerPrompt",
+       "op": "text",
+       "startMs": 3700,
+       "endMs": 4500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        385
+       ],
+       "text": "grams",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1",
+   "key": "3/8",
+   "prompt": "1/2 of 3/4"
+  },
+  {
+   "itemId": "r2",
+   "key": "8",
+   "prompt": "2 ÷ 1/4"
+  },
+  {
+   "itemId": "r3",
+   "key": "3/4",
+   "prompt": "1/2 + 1/4"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
  }
 }

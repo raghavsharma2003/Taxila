@@ -15,7 +15,1306 @@
   "repairs": [
    "failed after 3 attempts"
   ],
+  "lastFeedback": "the spec was rejected and replaced by the default (round-range; round-range; round-range; round-range; fallback-default; unknown kit id \"c6-maths-ch10-t02-m-neg-magnitude\" (use one of: c4-maths-ch04-t02, c4-maths-ch04-t02-m-right-to-left, c4-maths-ch04-t02-m-big-digits, c4-maths-ch04-t02-m-line-spacing, c4-maths-ch04-t02-i01, c4-maths-ch04-t02-i02, c4-maths-ch04-t02-i03, c4-maths-ch04-t02-i04, c4-maths-ch04-t02-i05, c4-maths-ch04-t02-i06, c4-maths-ch04-t02-i07, c4-maths-ch04-t02-i08, c4-maths-ch04-t02-i09, c4-maths-ch04-t02-i10, c4-maths-ch04-t02-i11, c4-maths-ch04-t02-i12, c4-maths-ch04-t02-i",
   "attempts": 3,
+  "model": "taxila-fast-bg",
+  "passes": 2
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c4-maths-ch04-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Right",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "BUSTED",
+    "order": "Tap in order"
+   },
+   "title": "Compare 4-digit numbers",
+   "accent": "ion",
+   "targets": "c4-maths-ch04-t02-m-right-to-left",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "row",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Compare 4-digit numbers"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Start comparing from the right"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "a",
+       "type": "node",
+       "text": "6482",
+       "sub": "number",
+       "glyph": "book",
+       "color": "ion"
+      },
+      {
+       "id": "b",
+       "type": "node",
+       "text": "6428",
+       "sub": "number",
+       "glyph": "book",
+       "color": "mint"
+      },
+      {
+       "id": "left",
+       "type": "label",
+       "text": "Compare from the left",
+       "x": 120,
+       "y": 430,
+       "color": "ion"
+      },
+      {
+       "id": "thousands",
+       "type": "label",
+       "text": "thousands",
+       "x": 150,
+       "y": 485,
+       "color": "amber"
+      },
+      {
+       "id": "hundreds",
+       "type": "label",
+       "text": "hundreds",
+       "x": 330,
+       "y": 485,
+       "color": "amber"
+      },
+      {
+       "id": "tens",
+       "type": "label",
+       "text": "tens",
+       "x": 510,
+       "y": 485,
+       "color": "amber"
+      },
+      {
+       "id": "ones",
+       "type": "label",
+       "text": "ones",
+       "x": 690,
+       "y": 485,
+       "color": "amber"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "split",
+     "els": [
+      {
+       "id": "bar",
+       "type": "bar",
+       "parts": 10,
+       "shaded": 1,
+       "x": 100,
+       "y": 350,
+       "w": 800,
+       "text": "0 to 10000"
+      },
+      {
+       "id": "axis",
+       "type": "axis",
+       "min": 0,
+       "max": 10000,
+       "step": 1000,
+       "unit": "number",
+       "scale": "linear",
+       "y": 500
+      },
+      {
+       "id": "mark",
+       "type": "mark",
+       "axis": "axis",
+       "value": 1000,
+       "text": "1000",
+       "color": "mint"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "n1",
+       "type": "node",
+       "text": "3012",
+       "sub": "1st",
+       "glyph": "ruler",
+       "color": "ion"
+      },
+      {
+       "id": "n2",
+       "type": "node",
+       "text": "3120",
+       "sub": "2nd",
+       "glyph": "ruler",
+       "color": "mint"
+      },
+      {
+       "id": "n3",
+       "type": "node",
+       "text": "3201",
+       "sub": "3rd",
+       "glyph": "ruler",
+       "color": "amber"
+      },
+      {
+       "id": "n4",
+       "type": "node",
+       "text": "3210",
+       "sub": "4th",
+       "glyph": "ruler",
+       "color": "sun"
+      }
+     ]
+    },
+    {
+     "id": "s5",
+     "layout": "row",
+     "els": [
+      {
+       "id": "q",
+       "type": "title",
+       "text": "Choose the bigger number"
+      },
+      {
+       "id": "o1",
+       "type": "label",
+       "text": "4520",
+       "x": 220,
+       "y": 400,
+       "color": "ion"
+      },
+      {
+       "id": "o2",
+       "type": "label",
+       "text": "3980",
+       "x": 620,
+       "y": 400,
+       "color": "mint"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "A number with more digits is bigger, so every 4-digit number is bigger than every 3-digit number.",
+    "L2": "To compare numbers with the same number of digits, start from the left.",
+    "L3": "Compare thousands first, then hundreds, tens, and ones.",
+    "L4": "As soon as one place is different, that place decides; later digits do not matter.",
+    "L5": "For 6482 and 6428, thousands and hundreds match, so compare the tens.",
+    "L6": "Eight tens is more than two tens, so 6482 is bigger than 6428.",
+    "L7": "On a number line, spacing shows value. 1000 is one tenth of the way from 0 to 10000.",
+    "L8": "Now compare 4520 and 3980. Tap the bigger number."
+   },
+   "narration": {
+    "L1": {
+     "text": "A number with more digits is bigger, so every 4-digit number is bigger than every 3-digit number.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "To compare numbers with the same number of digits, start from the left.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "Compare thousands first, then hundreds, tens, and ones.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "As soon as one place is different, that place decides; later digits do not matter.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "For 6482 and 6428, thousands and hundreds match, so compare the tens.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Eight tens is more than two tens, so 6482 is bigger than 6428.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "On a number line, spacing shows value. 1000 is one tenth of the way from 0 to 10000.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Now compare 4520 and 3980. Tap the bigger number.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.3,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "title"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "a",
+        "b"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "left",
+        "thousands",
+        "hundreds",
+        "tens",
+        "ones"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "left"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "tens"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "a"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.3,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "axis",
+        "bar",
+        "mark"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "focus",
+       "dur": 1,
+       "target": "mark"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s5",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "q",
+        "o1",
+        "o2"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "interactive",
+       "dur": 1
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which number is bigger?",
+    "options": [
+     "o1",
+     "o2"
+    ],
+    "answer": "o1",
+    "src": "c4-maths-ch04-t02-i01"
+   }
+  },
+  "repairs": [
+   "cue:target"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 31
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 2,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch04-t02-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "title",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "more digits = bigger",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "n4",
+       "op": "rect",
+       "startMs": 900,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        150,
+        150
+       ],
+       "w": 210,
+       "h": 100,
+       "round": 10
+      },
+      {
+       "id": "n3",
+       "op": "rect",
+       "startMs": 900,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        440,
+        150
+       ],
+       "w": 210,
+       "h": 100,
+       "round": 10
+      },
+      {
+       "id": "four",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        255,
+        205
+       ],
+       "text": "4-digit",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "three",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        545,
+        205
+       ],
+       "text": "3-digit",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "greater",
+       "op": "arrow",
+       "startMs": 2800,
+       "endMs": 3700,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        430,
+        200
+       ],
+       "to": [
+        370,
+        200
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch04-t02-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "same",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "same number of digits",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "digits",
+       "op": "rect",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        130
+       ],
+       "w": 560,
+       "h": 110,
+       "round": 10
+      },
+      {
+       "id": "left",
+       "op": "arrow",
+       "startMs": 1700,
+       "endMs": 2800,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        650,
+        185
+       ],
+       "to": [
+        180,
+        185
+       ]
+      },
+      {
+       "id": "start",
+       "op": "text",
+       "startMs": 2900,
+       "endMs": 4100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        300
+       ],
+       "text": "start from the left",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch04-t02-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 4004,
+     "ops": [
+      {
+       "id": "places",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        145,
+        120
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "thousa",
+         "→",
+         "hundre",
+         "→",
+         "tens",
+         "→",
+         "ones"
+        ]
+       ]
+      },
+      {
+       "id": "first",
+       "op": "text",
+       "startMs": 2000,
+       "endMs": 3000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        265
+       ],
+       "text": "thousands first",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "order",
+       "op": "arrow",
+       "startMs": 3000,
+       "endMs": 3900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        180,
+        350
+       ],
+       "to": [
+        620,
+        350
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch04-t02-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "compare",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        170,
+        100
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "same",
+         "same",
+         "differ",
+         "later"
+        ]
+       ]
+      },
+      {
+       "id": "decision",
+       "op": "circle",
+       "startMs": 1400,
+       "endMs": 2300,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        430,
+        125
+       ],
+       "r": 48
+      },
+      {
+       "id": "decides",
+       "op": "text",
+       "startMs": 2400,
+       "endMs": 3800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        430,
+        245
+       ],
+       "text": "different place decides",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "cross",
+       "op": "line",
+       "startMs": 5200,
+       "endMs": 6100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        250,
+        320
+       ],
+       "to": [
+        610,
+        370
+       ]
+      },
+      {
+       "id": "cross2",
+       "op": "line",
+       "startMs": 5200,
+       "endMs": 6100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        610,
+        320
+       ],
+       "to": [
+        250,
+        370
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch04-t02-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "num6482",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        150,
+        100
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "6482"
+        ]
+       ]
+      },
+      {
+       "id": "num6428",
+       "op": "numwork",
+       "startMs": 700,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        150,
+        175
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "6428"
+        ]
+       ]
+      },
+      {
+       "id": "match1",
+       "op": "circle",
+       "startMs": 1600,
+       "endMs": 2200,
+       "ink": "soft",
+       "weight": 2,
+       "c": [
+        185,
+        115
+       ],
+       "r": 28
+      },
+      {
+       "id": "match2",
+       "op": "circle",
+       "startMs": 1600,
+       "endMs": 2200,
+       "ink": "soft",
+       "weight": 2,
+       "c": [
+        185,
+        190
+       ],
+       "r": 28
+      },
+      {
+       "id": "tens",
+       "op": "circle",
+       "startMs": 2600,
+       "endMs": 3400,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        305,
+        152
+       ],
+       "r": 30
+      },
+      {
+       "id": "labelt",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        280
+       ],
+       "text": "compare the tens",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch04-t02-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "tens8",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        270,
+        100
+       ],
+       "text": "8 tens",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "tens2",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        530,
+        100
+       ],
+       "text": "2 tens",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "more",
+       "op": "arrow",
+       "startMs": 1100,
+       "endMs": 2000,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        360,
+        100
+       ],
+       "to": [
+        440,
+        100
+       ]
+      },
+      {
+       "id": "bigger",
+       "op": "text",
+       "startMs": 3600,
+       "endMs": 4800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        380
+       ],
+       "text": "6482 is bigger",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch04-t02-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "line",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        100,
+        250
+       ],
+       "to": [
+        700,
+        250
+       ]
+      },
+      {
+       "id": "zero",
+       "op": "text",
+       "startMs": 1100,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        300
+       ],
+       "text": "0",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "tenk",
+       "op": "text",
+       "startMs": 1100,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        700,
+        300
+       ],
+       "text": "10000",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "tick0",
+       "op": "line",
+       "startMs": 1500,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        100,
+        235
+       ],
+       "to": [
+        100,
+        265
+       ]
+      },
+      {
+       "id": "tick1",
+       "op": "line",
+       "startMs": 1800,
+       "endMs": 2100,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        160,
+        235
+       ],
+       "to": [
+        160,
+        265
+       ]
+      },
+      {
+       "id": "tick10",
+       "op": "line",
+       "startMs": 1800,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        700,
+        235
+       ],
+       "to": [
+        700,
+        265
+       ]
+      },
+      {
+       "id": "thousand",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 2700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        160,
+        205
+       ],
+       "text": "1000",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "fraction",
+       "op": "numwork",
+       "startMs": 3000,
+       "endMs": 4800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        270,
+        360
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "1000",
+         "=",
+         "one te",
+         "of",
+         "10000"
+        ]
+       ]
+      },
+      {
+       "id": "spacing",
+       "op": "text",
+       "startMs": 4900,
+       "endMs": 6200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        100
+       ],
+       "text": "spacing shows value",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch04-t02-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 4430,
+     "ops": [
+      {
+       "id": "a",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        250,
+        100
+       ],
+       "text": "4520",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "b",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        550,
+        100
+       ],
+       "text": "3980",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "compareline",
+       "op": "line",
+       "startMs": 800,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        150,
+        250
+       ],
+       "to": [
+        650,
+        250
+       ]
+      },
+      {
+       "id": "p4520",
+       "op": "circle",
+       "startMs": 1600,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        500,
+        250
+       ],
+       "r": 12
+      },
+      {
+       "id": "p3980",
+       "op": "circle",
+       "startMs": 1600,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        390,
+        250
+       ],
+       "r": 12
+      },
+      {
+       "id": "tap",
+       "op": "arrow",
+       "startMs": 2400,
+       "endMs": 3300,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        500,
+        180
+       ],
+       "to": [
+        500,
+        235
+       ]
+      },
+      {
+       "id": "bigger2",
+       "op": "text",
+       "startMs": 3400,
+       "endMs": 4200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        500,
+        350
+       ],
+       "text": "4520",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
   "model": "taxila-fast-bg"
  }
 }

@@ -1,0 +1,2104 @@
+{
+ "topicId": "c7-sst-ch19-t01",
+ "title": "Infrastructure: Engine of India’s Development",
+ "chapter": "Infrastructure: Engine of India’s Development",
+ "subject": "sst",
+ "class": 7,
+ "topicType": "T3",
+ "plan": {
+  "game": "town-lab@1",
+  "hint": "council mode: gram sabha / panchayat / ward decisions within a budget"
+ },
+ "game": {
+  "archetype": "town-lab@1",
+  "spec": {
+   "archetype": "town-lab@1",
+   "skills": [
+    "c7-sst-ch19-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "done": "right",
+    "have": "you have",
+    "need": "you need",
+    "has": "has",
+    "wants": "wants",
+    "trades": "trades",
+    "market": "market",
+    "coins": "coins",
+    "open": "OPEN",
+    "price": "price",
+    "cost": "cost",
+    "profit": "profit",
+    "sold": "sold",
+    "target": "target",
+    "stock": "stock",
+    "lock": "LOCK",
+    "run": "RUN",
+    "perMonth": "per month",
+    "years": "years",
+    "goal": "goal",
+    "saved": "saved",
+    "interest": "interest",
+    "budget": "budget",
+    "left": "left",
+    "families": "families helped",
+    "runDone": "Town closed",
+    "noDeal": "no deal",
+    "reset": "start again",
+    "rupee": "₹"
+   },
+   "title": "Infrastructure Town Lab",
+   "rounds": [
+    {
+     "mode": "savings",
+     "title": "Plan road repairs",
+     "sub": "save each month for regular maintenance",
+     "goal": 12000,
+     "years": 2,
+     "rate": 5,
+     "targets": "c7-sst-ch19-t01-m3"
+    },
+    {
+     "mode": "council",
+     "title": "Choose ward projects",
+     "sub": "use the budget to help most families",
+     "budget": 50,
+     "projects": [
+      {
+       "name": "school repair",
+       "glyph": "school",
+       "cost": 18,
+       "helps": 140
+      },
+      {
+       "name": "water pipeline",
+       "glyph": "tap",
+       "cost": 20,
+       "helps": 190
+      },
+      {
+       "name": "road repairs",
+       "glyph": "road",
+       "cost": 15,
+       "helps": 160
+      },
+      {
+       "name": "health centre",
+       "glyph": "house",
+       "cost": 22,
+       "helps": 170
+      },
+      {
+       "name": "solar power",
+       "glyph": "sun",
+       "cost": 16,
+       "helps": 110
+      }
+     ],
+     "targets": "c7-sst-ch19-t01-m2"
+    }
+   ]
+  },
+  "repairs": [
+   "enum:project.glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-sst-ch19-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Infrastructure powers development",
+   "accent": "volt",
+   "targets": "c7-sst-ch19-t01-m1",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Infrastructure powers development"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Only roads and buildings count"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "road",
+       "type": "node",
+       "text": "All-weather road",
+       "sub": "year-round access",
+       "glyph": "road",
+       "color": "volt"
+      },
+      {
+       "id": "market",
+       "type": "node",
+       "text": "Markets",
+       "sub": "better prices",
+       "glyph": "shop",
+       "color": "mint"
+      },
+      {
+       "id": "income",
+       "type": "node",
+       "text": "Incomes",
+       "sub": "more earnings",
+       "glyph": "coin",
+       "color": "sun"
+      },
+      {
+       "id": "school",
+       "type": "node",
+       "text": "School",
+       "sub": "easier travel",
+       "glyph": "school",
+       "color": "ion"
+      },
+      {
+       "id": "hospital",
+       "type": "node",
+       "text": "Hospital",
+       "sub": "faster care",
+       "glyph": "stomach",
+       "color": "sci"
+      },
+      {
+       "id": "r1",
+       "type": "arrow",
+       "from": "road",
+       "to": "market",
+       "text": "connects"
+      },
+      {
+       "id": "r2",
+       "type": "arrow",
+       "from": "market",
+       "to": "income",
+       "text": "raises"
+      },
+      {
+       "id": "r3",
+       "type": "arrow",
+       "from": "road",
+       "to": "school",
+       "text": "reaches"
+      },
+      {
+       "id": "r4",
+       "type": "arrow",
+       "from": "road",
+       "to": "hospital",
+       "text": "helps"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "physical",
+       "type": "node",
+       "text": "Physical",
+       "sub": "roads, power",
+       "glyph": "gear",
+       "color": "volt"
+      },
+      {
+       "id": "social",
+       "type": "node",
+       "text": "Social",
+       "sub": "schools, hospitals",
+       "glyph": "group",
+       "color": "ion"
+      },
+      {
+       "id": "digital",
+       "type": "node",
+       "text": "Digital",
+       "sub": "mobile, internet",
+       "glyph": "phone",
+       "color": "mint"
+      },
+      {
+       "id": "p1",
+       "type": "arrow",
+       "from": "physical",
+       "to": "social",
+       "text": "supports"
+      },
+      {
+       "id": "p2",
+       "type": "arrow",
+       "from": "digital",
+       "to": "social",
+       "text": "connects"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "split",
+     "els": [
+      {
+       "id": "growth",
+       "type": "node",
+       "text": "Development",
+       "sub": "jobs and services",
+       "glyph": "spark",
+       "color": "sun"
+      },
+      {
+       "id": "cost",
+       "type": "label",
+       "text": "Costs and trade-offs",
+       "color": "amber"
+      },
+      {
+       "id": "land",
+       "type": "node",
+       "text": "Land and forests",
+       "sub": "may be affected",
+       "glyph": "tree",
+       "color": "amber"
+      },
+      {
+       "id": "care",
+       "type": "node",
+       "text": "Maintenance",
+       "sub": "regular repairs",
+       "glyph": "gear",
+       "color": "volt"
+      },
+      {
+       "id": "green",
+       "type": "node",
+       "text": "Sustainable",
+       "sub": "solar, metro",
+       "glyph": "sun",
+       "color": "mint"
+      },
+      {
+       "id": "g2",
+       "type": "arrow",
+       "from": "growth",
+       "to": "care",
+       "text": "needs"
+      }
+     ]
+    },
+    {
+     "id": "s5",
+     "layout": "row",
+     "els": [
+      {
+       "id": "checktitle",
+       "type": "title",
+       "text": "Your turn"
+      },
+      {
+       "id": "optroad",
+       "type": "node",
+       "text": "Road",
+       "glyph": "road",
+       "color": "volt"
+      },
+      {
+       "id": "optpower",
+       "type": "node",
+       "text": "Power line",
+       "glyph": "lightning",
+       "color": "sun"
+      },
+      {
+       "id": "optschool",
+       "type": "node",
+       "text": "School",
+       "glyph": "school",
+       "color": "ion"
+      },
+      {
+       "id": "optport",
+       "type": "node",
+       "text": "Port",
+       "glyph": "boat",
+       "color": "sci"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Infrastructure is the basic set of facilities and systems a country needs to function.",
+    "L2": "It is an engine of development because it connects people, services, supplies and markets.",
+    "L3": "For example, an all-weather road lets farmers take produce to town and get better prices.",
+    "L4": "The same road helps children reach school and patients reach hospitals in time.",
+    "L5": "Infrastructure is physical, social and digital: roads and power, schools and hospitals, and mobile or internet networks.",
+    "L6": "But building it can take land and affect forests or rivers, so planning must be fair and careful.",
+    "L7": "Infrastructure also needs regular maintenance and should be sustainable, such as solar power or metro rail.",
+    "L8": "Now check the idea: which example is social infrastructure?"
+   },
+   "narration": {
+    "L1": {
+     "text": "Infrastructure is the basic set of facilities and systems a country needs to function.",
+     "dur": 4.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L2": {
+     "text": "It is an engine of development because it connects people, services, supplies and markets.",
+     "dur": 4.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L3": {
+     "text": "For example, an all-weather road lets farmers take produce to town and get better prices.",
+     "dur": 4.8,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L4": {
+     "text": "The same road helps children reach school and patients reach hospitals in time.",
+     "dur": 4.2,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L5": {
+     "text": "Infrastructure is physical, social and digital: roads and power, schools and hospitals, and mobile or internet networks.",
+     "dur": 5.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L6": {
+     "text": "But building it can take land and affect forests or rivers, so planning must be fair and careful.",
+     "dur": 4.8,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Infrastructure also needs regular maintenance and should be sustainable, such as solar power or metro rail.",
+     "dur": 4.8,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Now check the idea: which example is social infrastructure?",
+     "dur": 3.2,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "title"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "myth"
+      },
+      {
+       "at": 1,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "road"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "r1",
+        "market"
+       ]
+      },
+      {
+       "at": 1.2,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "r1",
+       "to": 1
+      },
+      {
+       "at": 1.8,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "r2",
+        "income"
+       ]
+      },
+      {
+       "at": 2.5,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "r2",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "r3",
+        "school",
+        "r4",
+        "hospital"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 0.7,
+       "target": [
+        "r3",
+        "r4"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "physical",
+        "social",
+        "digital"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.6,
+       "target": [
+        "p1",
+        "p2"
+       ]
+      },
+      {
+       "at": 1.2,
+       "do": "flow",
+       "dur": 0.6,
+       "target": [
+        "p1",
+        "p2"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "cost",
+        "land"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 1,
+       "target": "land"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "care",
+        "green"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.7,
+       "target": "growth"
+      },
+      {
+       "at": 1.3,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "g2",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s5",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "checktitle"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "optroad",
+        "optpower",
+        "optschool",
+        "optport"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive"
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which example is social infrastructure?",
+    "options": [
+     "optroad",
+     "optpower",
+     "optschool",
+     "optport"
+    ],
+    "answer": "optschool",
+    "src": "c7-sst-ch19-t01-i02"
+   }
+  },
+  "repairs": [
+   "arrow:dangling"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 40
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch19-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "infra",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "Infrastructure",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "connect1",
+       "op": "arrow",
+       "startMs": 500,
+       "endMs": 1100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        280,
+        250
+       ],
+       "to": [
+        320,
+        250
+       ]
+      },
+      {
+       "id": "fac",
+       "op": "rect",
+       "startMs": 1100,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        190
+       ],
+       "w": 180,
+       "h": 120,
+       "fill": "soft"
+      },
+      {
+       "id": "sys",
+       "op": "rect",
+       "startMs": 1900,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        320,
+        190
+       ],
+       "w": 180,
+       "h": 120,
+       "fill": "soft"
+      },
+      {
+       "id": "connect2",
+       "op": "arrow",
+       "startMs": 2700,
+       "endMs": 3300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        500,
+        250
+       ],
+       "to": [
+        580,
+        250
+       ]
+      },
+      {
+       "id": "faclab",
+       "op": "label",
+       "startMs": 2800,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        190,
+        350
+       ],
+       "text": "facilities",
+       "to": [
+        190,
+        310
+       ]
+      },
+      {
+       "id": "syslab",
+       "op": "label",
+       "startMs": 3500,
+       "endMs": 4200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        410,
+        350
+       ],
+       "text": "systems",
+       "to": [
+        410,
+        310
+       ]
+      },
+      {
+       "id": "country",
+       "op": "circle",
+       "startMs": 4300,
+       "endMs": 5000,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        650,
+        250
+       ],
+       "r": 70,
+       "fill": "soft"
+      },
+      {
+       "id": "countrylab",
+       "op": "label",
+       "startMs": 5000,
+       "endMs": 5500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        650,
+        350
+       ],
+       "text": "country",
+       "to": [
+        650,
+        320
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch19-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "engine",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "engine of development",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "a1",
+       "op": "arrow",
+       "startMs": 500,
+       "endMs": 1100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        175,
+        230
+       ],
+       "to": [
+        250,
+        230
+       ]
+      },
+      {
+       "id": "a2",
+       "op": "arrow",
+       "startMs": 1100,
+       "endMs": 1700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        380,
+        230
+       ],
+       "to": [
+        430,
+        230
+       ]
+      },
+      {
+       "id": "people",
+       "op": "circle",
+       "startMs": 1200,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        130,
+        230
+       ],
+       "r": 42
+      },
+      {
+       "id": "services",
+       "op": "rect",
+       "startMs": 1700,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        250,
+        190
+       ],
+       "w": 130,
+       "h": 80
+      },
+      {
+       "id": "a3",
+       "op": "arrow",
+       "startMs": 1700,
+       "endMs": 2300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        560,
+        230
+       ],
+       "to": [
+        620,
+        230
+       ]
+      },
+      {
+       "id": "supplies",
+       "op": "rect",
+       "startMs": 2200,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        430,
+        190
+       ],
+       "w": 130,
+       "h": 80
+      },
+      {
+       "id": "markets",
+       "op": "circle",
+       "startMs": 2700,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        670,
+        230
+       ],
+       "r": 48
+      },
+      {
+       "id": "pl",
+       "op": "label",
+       "startMs": 3200,
+       "endMs": 3650,
+       "at": [
+        130,
+        310
+       ],
+       "text": "people",
+       "to": [
+        130,
+        270
+       ]
+      },
+      {
+       "id": "sl",
+       "op": "label",
+       "startMs": 3650,
+       "endMs": 4100,
+       "at": [
+        315,
+        310
+       ],
+       "text": "services",
+       "to": [
+        315,
+        270
+       ]
+      },
+      {
+       "id": "spl",
+       "op": "label",
+       "startMs": 4100,
+       "endMs": 4550,
+       "at": [
+        495,
+        310
+       ],
+       "text": "supplies",
+       "to": [
+        495,
+        270
+       ]
+      },
+      {
+       "id": "ml",
+       "op": "label",
+       "startMs": 4550,
+       "endMs": 5000,
+       "at": [
+        670,
+        310
+       ],
+       "text": "markets",
+       "to": [
+        670,
+        278
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch19-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "road",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 3,
+       "from": [
+        100,
+        330
+       ],
+       "to": [
+        680,
+        330
+       ]
+      },
+      {
+       "id": "road2",
+       "op": "line",
+       "startMs": 500,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        100,
+        360
+       ],
+       "to": [
+        680,
+        360
+       ]
+      },
+      {
+       "id": "farm",
+       "op": "rect",
+       "startMs": 1200,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        70,
+        150
+       ],
+       "w": 150,
+       "h": 100
+      },
+      {
+       "id": "town",
+       "op": "rect",
+       "startMs": 1900,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        610,
+        140
+       ],
+       "w": 120,
+       "h": 110
+      },
+      {
+       "id": "farmers",
+       "op": "label",
+       "startMs": 2600,
+       "endMs": 3100,
+       "at": [
+        145,
+        290
+       ],
+       "text": "farmers",
+       "to": [
+        145,
+        250
+       ]
+      },
+      {
+       "id": "produce",
+       "op": "label",
+       "startMs": 3100,
+       "endMs": 3650,
+       "at": [
+        125,
+        410
+       ],
+       "text": "produce",
+       "to": [
+        145,
+        360
+       ]
+      },
+      {
+       "id": "townlab",
+       "op": "label",
+       "startMs": 3650,
+       "endMs": 4150,
+       "at": [
+        670,
+        290
+       ],
+       "text": "town",
+       "to": [
+        670,
+        250
+       ]
+      },
+      {
+       "id": "travel",
+       "op": "arrow",
+       "startMs": 4150,
+       "endMs": 5100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        220,
+        330
+       ],
+       "to": [
+        610,
+        330
+       ]
+      },
+      {
+       "id": "price",
+       "op": "numwork",
+       "startMs": 5200,
+       "endMs": 6000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        285,
+        105
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "better",
+         "prices"
+        ]
+       ]
+      },
+      {
+       "id": "allweather",
+       "op": "label",
+       "startMs": 6000,
+       "endMs": 6750,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        405
+       ],
+       "text": "all-weather road",
+       "to": [
+        400,
+        360
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch19-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "school",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        130
+       ],
+       "w": 180,
+       "h": 110
+      },
+      {
+       "id": "hospital",
+       "op": "rect",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        520,
+        130
+       ],
+       "w": 180,
+       "h": 110
+      },
+      {
+       "id": "schoollab",
+       "op": "label",
+       "startMs": 1400,
+       "endMs": 1900,
+       "at": [
+        190,
+        280
+       ],
+       "text": "school",
+       "to": [
+        190,
+        240
+       ]
+      },
+      {
+       "id": "hospitallab",
+       "op": "label",
+       "startMs": 1900,
+       "endMs": 2450,
+       "at": [
+        610,
+        280
+       ],
+       "text": "hospitals",
+       "to": [
+        610,
+        240
+       ]
+      },
+      {
+       "id": "children",
+       "op": "label",
+       "startMs": 2450,
+       "endMs": 3000,
+       "at": [
+        105,
+        370
+       ],
+       "text": "children",
+       "to": [
+        190,
+        240
+       ]
+      },
+      {
+       "id": "patients",
+       "op": "label",
+       "startMs": 3000,
+       "endMs": 3500,
+       "at": [
+        520,
+        370
+       ],
+       "text": "patients",
+       "to": [
+        610,
+        240
+       ]
+      },
+      {
+       "id": "schoolpath",
+       "op": "arrow",
+       "startMs": 3500,
+       "endMs": 4300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        280,
+        185
+       ],
+       "to": [
+        520,
+        185
+       ]
+      },
+      {
+       "id": "timely",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5100,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        430
+       ],
+       "text": "in time",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch19-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "physical",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        70,
+        110
+       ],
+       "w": 190,
+       "h": 90
+      },
+      {
+       "id": "social",
+       "op": "rect",
+       "startMs": 600,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        305,
+        110
+       ],
+       "w": 190,
+       "h": 90
+      },
+      {
+       "id": "digital",
+       "op": "rect",
+       "startMs": 1200,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        540,
+        110
+       ],
+       "w": 190,
+       "h": 90
+      },
+      {
+       "id": "pl",
+       "op": "label",
+       "startMs": 1800,
+       "endMs": 2250,
+       "at": [
+        165,
+        240
+       ],
+       "text": "physical",
+       "to": [
+        165,
+        200
+       ]
+      },
+      {
+       "id": "sl",
+       "op": "label",
+       "startMs": 2250,
+       "endMs": 2700,
+       "at": [
+        400,
+        240
+       ],
+       "text": "social",
+       "to": [
+        400,
+        200
+       ]
+      },
+      {
+       "id": "dl",
+       "op": "label",
+       "startMs": 2700,
+       "endMs": 3150,
+       "at": [
+        635,
+        240
+       ],
+       "text": "digital",
+       "to": [
+        635,
+        200
+       ]
+      },
+      {
+       "id": "roads",
+       "op": "label",
+       "startMs": 3150,
+       "endMs": 3750,
+       "at": [
+        100,
+        320
+       ],
+       "text": "roads and power",
+       "to": [
+        165,
+        200
+       ]
+      },
+      {
+       "id": "schools",
+       "op": "label",
+       "startMs": 3750,
+       "endMs": 4450,
+       "at": [
+        315,
+        320
+       ],
+       "text": "schools and hospitals",
+       "to": [
+        400,
+        200
+       ]
+      },
+      {
+       "id": "a1",
+       "op": "arrow",
+       "startMs": 5200,
+       "endMs": 5700,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        165,
+        200
+       ],
+       "to": [
+        165,
+        280
+       ]
+      },
+      {
+       "id": "a2",
+       "op": "arrow",
+       "startMs": 5700,
+       "endMs": 6200,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        400,
+        200
+       ],
+       "to": [
+        400,
+        280
+       ]
+      },
+      {
+       "id": "a3",
+       "op": "arrow",
+       "startMs": 6200,
+       "endMs": 6700,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        635,
+        200
+       ],
+       "to": [
+        635,
+        280
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch19-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "build",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        65
+       ],
+       "text": "building infrastructure",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "land",
+       "op": "polygon",
+       "startMs": 1100,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         60,
+         350
+        ],
+        [
+         250,
+         300
+        ],
+        [
+         430,
+         350
+        ],
+        [
+         740,
+         300
+        ],
+        [
+         740,
+         440
+        ],
+        [
+         60,
+         440
+        ]
+       ],
+       "fill": "soft"
+      },
+      {
+       "id": "forest",
+       "op": "polygon",
+       "startMs": 1900,
+       "endMs": 2500,
+       "ink": "good",
+       "weight": 2,
+       "points": [
+        [
+         100,
+         250
+        ],
+        [
+         140,
+         180
+        ],
+        [
+         180,
+         250
+        ]
+       ],
+       "fill": "soft"
+      },
+      {
+       "id": "river",
+       "op": "line",
+       "startMs": 2500,
+       "endMs": 3300,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        300,
+        180
+       ],
+       "to": [
+        500,
+        420
+       ]
+      },
+      {
+       "id": "landlab",
+       "op": "label",
+       "startMs": 3300,
+       "endMs": 3800,
+       "at": [
+        120,
+        470
+       ],
+       "text": "land",
+       "to": [
+        160,
+        380
+       ]
+      },
+      {
+       "id": "forestlab",
+       "op": "label",
+       "startMs": 3800,
+       "endMs": 4300,
+       "at": [
+        95,
+        145
+       ],
+       "text": "forests",
+       "to": [
+        140,
+        220
+       ]
+      },
+      {
+       "id": "riverlab",
+       "op": "label",
+       "startMs": 4300,
+       "endMs": 4800,
+       "at": [
+        500,
+        160
+       ],
+       "text": "rivers",
+       "to": [
+        400,
+        290
+       ]
+      },
+      {
+       "id": "affect",
+       "op": "arrow",
+       "startMs": 4800,
+       "endMs": 5500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        70
+       ],
+       "to": [
+        190,
+        300
+       ]
+      },
+      {
+       "id": "fair",
+       "op": "text",
+       "startMs": 5700,
+       "endMs": 6500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        455
+       ],
+       "text": "fair and careful",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "check",
+       "op": "highlight",
+       "startMs": 6700,
+       "endMs": 7600,
+       "ink": "accent",
+       "weight": 2,
+       "target": "land",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch19-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "maint",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        60
+       ],
+       "text": "regular maintenance",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "road",
+       "op": "line",
+       "startMs": 1100,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        80,
+        190
+       ],
+       "to": [
+        330,
+        190
+       ]
+      },
+      {
+       "id": "wrench",
+       "op": "line",
+       "startMs": 1700,
+       "endMs": 2200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        210,
+        140
+       ],
+       "to": [
+        270,
+        240
+       ]
+      },
+      {
+       "id": "solar",
+       "op": "circle",
+       "startMs": 2200,
+       "endMs": 2900,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        510,
+        185
+       ],
+       "r": 65,
+       "fill": "accent"
+      },
+      {
+       "id": "sunrays",
+       "op": "stroke",
+       "startMs": 2900,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 1,
+       "points": [
+        [
+         510,
+         100
+        ],
+        [
+         510,
+         75
+        ],
+        [
+         510,
+         100
+        ],
+        [
+         545,
+         85
+        ],
+        [
+         525,
+         110
+        ],
+        [
+         560,
+         120
+        ],
+        [
+         530,
+         125
+        ],
+        [
+         550,
+         155
+        ],
+        [
+         525,
+         140
+        ]
+       ]
+      },
+      {
+       "id": "metro",
+       "op": "rect",
+       "startMs": 3500,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        610,
+        160
+       ],
+       "w": 120,
+       "h": 60
+      },
+      {
+       "id": "solarlab",
+       "op": "label",
+       "startMs": 4100,
+       "endMs": 4700,
+       "at": [
+        510,
+        290
+       ],
+       "text": "solar power",
+       "to": [
+        510,
+        250
+       ]
+      },
+      {
+       "id": "metrolab",
+       "op": "label",
+       "startMs": 4700,
+       "endMs": 5300,
+       "at": [
+        670,
+        260
+       ],
+       "text": "metro rail",
+       "to": [
+        670,
+        220
+       ]
+      },
+      {
+       "id": "sustain",
+       "op": "text",
+       "startMs": 5500,
+       "endMs": 6500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        390
+       ],
+       "text": "sustainable",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "underline",
+       "op": "highlight",
+       "startMs": 6500,
+       "endMs": 7200,
+       "ink": "good",
+       "weight": 2,
+       "target": "sustain",
+       "style": "underline"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch19-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4430,
+     "ops": [
+      {
+       "id": "checkidea",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "which example?",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "physical",
+       "op": "rect",
+       "startMs": 1000,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        80,
+        160
+       ],
+       "w": 190,
+       "h": 90
+      },
+      {
+       "id": "social",
+       "op": "rect",
+       "startMs": 1500,
+       "endMs": 2000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        305,
+        160
+       ],
+       "w": 190,
+       "h": 90
+      },
+      {
+       "id": "digital",
+       "op": "rect",
+       "startMs": 2000,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        530,
+        160
+       ],
+       "w": 190,
+       "h": 90
+      },
+      {
+       "id": "pl",
+       "op": "label",
+       "startMs": 2500,
+       "endMs": 2900,
+       "at": [
+        175,
+        290
+       ],
+       "text": "physical",
+       "to": [
+        175,
+        250
+       ]
+      },
+      {
+       "id": "sl",
+       "op": "label",
+       "startMs": 2900,
+       "endMs": 3300,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        290
+       ],
+       "text": "social",
+       "to": [
+        400,
+        250
+       ]
+      },
+      {
+       "id": "dl",
+       "op": "label",
+       "startMs": 3300,
+       "endMs": 3700,
+       "at": [
+        625,
+        290
+       ],
+       "text": "digital",
+       "to": [
+        625,
+        250
+       ]
+      },
+      {
+       "id": "question",
+       "op": "arrow",
+       "startMs": 3700,
+       "endMs": 4300,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        400,
+        390
+       ],
+       "to": [
+        400,
+        300
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1",
+   "key": "₹488 a month",
+   "prompt": "save each month for regular maintenance"
+  },
+  {
+   "itemId": "r2",
+   "key": "410 families: school repair, road repairs, solar power",
+   "prompt": "use the budget to help most families"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

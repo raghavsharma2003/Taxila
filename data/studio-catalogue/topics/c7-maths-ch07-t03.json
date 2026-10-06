@@ -1,0 +1,1533 @@
+{
+ "topicId": "c7-maths-ch07-t03",
+ "title": "Types of triangles and the angle sum",
+ "chapter": "A Tale of Three Intersecting Lines",
+ "subject": "maths",
+ "class": 7,
+ "topicType": "T3",
+ "plan": {
+  "game": "geo-forge@1",
+  "hint": "triangle challenges by type (scalene, isosceles, equilateral, right, obtuse)"
+ },
+ "game": {
+  "archetype": "geo-forge@1",
+  "spec": {
+   "archetype": "geo-forge@1",
+   "skills": [
+    "c7-maths-ch07-t03"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "built": "built",
+    "check": "CHECK",
+    "undo": "UNDO",
+    "coach": "Tap pins to place corners; tap the first pin to close",
+    "runDone": "Blueprints done",
+    "perimeter": "perimeter",
+    "area": "area",
+    "units": "units",
+    "sq": "sq units",
+    "polygon": "sides",
+    "sticks": "Pick three sticks",
+    "rigid": "Brace it: it must not wobble",
+    "parallel": "Through the dot, parallel to the line",
+    "perpendicular": "Through the dot, at right angles",
+    "equidistant": "Place a pin the same distance from each dot",
+    "angle": "Make an angle of",
+    "right": "right-angled triangle",
+    "isosceles": "isosceles triangle",
+    "scalene": "scalene triangle",
+    "obtuse": "obtuse-angled triangle",
+    "acute": "acute-angled triangle",
+    "square": "square",
+    "rectangle": "rectangle",
+    "parallelogram": "parallelogram",
+    "rhombus": "rhombus",
+    "trapezium": "trapezium",
+    "kite": "kite",
+    "any": "shape",
+    "triangle": "triangle",
+    "make": "Make a",
+    "withArea": "with area",
+    "withPerim": "with perimeter",
+    "noTriangle": "Pick three that CANNOT close",
+    "wobbles": "WOBBLES",
+    "holds": "HOLDS",
+    "closes": "CLOSES",
+    "gap": "GAP",
+    "time": "time"
+   },
+   "title": "Triangle Workshop",
+   "rounds": [
+    {
+     "title": "Side clues",
+     "sub": "build triangles by their sides",
+     "time": 60,
+     "challenges": [
+      {
+       "kind": "triangle",
+       "type": "scalene"
+      },
+      {
+       "kind": "triangle",
+       "type": "isosceles"
+      }
+     ],
+     "targets": "c7-maths-ch07-t03-m-one-type"
+    },
+    {
+     "title": "Angle clues",
+     "sub": "spot the angle type",
+     "time": 60,
+     "challenges": [
+      {
+       "kind": "triangle",
+       "type": "right"
+      },
+      {
+       "kind": "triangle",
+       "type": "obtuse"
+      },
+      {
+       "kind": "triangle",
+       "type": "acute"
+      }
+     ],
+     "targets": "c7-maths-ch07-t03-m-two-obtuse"
+    },
+    {
+     "title": "Angle builder",
+     "sub": "make each angle carefully",
+     "time": 45,
+     "challenges": [
+      {
+       "kind": "angle",
+       "deg": 70,
+       "tol": 3
+      },
+      {
+       "kind": "angle",
+       "deg": 110,
+       "tol": 3
+      }
+     ]
+    }
+   ]
+  },
+  "repairs": [
+   "challenge:infeasible"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-maths-ch07-t03"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Every triangle makes 180°",
+   "accent": "amber",
+   "targets": "c7-maths-ch07-t03-m-two-obtuse",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "row",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Triangle angle sum"
+      },
+      {
+       "id": "m1",
+       "type": "myth",
+       "text": "A triangle can have two obtuse angles"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "split",
+     "els": [
+      {
+       "id": "tri",
+       "type": "node",
+       "text": "Triangle",
+       "sub": "three angles",
+       "color": "amber"
+      },
+      {
+       "id": "a1",
+       "type": "label",
+       "text": "P = 48°"
+      },
+      {
+       "id": "a2",
+       "type": "label",
+       "text": "Q = 96°"
+      },
+      {
+       "id": "a3",
+       "type": "label",
+       "text": "R = 36°"
+      },
+      {
+       "id": "sum",
+       "type": "label",
+       "text": "48° + 96° + 36° = 180°"
+      },
+      {
+       "id": "line",
+       "type": "axis",
+       "min": 0,
+       "max": 180,
+       "step": 30,
+       "unit": "°",
+       "scale": "linear",
+       "y": 420
+      },
+      {
+       "id": "straight",
+       "type": "mark",
+       "axis": "line",
+       "value": 180,
+       "text": "180°",
+       "color": "amber"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "op1",
+       "type": "label",
+       "text": "50° + 60°"
+      },
+      {
+       "id": "op2",
+       "type": "label",
+       "text": "third angle"
+      },
+      {
+       "id": "op3",
+       "type": "myth",
+       "text": "100° + 100° leaves no positive angle"
+      },
+      {
+       "id": "ans",
+       "type": "label",
+       "text": "70°"
+      },
+      {
+       "id": "check",
+       "type": "node",
+       "text": "Check",
+       "glyph": "question",
+       "color": "mint"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Every triangle has three angles, and their total is always 180 degrees.",
+    "L2": "The triangle may be large or small, but its angle sum does not change.",
+    "L3": "A parallel line through one vertex makes alternate angles equal to the other two angles.",
+    "L4": "Together, the three angles lie on a straight line, which is 180 degrees.",
+    "L5": "In the worked example, angle P is 48 degrees and angle Q is twice P, so Q is 96 degrees.",
+    "L6": "The first two angles total 144 degrees, so angle R is 180 minus 144: 36 degrees.",
+    "L7": "Here is a myth: a triangle can have two obtuse angles. Two 100-degree angles already total 200 degrees, so no third angle can fit.",
+    "L8": "Try this: two angles are 50 degrees and 60 degrees. Find the third angle."
+   },
+   "narration": {
+    "L1": {
+     "text": "Every triangle has three angles, and their total is always 180 degrees.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "The triangle may be large or small, but its angle sum does not change.",
+     "dur": 2.8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "A parallel line through one vertex makes alternate angles equal to the other two angles.",
+     "dur": 3.2,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "Together, the three angles lie on a straight line, which is 180 degrees.",
+     "dur": 2.6,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "In the worked example, angle P is 48 degrees and angle Q is twice P, so Q is 96 degrees.",
+     "dur": 3.8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "The first two angles total 144 degrees, so angle R is 180 minus 144: 36 degrees.",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Here is a myth: a triangle can have two obtuse angles. Two 100-degree angles already total 200 degrees, so no third angle can fit.",
+     "dur": 4.2,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Try this: two angles are 50 degrees and 60 degrees. Find the third angle.",
+     "dur": 2.8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.3,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.3,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "m1"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "tri"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": "line"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "straight"
+      },
+      {
+       "at": 0.4,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "straight"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "a1",
+        "a2"
+       ]
+      },
+      {
+       "at": 0.7,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "a2"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "a3",
+        "sum"
+       ]
+      },
+      {
+       "at": 0.6,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "a3"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.3,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "op3"
+      },
+      {
+       "at": 0.6,
+       "do": "bust",
+       "dur": 1,
+       "target": "op3"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "op1",
+        "op2"
+       ]
+      },
+      {
+       "at": 0.6,
+       "do": "show",
+       "dur": 0.8,
+       "target": "ans"
+      },
+      {
+       "at": "end",
+       "do": "interactive",
+       "dur": 0.5
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which angle completes the triangle?",
+    "options": [
+     "ans",
+     "op1",
+     "op2"
+    ],
+    "answer": "ans",
+    "src": "c7-maths-ch07-t03-i01"
+   }
+  },
+  "repairs": [
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 29
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 3,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch07-t03-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "tri1",
+       "op": "polygon",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         180,
+         360
+        ],
+        [
+         400,
+         100
+        ],
+        [
+         620,
+         360
+        ]
+       ]
+      },
+      {
+       "id": "sum",
+       "op": "numwork",
+       "startMs": 2700,
+       "endMs": 4300,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        250,
+        410
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "angle",
+         "sum",
+         "=",
+         "180"
+        ]
+       ]
+      },
+      {
+       "id": "h1",
+       "op": "highlight",
+       "startMs": 4400,
+       "endMs": 5200,
+       "ink": "good",
+       "weight": 2,
+       "target": "sum",
+       "style": "underline"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch07-t03-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "small",
+       "op": "polygon",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         120,
+         350
+        ],
+        [
+         240,
+         210
+        ],
+        [
+         360,
+         350
+        ]
+       ]
+      },
+      {
+       "id": "large",
+       "op": "polygon",
+       "startMs": 900,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         440,
+         390
+        ],
+        [
+         600,
+         80
+        ],
+        [
+         760,
+         390
+        ]
+       ]
+      },
+      {
+       "id": "s1",
+       "op": "numwork",
+       "startMs": 2200,
+       "endMs": 3600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        140,
+        410
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "angle",
+         "sum",
+         "=",
+         "180"
+        ]
+       ]
+      },
+      {
+       "id": "s2",
+       "op": "numwork",
+       "startMs": 3700,
+       "endMs": 5100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        480,
+        410
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "angle",
+         "sum",
+         "=",
+         "180"
+        ]
+       ]
+      },
+      {
+       "id": "h1",
+       "op": "highlight",
+       "startMs": 5200,
+       "endMs": 5800,
+       "ink": "good",
+       "weight": 1,
+       "target": "s1",
+       "style": "circle"
+      },
+      {
+       "id": "h2",
+       "op": "highlight",
+       "startMs": 5200,
+       "endMs": 5800,
+       "ink": "good",
+       "weight": 1,
+       "target": "s2",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch07-t03-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "tri",
+       "op": "polygon",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         180,
+         370
+        ],
+        [
+         400,
+         130
+        ],
+        [
+         620,
+         370
+        ]
+       ]
+      },
+      {
+       "id": "par",
+       "op": "line",
+       "startMs": 900,
+       "endMs": 1600,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        180,
+        130
+       ],
+       "to": [
+        620,
+        130
+       ]
+      },
+      {
+       "id": "vline",
+       "op": "line",
+       "startMs": 1600,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 1,
+       "from": [
+        400,
+        130
+       ],
+       "to": [
+        400,
+        80
+       ]
+      },
+      {
+       "id": "ar1",
+       "op": "arrow",
+       "startMs": 2200,
+       "endMs": 3000,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        235,
+        310
+       ],
+       "to": [
+        300,
+        240
+       ]
+      },
+      {
+       "id": "ar2",
+       "op": "arrow",
+       "startMs": 3000,
+       "endMs": 3800,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        500,
+        240
+       ],
+       "to": [
+        565,
+        310
+       ]
+      },
+      {
+       "id": "lab1",
+       "op": "label",
+       "startMs": 3900,
+       "endMs": 4700,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        245,
+        205
+       ],
+       "text": "alternate",
+       "to": [
+        300,
+        240
+       ]
+      },
+      {
+       "id": "lab2",
+       "op": "label",
+       "startMs": 4800,
+       "endMs": 5600,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        505,
+        205
+       ],
+       "text": "alternate",
+       "to": [
+        500,
+        240
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch07-t03-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "straight",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        150,
+        180
+       ],
+       "to": [
+        650,
+        180
+       ]
+      },
+      {
+       "id": "mark1",
+       "op": "line",
+       "startMs": 1000,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 1,
+       "from": [
+        250,
+        180
+       ],
+       "to": [
+        280,
+        150
+       ]
+      },
+      {
+       "id": "mark2",
+       "op": "line",
+       "startMs": 1400,
+       "endMs": 1800,
+       "ink": "accent",
+       "weight": 1,
+       "from": [
+        400,
+        180
+       ],
+       "to": [
+        430,
+        150
+       ]
+      },
+      {
+       "id": "mark3",
+       "op": "line",
+       "startMs": 1800,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 1,
+       "from": [
+        550,
+        180
+       ],
+       "to": [
+        580,
+        150
+       ]
+      },
+      {
+       "id": "eq",
+       "op": "numwork",
+       "startMs": 2500,
+       "endMs": 4000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        270,
+        280
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "angle",
+         "sum",
+         "=",
+         "180"
+        ]
+       ]
+      },
+      {
+       "id": "h",
+       "op": "highlight",
+       "startMs": 4300,
+       "endMs": 5200,
+       "ink": "good",
+       "weight": 2,
+       "target": "straight",
+       "style": "underline"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch07-t03-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9111,
+     "ops": [
+      {
+       "id": "tri",
+       "op": "polygon",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         160,
+         380
+        ],
+        [
+         400,
+         100
+        ],
+        [
+         650,
+         380
+        ]
+       ]
+      },
+      {
+       "id": "p",
+       "op": "label",
+       "startMs": 1000,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        190,
+        350
+       ],
+       "text": "P",
+       "to": [
+        190,
+        350
+       ]
+      },
+      {
+       "id": "q",
+       "op": "label",
+       "startMs": 1400,
+       "endMs": 1800,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        620,
+        350
+       ],
+       "text": "Q",
+       "to": [
+        620,
+        350
+       ]
+      },
+      {
+       "id": "pval",
+       "op": "text",
+       "startMs": 2000,
+       "endMs": 2500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        220,
+        315
+       ],
+       "text": "48",
+       "size": "m"
+      },
+      {
+       "id": "twice",
+       "op": "text",
+       "startMs": 2600,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        500,
+        250
+       ],
+       "text": "twice P",
+       "size": "m"
+      },
+      {
+       "id": "qval",
+       "op": "numwork",
+       "startMs": 3600,
+       "endMs": 5800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        330,
+        420
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "Q",
+         "=",
+         "2",
+         "×",
+         "48",
+         "=",
+         "96"
+        ]
+       ]
+      },
+      {
+       "id": "h",
+       "op": "highlight",
+       "startMs": 6200,
+       "endMs": 7200,
+       "ink": "good",
+       "weight": 2,
+       "target": "qval",
+       "style": "underline"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch07-t03-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "sum",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        150,
+        120
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "48",
+         "+",
+         "96",
+         "=",
+         "144"
+        ]
+       ]
+      },
+      {
+       "id": "sub",
+       "op": "numwork",
+       "startMs": 2000,
+       "endMs": 3900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        220,
+        250
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "180",
+         "−",
+         "144",
+         "=",
+         "36"
+        ]
+       ]
+      },
+      {
+       "id": "r",
+       "op": "label",
+       "startMs": 4200,
+       "endMs": 4700,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        390
+       ],
+       "text": "R",
+       "to": [
+        400,
+        390
+       ]
+      },
+      {
+       "id": "rval",
+       "op": "text",
+       "startMs": 4800,
+       "endMs": 5300,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        430,
+        390
+       ],
+       "text": "36",
+       "size": "m"
+      },
+      {
+       "id": "h",
+       "op": "highlight",
+       "startMs": 5600,
+       "endMs": 6500,
+       "ink": "good",
+       "weight": 2,
+       "target": "sub",
+       "style": "underline"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch07-t03-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 10813,
+     "ops": [
+      {
+       "id": "myth",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        60
+       ],
+       "text": "myth",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "tri",
+       "op": "polygon",
+       "startMs": 900,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         180,
+         380
+        ],
+        [
+         400,
+         120
+        ],
+        [
+         620,
+         380
+        ]
+       ]
+      },
+      {
+       "id": "o1",
+       "op": "text",
+       "startMs": 2000,
+       "endMs": 2500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        235,
+        330
+       ],
+       "text": "100",
+       "size": "m"
+      },
+      {
+       "id": "o2",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3000,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        565,
+        330
+       ],
+       "text": "100",
+       "size": "m"
+      },
+      {
+       "id": "sum",
+       "op": "numwork",
+       "startMs": 3400,
+       "endMs": 5200,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        240,
+        420
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "100",
+         "+",
+         "100",
+         "=",
+         "200"
+        ]
+       ]
+      },
+      {
+       "id": "no",
+       "op": "text",
+       "startMs": 5600,
+       "endMs": 6200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        430,
+        220
+       ],
+       "text": "no",
+       "size": "l"
+      },
+      {
+       "id": "h",
+       "op": "highlight",
+       "startMs": 6500,
+       "endMs": 7600,
+       "ink": "good",
+       "weight": 2,
+       "target": "sum",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch07-t03-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "tri",
+       "op": "polygon",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         180,
+         370
+        ],
+        [
+         400,
+         120
+        ],
+        [
+         620,
+         370
+        ]
+       ]
+      },
+      {
+       "id": "a1",
+       "op": "text",
+       "startMs": 1100,
+       "endMs": 1600,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        225,
+        330
+       ],
+       "text": "50",
+       "size": "m"
+      },
+      {
+       "id": "a2",
+       "op": "text",
+       "startMs": 1600,
+       "endMs": 2100,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        555,
+        330
+       ],
+       "text": "60",
+       "size": "m"
+      },
+      {
+       "id": "q",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 2800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        385,
+        155
+       ],
+       "text": "?",
+       "size": "l"
+      },
+      {
+       "id": "work",
+       "op": "numwork",
+       "startMs": 3000,
+       "endMs": 5200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        220,
+        420
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "50",
+         "+",
+         "60",
+         "+",
+         "?",
+         "=",
+         "180"
+        ]
+       ]
+      },
+      {
+       "id": "answer",
+       "op": "numwork",
+       "startMs": 5400,
+       "endMs": 6200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        300,
+        300
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "?",
+         "=",
+         "70"
+        ]
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "{\"kind\":\"triangle\",\"type\":\"scalene\"}",
+   "prompt": "triangle"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "{\"kind\":\"triangle\",\"type\":\"isosceles\"}",
+   "prompt": "triangle"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "{\"kind\":\"triangle\",\"type\":\"right\"}",
+   "prompt": "triangle"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "{\"kind\":\"triangle\",\"type\":\"obtuse\"}",
+   "prompt": "triangle"
+  },
+  {
+   "itemId": "r2:2",
+   "key": "{\"kind\":\"triangle\",\"type\":\"acute\"}",
+   "prompt": "triangle"
+  },
+  {
+   "itemId": "r3:0",
+   "key": "{\"kind\":\"angle\",\"deg\":70,\"tol\":3}",
+   "prompt": "angle"
+  },
+  {
+   "itemId": "r3:1",
+   "key": "{\"kind\":\"angle\",\"deg\":110,\"tol\":3}",
+   "prompt": "angle"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ },
+ "firstCheck": {
+  "issues": [
+   {
+    "where": "explainer",
+    "what": "In the 'op3' label, the angles 100°, 100°, 10° sum to 210° (not 180°) and two obtuse angles cannot form a triangle. The kit item c7-maths-ch07-t03-i08 shows that two 100° angles are impossible. Presenting such a set as plausible (even as a wrong option) is factually incorrect and could confuse students.",
+    "severity": "high"
+   },
+   {
+    "where": "game",
+    "what": "Round 'Angle builder' asks students to make angles of 70° and 110° with a tolerance of 3°. The kit's worked example uses 48°, 96°, 36°, not these numbers. That is allowed, as it is a new exercise. However, the round title and sub suggest 'make each angle carefully' but the actual challenge is to form a triangle, not just draw an angle. No contradiction with kit facts, and numbers are physically reasonable. No issue.",
+    "severity": "low"
+   }
+  ],
+  "verdict": "fail",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

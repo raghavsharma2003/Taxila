@@ -251,6 +251,10 @@ function planCandidates(S, fam, C, eff) {
   if (rungAllowed(C, "live_codegen") && fam.planned && liveA.length && !have.some((c) => c.rung === "live_codegen") && spec < cap) { mkCandidate(S, fam, "live_codegen", liveA[0].archetype, liveA[0].kind, C); spec++; }
   for (const x of rs4) {
     if (spec >= cap) break;
+    // ship5 p4-content (cfg.personalNeeds): where this archetype already has a ready, checked, on-topic instant piece (the
+    // authored catalogue spec or the reviewed default), a personal spec is built only for the needs where personal
+    // matters (a contrast of THIS child's misconception, a re-representation); the rest is spend with no gain
+    if (C.personalNeeds && !C.personalNeeds.includes(fam.need) && S.candidates.some((c) => c.family === fam.key && c.archetype === x.archetype && c.rung === "engine_default" && c.state === "ready")) continue;
     if (rungAllowed(C, "generated_spec") && !hasRung("generated_spec", x.archetype)) { mkCandidate(S, fam, "generated_spec", x.archetype, x.kind, C); spec++; }
   }
 }
@@ -503,6 +507,10 @@ export function preferredRung(S, want, C) {
   if (want.steer) return "steer";
   const cat = C.catalog, topic = S.meta.current?.topicId;
   if (want.kinds?.[0] === "image") return "image";
+  // ship5 p4-content (cfg.personalNeeds): where a checked instant piece for the archetype is the intended artifact (a need
+  // where personal does not matter), that piece is the bar; the personal spec is the bar only for the personal needs
+  if (want.archetype && cat?.rs4?.[want.archetype] && C.personalNeeds && !C.personalNeeds.includes(want.need)
+    && S.candidates.some((c) => c.family === want.family && c.archetype === want.archetype && c.rung === "engine_default" && c.state === "ready")) return "engine_default";
   if (want.archetype && cat?.rs4?.[want.archetype]) return "generated_spec";
   // a live build is the bar only while the lesson's live cap has room (≤ 3 per lesson); beyond it the board is the best there is
   if (want.archetype && (cat?.w2Topics?.[topic] ?? []).includes(want.archetype) && (S.meta.liveBuilds < (C.liveBuildsPerLesson ?? 3) || S.candidates.some((c) => c.family === want.family && c.rung === "live_codegen"))) return "live_codegen";

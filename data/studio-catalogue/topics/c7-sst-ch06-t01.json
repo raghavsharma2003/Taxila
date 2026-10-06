@@ -1,0 +1,2164 @@
+{
+ "topicId": "c7-sst-ch06-t01",
+ "title": "The Age of Reorganisation",
+ "chapter": "The Age of Reorganisation",
+ "subject": "sst",
+ "class": 7,
+ "topicType": "T3",
+ "plan": {
+  "game": "era-drop@1",
+  "hint": "place / century / order modes with BCE and CE dates from the kit"
+ },
+ "game": {
+  "archetype": "era-drop@1",
+  "spec": {
+   "archetype": "era-drop@1",
+   "skills": [
+    "c7-sst-ch06-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "landed": "landed",
+    "precision": "precision",
+    "coach": "Drag the dock along the timeline",
+    "first": "Which came first?",
+    "runDone": "Timeline complete",
+    "offBy": "off by",
+    "years": "years",
+    "exact": "SPOT ON",
+    "century": "century",
+    "bce": "BCE",
+    "ce": "CE",
+    "earlier": "EARLIER"
+   },
+   "title": "An Age of Reorganisation",
+   "axis": {
+    "min": -200,
+    "max": 200
+   },
+   "rounds": [
+    {
+     "mode": "place",
+     "title": "Drop the events",
+     "sub": "BCE comes before CE on the timeline",
+     "ticks": 40,
+     "speed": 0.8,
+     "tol": 8,
+     "items": [
+      {
+       "text": "Mauryan empire ends",
+       "value": -185,
+       "src": "c7-sst-ch06-t01-i01"
+      },
+      {
+       "text": "Shunga coin",
+       "value": -150
+      },
+      {
+       "text": "Kushana coin",
+       "value": 100
+      }
+     ]
+    },
+    {
+     "mode": "century",
+     "title": "Choose the century",
+     "sub": "Place each clue in its time",
+     "ticks": 0,
+     "speed": 0.9,
+     "tol": 4,
+     "items": [
+      {
+       "text": "Shunga coin",
+       "value": -150
+      },
+      {
+       "text": "Kushana coin",
+       "value": 100
+      }
+     ]
+    },
+    {
+     "mode": "order",
+     "title": "Which came first?",
+     "sub": "Earlier dates come first",
+     "ticks": 0,
+     "speed": 1,
+     "tol": 4,
+     "items": [
+      {
+       "text": "Mauryan empire ends",
+       "value": -185,
+       "src": "c7-sst-ch06-t01-i01"
+      },
+      {
+       "text": "Shunga coin",
+       "value": -150
+      },
+      {
+       "text": "Kushana coin",
+       "value": 100
+      }
+     ],
+     "targets": "c7-sst-ch06-t01-m1"
+    }
+   ]
+  },
+  "repairs": [
+   "src",
+   "src",
+   "src",
+   "src",
+   "src",
+   "src"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-sst-ch06-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "An Age of Reorganisation",
+   "accent": "amber",
+   "targets": "c7-sst-ch06-t01-m1",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title1",
+       "type": "title",
+       "text": "An Age of Reorganisation"
+      },
+      {
+       "id": "myth1",
+       "type": "myth",
+       "text": "Nothing important happened after the Mauryas."
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "maurya",
+       "type": "node",
+       "text": "Mauryas end",
+       "sub": "around 185 BCE",
+       "glyph": "crown",
+       "color": "amber"
+      },
+      {
+       "id": "shunga",
+       "type": "node",
+       "text": "Shungas",
+       "sub": "Magadha",
+       "glyph": "temple",
+       "color": "sci"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "land",
+       "type": "node",
+       "text": "Land routes",
+       "glyph": "road",
+       "color": "amber"
+      },
+      {
+       "id": "sea",
+       "type": "node",
+       "text": "Sea routes",
+       "glyph": "ship",
+       "color": "sci"
+      },
+      {
+       "id": "port",
+       "type": "node",
+       "text": "Ports",
+       "sub": "Muziris, Arikamedu",
+       "color": "mint"
+      },
+      {
+       "id": "goods",
+       "type": "node",
+       "text": "Goods",
+       "glyph": "wheat",
+       "color": "sun"
+      },
+      {
+       "id": "tr1",
+       "type": "arrow",
+       "from": "land",
+       "to": "goods",
+       "text": "carried"
+      },
+      {
+       "id": "tr2",
+       "type": "arrow",
+       "from": "sea",
+       "to": "port",
+       "text": "connected"
+      },
+      {
+       "id": "tr3",
+       "type": "arrow",
+       "from": "port",
+       "to": "goods",
+       "text": "exported"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "coins",
+       "type": "node",
+       "text": "Coins",
+       "sub": "rulers and trade",
+       "glyph": "coin",
+       "color": "amber"
+      },
+      {
+       "id": "inscriptions",
+       "type": "node",
+       "text": "Inscriptions",
+       "glyph": "scroll",
+       "color": "sci"
+      },
+      {
+       "id": "roman",
+       "type": "node",
+       "text": "Roman coins",
+       "sub": "south India",
+       "glyph": "coin",
+       "color": "volt"
+      },
+      {
+       "id": "trade",
+       "type": "node",
+       "text": "Trade",
+       "sub": "not Roman rule",
+       "glyph": "ship",
+       "color": "mint"
+      },
+      {
+       "id": "e1",
+       "type": "arrow",
+       "from": "roman",
+       "to": "trade",
+       "text": "shows"
+      },
+      {
+       "id": "e2",
+       "type": "arrow",
+       "from": "coins",
+       "to": "inscriptions",
+       "text": "evidence"
+      }
+     ]
+    },
+    {
+     "id": "s5",
+     "layout": "row",
+     "els": [
+      {
+       "id": "gandhara",
+       "type": "node",
+       "text": "Gandhara",
+       "glyph": "person",
+       "color": "sci"
+      },
+      {
+       "id": "mathura",
+       "type": "node",
+       "text": "Mathura",
+       "glyph": "person",
+       "color": "amber"
+      },
+      {
+       "id": "sangam",
+       "type": "node",
+       "text": "Sangam poems",
+       "sub": "south Indian life",
+       "glyph": "book",
+       "color": "mint"
+      },
+      {
+       "id": "ideas",
+       "type": "node",
+       "text": "Ideas travel",
+       "sub": "Buddhism, Jainism",
+       "glyph": "compass",
+       "color": "volt"
+      },
+      {
+       "id": "c1",
+       "type": "arrow",
+       "from": "ideas",
+       "to": "gandhara",
+       "text": "routes"
+      },
+      {
+       "id": "c2",
+       "type": "arrow",
+       "from": "ideas",
+       "to": "sangam",
+       "text": "cultures"
+      }
+     ]
+    },
+    {
+     "id": "s6",
+     "layout": "split",
+     "els": [
+      {
+       "id": "checktitle",
+       "type": "title",
+       "text": "Your turn"
+      },
+      {
+       "id": "trade2",
+       "type": "node",
+       "text": "Trade",
+       "glyph": "ship",
+       "color": "mint"
+      },
+      {
+       "id": "rule2",
+       "type": "node",
+       "text": "Roman rule",
+       "sub": "not shown",
+       "glyph": "crown",
+       "color": "amber"
+      },
+      {
+       "id": "local2",
+       "type": "node",
+       "text": "Only local trade",
+       "sub": "not shown",
+       "glyph": "house",
+       "color": "sci"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "When the Mauryan empire ended around 185 BCE, power did not simply disappear.",
+    "L2": "It was reorganised among many regional kingdoms, including the Shungas in Magadha.",
+    "L3": "The Kushanas, Indo-Greeks and Shakas ruled in the north and north-west, while the Satavahanas ruled in the Deccan.",
+    "L4": "Trade grew by land and sea, linking India with Central Asia, China, the Roman world and Southeast Asia.",
+    "L5": "Ports such as Muziris, Arikamedu and Bharuch exported pepper, spices, cotton cloth and gems.",
+    "L6": "Coins and inscriptions give evidence about rulers and connections. Roman coins in south India show trade, not Roman rule.",
+    "L7": "Art and literature flourished through Gandhara, Mathura and Tamil Sangam traditions, while ideas travelled with merchants and monks.",
+    "L8": "That is why this period is an age of reorganisation, not an age when nothing important happened."
+   },
+   "narration": {
+    "L1": {
+     "text": "When the Mauryan empire ended around 185 BCE, power did not simply disappear.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L2": {
+     "text": "It was reorganised among many regional kingdoms, including the Shungas in Magadha.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L3": {
+     "text": "The Kushanas, Indo-Greeks and Shakas ruled in the north and north-west, while the Satavahanas ruled in the Deccan.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L4": {
+     "text": "Trade grew by land and sea, linking India with Central Asia, China, the Roman world and Southeast Asia.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L5": {
+     "text": "Ports such as Muziris, Arikamedu and Bharuch exported pepper, spices, cotton cloth and gems.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Coins and inscriptions give evidence about rulers and connections. Roman coins in south India show trade, not Roman rule.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Art and literature flourished through Gandhara, Mathura and Tamil Sangam traditions, while ideas travelled with merchants and monks.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L8": {
+     "text": "That is why this period is an age of reorganisation, not an age when nothing important happened.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title1"
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth1"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": "maurya"
+      },
+      {
+       "at": 2,
+       "do": "show",
+       "dur": 0.8,
+       "target": "shunga"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0.5,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "shunga"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "land",
+        "sea",
+        "port"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 0.8,
+       "target": [
+        "tr1",
+        "tr2"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "goods"
+      },
+      {
+       "at": 0.6,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "tr3",
+       "to": 1
+      },
+      {
+       "at": 1.5,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "port"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "coins",
+        "inscriptions",
+        "roman"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "e1",
+        "trade"
+       ]
+      },
+      {
+       "at": 1.8,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "e1",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s5",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "gandhara",
+        "mathura",
+        "sangam"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.7,
+       "target": "ideas"
+      },
+      {
+       "at": 1.7,
+       "do": "flow",
+       "dur": 0.8,
+       "target": [
+        "c1",
+        "c2"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s6",
+     "cues": [
+      {
+       "at": 0,
+       "do": "camera",
+       "dur": 2,
+       "zoom": 1.05
+      },
+      {
+       "at": "end",
+       "do": "interactive",
+       "dur": 0.5
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "What do Roman coins found in south India most directly show?",
+    "options": [
+     "trade2",
+     "rule2",
+     "local2"
+    ],
+    "answer": "trade2",
+    "src": "c7-sst-ch06-t01-i08"
+   }
+  },
+  "repairs": [
+   "string:regional.text",
+   "string:land.sub",
+   "string:sea.sub",
+   "glyph",
+   "string:goods.sub",
+   "string:inscriptions.sub",
+   "string:gandhara.sub",
+   "string:mathura.sub",
+   "string:trade2.sub",
+   "arrow:dangling",
+   "arrow:dangling",
+   "cue:target",
+   "cue:target",
+   "cue:target"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 61
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch06-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "empire",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        150
+       ],
+       "w": 250,
+       "h": 130
+      },
+      {
+       "id": "mauryan",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        215,
+        215
+       ],
+       "text": "Mauryan empire",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "end",
+       "op": "line",
+       "startMs": 1400,
+       "endMs": 1900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        110,
+        320
+       ],
+       "to": [
+        320,
+        320
+       ]
+      },
+      {
+       "id": "date",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        215,
+        365
+       ],
+       "text": "185 BCE",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "power",
+       "op": "circle",
+       "startMs": 2700,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        545,
+        215
+       ],
+       "r": 55
+      },
+      {
+       "id": "powerlabel",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 3800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        545,
+        220
+       ],
+       "text": "power",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "arrow1",
+       "op": "arrow",
+       "startMs": 3900,
+       "endMs": 4700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        350,
+        215
+       ],
+       "to": [
+        475,
+        215
+       ]
+      },
+      {
+       "id": "notgone",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5700,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        545,
+        320
+       ],
+       "text": "did not disappear",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch06-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "reorg",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "reorganised",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "central",
+       "op": "circle",
+       "startMs": 800,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        220
+       ],
+       "r": 42
+      },
+      {
+       "id": "regional",
+       "op": "text",
+       "startMs": 1100,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        290
+       ],
+       "text": "regional kingdoms",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "r1",
+       "op": "circle",
+       "startMs": 1700,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        180,
+        390
+       ],
+       "r": 35
+      },
+      {
+       "id": "r2",
+       "op": "circle",
+       "startMs": 1900,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        330,
+        410
+       ],
+       "r": 35
+      },
+      {
+       "id": "r3",
+       "op": "circle",
+       "startMs": 2100,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        500,
+        410
+       ],
+       "r": 35
+      },
+      {
+       "id": "r4",
+       "op": "circle",
+       "startMs": 2300,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        650,
+        380
+       ],
+       "r": 35
+      },
+      {
+       "id": "s1",
+       "op": "arrow",
+       "startMs": 2800,
+       "endMs": 3300,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        370,
+        250
+       ],
+       "to": [
+        205,
+        360
+       ]
+      },
+      {
+       "id": "s2",
+       "op": "arrow",
+       "startMs": 3000,
+       "endMs": 3500,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        400,
+        265
+       ],
+       "to": [
+        330,
+        375
+       ]
+      },
+      {
+       "id": "s3",
+       "op": "arrow",
+       "startMs": 3200,
+       "endMs": 3700,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        430,
+        255
+       ],
+       "to": [
+        500,
+        375
+       ]
+      },
+      {
+       "id": "shunga",
+       "op": "label",
+       "startMs": 3800,
+       "endMs": 4400,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        165,
+        455
+       ],
+       "text": "Shungas"
+      },
+      {
+       "id": "magadha",
+       "op": "text",
+       "startMs": 4400,
+       "endMs": 5000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        610,
+        455
+       ],
+       "text": "Magadha",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch06-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "north",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        80,
+        80
+       ],
+       "w": 280,
+       "h": 150
+      },
+      {
+       "id": "northlabel",
+       "op": "text",
+       "startMs": 600,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        220,
+        160
+       ],
+       "text": "north",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "nw",
+       "op": "rect",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        440,
+        80
+       ],
+       "w": 280,
+       "h": 150
+      },
+      {
+       "id": "nwlabel",
+       "op": "text",
+       "startMs": 1200,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        580,
+        160
+       ],
+       "text": "north-west",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "deccan",
+       "op": "rect",
+       "startMs": 1600,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        270,
+        330
+       ],
+       "w": 260,
+       "h": 100
+      },
+      {
+       "id": "deccanlabel",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        390
+       ],
+       "text": "Deccan",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "kush",
+       "op": "label",
+       "startMs": 2700,
+       "endMs": 3300,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        145,
+        110
+       ],
+       "text": "Kushanas"
+      },
+      {
+       "id": "indo",
+       "op": "label",
+       "startMs": 3200,
+       "endMs": 3900,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        470,
+        110
+       ],
+       "text": "Indo-Greeks"
+      },
+      {
+       "id": "shakas",
+       "op": "label",
+       "startMs": 3900,
+       "endMs": 4500,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        620,
+        205
+       ],
+       "text": "Shakas"
+      },
+      {
+       "id": "sat",
+       "op": "label",
+       "startMs": 4500,
+       "endMs": 5300,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        355
+       ],
+       "text": "Satavahanas"
+      },
+      {
+       "id": "rule1",
+       "op": "arrow",
+       "startMs": 5600,
+       "endMs": 6200,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        220,
+        250
+       ],
+       "to": [
+        220,
+        310
+       ]
+      },
+      {
+       "id": "rule2",
+       "op": "arrow",
+       "startMs": 6200,
+       "endMs": 6800,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        580,
+        250
+       ],
+       "to": [
+        500,
+        310
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch06-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "india",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        250
+       ],
+       "r": 65
+      },
+      {
+       "id": "indialabel",
+       "op": "text",
+       "startMs": 600,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        258
+       ],
+       "text": "India",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "centralasia",
+       "op": "text",
+       "startMs": 1000,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        100,
+        100
+       ],
+       "text": "Central Asia",
+       "size": "m"
+      },
+      {
+       "id": "china",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        630,
+        100
+       ],
+       "text": "China",
+       "size": "m"
+      },
+      {
+       "id": "roman",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        100,
+        410
+       ],
+       "text": "Roman world",
+       "size": "m"
+      },
+      {
+       "id": "sea",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        620,
+        410
+       ],
+       "text": "Southeast Asia",
+       "size": "m"
+      },
+      {
+       "id": "a1",
+       "op": "arrow",
+       "startMs": 3000,
+       "endMs": 3700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        350,
+        205
+       ],
+       "to": [
+        180,
+        125
+       ]
+      },
+      {
+       "id": "a2",
+       "op": "arrow",
+       "startMs": 3500,
+       "endMs": 4200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        450,
+        205
+       ],
+       "to": [
+        600,
+        125
+       ]
+      },
+      {
+       "id": "a3",
+       "op": "arrow",
+       "startMs": 4000,
+       "endMs": 4700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        350,
+        290
+       ],
+       "to": [
+        180,
+        390
+       ]
+      },
+      {
+       "id": "a4",
+       "op": "arrow",
+       "startMs": 4500,
+       "endMs": 5200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        450,
+        290
+       ],
+       "to": [
+        600,
+        390
+       ]
+      },
+      {
+       "id": "trade",
+       "op": "text",
+       "startMs": 5700,
+       "endMs": 6400,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        470
+       ],
+       "text": "Trade",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch06-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "ports",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        65
+       ],
+       "text": "Ports",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "muziris",
+       "op": "circle",
+       "startMs": 700,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        170,
+        210
+       ],
+       "r": 48
+      },
+      {
+       "id": "mname",
+       "op": "text",
+       "startMs": 1100,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        170,
+        280
+       ],
+       "text": "Muziris",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "arikamedu",
+       "op": "circle",
+       "startMs": 1300,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        210
+       ],
+       "r": 48
+      },
+      {
+       "id": "aname",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        280
+       ],
+       "text": "Arikamedu",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "bharuch",
+       "op": "circle",
+       "startMs": 1900,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        630,
+        210
+       ],
+       "r": 48
+      },
+      {
+       "id": "bname",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        630,
+        280
+       ],
+       "text": "Bharuch",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "goods",
+       "op": "numwork",
+       "startMs": 3100,
+       "endMs": 4600,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        185,
+        345
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "pepper",
+         "spices"
+        ],
+        [
+         "cotton",
+         "gems"
+        ]
+       ]
+      },
+      {
+       "id": "export",
+       "op": "arrow",
+       "startMs": 4700,
+       "endMs": 5400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        330
+       ],
+       "to": [
+        400,
+        300
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch06-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "evidence",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        60
+       ],
+       "text": "Evidence",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "coins",
+       "op": "circle",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        230,
+        200
+       ],
+       "r": 65
+      },
+      {
+       "id": "cointext",
+       "op": "text",
+       "startMs": 1200,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        230,
+        205
+       ],
+       "text": "coins",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "inscriptions",
+       "op": "rect",
+       "startMs": 1300,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        500,
+        135
+       ],
+       "w": 180,
+       "h": 125
+      },
+      {
+       "id": "insctext",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        590,
+        205
+       ],
+       "text": "inscriptions",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "south",
+       "op": "rect",
+       "startMs": 2600,
+       "endMs": 3100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        220,
+        330
+       ],
+       "w": 360,
+       "h": 85
+      },
+      {
+       "id": "southtext",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        380
+       ],
+       "text": "south India",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "romancoins",
+       "op": "label",
+       "startMs": 3600,
+       "endMs": 4400,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        455
+       ],
+       "text": "Roman coins"
+      },
+      {
+       "id": "tradearrow",
+       "op": "arrow",
+       "startMs": 4500,
+       "endMs": 5200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        230,
+        270
+       ],
+       "to": [
+        330,
+        330
+       ]
+      },
+      {
+       "id": "trade",
+       "op": "text",
+       "startMs": 5200,
+       "endMs": 5800,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        650,
+        365
+       ],
+       "text": "trade",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "rule",
+       "op": "line",
+       "startMs": 6100,
+       "endMs": 6500,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        610,
+        400
+       ],
+       "to": [
+        700,
+        400
+       ]
+      },
+      {
+       "id": "notrule",
+       "op": "text",
+       "startMs": 6500,
+       "endMs": 7600,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        650,
+        445
+       ],
+       "text": "not Roman rule",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch06-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "art",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "Art and literature",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "gandhara",
+       "op": "rect",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        70,
+        130
+       ],
+       "w": 200,
+       "h": 110
+      },
+      {
+       "id": "gtext",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 2000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        170,
+        190
+       ],
+       "text": "Gandhara",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "mathura",
+       "op": "rect",
+       "startMs": 1600,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        300,
+        130
+       ],
+       "w": 200,
+       "h": 110
+      },
+      {
+       "id": "mtext",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        190
+       ],
+       "text": "Mathura",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "sangam",
+       "op": "rect",
+       "startMs": 2300,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        530,
+        130
+       ],
+       "w": 200,
+       "h": 110
+      },
+      {
+       "id": "stext",
+       "op": "text",
+       "startMs": 2800,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        630,
+        190
+       ],
+       "text": "Tamil Sangam",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "buddha1",
+       "op": "circle",
+       "startMs": 3600,
+       "endMs": 4100,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        170,
+        360
+       ],
+       "r": 35
+      },
+      {
+       "id": "buddha2",
+       "op": "circle",
+       "startMs": 3900,
+       "endMs": 4400,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        400,
+        360
+       ],
+       "r": 35
+      },
+      {
+       "id": "ideas",
+       "op": "text",
+       "startMs": 4200,
+       "endMs": 4700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        630,
+        360
+       ],
+       "text": "ideas",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "merchant",
+       "op": "arrow",
+       "startMs": 4800,
+       "endMs": 5500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        240,
+        360
+       ],
+       "to": [
+        340,
+        360
+       ]
+      },
+      {
+       "id": "monk",
+       "op": "arrow",
+       "startMs": 5400,
+       "endMs": 6100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        470,
+        360
+       ],
+       "to": [
+        580,
+        360
+       ]
+      },
+      {
+       "id": "travellers",
+       "op": "text",
+       "startMs": 6300,
+       "endMs": 7500,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        450
+       ],
+       "text": "merchants and monks",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch06-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "period",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        65
+       ],
+       "text": "This period",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "age",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        260,
+        245
+       ],
+       "r": 105
+      },
+      {
+       "id": "ageword",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 1900,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        260,
+        245
+       ],
+       "text": "age",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "reorg",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2700,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        260,
+        380
+       ],
+       "text": "reorganisation",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "arrow",
+       "op": "arrow",
+       "startMs": 2800,
+       "endMs": 3700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        380,
+        245
+       ],
+       "to": [
+        515,
+        245
+       ]
+      },
+      {
+       "id": "nothing",
+       "op": "circle",
+       "startMs": 3700,
+       "endMs": 4400,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        635,
+        245
+       ],
+       "r": 85
+      },
+      {
+       "id": "nothingword",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 5000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        635,
+        245
+       ],
+       "text": "nothing",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "cross1",
+       "op": "line",
+       "startMs": 5000,
+       "endMs": 5500,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        575,
+        185
+       ],
+       "to": [
+        695,
+        305
+       ]
+      },
+      {
+       "id": "cross2",
+       "op": "line",
+       "startMs": 5400,
+       "endMs": 5900,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        695,
+        185
+       ],
+       "to": [
+        575,
+        305
+       ]
+      },
+      {
+       "id": "important",
+       "op": "text",
+       "startMs": 6100,
+       "endMs": 7000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        455
+       ],
+       "text": "important",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "185 BCE",
+   "prompt": "Mauryan empire ends",
+   "src": "c7-sst-ch06-t01-i01"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "150 BCE",
+   "prompt": "Shunga coin"
+  },
+  {
+   "itemId": "r1:2",
+   "key": "100 CE",
+   "prompt": "Kushana coin"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "2nd century BCE",
+   "prompt": "Shunga coin"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "1st century CE",
+   "prompt": "Kushana coin"
+  },
+  {
+   "itemId": "r3:0",
+   "key": "Mauryan empire ends",
+   "prompt": "earlier: Mauryan empire ends (185 BCE) vs Shunga coin (150 BCE)"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

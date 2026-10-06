@@ -1,0 +1,1985 @@
+{
+ "topicId": "c5-evs-ch03-t02",
+ "title": "Preserving food",
+ "chapter": "The Mystery of Food",
+ "subject": "evs",
+ "class": 5,
+ "topicType": "T3",
+ "plan": {
+  "game": "fair-test@1",
+  "hint": "spoilage model: predict and design (warmth, moisture, covering)"
+ },
+ "game": {
+  "archetype": "fair-test@1",
+  "spec": {
+   "archetype": "fair-test@1",
+   "skills": [
+    "c5-evs-ch03-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "run": "RUN",
+    "day": "day",
+    "predict": "Tap every setup that will show it",
+    "design": "Make it a fair test",
+    "conclude": "Which factor matters?",
+    "notMatter": "Which factor does NOT matter?",
+    "fair": "FAIR TEST",
+    "unfair": "NOT FAIR",
+    "runDone": "Lab closed",
+    "correct": "right calls",
+    "drip": "Hold to add drops; stop when it turns",
+    "drops": "drops",
+    "neutral": "NEUTRAL",
+    "hint": "change only one thing"
+   },
+   "title": "Slow the Spoilage",
+   "model": "spoilage",
+   "rounds": [
+    {
+     "mode": "predict",
+     "title": "Predict",
+     "sub": "which bowls spoil first?",
+     "setups": [
+      {
+       "temp": "warm",
+       "moisture": "moist",
+       "salt": "no",
+       "lid": "open"
+      },
+      {
+       "temp": "cold",
+       "moisture": "moist",
+       "salt": "no",
+       "lid": "covered"
+      },
+      {
+       "temp": "warm",
+       "moisture": "dry",
+       "salt": "no",
+       "lid": "open"
+      },
+      {
+       "temp": "cold",
+       "moisture": "dry",
+       "salt": "yes",
+       "lid": "covered"
+      }
+     ],
+     "src": "c5-evs-ch03-t02-i05",
+     "targets": "c5-evs-ch03-t02-m1"
+    },
+    {
+     "mode": "design",
+     "title": "Test salt",
+     "sub": "change only the salt",
+     "vary": "salt",
+     "start": [
+      {
+       "temp": "warm",
+       "moisture": "moist",
+       "salt": "no",
+       "lid": "covered"
+      },
+      {
+       "temp": "warm",
+       "moisture": "moist",
+       "salt": "yes",
+       "lid": "covered"
+      }
+     ],
+     "targets": "c5-evs-ch03-t02-m3"
+    },
+    {
+     "mode": "design",
+     "title": "Test the fridge",
+     "sub": "change only the temperature",
+     "vary": "temp",
+     "start": [
+      {
+       "temp": "warm",
+       "moisture": "moist",
+       "salt": "no",
+       "lid": "open"
+      },
+      {
+       "temp": "cold",
+       "moisture": "moist",
+       "salt": "no",
+       "lid": "open"
+      }
+     ],
+     "targets": "c5-evs-ch03-t02-m1"
+    }
+   ]
+  },
+  "repairs": [
+   "conclude:needs-exactly-one-key"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c5-evs-ch03-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Preserving food",
+   "accent": "mint",
+   "targets": "c5-evs-ch03-t02-m1",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Preserving food"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Fridge food never spoils"
+      },
+      {
+       "id": "food",
+       "type": "node",
+       "text": "Food",
+       "sub": "microbes",
+       "glyph": "plate",
+       "color": "mint"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "dry",
+       "type": "node",
+       "text": "Drying",
+       "sub": "removes water",
+       "glyph": "sun",
+       "color": "sun"
+      },
+      {
+       "id": "salt",
+       "type": "node",
+       "text": "Salt",
+       "sub": "pulls water out",
+       "glyph": "pot",
+       "color": "amber"
+      },
+      {
+       "id": "sugar",
+       "type": "node",
+       "text": "Sugar",
+       "sub": "pulls water out",
+       "glyph": "apple",
+       "color": "amber"
+      },
+      {
+       "id": "microbes",
+       "type": "node",
+       "text": "Microbes",
+       "sub": "grow less easily",
+       "glyph": "insect",
+       "color": "sci"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "dry",
+       "to": "microbes",
+       "text": "less water"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "salt",
+       "to": "microbes",
+       "text": "less water"
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "sugar",
+       "to": "microbes",
+       "text": "less water"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "oil",
+       "type": "node",
+       "text": "Oil layer",
+       "sub": "keeps air out",
+       "glyph": "drop",
+       "color": "amber"
+      },
+      {
+       "id": "boil",
+       "type": "node",
+       "text": "Boiling",
+       "sub": "kills many",
+       "glyph": "fire",
+       "color": "sun"
+      },
+      {
+       "id": "seal",
+       "type": "node",
+       "text": "Airtight pack",
+       "sub": "keeps microbes out",
+       "glyph": "shield",
+       "color": "ion"
+      },
+      {
+       "id": "achaar",
+       "type": "node",
+       "text": "Achaar",
+       "sub": "salt and oil",
+       "color": "mint"
+      },
+      {
+       "id": "milk",
+       "type": "node",
+       "text": "Milk",
+       "sub": "boiled",
+       "glyph": "jug",
+       "color": "sci"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "column",
+     "els": [
+      {
+       "id": "fridge",
+       "type": "node",
+       "text": "Fridge",
+       "sub": "slows microbes",
+       "color": "ion"
+      },
+      {
+       "id": "freeze",
+       "type": "node",
+       "text": "Freezer",
+       "sub": "slows more",
+       "color": "sci"
+      },
+      {
+       "id": "check",
+       "type": "node",
+       "text": "Check food",
+       "sub": "smell, look, date",
+       "glyph": "eye",
+       "color": "mint"
+      },
+      {
+       "id": "warn",
+       "type": "label",
+       "text": "Never taste to test",
+       "x": 330,
+       "y": 500,
+       "color": "amber"
+      }
+     ]
+    },
+    {
+     "id": "s5",
+     "layout": "row",
+     "els": [
+      {
+       "id": "prompt",
+       "type": "title",
+       "text": "Choose the method"
+      },
+      {
+       "id": "dryopt",
+       "type": "node",
+       "text": "Drying",
+       "sub": "papad",
+       "glyph": "sun",
+       "color": "sun"
+      },
+      {
+       "id": "saltopt",
+       "type": "node",
+       "text": "Salting",
+       "sub": "achaar",
+       "glyph": "pot",
+       "color": "amber"
+      },
+      {
+       "id": "fridgeopt",
+       "type": "node",
+       "text": "Fridge",
+       "sub": "cold",
+       "color": "ion"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Preserving food means keeping it from spoiling for longer.",
+    "L2": "Microbes can spoil food, so preservation stops or slows their growth.",
+    "L3": "Drying removes water. Salt and sugar pull water out, so microbes cannot grow easily.",
+    "L4": "Oil keeps air and moisture away. Boiling kills many microbes, and airtight packs keep new microbes out.",
+    "L5": "A fridge only slows microbes; it does not kill them. Freezing slows them much more.",
+    "L6": "So fridge food can still spoil after some days. Check its smell, look and expiry date, and never taste it to test it.",
+    "L7": "For example, papad is dried, achaar uses salt and oil, and milk can be boiled and kept cold.",
+    "L8": "Now choose the method that removes the water microbes need."
+   },
+   "narration": {
+    "L1": {
+     "text": "Preserving food means keeping it from spoiling for longer.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "Microbes can spoil food, so preservation stops or slows their growth.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "Drying removes water. Salt and sugar pull water out, so microbes cannot grow easily.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "Oil keeps air and moisture away. Boiling kills many microbes, and airtight packs keep new microbes out.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "A fridge only slows microbes; it does not kill them. Freezing slows them much more.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "So fridge food can still spoil after some days. Check its smell, look and expiry date, and never taste it to test it.",
+     "dur": 9,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "For example, papad is dried, achaar uses salt and oil, and milk can be boiled and kept cold.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Now choose the method that removes the water microbes need.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "title"
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.8,
+       "target": "food"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      },
+      {
+       "at": 2,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "dry",
+        "salt",
+        "sugar"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.8,
+       "target": "microbes"
+      },
+      {
+       "at": 2,
+       "do": "flow",
+       "dur": 1,
+       "target": [
+        "a1",
+        "a2",
+        "a3"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "oil",
+        "boil",
+        "seal"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "achaar",
+        "milk"
+       ]
+      },
+      {
+       "at": 2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "oil"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "fridge",
+        "freeze"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 1,
+       "target": "fridge"
+      },
+      {
+       "at": 3,
+       "do": "highlight",
+       "dur": 1,
+       "target": "freeze"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "check",
+        "warn"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "focus",
+       "dur": 1,
+       "target": "check"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "achaar",
+        "milk"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 1,
+       "target": [
+        "oil",
+        "boil"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s5",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "prompt",
+        "dryopt",
+        "saltopt",
+        "fridgeopt"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which method removes the water microbes need?",
+    "options": [
+     "dryopt",
+     "saltopt",
+     "fridgeopt"
+    ],
+    "answer": "dryopt",
+    "src": "c5-evs-ch03-t02-i02"
+   }
+  },
+  "repairs": [
+   "glyph",
+   "glyph",
+   "glyph",
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 60
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch03-t02-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4430,
+     "ops": [
+      {
+       "id": "food",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        150,
+        210
+       ],
+       "r": 70
+      },
+      {
+       "id": "foodlabel",
+       "op": "label",
+       "startMs": 700,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        150,
+        310
+       ],
+       "text": "food",
+       "target": "food"
+      },
+      {
+       "id": "spoiling",
+       "op": "circle",
+       "startMs": 1200,
+       "endMs": 1900,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        210
+       ],
+       "r": 70
+      },
+      {
+       "id": "spoilabel",
+       "op": "label",
+       "startMs": 1900,
+       "endMs": 2350,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        310
+       ],
+       "text": "spoiling",
+       "target": "spoiling"
+      },
+      {
+       "id": "longer",
+       "op": "arrow",
+       "startMs": 2400,
+       "endMs": 3000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        230,
+        210
+       ],
+       "to": [
+        320,
+        210
+       ]
+      },
+      {
+       "id": "longlabel",
+       "op": "label",
+       "startMs": 3100,
+       "endMs": 3500,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        410
+       ],
+       "text": "longer"
+      },
+      {
+       "id": "keep",
+       "op": "text",
+       "startMs": 3600,
+       "endMs": 4430,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        90
+       ],
+       "text": "keeping food",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch03-t02-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "microbes",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        150,
+        180
+       ],
+       "r": 65
+      },
+      {
+       "id": "microtext",
+       "op": "label",
+       "startMs": 700,
+       "endMs": 1150,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        150,
+        275
+       ],
+       "text": "Microbes",
+       "target": "microbes"
+      },
+      {
+       "id": "food2",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        180
+       ],
+       "r": 65
+      },
+      {
+       "id": "foodtext2",
+       "op": "label",
+       "startMs": 1600,
+       "endMs": 1950,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        275
+       ],
+       "text": "food",
+       "target": "food2"
+      },
+      {
+       "id": "spoilarrow",
+       "op": "arrow",
+       "startMs": 2000,
+       "endMs": 2600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        215,
+        180
+       ],
+       "to": [
+        335,
+        180
+       ]
+      },
+      {
+       "id": "spoil2",
+       "op": "label",
+       "startMs": 2600,
+       "endMs": 3000,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        275,
+        140
+       ],
+       "text": "spoil"
+      },
+      {
+       "id": "slow",
+       "op": "arrow",
+       "startMs": 3150,
+       "endMs": 3650,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        400,
+        250
+       ],
+       "to": [
+        400,
+        370
+       ]
+      },
+      {
+       "id": "stop",
+       "op": "text",
+       "startMs": 3700,
+       "endMs": 4400,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        300,
+        430
+       ],
+       "text": "stops or slows",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "growth",
+       "op": "label",
+       "startMs": 4400,
+       "endMs": 4800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        560,
+        370
+       ],
+       "text": "growth"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch03-t02-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "water",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        170,
+        160
+       ],
+       "rx": 90,
+       "ry": 45
+      },
+      {
+       "id": "waterlabel",
+       "op": "label",
+       "startMs": 700,
+       "endMs": 1100,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        170,
+        235
+       ],
+       "text": "water",
+       "target": "water"
+      },
+      {
+       "id": "dryarrow",
+       "op": "arrow",
+       "startMs": 1200,
+       "endMs": 1800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        170,
+        220
+       ],
+       "to": [
+        170,
+        350
+       ]
+      },
+      {
+       "id": "dry",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2250,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        170,
+        410
+       ],
+       "text": "Drying",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "salt",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        110
+       ],
+       "text": "Salt",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "sugar",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        610,
+        110
+       ],
+       "text": "sugar",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "pullsalt",
+       "op": "arrow",
+       "startMs": 3200,
+       "endMs": 3700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        145
+       ],
+       "to": [
+        300,
+        250
+       ]
+      },
+      {
+       "id": "pullsugar",
+       "op": "arrow",
+       "startMs": 3700,
+       "endMs": 4200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        610,
+        145
+       ],
+       "to": [
+        510,
+        250
+       ]
+      },
+      {
+       "id": "out",
+       "op": "label",
+       "startMs": 4300,
+       "endMs": 4900,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        300
+       ],
+       "text": "pull water out"
+      },
+      {
+       "id": "cannot",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 6557,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        450
+       ],
+       "text": "cannot grow easily",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch03-t02-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "oil",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        150,
+        150
+       ],
+       "rx": 85,
+       "ry": 45
+      },
+      {
+       "id": "oillabel",
+       "op": "label",
+       "startMs": 600,
+       "endMs": 950,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        150,
+        225
+       ],
+       "text": "Oil",
+       "target": "oil"
+      },
+      {
+       "id": "barrier",
+       "op": "line",
+       "startMs": 1000,
+       "endMs": 1500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        250,
+        110
+       ],
+       "to": [
+        250,
+        260
+       ]
+      },
+      {
+       "id": "air",
+       "op": "label",
+       "startMs": 1550,
+       "endMs": 1850,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        310,
+        130
+       ],
+       "text": "air"
+      },
+      {
+       "id": "moisture",
+       "op": "label",
+       "startMs": 1850,
+       "endMs": 2250,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        310,
+        220
+       ],
+       "text": "moisture"
+      },
+      {
+       "id": "boiling",
+       "op": "text",
+       "startMs": 2400,
+       "endMs": 2900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        470,
+        110
+       ],
+       "text": "Boiling",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "kills",
+       "op": "label",
+       "startMs": 2950,
+       "endMs": 3450,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        470,
+        180
+       ],
+       "text": "kills microbes"
+      },
+      {
+       "id": "pack",
+       "op": "rect",
+       "startMs": 3600,
+       "endMs": 4200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        390,
+        270
+       ],
+       "w": 170,
+       "h": 100,
+       "round": 12
+      },
+      {
+       "id": "airtight",
+       "op": "label",
+       "startMs": 4250,
+       "endMs": 4800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        475,
+        395
+       ],
+       "text": "airtight packs",
+       "target": "pack"
+      },
+      {
+       "id": "out2",
+       "op": "arrow",
+       "startMs": 4900,
+       "endMs": 5400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        580,
+        320
+       ],
+       "to": [
+        690,
+        320
+       ]
+      },
+      {
+       "id": "new",
+       "op": "label",
+       "startMs": 5450,
+       "endMs": 6000,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        650,
+        280
+       ],
+       "text": "new microbes"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch03-t02-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "fridge",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        120
+       ],
+       "w": 190,
+       "h": 220,
+       "round": 12
+      },
+      {
+       "id": "fridgetext",
+       "op": "label",
+       "startMs": 800,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        195,
+        370
+       ],
+       "text": "fridge",
+       "target": "fridge"
+      },
+      {
+       "id": "slow1",
+       "op": "arrow",
+       "startMs": 1300,
+       "endMs": 1750,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        195,
+        120
+       ],
+       "to": [
+        195,
+        60
+       ]
+      },
+      {
+       "id": "slows",
+       "op": "text",
+       "startMs": 1750,
+       "endMs": 2300,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        195,
+        60
+       ],
+       "text": "slows microbes",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "notkill",
+       "op": "text",
+       "startMs": 2350,
+       "endMs": 2900,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        195,
+        430
+       ],
+       "text": "does not kill",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "freeze",
+       "op": "rect",
+       "startMs": 3000,
+       "endMs": 3800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        480,
+        120
+       ],
+       "w": 190,
+       "h": 220,
+       "round": 12
+      },
+      {
+       "id": "freezetext",
+       "op": "label",
+       "startMs": 3800,
+       "endMs": 4250,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        575,
+        370
+       ],
+       "text": "Freezing",
+       "target": "freeze"
+      },
+      {
+       "id": "slow2",
+       "op": "arrow",
+       "startMs": 4350,
+       "endMs": 4800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        575,
+        120
+       ],
+       "to": [
+        575,
+        60
+       ]
+      },
+      {
+       "id": "much",
+       "op": "text",
+       "startMs": 4800,
+       "endMs": 5500,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        575,
+        60
+       ],
+       "text": "slows much more",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "compare",
+       "op": "line",
+       "startMs": 5600,
+       "endMs": 6200,
+       "ink": "chalk",
+       "weight": 1,
+       "from": [
+        290,
+        230
+       ],
+       "to": [
+        480,
+        230
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch03-t02-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 10387,
+     "ops": [
+      {
+       "id": "fridgefood",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        70,
+        90
+       ],
+       "w": 180,
+       "h": 150,
+       "round": 10
+      },
+      {
+       "id": "foodlabel6",
+       "op": "label",
+       "startMs": 700,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        160,
+        270
+       ],
+       "text": "fridge food",
+       "target": "fridgefood"
+      },
+      {
+       "id": "days",
+       "op": "arrow",
+       "startMs": 1300,
+       "endMs": 1800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        250,
+        165
+       ],
+       "to": [
+        380,
+        165
+       ]
+      },
+      {
+       "id": "spoil6",
+       "op": "label",
+       "startMs": 1800,
+       "endMs": 2150,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        315,
+        125
+       ],
+       "text": "spoil"
+      },
+      {
+       "id": "smell",
+       "op": "circle",
+       "startMs": 2300,
+       "endMs": 2800,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        170,
+        370
+       ],
+       "r": 45
+      },
+      {
+       "id": "smelltext",
+       "op": "label",
+       "startMs": 2800,
+       "endMs": 3150,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        170,
+        440
+       ],
+       "text": "smell",
+       "target": "smell"
+      },
+      {
+       "id": "look",
+       "op": "circle",
+       "startMs": 3200,
+       "endMs": 3700,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        350,
+        370
+       ],
+       "r": 45
+      },
+      {
+       "id": "looktext",
+       "op": "label",
+       "startMs": 3700,
+       "endMs": 4000,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        350,
+        440
+       ],
+       "text": "look",
+       "target": "look"
+      },
+      {
+       "id": "expiry",
+       "op": "rect",
+       "startMs": 4050,
+       "endMs": 4550,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        530,
+        325
+       ],
+       "w": 150,
+       "h": 90,
+       "round": 8
+      },
+      {
+       "id": "expirytext",
+       "op": "label",
+       "startMs": 4550,
+       "endMs": 5000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        605,
+        440
+       ],
+       "text": "expiry date",
+       "target": "expiry"
+      },
+      {
+       "id": "never",
+       "op": "text",
+       "startMs": 5100,
+       "endMs": 5800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        60
+       ],
+       "text": "never taste",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "cross",
+       "op": "line",
+       "startMs": 5800,
+       "endMs": 6200,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        350,
+        25
+       ],
+       "to": [
+        450,
+        95
+       ]
+      },
+      {
+       "id": "cross2",
+       "op": "line",
+       "startMs": 6200,
+       "endMs": 6600,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        450,
+        25
+       ],
+       "to": [
+        350,
+        95
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch03-t02-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "papad",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        140,
+        130
+       ],
+       "rx": 90,
+       "ry": 45
+      },
+      {
+       "id": "papadtext",
+       "op": "label",
+       "startMs": 600,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        140,
+        205
+       ],
+       "text": "papad",
+       "target": "papad"
+      },
+      {
+       "id": "drymark",
+       "op": "arrow",
+       "startMs": 1050,
+       "endMs": 1450,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        140,
+        220
+       ],
+       "to": [
+        140,
+        285
+       ]
+      },
+      {
+       "id": "dried",
+       "op": "label",
+       "startMs": 1450,
+       "endMs": 1800,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        140,
+        330
+       ],
+       "text": "dried"
+      },
+      {
+       "id": "achaar",
+       "op": "ellipse",
+       "startMs": 1900,
+       "endMs": 2500,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        130
+       ],
+       "rx": 100,
+       "ry": 45
+      },
+      {
+       "id": "achaartext",
+       "op": "label",
+       "startMs": 2500,
+       "endMs": 2900,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        205
+       ],
+       "text": "achaar",
+       "target": "achaar"
+      },
+      {
+       "id": "salt7",
+       "op": "label",
+       "startMs": 2950,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        350,
+        285
+       ],
+       "text": "salt"
+      },
+      {
+       "id": "oil7",
+       "op": "label",
+       "startMs": 3300,
+       "endMs": 3600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        450,
+        285
+       ],
+       "text": "oil"
+      },
+      {
+       "id": "milk",
+       "op": "ellipse",
+       "startMs": 3700,
+       "endMs": 4300,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        650,
+        130
+       ],
+       "rx": 90,
+       "ry": 45
+      },
+      {
+       "id": "milktext",
+       "op": "label",
+       "startMs": 4300,
+       "endMs": 4650,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        650,
+        205
+       ],
+       "text": "milk",
+       "target": "milk"
+      },
+      {
+       "id": "boiled",
+       "op": "label",
+       "startMs": 4700,
+       "endMs": 5100,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        600,
+        285
+       ],
+       "text": "boiled"
+      },
+      {
+       "id": "cold",
+       "op": "label",
+       "startMs": 5100,
+       "endMs": 5450,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        700,
+        285
+       ],
+       "text": "cold"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch03-t02-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "micro8",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 650,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        170,
+        210
+       ],
+       "r": 65
+      },
+      {
+       "id": "micro8label",
+       "op": "label",
+       "startMs": 650,
+       "endMs": 1100,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        170,
+        300
+       ],
+       "text": "microbes",
+       "target": "micro8"
+      },
+      {
+       "id": "water8",
+       "op": "ellipse",
+       "startMs": 1200,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        210
+       ],
+       "rx": 90,
+       "ry": 45
+      },
+      {
+       "id": "water8label",
+       "op": "label",
+       "startMs": 1800,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        290
+       ],
+       "text": "water",
+       "target": "water8"
+      },
+      {
+       "id": "remove",
+       "op": "arrow",
+       "startMs": 2300,
+       "endMs": 2850,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        330,
+        210
+       ],
+       "to": [
+        255,
+        210
+       ]
+      },
+      {
+       "id": "removelabel",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        410
+       ],
+       "text": "removes water",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "question",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4855,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        90
+       ],
+       "text": "choose the method",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1",
+   "key": "1:spoils 2:no 3:no 4:no",
+   "prompt": "spoilage: {\"temp\":\"warm\",\"moisture\":\"moist\",\"salt\":\"no\",\"lid\":\"open\"} | {\"temp\":\"cold\",\"moisture\":\"moist\",\"salt\":\"no\",\"lid\":\"covered\"} | {\"temp\":\"warm\",\"moisture\":\"dry\",\"salt\":\"no\",\"lid\":\"open\"} | {\"temp\":\"cold\",\"moisture\":\"dry\",\"salt\":\"yes\",\"lid\":\"covered\"}",
+   "src": "c5-evs-ch03-t02-i05"
+  },
+  {
+   "itemId": "r2",
+   "key": "vary only salt",
+   "prompt": "fair test for salt"
+  },
+  {
+   "itemId": "r3",
+   "key": "vary only temp",
+   "prompt": "fair test for temp"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

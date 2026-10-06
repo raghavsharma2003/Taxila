@@ -1,0 +1,1416 @@
+{
+ "topicId": "c7-maths-ch10-t02",
+ "title": "Dividing integers",
+ "chapter": "Operations with Integers",
+ "subject": "maths",
+ "class": 7,
+ "topicType": "T4",
+ "plan": {
+  "game": "zero-pair@1",
+  "hint": "groups mode with share: true (dividing integers)"
+ },
+ "game": {
+  "archetype": "zero-pair@1",
+  "spec": {
+   "archetype": "zero-pair@1",
+   "skills": [
+    "c7-maths-ch10-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "done": "right",
+    "lock": "LOCK",
+    "zero": "+ zero pair",
+    "take": "take",
+    "groups": "groups of",
+    "share": "share into",
+    "runDone": "Lab closed",
+    "coach": "Tap tokens on the belt to grab them",
+    "value": "tray"
+   },
+   "title": "Integer Sharing Lab",
+   "rounds": [
+    {
+     "mode": "make",
+     "title": "Make the drop",
+     "sub": "use at least 7 tokens",
+     "target": -3,
+     "minTokens": 7,
+     "speed": 0.8
+    },
+    {
+     "mode": "groups",
+     "title": "Build equal groups",
+     "sub": "make 4 groups of −2",
+     "k": 4,
+     "m": -2,
+     "share": false
+    },
+    {
+     "mode": "groups",
+     "title": "Share a loss",
+     "sub": "share equally; divide by a negative",
+     "k": 4,
+     "m": -2,
+     "share": true,
+     "targets": "c7-maths-ch10-t02-m-impossible"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-maths-ch10-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Dividing integers",
+   "accent": "ion",
+   "targets": "c7-maths-ch10-t02-m-impossible",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Dividing integers"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Division by a negative is impossible"
+      },
+      {
+       "id": "idea",
+       "type": "label",
+       "text": "Division undoes multiplication",
+       "x": 120,
+       "y": 360,
+       "color": "ion"
+      },
+      {
+       "id": "mult",
+       "type": "node",
+       "text": "4 × (−3)",
+       "sub": "= −12",
+       "glyph": "gear",
+       "color": "mint"
+      },
+      {
+       "id": "div",
+       "type": "node",
+       "text": "(−12) ÷ 4",
+       "sub": "= −3",
+       "glyph": "question",
+       "color": "amber"
+      },
+      {
+       "id": "link",
+       "type": "arrow",
+       "from": "mult",
+       "to": "div",
+       "text": "undoes"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "same",
+       "type": "node",
+       "text": "same signs",
+       "sub": "positive",
+       "color": "mint"
+      },
+      {
+       "id": "diff",
+       "type": "node",
+       "text": "different signs",
+       "sub": "negative",
+       "color": "amber"
+      },
+      {
+       "id": "sarrow",
+       "type": "arrow",
+       "from": "same",
+       "to": "diff",
+       "text": "compare"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "a",
+       "type": "node",
+       "text": "12 ÷ (−3)",
+       "sub": "−4",
+       "glyph": "ruler",
+       "color": "amber"
+      },
+      {
+       "id": "b",
+       "type": "node",
+       "text": "(−15) ÷ (−3)",
+       "sub": "5",
+       "glyph": "balance",
+       "color": "mint"
+      },
+      {
+       "id": "c",
+       "type": "node",
+       "text": "0 ÷ (−5)",
+       "sub": "0",
+       "color": "ion"
+      },
+      {
+       "id": "d",
+       "type": "node",
+       "text": "(−8) ÷ 0",
+       "sub": "not defined",
+       "glyph": "question",
+       "color": "volt"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "column",
+     "els": [
+      {
+       "id": "worked",
+       "type": "title",
+       "text": "Worked example"
+      },
+      {
+       "id": "problem",
+       "type": "label",
+       "text": "(−63) ÷ 7",
+       "x": 110,
+       "y": 290,
+       "color": "ion"
+      },
+      {
+       "id": "size",
+       "type": "label",
+       "text": "63 ÷ 7 = 9",
+       "x": 110,
+       "y": 350,
+       "color": "mint"
+      },
+      {
+       "id": "sign",
+       "type": "label",
+       "text": "different signs → −9",
+       "x": 110,
+       "y": 410,
+       "color": "amber"
+      },
+      {
+       "id": "check",
+       "type": "label",
+       "text": "(−9) × 7 = −63",
+       "x": 110,
+       "y": 470,
+       "color": "sci"
+      },
+      {
+       "id": "opt1",
+       "type": "label",
+       "text": "−8",
+       "x": 100,
+       "y": 540,
+       "color": "amber"
+      },
+      {
+       "id": "opt2",
+       "type": "label",
+       "text": "8",
+       "x": 300,
+       "y": 540,
+       "color": "mint"
+      },
+      {
+       "id": "opt3",
+       "type": "label",
+       "text": "−6",
+       "x": 500,
+       "y": 540,
+       "color": "ion"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Division undoes multiplication. Ask: what number times the divisor gives the dividend?",
+    "L2": "For example, 4 times negative 3 is negative 12, so negative 12 divided by 4 is negative 3.",
+    "L3": "A negative divisor is allowed. Divide the sizes, then use the signs: same signs give positive, and different signs give negative.",
+    "L4": "So 12 divided by negative 3 is negative 4, while negative 15 divided by negative 3 is positive 5.",
+    "L5": "Zero divided by any non-zero integer is zero. But dividing a non-zero integer by zero is not defined.",
+    "L6": "For a worked example, ignore the signs first: 63 divided by 7 is 9.",
+    "L7": "The signs are different, so negative 63 divided by 7 is negative 9. Check by multiplying negative 9 by 7 to get negative 63.",
+    "L8": "Now choose the quotient of negative 48 divided by negative 6. Use the sign rule and check by multiplication."
+   },
+   "narration": {
+    "L1": {
+     "text": "Division undoes multiplication. Ask: what number times the divisor gives the dividend?",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L2": {
+     "text": "For example, 4 times negative 3 is negative 12, so negative 12 divided by 4 is negative 3.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L3": {
+     "text": "A negative divisor is allowed. Divide the sizes, then use the signs: same signs give positive, and different signs give negative.",
+     "dur": 9,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L4": {
+     "text": "So 12 divided by negative 3 is negative 4, while negative 15 divided by negative 3 is positive 5.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L5": {
+     "text": "Zero divided by any non-zero integer is zero. But dividing a non-zero integer by zero is not defined.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L6": {
+     "text": "For a worked example, ignore the signs first: 63 divided by 7 is 9.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L7": {
+     "text": "The signs are different, so negative 63 divided by 7 is negative 9. Check by multiplying negative 9 by 7 to get negative 63.",
+     "dur": 9,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Now choose the quotient of negative 48 divided by negative 6. Use the sign rule and check by multiplication.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "title"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.7,
+       "target": "idea"
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "mult",
+        "div",
+        "link"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "mult"
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "link",
+       "to": 1
+      },
+      {
+       "at": 1.8,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "div"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "myth"
+      },
+      {
+       "at": 0.8,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      },
+      {
+       "at": 2,
+       "do": "camera",
+       "dur": 1,
+       "zoom": 1.03
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "a",
+        "b"
+       ]
+      },
+      {
+       "at": 0.9,
+       "do": "highlight",
+       "dur": 0.7,
+       "target": "a"
+      },
+      {
+       "at": 2,
+       "do": "highlight",
+       "dur": 0.7,
+       "target": "b"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "c",
+        "d"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 0.7,
+       "target": "c"
+      },
+      {
+       "at": 2.4,
+       "do": "highlight",
+       "dur": 0.7,
+       "target": "d"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "worked",
+        "problem"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.7,
+       "target": "size"
+      },
+      {
+       "at": 2,
+       "do": "highlight",
+       "dur": 0.7,
+       "target": "size"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "sign"
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.7,
+       "target": "check"
+      },
+      {
+       "at": 2,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "check"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "opt1",
+        "opt2",
+        "opt3"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "What is (−48) ÷ (−6)?",
+    "options": [
+     "opt1",
+     "opt2",
+     "opt3"
+    ],
+    "answer": "opt2",
+    "src": "c7-maths-ch10-t02-i04"
+   }
+  },
+  "repairs": [
+   "glyph",
+   "glyph",
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 66
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch10-t02-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "div",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        90
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "divide",
+         "÷",
+         "diviso",
+         "=",
+         "quotie"
+        ]
+       ]
+      },
+      {
+       "id": "mult",
+       "op": "numwork",
+       "startMs": 1800,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        190
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "quotie",
+         "×",
+         "diviso",
+         "=",
+         "divide"
+        ]
+       ]
+      },
+      {
+       "id": "ask",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        330
+       ],
+       "text": "what × divisor?",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "undo",
+       "op": "arrow",
+       "startMs": 4500,
+       "endMs": 5400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        500,
+        220
+       ],
+       "to": [
+        500,
+        130
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch10-t02-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "ex2",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        80,
+        80
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "4",
+         "×",
+         "−3",
+         "=",
+         "−12"
+        ]
+       ]
+      },
+      {
+       "id": "ex3",
+       "op": "numwork",
+       "startMs": 2200,
+       "endMs": 4400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        80,
+        180
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "−12",
+         "÷",
+         "4",
+         "=",
+         "−3"
+        ]
+       ]
+      },
+      {
+       "id": "same",
+       "op": "arrow",
+       "startMs": 4400,
+       "endMs": 5600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        350,
+        125
+       ],
+       "to": [
+        350,
+        225
+       ]
+      },
+      {
+       "id": "check2",
+       "op": "highlight",
+       "startMs": 5600,
+       "endMs": 7000,
+       "ink": "accent",
+       "weight": 2,
+       "target": "ex2",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": false,
+    "errors": [
+     "allow:inside_board"
+    ],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch10-t02-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 9536,
+     "ops": [
+      {
+       "id": "allow",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        70
+       ],
+       "text": "negative divisor",
+       "size": "m"
+      },
+      {
+       "id": "sizes",
+       "op": "numwork",
+       "startMs": 1500,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        80,
+        150
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "divide",
+         "sizes"
+        ]
+       ]
+      },
+      {
+       "id": "sameRule",
+       "op": "numwork",
+       "startMs": 2800,
+       "endMs": 4700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        80,
+        250
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "same",
+         "signs",
+         "=",
+         "positi"
+        ]
+       ]
+      },
+      {
+       "id": "diffRule",
+       "op": "numwork",
+       "startMs": 4700,
+       "endMs": 6600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        80,
+        350
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "differ",
+         "signs",
+         "=",
+         "negati"
+        ]
+       ]
+      },
+      {
+       "id": "sameMark",
+       "op": "highlight",
+       "startMs": 6600,
+       "endMs": 7600,
+       "ink": "good",
+       "weight": 2,
+       "target": "sameRule",
+       "style": "underline"
+      },
+      {
+       "id": "diffMark",
+       "op": "highlight",
+       "startMs": 7600,
+       "endMs": 8800,
+       "ink": "accent",
+       "weight": 2,
+       "target": "diffRule",
+       "style": "underline"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch10-t02-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "case1",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        70,
+        90
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "12",
+         "÷",
+         "−3",
+         "=",
+         "−4"
+        ]
+       ]
+      },
+      {
+       "id": "case2",
+       "op": "numwork",
+       "startMs": 2200,
+       "endMs": 4400,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        70,
+        210
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "−15",
+         "÷",
+         "−3",
+         "=",
+         "5"
+        ]
+       ]
+      },
+      {
+       "id": "sign1",
+       "op": "text",
+       "startMs": 4400,
+       "endMs": 5700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        540,
+        125
+       ],
+       "text": "different signs",
+       "size": "m"
+      },
+      {
+       "id": "sign2",
+       "op": "text",
+       "startMs": 5700,
+       "endMs": 7000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        540,
+        245
+       ],
+       "text": "same signs",
+       "size": "m"
+      },
+      {
+       "id": "mark1",
+       "op": "highlight",
+       "startMs": 7000,
+       "endMs": 7800,
+       "ink": "accent",
+       "weight": 2,
+       "target": "case1",
+       "style": "circle"
+      },
+      {
+       "id": "mark2",
+       "op": "highlight",
+       "startMs": 7800,
+       "endMs": 8600,
+       "ink": "good",
+       "weight": 2,
+       "target": "case2",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch10-t02-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "zeroEq",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 2200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        70,
+        90
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "0",
+         "÷",
+         "non-ze",
+         "=",
+         "0"
+        ]
+       ]
+      },
+      {
+       "id": "badEq",
+       "op": "numwork",
+       "startMs": 2200,
+       "endMs": 4600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        70,
+        210
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "non-ze",
+         "÷",
+         "0",
+         "=",
+         "not de"
+        ]
+       ]
+      },
+      {
+       "id": "zeroCircle",
+       "op": "highlight",
+       "startMs": 4600,
+       "endMs": 5700,
+       "ink": "good",
+       "weight": 2,
+       "target": "zeroEq",
+       "style": "circle"
+      },
+      {
+       "id": "badUnderline",
+       "op": "highlight",
+       "startMs": 5700,
+       "endMs": 7000,
+       "ink": "accent",
+       "weight": 2,
+       "target": "badEq",
+       "style": "underline"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch10-t02-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "ignore",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        70
+       ],
+       "text": "ignore signs",
+       "size": "m"
+      },
+      {
+       "id": "work63",
+       "op": "numwork",
+       "startMs": 1300,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        80,
+        160
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "63",
+         "÷",
+         "7",
+         "=",
+         "9"
+        ]
+       ]
+      },
+      {
+       "id": "nine",
+       "op": "circle",
+       "startMs": 3500,
+       "endMs": 4600,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        470,
+        185
+       ],
+       "r": 35
+      },
+      {
+       "id": "sizes6",
+       "op": "text",
+       "startMs": 4600,
+       "endMs": 5500,
+       "ink": "soft",
+       "weight": 2,
+       "at": [
+        100,
+        290
+       ],
+       "text": "sizes",
+       "size": "m"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": false,
+    "errors": [
+     "different7:inside_board"
+    ],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch10-t02-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 10813,
+     "ops": [
+      {
+       "id": "signEq",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 2500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        70,
+        80
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "−63",
+         "÷",
+         "7",
+         "=",
+         "−9"
+        ]
+       ]
+      },
+      {
+       "id": "different7",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        100,
+        200
+       ],
+       "text": "different signs",
+       "size": "m"
+      },
+      {
+       "id": "check7",
+       "op": "numwork",
+       "startMs": 3800,
+       "endMs": 6200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        70,
+        300
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "−9",
+         "×",
+         "7",
+         "=",
+         "−63"
+        ]
+       ]
+      },
+      {
+       "id": "arrow7",
+       "op": "arrow",
+       "startMs": 6200,
+       "endMs": 7400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        500,
+        130
+       ],
+       "to": [
+        500,
+        350
+       ]
+      },
+      {
+       "id": "circle7",
+       "op": "highlight",
+       "startMs": 7400,
+       "endMs": 8800,
+       "ink": "good",
+       "weight": 2,
+       "target": "check7",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch10-t02-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "problem8",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        70,
+        80
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "−48",
+         "÷",
+         "−6",
+         "=",
+         "?"
+        ]
+       ]
+      },
+      {
+       "id": "rule8",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 3500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        100,
+        200
+       ],
+       "text": "same signs",
+       "size": "m"
+      },
+      {
+       "id": "answer8",
+       "op": "numwork",
+       "startMs": 3500,
+       "endMs": 5700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        70,
+        300
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "−48",
+         "÷",
+         "−6",
+         "=",
+         "8"
+        ]
+       ]
+      },
+      {
+       "id": "check8",
+       "op": "numwork",
+       "startMs": 5700,
+       "endMs": 7900,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        70,
+        400
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "8",
+         "×",
+         "−6",
+         "=",
+         "−48"
+        ]
+       ]
+      },
+      {
+       "id": "circle8",
+       "op": "highlight",
+       "startMs": 7900,
+       "endMs": 8600,
+       "ink": "good",
+       "weight": 2,
+       "target": "answer8",
+       "style": "circle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1",
+   "key": "-3",
+   "prompt": "make -3"
+  },
+  {
+   "itemId": "r2",
+   "key": "-8",
+   "prompt": "4 × (-2)"
+  },
+  {
+   "itemId": "r3",
+   "key": "-2",
+   "prompt": "-8 ÷ 4"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

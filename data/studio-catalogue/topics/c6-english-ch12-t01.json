@@ -1,0 +1,1611 @@
+{
+ "topicId": "c6-english-ch12-t01",
+ "title": "Yoga—A Way of Life",
+ "chapter": "Yoga—A Way of Life",
+ "subject": "english",
+ "class": 6,
+ "topicType": "T2",
+ "plan": {
+  "game": "story-rail@1",
+  "hint": "sequence, cause and who modes from the lesson's events and speakers"
+ },
+ "game": {
+  "archetype": "story-rail@1",
+  "spec": {
+   "archetype": "story-rail@1",
+   "skills": [
+    "c6-english-ch12-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "picked": "coupled",
+    "streak": "streak",
+    "next": "What happens next?",
+    "effect": "What does this lead to?",
+    "who": "Who said this?",
+    "runDone": "Line complete",
+    "order": "your train",
+    "right": "Coupled",
+    "wrong": "Not this one",
+    "coach": "Tap a wagon before the train reaches the fork"
+   },
+   "title": "Yoga—A Way of Life",
+   "rounds": [
+    {
+     "mode": "sequence",
+     "title": "Yoga steps",
+     "sub": "couple the steps in order",
+     "cards": [
+      {
+       "id": "s1",
+       "text": "Sit with your back straight",
+       "glyph": "person",
+       "src": "c6-english-ch12-t01-i13"
+      },
+      {
+       "id": "s2",
+       "text": "Close your eyes",
+       "glyph": "eye",
+       "src": "c6-english-ch12-t01-i13"
+      },
+      {
+       "id": "s3",
+       "text": "Breathe slowly for one minute",
+       "glyph": "lungs",
+       "src": "c6-english-ch12-t01-i13"
+      }
+     ],
+     "speed": 0.95
+    },
+    {
+     "mode": "cause",
+     "title": "Yoga connections",
+     "sub": "match each cause to its effect",
+     "pairs": [
+      {
+       "cause": {
+        "id": "c1",
+        "text": "The mind wanders",
+        "glyph": "cloud",
+        "src": "c6-english-ch12-t01-i06"
+       },
+       "effect": {
+        "id": "e1",
+        "text": "It is only stretching",
+        "glyph": "person",
+        "src": "c6-english-ch12-t01-i06"
+       }
+      },
+      {
+       "cause": {
+        "id": "c2",
+        "text": "Breathing and meditation",
+        "glyph": "lungs",
+        "src": "c6-english-ch12-t01-i05"
+       },
+       "effect": {
+        "id": "e2",
+        "text": "The mind becomes calm",
+        "glyph": "sun",
+        "src": "c6-english-ch12-t01-i05"
+       }
+      },
+      {
+       "cause": {
+        "id": "c3",
+        "text": "Yoga joins mind and body",
+        "glyph": "person",
+        "src": "c6-english-ch12-t01-i03"
+       },
+       "effect": {
+        "id": "e3",
+        "text": "It supports well-being",
+        "src": "c6-english-ch12-t01-i03"
+       }
+      }
+     ],
+     "speed": 0.85,
+     "targets": "c6-english-ch12-t01-m-yoga-only-exercise"
+    },
+    {
+     "mode": "who",
+     "title": "Who says it?",
+     "sub": "send each line to its source",
+     "speakers": [
+      {
+       "id": "riya",
+       "name": "Riya",
+       "glyph": "person"
+      },
+      {
+       "id": "text",
+       "name": "The text",
+       "glyph": "book"
+      }
+     ],
+     "lines": [
+      {
+       "id": "w1",
+       "text": "I feel nervous.",
+       "speaker": "riya",
+       "src": "c6-english-ch12-t01-i14"
+      },
+      {
+       "id": "w2",
+       "text": "Breathing may help me.",
+       "speaker": "riya",
+       "src": "c6-english-ch12-t01-i14"
+      },
+      {
+       "id": "w3",
+       "text": "Yoga joins mind and body.",
+       "speaker": "text",
+       "src": "c6-english-ch12-t01-i03"
+      },
+      {
+       "id": "w4",
+       "text": "Breathing calms the mind.",
+       "speaker": "text",
+       "src": "c6-english-ch12-t01-i05"
+      }
+     ],
+     "speed": 0.8
+    }
+   ]
+  },
+  "repairs": [
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c6-english-ch12-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Yoga joins mind and body",
+   "accent": "mint",
+   "targets": "c6-english-ch12-t01-m-yoga-only-exercise",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Yoga joins mind and body"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Yoga is only stretching"
+      },
+      {
+       "id": "yoga",
+       "type": "glyph",
+       "name": "person",
+       "color": "mint"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "mind",
+       "type": "node",
+       "text": "Mind",
+       "sub": "attention",
+       "glyph": "eye",
+       "color": "ion"
+      },
+      {
+       "id": "body",
+       "type": "node",
+       "text": "Body",
+       "sub": "asanas",
+       "glyph": "person",
+       "color": "mint"
+      },
+      {
+       "id": "breath",
+       "type": "node",
+       "text": "Breathing",
+       "sub": "calm mind",
+       "glyph": "wind",
+       "color": "sci"
+      },
+      {
+       "id": "benefit",
+       "type": "node",
+       "text": "Well-being",
+       "sub": "health",
+       "color": "sun"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "mind",
+       "to": "body",
+       "text": "joins"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "body",
+       "to": "benefit",
+       "text": "supports"
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "breath",
+       "to": "mind",
+       "text": "calms"
+      },
+      {
+       "id": "a4",
+       "type": "arrow",
+       "from": "body",
+       "to": "breath",
+       "text": "with"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "prompt",
+       "type": "title",
+       "text": "Choose the complete idea"
+      },
+      {
+       "id": "opt1",
+       "type": "node",
+       "text": "Stretching only",
+       "glyph": "person",
+       "color": "amber"
+      },
+      {
+       "id": "opt2",
+       "type": "node",
+       "text": "Mind and body",
+       "glyph": "balance",
+       "color": "mint"
+      },
+      {
+       "id": "opt3",
+       "type": "node",
+       "text": "Sleep only",
+       "glyph": "moon",
+       "color": "ion"
+      },
+      {
+       "id": "opt4",
+       "type": "node",
+       "text": "Sport only",
+       "glyph": "ballot",
+       "color": "sun"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Yoga is an ancient Indian practice for health and well-being.",
+    "L2": "The word yoga comes from the Sanskrit root yuj, meaning to join or unite.",
+    "L3": "Yoga joins the mind with the body through attention and asanas.",
+    "L4": "If the mind wanders, the activity is only stretching, not yoga.",
+    "L5": "Asanas can make muscles stronger and more flexible, and may reduce body pain.",
+    "L6": "Breathing techniques and meditation calm the mind and reduce stress.",
+    "L7": "Yoga can also support better sleep, concentration and heart health.",
+    "L8": "So the main idea is that yoga helps both body and mind. Choose that idea now."
+   },
+   "narration": {
+    "L1": {
+     "text": "Yoga is an ancient Indian practice for health and well-being.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "The word yoga comes from the Sanskrit root yuj, meaning to join or unite.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "Yoga joins the mind with the body through attention and asanas.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "If the mind wanders, the activity is only stretching, not yoga.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "Asanas can make muscles stronger and more flexible, and may reduce body pain.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Breathing techniques and meditation calm the mind and reduce stress.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Yoga can also support better sleep, concentration and heart health.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "So the main idea is that yoga helps both body and mind. Choose that idea now.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "title"
+      },
+      {
+       "at": 0.4,
+       "do": "show",
+       "dur": 1,
+       "target": "yoga"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "title"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "mind",
+        "body",
+        "a1"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "a1",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "myth"
+      },
+      {
+       "at": 0.8,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "benefit",
+        "a2"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "a2",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "breath",
+        "a3"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "a3",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1.2,
+       "target": "benefit"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "prompt"
+      },
+      {
+       "at": 0.8,
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which statement gives the main idea of the text?",
+    "options": [
+     "opt1",
+     "opt2",
+     "opt3",
+     "opt4"
+    ],
+    "answer": "opt2",
+    "src": "c6-english-ch12-t01-i03"
+   }
+  },
+  "repairs": [
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "passes": 2,
+  "seconds": 28
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "Close your eyes",
+   "prompt": "sequence: after/for \"Sit with your back straight\"",
+   "src": "c6-english-ch12-t01-i13"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "Breathe slowly for one minute",
+   "prompt": "sequence: after/for \"Close your eyes\"",
+   "src": "c6-english-ch12-t01-i13"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "It is only stretching",
+   "prompt": "cause: after/for \"The mind wanders\"",
+   "src": "c6-english-ch12-t01-i06"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "The mind becomes calm",
+   "prompt": "cause: after/for \"Breathing and meditation\"",
+   "src": "c6-english-ch12-t01-i05"
+  },
+  {
+   "itemId": "r2:2",
+   "key": "It supports well-being",
+   "prompt": "cause: after/for \"Yoga joins mind and body\"",
+   "src": "c6-english-ch12-t01-i03"
+  },
+  {
+   "itemId": "r3:0",
+   "key": "Riya",
+   "prompt": "who: after/for \"I feel nervous.\"",
+   "src": "c6-english-ch12-t01-i14"
+  },
+  {
+   "itemId": "r3:1",
+   "key": "Riya",
+   "prompt": "who: after/for \"Breathing may help me.\"",
+   "src": "c6-english-ch12-t01-i14"
+  },
+  {
+   "itemId": "r3:2",
+   "key": "The text",
+   "prompt": "who: after/for \"Yoga joins mind and body.\"",
+   "src": "c6-english-ch12-t01-i03"
+  },
+  {
+   "itemId": "r3:3",
+   "key": "The text",
+   "prompt": "who: after/for \"Breathing calms the mind.\"",
+   "src": "c6-english-ch12-t01-i05"
+  }
+ ],
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-english-ch12-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "title",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "Yoga",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "person",
+       "op": "circle",
+       "startMs": 700,
+       "endMs": 1200,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        220
+       ],
+       "r": 42
+      },
+      {
+       "id": "body",
+       "op": "stroke",
+       "startMs": 1100,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         400,
+         262
+        ],
+        [
+         400,
+         350
+        ],
+        [
+         350,
+         420
+        ],
+        [
+         400,
+         350
+        ],
+        [
+         450,
+         420
+        ]
+       ]
+      },
+      {
+       "id": "health",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 2900,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        245,
+        465
+       ],
+       "text": "health",
+       "size": "m"
+      },
+      {
+       "id": "well",
+       "op": "text",
+       "startMs": 2900,
+       "endMs": 3600,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        555,
+        465
+       ],
+       "text": "well-being",
+       "size": "m"
+      },
+      {
+       "id": "ancient",
+       "op": "text",
+       "startMs": 3800,
+       "endMs": 4500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        125
+       ],
+       "text": "ancient Indian",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-english-ch12-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "yoga",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        200,
+        100
+       ],
+       "text": "yoga",
+       "size": "l"
+      },
+      {
+       "id": "root",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        600,
+        100
+       ],
+       "text": "yuj",
+       "size": "l"
+      },
+      {
+       "id": "join",
+       "op": "arrow",
+       "startMs": 1700,
+       "endMs": 2600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        280,
+        110
+       ],
+       "to": [
+        520,
+        110
+       ]
+      },
+      {
+       "id": "meaning",
+       "op": "text",
+       "startMs": 2900,
+       "endMs": 3500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        220
+       ],
+       "text": "join",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "or",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        275
+       ],
+       "text": "or",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "unite",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4600,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        340
+       ],
+       "text": "unite",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "sans",
+       "op": "text",
+       "startMs": 4900,
+       "endMs": 5500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        430
+       ],
+       "text": "Sanskrit",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-english-ch12-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "mind",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        250,
+        220
+       ],
+       "r": 70
+      },
+      {
+       "id": "body",
+       "op": "circle",
+       "startMs": 500,
+       "endMs": 1200,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        550,
+        220
+       ],
+       "r": 70
+      },
+      {
+       "id": "attention",
+       "op": "text",
+       "startMs": 1300,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        100
+       ],
+       "text": "attention",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "link",
+       "op": "arrow",
+       "startMs": 1900,
+       "endMs": 2800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        320,
+        220
+       ],
+       "to": [
+        480,
+        220
+       ]
+      },
+      {
+       "id": "asanas",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        350
+       ],
+       "text": "asanas",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "mindlabel",
+       "op": "text",
+       "startMs": 3800,
+       "endMs": 4300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        250,
+        220
+       ],
+       "text": "mind",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "bodylabel",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 4800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        550,
+        220
+       ],
+       "text": "body",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-english-ch12-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "mind",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        250,
+        180
+       ],
+       "r": 65
+      },
+      {
+       "id": "wander",
+       "op": "arrow",
+       "startMs": 700,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        300,
+        180
+       ],
+       "to": [
+        480,
+        100
+       ]
+      },
+      {
+       "id": "attention",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        250,
+        300
+       ],
+       "text": "mind",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "stretch",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        390
+       ],
+       "text": "stretching",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "not",
+       "op": "text",
+       "startMs": 3700,
+       "endMs": 4400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        450
+       ],
+       "text": "not yoga",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-english-ch12-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "asanas",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "asanas",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "muscle",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        210,
+        180
+       ],
+       "text": "muscles",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "flex",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        590,
+        180
+       ],
+       "text": "flexible",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "strong",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2300,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        210,
+        260
+       ],
+       "text": "stronger",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "bodypain",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3400,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        380
+       ],
+       "text": "body pain",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "reduce",
+       "op": "arrow",
+       "startMs": 3500,
+       "endMs": 4300,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        400,
+        330
+       ],
+       "to": [
+        400,
+        250
+       ]
+      },
+      {
+       "id": "circle",
+       "op": "circle",
+       "startMs": 4500,
+       "endMs": 5300,
+       "ink": "good",
+       "weight": 1,
+       "c": [
+        400,
+        250
+       ],
+       "r": 105
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-english-ch12-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "breath",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        230,
+        100
+       ],
+       "text": "Breathing",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "med",
+       "op": "text",
+       "startMs": 500,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        570,
+        100
+       ],
+       "text": "meditation",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "mind",
+       "op": "circle",
+       "startMs": 1300,
+       "endMs": 1900,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        230
+       ],
+       "r": 75
+      },
+      {
+       "id": "calm",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 2700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        230
+       ],
+       "text": "calm",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "stress",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        390
+       ],
+       "text": "stress",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "down",
+       "op": "arrow",
+       "startMs": 3700,
+       "endMs": 4400,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        400,
+        350
+       ],
+       "to": [
+        400,
+        295
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-english-ch12-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "sleep",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        180,
+        120
+       ],
+       "text": "sleep",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "concentration",
+       "op": "text",
+       "startMs": 600,
+       "endMs": 1400,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        120
+       ],
+       "text": "concentration",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "heart",
+       "op": "circle",
+       "startMs": 1200,
+       "endMs": 1800,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        620,
+        120
+       ],
+       "r": 42
+      },
+      {
+       "id": "health",
+       "op": "text",
+       "startMs": 2000,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        280
+       ],
+       "text": "heart health",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "support",
+       "op": "arrow",
+       "startMs": 2900,
+       "endMs": 3700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        245
+       ],
+       "to": [
+        400,
+        170
+       ]
+      },
+      {
+       "id": "yoga",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        410
+       ],
+       "text": "Yoga",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-english-ch12-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "yoga",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        65
+       ],
+       "text": "Yoga",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "mind",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        250,
+        220
+       ],
+       "r": 75
+      },
+      {
+       "id": "body",
+       "op": "circle",
+       "startMs": 1200,
+       "endMs": 1800,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        550,
+        220
+       ],
+       "r": 75
+      },
+      {
+       "id": "join",
+       "op": "arrow",
+       "startMs": 1900,
+       "endMs": 2800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        325,
+        220
+       ],
+       "to": [
+        475,
+        220
+       ]
+      },
+      {
+       "id": "health",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        350
+       ],
+       "text": "health",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "well",
+       "op": "text",
+       "startMs": 3800,
+       "endMs": 4500,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        415
+       ],
+       "text": "well-being",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "mindlabel",
+       "op": "text",
+       "startMs": 4600,
+       "endMs": 5100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        250,
+        220
+       ],
+       "text": "mind",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "bodylabel",
+       "op": "text",
+       "startMs": 4600,
+       "endMs": 5100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        550,
+        220
+       ],
+       "text": "body",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "choose",
+       "op": "text",
+       "startMs": 5400,
+       "endMs": 6100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        470
+       ],
+       "text": "main idea",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ },
+ "firstCheck": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "Round 3 (Who says it?) attributes the line 'Breathe slowly and focus' to the Coach. The kit item i14 (Riya scenario) states that breathing exercises might help her, but does not contain a spoken line by a coach. The round is inventing a coach character and a line not present in the kit; this changes the facts of the kit's scenario.",
+    "severity": "high"
+   }
+  ],
+  "verdict": "fail",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

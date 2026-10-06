@@ -1,0 +1,1735 @@
+{
+ "topicId": "c5-maths-ch14-t01",
+ "title": "Directions and routes",
+ "chapter": "Maps and Locations",
+ "subject": "maths",
+ "class": 5,
+ "topicType": "T5",
+ "plan": {
+  "game": "map-route@1",
+  "hint": "route mode on a grid map with landmarks (compass steering), then a turns round"
+ },
+ "game": {
+  "archetype": "map-route@1",
+  "spec": {
+   "archetype": "map-route@1",
+   "skills": [
+    "c5-maths-ch14-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "thread": "Drag the thread along the road from A to B",
+    "round": "Round",
+    "done": "routes",
+    "go": "FLY",
+    "undo": "UNDO",
+    "coach": "Plan the route, then FLY",
+    "runDone": "Map room closed",
+    "fwd": "forward",
+    "left": "left",
+    "right": "right",
+    "km": "km",
+    "scale": "1 square =",
+    "measure": "Measure the map route",
+    "lat": "latitude",
+    "lon": "longitude",
+    "drop": "Drop the pin",
+    "fly": "Fly to",
+    "set": "SET",
+    "N": "north",
+    "S": "south",
+    "E": "east",
+    "W": "west",
+    "blocked": "BLOCKED",
+    "arrived": "ARRIVED"
+   },
+   "title": "Map Room",
+   "rounds": [
+    {
+     "mode": "route",
+     "title": "Temple route",
+     "sub": "Use north, south, east and west",
+     "w": 8,
+     "h": 5,
+     "blocks": [
+      [
+       2,
+       4
+      ],
+      [
+       2,
+       3
+      ],
+      [
+       4,
+       1
+      ],
+      [
+       4,
+       0
+      ]
+     ],
+     "places": [
+      {
+       "at": [
+        6,
+        0
+       ],
+       "label": "Temple",
+       "glyph": "temple"
+      },
+      {
+       "at": [
+        1,
+        4
+       ],
+       "label": "Neem",
+       "glyph": "tree"
+      }
+     ],
+     "start": [
+      0,
+      4
+     ],
+     "goal": 0,
+     "steer": "compass",
+     "maxSteps": 16,
+     "targets": "c5-maths-ch14-t01-m-north-is-up"
+    },
+    {
+     "mode": "route",
+     "title": "Turn at the bus stand",
+     "sub": "Face the way, then choose each turn",
+     "w": 8,
+     "h": 5,
+     "blocks": [
+      [
+       3,
+       4
+      ],
+      [
+       3,
+       3
+      ],
+      [
+       5,
+       2
+      ]
+     ],
+     "places": [
+      {
+       "at": [
+        6,
+        1
+       ],
+       "label": "House",
+       "glyph": "house"
+      },
+      {
+       "at": [
+        0,
+        4
+       ],
+       "label": "Bus stand",
+       "glyph": "road"
+      }
+     ],
+     "start": [
+      1,
+      4
+     ],
+     "goal": 0,
+     "steer": "turns",
+     "maxSteps": 12,
+     "targets": "c5-maths-ch14-t01-m-left-right-fixed"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c5-maths-ch14-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Finding your way",
+   "accent": "mint",
+   "targets": "c5-maths-ch14-t01-m-north-is-up",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Directions and routes"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "North is always up in real life"
+      },
+      {
+       "id": "map",
+       "type": "glyph",
+       "name": "map",
+       "x": 700,
+       "y": 320,
+       "size": 180,
+       "color": "mint"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "north",
+       "type": "node",
+       "text": "North",
+       "sub": "fixed direction",
+       "glyph": "compass",
+       "color": "ion"
+      },
+      {
+       "id": "east",
+       "type": "node",
+       "text": "East",
+       "sub": "right on map",
+       "glyph": "sun",
+       "color": "sun"
+      },
+      {
+       "id": "south",
+       "type": "node",
+       "text": "South",
+       "sub": "opposite north",
+       "glyph": "road",
+       "color": "sci"
+      },
+      {
+       "id": "west",
+       "type": "node",
+       "text": "West",
+       "sub": "left on map",
+       "glyph": "wind",
+       "color": "amber"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "north",
+       "to": "east",
+       "text": "right turn"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "east",
+       "to": "south",
+       "text": "right turn"
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "south",
+       "to": "west",
+       "text": "right turn"
+      },
+      {
+       "id": "a4",
+       "type": "arrow",
+       "from": "west",
+       "to": "north",
+       "text": "right turn"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "sunrise",
+       "type": "glyph",
+       "name": "sun",
+       "x": 120,
+       "y": 300,
+       "size": 130,
+       "color": "sun"
+      },
+      {
+       "id": "face",
+       "type": "node",
+       "text": "Face east",
+       "sub": "morning sun",
+       "glyph": "person",
+       "color": "amber"
+      },
+      {
+       "id": "left",
+       "type": "node",
+       "text": "North",
+       "sub": "on your left",
+       "glyph": "compass",
+       "color": "ion"
+      },
+      {
+       "id": "behind",
+       "type": "node",
+       "text": "West",
+       "sub": "behind you",
+       "glyph": "road",
+       "color": "sci"
+      },
+      {
+       "id": "p1",
+       "type": "arrow",
+       "from": "sunrise",
+       "to": "face",
+       "text": "rises"
+      },
+      {
+       "id": "p2",
+       "type": "arrow",
+       "from": "face",
+       "to": "left",
+       "text": "left side"
+      },
+      {
+       "id": "p3",
+       "type": "arrow",
+       "from": "face",
+       "to": "behind",
+       "text": "behind"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "row",
+     "els": [
+      {
+       "id": "bus",
+       "type": "node",
+       "text": "Bus stand",
+       "sub": "start",
+       "color": "mint"
+      },
+      {
+       "id": "temple",
+       "type": "node",
+       "text": "Temple",
+       "sub": "landmark",
+       "glyph": "temple",
+       "color": "amber"
+      },
+      {
+       "id": "house",
+       "type": "node",
+       "text": "House",
+       "sub": "finish",
+       "glyph": "house",
+       "color": "sun"
+      },
+      {
+       "id": "r1",
+       "type": "arrow",
+       "from": "bus",
+       "to": "temple",
+       "text": "2 north"
+      },
+      {
+       "id": "r2",
+       "type": "arrow",
+       "from": "temple",
+       "to": "house",
+       "text": "1 east"
+      }
+     ]
+    },
+    {
+     "id": "s5",
+     "layout": "row",
+     "els": [
+      {
+       "id": "southOpt",
+       "type": "node",
+       "text": "South",
+       "sub": "choice",
+       "glyph": "road",
+       "color": "sci"
+      },
+      {
+       "id": "eastOpt",
+       "type": "node",
+       "text": "East",
+       "sub": "choice",
+       "glyph": "sun",
+       "color": "sun"
+      },
+      {
+       "id": "westOpt",
+       "type": "node",
+       "text": "West",
+       "sub": "choice",
+       "glyph": "wind",
+       "color": "amber"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Directions are fixed on the ground: north, south, east and west.",
+    "L2": "North is often drawn at the top of a map, but north is not always up in real life.",
+    "L3": "On a map, east is right and west is left when north is at the top.",
+    "L4": "Left and right depend on which way you face. If you face north and turn right, you face east.",
+    "L5": "The sun rises in the east. Facing the morning sun, north is on your left and west is behind you.",
+    "L6": "Good directions name the turn, how far to go, and a landmark to check your route.",
+    "L7": "Ammu goes north, turns right, then turns right again. Which way does she face?",
+    "L8": "She faces east after the first turn, then south after the second turn."
+   },
+   "narration": {
+    "L1": {
+     "text": "Directions are fixed on the ground: north, south, east and west.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "North is often drawn at the top of a map, but north is not always up in real life.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "On a map, east is right and west is left when north is at the top.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "Left and right depend on which way you face. If you face north and turn right, you face east.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "The sun rises in the east. Facing the morning sun, north is on your left and west is behind you.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Good directions name the turn, how far to go, and a landmark to check your route.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Ammu goes north, turns right, then turns right again. Which way does she face?",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "She faces east after the first turn, then south after the second turn.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "north",
+        "east",
+        "south",
+        "west"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      },
+      {
+       "at": 1,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": [
+        "east",
+        "west"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "a1",
+       "to": 1
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "east"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.3,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "sunrise",
+        "face",
+        "left",
+        "behind"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 1,
+       "target": [
+        "p1",
+        "p2",
+        "p3"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.3,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "bus",
+        "temple",
+        "house"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 1,
+       "target": [
+        "r1",
+        "r2"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": [
+        "north",
+        "a1",
+        "a2"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s5",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "southOpt",
+        "eastOpt",
+        "westOpt"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "After walking north and turning right twice, which way are you facing?",
+    "options": [
+     "southOpt",
+     "eastOpt",
+     "westOpt"
+    ],
+    "answer": "southOpt",
+    "src": "c5-maths-ch14-t01-i03"
+   }
+  },
+  "repairs": [
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 32
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch14-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "n",
+       "op": "arrow",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        400,
+        250
+       ],
+       "to": [
+        400,
+        70
+       ]
+      },
+      {
+       "id": "s",
+       "op": "arrow",
+       "startMs": 600,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        400,
+        250
+       ],
+       "to": [
+        400,
+        430
+       ]
+      },
+      {
+       "id": "e",
+       "op": "arrow",
+       "startMs": 1200,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        400,
+        250
+       ],
+       "to": [
+        580,
+        250
+       ]
+      },
+      {
+       "id": "w",
+       "op": "arrow",
+       "startMs": 1800,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        400,
+        250
+       ],
+       "to": [
+        220,
+        250
+       ]
+      },
+      {
+       "id": "tn",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3300,
+       "ink": "accent",
+       "at": [
+        400,
+        50
+       ],
+       "text": "north",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "ts",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3600,
+       "ink": "accent",
+       "at": [
+        400,
+        465
+       ],
+       "text": "south",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "te",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 3900,
+       "ink": "accent",
+       "at": [
+        610,
+        255
+       ],
+       "text": "east",
+       "size": "m"
+      },
+      {
+       "id": "tw",
+       "op": "text",
+       "startMs": 3600,
+       "endMs": 4200,
+       "ink": "accent",
+       "at": [
+        165,
+        255
+       ],
+       "text": "west",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "ground",
+       "op": "line",
+       "startMs": 4000,
+       "endMs": 4700,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        180,
+        250
+       ],
+       "to": [
+        620,
+        250
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch14-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "map",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        80
+       ],
+       "w": 560,
+       "h": 340
+      },
+      {
+       "id": "top",
+       "op": "arrow",
+       "startMs": 900,
+       "endMs": 1800,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        400,
+        250
+       ],
+       "to": [
+        400,
+        105
+       ]
+      },
+      {
+       "id": "north",
+       "op": "label",
+       "startMs": 1800,
+       "endMs": 2400,
+       "ink": "accent",
+       "at": [
+        425,
+        105
+       ],
+       "text": "north",
+       "to": [
+        400,
+        105
+       ]
+      },
+      {
+       "id": "real",
+       "op": "circle",
+       "startMs": 2800,
+       "endMs": 3500,
+       "ink": "mark",
+       "weight": 2,
+       "c": [
+        400,
+        250
+       ],
+       "r": 18
+      },
+      {
+       "id": "ground",
+       "op": "line",
+       "startMs": 3600,
+       "endMs": 4400,
+       "ink": "soft",
+       "from": [
+        220,
+        390
+       ],
+       "to": [
+        580,
+        390
+       ]
+      },
+      {
+       "id": "notup",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5300,
+       "ink": "accent",
+       "at": [
+        400,
+        455
+       ],
+       "text": "not up",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "mapword",
+       "op": "text",
+       "startMs": 5400,
+       "endMs": 6000,
+       "ink": "chalk",
+       "at": [
+        400,
+        65
+       ],
+       "text": "map",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch14-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "east",
+       "op": "arrow",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        400,
+        250
+       ],
+       "to": [
+        590,
+        250
+       ]
+      },
+      {
+       "id": "west",
+       "op": "arrow",
+       "startMs": 500,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        400,
+        250
+       ],
+       "to": [
+        210,
+        250
+       ]
+      },
+      {
+       "id": "north",
+       "op": "arrow",
+       "startMs": 1000,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        400,
+        250
+       ],
+       "to": [
+        400,
+        90
+       ]
+      },
+      {
+       "id": "right",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 2700,
+       "ink": "accent",
+       "at": [
+        620,
+        255
+       ],
+       "text": "east",
+       "size": "m"
+      },
+      {
+       "id": "left",
+       "op": "text",
+       "startMs": 2400,
+       "endMs": 3000,
+       "ink": "accent",
+       "at": [
+        165,
+        255
+       ],
+       "text": "west",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "toplabel",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3600,
+       "ink": "chalk",
+       "at": [
+        400,
+        65
+       ],
+       "text": "north",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "h1",
+       "op": "highlight",
+       "startMs": 4000,
+       "endMs": 5000,
+       "ink": "good",
+       "weight": 2,
+       "target": "right",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch14-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "person",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "c": [
+        400,
+        260
+       ],
+       "r": 25
+      },
+      {
+       "id": "face",
+       "op": "arrow",
+       "startMs": 500,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        400,
+        235
+       ],
+       "to": [
+        400,
+        100
+       ]
+      },
+      {
+       "id": "north",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 2000,
+       "ink": "accent",
+       "at": [
+        400,
+        70
+       ],
+       "text": "north",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "turn",
+       "op": "arrow",
+       "startMs": 2200,
+       "endMs": 3400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        420,
+        150
+       ],
+       "to": [
+        560,
+        250
+       ],
+       "bend": 1
+      },
+      {
+       "id": "right",
+       "op": "text",
+       "startMs": 3400,
+       "endMs": 4000,
+       "ink": "accent",
+       "at": [
+        570,
+        220
+       ],
+       "text": "right",
+       "size": "m"
+      },
+      {
+       "id": "east",
+       "op": "text",
+       "startMs": 4200,
+       "endMs": 4800,
+       "ink": "good",
+       "at": [
+        610,
+        275
+       ],
+       "text": "east",
+       "size": "m"
+      },
+      {
+       "id": "h1",
+       "op": "highlight",
+       "startMs": 5200,
+       "endMs": 6200,
+       "ink": "good",
+       "weight": 2,
+       "target": "east",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch14-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9111,
+     "ops": [
+      {
+       "id": "sun",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        120,
+        120
+       ],
+       "r": 42,
+       "fill": "accent"
+      },
+      {
+       "id": "sunrise",
+       "op": "text",
+       "startMs": 800,
+       "endMs": 1500,
+       "ink": "accent",
+       "at": [
+        120,
+        185
+       ],
+       "text": "sun rises",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "east",
+       "op": "arrow",
+       "startMs": 1500,
+       "endMs": 2600,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        200,
+        250
+       ],
+       "to": [
+        600,
+        250
+       ]
+      },
+      {
+       "id": "el",
+       "op": "text",
+       "startMs": 2600,
+       "endMs": 3200,
+       "ink": "accent",
+       "at": [
+        620,
+        255
+       ],
+       "text": "east",
+       "size": "m"
+      },
+      {
+       "id": "person",
+       "op": "circle",
+       "startMs": 3200,
+       "endMs": 3800,
+       "ink": "chalk",
+       "c": [
+        400,
+        300
+       ],
+       "r": 24
+      },
+      {
+       "id": "face",
+       "op": "arrow",
+       "startMs": 3800,
+       "endMs": 4900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        275
+       ],
+       "to": [
+        590,
+        250
+       ]
+      },
+      {
+       "id": "north",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 5600,
+       "ink": "good",
+       "at": [
+        300,
+        220
+       ],
+       "text": "north",
+       "size": "m"
+      },
+      {
+       "id": "west",
+       "op": "text",
+       "startMs": 5600,
+       "endMs": 6200,
+       "ink": "good",
+       "at": [
+        400,
+        390
+       ],
+       "text": "west",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "left",
+       "op": "text",
+       "startMs": 6300,
+       "endMs": 6800,
+       "ink": "accent",
+       "at": [
+        280,
+        300
+       ],
+       "text": "left",
+       "size": "m"
+      },
+      {
+       "id": "behind",
+       "op": "text",
+       "startMs": 6900,
+       "endMs": 7500,
+       "ink": "accent",
+       "at": [
+        400,
+        430
+       ],
+       "text": "behind",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch14-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "turn",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "accent",
+       "at": [
+        100,
+        130
+       ],
+       "text": "turn",
+       "size": "m"
+      },
+      {
+       "id": "far",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "accent",
+       "at": [
+        100,
+        230
+       ],
+       "text": "how far",
+       "size": "m"
+      },
+      {
+       "id": "land",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "accent",
+       "at": [
+        100,
+        330
+       ],
+       "text": "landmark",
+       "size": "m"
+      },
+      {
+       "id": "route",
+       "op": "line",
+       "startMs": 2300,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        240,
+        130
+       ],
+       "to": [
+        650,
+        130
+       ]
+      },
+      {
+       "id": "r1",
+       "op": "arrow",
+       "startMs": 3000,
+       "endMs": 3500,
+       "ink": "mark",
+       "from": [
+        240,
+        130
+       ],
+       "to": [
+        360,
+        130
+       ]
+      },
+      {
+       "id": "r2",
+       "op": "arrow",
+       "startMs": 3500,
+       "endMs": 4000,
+       "ink": "mark",
+       "from": [
+        360,
+        130
+       ],
+       "to": [
+        360,
+        250
+       ]
+      },
+      {
+       "id": "r3",
+       "op": "arrow",
+       "startMs": 4000,
+       "endMs": 4700,
+       "ink": "mark",
+       "from": [
+        360,
+        250
+       ],
+       "to": [
+        600,
+        250
+       ]
+      },
+      {
+       "id": "check",
+       "op": "circle",
+       "startMs": 4800,
+       "endMs": 5500,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        600,
+        250
+       ],
+       "r": 28
+      },
+      {
+       "id": "h",
+       "op": "highlight",
+       "startMs": 5700,
+       "endMs": 6500,
+       "ink": "good",
+       "weight": 2,
+       "target": "check",
+       "style": "pulse"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch14-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "start",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "chalk",
+       "c": [
+        150,
+        250
+       ],
+       "r": 22
+      },
+      {
+       "id": "north",
+       "op": "arrow",
+       "startMs": 500,
+       "endMs": 1300,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        150,
+        220
+       ],
+       "to": [
+        150,
+        80
+       ]
+      },
+      {
+       "id": "nlabel",
+       "op": "text",
+       "startMs": 1300,
+       "endMs": 1900,
+       "ink": "accent",
+       "at": [
+        150,
+        55
+       ],
+       "text": "north",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "east",
+       "op": "arrow",
+       "startMs": 2100,
+       "endMs": 3000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        180,
+        250
+       ],
+       "to": [
+        350,
+        250
+       ]
+      },
+      {
+       "id": "turn1",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3600,
+       "ink": "accent",
+       "at": [
+        260,
+        220
+       ],
+       "text": "right",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "south",
+       "op": "arrow",
+       "startMs": 3700,
+       "endMs": 4600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        350,
+        280
+       ],
+       "to": [
+        350,
+        420
+       ]
+      },
+      {
+       "id": "turn2",
+       "op": "text",
+       "startMs": 4600,
+       "endMs": 5200,
+       "ink": "accent",
+       "at": [
+        390,
+        350
+       ],
+       "text": "right",
+       "size": "m"
+      },
+      {
+       "id": "question",
+       "op": "text",
+       "startMs": 5300,
+       "endMs": 6100,
+       "ink": "chalk",
+       "at": [
+        500,
+        150
+       ],
+       "text": "which way",
+       "size": "m"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 2,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch14-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "first",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2700,
+       "ink": "good",
+       "at": [
+        520,
+        220
+       ],
+       "text": "east",
+       "size": "l"
+      },
+      {
+       "id": "second",
+       "op": "text",
+       "startMs": 2800,
+       "endMs": 3600,
+       "ink": "good",
+       "at": [
+        520,
+        330
+       ],
+       "text": "south",
+       "size": "l"
+      },
+      {
+       "id": "step1",
+       "op": "arrow",
+       "startMs": 3800,
+       "endMs": 4400,
+       "ink": "mark",
+       "from": [
+        500,
+        240
+       ],
+       "to": [
+        500,
+        300
+       ]
+      },
+      {
+       "id": "step2",
+       "op": "arrow",
+       "startMs": 4400,
+       "endMs": 5000,
+       "ink": "mark",
+       "from": [
+        500,
+        350
+       ],
+       "to": [
+        500,
+        410
+       ]
+      },
+      {
+       "id": "final",
+       "op": "highlight",
+       "startMs": 5100,
+       "endMs": 5900,
+       "ink": "good",
+       "weight": 2,
+       "target": "second",
+       "style": "pulse"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "10 steps",
+   "prompt": "to Temple"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "8 steps",
+   "prompt": "to House"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

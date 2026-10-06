@@ -1,0 +1,1640 @@
+{
+ "topicId": "c5-english-ch07-t01",
+ "title": "Gilli Danda",
+ "chapter": "Gilli Danda",
+ "subject": "english",
+ "class": 5,
+ "topicType": "T1",
+ "plan": {
+  "game": "beat-line@1",
+  "hint": "beat and rhyme rounds (Hindi: matra round on a doha/chaupai line)"
+ },
+ "game": {
+  "archetype": "beat-line@1",
+  "spec": {
+   "archetype": "beat-line@1",
+   "skills": [
+    "c5-english-ch07-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "onBeat": "on beat",
+    "combo": "combo",
+    "tap": "Tap on the beat",
+    "catch": "Catch the rhyme",
+    "mark": "Short or long?",
+    "short": "। short",
+    "long": "ऽ long",
+    "practice": "PRACTICE LINE",
+    "runDone": "Poem played",
+    "perfect": "ON BEAT",
+    "early": "early",
+    "late": "late",
+    "meter": "मात्रा"
+   },
+   "title": "Gilli Danda Beats",
+   "bpm": 80,
+   "lines": [
+    {
+     "text": "Tap the gilli, up it springs",
+     "beats": [
+      0,
+      2,
+      5
+     ],
+     "own": true
+    },
+    {
+     "text": "Whack! It flies as if on wings",
+     "beats": [
+      0,
+      1,
+      4
+     ],
+     "own": true
+    },
+    {
+     "text": "No bat, no ball, no costly toy",
+     "beats": [
+      0,
+      2,
+      5
+     ],
+     "own": true
+    },
+    {
+     "text": "Just two old sticks and lots of joy",
+     "beats": [
+      0,
+      2,
+      5
+     ],
+     "own": true
+    },
+    {
+     "text": "Place the gilli on the ground",
+     "beats": [
+      0,
+      3
+     ],
+     "own": true
+    },
+    {
+     "text": "Tap one end so it jumps up",
+     "beats": [
+      0,
+      2,
+      5
+     ],
+     "own": true
+    },
+    {
+     "text": "Hit the gilli far with the danda",
+     "beats": [
+      0,
+      2,
+      5
+     ],
+     "own": true
+    },
+    {
+     "text": "Measure the distance with the danda",
+     "beats": [
+      0,
+      2,
+      5
+     ],
+     "own": true
+    }
+   ],
+   "rounds": [
+    {
+     "mode": "beat",
+     "title": "Feel the whack",
+     "sub": "Tap the strong sounds in each line",
+     "lines": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "mode": "rhyme",
+     "title": "Catch the rhyme",
+     "sub": "Listen for the matching end sound",
+     "items": [
+      {
+       "cue": "Tap the gilli, up it ____",
+       "options": [
+        "springs",
+        "spins",
+        "sings"
+       ],
+       "answer": "springs",
+       "src": "c5-english-ch07-t01-i02"
+      },
+      {
+       "cue": "Whack! It flies as if on ____",
+       "options": [
+        "wings",
+        "rings",
+        "things"
+       ],
+       "answer": "wings",
+       "src": "c5-english-ch07-t01-i02"
+      },
+      {
+       "cue": "Just two old sticks and lots of ____",
+       "options": [
+        "joy",
+        "toy",
+        "boy"
+       ],
+       "answer": "joy",
+       "src": "c5-english-ch07-t01-i05"
+      }
+     ],
+     "targets": "c5-english-ch07-t01-m-simile-literal"
+    }
+   ]
+  },
+  "repairs": [
+   "round:lines"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c5-english-ch07-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Gilli Danda: Simple Fun",
+   "accent": "amber",
+   "targets": "c5-english-ch07-t01-m-simile-literal",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Gilli Danda"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "The gilli really has wings"
+      },
+      {
+       "id": "gilli",
+       "type": "node",
+       "text": "Gilli",
+       "sub": "small stick",
+       "glyph": "torch",
+       "color": "amber"
+      },
+      {
+       "id": "danda",
+       "type": "node",
+       "text": "Danda",
+       "sub": "long stick",
+       "glyph": "ruler",
+       "color": "sci"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "place",
+       "type": "node",
+       "text": "Place it",
+       "sub": "on the ground",
+       "glyph": "road",
+       "color": "mint"
+      },
+      {
+       "id": "tap",
+       "type": "node",
+       "text": "Tap",
+       "sub": "one end",
+       "glyph": "hand",
+       "color": "sun"
+      },
+      {
+       "id": "whack",
+       "type": "node",
+       "text": "Whack!",
+       "sub": "hit it hard",
+       "glyph": "lightning",
+       "color": "amber"
+      },
+      {
+       "id": "fly",
+       "type": "node",
+       "text": "Flies high",
+       "sub": "fast like a bird",
+       "glyph": "bird",
+       "color": "ion"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "place",
+       "to": "tap",
+       "text": "then"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "tap",
+       "to": "whack",
+       "text": "then"
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "whack",
+       "to": "fly",
+       "text": "up it goes"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "i1",
+       "type": "node",
+       "text": "Place",
+       "sub": "the gilli",
+       "glyph": "road",
+       "color": "mint"
+      },
+      {
+       "id": "i2",
+       "type": "node",
+       "text": "Tap",
+       "sub": "one end",
+       "glyph": "hand",
+       "color": "sun"
+      },
+      {
+       "id": "i3",
+       "type": "node",
+       "text": "Hit",
+       "sub": "with danda",
+       "glyph": "lightning",
+       "color": "amber"
+      },
+      {
+       "id": "i4",
+       "type": "node",
+       "text": "Measure",
+       "sub": "the distance",
+       "glyph": "ruler",
+       "color": "sci"
+      },
+      {
+       "id": "a4",
+       "type": "arrow",
+       "from": "i1",
+       "to": "i2",
+       "text": "next"
+      },
+      {
+       "id": "a5",
+       "type": "arrow",
+       "from": "i2",
+       "to": "i3",
+       "text": "next"
+      },
+      {
+       "id": "a6",
+       "type": "arrow",
+       "from": "i3",
+       "to": "i4",
+       "text": "after landing"
+      },
+      {
+       "id": "joy",
+       "type": "label",
+       "text": "Two sticks, lots of joy",
+       "x": 420,
+       "y": 500,
+       "color": "sun"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Gilli danda is a traditional game played with two sticks: a gilli and a danda.",
+    "L2": "The poem says you do not need costly toys to have fun; two old sticks can bring lots of joy.",
+    "L3": "First, place the gilli on the ground. Then tap one end so it springs up.",
+    "L4": "Whack! Hit the gilli hard with the danda, and watch it fly high and fast.",
+    "L5": "The gilli flies as if on wings, but this is a comparison, not a fact about real wings.",
+    "L6": "After it lands, players count or measure how far it went to see who is winning.",
+    "L7": "The exclamation mark makes Whack sound sudden and loud, so stress that word when you recite.",
+    "L8": "Remember the order: place, tap, hit, then measure. Simple play can give great joy."
+   },
+   "narration": {
+    "L1": {
+     "text": "Gilli danda is a traditional game played with two sticks: a gilli and a danda.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "The poem says you do not need costly toys to have fun; two old sticks can bring lots of joy.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "First, place the gilli on the ground. Then tap one end so it springs up.",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "Whack! Hit the gilli hard with the danda, and watch it fly high and fast.",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "The gilli flies as if on wings, but this is a comparison, not a fact about real wings.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "After it lands, players count or measure how far it went to see who is winning.",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "The exclamation mark makes Whack sound sudden and loud, so stress that word when you recite.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Remember the order: place, tap, hit, then measure. Simple play can give great joy.",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "title"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "gilli",
+        "danda"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "myth"
+      },
+      {
+       "at": 1,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.5,
+       "target": "place"
+      },
+      {
+       "at": 0.6,
+       "do": "show",
+       "dur": 0.6,
+       "target": "tap"
+      },
+      {
+       "at": 1.2,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "a1",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "whack"
+      },
+      {
+       "at": 0.7,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "a2",
+       "to": 1
+      },
+      {
+       "at": 1.4,
+       "do": "show",
+       "dur": 0.7,
+       "target": "fly"
+      },
+      {
+       "at": 2,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "a3",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1.2,
+       "target": "fly"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "i4"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "whack"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "i1",
+        "i2",
+        "i3",
+        "i4"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive"
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "order",
+    "prompt": "Tap the steps of gilli danda in the correct order.",
+    "items": [
+     "i1",
+     "i2",
+     "i3",
+     "i4"
+    ],
+    "src": "c5-english-ch07-t01-i06"
+   }
+  },
+  "repairs": [],
+  "attempts": 2,
+  "model": "taxila-fast-bg",
+  "passes": 2,
+  "seconds": 33
+ },
+ "keys": [
+  {
+   "itemId": "b0:*",
+   "key": "Tap · gilli, · springs",
+   "prompt": "stressed words in: Tap the gilli, up it springs"
+  },
+  {
+   "itemId": "b1:*",
+   "key": "Whack! · It · if",
+   "prompt": "stressed words in: Whack! It flies as if on wings"
+  },
+  {
+   "itemId": "b2:*",
+   "key": "No · no · costly",
+   "prompt": "stressed words in: No bat, no ball, no costly toy"
+  },
+  {
+   "itemId": "b3:*",
+   "key": "Just · old · lots",
+   "prompt": "stressed words in: Just two old sticks and lots of joy"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "springs",
+   "prompt": "Tap the gilli, up it ____ [springs / spins / sings]",
+   "src": "c5-english-ch07-t01-i02"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "wings",
+   "prompt": "Whack! It flies as if on ____ [wings / rings / things]",
+   "src": "c5-english-ch07-t01-i02"
+  },
+  {
+   "itemId": "r2:2",
+   "key": "joy",
+   "prompt": "Just two old sticks and lots of ____ [joy / toy / boy]",
+   "src": "c5-english-ch07-t01-i05"
+  }
+ ],
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-english-ch07-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "title",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "Gilli danda",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "gilli",
+       "op": "line",
+       "startMs": 1100,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 3,
+       "from": [
+        180,
+        220
+       ],
+       "to": [
+        300,
+        190
+       ]
+      },
+      {
+       "id": "gilliLabel",
+       "op": "label",
+       "startMs": 1900,
+       "endMs": 2500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        245,
+        165
+       ],
+       "text": "gilli",
+       "target": "gilli"
+      },
+      {
+       "id": "danda",
+       "op": "line",
+       "startMs": 2700,
+       "endMs": 3600,
+       "ink": "chalk",
+       "weight": 3,
+       "from": [
+        430,
+        300
+       ],
+       "to": [
+        650,
+        180
+       ]
+      },
+      {
+       "id": "dandaLabel",
+       "op": "label",
+       "startMs": 3600,
+       "endMs": 4200,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        610,
+        155
+       ],
+       "text": "danda",
+       "target": "danda"
+      },
+      {
+       "id": "two",
+       "op": "text",
+       "startMs": 4600,
+       "endMs": 5400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        400
+       ],
+       "text": "two sticks",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "game",
+       "op": "text",
+       "startMs": 5600,
+       "endMs": 6500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        450
+       ],
+       "text": "traditional game",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-english-ch07-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9111,
+     "ops": [
+      {
+       "id": "cost",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        170,
+        100
+       ],
+       "text": "costly toys",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "cross",
+       "op": "line",
+       "startMs": 1200,
+       "endMs": 1800,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        90,
+        70
+       ],
+       "to": [
+        250,
+        130
+       ]
+      },
+      {
+       "id": "old",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        100
+       ],
+       "text": "two old sticks",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "joy",
+       "op": "text",
+       "startMs": 3800,
+       "endMs": 5000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        250
+       ],
+       "text": "lots of joy",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "arrow",
+       "op": "arrow",
+       "startMs": 5100,
+       "endMs": 5800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        140
+       ],
+       "to": [
+        400,
+        220
+       ]
+      },
+      {
+       "id": "enough",
+       "op": "text",
+       "startMs": 6100,
+       "endMs": 6900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        350
+       ],
+       "text": "enough",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "message",
+       "op": "text",
+       "startMs": 7200,
+       "endMs": 8500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        440
+       ],
+       "text": "fun needs no costly toys",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-english-ch07-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "ground",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        100,
+        330
+       ],
+       "to": [
+        700,
+        330
+       ]
+      },
+      {
+       "id": "gilli",
+       "op": "line",
+       "startMs": 1100,
+       "endMs": 1900,
+       "ink": "accent",
+       "weight": 3,
+       "from": [
+        330,
+        320
+       ],
+       "to": [
+        430,
+        300
+       ]
+      },
+      {
+       "id": "place",
+       "op": "text",
+       "startMs": 2000,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        380,
+        390
+       ],
+       "text": "place",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "tap",
+       "op": "arrow",
+       "startMs": 3000,
+       "endMs": 3900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        500,
+        270
+       ],
+       "to": [
+        420,
+        305
+       ]
+      },
+      {
+       "id": "spring",
+       "op": "arrow",
+       "startMs": 4100,
+       "endMs": 5300,
+       "ink": "accent",
+       "weight": 3,
+       "from": [
+        430,
+        300
+       ],
+       "to": [
+        470,
+        150
+       ]
+      },
+      {
+       "id": "tapLabel",
+       "op": "text",
+       "startMs": 5400,
+       "endMs": 5900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        535,
+        270
+       ],
+       "text": "tap",
+       "size": "m"
+      },
+      {
+       "id": "up",
+       "op": "text",
+       "startMs": 6000,
+       "endMs": 6700,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        500,
+        120
+       ],
+       "text": "springs up",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-english-ch07-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "danda",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 3,
+       "from": [
+        220,
+        380
+       ],
+       "to": [
+        360,
+        250
+       ]
+      },
+      {
+       "id": "hit",
+       "op": "arrow",
+       "startMs": 1000,
+       "endMs": 1900,
+       "ink": "mark",
+       "weight": 3,
+       "from": [
+        360,
+        250
+       ],
+       "to": [
+        470,
+        190
+       ]
+      },
+      {
+       "id": "whack",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 3100,
+       "ink": "accent",
+       "weight": 3,
+       "at": [
+        400,
+        90
+       ],
+       "text": "Whack!",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "flight",
+       "op": "arrow",
+       "startMs": 3300,
+       "endMs": 4700,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        470,
+        190
+       ],
+       "to": [
+        650,
+        90
+       ]
+      },
+      {
+       "id": "high",
+       "op": "text",
+       "startMs": 4800,
+       "endMs": 5300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        650,
+        55
+       ],
+       "text": "high",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "fast",
+       "op": "text",
+       "startMs": 5500,
+       "endMs": 6000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        650,
+        140
+       ],
+       "text": "fast",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-english-ch07-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "gilli",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        260,
+        260
+       ],
+       "r": 18
+      },
+      {
+       "id": "path",
+       "op": "arrow",
+       "startMs": 900,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        280,
+        250
+       ],
+       "to": [
+        620,
+        120
+       ]
+      },
+      {
+       "id": "wings",
+       "op": "line",
+       "startMs": 2400,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        540,
+        140
+       ],
+       "to": [
+        490,
+        95
+       ]
+      },
+      {
+       "id": "wings2",
+       "op": "line",
+       "startMs": 2900,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        540,
+        140
+       ],
+       "to": [
+        590,
+        95
+       ]
+      },
+      {
+       "id": "asif",
+       "op": "text",
+       "startMs": 3600,
+       "endMs": 4800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        540,
+        210
+       ],
+       "text": "as if on wings",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "not",
+       "op": "text",
+       "startMs": 5100,
+       "endMs": 6300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        350
+       ],
+       "text": "not real wings",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "compare",
+       "op": "text",
+       "startMs": 6500,
+       "endMs": 7600,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        430
+       ],
+       "text": "comparison",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-english-ch07-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "ground",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        90,
+        330
+       ],
+       "to": [
+        700,
+        330
+       ]
+      },
+      {
+       "id": "gilli",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        230,
+        315
+       ],
+       "r": 14
+      },
+      {
+       "id": "landing",
+       "op": "circle",
+       "startMs": 1600,
+       "endMs": 2100,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        610,
+        315
+       ],
+       "r": 14
+      },
+      {
+       "id": "distance",
+       "op": "line",
+       "startMs": 2400,
+       "endMs": 3400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        230,
+        370
+       ],
+       "to": [
+        610,
+        370
+       ]
+      },
+      {
+       "id": "measure",
+       "op": "text",
+       "startMs": 3600,
+       "endMs": 4400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        420,
+        420
+       ],
+       "text": "measure",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "far",
+       "op": "text",
+       "startMs": 4600,
+       "endMs": 5400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        420,
+        275
+       ],
+       "text": "how far",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "winning",
+       "op": "text",
+       "startMs": 5700,
+       "endMs": 6600,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        420,
+        470
+       ],
+       "text": "winning",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-english-ch07-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "word",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1100,
+       "ink": "accent",
+       "weight": 3,
+       "at": [
+        400,
+        170
+       ],
+       "text": "Whack!",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "mark",
+       "op": "circle",
+       "startMs": 1200,
+       "endMs": 1900,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        150
+       ],
+       "r": 75
+      },
+      {
+       "id": "sound",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        270
+       ],
+       "text": "sudden",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "loud",
+       "op": "text",
+       "startMs": 3400,
+       "endMs": 4200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        340
+       ],
+       "text": "loud",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "stress",
+       "op": "arrow",
+       "startMs": 4500,
+       "endMs": 5400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        390
+       ],
+       "to": [
+        400,
+        230
+       ]
+      },
+      {
+       "id": "recite",
+       "op": "text",
+       "startMs": 5700,
+       "endMs": 6900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        450
+       ],
+       "text": "stress Whack!",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-english-ch07-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "one",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        170,
+        90
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "place",
+         "→",
+         "tap"
+        ]
+       ]
+      },
+      {
+       "id": "two",
+       "op": "numwork",
+       "startMs": 1200,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        170,
+        180
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "tap",
+         "→",
+         "hit"
+        ]
+       ]
+      },
+      {
+       "id": "three",
+       "op": "numwork",
+       "startMs": 2400,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        170,
+        270
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "hit",
+         "→",
+         "measur"
+        ]
+       ]
+      },
+      {
+       "id": "joy",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 5000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        400
+       ],
+       "text": "great joy",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "simple",
+       "op": "text",
+       "startMs": 5200,
+       "endMs": 6100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        460
+       ],
+       "text": "simple play",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "check": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "Game round 'Feel the whack' asks to tap strong sounds in each line; computed keys show stress on words like 'Tap', 'gilli', 'Whack!', 'No', 'costly', 'Just', 'old', 'lots'. For line 1 ('Whack! It flies as if on wings'), the computed key includes 'It' as a stressed word, which is unrealistic (function word 'It' would not be stressed in natural recitation) and could mislead children. This mismatch between the round's expectation and realistic prosody may cause confusion about poetry rhythm.",
+    "severity": "low"
+   }
+  ],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

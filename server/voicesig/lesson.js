@@ -213,6 +213,27 @@ export async function withdraw(d) {
   }
 }
 
+/**
+ * The backstop for withdrawal (and for a grant that lapsed any other way): delete every stored subject whose child's
+ * LATEST voice_pace_memory consent row (child-specific or guardian-wide, as auth.js hasConsent reads it) is not a grant.
+ * Cascades to baseline + calibration. Needs no subject key (voicesig.subject keeps child_id for exactly this and for
+ * erasure). Run by the worker's ticker leader (patch 11) and by `node scripts/voicesig/sweep.mjs`. Never throws.
+ * @param {(sql: string, params?: unknown[]) => Promise<any[]>} q
+ * @returns {Promise<number>} subjects deleted, or -1 when the sweep could not run (missing schema, database down)
+ */
+export const SWEEP_SQL =
+  "delete from voicesig.subject s using child ch where ch.id = s.child_id and coalesce((select c.granted from consent c " +
+  "where c.guardian_id = ch.guardian_id and (c.child_id = s.child_id or c.child_id is null) and c.purpose = $1 " +
+  "order by c.created_at desc limit 1), false) = false returning s.child_id";
+export async function sweep(q) {
+  try {
+    return (await q(SWEEP_SQL, [PACE_PURPOSE])).length;
+  } catch (e) {
+    console.warn("[voicesig] consent sweep failed (retried on the next run):", e?.message ?? e);
+    return -1;
+  }
+}
+
 /** GET /api/voicesig/config: what the client may run. No child data; short cache so a kill reaches new loads quickly. */
 export function config(env = process.env) {
   const mode = seamMode(env);
@@ -232,4 +253,4 @@ export function status(env = process.env) {
   };
 }
 
-export const voicesigSeam = { turn, startRows, endSave, withdraw, config, status, mode: seamMode };
+export const voicesigSeam = { turn, startRows, endSave, withdraw, sweep, config, status, mode: seamMode };

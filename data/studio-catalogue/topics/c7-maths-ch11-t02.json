@@ -1,0 +1,2057 @@
+{
+ "topicId": "c7-maths-ch11-t02",
+ "title": "Lowest common multiple",
+ "chapter": "Finding Common Ground",
+ "subject": "maths",
+ "class": 7,
+ "topicType": "T5",
+ "plan": {
+  "game": "sieve-storm@1",
+  "hint": "rules multiple and common (multiples and common multiples)"
+ },
+ "game": {
+  "archetype": "sieve-storm@1",
+  "spec": {
+   "archetype": "sieve-storm@1",
+   "skills": [
+    "c7-maths-ch11-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "slashed": "right calls",
+    "combo": "combo",
+    "coach": "Swipe numbers that fit the rule",
+    "runDone": "Storm over",
+    "prime": "prime",
+    "composite": "composite",
+    "even": "even",
+    "odd": "odd",
+    "multipleOf": "multiples of",
+    "commonOf": "common multiples of",
+    "factorOf": "factors of",
+    "cfactorOf": "common factors of",
+    "divisibleBy": "divisible by",
+    "coprimeWith": "co-prime with",
+    "square": "square numbers",
+    "palindrome": "palindromes",
+    "slipped": "slipped",
+    "wrongCut": "not this one",
+    "and": "and"
+   },
+   "title": "Sieve Storm",
+   "rounds": [
+    {
+     "rule": "multiple",
+     "a": 3,
+     "title": "Count in equal jumps",
+     "sub": "Swipe the multiples of 3",
+     "lo": 1,
+     "hi": 60,
+     "count": 12,
+     "hitRate": 0.5,
+     "seed": 17,
+     "speed": 0.7
+    },
+    {
+     "rule": "common",
+     "a": 4,
+     "b": 6,
+     "title": "Meet in both tables",
+     "sub": "Swipe common multiples",
+     "lo": 1,
+     "hi": 60,
+     "count": 14,
+     "hitRate": 0.4,
+     "seed": 29,
+     "speed": 0.85
+    },
+    {
+     "rule": "common",
+     "a": 6,
+     "b": 8,
+     "title": "Shared table storm",
+     "sub": "Find numbers in both tables",
+     "lo": 1,
+     "hi": 96,
+     "count": 16,
+     "hitRate": 0.35,
+     "seed": 43,
+     "speed": 1.05,
+     "targets": "c7-maths-ch11-t02-m-product-always"
+    },
+    {
+     "rule": "common",
+     "a": 12,
+     "b": 30,
+     "title": "Bigger table check",
+     "sub": "Common multiples must reach both",
+     "lo": 1,
+     "hi": 180,
+     "count": 18,
+     "hitRate": 0.3,
+     "seed": 71,
+     "speed": 1.25,
+     "targets": "c7-maths-ch11-t02-m-lcm-smaller"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-maths-ch11-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Find the lowest common multiple",
+   "accent": "ion",
+   "targets": "c7-maths-ch11-t02-m-product-always",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Lowest common multiple"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "LCM is always the product"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "twelve",
+       "type": "node",
+       "text": "12",
+       "sub": "12 table",
+       "color": "ion"
+      },
+      {
+       "id": "eighteen",
+       "type": "node",
+       "text": "18",
+       "sub": "18 table",
+       "color": "sci"
+      },
+      {
+       "id": "common",
+       "type": "node",
+       "text": "36",
+       "sub": "first common",
+       "color": "mint"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "twelve",
+       "to": "common",
+       "text": "multiple"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "eighteen",
+       "to": "common",
+       "text": "multiple"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "column",
+     "els": [
+      {
+       "id": "p12",
+       "type": "label",
+       "text": "12 = 2 × 2 × 3"
+      },
+      {
+       "id": "p18",
+       "type": "label",
+       "text": "18 = 2 × 3 × 3"
+      },
+      {
+       "id": "take",
+       "type": "label",
+       "text": "take most"
+      },
+      {
+       "id": "result",
+       "type": "bar",
+       "parts": 4,
+       "shaded": 4,
+       "text": "2 × 2 × 3 × 3"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "row",
+     "els": [
+      {
+       "id": "bell15",
+       "type": "node",
+       "text": "15 min",
+       "sub": "bell A",
+       "color": "amber"
+      },
+      {
+       "id": "bell20",
+       "type": "node",
+       "text": "20 min",
+       "sub": "bell B",
+       "color": "sun"
+      },
+      {
+       "id": "meet",
+       "type": "node",
+       "text": "60 min",
+       "sub": "together",
+       "color": "mint"
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "bell15",
+       "to": "meet",
+       "text": "LCM"
+      },
+      {
+       "id": "a4",
+       "type": "arrow",
+       "from": "bell20",
+       "to": "meet",
+       "text": "LCM"
+      }
+     ]
+    },
+    {
+     "id": "s5",
+     "layout": "split",
+     "els": [
+      {
+       "id": "repeat",
+       "type": "label",
+       "text": "Repeating together: LCM"
+      },
+      {
+       "id": "cut",
+       "type": "label",
+       "text": "Largest equal pieces: HCF"
+      }
+     ]
+    },
+    {
+     "id": "s6",
+     "layout": "row",
+     "els": [
+      {
+       "id": "four",
+       "type": "node",
+       "text": "4",
+       "sub": "table",
+       "color": "ion"
+      },
+      {
+       "id": "six",
+       "type": "node",
+       "text": "6",
+       "sub": "table",
+       "color": "sci"
+      },
+      {
+       "id": "twelve2",
+       "type": "node",
+       "text": "12",
+       "sub": "LCM",
+       "color": "mint"
+      },
+      {
+       "id": "a5",
+       "type": "arrow",
+       "from": "four",
+       "to": "twelve2",
+       "text": "common"
+      },
+      {
+       "id": "a6",
+       "type": "arrow",
+       "from": "six",
+       "to": "twelve2",
+       "text": "common"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "The lowest common multiple is the smallest common multiple after zero.",
+    "L2": "A common multiple appears in both times tables. The LCM cannot be smaller than the larger number.",
+    "L3": "For 12 and 18, write prime factors: 12 is two twos and one three, while 18 is one two and two threes.",
+    "L4": "Take every prime as many times as it appears most often. That gives two twos and two threes.",
+    "L5": "So the LCM is 2 times 2 times 3 times 3, which is 36.",
+    "L6": "The product is not always the LCM. For 4 and 6, 12 is already common, so it is lower than 24.",
+    "L7": "Use the LCM when repeating events meet again. Use the HCF when cutting into the largest equal pieces.",
+    "L8": "Now choose the first place where the 4s and 6s meet after zero."
+   },
+   "narration": {
+    "L1": {
+     "text": "The lowest common multiple is the smallest common multiple after zero.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "A common multiple appears in both times tables. The LCM cannot be smaller than the larger number.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "For 12 and 18, write prime factors: 12 is two twos and one three, while 18 is one two and two threes.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "Take every prime as many times as it appears most often. That gives two twos and two threes.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "So the LCM is 2 times 2 times 3 times 3, which is 36.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "The product is not always the LCM. For 4 and 6, 12 is already common, so it is lower than 24.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Use the LCM when repeating events meet again. Use the HCF when cutting into the largest equal pieces.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Now choose the first place where the 4s and 6s meet after zero.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.3,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "twelve",
+        "eighteen",
+        "common"
+       ]
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "a1",
+        "a2"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.3,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "p12",
+        "p18"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.3,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "take"
+      },
+      {
+       "at": 0.5,
+       "do": "highlight",
+       "dur": 1,
+       "target": "result"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.3,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "result"
+      },
+      {
+       "at": 0.7,
+       "do": "focus",
+       "dur": 1,
+       "target": "result"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.3,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      },
+      {
+       "at": 0.8,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.3,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "bell15",
+        "bell20",
+        "meet"
+       ]
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "a3",
+        "a4"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s6",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "four",
+        "six",
+        "twelve2",
+        "a5",
+        "a6"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Where do the 4s and 6s first meet after zero?",
+    "options": [
+     "four",
+     "six",
+     "twelve2"
+    ],
+    "answer": "twelve2",
+    "src": "c7-maths-ch11-t02-i01"
+   }
+  },
+  "repairs": [],
+  "attempts": 2,
+  "model": "taxila-fast-bg",
+  "seconds": 34
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch11-t02-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "title",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "LCM",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "zero",
+       "op": "text",
+       "startMs": 600,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        120,
+        220
+       ],
+       "text": "0",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "arrow",
+       "op": "arrow",
+       "startMs": 900,
+       "endMs": 1700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        150,
+        220
+       ],
+       "to": [
+        650,
+        220
+       ]
+      },
+      {
+       "id": "smallest",
+       "op": "circle",
+       "startMs": 1800,
+       "endMs": 2500,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        300,
+        220
+       ],
+       "r": 38
+      },
+      {
+       "id": "common",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        300,
+        290
+       ],
+       "text": "common multiple",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "after",
+       "op": "label",
+       "startMs": 3400,
+       "endMs": 4300,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        390,
+        175
+       ],
+       "text": "after zero",
+       "to": [
+        350,
+        220
+       ]
+      },
+      {
+       "id": "small",
+       "op": "label",
+       "startMs": 4300,
+       "endMs": 5100,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        300,
+        155
+       ],
+       "text": "smallest",
+       "to": [
+        300,
+        182
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch11-t02-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "times1",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        150,
+        100
+       ],
+       "text": "times table",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "times2",
+       "op": "text",
+       "startMs": 500,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        600,
+        100
+       ],
+       "text": "times table",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "left",
+       "op": "numwork",
+       "startMs": 1200,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        100,
+        150
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "multip",
+         "multip"
+        ]
+       ]
+      },
+      {
+       "id": "right",
+       "op": "numwork",
+       "startMs": 1200,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        550,
+        150
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "multip",
+         "multip"
+        ]
+       ]
+      },
+      {
+       "id": "meet",
+       "op": "circle",
+       "startMs": 2200,
+       "endMs": 3000,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        180
+       ],
+       "r": 55
+      },
+      {
+       "id": "both",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3600,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        280
+       ],
+       "text": "both",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "larger",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 4800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        390
+       ],
+       "text": "larger number",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "notless",
+       "op": "arrow",
+       "startMs": 4800,
+       "endMs": 5700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        260,
+        370
+       ],
+       "to": [
+        500,
+        370
+       ]
+      },
+      {
+       "id": "LCM2",
+       "op": "text",
+       "startMs": 5700,
+       "endMs": 6500,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        600,
+        370
+       ],
+       "text": "LCM",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "underline",
+       "op": "line",
+       "startMs": 6500,
+       "endMs": 7300,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        520,
+        390
+       ],
+       "to": [
+        680,
+        390
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch11-t02-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9962,
+     "ops": [
+      {
+       "id": "heading",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "prime factors",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "n12",
+       "op": "numwork",
+       "startMs": 800,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        130
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "12",
+         "=",
+         "2",
+         "×",
+         "2",
+         "×",
+         "3"
+        ]
+       ]
+      },
+      {
+       "id": "n18",
+       "op": "numwork",
+       "startMs": 1800,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        230
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "18",
+         "=",
+         "2",
+         "×",
+         "3",
+         "×",
+         "3"
+        ]
+       ]
+      },
+      {
+       "id": "twos12",
+       "op": "label",
+       "startMs": 3300,
+       "endMs": 4400,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        180,
+        330
+       ],
+       "text": "two twos",
+       "to": [
+        250,
+        160
+       ]
+      },
+      {
+       "id": "three12",
+       "op": "label",
+       "startMs": 4000,
+       "endMs": 5000,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        430,
+        330
+       ],
+       "text": "one three",
+       "to": [
+        460,
+        160
+       ]
+      },
+      {
+       "id": "two18",
+       "op": "label",
+       "startMs": 5000,
+       "endMs": 5900,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        180,
+        390
+       ],
+       "text": "one two",
+       "to": [
+        250,
+        260
+       ]
+      },
+      {
+       "id": "threes18",
+       "op": "label",
+       "startMs": 5600,
+       "endMs": 6600,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        430,
+        390
+       ],
+       "text": "two threes",
+       "to": [
+        460,
+        260
+       ]
+      },
+      {
+       "id": "brace1",
+       "op": "line",
+       "startMs": 6800,
+       "endMs": 7400,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        240,
+        175
+       ],
+       "to": [
+        360,
+        175
+       ]
+      },
+      {
+       "id": "brace2",
+       "op": "line",
+       "startMs": 7400,
+       "endMs": 8000,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        420,
+        275
+       ],
+       "to": [
+        540,
+        275
+       ]
+      },
+      {
+       "id": "factor",
+       "op": "text",
+       "startMs": 8200,
+       "endMs": 9000,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        455
+       ],
+       "text": "12 and 18",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch11-t02-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "take",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "take most",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "two",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        245,
+        175
+       ],
+       "r": 32
+      },
+      {
+       "id": "two2",
+       "op": "circle",
+       "startMs": 1200,
+       "endMs": 1800,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        315,
+        175
+       ],
+       "r": 32
+      },
+      {
+       "id": "three1",
+       "op": "circle",
+       "startMs": 1800,
+       "endMs": 2400,
+       "ink": "mark",
+       "weight": 2,
+       "c": [
+        425,
+        275
+       ],
+       "r": 32
+      },
+      {
+       "id": "three2",
+       "op": "circle",
+       "startMs": 2100,
+       "endMs": 2700,
+       "ink": "mark",
+       "weight": 2,
+       "c": [
+        495,
+        275
+       ],
+       "r": 32
+      },
+      {
+       "id": "most",
+       "op": "arrow",
+       "startMs": 2700,
+       "endMs": 3400,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        400,
+        110
+       ],
+       "to": [
+        400,
+        145
+       ]
+      },
+      {
+       "id": "result",
+       "op": "numwork",
+       "startMs": 3700,
+       "endMs": 5200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        220,
+        370
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "2",
+         "×",
+         "2",
+         "×",
+         "3",
+         "×",
+         "3"
+        ]
+       ]
+      },
+      {
+       "id": "label2",
+       "op": "text",
+       "startMs": 5200,
+       "endMs": 6000,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        280,
+        330
+       ],
+       "text": "two twos",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "label3",
+       "op": "text",
+       "startMs": 6000,
+       "endMs": 6800,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        480,
+        330
+       ],
+       "text": "two threes",
+       "size": "s",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch11-t02-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "eq",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        130,
+        180
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "LCM",
+         "=",
+         "2",
+         "×",
+         "2",
+         "×",
+         "3",
+         "×",
+         "3"
+        ]
+       ]
+      },
+      {
+       "id": "equals",
+       "op": "text",
+       "startMs": 2000,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        280
+       ],
+       "text": "=",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "answer",
+       "op": "text",
+       "startMs": 2600,
+       "endMs": 3400,
+       "ink": "good",
+       "weight": 3,
+       "at": [
+        400,
+        350
+       ],
+       "text": "36",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "box",
+       "op": "rect",
+       "startMs": 3500,
+       "endMs": 4400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        350,
+        305
+       ],
+       "w": 100,
+       "h": 70,
+       "round": 12
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch11-t02-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9536,
+     "ops": [
+      {
+       "id": "product",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "product not LCM",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "p1",
+       "op": "numwork",
+       "startMs": 900,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        140
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "4",
+         "×",
+         "6",
+         "=",
+         "24"
+        ]
+       ]
+      },
+      {
+       "id": "four",
+       "op": "numwork",
+       "startMs": 1900,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        100,
+        250
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "4",
+         "8",
+         "12"
+        ]
+       ]
+      },
+      {
+       "id": "six",
+       "op": "numwork",
+       "startMs": 2400,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        100,
+        330
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "6",
+         "12"
+        ]
+       ]
+      },
+      {
+       "id": "meet12",
+       "op": "circle",
+       "startMs": 3600,
+       "endMs": 4400,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        250,
+        290
+       ],
+       "r": 35
+      },
+      {
+       "id": "common12",
+       "op": "label",
+       "startMs": 4400,
+       "endMs": 5200,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        330,
+        290
+       ],
+       "text": "common",
+       "to": [
+        275,
+        290
+       ]
+      },
+      {
+       "id": "lower",
+       "op": "arrow",
+       "startMs": 5300,
+       "endMs": 6300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        300,
+        150
+       ],
+       "to": [
+        300,
+        290
+       ]
+      },
+      {
+       "id": "underline6",
+       "op": "line",
+       "startMs": 7800,
+       "endMs": 8500,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        400,
+        350
+       ],
+       "to": [
+        600,
+        350
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch11-t02-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "lcmuse",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        220,
+        70
+       ],
+       "text": "LCM",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "meet",
+       "op": "circle",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        220,
+        190
+       ],
+       "r": 65
+      },
+      {
+       "id": "events",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        220,
+        300
+       ],
+       "text": "events meet",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "repeat",
+       "op": "arrow",
+       "startMs": 2200,
+       "endMs": 3200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        150,
+        190
+       ],
+       "to": [
+        290,
+        190
+       ],
+       "bend": 1
+      },
+      {
+       "id": "hcfuse",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        580,
+        70
+       ],
+       "text": "HCF",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "pieces",
+       "op": "rect",
+       "startMs": 3800,
+       "endMs": 4700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        500,
+        155
+       ],
+       "w": 160,
+       "h": 100,
+       "round": 8
+      },
+      {
+       "id": "cut",
+       "op": "line",
+       "startMs": 4700,
+       "endMs": 5400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        580,
+        155
+       ],
+       "to": [
+        580,
+        255
+       ]
+      },
+      {
+       "id": "equal",
+       "op": "text",
+       "startMs": 5500,
+       "endMs": 6500,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        580,
+        300
+       ],
+       "text": "equal pieces",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "largest",
+       "op": "label",
+       "startMs": 6500,
+       "endMs": 7400,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        580,
+        370
+       ],
+       "text": "largest",
+       "to": [
+        580,
+        320
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 2,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch11-t02-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "question",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "first meet",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "zero8",
+       "op": "text",
+       "startMs": 2600,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        80,
+        390
+       ],
+       "text": "0",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "meet12b",
+       "op": "circle",
+       "startMs": 3200,
+       "endMs": 4000,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        500,
+        215
+       ],
+       "r": 42
+      },
+      {
+       "id": "answer12",
+       "op": "text",
+       "startMs": 4100,
+       "endMs": 4900,
+       "ink": "good",
+       "weight": 3,
+       "at": [
+        500,
+        390
+       ],
+       "text": "12",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "afterzero",
+       "op": "label",
+       "startMs": 4900,
+       "endMs": 5800,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        590,
+        390
+       ],
+       "text": "after zero",
+       "to": [
+        535,
+        390
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 21 multiple 3?"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 17 multiple 3?"
+  },
+  {
+   "itemId": "r1:2",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 44 multiple 3?"
+  },
+  {
+   "itemId": "r1:3",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 18 multiple 3?"
+  },
+  {
+   "itemId": "r1:4",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 41 multiple 3?"
+  },
+  {
+   "itemId": "r1:5",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 31 multiple 3?"
+  },
+  {
+   "itemId": "r1:6",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 3 multiple 3?"
+  },
+  {
+   "itemId": "r1:7",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 4 multiple 3?"
+  },
+  {
+   "itemId": "r1:8",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 1 multiple 3?"
+  },
+  {
+   "itemId": "r1:9",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 25 multiple 3?"
+  },
+  {
+   "itemId": "r1:10",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 28 multiple 3?"
+  },
+  {
+   "itemId": "r1:11",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 33 multiple 3?"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 48 common 4 6?"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 60 common 4 6?"
+  },
+  {
+   "itemId": "r2:2",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 13 common 4 6?"
+  },
+  {
+   "itemId": "r2:3",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 27 common 4 6?"
+  },
+  {
+   "itemId": "r2:4",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 55 common 4 6?"
+  },
+  {
+   "itemId": "r2:5",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 52 common 4 6?"
+  },
+  {
+   "itemId": "r2:6",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 22 common 4 6?"
+  },
+  {
+   "itemId": "r2:7",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 12 common 4 6?"
+  },
+  {
+   "itemId": "r2:8",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 28 common 4 6?"
+  },
+  {
+   "itemId": "r2:9",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 26 common 4 6?"
+  },
+  {
+   "itemId": "r2:10",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 60 common 4 6?"
+  },
+  {
+   "itemId": "r2:11",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 11 common 4 6?"
+  },
+  {
+   "itemId": "r2:12",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 34 common 4 6?"
+  },
+  {
+   "itemId": "r2:13",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 42 common 4 6?"
+  },
+  {
+   "itemId": "r3:0",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 96 common 6 8?"
+  },
+  {
+   "itemId": "r3:1",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 7 common 6 8?"
+  },
+  {
+   "itemId": "r3:2",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 72 common 6 8?"
+  },
+  {
+   "itemId": "r3:3",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 26 common 6 8?"
+  },
+  {
+   "itemId": "r3:4",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 72 common 6 8?"
+  },
+  {
+   "itemId": "r3:5",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 52 common 6 8?"
+  },
+  {
+   "itemId": "r3:6",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 12 common 6 8?"
+  },
+  {
+   "itemId": "r3:7",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 96 common 6 8?"
+  },
+  {
+   "itemId": "r3:8",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 48 common 6 8?"
+  },
+  {
+   "itemId": "r3:9",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 24 common 6 8?"
+  },
+  {
+   "itemId": "r3:10",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 14 common 6 8?"
+  },
+  {
+   "itemId": "r3:11",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 81 common 6 8?"
+  },
+  {
+   "itemId": "r3:12",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 16 common 6 8?"
+  },
+  {
+   "itemId": "r3:13",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 96 common 6 8?"
+  },
+  {
+   "itemId": "r3:14",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 72 common 6 8?"
+  },
+  {
+   "itemId": "r3:15",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 32 common 6 8?"
+  },
+  {
+   "itemId": "r4:0",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 120 common 12 30?"
+  },
+  {
+   "itemId": "r4:1",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 161 common 12 30?"
+  },
+  {
+   "itemId": "r4:2",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 14 common 12 30?"
+  },
+  {
+   "itemId": "r4:3",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 7 common 12 30?"
+  },
+  {
+   "itemId": "r4:4",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 11 common 12 30?"
+  },
+  {
+   "itemId": "r4:5",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 34 common 12 30?"
+  },
+  {
+   "itemId": "r4:6",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 40 common 12 30?"
+  },
+  {
+   "itemId": "r4:7",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 78 common 12 30?"
+  },
+  {
+   "itemId": "r4:8",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 158 common 12 30?"
+  },
+  {
+   "itemId": "r4:9",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 60 common 12 30?"
+  },
+  {
+   "itemId": "r4:10",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 45 common 12 30?"
+  },
+  {
+   "itemId": "r4:11",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 166 common 12 30?"
+  },
+  {
+   "itemId": "r4:12",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 59 common 12 30?"
+  },
+  {
+   "itemId": "r4:13",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 129 common 12 30?"
+  },
+  {
+   "itemId": "r4:14",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 99 common 12 30?"
+  },
+  {
+   "itemId": "r4:15",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 21 common 12 30?"
+  },
+  {
+   "itemId": "r4:16",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 180 common 12 30?"
+  },
+  {
+   "itemId": "r4:17",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 10 common 12 30?"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

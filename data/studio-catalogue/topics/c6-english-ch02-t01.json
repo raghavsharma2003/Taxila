@@ -1,0 +1,1722 @@
+{
+ "topicId": "c6-english-ch02-t01",
+ "title": "The Raven and the Fox",
+ "chapter": "The Raven and the Fox",
+ "subject": "english",
+ "class": 6,
+ "topicType": "T3",
+ "plan": {
+  "game": "story-rail@1",
+  "hint": "sequence, cause and who modes from the lesson's events and speakers"
+ },
+ "game": {
+  "archetype": "story-rail@1",
+  "spec": {
+   "archetype": "story-rail@1",
+   "skills": [
+    "c6-english-ch02-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "picked": "coupled",
+    "streak": "streak",
+    "next": "What happens next?",
+    "effect": "What does this lead to?",
+    "who": "Who said this?",
+    "runDone": "Line complete",
+    "order": "your train",
+    "right": "Coupled",
+    "wrong": "Not this one",
+    "coach": "Tap a wagon before the train reaches the fork"
+   },
+   "title": "The Raven and the Fox",
+   "rounds": [
+    {
+     "mode": "sequence",
+     "title": "The story",
+     "sub": "couple the events in order",
+     "cards": [
+      {
+       "id": "e1",
+       "text": "Raven holds a morsel",
+       "glyph": "bird",
+       "src": "c6-english-ch02-t01-i04"
+      },
+      {
+       "id": "e2",
+       "text": "Fox praises the raven",
+       "glyph": "eye",
+       "src": "c6-english-ch02-t01-i05"
+      },
+      {
+       "id": "e3",
+       "text": "Fox asks him to sing",
+       "glyph": "music",
+       "src": "c6-english-ch02-t01-i06"
+      },
+      {
+       "id": "e4",
+       "text": "Raven opens his beak",
+       "glyph": "bird",
+       "src": "c6-english-ch02-t01-i06"
+      },
+      {
+       "id": "e5",
+       "text": "The morsel falls",
+       "glyph": "drop",
+       "src": "c6-english-ch02-t01-i06"
+      },
+      {
+       "id": "e6",
+       "text": "Fox takes the food",
+       "glyph": "wind",
+       "src": "c6-english-ch02-t01-i06"
+      }
+     ],
+     "speed": 0.9,
+     "targets": "c6-english-ch02-t01-m-praise-equals-flattery"
+    },
+    {
+     "mode": "cause",
+     "title": "Because",
+     "sub": "match each cause to what it led to",
+     "pairs": [
+      {
+       "cause": {
+        "id": "c1",
+        "text": "Fox wants the food",
+        "glyph": "fish"
+       },
+       "effect": {
+        "id": "f1",
+        "text": "He flatters the raven",
+        "glyph": "eye",
+        "src": "c6-english-ch02-t01-i05"
+       }
+      },
+      {
+       "cause": {
+        "id": "c2",
+        "text": "Raven believes the praise",
+        "glyph": "bird"
+       },
+       "effect": {
+        "id": "f2",
+        "text": "He tries to sing",
+        "glyph": "music",
+        "src": "c6-english-ch02-t01-i06"
+       }
+      },
+      {
+       "cause": {
+        "id": "c3",
+        "text": "Raven opens his beak",
+        "glyph": "bird"
+       },
+       "effect": {
+        "id": "f3",
+        "text": "The morsel falls",
+        "glyph": "drop",
+        "src": "c6-english-ch02-t01-i06"
+       }
+      },
+      {
+       "cause": {
+        "id": "c4",
+        "text": "The food falls down",
+        "glyph": "drop"
+       },
+       "effect": {
+        "id": "f4",
+        "text": "Fox takes the food",
+        "glyph": "wind",
+        "src": "c6-english-ch02-t01-i06"
+       }
+      }
+     ],
+     "speed": 0.85
+    },
+    {
+     "mode": "who",
+     "title": "Who said it?",
+     "sub": "send each line to its speaker",
+     "speakers": [
+      {
+       "id": "fox",
+       "name": "Fox",
+       "glyph": "eye"
+      },
+      {
+       "id": "raven",
+       "name": "Raven",
+       "glyph": "bird"
+      }
+     ],
+     "lines": [
+      {
+       "id": "w1",
+       "text": "What a fine bird you are!",
+       "speaker": "fox",
+       "src": "c6-english-ch02-t01-i05"
+      },
+      {
+       "id": "w2",
+       "text": "Caw!",
+       "speaker": "raven",
+       "src": "c6-english-ch02-t01-i06"
+      },
+      {
+       "id": "w3",
+       "text": "Sing for me, Sir King",
+       "speaker": "fox",
+       "src": "c6-english-ch02-t01-i05"
+      }
+     ],
+     "speed": 0.85
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 2,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c6-english-ch02-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "The Raven and the Fox",
+   "accent": "amber",
+   "targets": "c6-english-ch02-t01-m-praise-equals-flattery",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "The Raven and the Fox"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "All praise is flattery; reject every compliment"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "raven",
+       "type": "node",
+       "text": "Raven",
+       "sub": "proud",
+       "glyph": "bird",
+       "color": "ion"
+      },
+      {
+       "id": "fox",
+       "type": "node",
+       "text": "Fox",
+       "sub": "clever",
+       "glyph": "insect",
+       "color": "amber"
+      },
+      {
+       "id": "morsel",
+       "type": "node",
+       "text": "Morsel",
+       "sub": "small food",
+       "glyph": "apple",
+       "color": "sun"
+      },
+      {
+       "id": "praise",
+       "type": "arrow",
+       "from": "fox",
+       "to": "raven",
+       "text": "praises"
+      },
+      {
+       "id": "sing",
+       "type": "arrow",
+       "from": "fox",
+       "to": "raven",
+       "text": "asks to sing"
+      },
+      {
+       "id": "drop",
+       "type": "arrow",
+       "from": "raven",
+       "to": "morsel",
+       "text": "beak opens"
+      },
+      {
+       "id": "take",
+       "type": "arrow",
+       "from": "fox",
+       "to": "morsel",
+       "text": "takes"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "honest",
+       "type": "label",
+       "text": "A: Lovely sky",
+       "x": 100,
+       "y": 300,
+       "color": "mint"
+      },
+      {
+       "id": "flattery",
+       "type": "label",
+       "text": "B: Greatest artist; give crayons",
+       "x": 100,
+       "y": 390,
+       "color": "amber"
+      },
+      {
+       "id": "beak",
+       "type": "label",
+       "text": "beak",
+       "x": 600,
+       "y": 300,
+       "color": "ion"
+      },
+      {
+       "id": "seek",
+       "type": "label",
+       "text": "seek",
+       "x": 760,
+       "y": 300,
+       "color": "ion"
+      },
+      {
+       "id": "couplet",
+       "type": "node",
+       "text": "Couplet",
+       "sub": "two rhyming lines",
+       "glyph": "book",
+       "color": "sci"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Mr Raven sat on a tree limb with a morsel in his beak.",
+    "L2": "The fox praised him to make him proud and get the food.",
+    "L3": "The raven believed the praise and forgot that his voice was only a croak.",
+    "L4": "When he opened his beak to sing, the morsel fell and the fox took it.",
+    "L5": "The poem teaches us not to be fooled by sweet words or pride.",
+    "L6": "Honest praise is specific and has no hidden demand. Flattery exaggerates and wants something in return.",
+    "L7": "The poem rhymes in couplets. For example, beak rhymes with seek.",
+    "L8": "Now tap the message that is flattery."
+   },
+   "narration": {},
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      },
+      {
+       "at": 0.6,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "fox",
+        "raven",
+        "morsel"
+       ]
+      },
+      {
+       "at": 0.5,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "praise",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "raven"
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.8,
+       "target": "sing"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "drop",
+       "to": 1
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "take",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1.2,
+       "target": [
+        "praise",
+        "morsel"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "honest",
+        "flattery"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 1,
+       "target": "flattery"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "beak",
+        "seek",
+        "couplet"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 1,
+       "target": [
+        "beak",
+        "seek"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "interactive",
+       "dur": 1
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which message is flattery?",
+    "options": [
+     "honest",
+     "flattery"
+    ],
+    "answer": "flattery",
+    "src": "c6-english-ch02-t01-i07"
+   }
+  },
+  "repairs": [
+   "cue:target"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 49
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-english-ch02-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "tree",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 3,
+       "from": [
+        120,
+        370
+       ],
+       "to": [
+        680,
+        370
+       ]
+      },
+      {
+       "id": "trunk",
+       "op": "line",
+       "startMs": 500,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        180,
+        370
+       ],
+       "to": [
+        130,
+        470
+       ]
+      },
+      {
+       "id": "raven",
+       "op": "ellipse",
+       "startMs": 1100,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        390,
+        300
+       ],
+       "rx": 55,
+       "ry": 38
+      },
+      {
+       "id": "head",
+       "op": "circle",
+       "startMs": 1500,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        435,
+        270
+       ],
+       "r": 28
+      },
+      {
+       "id": "beak",
+       "op": "polygon",
+       "startMs": 1900,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         458,
+         266
+        ],
+        [
+         515,
+         280
+        ],
+        [
+         458,
+         286
+        ]
+       ]
+      },
+      {
+       "id": "morsel",
+       "op": "circle",
+       "startMs": 2300,
+       "endMs": 2800,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        535,
+        282
+       ],
+       "r": 12,
+       "fill": "accent"
+      },
+      {
+       "id": "t1",
+       "op": "label",
+       "startMs": 3000,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        380,
+        410
+       ],
+       "text": "tree limb",
+       "to": [
+        380,
+        370
+       ]
+      },
+      {
+       "id": "t2",
+       "op": "label",
+       "startMs": 3700,
+       "endMs": 4400,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        535,
+        240
+       ],
+       "text": "morsel",
+       "to": [
+        535,
+        282
+       ]
+      },
+      {
+       "id": "t3",
+       "op": "label",
+       "startMs": 4400,
+       "endMs": 5200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        390,
+        220
+       ],
+       "text": "Mr Raven",
+       "to": [
+        390,
+        270
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-english-ch02-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "fox",
+       "op": "polygon",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         220,
+         410
+        ],
+        [
+         250,
+         300
+        ],
+        [
+         300,
+         260
+        ],
+        [
+         350,
+         300
+        ],
+        [
+         390,
+         410
+        ]
+       ]
+      },
+      {
+       "id": "foxear",
+       "op": "polygon",
+       "startMs": 500,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         260,
+         280
+        ],
+        [
+         265,
+         230
+        ],
+        [
+         290,
+         270
+        ]
+       ]
+      },
+      {
+       "id": "praise",
+       "op": "arrow",
+       "startMs": 1200,
+       "endMs": 2400,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        350,
+        300
+       ],
+       "to": [
+        450,
+        280
+       ]
+      },
+      {
+       "id": "p1",
+       "op": "label",
+       "startMs": 2400,
+       "endMs": 3200,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        430,
+        190
+       ],
+       "text": "praised",
+       "to": [
+        410,
+        235
+       ]
+      },
+      {
+       "id": "p2",
+       "op": "label",
+       "startMs": 3200,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        175,
+        455
+       ],
+       "text": "fox",
+       "to": [
+        280,
+        350
+       ]
+      },
+      {
+       "id": "p3",
+       "op": "label",
+       "startMs": 3900,
+       "endMs": 4600,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        555,
+        330
+       ],
+       "text": "food",
+       "to": [
+        535,
+        282
+       ]
+      },
+      {
+       "id": "goal",
+       "op": "arrow",
+       "startMs": 4500,
+       "endMs": 5500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        350,
+        400
+       ],
+       "to": [
+        520,
+        350
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-english-ch02-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "belief",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        390,
+        300
+       ],
+       "r": 75
+      },
+      {
+       "id": "b1",
+       "op": "label",
+       "startMs": 900,
+       "endMs": 1700,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        290,
+        190
+       ],
+       "text": "believed",
+       "to": [
+        350,
+        250
+       ]
+      },
+      {
+       "id": "voice",
+       "op": "ellipse",
+       "startMs": 1800,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        520,
+        310
+       ],
+       "rx": 105,
+       "ry": 48
+      },
+      {
+       "id": "b2",
+       "op": "label",
+       "startMs": 2700,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        485,
+        385
+       ],
+       "text": "voice",
+       "to": [
+        520,
+        350
+       ]
+      },
+      {
+       "id": "croak",
+       "op": "text",
+       "startMs": 3400,
+       "endMs": 4200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        520,
+        315
+       ],
+       "text": "croak",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "pride",
+       "op": "arrow",
+       "startMs": 4300,
+       "endMs": 5100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        390,
+        220
+       ],
+       "to": [
+        390,
+        130
+       ]
+      },
+      {
+       "id": "b3",
+       "op": "label",
+       "startMs": 5100,
+       "endMs": 5900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        430,
+        140
+       ],
+       "text": "pride",
+       "to": [
+        390,
+        160
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-english-ch02-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "open",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        455,
+        270
+       ],
+       "to": [
+        500,
+        255
+       ]
+      },
+      {
+       "id": "sing",
+       "op": "text",
+       "startMs": 800,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        520,
+        210
+       ],
+       "text": "sing",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "drop",
+       "op": "arrow",
+       "startMs": 1600,
+       "endMs": 2800,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        535,
+        282
+       ],
+       "to": [
+        535,
+        425
+       ]
+      },
+      {
+       "id": "fallen",
+       "op": "circle",
+       "startMs": 2800,
+       "endMs": 3400,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        535,
+        425
+       ],
+       "r": 13,
+       "fill": "accent"
+      },
+      {
+       "id": "fall",
+       "op": "label",
+       "startMs": 3400,
+       "endMs": 4100,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        580,
+        390
+       ],
+       "text": "fell",
+       "to": [
+        535,
+        425
+       ]
+      },
+      {
+       "id": "take",
+       "op": "arrow",
+       "startMs": 4200,
+       "endMs": 5400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        300,
+        400
+       ],
+       "to": [
+        525,
+        425
+       ]
+      },
+      {
+       "id": "taken",
+       "op": "label",
+       "startMs": 5400,
+       "endMs": 6200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        350,
+        455
+       ],
+       "text": "took",
+       "to": [
+        470,
+        425
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-english-ch02-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "lesson",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        90
+       ],
+       "text": "poem",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "message",
+       "op": "rect",
+       "startMs": 900,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        180,
+        150
+       ],
+       "w": 440,
+       "h": 190,
+       "round": 18
+      },
+      {
+       "id": "sweet",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2800,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        205
+       ],
+       "text": "sweet words",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "pride",
+       "op": "text",
+       "startMs": 2800,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        260
+       ],
+       "text": "pride",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "warning",
+       "op": "line",
+       "startMs": 3600,
+       "endMs": 4500,
+       "ink": "mark",
+       "weight": 3,
+       "from": [
+        240,
+        315
+       ],
+       "to": [
+        560,
+        175
+       ]
+      },
+      {
+       "id": "notfooled",
+       "op": "label",
+       "startMs": 4500,
+       "endMs": 5600,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        400
+       ],
+       "text": "not fooled",
+       "to": [
+        400,
+        300
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-english-ch02-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "honest",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        70,
+        100
+       ],
+       "w": 300,
+       "h": 250,
+       "round": 16
+      },
+      {
+       "id": "h1",
+       "op": "text",
+       "startMs": 800,
+       "endMs": 1600,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        220,
+        150
+       ],
+       "text": "honest praise",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "specific",
+       "op": "label",
+       "startMs": 1600,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        220,
+        220
+       ],
+       "text": "specific",
+       "to": [
+        220,
+        245
+       ]
+      },
+      {
+       "id": "none",
+       "op": "label",
+       "startMs": 2300,
+       "endMs": 3400,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        220,
+        290
+       ],
+       "text": "no hidden demand",
+       "to": [
+        220,
+        315
+       ]
+      },
+      {
+       "id": "flattery",
+       "op": "rect",
+       "startMs": 3400,
+       "endMs": 4200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        430,
+        100
+       ],
+       "w": 300,
+       "h": 250,
+       "round": 16
+      },
+      {
+       "id": "f1",
+       "op": "text",
+       "startMs": 4200,
+       "endMs": 4900,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        580,
+        150
+       ],
+       "text": "flattery",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "exaggerates",
+       "op": "label",
+       "startMs": 4900,
+       "endMs": 5800,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        580,
+        220
+       ],
+       "text": "exaggerates",
+       "to": [
+        580,
+        245
+       ]
+      },
+      {
+       "id": "return",
+       "op": "label",
+       "startMs": 5800,
+       "endMs": 6800,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        580,
+        290
+       ],
+       "text": "in return",
+       "to": [
+        580,
+        315
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-english-ch02-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "couplets",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        90
+       ],
+       "text": "couplets",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "line1",
+       "op": "line",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        130,
+        180
+       ],
+       "to": [
+        670,
+        180
+       ]
+      },
+      {
+       "id": "line2",
+       "op": "line",
+       "startMs": 1500,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        130,
+        300
+       ],
+       "to": [
+        670,
+        300
+       ]
+      },
+      {
+       "id": "beak",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 2900,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        270,
+        180
+       ],
+       "text": "beak",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "seek",
+       "op": "text",
+       "startMs": 2900,
+       "endMs": 3600,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        530,
+        300
+       ],
+       "text": "seek",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "rhyme",
+       "op": "arrow",
+       "startMs": 3700,
+       "endMs": 4700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        300,
+        195
+       ],
+       "to": [
+        500,
+        285
+       ]
+      },
+      {
+       "id": "rhymes",
+       "op": "label",
+       "startMs": 4700,
+       "endMs": 5200,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        400
+       ],
+       "text": "rhymes",
+       "to": [
+        400,
+        240
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-english-ch02-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 3579,
+     "ops": [
+      {
+       "id": "prompt",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        90
+       ],
+       "text": "message",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "card1",
+       "op": "rect",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        160
+       ],
+       "w": 250,
+       "h": 180,
+       "round": 16
+      },
+      {
+       "id": "card2",
+       "op": "rect",
+       "startMs": 1500,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        450,
+        160
+       ],
+       "w": 250,
+       "h": 180,
+       "round": 16
+      },
+      {
+       "id": "sweet",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 2900,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        225,
+        230
+       ],
+       "text": "sweet words",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "honest",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 2900,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        575,
+        230
+       ],
+       "text": "honest praise",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "tap",
+       "op": "circle",
+       "startMs": 2900,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        225,
+        250
+       ],
+       "r": 62
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "Fox praises the raven",
+   "prompt": "sequence: after/for \"Raven holds a morsel\"",
+   "src": "c6-english-ch02-t01-i05"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "Fox asks him to sing",
+   "prompt": "sequence: after/for \"Fox praises the raven\"",
+   "src": "c6-english-ch02-t01-i06"
+  },
+  {
+   "itemId": "r1:2",
+   "key": "Raven opens his beak",
+   "prompt": "sequence: after/for \"Fox asks him to sing\"",
+   "src": "c6-english-ch02-t01-i06"
+  },
+  {
+   "itemId": "r1:3",
+   "key": "The morsel falls",
+   "prompt": "sequence: after/for \"Raven opens his beak\"",
+   "src": "c6-english-ch02-t01-i06"
+  },
+  {
+   "itemId": "r1:4",
+   "key": "Fox takes the food",
+   "prompt": "sequence: after/for \"The morsel falls\"",
+   "src": "c6-english-ch02-t01-i06"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "He flatters the raven",
+   "prompt": "cause: after/for \"Fox wants the food\"",
+   "src": "c6-english-ch02-t01-i05"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "He tries to sing",
+   "prompt": "cause: after/for \"Raven believes the praise\"",
+   "src": "c6-english-ch02-t01-i06"
+  },
+  {
+   "itemId": "r2:2",
+   "key": "The morsel falls",
+   "prompt": "cause: after/for \"Raven opens his beak\"",
+   "src": "c6-english-ch02-t01-i06"
+  },
+  {
+   "itemId": "r2:3",
+   "key": "Fox takes the food",
+   "prompt": "cause: after/for \"The food falls down\"",
+   "src": "c6-english-ch02-t01-i06"
+  },
+  {
+   "itemId": "r3:0",
+   "key": "Fox",
+   "prompt": "who: after/for \"What a fine bird you are!\"",
+   "src": "c6-english-ch02-t01-i05"
+  },
+  {
+   "itemId": "r3:1",
+   "key": "Raven",
+   "prompt": "who: after/for \"Caw!\"",
+   "src": "c6-english-ch02-t01-i06"
+  },
+  {
+   "itemId": "r3:2",
+   "key": "Fox",
+   "prompt": "who: after/for \"Sing for me, Sir King\"",
+   "src": "c6-english-ch02-t01-i05"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ },
+ "firstCheck": {
+  "issues": [
+   {
+    "where": "explainer scene s2: fox glyph is 'insect'",
+    "what": "The fox is depicted with a 'insect' glyph (e.g., bug icon) instead of an appropriate animal icon; this is factually wrong and may confuse children.",
+    "severity": "high"
+   },
+   {
+    "where": "explainer s3: the task answer dismisses honest compliment as flattery?",
+    "what": "The task asks 'Which message is flattery?' and lists options 'honest' and 'flattery'. The answer is 'flattery' (option B), but the 'honest' option is labeled 'A: Lovely sky' which is actually honest praise (no hidden demand). This could mislead children into thinking all praise is flattery, contradicting the kit's distinction.",
+    "severity": "high"
+   }
+  ],
+  "verdict": "fail",
+  "model": "DeepSeek-V4-Flash"
+ },
+ "regens": 2
+}

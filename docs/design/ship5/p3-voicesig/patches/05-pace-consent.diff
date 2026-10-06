@@ -22,7 +22,7 @@ index 2cb7387..96764bb 100644
    }
    await q("insert into audit(guardian_id, action, detail) values ($1, 'consent', $2)", [g.id, { childId, grants, version: CONSENT_VERSION }]);
 +  // Withdrawal is as easy as the grant and takes effect now: the stored answering-pace rows go in this request (a failure
-+  // is logged; the nightly backstop in docs/design/ship5/p3-voicesig/APPLY.md deletes rows without a current grant).
++  // is logged; the worker consent sweep, patch 11, deletes rows without a current grant).
 +  if (grants.voice_pace_memory === false) {
 +    const ids = childId ? [childId] : (await q("select id from child where guardian_id = $1", [g.id])).map((r) => r.id);
 +    for (const id of ids) await voicesigSeam.withdraw({ q, childId: id });
@@ -38,7 +38,7 @@ index e7de2a9..917c2ca 100644
    core_tutoring: "Lessons. She teaches your child live and keeps their answers, so you can see what they learned. Needed to use Taxila.",
    learning_profile: "Remember learning across days. So the next lesson starts from where your child is, and she checks again on a later day. Choose: yes, remember. Or: only this session.",
    memory: "Remember what your child says they like. Cricket, cooking, a pet's name. She uses it in examples. You can see and delete each one. Choose no, or yes.",
-+  voice_pace_memory: "Remember your child's usual answering pace. Only numbers about how long your child usually takes to start an answer are kept, on our server in Singapore, never recordings or words. We are still testing what these numbers can tell the teacher, and for now they change nothing in lessons. Choose: yes, remember. Or: only this lesson. Turning it off deletes them.",
++  voice_pace_memory: "Remember your child's usual answering pace. Only numbers about how long your child usually takes to start an answer are kept, on Taxila's own database, never recordings or words. We are still testing what these numbers can tell the teacher, and for now they change nothing in lessons. Choose: yes, remember. Or: only this lesson. Turning it off deletes them.",
    research: "Research. We do not use your child's data for research now. If that changes, we will ask you here first.",
    reports: "Where reports go. One short weekly report with what your child can now do and one thing to try at home. Choose WhatsApp, or only in the app.",
  };
@@ -61,7 +61,7 @@ index 63a8d31..9b9f38b 100644
      effectNo: (t) => `${t} won't use your child's interests in examples.` },
 +  // ship5 p3-voicesig. KEEP IN STEP with server/routes/parent.js CONSENT_SPEECH.voice_pace_memory (the spoken version).
 +  { purpose: "voice_pace_memory", title: "Remember your child's usual answering pace", yes: "Yes, remember", no: "Only this lesson",
-+    effectYes: "Only numbers about how long your child usually takes to start an answer are kept (server in Singapore), never recordings or words. We are still testing what they can tell the teacher; for now they change nothing in lessons.",
++    effectYes: "Only numbers about how long your child usually takes to start an answer are kept on Taxila's own database, never recordings or words. We are still testing what they can tell the teacher; for now they change nothing in lessons.",
 +    effectNo: () => "Nothing about your child's answering pace is kept after a lesson. Turning this off deletes what was kept." },
  ];
  

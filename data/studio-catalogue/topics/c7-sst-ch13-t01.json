@@ -1,0 +1,2040 @@
+{
+ "topicId": "c7-sst-ch13-t01",
+ "title": "The Story of Indian Farming",
+ "chapter": "The Story of Indian Farming",
+ "subject": "sst",
+ "class": 7,
+ "topicType": "T3",
+ "plan": {
+  "game": "story-rail@1",
+  "hint": "sequence and cause modes: the story of Indian farming"
+ },
+ "game": {
+  "archetype": "story-rail@1",
+  "spec": {
+   "archetype": "story-rail@1",
+   "skills": [
+    "c7-sst-ch13-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "picked": "coupled",
+    "streak": "streak",
+    "next": "What happens next?",
+    "effect": "What does this lead to?",
+    "who": "Who said this?",
+    "runDone": "Line complete",
+    "order": "your train",
+    "right": "Coupled",
+    "wrong": "Not this one",
+    "coach": "Tap a wagon before the train reaches the fork"
+   },
+   "title": "Indian Farming Through Time",
+   "rounds": [
+    {
+     "mode": "sequence",
+     "title": "Through the ages",
+     "sub": "couple farming events in order",
+     "cards": [
+      {
+       "id": "e1",
+       "text": "Farming at Mehrgarh",
+       "glyph": "seed",
+       "src": "c7-sst-ch13-t01-i02"
+      },
+      {
+       "id": "e2",
+       "text": "Harappans grow cotton",
+       "glyph": "wheat",
+       "src": "c7-sst-ch13-t01-i02"
+      },
+      {
+       "id": "e3",
+       "text": "Kallanai built on Kaveri",
+       "glyph": "river",
+       "src": "c7-sst-ch13-t01-i02"
+      },
+      {
+       "id": "e4",
+       "text": "Green Revolution begins",
+       "glyph": "leaf",
+       "src": "c7-sst-ch13-t01-i02"
+      }
+     ],
+     "speed": 0.9
+    },
+    {
+     "mode": "cause",
+     "title": "Cause and effect",
+     "sub": "match each cause to its result",
+     "pairs": [
+      {
+       "cause": {
+        "id": "c1",
+        "text": "Monsoon brings warm rain",
+        "glyph": "rain",
+        "src": "c7-sst-ch13-t01-i03"
+       },
+       "effect": {
+        "id": "f1",
+        "text": "Rice grows as kharif",
+        "glyph": "wheat",
+        "src": "c7-sst-ch13-t01-i03"
+       }
+      },
+      {
+       "cause": {
+        "id": "c2",
+        "text": "Winter brings cool weather",
+        "glyph": "cloud",
+        "src": "c7-sst-ch13-t01-i05"
+       },
+       "effect": {
+        "id": "f2",
+        "text": "Wheat grows as rabi",
+        "glyph": "wheat",
+        "src": "c7-sst-ch13-t01-i05"
+       }
+      },
+      {
+       "cause": {
+        "id": "c3",
+        "text": "Groundwater is pumped yearly",
+        "src": "c7-sst-ch13-t01-i09"
+       },
+       "effect": {
+        "id": "f3",
+        "text": "The water table falls",
+        "glyph": "drop",
+        "src": "c7-sst-ch13-t01-i09"
+       }
+      }
+     ],
+     "speed": 0.85,
+     "targets": "c7-sst-ch13-t01-m3"
+    },
+    {
+     "mode": "who",
+     "title": "Who said the line?",
+     "sub": "send each line to its speaker",
+     "speakers": [
+      {
+       "id": "farmer",
+       "name": "Farmer",
+       "glyph": "person"
+      },
+      {
+       "id": "teacher",
+       "name": "Teacher",
+       "glyph": "book"
+      },
+      {
+       "id": "engineer",
+       "name": "Engineer",
+       "glyph": "gear"
+      }
+     ],
+     "lines": [
+      {
+       "id": "w1",
+       "text": "I need water for my crop",
+       "speaker": "farmer"
+      },
+      {
+       "id": "w2",
+       "text": "Wheat grows in cool weather",
+       "speaker": "teacher",
+       "src": "c7-sst-ch13-t01-i05"
+      },
+      {
+       "id": "w3",
+       "text": "This canal can feed fields",
+       "speaker": "engineer",
+       "src": "c7-sst-ch13-t01-i06"
+      }
+     ],
+     "speed": 0.8
+    }
+   ]
+  },
+  "repairs": [
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-sst-ch13-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "The Story of Indian Farming",
+   "accent": "amber",
+   "targets": "c7-sst-ch13-t01-m2",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "The Story of Indian Farming"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Ancient farmers had no irrigation"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "mehr",
+       "type": "node",
+       "text": "Mehrgarh",
+       "sub": "c. 7000 BCE",
+       "glyph": "wheat",
+       "color": "amber"
+      },
+      {
+       "id": "harapp",
+       "type": "node",
+       "text": "Harappan farms",
+       "sub": "wheat, cotton",
+       "color": "sun"
+      },
+      {
+       "id": "kallanai",
+       "type": "node",
+       "text": "Kallanai",
+       "sub": "2nd century CE",
+       "glyph": "river",
+       "color": "sci"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "mehr",
+       "to": "harapp",
+       "text": "later"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "harapp",
+       "to": "kallanai",
+       "text": "later"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "column",
+     "els": [
+      {
+       "id": "kharif",
+       "type": "bar",
+       "parts": 4,
+       "shaded": 3,
+       "x": 100,
+       "y": 220,
+       "w": 600,
+       "text": "Kharif"
+      },
+      {
+       "id": "rabi",
+       "type": "bar",
+       "parts": 4,
+       "shaded": 3,
+       "x": 100,
+       "y": 360,
+       "w": 600,
+       "text": "Rabi"
+      },
+      {
+       "id": "klabel",
+       "type": "label",
+       "text": "June–July to September–October",
+       "x": 120,
+       "y": 270,
+       "color": "sun"
+      },
+      {
+       "id": "rlabel",
+       "type": "label",
+       "text": "October–December to March–April",
+       "x": 120,
+       "y": 410,
+       "color": "ion"
+      },
+      {
+       "id": "rice",
+       "type": "glyph",
+       "name": "wheat",
+       "x": 780,
+       "y": 250,
+       "size": 100,
+       "color": "sun"
+      },
+      {
+       "id": "wheat",
+       "type": "glyph",
+       "name": "wheat",
+       "x": 780,
+       "y": 390,
+       "size": 100,
+       "color": "ion"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "row",
+     "els": [
+      {
+       "id": "green",
+       "type": "node",
+       "text": "Green Revolution",
+       "sub": "1960s",
+       "glyph": "wheat",
+       "color": "mint"
+      },
+      {
+       "id": "gain",
+       "type": "node",
+       "text": "More grain",
+       "sub": "wheat and rice",
+       "color": "sun"
+      },
+      {
+       "id": "challenge",
+       "type": "node",
+       "text": "Challenges",
+       "glyph": "thermometer",
+       "color": "amber"
+      },
+      {
+       "id": "solution",
+       "type": "node",
+       "text": "Solutions",
+       "sub": "drip, millets",
+       "glyph": "drop",
+       "color": "sci"
+      },
+      {
+       "id": "b1",
+       "type": "arrow",
+       "from": "green",
+       "to": "gain",
+       "text": "raised"
+      },
+      {
+       "id": "b2",
+       "type": "arrow",
+       "from": "gain",
+       "to": "challenge",
+       "text": "but"
+      },
+      {
+       "id": "b3",
+       "type": "arrow",
+       "from": "challenge",
+       "to": "solution",
+       "text": "respond"
+      }
+     ]
+    },
+    {
+     "id": "s5",
+     "layout": "row",
+     "els": [
+      {
+       "id": "mrg",
+       "type": "node",
+       "text": "Mehrgarh",
+       "sub": "c. 7000 BCE",
+       "glyph": "wheat",
+       "color": "amber"
+      },
+      {
+       "id": "har",
+       "type": "node",
+       "text": "Harappan cotton",
+       "sub": "c. 2600 BCE",
+       "glyph": "leaf",
+       "color": "sun"
+      },
+      {
+       "id": "kal",
+       "type": "node",
+       "text": "Kallanai",
+       "sub": "2nd century CE",
+       "glyph": "river",
+       "color": "sci"
+      },
+      {
+       "id": "gr",
+       "type": "node",
+       "text": "Green Revolution",
+       "sub": "1960s",
+       "glyph": "wheat",
+       "color": "mint"
+      },
+      {
+       "id": "c1",
+       "type": "arrow",
+       "from": "mrg",
+       "to": "har",
+       "text": "next"
+      },
+      {
+       "id": "c2",
+       "type": "arrow",
+       "from": "har",
+       "to": "kal",
+       "text": "next"
+      },
+      {
+       "id": "c3",
+       "type": "arrow",
+       "from": "kal",
+       "to": "gr",
+       "text": "next"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Indian farming has a very long story, from early settled farmers to the challenges farmers face today.",
+    "L2": "A common belief says ancient Indian farmers had no irrigation or technology. That is not true.",
+    "L3": "At Mehrgarh, around 7000 BCE, people grew wheat and barley and kept animals.",
+    "L4": "Harappan farmers grew wheat, barley and cotton, and used ploughs. Ancient people also built wells, tanks, stepwells and canals.",
+    "L5": "Crops follow seasons: kharif crops are sown with the monsoon, while rabi crops are sown in the cooler months. Rice is kharif, and wheat is rabi.",
+    "L6": "The Green Revolution of the 1960s used high-yielding seeds, irrigation and fertilisers, sharply raising grain production, especially wheat and rice.",
+    "L7": "Farmers now face small landholdings, uncertain monsoons, falling groundwater, damaged soil, price swings and climate change. Water-saving methods and crop diversity can help.",
+    "L8": "The timeline is Mehrgarh, Harappan cotton, Kallanai, then the Green Revolution. Put these farming milestones in order."
+   },
+   "narration": {
+    "L1": {
+     "text": "Indian farming has a very long story, from early settled farmers to the challenges farmers face today.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "A common belief says ancient Indian farmers had no irrigation or technology. That is not true.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "At Mehrgarh, around 7000 BCE, people grew wheat and barley and kept animals.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "Harappan farmers grew wheat, barley and cotton, and used ploughs. Ancient people also built wells, tanks, stepwells and canals.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "Crops follow seasons: kharif crops are sown with the monsoon, while rabi crops are sown in the cooler months. Rice is kharif, and wheat is rabi.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "The Green Revolution of the 1960s used high-yielding seeds, irrigation and fertilisers, sharply raising grain production, especially wheat and rice.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Farmers now face small landholdings, uncertain monsoons, falling groundwater, damaged soil, price swings and climate change. Water-saving methods and crop diversity can help.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "The timeline is Mehrgarh, Harappan cotton, Kallanai, then the Green Revolution. Put these farming milestones in order.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "title"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      },
+      {
+       "at": 1,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "mehr"
+      },
+      {
+       "at": 0.6,
+       "do": "highlight",
+       "dur": 1,
+       "target": "mehr"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "harapp",
+        "a1"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "kallanai",
+        "a2"
+       ]
+      },
+      {
+       "at": 2,
+       "do": "flow",
+       "dur": 1,
+       "target": [
+        "a1",
+        "a2"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "kharif",
+        "klabel"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "rabi",
+        "rlabel"
+       ]
+      },
+      {
+       "at": 2,
+       "do": "highlight",
+       "dur": 1,
+       "target": [
+        "rice",
+        "wheat"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "green"
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "b1",
+        "gain"
+       ]
+      },
+      {
+       "at": 2,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "b1",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "b2",
+        "challenge"
+       ]
+      },
+      {
+       "at": 1.4,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "b3",
+        "solution"
+       ]
+      },
+      {
+       "at": 2.2,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "b3",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s5",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "mrg",
+        "har",
+        "kal",
+        "gr"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "interactive",
+       "dur": 1
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "order",
+    "prompt": "Put these farming milestones in the correct historical order.",
+    "items": [
+     "mrg",
+     "har",
+     "kal",
+     "gr"
+    ],
+    "src": "c7-sst-ch13-t01-i02"
+   }
+  },
+  "repairs": [
+   "glyph",
+   "glyph",
+   "string:challenge.sub",
+   "scene:empty"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "passes": 2,
+  "seconds": 56
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "Harappans grow cotton",
+   "prompt": "sequence: after/for \"Farming at Mehrgarh\"",
+   "src": "c7-sst-ch13-t01-i02"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "Kallanai built on Kaveri",
+   "prompt": "sequence: after/for \"Harappans grow cotton\"",
+   "src": "c7-sst-ch13-t01-i02"
+  },
+  {
+   "itemId": "r1:2",
+   "key": "Green Revolution begins",
+   "prompt": "sequence: after/for \"Kallanai built on Kaveri\"",
+   "src": "c7-sst-ch13-t01-i02"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "Rice grows as kharif",
+   "prompt": "cause: after/for \"Monsoon brings warm rain\"",
+   "src": "c7-sst-ch13-t01-i03"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "Wheat grows as rabi",
+   "prompt": "cause: after/for \"Winter brings cool weather\"",
+   "src": "c7-sst-ch13-t01-i05"
+  },
+  {
+   "itemId": "r2:2",
+   "key": "The water table falls",
+   "prompt": "cause: after/for \"Groundwater is pumped yearly\"",
+   "src": "c7-sst-ch13-t01-i09"
+  },
+  {
+   "itemId": "r3:0",
+   "key": "Farmer",
+   "prompt": "who: after/for \"I need water for my crop\""
+  },
+  {
+   "itemId": "r3:1",
+   "key": "Teacher",
+   "prompt": "who: after/for \"Wheat grows in cool weather\"",
+   "src": "c7-sst-ch13-t01-i05"
+  },
+  {
+   "itemId": "r3:2",
+   "key": "Engineer",
+   "prompt": "who: after/for \"This canal can feed fields\"",
+   "src": "c7-sst-ch13-t01-i06"
+  }
+ ],
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch13-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "timeline",
+       "op": "line",
+       "startMs": 500,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        90,
+        250
+       ],
+       "to": [
+        710,
+        250
+       ]
+      },
+      {
+       "id": "early",
+       "op": "circle",
+       "startMs": 1500,
+       "endMs": 2100,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        150,
+        250
+       ],
+       "r": 28
+      },
+      {
+       "id": "past",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        150,
+        315
+       ],
+       "text": "early farmers",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "today",
+       "op": "circle",
+       "startMs": 2900,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        650,
+        250
+       ],
+       "r": 28
+      },
+      {
+       "id": "todaylabel",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        650,
+        315
+       ],
+       "text": "today",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "arrow",
+       "op": "arrow",
+       "startMs": 4200,
+       "endMs": 5200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        190,
+        250
+       ],
+       "to": [
+        610,
+        250
+       ]
+      },
+      {
+       "id": "farming",
+       "op": "text",
+       "startMs": 5600,
+       "endMs": 6800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        150
+       ],
+       "text": "Indian farming",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "challenges",
+       "op": "text",
+       "startMs": 6800,
+       "endMs": 7600,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        650,
+        385
+       ],
+       "text": "challenges",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch13-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "belief",
+       "op": "text",
+       "startMs": 300,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        150,
+        110
+       ],
+       "text": "common belief",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "noirrigation",
+       "op": "text",
+       "startMs": 1100,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        150,
+        180
+       ],
+       "text": "no irrigation",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "cross",
+       "op": "line",
+       "startMs": 1900,
+       "endMs": 2500,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        80,
+        155
+       ],
+       "to": [
+        220,
+        205
+       ]
+      },
+      {
+       "id": "technology",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        180
+       ],
+       "text": "technology",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "question",
+       "op": "text",
+       "startMs": 3600,
+       "endMs": 4500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        270
+       ],
+       "text": "not true",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "well",
+       "op": "circle",
+       "startMs": 4700,
+       "endMs": 5300,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        610,
+        180
+       ],
+       "r": 35
+      },
+      {
+       "id": "welllabel",
+       "op": "text",
+       "startMs": 5300,
+       "endMs": 5900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        610,
+        245
+       ],
+       "text": "well",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "irrigation",
+       "op": "text",
+       "startMs": 6100,
+       "endMs": 7200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        390
+       ],
+       "text": "irrigation",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch13-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "mehrgarh",
+       "op": "text",
+       "startMs": 300,
+       "endMs": 1100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        80
+       ],
+       "text": "Mehrgarh",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "date",
+       "op": "text",
+       "startMs": 1100,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        135
+       ],
+       "text": "7000 BCE",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "field",
+       "op": "rect",
+       "startMs": 1800,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        250
+       ],
+       "w": 220,
+       "h": 100
+      },
+      {
+       "id": "wheat",
+       "op": "text",
+       "startMs": 2600,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        170,
+        300
+       ],
+       "text": "wheat",
+       "size": "m"
+      },
+      {
+       "id": "barley",
+       "op": "text",
+       "startMs": 3200,
+       "endMs": 3800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        270,
+        300
+       ],
+       "text": "barley",
+       "size": "m"
+      },
+      {
+       "id": "animal",
+       "op": "circle",
+       "startMs": 3800,
+       "endMs": 4400,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        570,
+        290
+       ],
+       "r": 45
+      },
+      {
+       "id": "animals",
+       "op": "text",
+       "startMs": 4400,
+       "endMs": 5100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        570,
+        370
+       ],
+       "text": "animals",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "grow",
+       "op": "arrow",
+       "startMs": 5100,
+       "endMs": 5900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        340,
+        290
+       ],
+       "to": [
+        500,
+        290
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch13-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "harappan",
+       "op": "text",
+       "startMs": 300,
+       "endMs": 1000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        150,
+        80
+       ],
+       "text": "Harappan",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "crops",
+       "op": "text",
+       "startMs": 1000,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        150,
+        145
+       ],
+       "text": "wheat barley cotton",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "plough",
+       "op": "line",
+       "startMs": 1900,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        80,
+        260
+       ],
+       "to": [
+        230,
+        260
+       ]
+      },
+      {
+       "id": "ploughhandle",
+       "op": "line",
+       "startMs": 2300,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        150,
+        260
+       ],
+       "to": [
+        120,
+        210
+       ]
+      },
+      {
+       "id": "well2",
+       "op": "circle",
+       "startMs": 2900,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        360,
+        245
+       ],
+       "r": 38
+      },
+      {
+       "id": "tank",
+       "op": "rect",
+       "startMs": 3500,
+       "endMs": 4200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        440,
+        210
+       ],
+       "w": 110,
+       "h": 70
+      },
+      {
+       "id": "stepwell",
+       "op": "polygon",
+       "startMs": 4200,
+       "endMs": 5000,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         590,
+         280
+        ],
+        [
+         700,
+         280
+        ],
+        [
+         675,
+         210
+        ],
+        [
+         615,
+         210
+        ]
+       ]
+      },
+      {
+       "id": "canal",
+       "op": "line",
+       "startMs": 5000,
+       "endMs": 5800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        250,
+        390
+       ],
+       "to": [
+        690,
+        390
+       ]
+      },
+      {
+       "id": "water",
+       "op": "arrow",
+       "startMs": 5800,
+       "endMs": 6500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        690,
+        390
+       ],
+       "to": [
+        690,
+        300
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch13-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 11664,
+     "ops": [
+      {
+       "id": "seasons",
+       "op": "text",
+       "startMs": 300,
+       "endMs": 1100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "crop seasons",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "monsoon",
+       "op": "arrow",
+       "startMs": 1200,
+       "endMs": 2000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        170,
+        180
+       ],
+       "to": [
+        170,
+        330
+       ]
+      },
+      {
+       "id": "kharif",
+       "op": "text",
+       "startMs": 2000,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        170,
+        145
+       ],
+       "text": "kharif",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "rice",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        170,
+        390
+       ],
+       "text": "rice",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "cool",
+       "op": "arrow",
+       "startMs": 3400,
+       "endMs": 4200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        610,
+        330
+       ],
+       "to": [
+        610,
+        180
+       ]
+      },
+      {
+       "id": "rabi",
+       "op": "text",
+       "startMs": 4200,
+       "endMs": 4900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        610,
+        145
+       ],
+       "text": "rabi",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "wheat",
+       "op": "text",
+       "startMs": 4900,
+       "endMs": 5500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        610,
+        390
+       ],
+       "text": "wheat",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "sown",
+       "op": "text",
+       "startMs": 5700,
+       "endMs": 6300,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        250
+       ],
+       "text": "sown",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "split",
+       "op": "line",
+       "startMs": 6500,
+       "endMs": 7300,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        400,
+        110
+       ],
+       "to": [
+        400,
+        430
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch13-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9111,
+     "ops": [
+      {
+       "id": "green",
+       "op": "text",
+       "startMs": 300,
+       "endMs": 1200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        75
+       ],
+       "text": "Green Revolution",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "sixties",
+       "op": "text",
+       "startMs": 1200,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        130
+       ],
+       "text": "1960s",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "seed",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        140,
+        220
+       ],
+       "text": "high-yielding seeds",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "irrigation3",
+       "op": "text",
+       "startMs": 2800,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        220
+       ],
+       "text": "irrigation",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "fertiliser",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        650,
+        220
+       ],
+       "text": "fertilisers",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "rise",
+       "op": "arrow",
+       "startMs": 4500,
+       "endMs": 6000,
+       "ink": "good",
+       "weight": 3,
+       "from": [
+        170,
+        400
+       ],
+       "to": [
+        630,
+        280
+       ]
+      },
+      {
+       "id": "grain",
+       "op": "text",
+       "startMs": 6200,
+       "endMs": 7000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        430
+       ],
+       "text": "grain production",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "wheat2",
+       "op": "text",
+       "startMs": 7200,
+       "endMs": 7800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        300,
+        325
+       ],
+       "text": "wheat",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "rice2",
+       "op": "text",
+       "startMs": 7800,
+       "endMs": 8400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        500,
+        325
+       ],
+       "text": "rice",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch13-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 10387,
+     "ops": [
+      {
+       "id": "small",
+       "op": "text",
+       "startMs": 300,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        130,
+        100
+       ],
+       "text": "small landholdings",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "monsoon2",
+       "op": "text",
+       "startMs": 1100,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        100
+       ],
+       "text": "uncertain monsoons",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "groundwater",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        660,
+        100
+       ],
+       "text": "falling groundwater",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "soil",
+       "op": "text",
+       "startMs": 2800,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        180,
+        220
+       ],
+       "text": "damaged soil",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "prices",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4200,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        220
+       ],
+       "text": "price swings",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "climate",
+       "op": "text",
+       "startMs": 4200,
+       "endMs": 5000,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        620,
+        220
+       ],
+       "text": "climate change",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "waterhelp",
+       "op": "text",
+       "startMs": 5500,
+       "endMs": 6500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        250,
+        350
+       ],
+       "text": "water-saving methods",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "diversity",
+       "op": "text",
+       "startMs": 6500,
+       "endMs": 7300,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        560,
+        350
+       ],
+       "text": "crop diversity",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "help",
+       "op": "arrow",
+       "startMs": 7600,
+       "endMs": 8500,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        400,
+        275
+       ],
+       "to": [
+        400,
+        330
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch13-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "timeline2",
+       "op": "line",
+       "startMs": 300,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        90,
+        250
+       ],
+       "to": [
+        710,
+        250
+       ]
+      },
+      {
+       "id": "m1",
+       "op": "circle",
+       "startMs": 1200,
+       "endMs": 1600,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        130,
+        250
+       ],
+       "r": 25
+      },
+      {
+       "id": "mehrgarh2",
+       "op": "text",
+       "startMs": 1600,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        130,
+        320
+       ],
+       "text": "Mehrgarh",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "m2",
+       "op": "circle",
+       "startMs": 2300,
+       "endMs": 2700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        315,
+        250
+       ],
+       "r": 25
+      },
+      {
+       "id": "cotton",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        315,
+        320
+       ],
+       "text": "Harappan cotton",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "m3",
+       "op": "circle",
+       "startMs": 3500,
+       "endMs": 3900,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        500,
+        250
+       ],
+       "r": 25
+      },
+      {
+       "id": "kallanai",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        500,
+        320
+       ],
+       "text": "Kallanai",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "m4",
+       "op": "circle",
+       "startMs": 4500,
+       "endMs": 4900,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        670,
+        250
+       ],
+       "r": 25
+      },
+      {
+       "id": "green2",
+       "op": "text",
+       "startMs": 4900,
+       "endMs": 5900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        670,
+        320
+       ],
+       "text": "Green Revolution",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "order",
+       "op": "arrow",
+       "startMs": 6100,
+       "endMs": 7000,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        130,
+        180
+       ],
+       "to": [
+        670,
+        180
+       ]
+      },
+      {
+       "id": "orderlabel",
+       "op": "text",
+       "startMs": 7000,
+       "endMs": 7600,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        120
+       ],
+       "text": "in order",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

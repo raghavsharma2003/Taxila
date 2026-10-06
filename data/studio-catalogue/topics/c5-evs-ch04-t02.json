@@ -1,0 +1,1965 @@
+{
+ "topicId": "c5-evs-ch04-t02",
+ "title": "Safety on the way to school",
+ "chapter": "Our School — A Happy Place",
+ "subject": "evs",
+ "class": 5,
+ "topicType": "T4",
+ "plan": {
+  "game": "map-route@1",
+  "hint": "route mode: a safe route to school that avoids hazards (blocks = busy road, open drain, construction)"
+ },
+ "game": {
+  "archetype": "map-route@1",
+  "spec": {
+   "archetype": "map-route@1",
+   "skills": [
+    "c5-evs-ch04-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "thread": "Drag the thread along the road",
+    "round": "Round",
+    "done": "done",
+    "go": "FLY",
+    "undo": "UNDO",
+    "coach": "Plan a safe route, then FLY",
+    "runDone": "Route complete",
+    "fwd": "forward",
+    "left": "left",
+    "right": "right",
+    "km": "km",
+    "scale": "1 square =",
+    "measure": "Measure the map distance",
+    "lat": "lat",
+    "lon": "long",
+    "drop": "Drop the pin",
+    "fly": "Fly to",
+    "set": "SET",
+    "N": "N",
+    "S": "S",
+    "E": "E",
+    "W": "W",
+    "blocked": "BLOCKED",
+    "arrived": "SAFE ARRIVAL"
+   },
+   "title": "Safety on the way to school",
+   "rounds": [
+    {
+     "mode": "route",
+     "title": "Safe school route",
+     "sub": "walk safely around hazards",
+     "w": 8,
+     "h": 6,
+     "blocks": [
+      [
+       3,
+       1
+      ],
+      [
+       3,
+       3
+      ],
+      [
+       5,
+       3
+      ],
+      [
+       2,
+       2
+      ]
+     ],
+     "places": [
+      {
+       "at": [
+        7,
+        0
+       ],
+       "label": "School",
+       "glyph": "school"
+      },
+      {
+       "at": [
+        3,
+        2
+       ],
+       "label": "Busy road",
+       "glyph": "road"
+      },
+      {
+       "at": [
+        5,
+        4
+       ],
+       "label": "Open drain",
+       "glyph": "river"
+      },
+      {
+       "at": [
+        1,
+        2
+       ],
+       "label": "Build site",
+       "glyph": "factory"
+      }
+     ],
+     "start": [
+      0,
+      5
+     ],
+     "goal": 0,
+     "steer": "compass",
+     "maxSteps": 20
+    },
+    {
+     "mode": "route",
+     "title": "Bus stop route",
+     "sub": "reach school without hidden hazards",
+     "w": 9,
+     "h": 6,
+     "blocks": [
+      [
+       2,
+       3
+      ],
+      [
+       5,
+       1
+      ],
+      [
+       5,
+       3
+      ]
+     ],
+     "places": [
+      {
+       "at": [
+        8,
+        0
+       ],
+       "label": "School",
+       "glyph": "school"
+      },
+      {
+       "at": [
+        2,
+        4
+       ],
+       "label": "Parked bus"
+      },
+      {
+       "at": [
+        5,
+        2
+       ],
+       "label": "Busy road",
+       "glyph": "road"
+      },
+      {
+       "at": [
+        7,
+        2
+       ],
+       "label": "Build site",
+       "glyph": "factory"
+      }
+     ],
+     "start": [
+      0,
+      5
+     ],
+     "goal": 0,
+     "steer": "turns",
+     "maxSteps": 24,
+     "targets": "c5-evs-ch04-t02-m1"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c5-evs-ch04-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Safety on the way to school",
+   "accent": "mint",
+   "targets": "c5-evs-ch04-t02-m1",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Cross safely"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "It is safe behind a parked bus"
+      },
+      {
+       "id": "bus",
+       "type": "node",
+       "text": "Parked bus",
+       "sub": "blocks the view",
+       "color": "amber"
+      },
+      {
+       "id": "child",
+       "type": "node",
+       "text": "Child",
+       "sub": "cannot be seen",
+       "glyph": "person",
+       "color": "mint"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "cross",
+       "type": "node",
+       "text": "Zebra crossing",
+       "sub": "cross here",
+       "glyph": "road",
+       "color": "mint"
+      },
+      {
+       "id": "stop",
+       "type": "node",
+       "text": "Stop",
+       "sub": "at the edge",
+       "glyph": "hand",
+       "color": "amber"
+      },
+      {
+       "id": "right",
+       "type": "node",
+       "text": "Look right",
+       "sub": "first",
+       "glyph": "eye",
+       "color": "sun"
+      },
+      {
+       "id": "left",
+       "type": "node",
+       "text": "Look left",
+       "sub": "second",
+       "glyph": "eye",
+       "color": "sun"
+      },
+      {
+       "id": "right2",
+       "type": "node",
+       "text": "Look right",
+       "sub": "again",
+       "glyph": "eye",
+       "color": "sun"
+      },
+      {
+       "id": "listen",
+       "type": "node",
+       "text": "Listen",
+       "sub": "for traffic",
+       "color": "ion"
+      },
+      {
+       "id": "green",
+       "type": "node",
+       "text": "Green walker",
+       "sub": "wait for this",
+       "color": "mint"
+      },
+      {
+       "id": "clear",
+       "type": "node",
+       "text": "Way clear",
+       "sub": "then cross",
+       "glyph": "shield",
+       "color": "mint"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "cross",
+       "to": "stop",
+       "text": "reach"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "stop",
+       "to": "right",
+       "text": "check"
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "right",
+       "to": "left",
+       "text": "then"
+      },
+      {
+       "id": "a4",
+       "type": "arrow",
+       "from": "left",
+       "to": "right2",
+       "text": "again"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "checkTitle",
+       "type": "title",
+       "text": "Your turn"
+      },
+      {
+       "id": "stepRight",
+       "type": "node",
+       "text": "Right",
+       "sub": "first",
+       "glyph": "eye",
+       "color": "sun"
+      },
+      {
+       "id": "stepLeft",
+       "type": "node",
+       "text": "Left",
+       "sub": "second",
+       "glyph": "eye",
+       "color": "sun"
+      },
+      {
+       "id": "stepRightAgain",
+       "type": "node",
+       "text": "Right again",
+       "sub": "third",
+       "glyph": "eye",
+       "color": "sun"
+      },
+      {
+       "id": "safe",
+       "type": "node",
+       "text": "Cross safely",
+       "sub": "walk straight",
+       "glyph": "shield",
+       "color": "mint"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "To get to school safely, cross only at a zebra crossing, foot overbridge or subway, or with a signal or traffic police person.",
+    "L2": "A parked bus can hide you from a driver, and it can hide the vehicle from you. Never cross from behind or in front of it.",
+    "L3": "First, stop at the edge of the crossing and listen. If there is a signal, wait for the green walking figure.",
+    "L4": "In India, vehicles drive on the left, so the nearest traffic comes from your right. Look right, then left, then right again.",
+    "L5": "When the way is clear, walk briskly in a straight line and keep looking. Never run or zig-zag across the road.",
+    "L6": "Use the footpath after crossing. If there is no footpath, walk on the right edge facing traffic coming towards you.",
+    "L7": "On a school bus, wait until it stops fully, keep your hands and head inside, and wear a seat belt if there is one.",
+    "L8": "Now put the three looks in the correct order."
+   },
+   "narration": {
+    "L1": {
+     "text": "To get to school safely, cross only at a zebra crossing, foot overbridge or subway, or with a signal or traffic police person.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L2": {
+     "text": "A parked bus can hide you from a driver, and it can hide the vehicle from you. Never cross from behind or in front of it.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L3": {
+     "text": "First, stop at the edge of the crossing and listen. If there is a signal, wait for the green walking figure.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L4": {
+     "text": "In India, vehicles drive on the left, so the nearest traffic comes from your right. Look right, then left, then right again.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L5": {
+     "text": "When the way is clear, walk briskly in a straight line and keep looking. Never run or zig-zag across the road.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Use the footpath after crossing. If there is no footpath, walk on the right edge facing traffic coming towards you.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L7": {
+     "text": "On a school bus, wait until it stops fully, keep your hands and head inside, and wear a seat belt if there is one.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Now put the three looks in the correct order.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": "bus"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": "child"
+      },
+      {
+       "at": 2,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "cross",
+        "stop",
+        "listen"
+       ]
+      },
+      {
+       "at": 2,
+       "do": "show",
+       "dur": 0.8,
+       "target": "green"
+      },
+      {
+       "at": 3,
+       "do": "highlight",
+       "dur": 1,
+       "target": "green"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "right",
+        "left",
+        "right2"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 1.2,
+       "target": [
+        "a2",
+        "a3",
+        "a4"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "clear"
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "a1",
+       "to": 1
+      },
+      {
+       "at": 2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "clear"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "cross"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.5,
+       "target": "cross"
+      },
+      {
+       "at": 1,
+       "do": "focus",
+       "dur": 1,
+       "target": "stop"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "checkTitle",
+        "stepRight",
+        "stepLeft",
+        "stepRightAgain"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "order",
+    "prompt": "Tap the three looks in the correct order before crossing.",
+    "items": [
+     "stepRight",
+     "stepLeft",
+     "stepRightAgain"
+    ],
+    "src": "c5-evs-ch04-t02-i14"
+   }
+  },
+  "repairs": [
+   "glyph",
+   "glyph",
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "passes": 2,
+  "seconds": 50
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "12 steps",
+   "prompt": "to School"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "13 steps",
+   "prompt": "to School"
+  }
+ ],
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch04-t02-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 10387,
+     "ops": [
+      {
+       "id": "zebra",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        210
+       ],
+       "w": 620,
+       "h": 110
+      },
+      {
+       "id": "stripe1",
+       "op": "line",
+       "startMs": 500,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        130,
+        220
+       ],
+       "to": [
+        180,
+        310
+       ]
+      },
+      {
+       "id": "stripe2",
+       "op": "line",
+       "startMs": 700,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        230,
+        220
+       ],
+       "to": [
+        280,
+        310
+       ]
+      },
+      {
+       "id": "stripe3",
+       "op": "line",
+       "startMs": 900,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        330,
+        220
+       ],
+       "to": [
+        380,
+        310
+       ]
+      },
+      {
+       "id": "stripe4",
+       "op": "line",
+       "startMs": 1100,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        430,
+        220
+       ],
+       "to": [
+        480,
+        310
+       ]
+      },
+      {
+       "id": "stripe5",
+       "op": "line",
+       "startMs": 1300,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        530,
+        220
+       ],
+       "to": [
+        580,
+        310
+       ]
+      },
+      {
+       "id": "cross",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        365
+       ],
+       "text": "zebra crossing",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "over",
+       "op": "rect",
+       "startMs": 3000,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        90
+       ],
+       "w": 180,
+       "h": 35
+      },
+      {
+       "id": "overlabel",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        80
+       ],
+       "text": "foot overbridge",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "subway",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 5000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        80
+       ],
+       "text": "subway",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "signal",
+       "op": "circle",
+       "startMs": 5100,
+       "endMs": 5600,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        650,
+        110
+       ],
+       "r": 28
+      },
+      {
+       "id": "police",
+       "op": "text",
+       "startMs": 5700,
+       "endMs": 6500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        650,
+        175
+       ],
+       "text": "traffic police",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "safe",
+       "op": "label",
+       "startMs": 7000,
+       "endMs": 8500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        440
+       ],
+       "text": "safe crossing"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch04-t02-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 11664,
+     "ops": [
+      {
+       "id": "bus",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        250,
+        130
+       ],
+       "w": 300,
+       "h": 210
+      },
+      {
+       "id": "buslabel",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        190
+       ],
+       "text": "parked bus",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "child",
+       "op": "circle",
+       "startMs": 1700,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        150,
+        300
+       ],
+       "r": 18
+      },
+      {
+       "id": "driver",
+       "op": "circle",
+       "startMs": 2200,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        650,
+        300
+       ],
+       "r": 18
+      },
+      {
+       "id": "hide1",
+       "op": "line",
+       "startMs": 2800,
+       "endMs": 3300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        180,
+        300
+       ],
+       "to": [
+        250,
+        300
+       ]
+      },
+      {
+       "id": "hide2",
+       "op": "line",
+       "startMs": 3400,
+       "endMs": 3900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        550,
+        300
+       ],
+       "to": [
+        620,
+        300
+       ]
+      },
+      {
+       "id": "behind",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 4900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        390
+       ],
+       "text": "behind",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "front",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 5600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        620,
+        390
+       ],
+       "text": "in front",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "never",
+       "op": "text",
+       "startMs": 6500,
+       "endMs": 7600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        450
+       ],
+       "text": "never cross",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch04-t02-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9536,
+     "ops": [
+      {
+       "id": "edge",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        100,
+        300
+       ],
+       "to": [
+        700,
+        300
+       ]
+      },
+      {
+       "id": "stop",
+       "op": "circle",
+       "startMs": 800,
+       "endMs": 1300,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        180,
+        260
+       ],
+       "r": 25
+      },
+      {
+       "id": "stoplabel",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        350
+       ],
+       "text": "stop",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "ear",
+       "op": "label",
+       "startMs": 2100,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        300,
+        250
+       ],
+       "text": "listen",
+       "to": [
+        300,
+        300
+       ]
+      },
+      {
+       "id": "signal",
+       "op": "rect",
+       "startMs": 3000,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        520,
+        120
+       ],
+       "w": 100,
+       "h": 180
+      },
+      {
+       "id": "red",
+       "op": "circle",
+       "startMs": 3700,
+       "endMs": 4200,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        570,
+        160
+       ],
+       "r": 20,
+       "fill": "accent"
+      },
+      {
+       "id": "green",
+       "op": "circle",
+       "startMs": 5000,
+       "endMs": 5600,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        570,
+        250
+       ],
+       "r": 20,
+       "fill": "good"
+      },
+      {
+       "id": "walk",
+       "op": "text",
+       "startMs": 5700,
+       "endMs": 6800,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        570,
+        350
+       ],
+       "text": "green walking figure",
+       "size": "s",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch04-t02-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9962,
+     "ops": [
+      {
+       "id": "road",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        100,
+        250
+       ],
+       "to": [
+        700,
+        250
+       ]
+      },
+      {
+       "id": "left",
+       "op": "arrow",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        650,
+        210
+       ],
+       "to": [
+        450,
+        210
+       ]
+      },
+      {
+       "id": "india",
+       "op": "text",
+       "startMs": 1600,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        110
+       ],
+       "text": "India",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "right",
+       "op": "arrow",
+       "startMs": 2500,
+       "endMs": 3200,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        180,
+        320
+       ],
+       "to": [
+        350,
+        320
+       ]
+      },
+      {
+       "id": "r1",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        390
+       ],
+       "text": "right",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "l1",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 4900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        390
+       ],
+       "text": "left",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "r2",
+       "op": "text",
+       "startMs": 5100,
+       "endMs": 5700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        620,
+        390
+       ],
+       "text": "right",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "lookarr",
+       "op": "arrow",
+       "startMs": 6200,
+       "endMs": 6800,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        180,
+        300
+       ],
+       "to": [
+        350,
+        300
+       ]
+      },
+      {
+       "id": "lookarr2",
+       "op": "arrow",
+       "startMs": 6900,
+       "endMs": 7500,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        350,
+        300
+       ],
+       "to": [
+        520,
+        300
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch04-t02-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9536,
+     "ops": [
+      {
+       "id": "road",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        80,
+        280
+       ],
+       "to": [
+        720,
+        280
+       ]
+      },
+      {
+       "id": "walker",
+       "op": "circle",
+       "startMs": 800,
+       "endMs": 1300,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        170,
+        250
+       ],
+       "r": 18
+      },
+      {
+       "id": "straight",
+       "op": "arrow",
+       "startMs": 1600,
+       "endMs": 3000,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        190,
+        250
+       ],
+       "to": [
+        610,
+        250
+       ]
+      },
+      {
+       "id": "brisk",
+       "op": "text",
+       "startMs": 3100,
+       "endMs": 3800,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        170
+       ],
+       "text": "walk briskly",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "look",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 4700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        350
+       ],
+       "text": "keep looking",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "run",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 5700,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        180,
+        430
+       ],
+       "text": "never run",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "zig",
+       "op": "stroke",
+       "startMs": 5900,
+       "endMs": 6700,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         520,
+         410
+        ],
+        [
+         560,
+         370
+        ],
+        [
+         540,
+         330
+        ],
+        [
+         590,
+         290
+        ]
+       ]
+      },
+      {
+       "id": "nozig",
+       "op": "label",
+       "startMs": 6800,
+       "endMs": 7700,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        640,
+        410
+       ],
+       "text": "no zig-zag"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch04-t02-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9111,
+     "ops": [
+      {
+       "id": "road",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        80,
+        300
+       ],
+       "to": [
+        720,
+        300
+       ]
+      },
+      {
+       "id": "path",
+       "op": "rect",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        80,
+        120
+       ],
+       "w": 640,
+       "h": 65
+      },
+      {
+       "id": "pathlabel",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 2000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        155
+       ],
+       "text": "footpath",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "walker",
+       "op": "circle",
+       "startMs": 2100,
+       "endMs": 2500,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        300,
+        150
+       ],
+       "r": 16
+      },
+      {
+       "id": "noroadpath",
+       "op": "text",
+       "startMs": 2900,
+       "endMs": 3600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        235
+       ],
+       "text": "no footpath",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "rightedge",
+       "op": "text",
+       "startMs": 3800,
+       "endMs": 4500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        390
+       ],
+       "text": "right edge",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "facing",
+       "op": "text",
+       "startMs": 4600,
+       "endMs": 5400,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        600,
+        390
+       ],
+       "text": "facing traffic",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "traffic",
+       "op": "arrow",
+       "startMs": 5600,
+       "endMs": 6500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        700,
+        330
+       ],
+       "to": [
+        470,
+        330
+       ]
+      },
+      {
+       "id": "walkarrow",
+       "op": "arrow",
+       "startMs": 6700,
+       "endMs": 7500,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        180,
+        270
+       ],
+       "to": [
+        180,
+        220
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch04-t02-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 10813,
+     "ops": [
+      {
+       "id": "bus",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        170,
+        120
+       ],
+       "w": 460,
+       "h": 250
+      },
+      {
+       "id": "buslabel",
+       "op": "text",
+       "startMs": 1000,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        160
+       ],
+       "text": "school bus",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "stop",
+       "op": "line",
+       "startMs": 1800,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        680,
+        390
+       ],
+       "to": [
+        680,
+        450
+       ]
+      },
+      {
+       "id": "stoplabel",
+       "op": "text",
+       "startMs": 2400,
+       "endMs": 3100,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        680,
+        475
+       ],
+       "text": "stops fully",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "hand",
+       "op": "circle",
+       "startMs": 3300,
+       "endMs": 3700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        250,
+        230
+       ],
+       "r": 15
+      },
+      {
+       "id": "head",
+       "op": "circle",
+       "startMs": 3800,
+       "endMs": 4300,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        550,
+        210
+       ],
+       "r": 22
+      },
+      {
+       "id": "inside",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5500,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        420
+       ],
+       "text": "hands and head inside",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "belt",
+       "op": "line",
+       "startMs": 5900,
+       "endMs": 6600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        330,
+        210
+       ],
+       "to": [
+        470,
+        310
+       ]
+      },
+      {
+       "id": "beltlabel",
+       "op": "text",
+       "startMs": 6800,
+       "endMs": 7400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        350
+       ],
+       "text": "seat belt",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch04-t02-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4430,
+     "ops": [
+      {
+       "id": "looks",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        75
+       ],
+       "text": "three looks",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "one",
+       "op": "circle",
+       "startMs": 800,
+       "endMs": 1300,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        150,
+        230
+       ],
+       "r": 55
+      },
+      {
+       "id": "oneText",
+       "op": "text",
+       "startMs": 1300,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        150,
+        245
+       ],
+       "text": "right",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "two",
+       "op": "circle",
+       "startMs": 1800,
+       "endMs": 2300,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        230
+       ],
+       "r": 55
+      },
+      {
+       "id": "twoText",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        245
+       ],
+       "text": "left",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "three",
+       "op": "circle",
+       "startMs": 2800,
+       "endMs": 3300,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        650,
+        230
+       ],
+       "r": 55
+      },
+      {
+       "id": "threeText",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 3800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        650,
+        245
+       ],
+       "text": "right",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "order",
+       "op": "arrow",
+       "startMs": 3800,
+       "endMs": 4100,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        210,
+        230
+       ],
+       "to": [
+        340,
+        230
+       ]
+      },
+      {
+       "id": "order2",
+       "op": "arrow",
+       "startMs": 4100,
+       "endMs": 4430,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        460,
+        230
+       ],
+       "to": [
+        590,
+        230
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

@@ -1,0 +1,1728 @@
+{
+ "topicId": "c6-science-ch08-t02",
+ "title": "Evaporation and condensation",
+ "chapter": "A Journey through States of Water",
+ "subject": "science",
+ "class": 6,
+ "topicType": "T3",
+ "plan": {
+  "game": "phase-shift@1",
+  "hint": "Phase Shift: states of water, evaporation and condensation, factors"
+ },
+ "game": {
+  "archetype": "phase-shift@1",
+  "spec": {
+   "archetype": "phase-shift@1",
+   "skills": [
+    "c6-science-ch08-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "step": "Step",
+    "heat": "HEAT",
+    "cool": "COOL",
+    "fan": "FAN",
+    "lid": "COLD LID",
+    "temp": "TEMP",
+    "ice": "ice",
+    "water": "water",
+    "vapour": "vapour",
+    "plateau": "temperature check",
+    "boiling": "boiling",
+    "invisible": "vapour",
+    "predict": "Predict",
+    "done": "Done",
+    "noBoil": "without boiling"
+   },
+   "start": 25,
+   "steps": [
+    {
+     "kind": "goal",
+     "goal": "evaporate",
+     "arg": 0.15,
+     "tMax": 40,
+     "text": "Dry some water without boiling it.",
+     "targets": "c6-science-ch08-t02-m2"
+    },
+    {
+     "kind": "probe",
+     "probe": "glass",
+     "targets": "c6-science-ch08-t02-m1"
+    },
+    {
+     "kind": "goal",
+     "goal": "condense",
+     "arg": 0.15,
+     "tMax": 35,
+     "text": "Make tiny drops appear on the cool surface."
+    },
+    {
+     "kind": "goal",
+     "goal": "condense",
+     "arg": 0.1,
+     "tMax": 30,
+     "text": "Bring some water vapour back as water drops.",
+     "targets": "c6-science-ch08-t02-m3"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c6-science-ch08-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Evaporation and condensation",
+   "accent": "sci",
+   "targets": "c6-science-ch08-t02-m2",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Evaporation and condensation"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Evaporation happens only when water boils"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "plate",
+       "type": "node",
+       "text": "Liquid water",
+       "sub": "surface",
+       "glyph": "drop",
+       "color": "sci"
+      },
+      {
+       "id": "vapour",
+       "type": "node",
+       "text": "Water vapour",
+       "sub": "in air",
+       "glyph": "wind",
+       "color": "ion"
+      },
+      {
+       "id": "cool",
+       "type": "node",
+       "text": "Cool surface",
+       "sub": "mirror or glass",
+       "glyph": "mirror",
+       "color": "mint"
+      },
+      {
+       "id": "drops",
+       "type": "node",
+       "text": "Tiny drops",
+       "sub": "liquid water",
+       "glyph": "rain",
+       "color": "sci"
+      },
+      {
+       "id": "evap",
+       "type": "arrow",
+       "from": "plate",
+       "to": "vapour",
+       "text": "evaporation"
+      },
+      {
+       "id": "cond",
+       "type": "arrow",
+       "from": "vapour",
+       "to": "drops",
+       "text": "condensation"
+      },
+      {
+       "id": "cooler",
+       "type": "arrow",
+       "from": "cool",
+       "to": "drops",
+       "text": "cooling"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "sea",
+       "type": "node",
+       "text": "Sea",
+       "glyph": "wave",
+       "color": "sci"
+      },
+      {
+       "id": "cloud",
+       "type": "node",
+       "text": "Clouds",
+       "glyph": "cloud",
+       "color": "ion"
+      },
+      {
+       "id": "rain",
+       "type": "node",
+       "text": "Rain",
+       "glyph": "rain",
+       "color": "sci"
+      },
+      {
+       "id": "river",
+       "type": "node",
+       "text": "River",
+       "glyph": "river",
+       "color": "mint"
+      },
+      {
+       "id": "cycle1",
+       "type": "arrow",
+       "from": "sea",
+       "to": "cloud",
+       "text": "evaporation"
+      },
+      {
+       "id": "cycle2",
+       "type": "arrow",
+       "from": "cloud",
+       "to": "rain",
+       "text": "condensation"
+      },
+      {
+       "id": "cycle3",
+       "type": "arrow",
+       "from": "rain",
+       "to": "river",
+       "text": "falls"
+      },
+      {
+       "id": "cycle4",
+       "type": "arrow",
+       "from": "river",
+       "to": "sea",
+       "text": "returns"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "qtitle",
+       "type": "title",
+       "text": "Check your idea"
+      },
+      {
+       "id": "opt1",
+       "type": "label",
+       "text": "Evaporation",
+       "x": 120,
+       "y": 300
+      },
+      {
+       "id": "opt2",
+       "type": "label",
+       "text": "Condensation",
+       "x": 500,
+       "y": 300
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Water can change state without disappearing. Two important changes are evaporation and condensation.",
+    "L2": "Evaporation is liquid water changing into water vapour from the surface.",
+    "L3": "It happens slowly at all temperatures, so clothes and wet floors can dry without boiling.",
+    "L4": "Water vapour is in the air. When it cools on a cold glass or mirror, it changes into tiny liquid drops.",
+    "L5": "Those drops come from the surrounding air, not through the glass.",
+    "L6": "Together, evaporation and condensation drive the water cycle: sea water becomes vapour, clouds form, and rain falls.",
+    "L7": "So remember: evaporation changes liquid to vapour, while condensation changes vapour to liquid.",
+    "L8": "Now identify the process that forms drops on the outside of a cold bottle."
+   },
+   "narration": {
+    "L1": {
+     "text": "Water can change state without disappearing. Two important changes are evaporation and condensation.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "Evaporation is liquid water changing into water vapour from the surface.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "It happens slowly at all temperatures, so clothes and wet floors can dry without boiling.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "Water vapour is in the air. When it cools on a cold glass or mirror, it changes into tiny liquid drops.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "Those drops come from the surrounding air, not through the glass.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Together, evaporation and condensation drive the water cycle: sea water becomes vapour, clouds form, and rain falls.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "So remember: evaporation changes liquid to vapour, while condensation changes vapour to liquid.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Now identify the process that forms drops on the outside of a cold bottle.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "plate"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.6,
+       "target": "evap"
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.7,
+       "target": "vapour"
+      },
+      {
+       "at": 1.5,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "evap",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "myth"
+      },
+      {
+       "at": 1,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "cool"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.6,
+       "target": "cond"
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.7,
+       "target": "drops"
+      },
+      {
+       "at": 1.5,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "cond",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "cool"
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 1,
+       "target": "drops"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.5,
+       "target": "sea"
+      },
+      {
+       "at": 0.4,
+       "do": "show",
+       "dur": 0.5,
+       "target": "cycle1"
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.5,
+       "target": "cloud"
+      },
+      {
+       "at": 1.2,
+       "do": "show",
+       "dur": 0.5,
+       "target": "cycle2"
+      },
+      {
+       "at": 1.6,
+       "do": "show",
+       "dur": 0.5,
+       "target": "rain"
+      },
+      {
+       "at": 2,
+       "do": "show",
+       "dur": 0.5,
+       "target": "cycle3"
+      },
+      {
+       "at": 2.4,
+       "do": "show",
+       "dur": 0.5,
+       "target": "river"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "focus",
+       "dur": 1.2,
+       "target": [
+        "evap",
+        "cond"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "qtitle"
+      },
+      {
+       "at": "end",
+       "do": "interactive"
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which process forms drops on the outside of a cold bottle?",
+    "options": [
+     "opt1",
+     "opt2"
+    ],
+    "answer": "opt2",
+    "src": "c6-science-ch08-t02-i03"
+   }
+  },
+  "repairs": [],
+  "attempts": 2,
+  "model": "taxila-fast-bg",
+  "seconds": 43
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch08-t02-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "water",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        250,
+        270
+       ],
+       "rx": 120,
+       "ry": 70
+      },
+      {
+       "id": "waterlabel",
+       "op": "label",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        250,
+        365
+       ],
+       "text": "liquid water",
+       "to": [
+        250,
+        330
+       ]
+      },
+      {
+       "id": "vapour",
+       "op": "ellipse",
+       "startMs": 1200,
+       "endMs": 2000,
+       "ink": "soft",
+       "weight": 2,
+       "c": [
+        550,
+        170
+       ],
+       "rx": 120,
+       "ry": 65
+      },
+      {
+       "id": "vapourlabel",
+       "op": "label",
+       "startMs": 1800,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        550,
+        90
+       ],
+       "text": "water vapour",
+       "to": [
+        550,
+        120
+       ]
+      },
+      {
+       "id": "evap",
+       "op": "arrow",
+       "startMs": 2400,
+       "endMs": 3300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        350,
+        245
+       ],
+       "to": [
+        455,
+        190
+       ]
+      },
+      {
+       "id": "evaplabel",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        285
+       ],
+       "text": "evaporation",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "cond",
+       "op": "arrow",
+       "startMs": 3700,
+       "endMs": 4600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        455,
+        150
+       ],
+       "to": [
+        350,
+        205
+       ]
+      },
+      {
+       "id": "condlabel",
+       "op": "text",
+       "startMs": 4400,
+       "endMs": 5200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        125
+       ],
+       "text": "condensation",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch08-t02-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "surface",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        100,
+        330
+       ],
+       "to": [
+        330,
+        330
+       ]
+      },
+      {
+       "id": "liquid",
+       "op": "ellipse",
+       "startMs": 300,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        215,
+        370
+       ],
+       "rx": 115,
+       "ry": 35
+      },
+      {
+       "id": "liquidlabel",
+       "op": "label",
+       "startMs": 800,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        215,
+        445
+       ],
+       "text": "liquid water",
+       "to": [
+        215,
+        390
+       ]
+      },
+      {
+       "id": "up1",
+       "op": "arrow",
+       "startMs": 1300,
+       "endMs": 2100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        150,
+        325
+       ],
+       "to": [
+        135,
+        235
+       ]
+      },
+      {
+       "id": "up2",
+       "op": "arrow",
+       "startMs": 1500,
+       "endMs": 2300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        215,
+        325
+       ],
+       "to": [
+        215,
+        220
+       ]
+      },
+      {
+       "id": "up3",
+       "op": "arrow",
+       "startMs": 1700,
+       "endMs": 2500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        280,
+        325
+       ],
+       "to": [
+        295,
+        235
+       ]
+      },
+      {
+       "id": "vaplabel",
+       "op": "label",
+       "startMs": 2400,
+       "endMs": 3100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        215,
+        190
+       ],
+       "text": "water vapour",
+       "to": [
+        215,
+        220
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch08-t02-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "floor",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        90,
+        370
+       ],
+       "to": [
+        330,
+        370
+       ]
+      },
+      {
+       "id": "puddle",
+       "op": "ellipse",
+       "startMs": 300,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        210,
+        355
+       ],
+       "rx": 105,
+       "ry": 25
+      },
+      {
+       "id": "cloth",
+       "op": "rect",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        500,
+        300
+       ],
+       "w": 150,
+       "h": 75,
+       "round": 8
+      },
+      {
+       "id": "clothlabel",
+       "op": "label",
+       "startMs": 1100,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        575,
+        405
+       ],
+       "text": "clothes",
+       "to": [
+        575,
+        375
+       ]
+      },
+      {
+       "id": "slow",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        90
+       ],
+       "text": "slowly",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "temps",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        145
+       ],
+       "text": "all temperatures",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "pudarrow",
+       "op": "arrow",
+       "startMs": 3000,
+       "endMs": 3900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        210,
+        330
+       ],
+       "to": [
+        210,
+        240
+       ]
+      },
+      {
+       "id": "clotharrow",
+       "op": "arrow",
+       "startMs": 3500,
+       "endMs": 4400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        575,
+        295
+       ],
+       "to": [
+        575,
+        210
+       ]
+      },
+      {
+       "id": "dry",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5300,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        455
+       ],
+       "text": "dry",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch08-t02-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9536,
+     "ops": [
+      {
+       "id": "air",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "soft",
+       "weight": 2,
+       "c": [
+        180,
+        180
+       ],
+       "rx": 130,
+       "ry": 75
+      },
+      {
+       "id": "airlabel",
+       "op": "text",
+       "startMs": 600,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        180
+       ],
+       "text": "air",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "glass",
+       "op": "rect",
+       "startMs": 900,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        500,
+        180
+       ],
+       "w": 120,
+       "h": 190,
+       "round": 12
+      },
+      {
+       "id": "cold",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        560,
+        405
+       ],
+       "text": "cold glass",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "vapour",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        290
+       ],
+       "text": "water vapour",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "coolarrow",
+       "op": "arrow",
+       "startMs": 2900,
+       "endMs": 4000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        315,
+        190
+       ],
+       "to": [
+        490,
+        230
+       ]
+      },
+      {
+       "id": "drop1",
+       "op": "circle",
+       "startMs": 4300,
+       "endMs": 4900,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        525,
+        215
+       ],
+       "r": 9
+      },
+      {
+       "id": "drop2",
+       "op": "circle",
+       "startMs": 4500,
+       "endMs": 5100,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        560,
+        250
+       ],
+       "r": 8
+      },
+      {
+       "id": "drop3",
+       "op": "circle",
+       "startMs": 4700,
+       "endMs": 5300,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        590,
+        295
+       ],
+       "r": 10
+      },
+      {
+       "id": "droplabel",
+       "op": "label",
+       "startMs": 5300,
+       "endMs": 6200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        650,
+        255
+       ],
+       "text": "liquid drops",
+       "to": [
+        590,
+        275
+       ]
+      },
+      {
+       "id": "condlabel",
+       "op": "text",
+       "startMs": 6500,
+       "endMs": 7300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        110
+       ],
+       "text": "condensation",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch08-t02-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "airlabel2",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        150,
+        90
+       ],
+       "text": "surrounding air",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "airarrow",
+       "op": "arrow",
+       "startMs": 700,
+       "endMs": 1700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        260,
+        150
+       ],
+       "to": [
+        485,
+        220
+       ]
+      },
+      {
+       "id": "drops2",
+       "op": "circle",
+       "startMs": 1700,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        535,
+        225
+       ],
+       "r": 10
+      },
+      {
+       "id": "glassline",
+       "op": "line",
+       "startMs": 2200,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        500,
+        180
+       ],
+       "to": [
+        500,
+        370
+       ]
+      },
+      {
+       "id": "notthrough",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 4000,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        440
+       ],
+       "text": "not through glass",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch08-t02-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "sea",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        130,
+        370
+       ],
+       "rx": 90,
+       "ry": 45
+      },
+      {
+       "id": "sealabel",
+       "op": "text",
+       "startMs": 500,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        130,
+        370
+       ],
+       "text": "sea water",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "seaarrow",
+       "op": "arrow",
+       "startMs": 1100,
+       "endMs": 1900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        130,
+        320
+       ],
+       "to": [
+        130,
+        220
+       ]
+      },
+      {
+       "id": "vapourlabel6",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        130,
+        180
+       ],
+       "text": "vapour",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "cloud",
+       "op": "ellipse",
+       "startMs": 2300,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        170
+       ],
+       "rx": 125,
+       "ry": 55
+      },
+      {
+       "id": "cloudlabel",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        170
+       ],
+       "text": "clouds",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "condarrow6",
+       "op": "arrow",
+       "startMs": 3500,
+       "endMs": 4300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        300,
+        210
+       ],
+       "to": [
+        285,
+        290
+       ]
+      },
+      {
+       "id": "rain1",
+       "op": "line",
+       "startMs": 4100,
+       "endMs": 4700,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        360,
+        230
+       ],
+       "to": [
+        350,
+        330
+       ]
+      },
+      {
+       "id": "rain2",
+       "op": "line",
+       "startMs": 4300,
+       "endMs": 4900,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        400,
+        230
+       ],
+       "to": [
+        390,
+        330
+       ]
+      },
+      {
+       "id": "rain3",
+       "op": "line",
+       "startMs": 4500,
+       "endMs": 5100,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        440,
+        230
+       ],
+       "to": [
+        430,
+        330
+       ]
+      },
+      {
+       "id": "rainlabel",
+       "op": "text",
+       "startMs": 5200,
+       "endMs": 5900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        390
+       ],
+       "text": "rain",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "cyclearrow",
+       "op": "arrow",
+       "startMs": 6000,
+       "endMs": 7400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        500,
+        340
+       ],
+       "to": [
+        210,
+        370
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch08-t02-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "eq1",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        120
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "liquid",
+         "→",
+         "vapour"
+        ]
+       ]
+      },
+      {
+       "id": "evap7",
+       "op": "text",
+       "startMs": 1200,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        235,
+        190
+       ],
+       "text": "evaporation",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "eq2",
+       "op": "numwork",
+       "startMs": 2300,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        430,
+        120
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "vapour",
+         "→",
+         "liquid"
+        ]
+       ]
+      },
+      {
+       "id": "cond7",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        565,
+        190
+       ],
+       "text": "condensation",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "remember",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5500,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        330
+       ],
+       "text": "remember",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch08-t02-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "bottle",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        320,
+        130
+       ],
+       "w": 160,
+       "h": 250,
+       "round": 28
+      },
+      {
+       "id": "coldlabel",
+       "op": "text",
+       "startMs": 800,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        100
+       ],
+       "text": "cold bottle",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "dropa",
+       "op": "circle",
+       "startMs": 1800,
+       "endMs": 2400,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        315,
+        190
+       ],
+       "r": 10
+      },
+      {
+       "id": "dropb",
+       "op": "circle",
+       "startMs": 2100,
+       "endMs": 2700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        495,
+        230
+       ],
+       "r": 9
+      },
+      {
+       "id": "dropc",
+       "op": "circle",
+       "startMs": 2400,
+       "endMs": 3000,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        310,
+        300
+       ],
+       "r": 11
+      },
+      {
+       "id": "dropd",
+       "op": "circle",
+       "startMs": 2700,
+       "endMs": 3300,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        500,
+        330
+       ],
+       "r": 10
+      },
+      {
+       "id": "question",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 4800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        440
+       ],
+       "text": "process?",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "answer",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 6200,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        55
+       ],
+       "text": "condensation",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

@@ -25,7 +25,7 @@ export function sanitizeBoard(b: BoardSpec | null | undefined, fallbackTitle: st
 /** Draws the board at progress p ∈ [0, 1] (0 = blank board, 1 = fully drawn). Pure function of p. */
 export function drawBoard(ctx: Ctx, b: BoardSpec, p: number): void {
   const acc = b.accent ?? C.ion;
-  ctx.fillStyle = "#0E1118"; ctx.fillRect(0, 0, W, H);
+  ctx.fillStyle = C.board; ctx.fillRect(0, 0, W, H);
   ctx.strokeStyle = "rgba(255,255,255,.035)"; ctx.lineWidth = 1;
   for (let x = 40; x < W; x += 40) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
   for (let y = 40; y < H; y += 40) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }

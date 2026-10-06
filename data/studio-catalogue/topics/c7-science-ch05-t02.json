@@ -1,0 +1,2033 @@
+{
+ "topicId": "c7-science-ch05-t02",
+ "title": "Rusting and combustion",
+ "chapter": "Changes Around Us: Physical and Chemical",
+ "subject": "science",
+ "class": 7,
+ "topicType": "T3",
+ "plan": {
+  "game": "fair-test@1",
+  "hint": "rusting and combustion models"
+ },
+ "game": {
+  "archetype": "fair-test@1",
+  "spec": {
+   "archetype": "fair-test@1",
+   "skills": [
+    "c7-science-ch05-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "run": "RUN",
+    "day": "day",
+    "predict": "Tap every setup that will show it",
+    "design": "Make it a fair test",
+    "conclude": "Which factor matters?",
+    "notMatter": "Which factor does NOT matter?",
+    "fair": "FAIR TEST",
+    "unfair": "NOT FAIR",
+    "runDone": "Lab closed",
+    "correct": "right calls",
+    "drip": "Hold to add drops; stop when it turns",
+    "drops": "drops",
+    "neutral": "NEUTRAL",
+    "hint": "change only one thing"
+   },
+   "title": "Sigri Fire Test",
+   "model": "combustion",
+   "rounds": [
+    {
+     "mode": "predict",
+     "title": "Make a prediction",
+     "sub": "which setups keep burning?",
+     "setups": [
+      {
+       "air": "yes",
+       "fuel": "yes",
+       "flame": "yes"
+      },
+      {
+       "air": "no",
+       "fuel": "yes",
+       "flame": "yes"
+      },
+      {
+       "air": "yes",
+       "fuel": "no",
+       "flame": "yes"
+      },
+      {
+       "air": "yes",
+       "fuel": "yes",
+       "flame": "no"
+      }
+     ],
+     "src": "c7-science-ch05-t02-i02",
+     "targets": "c7-science-ch05-t02-m2"
+    },
+    {
+     "mode": "design",
+     "title": "Test the air",
+     "sub": "change only the air",
+     "vary": "air",
+     "start": [
+      {
+       "air": "yes",
+       "fuel": "yes",
+       "flame": "yes"
+      },
+      {
+       "air": "no",
+       "fuel": "yes",
+       "flame": "yes"
+      }
+     ],
+     "targets": "c7-science-ch05-t02-m2"
+    }
+   ]
+  },
+  "repairs": [
+   "conclude:needs-exactly-one-key"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-science-ch05-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Why does fanning brighten fire?",
+   "accent": "sci",
+   "targets": "c7-science-ch05-t02-m2",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "row",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Why does fanning brighten fire?"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Fanning blows heat into the fire"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "fuel",
+       "type": "node",
+       "text": "Fuel",
+       "sub": "coals",
+       "glyph": "fire",
+       "color": "amber"
+      },
+      {
+       "id": "oxygen",
+       "type": "node",
+       "text": "Oxygen",
+       "sub": "fresh air",
+       "glyph": "wind",
+       "color": "ion"
+      },
+      {
+       "id": "heat",
+       "type": "node",
+       "text": "Enough heat",
+       "sub": "ignition",
+       "glyph": "thermometer",
+       "color": "sun"
+      },
+      {
+       "id": "burn",
+       "type": "node",
+       "text": "Combustion",
+       "sub": "heat + light",
+       "glyph": "spark",
+       "color": "amber"
+      },
+      {
+       "id": "f1",
+       "type": "arrow",
+       "from": "fuel",
+       "to": "burn",
+       "text": "reacts"
+      },
+      {
+       "id": "f2",
+       "type": "arrow",
+       "from": "oxygen",
+       "to": "burn",
+       "text": "needed"
+      },
+      {
+       "id": "f3",
+       "type": "arrow",
+       "from": "heat",
+       "to": "burn",
+       "text": "starts"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "sigri",
+       "type": "node",
+       "text": "Sigri coals",
+       "sub": "fuel",
+       "glyph": "fire",
+       "color": "amber"
+      },
+      {
+       "id": "air",
+       "type": "node",
+       "text": "Fresh air",
+       "sub": "oxygen-rich",
+       "glyph": "wind",
+       "color": "ion"
+      },
+      {
+       "id": "strong",
+       "type": "node",
+       "text": "Stronger burn",
+       "sub": "more heat + light",
+       "glyph": "lightning",
+       "color": "sun"
+      },
+      {
+       "id": "fan",
+       "type": "glyph",
+       "name": "wind",
+       "x": 700,
+       "y": 330,
+       "size": 120,
+       "color": "ion"
+      },
+      {
+       "id": "fa",
+       "type": "arrow",
+       "from": "air",
+       "to": "sigri",
+       "text": "fanning"
+      },
+      {
+       "id": "fb",
+       "type": "arrow",
+       "from": "sigri",
+       "to": "strong",
+       "text": "burns faster"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "split",
+     "els": [
+      {
+       "id": "cover",
+       "type": "node",
+       "text": "Cover flame",
+       "sub": "less air",
+       "glyph": "shield",
+       "color": "mint"
+      },
+      {
+       "id": "out",
+       "type": "node",
+       "text": "Fire out",
+       "sub": "oxygen cut off",
+       "glyph": "fire",
+       "color": "ion"
+      },
+      {
+       "id": "ca",
+       "type": "arrow",
+       "from": "cover",
+       "to": "out",
+       "text": "cuts off"
+      },
+      {
+       "id": "rust",
+       "type": "node",
+       "text": "Rusting",
+       "sub": "slow + water",
+       "glyph": "gear",
+       "color": "sci"
+      },
+      {
+       "id": "rustsame",
+       "type": "label",
+       "text": "Both need oxygen",
+       "x": 560,
+       "y": 370,
+       "color": "sci"
+      }
+     ]
+    },
+    {
+     "id": "s5",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "checktitle",
+       "type": "title",
+       "text": "Quick check"
+      },
+      {
+       "id": "optfuel",
+       "type": "node",
+       "text": "Fuel",
+       "sub": "one need",
+       "glyph": "fire",
+       "color": "amber"
+      },
+      {
+       "id": "optair",
+       "type": "node",
+       "text": "Oxygen",
+       "sub": "from air",
+       "glyph": "wind",
+       "color": "ion"
+      },
+      {
+       "id": "optheat",
+       "type": "node",
+       "text": "Heat",
+       "sub": "ignition",
+       "glyph": "thermometer",
+       "color": "sun"
+      },
+      {
+       "id": "question",
+       "type": "glyph",
+       "name": "question",
+       "x": 500,
+       "y": 330,
+       "size": 110,
+       "color": "volt"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Burning is a chemical change: a fuel reacts with oxygen and gives out heat and usually light.",
+    "L2": "A fire needs three things: fuel, oxygen from air, and enough heat to reach its ignition temperature.",
+    "L3": "Our sigri coals are fuel and are already hot enough, but they are short of oxygen.",
+    "L4": "Fanning pushes fresh, oxygen-rich air onto the coals, so combustion becomes faster and gives more heat and light.",
+    "L5": "Covering a flame cuts off oxygen, so the fire goes out.",
+    "L6": "Burning does not destroy matter. Wood, wax or oil become gases, smoke and ash.",
+    "L7": "Rusting is also a chemical change that needs oxygen, but it is slow, needs water and gives no flame.",
+    "L8": "Your turn: which one of these is needed for burning?"
+   },
+   "narration": {
+    "L1": {
+     "text": "Burning is a chemical change: a fuel reacts with oxygen and gives out heat and usually light.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L2": {
+     "text": "A fire needs three things: fuel, oxygen from air, and enough heat to reach its ignition temperature.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L3": {
+     "text": "Our sigri coals are fuel and are already hot enough, but they are short of oxygen.",
+     "dur": 4.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L4": {
+     "text": "Fanning pushes fresh, oxygen-rich air onto the coals, so combustion becomes faster and gives more heat and light.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L5": {
+     "text": "Covering a flame cuts off oxygen, so the fire goes out.",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Burning does not destroy matter. Wood, wax or oil become gases, smoke and ash.",
+     "dur": 4.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Rusting is also a chemical change that needs oxygen, but it is slow, needs water and gives no flame.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Your turn: which one of these is needed for burning?",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      },
+      {
+       "at": 2.5,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "fuel",
+        "oxygen",
+        "heat"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "f1",
+        "f2",
+        "f3",
+        "burn"
+       ]
+      },
+      {
+       "at": 2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "burn"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "sigri"
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.7,
+       "target": "air"
+      },
+      {
+       "at": 1.5,
+       "do": "highlight",
+       "dur": 1,
+       "target": "sigri"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "fan"
+      },
+      {
+       "at": 0.5,
+       "do": "flow",
+       "dur": 1,
+       "target": "fa",
+       "to": 1
+      },
+      {
+       "at": 1.8,
+       "do": "show",
+       "dur": 0.8,
+       "target": "strong"
+      },
+      {
+       "at": 2.2,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "fb",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "cover"
+      },
+      {
+       "at": 0.7,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "ca",
+       "to": 1
+      },
+      {
+       "at": 1.5,
+       "do": "show",
+       "dur": 0.7,
+       "target": "out"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "rustsame"
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 1,
+       "target": "rustsame"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "rust"
+      },
+      {
+       "at": 1,
+       "do": "focus",
+       "dur": 1.2,
+       "target": "rust"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s5",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "checktitle",
+        "optfuel",
+        "optair",
+        "optheat"
+       ]
+      },
+      {
+       "at": 1.5,
+       "do": "interactive",
+       "dur": 1
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which gas from the air is needed for burning?",
+    "options": [
+     "optfuel",
+     "optair",
+     "optheat"
+    ],
+    "answer": "optair",
+    "src": "c7-science-ch05-t02-i01"
+   }
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg",
+  "seconds": 39
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch05-t02-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "fuel",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        80,
+        290
+       ],
+       "w": 150,
+       "h": 80,
+       "fill": "soft",
+       "round": 10
+      },
+      {
+       "id": "fuelText",
+       "op": "text",
+       "startMs": 500,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        155,
+        335
+       ],
+       "text": "fuel",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "oxygen",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        330
+       ],
+       "r": 48,
+       "fill": "soft"
+      },
+      {
+       "id": "oxygenText",
+       "op": "text",
+       "startMs": 1200,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        335
+       ],
+       "text": "oxygen",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "react",
+       "op": "arrow",
+       "startMs": 1800,
+       "endMs": 2500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        235,
+        330
+       ],
+       "to": [
+        345,
+        330
+       ]
+      },
+      {
+       "id": "reactText",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 2600,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        290,
+        300
+       ],
+       "text": "reacts",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "flame",
+       "op": "polygon",
+       "startMs": 2700,
+       "endMs": 3800,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         600,
+         380
+        ],
+        [
+         565,
+         300
+        ],
+        [
+         605,
+         320
+        ],
+        [
+         625,
+         245
+        ],
+        [
+         675,
+         325
+        ],
+        [
+         710,
+         300
+        ],
+        [
+         690,
+         380
+        ]
+       ],
+       "fill": "accent"
+      },
+      {
+       "id": "heat",
+       "op": "label",
+       "startMs": 3900,
+       "endMs": 4600,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        595,
+        425
+       ],
+       "text": "heat",
+       "to": [
+        635,
+        365
+       ]
+      },
+      {
+       "id": "light",
+       "op": "label",
+       "startMs": 4600,
+       "endMs": 5300,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        700,
+        250
+       ],
+       "text": "light",
+       "to": [
+        665,
+        300
+       ]
+      },
+      {
+       "id": "change",
+       "op": "text",
+       "startMs": 5600,
+       "endMs": 6800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        100
+       ],
+       "text": "chemical change",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch05-t02-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "tri",
+       "op": "polygon",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         400,
+         125
+        ],
+        [
+         220,
+         400
+        ],
+        [
+         580,
+         400
+        ]
+       ]
+      },
+      {
+       "id": "fuel2",
+       "op": "text",
+       "startMs": 500,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        115
+       ],
+       "text": "fuel",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "air2",
+       "op": "text",
+       "startMs": 1000,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        205,
+        425
+       ],
+       "text": "oxygen from air",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "heat2",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        595,
+        425
+       ],
+       "text": "enough heat",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "ignite",
+       "op": "circle",
+       "startMs": 2500,
+       "endMs": 3300,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        285
+       ],
+       "r": 62,
+       "fill": "soft"
+      },
+      {
+       "id": "igniteText",
+       "op": "text",
+       "startMs": 2900,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        280
+       ],
+       "text": "ignition",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "tempText",
+       "op": "text",
+       "startMs": 3400,
+       "endMs": 4000,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        310
+       ],
+       "text": "temperature",
+       "size": "s",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch05-t02-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "sigri",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        350
+       ],
+       "rx": 170,
+       "ry": 55
+      },
+      {
+       "id": "coal1",
+       "op": "circle",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        330,
+        335
+       ],
+       "r": 35,
+       "fill": "accent"
+      },
+      {
+       "id": "coal2",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        325
+       ],
+       "r": 38,
+       "fill": "accent"
+      },
+      {
+       "id": "coal3",
+       "op": "circle",
+       "startMs": 1100,
+       "endMs": 1700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        470,
+        340
+       ],
+       "r": 33,
+       "fill": "accent"
+      },
+      {
+       "id": "coalText",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        425
+       ],
+       "text": "fuel",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "hot",
+       "op": "label",
+       "startMs": 2300,
+       "endMs": 3200,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        535,
+        290
+       ],
+       "text": "hot enough",
+       "to": [
+        470,
+        325
+       ]
+      },
+      {
+       "id": "airGap",
+       "op": "line",
+       "startMs": 3500,
+       "endMs": 4200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        160,
+        190
+       ],
+       "to": [
+        250,
+        270
+       ]
+      },
+      {
+       "id": "short",
+       "op": "label",
+       "startMs": 4100,
+       "endMs": 5200,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        100,
+        160
+       ],
+       "text": "short of oxygen",
+       "to": [
+        250,
+        270
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch05-t02-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "fan",
+       "op": "polygon",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         95,
+         170
+        ],
+        [
+         190,
+         130
+        ],
+        [
+         235,
+         170
+        ],
+        [
+         140,
+         215
+        ]
+       ]
+      },
+      {
+       "id": "handle",
+       "op": "line",
+       "startMs": 500,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        155,
+        190
+       ],
+       "to": [
+        105,
+        290
+       ]
+      },
+      {
+       "id": "airArrow",
+       "op": "arrow",
+       "startMs": 1200,
+       "endMs": 2400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        250,
+        180
+       ],
+       "to": [
+        430,
+        300
+       ]
+      },
+      {
+       "id": "fresh",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        300,
+        145
+       ],
+       "text": "fresh air",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "oxygenRich",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 2900,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        330,
+        220
+       ],
+       "text": "oxygen-rich",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "coals",
+       "op": "ellipse",
+       "startMs": 2700,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        470,
+        350
+       ],
+       "rx": 120,
+       "ry": 45,
+       "fill": "soft"
+      },
+      {
+       "id": "flame4",
+       "op": "polygon",
+       "startMs": 3500,
+       "endMs": 4500,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         470,
+         350
+        ],
+        [
+         445,
+         290
+        ],
+        [
+         475,
+         305
+        ],
+        [
+         495,
+         250
+        ],
+        [
+         530,
+         315
+        ],
+        [
+         550,
+         290
+        ],
+        [
+         530,
+         350
+        ]
+       ],
+       "fill": "accent"
+      },
+      {
+       "id": "faster",
+       "op": "text",
+       "startMs": 4600,
+       "endMs": 5200,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        620,
+        300
+       ],
+       "text": "faster",
+       "size": "m"
+      },
+      {
+       "id": "moreHeat",
+       "op": "text",
+       "startMs": 5300,
+       "endMs": 5900,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        620,
+        350
+       ],
+       "text": "more heat",
+       "size": "m"
+      },
+      {
+       "id": "moreLight",
+       "op": "text",
+       "startMs": 6000,
+       "endMs": 6600,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        620,
+        400
+       ],
+       "text": "more light",
+       "size": "m"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch05-t02-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "flame5",
+       "op": "polygon",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         300,
+         390
+        ],
+        [
+         275,
+         320
+        ],
+        [
+         305,
+         335
+        ],
+        [
+         325,
+         255
+        ],
+        [
+         365,
+         335
+        ],
+        [
+         390,
+         310
+        ],
+        [
+         375,
+         390
+        ]
+       ],
+       "fill": "accent"
+      },
+      {
+       "id": "cover",
+       "op": "rect",
+       "startMs": 1100,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        230,
+        225
+       ],
+       "w": 230,
+       "h": 35,
+       "fill": "soft",
+       "round": 8
+      },
+      {
+       "id": "coverText",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        345,
+        248
+       ],
+       "text": "covering",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "cut",
+       "op": "line",
+       "startMs": 2200,
+       "endMs": 2800,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        345,
+        270
+       ],
+       "to": [
+        345,
+        315
+       ]
+      },
+      {
+       "id": "oxygenOut",
+       "op": "text",
+       "startMs": 2900,
+       "endMs": 3800,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        520,
+        275
+       ],
+       "text": "oxygen cut off",
+       "size": "m"
+      },
+      {
+       "id": "out",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 4900,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        345,
+        430
+       ],
+       "text": "fire goes out",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch05-t02-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "matter",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        75
+       ],
+       "text": "matter",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "wood",
+       "op": "rect",
+       "startMs": 800,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        80,
+        220
+       ],
+       "w": 120,
+       "h": 90,
+       "fill": "soft",
+       "round": 8
+      },
+      {
+       "id": "woodText",
+       "op": "text",
+       "startMs": 1200,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        140,
+        270
+       ],
+       "text": "wood",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "wax",
+       "op": "circle",
+       "startMs": 1400,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        140,
+        390
+       ],
+       "r": 45,
+       "fill": "soft"
+      },
+      {
+       "id": "waxText",
+       "op": "text",
+       "startMs": 1600,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        140,
+        395
+       ],
+       "text": "wax",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "oil",
+       "op": "ellipse",
+       "startMs": 1900,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        140,
+        125
+       ],
+       "rx": 65,
+       "ry": 30,
+       "fill": "soft"
+      },
+      {
+       "id": "oilText",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 2550,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        140,
+        132
+       ],
+       "text": "oil",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "matterArrow",
+       "op": "arrow",
+       "startMs": 2500,
+       "endMs": 3400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        230,
+        260
+       ],
+       "to": [
+        400,
+        260
+       ]
+      },
+      {
+       "id": "gases",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        500,
+        170
+       ],
+       "text": "gases",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "smoke",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        500,
+        260
+       ],
+       "text": "smoke",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "ash",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 4800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        500,
+        350
+       ],
+       "text": "ash",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "notDestroy",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 6100,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        445
+       ],
+       "text": "not destroy matter",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch05-t02-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "iron",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        280
+       ],
+       "w": 180,
+       "h": 75,
+       "fill": "soft",
+       "round": 8
+      },
+      {
+       "id": "ironText",
+       "op": "text",
+       "startMs": 500,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        325
+       ],
+       "text": "iron",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "rustArrow",
+       "op": "arrow",
+       "startMs": 1100,
+       "endMs": 2100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        280,
+        320
+       ],
+       "to": [
+        470,
+        320
+       ]
+      },
+      {
+       "id": "oxygen7",
+       "op": "text",
+       "startMs": 1300,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        370,
+        270
+       ],
+       "text": "oxygen",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "water7",
+       "op": "circle",
+       "startMs": 1900,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        390,
+        395
+       ],
+       "r": 28,
+       "fill": "soft"
+      },
+      {
+       "id": "waterText7",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        390,
+        400
+       ],
+       "text": "water",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "rust",
+       "op": "rect",
+       "startMs": 2600,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        500,
+        280
+       ],
+       "w": 180,
+       "h": 75,
+       "fill": "accent",
+       "round": 8
+      },
+      {
+       "id": "rustText",
+       "op": "text",
+       "startMs": 3100,
+       "endMs": 3600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        590,
+        325
+       ],
+       "text": "rust",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "slow",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        590,
+        410
+       ],
+       "text": "slow",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "noFlame",
+       "op": "text",
+       "startMs": 4600,
+       "endMs": 5300,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        590,
+        455
+       ],
+       "text": "no flame",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "chemical7",
+       "op": "text",
+       "startMs": 5700,
+       "endMs": 6900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        100
+       ],
+       "text": "chemical change",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch05-t02-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "question",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        80
+       ],
+       "text": "which one",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "needed",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        135
+       ],
+       "text": "is needed for burning?",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "fuelChoice",
+       "op": "rect",
+       "startMs": 1700,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        80,
+        250
+       ],
+       "w": 180,
+       "h": 75,
+       "round": 8
+      },
+      {
+       "id": "fuelChoiceText",
+       "op": "text",
+       "startMs": 2000,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        170,
+        295
+       ],
+       "text": "fuel",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "oxygenChoice",
+       "op": "rect",
+       "startMs": 2200,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        310,
+        250
+       ],
+       "w": 180,
+       "h": 75,
+       "round": 8
+      },
+      {
+       "id": "oxygenChoiceText",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        295
+       ],
+       "text": "oxygen",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "heatChoice",
+       "op": "rect",
+       "startMs": 2700,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        540,
+        250
+       ],
+       "w": 180,
+       "h": 75,
+       "round": 8
+      },
+      {
+       "id": "heatChoiceText",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        630,
+        295
+       ],
+       "text": "enough heat",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "allArrow",
+       "op": "arrow",
+       "startMs": 3800,
+       "endMs": 4500,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        400,
+        390
+       ],
+       "to": [
+        400,
+        345
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1",
+   "key": "1:keeps burning 2:no 3:no 4:no",
+   "prompt": "combustion: {\"air\":\"yes\",\"fuel\":\"yes\",\"flame\":\"yes\"} | {\"air\":\"no\",\"fuel\":\"yes\",\"flame\":\"yes\"} | {\"air\":\"yes\",\"fuel\":\"no\",\"flame\":\"yes\"} | {\"air\":\"yes\",\"fuel\":\"yes\",\"flame\":\"no\"}",
+   "src": "c7-science-ch05-t02-i02"
+  },
+  {
+   "itemId": "r2",
+   "key": "vary only air",
+   "prompt": "fair test for air"
+  }
+ ],
+ "check": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "The round name 'Sigri Fire Test' is fine. Round r2: vary='air', start=[air:yes, fuel:yes, flame:yes] and [air:no, fuel:yes, flame:yes]. This is a correct fair test for air. No issue."
+   }
+  ],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

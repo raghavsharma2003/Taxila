@@ -1,0 +1,1924 @@
+{
+ "topicId": "c7-science-ch12-t01",
+ "title": "Rotation and revolution of the Earth",
+ "chapter": "Earth, Moon, and the Sun",
+ "subject": "science",
+ "class": 7,
+ "topicType": "T3",
+ "plan": {
+  "game": "sky-lab@1",
+  "hint": "daynight mode (sunrise, noon, sunset, midnight in Indian and world cities)"
+ },
+ "game": {
+  "archetype": "sky-lab@1",
+  "spec": {
+   "archetype": "sky-lab@1",
+   "skills": [
+    "c7-science-ch12-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "done": "Right",
+    "lock": "LOCK",
+    "spin": "Drag to spin the Earth",
+    "sun": "Sun",
+    "noon": "noon",
+    "midnight": "midnight",
+    "sunrise": "sunrise",
+    "sunset": "sunset",
+    "localTime": "time in",
+    "north": "North Pole",
+    "dayLength": "day",
+    "sunHigh": "noon Sun",
+    "distance": "Earth–Sun",
+    "orbit": "Move Earth along its orbit",
+    "longest": "longest day",
+    "shortest": "shortest day",
+    "equal": "equal day and night",
+    "summerNorth": "summer in the north",
+    "summerSouth": "summer in the south",
+    "solar": "solar eclipse",
+    "lunar": "lunar eclipse",
+    "moon": "Moon",
+    "date": "date",
+    "night": "night",
+    "stillStar": "Tap the star that does not move",
+    "pointer": "Drag from Merak through Dubhe",
+    "join": "Join the stars",
+    "polaris": "Pole Star",
+    "wrongWay": "Try the other direction",
+    "runDone": "Sky closed",
+    "hours": "h",
+    "months": "Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec",
+    "saptarishi": "Saptarishi",
+    "cassiopeia": "Cassiopeia",
+    "new": "new moon",
+    "waxingCrescent": "waxing crescent",
+    "firstQuarter": "first quarter",
+    "waxingGibbous": "waxing gibbous",
+    "full": "full moon",
+    "waningGibbous": "waning gibbous",
+    "lastQuarter": "last quarter",
+    "waningCrescent": "waning crescent",
+    "fromEarth": "seen from Earth",
+    "place": "Drag the Moon round its orbit"
+   },
+   "title": "Spin Earth, Find Time",
+   "rounds": [
+    {
+     "mode": "daynight",
+     "title": "Spin to Sunrise",
+     "sub": "Bring Kolkata into daylight",
+     "city": "Kolkata",
+     "lon": 88.4,
+     "ask": "sunrise",
+     "tolH": 1,
+     "targets": "c7-science-ch12-t01-m1"
+    },
+    {
+     "mode": "daynight",
+     "title": "Find Local Noon",
+     "sub": "Turn Mumbai to the Sun",
+     "city": "Mumbai",
+     "lon": 72.8,
+     "ask": "noon",
+     "tolH": 1
+    },
+    {
+     "mode": "daynight",
+     "title": "Find Sunset",
+     "sub": "Watch the light leave India",
+     "city": "Dwarka",
+     "lon": 68.9,
+     "ask": "sunset",
+     "tolH": 1
+    },
+    {
+     "mode": "daynight",
+     "title": "Find Midnight",
+     "sub": "Turn the city from the Sun",
+     "city": "Itanagar",
+     "lon": 93.6,
+     "ask": "midnight",
+     "tolH": 1,
+     "targets": "c7-science-ch12-t01-m2"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-science-ch12-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Earth’s two movements",
+   "accent": "sci",
+   "targets": "c7-science-ch12-t01-m1",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Earth’s two movements"
+      },
+      {
+       "id": "myth1",
+       "type": "myth",
+       "text": "The Sun goes around Earth each day"
+      },
+      {
+       "id": "sun",
+       "type": "node",
+       "text": "Sun",
+       "sub": "light source",
+       "glyph": "sun",
+       "x": 180,
+       "y": 310,
+       "color": "sun"
+      },
+      {
+       "id": "earth",
+       "type": "node",
+       "text": "Earth",
+       "sub": "spinning globe",
+       "glyph": "earth",
+       "x": 600,
+       "y": 310,
+       "color": "sci"
+      },
+      {
+       "id": "light",
+       "type": "arrow",
+       "from": "sun",
+       "to": "earth",
+       "text": "lights half"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "earth2",
+       "type": "node",
+       "text": "Earth",
+       "sub": "axis spin",
+       "glyph": "earth",
+       "x": 500,
+       "y": 310,
+       "color": "sci"
+      },
+      {
+       "id": "day",
+       "type": "node",
+       "text": "Day",
+       "sub": "faces Sun",
+       "glyph": "sun",
+       "x": 780,
+       "y": 220,
+       "color": "sun"
+      },
+      {
+       "id": "night",
+       "type": "node",
+       "text": "Night",
+       "sub": "faces away",
+       "glyph": "moon",
+       "x": 220,
+       "y": 400,
+       "color": "ion"
+      },
+      {
+       "id": "spin",
+       "type": "arrow",
+       "from": "earth2",
+       "to": "day",
+       "text": "rotates"
+      },
+      {
+       "id": "d1",
+       "type": "arrow",
+       "from": "night",
+       "to": "day",
+       "bend": 0.4
+      },
+      {
+       "id": "d2",
+       "type": "arrow",
+       "from": "day",
+       "to": "night",
+       "text": "turns away",
+       "bend": 0.4
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "west",
+       "type": "node",
+       "text": "West",
+       "sub": "turns later",
+       "glyph": "compass",
+       "x": 160,
+       "y": 300,
+       "color": "ion"
+      },
+      {
+       "id": "east",
+       "type": "node",
+       "text": "East",
+       "sub": "turns first",
+       "glyph": "compass",
+       "x": 440,
+       "y": 300,
+       "color": "mint"
+      },
+      {
+       "id": "rise",
+       "type": "node",
+       "text": "Sunrise",
+       "sub": "appears east",
+       "glyph": "sun",
+       "x": 760,
+       "y": 300,
+       "color": "sun"
+      },
+      {
+       "id": "we",
+       "type": "arrow",
+       "from": "west",
+       "to": "east",
+       "text": "Earth spins",
+       "bend": 0.2
+      },
+      {
+       "id": "er",
+       "type": "arrow",
+       "from": "east",
+       "to": "rise",
+       "text": "earlier"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "split",
+     "els": [
+      {
+       "id": "orbit",
+       "type": "node",
+       "text": "Revolution",
+       "sub": "around Sun",
+       "glyph": "globe",
+       "x": 500,
+       "y": 280,
+       "color": "sci"
+      },
+      {
+       "id": "year",
+       "type": "bar",
+       "parts": 4,
+       "shaded": 1,
+       "x": 170,
+       "y": 430,
+       "w": 660,
+       "text": "365¼ days"
+      },
+      {
+       "id": "qtr",
+       "type": "label",
+       "text": "extra quarter day",
+       "x": 400,
+       "y": 500,
+       "color": "amber"
+      },
+      {
+       "id": "leap",
+       "type": "node",
+       "text": "Leap year",
+       "sub": "29 February",
+       "x": 760,
+       "y": 230,
+       "color": "amber"
+      }
+     ]
+    },
+    {
+     "id": "s5",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "rot",
+       "type": "node",
+       "text": "Rotation",
+       "sub": "axis; 24 hours",
+       "glyph": "earth",
+       "x": 230,
+       "y": 270,
+       "color": "sci"
+      },
+      {
+       "id": "rev",
+       "type": "node",
+       "text": "Revolution",
+       "sub": "orbit; 365¼ days",
+       "glyph": "globe",
+       "x": 700,
+       "y": 270,
+       "color": "mint"
+      },
+      {
+       "id": "daynight",
+       "type": "label",
+       "text": "day and night",
+       "x": 170,
+       "y": 430,
+       "color": "sun"
+      },
+      {
+       "id": "oneyear",
+       "type": "label",
+       "text": "one year",
+       "x": 680,
+       "y": 430,
+       "color": "mint"
+      },
+      {
+       "id": "r1",
+       "type": "arrow",
+       "from": "rot",
+       "to": "daynight",
+       "text": "gives"
+      },
+      {
+       "id": "r2",
+       "type": "arrow",
+       "from": "rev",
+       "to": "oneyear",
+       "text": "gives"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Earth has two important movements: rotation and revolution.",
+    "L2": "The Sun does not go around Earth each day. Earth rotates, causing day and night.",
+    "L3": "Earth spins on its axis from west to east, once in about 24 hours.",
+    "L4": "The half facing the Sun has day; the other half has night. As Earth rotates, places move from night into day and back.",
+    "L5": "Because Earth rotates west to east, the Sun appears to rise in the east and set in the west.",
+    "L6": "Places farther east turn into sunlight first, so sunrise is earlier there.",
+    "L7": "Earth also revolves around the Sun. One revolution takes about 365¼ days, which is one year.",
+    "L8": "Rotation gives us day and night; revolution gives us the year. The extra quarter day makes a 29 February every fourth year."
+   },
+   "narration": {
+    "L1": {
+     "text": "Earth has two important movements: rotation and revolution.",
+     "dur": 4.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L2": {
+     "text": "The Sun does not go around Earth each day. Earth rotates, causing day and night.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L3": {
+     "text": "Earth spins on its axis from west to east, once in about 24 hours.",
+     "dur": 5.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L4": {
+     "text": "The half facing the Sun has day; the other half has night. As Earth rotates, places move from night into day and back.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L5": {
+     "text": "Because Earth rotates west to east, the Sun appears to rise in the east and set in the west.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Places farther east turn into sunlight first, so sunrise is earlier there.",
+     "dur": 4.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Earth also revolves around the Sun. One revolution takes about 365¼ days, which is one year.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Rotation gives us day and night; revolution gives us the year. The extra quarter day makes a 29 February every fourth year.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "sun",
+        "earth",
+        "light"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "myth1"
+      },
+      {
+       "at": 0.8,
+       "do": "bust",
+       "dur": 1.2,
+       "target": "myth1"
+      },
+      {
+       "at": 1.2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "earth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "earth2",
+        "spin"
+       ]
+      },
+      {
+       "at": 0.7,
+       "do": "flow",
+       "dur": 1.2,
+       "target": "spin",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "day",
+        "night",
+        "d1",
+        "d2"
+       ]
+      },
+      {
+       "at": 0.7,
+       "do": "flow",
+       "dur": 1.2,
+       "target": [
+        "d1",
+        "d2"
+       ],
+       "to": 1
+      },
+      {
+       "at": 2,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "day"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "west",
+        "east",
+        "rise",
+        "we",
+        "er"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 1.2,
+       "target": [
+        "we",
+        "er"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "east"
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 1,
+       "target": "rise"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "orbit",
+        "year"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "count",
+       "dur": 1.4,
+       "target": "year",
+       "to": 1
+      },
+      {
+       "at": 1.8,
+       "do": "show",
+       "dur": 0.6,
+       "target": "qtr"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s5",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "rot",
+        "rev",
+        "daynight",
+        "oneyear",
+        "r1",
+        "r2"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 1,
+       "target": [
+        "daynight",
+        "oneyear"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which movement brings a dark-side place into sunlight?",
+    "options": [
+     "rot",
+     "rev",
+     "daynight",
+     "oneyear"
+    ],
+    "answer": "rot"
+   }
+  },
+  "repairs": [
+   "string:d1.text",
+   "glyph",
+   "src"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 50
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch12-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4004,
+     "ops": [
+      {
+       "id": "earth",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        250
+       ],
+       "r": 105,
+       "fill": "soft"
+      },
+      {
+       "id": "rot",
+       "op": "arrow",
+       "startMs": 700,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        400,
+        120
+       ],
+       "to": [
+        400,
+        55
+       ],
+       "bend": -1
+      },
+      {
+       "id": "rotation",
+       "op": "text",
+       "startMs": 1300,
+       "endMs": 2100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        210,
+        145
+       ],
+       "text": "rotation",
+       "size": "l"
+      },
+      {
+       "id": "revpath",
+       "op": "ellipse",
+       "startMs": 1700,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        250
+       ],
+       "rx": 260,
+       "ry": 145
+      },
+      {
+       "id": "rev",
+       "op": "arrow",
+       "startMs": 2500,
+       "endMs": 3300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        650,
+        250
+       ],
+       "to": [
+        620,
+        180
+       ],
+       "bend": -1
+      },
+      {
+       "id": "revolution",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3900,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        400,
+        450
+       ],
+       "text": "revolution",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch12-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "sun2",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        125,
+        250
+       ],
+       "r": 58,
+       "fill": "accent"
+      },
+      {
+       "id": "earth2",
+       "op": "circle",
+       "startMs": 500,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        510,
+        250
+       ],
+       "r": 105,
+       "fill": "soft"
+      },
+      {
+       "id": "ray2",
+       "op": "line",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        185,
+        250
+       ],
+       "to": [
+        405,
+        250
+       ]
+      },
+      {
+       "id": "axis2",
+       "op": "line",
+       "startMs": 1300,
+       "endMs": 1900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        510,
+        130
+       ],
+       "to": [
+        510,
+        370
+       ]
+      },
+      {
+       "id": "night2",
+       "op": "sector",
+       "startMs": 1900,
+       "endMs": 2700,
+       "ink": "ink",
+       "weight": 2,
+       "c": [
+        510,
+        250
+       ],
+       "r": 105,
+       "fill": "ink",
+       "fromDeg": 90,
+       "toDeg": 270
+      },
+      {
+       "id": "day2",
+       "op": "label",
+       "startMs": 2700,
+       "endMs": 3400,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        635,
+        210
+       ],
+       "text": "day",
+       "to": [
+        590,
+        220
+       ]
+      },
+      {
+       "id": "nightlabel2",
+       "op": "label",
+       "startMs": 3400,
+       "endMs": 4200,
+       "ink": "soft",
+       "weight": 2,
+       "at": [
+        350,
+        300
+       ],
+       "text": "night",
+       "to": [
+        440,
+        290
+       ]
+      },
+      {
+       "id": "notorbit",
+       "op": "text",
+       "startMs": 4200,
+       "endMs": 5400,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        270,
+        80
+       ],
+       "text": "not around Earth",
+       "size": "m"
+      },
+      {
+       "id": "spin2",
+       "op": "arrow",
+       "startMs": 5300,
+       "endMs": 6500,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        570,
+        150
+       ],
+       "to": [
+        590,
+        205
+       ],
+       "bend": 1
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch12-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "axis3",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        90
+       ],
+       "to": [
+        400,
+        410
+       ]
+      },
+      {
+       "id": "west3",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        275,
+        245
+       ],
+       "text": "west",
+       "size": "m"
+      },
+      {
+       "id": "east3",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        500,
+        245
+       ],
+       "text": "east",
+       "size": "m"
+      },
+      {
+       "id": "spin3",
+       "op": "arrow",
+       "startMs": 1300,
+       "endMs": 2500,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        330,
+        160
+       ],
+       "to": [
+        470,
+        160
+       ],
+       "bend": -1
+      },
+      {
+       "id": "north3",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        420,
+        80
+       ],
+       "text": "North",
+       "size": "s"
+      },
+      {
+       "id": "south3",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        420,
+        420
+       ],
+       "text": "South",
+       "size": "s"
+      },
+      {
+       "id": "time3",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 5000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        465
+       ],
+       "text": "24 hours",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "axislabel3",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 5800,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "axis",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch12-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 10387,
+     "ops": [
+      {
+       "id": "sun4",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        125,
+        250
+       ],
+       "r": 55,
+       "fill": "accent"
+      },
+      {
+       "id": "earth4",
+       "op": "circle",
+       "startMs": 500,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        500,
+        250
+       ],
+       "r": 110,
+       "fill": "soft"
+      },
+      {
+       "id": "nightlabel4",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 2800,
+       "ink": "soft",
+       "weight": 2,
+       "at": [
+        420,
+        300
+       ],
+       "text": "night",
+       "size": "m"
+      },
+      {
+       "id": "daylabel4",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 2800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        570,
+        205
+       ],
+       "text": "day",
+       "size": "m"
+      },
+      {
+       "id": "axis4",
+       "op": "line",
+       "startMs": 2800,
+       "endMs": 3500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        500,
+        125
+       ],
+       "to": [
+        500,
+        375
+       ]
+      },
+      {
+       "id": "move4",
+       "op": "arrow",
+       "startMs": 3700,
+       "endMs": 5100,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        420,
+        330
+       ],
+       "to": [
+        575,
+        170
+       ],
+       "bend": -1
+      },
+      {
+       "id": "places4",
+       "op": "text",
+       "startMs": 5200,
+       "endMs": 5900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        270,
+        420
+       ],
+       "text": "places",
+       "size": "m"
+      },
+      {
+       "id": "intoday4",
+       "op": "text",
+       "startMs": 6200,
+       "endMs": 7100,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        475,
+        420
+       ],
+       "text": "into day",
+       "size": "m"
+      },
+      {
+       "id": "back4",
+       "op": "arrow",
+       "startMs": 7500,
+       "endMs": 8900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        600,
+        170
+       ],
+       "to": [
+        420,
+        330
+       ],
+       "bend": 1
+      },
+      {
+       "id": "nightback4",
+       "op": "text",
+       "startMs": 9000,
+       "endMs": 9800,
+       "ink": "soft",
+       "weight": 2,
+       "at": [
+        625,
+        420
+       ],
+       "text": "night",
+       "size": "m"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch12-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "earth5",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        270
+       ],
+       "r": 105,
+       "fill": "soft"
+      },
+      {
+       "id": "west5",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        250,
+        270
+       ],
+       "text": "west",
+       "size": "m"
+      },
+      {
+       "id": "east5",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        520,
+        270
+       ],
+       "text": "east",
+       "size": "m"
+      },
+      {
+       "id": "spin5",
+       "op": "arrow",
+       "startMs": 1300,
+       "endMs": 2500,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        330,
+        180
+       ],
+       "to": [
+        475,
+        180
+       ],
+       "bend": -1
+      },
+      {
+       "id": "sunrise5",
+       "op": "arrow",
+       "startMs": 2700,
+       "endMs": 3800,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        530,
+        160
+       ],
+       "to": [
+        650,
+        115
+       ]
+      },
+      {
+       "id": "sunriseLabel5",
+       "op": "text",
+       "startMs": 3800,
+       "endMs": 4400,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        650,
+        95
+       ],
+       "text": "rise",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "sunset5",
+       "op": "arrow",
+       "startMs": 4500,
+       "endMs": 5600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        270,
+        160
+       ],
+       "to": [
+        150,
+        115
+       ]
+      },
+      {
+       "id": "sunsetLabel5",
+       "op": "text",
+       "startMs": 5600,
+       "endMs": 6200,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        150,
+        95
+       ],
+       "text": "set",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "appear5",
+       "op": "text",
+       "startMs": 6700,
+       "endMs": 7400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        450
+       ],
+       "text": "appears",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch12-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "sun6",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        120,
+        120
+       ],
+       "r": 42,
+       "fill": "accent"
+      },
+      {
+       "id": "eastline6",
+       "op": "line",
+       "startMs": 600,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        210,
+        300
+       ],
+       "to": [
+        650,
+        300
+       ]
+      },
+      {
+       "id": "eastarrow6",
+       "op": "arrow",
+       "startMs": 1300,
+       "endMs": 2300,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        300,
+        300
+       ],
+       "to": [
+        600,
+        300
+       ]
+      },
+      {
+       "id": "eastlabel6",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 3200,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        400,
+        345
+       ],
+       "text": "farther east",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "light6",
+       "op": "arrow",
+       "startMs": 3000,
+       "endMs": 4000,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        155,
+        140
+       ],
+       "to": [
+        300,
+        280
+       ]
+      },
+      {
+       "id": "sunrise6",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 5100,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        220
+       ],
+       "text": "sunrise earlier",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch12-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "sun7",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        250
+       ],
+       "r": 58,
+       "fill": "accent"
+      },
+      {
+       "id": "orbit7",
+       "op": "ellipse",
+       "startMs": 500,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        250
+       ],
+       "rx": 270,
+       "ry": 150
+      },
+      {
+       "id": "earth7",
+       "op": "circle",
+       "startMs": 1200,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        670,
+        250
+       ],
+       "r": 38,
+       "fill": "soft"
+      },
+      {
+       "id": "revolve7",
+       "op": "arrow",
+       "startMs": 1900,
+       "endMs": 3000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        650,
+        205
+       ],
+       "to": [
+        600,
+        145
+       ],
+       "bend": -1
+      },
+      {
+       "id": "orbitlabel7",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        75
+       ],
+       "text": "orbit",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "revolutionlabel7",
+       "op": "text",
+       "startMs": 3700,
+       "endMs": 4700,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        400,
+        440
+       ],
+       "text": "revolution",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "days7",
+       "op": "text",
+       "startMs": 4800,
+       "endMs": 5900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        110
+       ],
+       "text": "365¼ days",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "year7",
+       "op": "text",
+       "startMs": 6000,
+       "endMs": 6900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        475
+       ],
+       "text": "one year",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch12-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9962,
+     "ops": [
+      {
+       "id": "rotation8",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        145,
+        95
+       ],
+       "text": "rotation",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "daynight8",
+       "op": "text",
+       "startMs": 800,
+       "endMs": 1700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        145,
+        160
+       ],
+       "text": "day and night",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "rev8",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2500,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        650,
+        95
+       ],
+       "text": "revolution",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "year8",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        650,
+        160
+       ],
+       "text": "year",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "eq8",
+       "op": "numwork",
+       "startMs": 3200,
+       "endMs": 4700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        250,
+        235
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "365¼",
+         "days",
+         "=",
+         "1",
+         "year"
+        ]
+       ]
+      },
+      {
+       "id": "quarter8",
+       "op": "text",
+       "startMs": 4800,
+       "endMs": 5900,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        400,
+        315
+       ],
+       "text": "extra quarter day",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "fourth8",
+       "op": "text",
+       "startMs": 6000,
+       "endMs": 7100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        365
+       ],
+       "text": "every fourth year",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "feb8",
+       "op": "text",
+       "startMs": 7200,
+       "endMs": 8400,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        425
+       ],
+       "text": "29 February",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "leap8",
+       "op": "text",
+       "startMs": 8500,
+       "endMs": 9400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        475
+       ],
+       "text": "leap year",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1",
+   "key": "Kolkata at 6:00 (spin +120°)",
+   "prompt": "Bring Kolkata into daylight"
+  },
+  {
+   "itemId": "r2",
+   "key": "Mumbai at 12:00 (spin +120°)",
+   "prompt": "Turn Mumbai to the Sun"
+  },
+  {
+   "itemId": "r3",
+   "key": "Dwarka at 18:00 (spin +120°)",
+   "prompt": "Watch the light leave India"
+  },
+  {
+   "itemId": "r4",
+   "key": "Itanagar at 0:00 (spin +120°)",
+   "prompt": "Turn the city from the Sun"
+  }
+ ],
+ "check": {
+  "issues": [
+   {
+    "where": "explainer",
+    "what": "In scene s2, arrow labels suggest rotation moves from night to day and back, but the text correctly says Earth rotates placing places into day then night; the diagram's arrows could be confusing for 9-15 year olds. However, the content is factually correct, so no high-severity issue.",
+    "severity": "low"
+   }
+  ],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ },
+ "firstCheck": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "Round 3 asks to 'find midnight in New York' but the kit does not discuss midnight for New York in this context; however, the more serious issue is that in round 2 the target misconception c7-science-ch12-t01-m1 ('Sun moves around Earth') is attached to the Jaipur sunrise question, which is unrelated to that misconception (both cities get sunrise by rotation; the round is about correct concept, not the myth). The round's targeting is misapplied.",
+    "severity": "high"
+   },
+   {
+    "where": "explainer",
+    "what": "Scene s2 shows an arrow 'rotates' from Earth to Day, and arrows between day and night labeled 'turns away', which could be misinterpreted as day and night being separate objects that move. The kit states day and night are simply the lit/unlit halves due to rotation. This visual might confuse students.",
+    "severity": "low"
+   },
+   {
+    "where": "game",
+    "what": "Round titles ('Spin to Sunrise', 'Compare Two Cities', 'Turn to Midnight') and instructions (e.g., 'make sunrise in Kolkata') are fine. However, the computed key for round 3 says 'New York at 0:00 (spin +120°)' but the question is to 'find midnight' which is the opposite side from the Sun; this is technically correct but the game's 'mode daynight' and 'ask midnight' may confuse if not explained. Not a high issue but note."
+   }
+  ],
+  "verdict": "fail",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

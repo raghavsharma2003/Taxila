@@ -1,0 +1,2110 @@
+{
+ "topicId": "c5-evs-ch08-t02",
+ "title": "Stitching and caring for clothes",
+ "chapter": "Clothes — How Things are Made",
+ "subject": "evs",
+ "class": 5,
+ "topicType": "T4",
+ "plan": {
+  "game": "story-rail@1",
+  "hint": "sequence mode: stitching and caring for clothes"
+ },
+ "game": {
+  "archetype": "story-rail@1",
+  "spec": {
+   "archetype": "story-rail@1",
+   "skills": [
+    "c5-evs-ch08-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "picked": "coupled",
+    "streak": "streak",
+    "next": "What happens next?",
+    "effect": "What does this lead to?",
+    "who": "Who said this?",
+    "runDone": "Line complete",
+    "order": "your train",
+    "right": "Coupled",
+    "wrong": "Not this one",
+    "coach": "Tap a wagon before the train reaches the fork"
+   },
+   "title": "Caring for Clothes",
+   "rounds": [
+    {
+     "mode": "sequence",
+     "title": "Mend and reuse",
+     "sub": "couple the steps in order",
+     "cards": [
+      {
+       "id": "s1",
+       "text": "Notice a small tear",
+       "glyph": "eye",
+       "src": "c5-evs-ch08-t02-i06"
+      },
+      {
+       "id": "s2",
+       "text": "Mend it with stitches",
+       "glyph": "hand",
+       "src": "c5-evs-ch08-t02-i06"
+      },
+      {
+       "id": "s3",
+       "text": "Wash the cloth gently",
+       "glyph": "drop",
+       "src": "c5-evs-ch08-t02-i13"
+      },
+      {
+       "id": "s4",
+       "text": "Dry it properly",
+       "glyph": "sun",
+       "src": "c5-evs-ch08-t02-i13"
+      },
+      {
+       "id": "s5",
+       "text": "Reuse it as a bag",
+       "glyph": "shop",
+       "src": "c5-evs-ch08-t02-i02"
+      }
+     ],
+     "speed": 0.85,
+     "targets": "c5-evs-ch08-t02-m1"
+    },
+    {
+     "mode": "cause",
+     "title": "Stitch choices",
+     "sub": "match each cause to its effect",
+     "pairs": [
+      {
+       "cause": {
+        "id": "c1",
+        "text": "Use a running stitch",
+        "glyph": "hand",
+        "src": "c5-evs-ch08-t02-i01"
+       },
+       "effect": {
+        "id": "e1",
+        "text": "The line has gaps",
+        "glyph": "question",
+        "src": "c5-evs-ch08-t02-i01"
+       }
+      },
+      {
+       "cause": {
+        "id": "c2",
+        "text": "Use a back stitch",
+        "glyph": "hand",
+        "src": "c5-evs-ch08-t02-i01"
+       },
+       "effect": {
+        "id": "e2",
+        "text": "The line is stronger",
+        "glyph": "shield",
+        "src": "c5-evs-ch08-t02-i01"
+       }
+      },
+      {
+       "cause": {
+        "id": "c3",
+        "text": "Fold damp clothes away",
+        "glyph": "cloud",
+        "src": "c5-evs-ch08-t02-i04"
+       },
+       "effect": {
+        "id": "e3",
+        "text": "Mould and smell grow",
+        "glyph": "insect",
+        "src": "c5-evs-ch08-t02-i04"
+       }
+      }
+     ],
+     "speed": 0.95,
+     "targets": "c5-evs-ch08-t02-m4"
+    },
+    {
+     "mode": "who",
+     "title": "Who said it?",
+     "sub": "send each line to its speaker",
+     "speakers": [
+      {
+       "id": "bunty",
+       "name": "Bunty",
+       "glyph": "person"
+      },
+      {
+       "id": "adult",
+       "name": "Adult",
+       "glyph": "person"
+      },
+      {
+       "id": "child",
+       "name": "Child",
+       "glyph": "person"
+      }
+     ],
+     "lines": [
+      {
+       "id": "w1",
+       "text": "Always dry every cloth hot",
+       "speaker": "bunty",
+       "src": "c5-evs-ch08-t02-i12"
+      },
+      {
+       "id": "w2",
+       "text": "Use a blunt plastic needle",
+       "speaker": "adult",
+       "src": "c5-evs-ch08-t02-i09"
+      },
+      {
+       "id": "w3",
+       "text": "Make a quilt from old cloth",
+       "speaker": "child",
+       "src": "c5-evs-ch08-t02-i02"
+      }
+     ],
+     "speed": 1.05
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 2,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c5-evs-ch08-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Stitch, mend and reuse",
+   "accent": "mint",
+   "targets": "c5-evs-ch08-t02-m1",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Stitch, mend and reuse"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Torn clothes must be thrown away"
+      },
+      {
+       "id": "torn",
+       "type": "node",
+       "text": "Torn cloth",
+       "color": "amber"
+      },
+      {
+       "id": "mend",
+       "type": "node",
+       "text": "Mend it",
+       "sub": "stitch or patch",
+       "color": "mint"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "torn",
+       "to": "mend",
+       "text": "can fix"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "run",
+       "type": "node",
+       "text": "Running stitch",
+       "sub": "gaps",
+       "color": "amber"
+      },
+      {
+       "id": "back",
+       "type": "node",
+       "text": "Back stitch",
+       "sub": "strong line",
+       "glyph": "shield",
+       "color": "mint"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "run",
+       "to": "back",
+       "text": "fills gaps"
+      },
+      {
+       "id": "safe",
+       "type": "label",
+       "text": "Practise safely with a shoelace",
+       "x": 100,
+       "y": 520,
+       "color": "ion"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "reuseTitle",
+       "type": "title",
+       "text": "Give old clothes a new use"
+      },
+      {
+       "id": "quilt",
+       "type": "node",
+       "text": "Quilt",
+       "sub": "kantha or godhadi",
+       "color": "mint"
+      },
+      {
+       "id": "bag",
+       "type": "node",
+       "text": "Bag",
+       "color": "amber"
+      },
+      {
+       "id": "cover",
+       "type": "node",
+       "text": "Cushion cover",
+       "glyph": "house",
+       "color": "sun"
+      },
+      {
+       "id": "duster",
+       "type": "node",
+       "text": "Duster",
+       "color": "ion"
+      },
+      {
+       "id": "care",
+       "type": "label",
+       "text": "Wash gently; dry fully",
+       "x": 100,
+       "y": 540,
+       "color": "sci"
+      },
+      {
+       "id": "runOpt",
+       "type": "label",
+       "text": "Running stitch",
+       "x": 100,
+       "y": 430,
+       "color": "amber"
+      },
+      {
+       "id": "backOpt",
+       "type": "label",
+       "text": "Back stitch",
+       "x": 360,
+       "y": 430,
+       "color": "mint"
+      },
+      {
+       "id": "patchOpt",
+       "type": "label",
+       "text": "Patch",
+       "x": 620,
+       "y": 430,
+       "color": "ion"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "A tear does not mean a piece of clothing is useless. We can mend it instead of throwing it away.",
+    "L2": "A small tear can be fixed by stitching, patching or darning. A missing button can be sewn back on with adult help.",
+    "L3": "A running stitch goes in and out along a line, leaving gaps between the stitches.",
+    "L4": "A back stitch goes back to fill each gap. This makes a continuous line that is stronger.",
+    "L5": "Practise first with a shoelace on a lacing card or with a blunt plastic needle. Real needles are sharp, so use one only with an adult.",
+    "L6": "Old clothes can become quilts, bags, cushion covers or dusters. They can also be given to people who need them.",
+    "L7": "Care helps clothes last longer: wash gently, dry properly and store clothes only when they are fully dry.",
+    "L8": "Now check: which stitch leaves gaps between the stitches?"
+   },
+   "narration": {
+    "L1": {
+     "text": "A tear does not mean a piece of clothing is useless. We can mend it instead of throwing it away.",
+     "dur": 5.2,
+     "lead": 0.2,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L2": {
+     "text": "A small tear can be fixed by stitching, patching or darning. A missing button can be sewn back on with adult help.",
+     "dur": 5.8,
+     "lead": 0.2,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L3": {
+     "text": "A running stitch goes in and out along a line, leaving gaps between the stitches.",
+     "dur": 4.6,
+     "lead": 0.2,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L4": {
+     "text": "A back stitch goes back to fill each gap. This makes a continuous line that is stronger.",
+     "dur": 4.8,
+     "lead": 0.2,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L5": {
+     "text": "Practise first with a shoelace on a lacing card or with a blunt plastic needle. Real needles are sharp, so use one only with an adult.",
+     "dur": 6.8,
+     "lead": 0.2,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Old clothes can become quilts, bags, cushion covers or dusters. They can also be given to people who need them.",
+     "dur": 5.6,
+     "lead": 0.2,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Care helps clothes last longer: wash gently, dry properly and store clothes only when they are fully dry.",
+     "dur": 5.2,
+     "lead": 0.2,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Now check: which stitch leaves gaps between the stitches?",
+     "dur": 3.2,
+     "lead": 0.2,
+     "tail": 0.2,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      },
+      {
+       "at": 1.8,
+       "do": "bust",
+       "dur": 1.2,
+       "target": "myth"
+      },
+      {
+       "at": 3.2,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "torn",
+        "mend",
+        "a1"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1.4,
+       "target": "mend"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "run"
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 1.2,
+       "target": "run"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "back",
+        "a2"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 1,
+       "target": "a2",
+       "to": 1
+      },
+      {
+       "at": 2,
+       "do": "highlight",
+       "dur": 1.2,
+       "target": "back"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "safe"
+      },
+      {
+       "at": 1,
+       "do": "focus",
+       "dur": 1,
+       "target": "safe"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "reuseTitle"
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "quilt",
+        "bag",
+        "cover",
+        "duster"
+       ]
+      },
+      {
+       "at": 2.2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "quilt"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "care"
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 1.2,
+       "target": "care"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "runOpt",
+        "backOpt",
+        "patchOpt"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive"
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which stitch leaves gaps between the stitches?",
+    "options": [
+     "runOpt",
+     "backOpt",
+     "patchOpt"
+    ],
+    "answer": "runOpt",
+    "src": "c5-evs-ch08-t02-i14"
+   }
+  },
+  "repairs": [
+   "glyph",
+   "glyph",
+   "glyph",
+   "glyph",
+   "glyph",
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 45
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch08-t02-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9111,
+     "ops": [
+      {
+       "id": "cloth",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        110
+       ],
+       "w": 250,
+       "h": 190,
+       "round": 12
+      },
+      {
+       "id": "tear",
+       "op": "stroke",
+       "startMs": 900,
+       "endMs": 1800,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         220,
+         145
+        ],
+        [
+         245,
+         175
+        ],
+        [
+         225,
+         205
+        ],
+        [
+         255,
+         235
+        ],
+        [
+         235,
+         275
+        ]
+       ]
+      },
+      {
+       "id": "tearlabel",
+       "op": "label",
+       "startMs": 1800,
+       "endMs": 2500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        285,
+        180
+       ],
+       "text": "tear",
+       "to": [
+        240,
+        190
+       ]
+      },
+      {
+       "id": "cross",
+       "op": "line",
+       "startMs": 2700,
+       "endMs": 3500,
+       "ink": "soft",
+       "weight": 2,
+       "from": [
+        470,
+        125
+       ],
+       "to": [
+        650,
+        285
+       ]
+      },
+      {
+       "id": "cross2",
+       "op": "line",
+       "startMs": 3500,
+       "endMs": 4300,
+       "ink": "soft",
+       "weight": 2,
+       "from": [
+        650,
+        125
+       ],
+       "to": [
+        470,
+        285
+       ]
+      },
+      {
+       "id": "throw",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 5000,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        560,
+        320
+       ],
+       "text": "throw away",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "mendline",
+       "op": "arrow",
+       "startMs": 5200,
+       "endMs": 6000,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        390,
+        205
+       ],
+       "to": [
+        470,
+        205
+       ]
+      },
+      {
+       "id": "mend",
+       "op": "text",
+       "startMs": 6100,
+       "endMs": 7000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        560,
+        365
+       ],
+       "text": "mend",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "patch",
+       "op": "rect",
+       "startMs": 7100,
+       "endMs": 7900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        205,
+        205
+       ],
+       "w": 65,
+       "h": 45,
+       "round": 6
+      },
+      {
+       "id": "stitches",
+       "op": "stroke",
+       "startMs": 7900,
+       "endMs": 8800,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         215,
+         215
+        ],
+        [
+         230,
+         238
+        ],
+        [
+         245,
+         215
+        ],
+        [
+         260,
+         238
+        ]
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch08-t02-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 9962,
+     "ops": [
+      {
+       "id": "smalltear",
+       "op": "stroke",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         90,
+         100
+        ],
+        [
+         115,
+         130
+        ],
+        [
+         95,
+         160
+        ]
+       ]
+      },
+      {
+       "id": "stitch",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        170,
+        115
+       ],
+       "text": "stitching",
+       "size": "m"
+      },
+      {
+       "id": "patch2",
+       "op": "rect",
+       "startMs": 1600,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        220
+       ],
+       "w": 75,
+       "h": 55,
+       "round": 6
+      },
+      {
+       "id": "patchlabel",
+       "op": "text",
+       "startMs": 2400,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        185,
+        250
+       ],
+       "text": "patching",
+       "size": "m"
+      },
+      {
+       "id": "darn",
+       "op": "ellipse",
+       "startMs": 3300,
+       "endMs": 4000,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        125,
+        365
+       ],
+       "rx": 45,
+       "ry": 30
+      },
+      {
+       "id": "darnlabel",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 4800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        205,
+        372
+       ],
+       "text": "darning",
+       "size": "m"
+      },
+      {
+       "id": "button",
+       "op": "circle",
+       "startMs": 5000,
+       "endMs": 5700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        510,
+        175
+       ],
+       "r": 25
+      },
+      {
+       "id": "holes",
+       "op": "circle",
+       "startMs": 5700,
+       "endMs": 6100,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        500,
+        168
+       ],
+       "r": 3
+      },
+      {
+       "id": "holes2",
+       "op": "circle",
+       "startMs": 6100,
+       "endMs": 6500,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        520,
+        182
+       ],
+       "r": 3
+      },
+      {
+       "id": "sew",
+       "op": "stroke",
+       "startMs": 6500,
+       "endMs": 7600,
+       "ink": "good",
+       "weight": 2,
+       "points": [
+        [
+         500,
+         168
+        ],
+        [
+         520,
+         182
+        ],
+        [
+         500,
+         182
+        ],
+        [
+         520,
+         168
+        ]
+       ]
+      },
+      {
+       "id": "adult",
+       "op": "label",
+       "startMs": 7800,
+       "endMs": 8800,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        560,
+        245
+       ],
+       "text": "adult help",
+       "to": [
+        515,
+        180
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch08-t02-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "runlabel",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        75
+       ],
+       "text": "running stitch",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "fabric",
+       "op": "line",
+       "startMs": 1000,
+       "endMs": 1800,
+       "ink": "soft",
+       "weight": 2,
+       "from": [
+        100,
+        250
+       ],
+       "to": [
+        700,
+        250
+       ]
+      },
+      {
+       "id": "needleline",
+       "op": "stroke",
+       "startMs": 1900,
+       "endMs": 4000,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         150,
+         250
+        ],
+        [
+         190,
+         190
+        ],
+        [
+         230,
+         250
+        ],
+        [
+         270,
+         190
+        ],
+        [
+         310,
+         250
+        ],
+        [
+         350,
+         190
+        ],
+        [
+         390,
+         250
+        ]
+       ]
+      },
+      {
+       "id": "gap1",
+       "op": "highlight",
+       "startMs": 4200,
+       "endMs": 5000,
+       "ink": "mark",
+       "weight": 1,
+       "target": "needleline",
+       "style": "circle"
+      },
+      {
+       "id": "gaps",
+       "op": "label",
+       "startMs": 5000,
+       "endMs": 5800,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        440,
+        170
+       ],
+       "text": "gaps",
+       "to": [
+        410,
+        205
+       ]
+      },
+      {
+       "id": "inout",
+       "op": "text",
+       "startMs": 5900,
+       "endMs": 6800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        350
+       ],
+       "text": "in and out",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch08-t02-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "backlabel",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        75
+       ],
+       "text": "back stitch",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "backline",
+       "op": "stroke",
+       "startMs": 1000,
+       "endMs": 3000,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         120,
+         250
+        ],
+        [
+         180,
+         190
+        ],
+        [
+         240,
+         250
+        ],
+        [
+         300,
+         190
+        ],
+        [
+         360,
+         250
+        ],
+        [
+         420,
+         190
+        ],
+        [
+         480,
+         250
+        ]
+       ]
+      },
+      {
+       "id": "return1",
+       "op": "arrow",
+       "startMs": 3100,
+       "endMs": 3900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        240,
+        250
+       ],
+       "to": [
+        180,
+        190
+       ]
+      },
+      {
+       "id": "return2",
+       "op": "arrow",
+       "startMs": 3900,
+       "endMs": 4700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        360,
+        250
+       ],
+       "to": [
+        300,
+        190
+       ]
+      },
+      {
+       "id": "continuous",
+       "op": "line",
+       "startMs": 4900,
+       "endMs": 5700,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        520,
+        250
+       ],
+       "to": [
+        680,
+        250
+       ]
+      },
+      {
+       "id": "strong",
+       "op": "text",
+       "startMs": 5800,
+       "endMs": 6600,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        600,
+        325
+       ],
+       "text": "stronger",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "nogaps",
+       "op": "label",
+       "startMs": 6700,
+       "endMs": 7600,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        545,
+        185
+       ],
+       "text": "no gaps",
+       "to": [
+        500,
+        240
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch08-t02-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 11664,
+     "ops": [
+      {
+       "id": "card",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        140
+       ],
+       "w": 300,
+       "h": 230,
+       "round": 8
+      },
+      {
+       "id": "holes",
+       "op": "circle",
+       "startMs": 1200,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        150,
+        220
+       ],
+       "r": 7
+      },
+      {
+       "id": "holes2",
+       "op": "circle",
+       "startMs": 1500,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        220,
+        220
+       ],
+       "r": 7
+      },
+      {
+       "id": "holes3",
+       "op": "circle",
+       "startMs": 1800,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        290,
+        220
+       ],
+       "r": 7
+      },
+      {
+       "id": "lace",
+       "op": "stroke",
+       "startMs": 2200,
+       "endMs": 3900,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         150,
+         220
+        ],
+        [
+         220,
+         290
+        ],
+        [
+         290,
+         220
+        ],
+        [
+         220,
+         150
+        ],
+        [
+         150,
+         220
+        ]
+       ]
+      },
+      {
+       "id": "lacing",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 4800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        240,
+        340
+       ],
+       "text": "lacing card",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "plastic",
+       "op": "line",
+       "startMs": 5000,
+       "endMs": 5700,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        480,
+        190
+       ],
+       "to": [
+        650,
+        190
+       ]
+      },
+      {
+       "id": "blunt",
+       "op": "circle",
+       "startMs": 5700,
+       "endMs": 6200,
+       "ink": "good",
+       "weight": 1,
+       "c": [
+        480,
+        190
+       ],
+       "r": 9
+      },
+      {
+       "id": "needle",
+       "op": "line",
+       "startMs": 6200,
+       "endMs": 7000,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        475,
+        190
+       ],
+       "to": [
+        680,
+        190
+       ]
+      },
+      {
+       "id": "sharp",
+       "op": "label",
+       "startMs": 7000,
+       "endMs": 7700,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        640,
+        155
+       ],
+       "text": "sharp",
+       "to": [
+        675,
+        190
+       ]
+      },
+      {
+       "id": "adult2",
+       "op": "text",
+       "startMs": 8000,
+       "endMs": 9000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        570,
+        285
+       ],
+       "text": "adult",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "practice",
+       "op": "text",
+       "startMs": 9200,
+       "endMs": 10000,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        240,
+        415
+       ],
+       "text": "practise",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "safe",
+       "op": "highlight",
+       "startMs": 10100,
+       "endMs": 11200,
+       "ink": "good",
+       "weight": 1,
+       "target": "blunt",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch08-t02-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9111,
+     "ops": [
+      {
+       "id": "old",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        70,
+        105
+       ],
+       "w": 190,
+       "h": 135,
+       "round": 8
+      },
+      {
+       "id": "oldlabel",
+       "op": "text",
+       "startMs": 800,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        165,
+        275
+       ],
+       "text": "old clothes",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "quilt",
+       "op": "rect",
+       "startMs": 1700,
+       "endMs": 2400,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        340,
+        90
+       ],
+       "w": 150,
+       "h": 105,
+       "round": 5
+      },
+      {
+       "id": "quiltlabel",
+       "op": "text",
+       "startMs": 2400,
+       "endMs": 3000,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        415,
+        220
+       ],
+       "text": "quilts",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "bag",
+       "op": "polygon",
+       "startMs": 3100,
+       "endMs": 3900,
+       "ink": "good",
+       "weight": 2,
+       "points": [
+        [
+         550,
+         110
+        ],
+        [
+         670,
+         110
+        ],
+        [
+         650,
+         250
+        ],
+        [
+         570,
+         250
+        ]
+       ]
+      },
+      {
+       "id": "baglabel",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4500,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        610,
+        280
+       ],
+       "text": "bags",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "cushion",
+       "op": "rect",
+       "startMs": 4600,
+       "endMs": 5200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        100,
+        340
+       ],
+       "w": 145,
+       "h": 80,
+       "round": 15
+      },
+      {
+       "id": "cushionlabel",
+       "op": "text",
+       "startMs": 5200,
+       "endMs": 5900,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        172,
+        450
+       ],
+       "text": "cushion covers",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "duster",
+       "op": "ellipse",
+       "startMs": 6000,
+       "endMs": 6600,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        390,
+        380
+       ],
+       "rx": 85,
+       "ry": 35
+      },
+      {
+       "id": "dusterlabel",
+       "op": "text",
+       "startMs": 6600,
+       "endMs": 7200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        390,
+        445
+       ],
+       "text": "dusters",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "give",
+       "op": "arrow",
+       "startMs": 7300,
+       "endMs": 8100,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        520,
+        370
+       ],
+       "to": [
+        680,
+        370
+       ]
+      },
+      {
+       "id": "need",
+       "op": "text",
+       "startMs": 8100,
+       "endMs": 9000,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        680,
+        425
+       ],
+       "text": "people who need them",
+       "size": "s",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch08-t02-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "care",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        65
+       ],
+       "text": "care",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "wash",
+       "op": "ellipse",
+       "startMs": 900,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        150,
+        180
+       ],
+       "rx": 75,
+       "ry": 45
+      },
+      {
+       "id": "washlabel",
+       "op": "text",
+       "startMs": 1600,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        150,
+        260
+       ],
+       "text": "wash gently",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "dry",
+       "op": "line",
+       "startMs": 2500,
+       "endMs": 3200,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        330,
+        220
+       ],
+       "to": [
+        510,
+        220
+       ]
+      },
+      {
+       "id": "sun",
+       "op": "circle",
+       "startMs": 3200,
+       "endMs": 3800,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        420,
+        145
+       ],
+       "r": 35
+      },
+      {
+       "id": "drylabel",
+       "op": "text",
+       "startMs": 3800,
+       "endMs": 4700,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        420,
+        285
+       ],
+       "text": "dry properly",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "fold",
+       "op": "polygon",
+       "startMs": 4800,
+       "endMs": 5600,
+       "ink": "good",
+       "weight": 2,
+       "points": [
+        [
+         610,
+         170
+        ],
+        [
+         720,
+         170
+        ],
+        [
+         690,
+         280
+        ],
+        [
+         580,
+         280
+        ]
+       ]
+      },
+      {
+       "id": "storelabel",
+       "op": "text",
+       "startMs": 5600,
+       "endMs": 6700,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        650,
+        325
+       ],
+       "text": "store fully dry",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "mould",
+       "op": "text",
+       "startMs": 6900,
+       "endMs": 7700,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        400,
+        390
+       ],
+       "text": "damp: mould",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "last",
+       "op": "arrow",
+       "startMs": 7700,
+       "endMs": 8200,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        170,
+        430
+       ],
+       "to": [
+        630,
+        430
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch08-t02-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4430,
+     "ops": [
+      {
+       "id": "question",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        75
+       ],
+       "text": "which stitch?",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "run",
+       "op": "stroke",
+       "startMs": 900,
+       "endMs": 1900,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         100,
+         190
+        ],
+        [
+         145,
+         150
+        ],
+        [
+         190,
+         190
+        ],
+        [
+         235,
+         150
+        ],
+        [
+         280,
+         190
+        ]
+       ]
+      },
+      {
+       "id": "runlabel",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        190,
+        245
+       ],
+       "text": "running stitch",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "gap",
+       "op": "highlight",
+       "startMs": 2800,
+       "endMs": 3600,
+       "ink": "mark",
+       "weight": 1,
+       "target": "run",
+       "style": "circle"
+      },
+      {
+       "id": "answer",
+       "op": "text",
+       "startMs": 3700,
+       "endMs": 4300,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        500,
+        190
+       ],
+       "text": "gaps",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "Mend it with stitches",
+   "prompt": "sequence: after/for \"Notice a small tear\"",
+   "src": "c5-evs-ch08-t02-i06"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "Wash the cloth gently",
+   "prompt": "sequence: after/for \"Mend it with stitches\"",
+   "src": "c5-evs-ch08-t02-i13"
+  },
+  {
+   "itemId": "r1:2",
+   "key": "Dry it properly",
+   "prompt": "sequence: after/for \"Wash the cloth gently\"",
+   "src": "c5-evs-ch08-t02-i13"
+  },
+  {
+   "itemId": "r1:3",
+   "key": "Reuse it as a bag",
+   "prompt": "sequence: after/for \"Dry it properly\"",
+   "src": "c5-evs-ch08-t02-i02"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "The line has gaps",
+   "prompt": "cause: after/for \"Use a running stitch\"",
+   "src": "c5-evs-ch08-t02-i01"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "The line is stronger",
+   "prompt": "cause: after/for \"Use a back stitch\"",
+   "src": "c5-evs-ch08-t02-i01"
+  },
+  {
+   "itemId": "r2:2",
+   "key": "Mould and smell grow",
+   "prompt": "cause: after/for \"Fold damp clothes away\"",
+   "src": "c5-evs-ch08-t02-i04"
+  },
+  {
+   "itemId": "r3:0",
+   "key": "Bunty",
+   "prompt": "who: after/for \"Always dry every cloth hot\"",
+   "src": "c5-evs-ch08-t02-i12"
+  },
+  {
+   "itemId": "r3:1",
+   "key": "Adult",
+   "prompt": "who: after/for \"Use a blunt plastic needle\"",
+   "src": "c5-evs-ch08-t02-i09"
+  },
+  {
+   "itemId": "r3:2",
+   "key": "Child",
+   "prompt": "who: after/for \"Make a quilt from old cloth\"",
+   "src": "c5-evs-ch08-t02-i02"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

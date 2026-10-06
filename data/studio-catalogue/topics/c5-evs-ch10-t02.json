@@ -1,0 +1,1737 @@
+{
+ "topicId": "c5-evs-ch10-t02",
+ "title": "Caring for the Earth",
+ "chapter": "Earth — Our Shared Home",
+ "subject": "evs",
+ "class": 5,
+ "topicType": "T5",
+ "plan": {
+  "game": "town-lab@1",
+  "hint": "council mode: a community deciding together what to fund"
+ },
+ "game": {
+  "archetype": "town-lab@1",
+  "spec": {
+   "archetype": "town-lab@1",
+   "skills": [
+    "c5-evs-ch10-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "done": "right",
+    "have": "you have",
+    "need": "you need",
+    "has": "has",
+    "wants": "wants",
+    "trades": "trades",
+    "market": "market",
+    "coins": "coins",
+    "open": "OPEN",
+    "price": "price",
+    "cost": "cost",
+    "profit": "profit",
+    "sold": "sold",
+    "target": "target",
+    "stock": "stock",
+    "lock": "LOCK",
+    "run": "RUN",
+    "perMonth": "per month",
+    "years": "years",
+    "goal": "goal",
+    "saved": "saved",
+    "interest": "interest",
+    "budget": "budget",
+    "left": "left",
+    "families": "families helped",
+    "runDone": "Town closed",
+    "noDeal": "no deal",
+    "reset": "start again",
+    "rupee": "₹"
+   },
+   "title": "Caring for Our Earth",
+   "rounds": [
+    {
+     "mode": "market",
+     "title": "Cloth bag stall",
+     "sub": "price a reusable bag",
+     "good": "cloth bag",
+     "glyph": "recycle",
+     "cost": 20,
+     "stock": 8,
+     "buyers": [
+      50,
+      45,
+      60,
+      35,
+      40,
+      55,
+      30,
+      70
+     ],
+     "target": 80,
+     "targets": "c5-evs-ch10-t02-m2"
+    },
+    {
+     "mode": "savings",
+     "title": "Save for saplings",
+     "sub": "choose a monthly saving",
+     "goal": 1000,
+     "years": 2,
+     "rate": 5
+    },
+    {
+     "mode": "council",
+     "title": "Green ward plan",
+     "sub": "help the most families",
+     "budget": 50,
+     "projects": [
+      {
+       "name": "tree care",
+       "glyph": "tree",
+       "cost": 12,
+       "helps": 80
+      },
+      {
+       "name": "water saving",
+       "glyph": "tap",
+       "cost": 15,
+       "helps": 120
+      },
+      {
+       "name": "waste sorting",
+       "glyph": "recycle",
+       "cost": 18,
+       "helps": 100
+      },
+      {
+       "name": "cycle path",
+       "glyph": "road",
+       "cost": 25,
+       "helps": 110
+      }
+     ],
+     "targets": "c5-evs-ch10-t02-m1"
+    }
+   ]
+  },
+  "repairs": [
+   "string:project.name"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c5-evs-ch10-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Caring for the Earth",
+   "accent": "mint",
+   "targets": "c5-evs-ch10-t02-m1",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Caring for the Earth"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "One person's actions do not matter"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "refuse",
+       "type": "node",
+       "text": "Refuse",
+       "glyph": "shield",
+       "color": "mint"
+      },
+      {
+       "id": "reuse",
+       "type": "node",
+       "text": "Reuse",
+       "glyph": "recycle",
+       "color": "sun"
+      },
+      {
+       "id": "recycle",
+       "type": "node",
+       "text": "Recycle",
+       "glyph": "recycle",
+       "color": "ion"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "refuse",
+       "to": "reuse",
+       "text": "then",
+       "bend": 0
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "reuse",
+       "to": "recycle",
+       "text": "then",
+       "bend": 0
+      },
+      {
+       "id": "bag",
+       "type": "node",
+       "text": "Cloth bag",
+       "color": "mint"
+      },
+      {
+       "id": "bottle",
+       "type": "node",
+       "text": "Steel bottle",
+       "glyph": "jug",
+       "color": "sci"
+      },
+      {
+       "id": "chart",
+       "type": "bars",
+       "values": [
+        2,
+        7
+       ],
+       "labels": [
+        "start",
+        "week"
+       ],
+       "unit": "actions"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "ask",
+       "type": "title",
+       "text": "Your turn"
+      },
+      {
+       "id": "refuse2",
+       "type": "node",
+       "text": "Refuse",
+       "glyph": "shield",
+       "color": "mint"
+      },
+      {
+       "id": "reuse2",
+       "type": "node",
+       "text": "Reuse",
+       "glyph": "recycle",
+       "color": "sun"
+      },
+      {
+       "id": "recycle2",
+       "type": "node",
+       "text": "Recycle",
+       "glyph": "recycle",
+       "color": "ion"
+      },
+      {
+       "id": "track",
+       "type": "node",
+       "text": "Track daily",
+       "glyph": "note",
+       "color": "amber"
+      },
+      {
+       "id": "share",
+       "type": "node",
+       "text": "Share plan",
+       "glyph": "group",
+       "color": "volt"
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "track",
+       "to": "share",
+       "text": "tell family",
+       "bend": 0
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "The Earth is our shared home. Small daily actions can help protect it.",
+    "L2": "Some people think one person's actions do not matter. That is not true: repeated actions add up, and others can copy them.",
+    "L3": "Refuse and reduce come first. Carry a cloth bag and a steel bottle instead of taking single-use plastic.",
+    "L4": "If waste is made, reuse it before recycling it. Recycling still uses energy, and not everything gets recycled.",
+    "L5": "A class of 40 students using cloth bags for 365 days could avoid about 14,000 plastic bags.",
+    "L6": "A good plan is specific and lasts a set time. Use a seven-day chart and tick it each evening.",
+    "L7": "Share the plan with family or friends. Sort waste, compost what you can, and never burn or bury plastic.",
+    "L8": "Now put these three choices in order from best to least good for the Earth."
+   },
+   "narration": {
+    "L1": {
+     "text": "The Earth is our shared home. Small daily actions can help protect it.",
+     "dur": 7.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "Some people think one person's actions do not matter. That is not true: repeated actions add up, and others can copy them.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "Refuse and reduce come first. Carry a cloth bag and a steel bottle instead of taking single-use plastic.",
+     "dur": 7.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "If waste is made, reuse it before recycling it. Recycling still uses energy, and not everything gets recycled.",
+     "dur": 7.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "A class of 40 students using cloth bags for 365 days could avoid about 14,000 plastic bags.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "A good plan is specific and lasts a set time. Use a seven-day chart and tick it each evening.",
+     "dur": 7.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Share the plan with family or friends. Sort waste, compost what you can, and never burn or bury plastic.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Now put these three choices in order from best to least good for the Earth.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "title"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "hide",
+       "dur": 0.5,
+       "target": "title"
+      },
+      {
+       "at": 0.2,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      },
+      {
+       "at": 3,
+       "do": "bust",
+       "dur": 1.2,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.5,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "refuse",
+        "bag",
+        "bottle"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 1,
+       "target": "refuse"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.5,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "reuse",
+        "recycle",
+        "a1",
+        "a2"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 1,
+       "target": [
+        "a1",
+        "a2"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.5,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "count",
+       "dur": 2,
+       "target": "chart",
+       "to": 1
+      },
+      {
+       "at": 2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "chart"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.5,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "chart"
+      },
+      {
+       "at": 1,
+       "do": "focus",
+       "dur": 1.2,
+       "target": "chart"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.5,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "track",
+        "share",
+        "a3"
+       ]
+      },
+      {
+       "at": 1.5,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "a3",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "refuse2",
+        "reuse2",
+        "recycle2"
+       ]
+      },
+      {
+       "at": 2,
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "order",
+    "prompt": "Put these choices in order from best to least good for the Earth.",
+    "items": [
+     "refuse2",
+     "reuse2",
+     "recycle2"
+    ],
+    "src": "c5-evs-ch10-t02-i02"
+   }
+  },
+  "repairs": [
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "passes": 2,
+  "seconds": 62
+ },
+ "keys": [
+  {
+   "itemId": "r1",
+   "key": "₹45 → profit 125 (target 80)",
+   "prompt": "price a reusable bag"
+  },
+  {
+   "itemId": "r2",
+   "key": "₹41 a month",
+   "prompt": "choose a monthly saving"
+  },
+  {
+   "itemId": "r3",
+   "key": "300 families: tree care, water saving, waste sorting",
+   "prompt": "help the most families"
+  }
+ ],
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch10-t02-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "earth",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 1100,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        210
+       ],
+       "r": 125,
+       "fill": "soft"
+      },
+      {
+       "id": "home",
+       "op": "text",
+       "startMs": 1100,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        220
+       ],
+       "text": "Earth",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "hands",
+       "op": "stroke",
+       "startMs": 1900,
+       "endMs": 2900,
+       "ink": "mark",
+       "weight": 2,
+       "points": [
+        [
+         230,
+         350
+        ],
+        [
+         280,
+         325
+        ],
+        [
+         330,
+         350
+        ],
+        [
+         380,
+         325
+        ],
+        [
+         430,
+         350
+        ],
+        [
+         480,
+         325
+        ],
+        [
+         530,
+         350
+        ],
+        [
+         570,
+         330
+        ]
+       ]
+      },
+      {
+       "id": "actions",
+       "op": "label",
+       "startMs": 3000,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        400
+       ],
+       "text": "daily actions",
+       "to": [
+        400,
+        350
+       ]
+      },
+      {
+       "id": "protect",
+       "op": "arrow",
+       "startMs": 4100,
+       "endMs": 5000,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        400,
+        325
+       ],
+       "to": [
+        400,
+        270
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch10-t02-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 9962,
+     "ops": [
+      {
+       "id": "person",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        150,
+        180
+       ],
+       "r": 35
+      },
+      {
+       "id": "one",
+       "op": "text",
+       "startMs": 500,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        150,
+        250
+       ],
+       "text": "1",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "repeat",
+       "op": "arrow",
+       "startMs": 1200,
+       "endMs": 2200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        200,
+        180
+       ],
+       "to": [
+        370,
+        180
+       ]
+      },
+      {
+       "id": "many",
+       "op": "circle",
+       "startMs": 2300,
+       "endMs": 2800,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        500,
+        180
+       ],
+       "r": 48
+      },
+      {
+       "id": "manylabel",
+       "op": "label",
+       "startMs": 2900,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        500,
+        260
+       ],
+       "text": "add up",
+       "to": [
+        500,
+        230
+       ]
+      },
+      {
+       "id": "copyarrow",
+       "op": "arrow",
+       "startMs": 4000,
+       "endMs": 5000,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        540,
+        180
+       ],
+       "to": [
+        665,
+        120
+       ]
+      },
+      {
+       "id": "copy",
+       "op": "label",
+       "startMs": 5000,
+       "endMs": 5700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        680,
+        115
+       ],
+       "text": "copy",
+       "to": [
+        650,
+        130
+       ]
+      },
+      {
+       "id": "sum",
+       "op": "numwork",
+       "startMs": 6200,
+       "endMs": 7800,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        280,
+        320
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "1",
+         "+",
+         "1",
+         "+",
+         "1",
+         "=",
+         "many"
+        ]
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch10-t02-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "refuse",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        145,
+        110
+       ],
+       "text": "refuse",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "reduce",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        110
+       ],
+       "text": "reduce",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "arrowfirst",
+       "op": "arrow",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        190,
+        110
+       ],
+       "to": [
+        345,
+        110
+       ]
+      },
+      {
+       "id": "bag",
+       "op": "rect",
+       "startMs": 2400,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        220
+       ],
+       "w": 150,
+       "h": 130
+      },
+      {
+       "id": "baglabel",
+       "op": "label",
+       "startMs": 3300,
+       "endMs": 4000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        175,
+        380
+       ],
+       "text": "cloth bag",
+       "to": [
+        175,
+        350
+       ]
+      },
+      {
+       "id": "bottle",
+       "op": "rect",
+       "startMs": 4100,
+       "endMs": 5000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        490,
+        210
+       ],
+       "w": 80,
+       "h": 150
+      },
+      {
+       "id": "bottlelabel",
+       "op": "label",
+       "startMs": 5000,
+       "endMs": 5900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        530,
+        390
+       ],
+       "text": "steel bottle",
+       "to": [
+        530,
+        360
+       ]
+      },
+      {
+       "id": "plastic",
+       "op": "text",
+       "startMs": 6200,
+       "endMs": 7100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        380,
+        450
+       ],
+       "text": "single-use plastic",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch10-t02-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "reuse",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        150,
+        100
+       ],
+       "text": "reuse",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "recycle",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        400,
+        100
+       ],
+       "text": "recycle",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "reusearrow",
+       "op": "arrow",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        210,
+        100
+       ],
+       "to": [
+        340,
+        100
+       ]
+      },
+      {
+       "id": "bin",
+       "op": "rect",
+       "startMs": 2300,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        300,
+        210
+       ],
+       "w": 170,
+       "h": 150
+      },
+      {
+       "id": "waste",
+       "op": "label",
+       "startMs": 3200,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        385,
+        390
+       ],
+       "text": "waste",
+       "to": [
+        385,
+        360
+       ]
+      },
+      {
+       "id": "energy",
+       "op": "text",
+       "startMs": 4200,
+       "endMs": 5000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        610,
+        220
+       ],
+       "text": "energy",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "energyarrow",
+       "op": "arrow",
+       "startMs": 5000,
+       "endMs": 5700,
+       "ink": "accent",
+       "weight": 1,
+       "from": [
+        550,
+        280
+       ],
+       "to": [
+        610,
+        245
+       ]
+      },
+      {
+       "id": "notall",
+       "op": "text",
+       "startMs": 6200,
+       "endMs": 7200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        450
+       ],
+       "text": "not everything",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch10-t02-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "class",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        160,
+        100
+       ],
+       "text": "40 students",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "days",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        100
+       ],
+       "text": "365 days",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "multiply",
+       "op": "numwork",
+       "startMs": 1900,
+       "endMs": 3600,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        180,
+        210
+       ],
+       "layout": "column_mul",
+       "rows": [
+        [
+         "40"
+        ],
+        [
+         "×",
+         "365"
+        ],
+        [
+         "14,600"
+        ]
+       ]
+      },
+      {
+       "id": "bags",
+       "op": "text",
+       "startMs": 3800,
+       "endMs": 4700,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        560,
+        250
+       ],
+       "text": "plastic bags",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "avoid",
+       "op": "arrow",
+       "startMs": 4700,
+       "endMs": 5400,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        470,
+        270
+       ],
+       "to": [
+        520,
+        270
+       ]
+      },
+      {
+       "id": "about",
+       "op": "text",
+       "startMs": 5700,
+       "endMs": 6800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        430
+       ],
+       "text": "about 14,000",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch10-t02-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "plan",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "specific plan",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "chart",
+       "op": "rect",
+       "startMs": 1100,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        150,
+        140
+       ],
+       "w": 500,
+       "h": 270
+      },
+      {
+       "id": "daysrow",
+       "op": "numwork",
+       "startMs": 2300,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        175
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "1",
+         "2",
+         "3",
+         "4",
+         "5",
+         "6",
+         "7"
+        ]
+       ]
+      },
+      {
+       "id": "ticks",
+       "op": "stroke",
+       "startMs": 3600,
+       "endMs": 4800,
+       "ink": "good",
+       "weight": 2,
+       "points": [
+        [
+         200,
+         270
+        ],
+        [
+         260,
+         270
+        ],
+        [
+         320,
+         270
+        ],
+        [
+         380,
+         270
+        ],
+        [
+         440,
+         270
+        ],
+        [
+         500,
+         270
+        ],
+        [
+         560,
+         270
+        ]
+       ]
+      },
+      {
+       "id": "evening",
+       "op": "label",
+       "startMs": 5200,
+       "endMs": 6100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        455
+       ],
+       "text": "each evening",
+       "to": [
+        400,
+        400
+       ]
+      },
+      {
+       "id": "seven",
+       "op": "text",
+       "startMs": 6500,
+       "endMs": 7400,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        400,
+        115
+       ],
+       "text": "7-day chart",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch10-t02-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "share",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "share",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "family",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        220,
+        180
+       ],
+       "r": 45
+      },
+      {
+       "id": "friends",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        580,
+        180
+       ],
+       "r": 45
+      },
+      {
+       "id": "connect",
+       "op": "line",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        265,
+        180
+       ],
+       "to": [
+        535,
+        180
+       ]
+      },
+      {
+       "id": "sort",
+       "op": "rect",
+       "startMs": 2500,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        290
+       ],
+       "w": 150,
+       "h": 100
+      },
+      {
+       "id": "sortlabel",
+       "op": "label",
+       "startMs": 3300,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        195,
+        425
+       ],
+       "text": "sort waste",
+       "to": [
+        195,
+        390
+       ]
+      },
+      {
+       "id": "compost",
+       "op": "ellipse",
+       "startMs": 4300,
+       "endMs": 5000,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        400,
+        340
+       ],
+       "rx": 90,
+       "ry": 45
+      },
+      {
+       "id": "compostlabel",
+       "op": "label",
+       "startMs": 5000,
+       "endMs": 5700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        425
+       ],
+       "text": "compost",
+       "to": [
+        400,
+        385
+       ]
+      },
+      {
+       "id": "plastic",
+       "op": "text",
+       "startMs": 5900,
+       "endMs": 6600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        620,
+        340
+       ],
+       "text": "plastic",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "ban",
+       "op": "line",
+       "startMs": 6700,
+       "endMs": 7500,
+       "ink": "accent",
+       "weight": 3,
+       "from": [
+        580,
+        295
+       ],
+       "to": [
+        660,
+        385
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch10-t02-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "best",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        65
+       ],
+       "text": "best",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "orderline",
+       "op": "line",
+       "startMs": 700,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        120,
+        150
+       ],
+       "to": [
+        680,
+        150
+       ]
+      },
+      {
+       "id": "refuse",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2400,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        160,
+        230
+       ],
+       "text": "refuse",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "reduce",
+       "op": "text",
+       "startMs": 2400,
+       "endMs": 3100,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        320,
+        230
+       ],
+       "text": "reduce",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "reuse",
+       "op": "text",
+       "startMs": 3100,
+       "endMs": 3800,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        480,
+        230
+       ],
+       "text": "reuse",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "recycle",
+       "op": "text",
+       "startMs": 3800,
+       "endMs": 4500,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        640,
+        230
+       ],
+       "text": "recycle",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "arrow",
+       "op": "arrow",
+       "startMs": 4700,
+       "endMs": 5600,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        160,
+        180
+       ],
+       "to": [
+        640,
+        180
+       ]
+      },
+      {
+       "id": "least",
+       "op": "text",
+       "startMs": 5800,
+       "endMs": 6600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        330
+       ],
+       "text": "least good",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

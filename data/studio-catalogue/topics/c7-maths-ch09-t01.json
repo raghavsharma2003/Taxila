@@ -1,0 +1,1620 @@
+{
+ "topicId": "c7-maths-ch09-t01",
+ "title": "Congruent figures",
+ "chapter": "Geometric Twins",
+ "subject": "maths",
+ "class": 7,
+ "topicType": "T3",
+ "plan": {
+  "game": "mirror-paint@1",
+  "hint": "twin mode (turn and flip to fit)"
+ },
+ "game": {
+  "archetype": "mirror-paint@1",
+  "spec": {
+   "archetype": "mirror-paint@1",
+   "skills": [
+    "c7-maths-ch09-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "done": "designs",
+    "check": "CHECK",
+    "rotate": "TURN",
+    "flip": "FLIP",
+    "coach": "Paint the mirror half: tap the squares",
+    "runDone": "Studio closed",
+    "lines": "Mark every line of symmetry",
+    "turn": "How many times the same in one full turn?",
+    "twin": "Turn and flip it to fit its twin",
+    "same": "SAME",
+    "order": "order",
+    "fold": "FOLD"
+   },
+   "title": "Mirror Studio",
+   "rounds": [
+    {
+     "mode": "complete",
+     "title": "Mirror paper badge",
+     "sub": "paint the matching half exactly",
+     "size": 8,
+     "cells": [
+      [
+       1,
+       1
+      ],
+      [
+       2,
+       1
+      ],
+      [
+       3,
+       1
+      ],
+      [
+       0,
+       2
+      ],
+      [
+       1,
+       2
+      ],
+      [
+       3,
+       2
+      ],
+      [
+       2,
+       3
+      ],
+      [
+       3,
+       3
+      ],
+      [
+       1,
+       4
+      ],
+      [
+       2,
+       4
+      ]
+     ],
+     "axis": "v",
+     "time": 60
+    },
+    {
+     "mode": "twin",
+     "title": "Fit the paper twin",
+     "sub": "turn or flip it to fit exactly",
+     "size": 7,
+     "cells": [
+      [
+       1,
+       1
+      ],
+      [
+       2,
+       1
+      ],
+      [
+       3,
+       1
+      ],
+      [
+       1,
+       2
+      ],
+      [
+       1,
+       3
+      ],
+      [
+       2,
+       3
+      ],
+      [
+       3,
+       3
+      ],
+      [
+       3,
+       4
+      ]
+     ],
+     "time": 60,
+     "targets": "c7-maths-ch09-t01-m-flip-breaks"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-maths-ch09-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Congruent figures",
+   "accent": "ion",
+   "targets": "c7-maths-ch09-t01-m-shape-only",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "row",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Congruent figures"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Same shape means congruent, any size"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "fig1",
+       "type": "node",
+       "text": "Figure A",
+       "sub": "shape and size",
+       "color": "ion"
+      },
+      {
+       "id": "fig2",
+       "type": "node",
+       "text": "Figure B",
+       "color": "mint"
+      },
+      {
+       "id": "trace",
+       "type": "node",
+       "text": "Tracing",
+       "sub": "thin paper",
+       "glyph": "scroll",
+       "color": "amber"
+      },
+      {
+       "id": "place",
+       "type": "arrow",
+       "from": "fig1",
+       "to": "trace",
+       "text": "trace"
+      },
+      {
+       "id": "fit",
+       "type": "arrow",
+       "from": "trace",
+       "to": "fig2",
+       "text": "place exactly"
+      },
+      {
+       "id": "turn",
+       "type": "label",
+       "text": "slide, turn, flip",
+       "x": 300,
+       "y": 500,
+       "color": "sci"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "test",
+       "type": "node",
+       "text": "Superposition",
+       "sub": "exact fit",
+       "glyph": "mirror",
+       "color": "mint"
+      },
+      {
+       "id": "shape",
+       "type": "node",
+       "text": "Shape only",
+       "sub": "not enough",
+       "color": "amber"
+      },
+      {
+       "id": "area",
+       "type": "node",
+       "text": "Equal area",
+       "sub": "not enough",
+       "glyph": "balance",
+       "color": "sun"
+      },
+      {
+       "id": "same",
+       "type": "label",
+       "text": "same shape + size",
+       "x": 350,
+       "y": 480,
+       "color": "ion"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Two figures are congruent when one can be placed exactly over the other.",
+    "L2": "They must have the same shape and the same size. We test this by superposition.",
+    "L3": "Here is a common myth: matching shape alone is enough, whatever the size.",
+    "L4": "That is not true. A smaller copy with the same shape cannot cover a larger one exactly.",
+    "L5": "Trace the first figure, then place the tracing on the second figure.",
+    "L6": "You may slide, turn or flip the tracing. These movements do not change congruence.",
+    "L7": "If every side and every corner lines up, the figures are congruent; matching parts are equal.",
+    "L8": "Now choose the test that decides whether two figures are congruent."
+   },
+   "narration": {
+    "L1": {
+     "text": "Two figures are congruent when one can be placed exactly over the other.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0.5,
+     "pauses": []
+    },
+    "L2": {
+     "text": "They must have the same shape and the same size. We test this by superposition.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.5,
+     "pauses": []
+    },
+    "L3": {
+     "text": "Here is a common myth: matching shape alone is enough, whatever the size.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0.5,
+     "pauses": []
+    },
+    "L4": {
+     "text": "That is not true. A smaller copy with the same shape cannot cover a larger one exactly.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.5,
+     "pauses": []
+    },
+    "L5": {
+     "text": "Trace the first figure, then place the tracing on the second figure.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0.5,
+     "pauses": []
+    },
+    "L6": {
+     "text": "You may slide, turn or flip the tracing. These movements do not change congruence.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.5,
+     "pauses": []
+    },
+    "L7": {
+     "text": "If every side and every corner lines up, the figures are congruent; matching parts are equal.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.5,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Now choose the test that decides whether two figures are congruent.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "fig1",
+        "fig2"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "fig1"
+      },
+      {
+       "at": 1.6,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "fig2"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "trace"
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "place",
+       "to": 1
+      },
+      {
+       "at": 1.6,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "fit",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "turn"
+      },
+      {
+       "at": 0.8,
+       "do": "move",
+       "dur": 1.2,
+       "target": "trace",
+       "x": 500,
+       "y": 330
+      },
+      {
+       "at": 2.2,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "fig2"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "same"
+      },
+      {
+       "at": 0.8,
+       "do": "focus",
+       "dur": 1,
+       "target": "test"
+      },
+      {
+       "at": 2,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "test"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "interactive",
+       "dur": 0.5
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which test decides whether two figures are congruent?",
+    "options": [
+     "test",
+     "shape",
+     "area"
+    ],
+    "answer": "test",
+    "src": "c7-maths-ch09-t01-i01"
+   }
+  },
+  "repairs": [
+   "glyph",
+   "glyph",
+   "string:fig2.sub",
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 39
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch09-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "fig1",
+       "op": "polygon",
+       "startMs": 300,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         90,
+         150
+        ],
+        [
+         190,
+         90
+        ],
+        [
+         270,
+         150
+        ],
+        [
+         235,
+         280
+        ],
+        [
+         120,
+         280
+        ]
+       ]
+      },
+      {
+       "id": "fig2",
+       "op": "polygon",
+       "startMs": 1500,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         500,
+         150
+        ],
+        [
+         600,
+         90
+        ],
+        [
+         680,
+         150
+        ],
+        [
+         645,
+         280
+        ],
+        [
+         530,
+         280
+        ]
+       ]
+      },
+      {
+       "id": "move",
+       "op": "arrow",
+       "startMs": 2700,
+       "endMs": 3800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        285,
+        185
+       ],
+       "to": [
+        485,
+        185
+       ]
+      },
+      {
+       "id": "overlap",
+       "op": "polygon",
+       "startMs": 4100,
+       "endMs": 5200,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         295,
+         150
+        ],
+        [
+         395,
+         90
+        ],
+        [
+         475,
+         150
+        ],
+        [
+         440,
+         280
+        ],
+        [
+         325,
+         280
+        ]
+       ]
+      },
+      {
+       "id": "exact",
+       "op": "highlight",
+       "startMs": 5300,
+       "endMs": 6100,
+       "ink": "good",
+       "weight": 2,
+       "target": "overlap",
+       "style": "pulse"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch09-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "sameShape",
+       "op": "text",
+       "startMs": 300,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        55
+       ],
+       "text": "same shape",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "sameSize",
+       "op": "text",
+       "startMs": 1200,
+       "endMs": 2000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        440
+       ],
+       "text": "same size",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "coverArrow",
+       "op": "arrow",
+       "startMs": 2200,
+       "endMs": 3200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        90
+       ],
+       "to": [
+        400,
+        350
+       ]
+      },
+      {
+       "id": "test",
+       "op": "text",
+       "startMs": 3400,
+       "endMs": 4500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        385
+       ],
+       "text": "superposition",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "trace",
+       "op": "ellipse",
+       "startMs": 4700,
+       "endMs": 5900,
+       "ink": "soft",
+       "weight": 1,
+       "c": [
+        400,
+        220
+       ],
+       "rx": 270,
+       "ry": 175
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch09-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "largeShape",
+       "op": "polygon",
+       "startMs": 300,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         90,
+         150
+        ],
+        [
+         200,
+         80
+        ],
+        [
+         300,
+         150
+        ],
+        [
+         260,
+         300
+        ],
+        [
+         125,
+         300
+        ]
+       ]
+      },
+      {
+       "id": "smallShape",
+       "op": "polygon",
+       "startMs": 1500,
+       "endMs": 2500,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         510,
+         175
+        ],
+        [
+         580,
+         130
+        ],
+        [
+         645,
+         175
+        ],
+        [
+         620,
+         265
+        ],
+        [
+         535,
+         265
+        ]
+       ]
+      },
+      {
+       "id": "shapeWord",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        55
+       ],
+       "text": "matching shape",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "sizeArrow",
+       "op": "arrow",
+       "startMs": 3800,
+       "endMs": 4700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        310,
+        210
+       ],
+       "to": [
+        490,
+        210
+       ]
+      },
+      {
+       "id": "myth",
+       "op": "text",
+       "startMs": 4900,
+       "endMs": 5600,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        430
+       ],
+       "text": "myth",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "cross",
+       "op": "line",
+       "startMs": 5500,
+       "endMs": 6100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        340,
+        405
+       ],
+       "to": [
+        460,
+        455
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch09-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "smallCopy",
+       "op": "polygon",
+       "startMs": 300,
+       "endMs": 1300,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         100,
+         175
+        ],
+        [
+         180,
+         115
+        ],
+        [
+         250,
+         175
+        ],
+        [
+         220,
+         275
+        ],
+        [
+         130,
+         275
+        ]
+       ]
+      },
+      {
+       "id": "largeCopy",
+       "op": "polygon",
+       "startMs": 1500,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         460,
+         130
+        ],
+        [
+         590,
+         55
+        ],
+        [
+         720,
+         130
+        ],
+        [
+         665,
+         345
+        ],
+        [
+         510,
+         345
+        ]
+       ]
+      },
+      {
+       "id": "coverMove",
+       "op": "arrow",
+       "startMs": 2900,
+       "endMs": 4000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        270,
+        220
+       ],
+       "to": [
+        445,
+        220
+       ]
+      },
+      {
+       "id": "gap",
+       "op": "line",
+       "startMs": 4200,
+       "endMs": 4900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        510,
+        345
+       ],
+       "to": [
+        665,
+        345
+       ]
+      },
+      {
+       "id": "notExact",
+       "op": "text",
+       "startMs": 5100,
+       "endMs": 6100,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        420
+       ],
+       "text": "not exact",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "noCover",
+       "op": "highlight",
+       "startMs": 6400,
+       "endMs": 7800,
+       "ink": "mark",
+       "weight": 2,
+       "target": "largeCopy",
+       "style": "pulse"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch09-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "paper",
+       "op": "polygon",
+       "startMs": 300,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         100,
+         140
+        ],
+        [
+         220,
+         90
+        ],
+        [
+         285,
+         190
+        ],
+        [
+         220,
+         300
+        ],
+        [
+         105,
+         270
+        ]
+       ]
+      },
+      {
+       "id": "traceLine",
+       "op": "stroke",
+       "startMs": 1500,
+       "endMs": 2500,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         100,
+         140
+        ],
+        [
+         220,
+         90
+        ],
+        [
+         285,
+         190
+        ],
+        [
+         220,
+         300
+        ],
+        [
+         105,
+         270
+        ],
+        [
+         100,
+         140
+        ]
+       ]
+      },
+      {
+       "id": "traceArrow",
+       "op": "arrow",
+       "startMs": 2700,
+       "endMs": 3700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        300,
+        200
+       ],
+       "to": [
+        475,
+        200
+       ]
+      },
+      {
+       "id": "target",
+       "op": "polygon",
+       "startMs": 3900,
+       "endMs": 5000,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         500,
+         140
+        ],
+        [
+         620,
+         90
+        ],
+        [
+         685,
+         190
+        ],
+        [
+         620,
+         300
+        ],
+        [
+         505,
+         270
+        ]
+       ]
+      },
+      {
+       "id": "place",
+       "op": "highlight",
+       "startMs": 5100,
+       "endMs": 5700,
+       "ink": "good",
+       "weight": 2,
+       "target": "target",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch09-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "slide",
+       "op": "arrow",
+       "startMs": 300,
+       "endMs": 1100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        100,
+        120
+       ],
+       "to": [
+        250,
+        120
+       ]
+      },
+      {
+       "id": "turn",
+       "op": "arrow",
+       "startMs": 1300,
+       "endMs": 2300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        120
+       ],
+       "to": [
+        400,
+        270
+       ],
+       "bend": 1
+      },
+      {
+       "id": "flip",
+       "op": "arrow",
+       "startMs": 2500,
+       "endMs": 3500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        680,
+        120
+       ],
+       "to": [
+        600,
+        270
+       ],
+       "bend": -1
+      },
+      {
+       "id": "slideWord",
+       "op": "text",
+       "startMs": 3700,
+       "endMs": 4300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        175,
+        185
+       ],
+       "text": "slide",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "turnWord",
+       "op": "text",
+       "startMs": 4400,
+       "endMs": 5000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        325
+       ],
+       "text": "turn",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "flipWord",
+       "op": "text",
+       "startMs": 5100,
+       "endMs": 5700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        620,
+        325
+       ],
+       "text": "flip",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "unchanged",
+       "op": "text",
+       "startMs": 5800,
+       "endMs": 6500,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        450
+       ],
+       "text": "congruence",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch09-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "quadA",
+       "op": "polygon",
+       "startMs": 300,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         90,
+         130
+        ],
+        [
+         210,
+         85
+        ],
+        [
+         285,
+         180
+        ],
+        [
+         235,
+         310
+        ],
+        [
+         110,
+         285
+        ]
+       ]
+      },
+      {
+       "id": "quadB",
+       "op": "polygon",
+       "startMs": 1500,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         500,
+         130
+        ],
+        [
+         620,
+         85
+        ],
+        [
+         695,
+         180
+        ],
+        [
+         645,
+         310
+        ],
+        [
+         520,
+         285
+        ]
+       ]
+      },
+      {
+       "id": "sideMatch",
+       "op": "line",
+       "startMs": 2800,
+       "endMs": 3600,
+       "ink": "accent",
+       "weight": 1,
+       "from": [
+        210,
+        85
+       ],
+       "to": [
+        620,
+        85
+       ],
+       "dashed": true
+      },
+      {
+       "id": "cornerMatch",
+       "op": "line",
+       "startMs": 3700,
+       "endMs": 4500,
+       "ink": "accent",
+       "weight": 1,
+       "from": [
+        90,
+        130
+       ],
+       "to": [
+        500,
+        130
+       ],
+       "dashed": true
+      },
+      {
+       "id": "allSides",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        370
+       ],
+       "text": "every side",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "allCorners",
+       "op": "text",
+       "startMs": 5600,
+       "endMs": 6500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        420
+       ],
+       "text": "every corner",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "equal",
+       "op": "text",
+       "startMs": 6600,
+       "endMs": 7400,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        465
+       ],
+       "text": "equal",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch09-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "testA",
+       "op": "polygon",
+       "startMs": 300,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         100,
+         150
+        ],
+        [
+         210,
+         90
+        ],
+        [
+         290,
+         180
+        ],
+        [
+         235,
+         300
+        ],
+        [
+         115,
+         275
+        ]
+       ]
+      },
+      {
+       "id": "testB",
+       "op": "polygon",
+       "startMs": 1500,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         510,
+         150
+        ],
+        [
+         620,
+         90
+        ],
+        [
+         700,
+         180
+        ],
+        [
+         645,
+         300
+        ],
+        [
+         525,
+         275
+        ]
+       ]
+      },
+      {
+       "id": "testArrow",
+       "op": "arrow",
+       "startMs": 2700,
+       "endMs": 3600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        305,
+        200
+       ],
+       "to": [
+        495,
+        200
+       ]
+      },
+      {
+       "id": "traceTest",
+       "op": "ellipse",
+       "startMs": 3700,
+       "endMs": 4500,
+       "ink": "soft",
+       "weight": 1,
+       "c": [
+        400,
+        220
+       ],
+       "rx": 285,
+       "ry": 160
+      },
+      {
+       "id": "decides",
+       "op": "text",
+       "startMs": 4600,
+       "endMs": 5281,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        440
+       ],
+       "text": "superposition",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1",
+   "key": "complete",
+   "prompt": "complete 8×8"
+  },
+  {
+   "itemId": "r2",
+   "key": "twin",
+   "prompt": "twin 7×7"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

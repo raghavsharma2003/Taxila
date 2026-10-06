@@ -1,0 +1,1694 @@
+{
+ "topicId": "c6-science-ch07-t01",
+ "title": "Hot, cold and temperature",
+ "chapter": "Temperature and its Measurement",
+ "subject": "science",
+ "class": 6,
+ "topicType": "T3",
+ "plan": {
+  "game": "instrument@1",
+  "hint": "thermo mode: clinical (35-42 °C, 0.1 steps) and laboratory thermometers"
+ },
+ "game": {
+  "archetype": "instrument@1",
+  "spec": {
+   "archetype": "instrument@1",
+   "skills": [
+    "c6-science-ch07-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "measured": "measured",
+    "precision": "precision",
+    "hold": "Hold steady",
+    "release": "Release",
+    "cut": "Tap to cut",
+    "set": "Set",
+    "am": "a.m.",
+    "pm": "p.m.",
+    "tapAt": "Tap when it reads",
+    "runDone": "Bench clear",
+    "offBy": "off by",
+    "exact": "EXACT",
+    "after": "after",
+    "minutes": "min",
+    "balanced": "BALANCED",
+    "heavy": "parcel heavier",
+    "light": "weights heavier"
+   },
+   "title": "Temperature Bench",
+   "rounds": [
+    {
+     "mode": "thermo",
+     "title": "Check body temperature",
+     "sub": "use the clinical thermometer",
+     "items": [
+      {
+       "target": 376,
+       "show": "C"
+      },
+      {
+       "target": 370,
+       "show": "C"
+      }
+     ],
+     "scaleMax": 420,
+     "minor": 4.2,
+     "tol": 2,
+     "speed": 1,
+     "targets": "c6-science-ch07-t01-m3"
+    },
+    {
+     "mode": "thermo",
+     "title": "Measure",
+     "sub": "read the Celsius scale",
+     "items": [
+      {
+       "target": 650,
+       "show": "C"
+      },
+      {
+       "target": 1000,
+       "show": "C"
+      }
+     ],
+     "scaleMax": 1000,
+     "minor": 10,
+     "tol": 10,
+     "speed": 0.9
+    }
+   ]
+  },
+  "repairs": [
+   "enum:show",
+   "enum:show",
+   "minor:too-dense",
+   "enum:show",
+   "enum:show",
+   "string:round.title"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c6-science-ch07-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Hot, cold and temperature",
+   "accent": "sci",
+   "targets": "c6-science-ch07-t01-m1",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Hot, cold and temperature"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Metal is colder than wood"
+      },
+      {
+       "id": "steel",
+       "type": "node",
+       "text": "Steel spoon",
+       "sub": "room temperature",
+       "color": "sci"
+      },
+      {
+       "id": "wood",
+       "type": "node",
+       "text": "Wooden spoon",
+       "sub": "room temperature",
+       "glyph": "tree",
+       "color": "mint"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "hand",
+       "type": "node",
+       "text": "Warm hand",
+       "sub": "about 37 °C",
+       "glyph": "hand",
+       "color": "sun"
+      },
+      {
+       "id": "steel2",
+       "type": "node",
+       "text": "Steel",
+       "sub": "same temperature",
+       "color": "sci"
+      },
+      {
+       "id": "wood2",
+       "type": "node",
+       "text": "Wood",
+       "sub": "same temperature",
+       "glyph": "tree",
+       "color": "mint"
+      },
+      {
+       "id": "heat1",
+       "type": "arrow",
+       "from": "hand",
+       "to": "steel2",
+       "text": "heat flows"
+      },
+      {
+       "id": "heat2",
+       "type": "arrow",
+       "from": "hand",
+       "to": "wood2",
+       "text": "heat flows"
+      },
+      {
+       "id": "fast",
+       "type": "label",
+       "text": "metal: faster heat flow",
+       "x": 300,
+       "y": 420,
+       "color": "amber"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "column",
+     "els": [
+      {
+       "id": "therm",
+       "type": "node",
+       "text": "Thermometer",
+       "glyph": "thermometer",
+       "color": "sci"
+      },
+      {
+       "id": "axis",
+       "type": "axis",
+       "min": 0,
+       "max": 100,
+       "step": 10,
+       "unit": "°C",
+       "scale": "linear",
+       "y": 430
+      },
+      {
+       "id": "freeze",
+       "type": "mark",
+       "axis": "axis",
+       "value": 0,
+       "text": "0 °C",
+       "color": "ion"
+      },
+      {
+       "id": "body",
+       "type": "mark",
+       "axis": "axis",
+       "value": 37,
+       "text": "37 °C",
+       "color": "sun"
+      },
+      {
+       "id": "boil",
+       "type": "mark",
+       "axis": "axis",
+       "value": 100,
+       "text": "100 °C",
+       "color": "amber"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Touch can mislead us about how hot or cold something is.",
+    "L2": "A hand from cold water feels lukewarm water as warm, while a warm hand feels the same water as cool.",
+    "L3": "So we use a thermometer to measure temperature, usually in degrees Celsius, or °C.",
+    "L4": "Steel and wood spoons in the same room can be at the same temperature.",
+    "L5": "Steel feels colder because metal takes heat away from our hand faster than wood.",
+    "L6": "Temperature tells how hot something is. Heat is energy flowing from a hotter object to a colder one, and they are not the same.",
+    "L7": "On the Celsius scale, water freezes at 0 °C, normal body temperature is about 37 °C, and water boils at about 100 °C.",
+    "L8": "Now put these Celsius temperatures in order from lowest to highest."
+   },
+   "narration": {
+    "L1": {
+     "text": "Touch can mislead us about how hot or cold something is.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "A hand from cold water feels lukewarm water as warm, while a warm hand feels the same water as cool.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "So we use a thermometer to measure temperature, usually in degrees Celsius, or °C.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "Steel and wood spoons in the same room can be at the same temperature.",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "Steel feels colder because metal takes heat away from our hand faster than wood.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Temperature tells how hot something is. Heat is energy flowing from a hotter object to a colder one, and they are not the same.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "On the Celsius scale, water freezes at 0 °C, normal body temperature is about 37 °C, and water boils at about 100 °C.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Now put these Celsius temperatures in order from lowest to highest.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.3,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "title"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "myth"
+      },
+      {
+       "at": 1,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "therm"
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.7,
+       "target": "axis"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "steel2",
+        "wood2"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": [
+        "steel2",
+        "wood2"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "hand"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "heat1",
+        "heat2"
+       ]
+      },
+      {
+       "at": 1.4,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "heat1",
+       "to": 1
+      },
+      {
+       "at": 2.2,
+       "do": "show",
+       "dur": 0.6,
+       "target": "fast"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "hand"
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": [
+        "heat1",
+        "heat2"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "freeze",
+        "body",
+        "boil"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "focus",
+       "dur": 1,
+       "target": "axis"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "order",
+    "prompt": "Tap these temperatures from lowest to highest.",
+    "items": [
+     "freeze",
+     "body",
+     "boil"
+    ],
+    "src": "c6-science-ch07-t01-i10"
+   }
+  },
+  "repairs": [
+   "glyph",
+   "glyph",
+   "string:therm.sub"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 36
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch07-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "hand",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        180,
+        220
+       ],
+       "r": 55
+      },
+      {
+       "id": "obj",
+       "op": "rect",
+       "startMs": 500,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        500,
+        180
+       ],
+       "w": 130,
+       "h": 100,
+       "round": 12
+      },
+      {
+       "id": "touch",
+       "op": "arrow",
+       "startMs": 1200,
+       "endMs": 2100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        240,
+        220
+       ],
+       "to": [
+        500,
+        230
+       ]
+      },
+      {
+       "id": "hot",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 2700,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        555,
+        150
+       ],
+       "text": "hot",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "cold",
+       "op": "text",
+       "startMs": 2800,
+       "endMs": 3300,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        555,
+        330
+       ],
+       "text": "cold",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "mislead",
+       "op": "text",
+       "startMs": 3700,
+       "endMs": 4500,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        400,
+        420
+       ],
+       "text": "mislead",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "hl",
+       "op": "highlight",
+       "startMs": 4500,
+       "endMs": 5100,
+       "ink": "accent",
+       "weight": 2,
+       "target": "mislead",
+       "style": "underline"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch07-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9111,
+     "ops": [
+      {
+       "id": "coldhand",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        130,
+        170
+       ],
+       "r": 45
+      },
+      {
+       "id": "warmhand",
+       "op": "circle",
+       "startMs": 300,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        670,
+        170
+       ],
+       "r": 45
+      },
+      {
+       "id": "water",
+       "op": "ellipse",
+       "startMs": 700,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        300
+       ],
+       "rx": 150,
+       "ry": 55
+      },
+      {
+       "id": "coldlabel",
+       "op": "label",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        100,
+        250
+       ],
+       "text": "cold water",
+       "to": [
+        130,
+        200
+       ]
+      },
+      {
+       "id": "warmlabel",
+       "op": "label",
+       "startMs": 1900,
+       "endMs": 2600,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        635,
+        250
+       ],
+       "text": "warm hand",
+       "to": [
+        670,
+        200
+       ]
+      },
+      {
+       "id": "arrow1",
+       "op": "arrow",
+       "startMs": 2700,
+       "endMs": 3600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        170,
+        180
+       ],
+       "to": [
+        350,
+        285
+       ]
+      },
+      {
+       "id": "arrow2",
+       "op": "arrow",
+       "startMs": 3500,
+       "endMs": 4400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        630,
+        180
+       ],
+       "to": [
+        450,
+        285
+       ]
+      },
+      {
+       "id": "warmfeel",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5300,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        245,
+        390
+       ],
+       "text": "warm",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "coolfeel",
+       "op": "text",
+       "startMs": 5300,
+       "endMs": 5900,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        555,
+        390
+       ],
+       "text": "cool",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "same",
+       "op": "text",
+       "startMs": 6500,
+       "endMs": 7300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        455
+       ],
+       "text": "same water",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "contrast",
+       "op": "arrow",
+       "startMs": 7500,
+       "endMs": 8300,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        300,
+        390
+       ],
+       "to": [
+        500,
+        390
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch07-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "thermo",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        345,
+        80
+       ],
+       "w": 110,
+       "h": 300,
+       "round": 35
+      },
+      {
+       "id": "bulb",
+       "op": "circle",
+       "startMs": 500,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        390
+       ],
+       "r": 55
+      },
+      {
+       "id": "scale",
+       "op": "line",
+       "startMs": 1000,
+       "endMs": 1500,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        375,
+        130
+       ],
+       "to": [
+        375,
+        350
+       ]
+      },
+      {
+       "id": "mercury",
+       "op": "rect",
+       "startMs": 1400,
+       "endMs": 2100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        385,
+        250
+       ],
+       "w": 30,
+       "h": 105,
+       "fill": "accent",
+       "round": 8
+      },
+      {
+       "id": "measure",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        55
+       ],
+       "text": "thermometer",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "celsius",
+       "op": "text",
+       "startMs": 3100,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        520,
+        250
+       ],
+       "text": "degrees Celsius",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "degree",
+       "op": "text",
+       "startMs": 4200,
+       "endMs": 4900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        520,
+        310
+       ],
+       "text": "°C",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch07-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "room",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        80,
+        80
+       ],
+       "w": 640,
+       "h": 330,
+       "round": 10
+      },
+      {
+       "id": "steel",
+       "op": "rect",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        210,
+        170
+       ],
+       "w": 55,
+       "h": 190,
+       "round": 8
+      },
+      {
+       "id": "wood",
+       "op": "rect",
+       "startMs": 1000,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        535,
+        170
+       ],
+       "w": 55,
+       "h": 190,
+       "round": 8
+      },
+      {
+       "id": "steellabel",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2300,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        238,
+        400
+       ],
+       "text": "steel",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "woodlabel",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        563,
+        400
+       ],
+       "text": "wood",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "same",
+       "op": "text",
+       "startMs": 2800,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        120
+       ],
+       "text": "same room",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "temp",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4900,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        400,
+        455
+       ],
+       "text": "same temperature",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch07-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "hand",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        100
+       ],
+       "r": 42
+      },
+      {
+       "id": "steel",
+       "op": "rect",
+       "startMs": 500,
+       "endMs": 1100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        220,
+        290
+       ],
+       "w": 75,
+       "h": 110,
+       "round": 8
+      },
+      {
+       "id": "wood",
+       "op": "rect",
+       "startMs": 800,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        505,
+        290
+       ],
+       "w": 75,
+       "h": 110,
+       "round": 8
+      },
+      {
+       "id": "heatsteel",
+       "op": "arrow",
+       "startMs": 1500,
+       "endMs": 2400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        380,
+        135
+       ],
+       "to": [
+        260,
+        285
+       ]
+      },
+      {
+       "id": "heatwood",
+       "op": "arrow",
+       "startMs": 2100,
+       "endMs": 3000,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        420,
+        135
+       ],
+       "to": [
+        540,
+        285
+       ]
+      },
+      {
+       "id": "fast",
+       "op": "text",
+       "startMs": 3200,
+       "endMs": 3800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        260,
+        250
+       ],
+       "text": "faster",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "woodlabel",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        542,
+        440
+       ],
+       "text": "wood",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "cold",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5700,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        400,
+        470
+       ],
+       "text": "steel feels colder",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch07-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 10813,
+     "ops": [
+      {
+       "id": "tempbox",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        70,
+        80
+       ],
+       "w": 300,
+       "h": 130,
+       "round": 10
+      },
+      {
+       "id": "temp",
+       "op": "text",
+       "startMs": 800,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        220,
+        135
+       ],
+       "text": "temperature",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "hot",
+       "op": "circle",
+       "startMs": 1700,
+       "endMs": 2400,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        170,
+        330
+       ],
+       "r": 55,
+       "fill": "accent"
+      },
+      {
+       "id": "cold",
+       "op": "circle",
+       "startMs": 1900,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        630,
+        330
+       ],
+       "r": 55
+      },
+      {
+       "id": "heat",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3300,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        400,
+        260
+       ],
+       "text": "heat",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "flow",
+       "op": "arrow",
+       "startMs": 3500,
+       "endMs": 4700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        240,
+        330
+       ],
+       "to": [
+        560,
+        330
+       ]
+      },
+      {
+       "id": "hotlabel",
+       "op": "text",
+       "startMs": 4800,
+       "endMs": 5400,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        170,
+        420
+       ],
+       "text": "hotter",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "coldlabel",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 5600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        630,
+        420
+       ],
+       "text": "colder",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "not",
+       "op": "text",
+       "startMs": 7000,
+       "endMs": 7900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        465
+       ],
+       "text": "not the same",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch07-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 10387,
+     "ops": [
+      {
+       "id": "scale",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        120,
+        270
+       ],
+       "to": [
+        680,
+        270
+       ]
+      },
+      {
+       "id": "zero",
+       "op": "line",
+       "startMs": 700,
+       "endMs": 1200,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        180,
+        250
+       ],
+       "to": [
+        180,
+        290
+       ]
+      },
+      {
+       "id": "thirtyseven",
+       "op": "line",
+       "startMs": 1000,
+       "endMs": 1500,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        400,
+        250
+       ],
+       "to": [
+        400,
+        290
+       ]
+      },
+      {
+       "id": "hundred",
+       "op": "line",
+       "startMs": 1300,
+       "endMs": 1800,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        620,
+        250
+       ],
+       "to": [
+        620,
+        290
+       ]
+      },
+      {
+       "id": "freeze",
+       "op": "text",
+       "startMs": 2000,
+       "endMs": 2600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        180,
+        220
+       ],
+       "text": "0 °C",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "body",
+       "op": "text",
+       "startMs": 2800,
+       "endMs": 3400,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        400,
+        220
+       ],
+       "text": "37 °C",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "boil",
+       "op": "text",
+       "startMs": 3600,
+       "endMs": 4300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        620,
+        220
+       ],
+       "text": "100 °C",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "freezelabel",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        350
+       ],
+       "text": "freezes",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "bodylabel",
+       "op": "text",
+       "startMs": 5300,
+       "endMs": 5800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        350
+       ],
+       "text": "body",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "boillabel",
+       "op": "text",
+       "startMs": 5900,
+       "endMs": 6500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        620,
+        350
+       ],
+       "text": "boils",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "about",
+       "op": "text",
+       "startMs": 7000,
+       "endMs": 7500,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        400,
+        425
+       ],
+       "text": "about",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch07-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "title",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        90
+       ],
+       "text": "Celsius temperatures",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "low",
+       "op": "text",
+       "startMs": 1100,
+       "endMs": 1700,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        160,
+        230
+       ],
+       "text": "lowest",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "high",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2100,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        640,
+        230
+       ],
+       "text": "highest",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "arrow",
+       "op": "arrow",
+       "startMs": 2300,
+       "endMs": 3400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        220,
+        300
+       ],
+       "to": [
+        580,
+        300
+       ]
+      },
+      {
+       "id": "order",
+       "op": "text",
+       "startMs": 3600,
+       "endMs": 4500,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        400,
+        390
+       ],
+       "text": "lowest to highest",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "376 tenths C",
+   "prompt": "thermo: 37.6 °C"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "370 tenths C",
+   "prompt": "thermo: 37 °C"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "650 tenths C",
+   "prompt": "thermo: 65 °C"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "1000 tenths C",
+   "prompt": "thermo: 100 °C"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

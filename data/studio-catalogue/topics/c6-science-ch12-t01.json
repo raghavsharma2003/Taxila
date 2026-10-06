@@ -1,0 +1,1771 @@
+{
+ "topicId": "c6-science-ch12-t01",
+ "title": "Stars and constellations",
+ "chapter": "Beyond Earth",
+ "subject": "science",
+ "class": 6,
+ "topicType": "T3",
+ "plan": {
+  "game": "sky-lab@1",
+  "hint": "stars mode: still (Pole Star), pointer and join (Saptarishi, Cassiopeia)"
+ },
+ "game": {
+  "archetype": "sky-lab@1",
+  "spec": {
+   "archetype": "sky-lab@1",
+   "skills": [
+    "c6-science-ch12-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "done": "Right",
+    "lock": "LOCK",
+    "spin": "Drag to spin the Earth",
+    "sun": "Sun",
+    "noon": "noon",
+    "midnight": "midnight",
+    "sunrise": "sunrise",
+    "sunset": "sunset",
+    "localTime": "time in",
+    "north": "North",
+    "dayLength": "day",
+    "sunHigh": "noon Sun",
+    "distance": "Earth–Sun",
+    "orbit": "Drag the Earth along its orbit",
+    "longest": "longest day",
+    "shortest": "shortest day",
+    "equal": "equal day and night",
+    "summerNorth": "summer in India",
+    "summerSouth": "summer in Australia",
+    "solar": "solar eclipse",
+    "lunar": "lunar eclipse",
+    "moon": "Moon",
+    "date": "date",
+    "night": "night",
+    "stillStar": "Tap the star that does not move",
+    "pointer": "Drag through the pointer stars",
+    "join": "Join the stars",
+    "polaris": "Pole Star",
+    "wrongWay": "the Earth spins west to east",
+    "runDone": "Sky closed",
+    "hours": "h",
+    "months": "Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec",
+    "saptarishi": "Saptarishi",
+    "cassiopeia": "Cassiopeia",
+    "new": "new moon",
+    "waxingCrescent": "waxing crescent",
+    "firstQuarter": "first quarter",
+    "waxingGibbous": "waxing gibbous",
+    "full": "full moon",
+    "waningGibbous": "waning gibbous",
+    "lastQuarter": "last quarter",
+    "waningCrescent": "waning crescent",
+    "fromEarth": "seen from Earth",
+    "place": "Drag the Moon round its orbit"
+   },
+   "title": "Stars and Constellations",
+   "rounds": [
+    {
+     "mode": "stars",
+     "title": "Find the still star",
+     "sub": "Watch the night sky turn",
+     "task": "still",
+     "shape": "saptarishi",
+     "targets": "c6-science-ch12-t01-m3"
+    },
+    {
+     "mode": "stars",
+     "title": "Point the way north",
+     "sub": "Use the pattern in the sky",
+     "task": "pointer",
+     "shape": "saptarishi"
+    },
+    {
+     "mode": "stars",
+     "title": "Join a constellation",
+     "sub": "Make the stars form a pattern",
+     "task": "join",
+     "shape": "cassiopeia"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c6-science-ch12-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Stars and constellations",
+   "accent": "sci",
+   "targets": "c6-science-ch12-t01-m4",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Stars and constellations"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "A shooting star is a real star falling"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "sunstar",
+       "type": "node",
+       "text": "The Sun",
+       "sub": "nearest star",
+       "glyph": "sun",
+       "color": "sun"
+      },
+      {
+       "id": "farstar",
+       "type": "node",
+       "text": "Other stars",
+       "sub": "very far away",
+       "glyph": "star",
+       "color": "ion"
+      },
+      {
+       "id": "hotgas",
+       "type": "label",
+       "text": "Huge hot glowing gas",
+       "x": 240,
+       "y": 430,
+       "color": "sci"
+      },
+      {
+       "id": "ownlight",
+       "type": "label",
+       "text": "Makes its own light",
+       "x": 560,
+       "y": 430,
+       "color": "amber"
+      },
+      {
+       "id": "nearfar",
+       "type": "arrow",
+       "from": "sunstar",
+       "to": "farstar",
+       "text": "farther"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "free",
+     "els": [
+      {
+       "id": "const",
+       "type": "title",
+       "text": "A pattern seen from Earth"
+      },
+      {
+       "id": "s1star",
+       "type": "glyph",
+       "name": "star",
+       "x": 180,
+       "y": 270,
+       "size": 90,
+       "color": "sun"
+      },
+      {
+       "id": "s2star",
+       "type": "glyph",
+       "name": "star",
+       "x": 300,
+       "y": 230,
+       "size": 90,
+       "color": "sun"
+      },
+      {
+       "id": "s3star",
+       "type": "glyph",
+       "name": "star",
+       "x": 430,
+       "y": 290,
+       "size": 90,
+       "color": "sun"
+      },
+      {
+       "id": "s4star",
+       "type": "glyph",
+       "name": "star",
+       "x": 560,
+       "y": 220,
+       "size": 90,
+       "color": "sun"
+      },
+      {
+       "id": "pattern",
+       "type": "label",
+       "text": "Constellation",
+       "x": 350,
+       "y": 470,
+       "color": "sci"
+      },
+      {
+       "id": "sap",
+       "type": "node",
+       "text": "Saptarishi",
+       "sub": "Ursa Major",
+       "glyph": "star",
+       "color": "ion"
+      },
+      {
+       "id": "ori",
+       "type": "node",
+       "text": "Orion",
+       "sub": "Mriga",
+       "glyph": "star",
+       "color": "mint"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "earth",
+       "type": "node",
+       "text": "Earth spins",
+       "sub": "west to east",
+       "glyph": "earth",
+       "color": "sci"
+      },
+      {
+       "id": "east",
+       "type": "label",
+       "text": "East",
+       "x": 180,
+       "y": 450,
+       "color": "mint"
+      },
+      {
+       "id": "west",
+       "type": "label",
+       "text": "West",
+       "x": 700,
+       "y": 450,
+       "color": "amber"
+      },
+      {
+       "id": "move",
+       "type": "arrow",
+       "from": "east",
+       "to": "west"
+      },
+      {
+       "id": "axis",
+       "type": "node",
+       "text": "Pole Star",
+       "sub": "nearly fixed",
+       "glyph": "star",
+       "color": "sun"
+      }
+     ]
+    },
+    {
+     "id": "s5",
+     "layout": "split",
+     "els": [
+      {
+       "id": "pointers",
+       "type": "node",
+       "text": "Pointer stars",
+       "sub": "in Saptarishi",
+       "glyph": "compass",
+       "color": "mint"
+      },
+      {
+       "id": "pole",
+       "type": "node",
+       "text": "Pole Star",
+       "sub": "finds north",
+       "glyph": "star",
+       "color": "sun"
+      },
+      {
+       "id": "north",
+       "type": "label",
+       "text": "North",
+       "x": 650,
+       "y": 390,
+       "color": "sci"
+      },
+      {
+       "id": "point",
+       "type": "arrow",
+       "from": "pointers",
+       "to": "pole",
+       "text": "points to"
+      },
+      {
+       "id": "shoot",
+       "type": "node",
+       "text": "Meteor",
+       "sub": "rock or dust",
+       "glyph": "lightning",
+       "color": "amber"
+      },
+      {
+       "id": "air",
+       "type": "label",
+       "text": "burns in air",
+       "x": 650,
+       "y": 480,
+       "color": "amber"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Stars are huge, very hot balls of glowing gas that make their own light.",
+    "L2": "The Sun is the star nearest to us, while other stars look tiny because they are extremely far away.",
+    "L3": "A constellation is a group of stars forming a pattern as seen from Earth, such as Saptarishi or Orion.",
+    "L4": "Stars are in the sky during the day too, but scattered sunlight makes the sky too bright to see them.",
+    "L5": "Stars seem to move from east to west because Earth spins from west to east.",
+    "L6": "Saptarishi's two pointer stars help us find the Pole Star, which shows the direction north.",
+    "L7": "A shooting star is not a star. It is a small piece of rock or dust burning in Earth's air.",
+    "L8": "Now choose the star that helps travellers find north."
+   },
+   "narration": {
+    "L1": {
+     "text": "Stars are huge, very hot balls of glowing gas that make their own light.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L2": {
+     "text": "The Sun is the star nearest to us, while other stars look tiny because they are extremely far away.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L3": {
+     "text": "A constellation is a group of stars forming a pattern as seen from Earth, such as Saptarishi or Orion.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L4": {
+     "text": "Stars are in the sky during the day too, but scattered sunlight makes the sky too bright to see them.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L5": {
+     "text": "Stars seem to move from east to west because Earth spins from west to east.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Saptarishi's two pointer stars help us find the Pole Star, which shows the direction north.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L7": {
+     "text": "A shooting star is not a star. It is a small piece of rock or dust burning in Earth's air.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Now choose the star that helps travellers find north.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "sunstar"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.6,
+       "target": "hotgas"
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.6,
+       "target": "ownlight"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "farstar"
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "nearfar",
+       "to": 1
+      },
+      {
+       "at": 1.5,
+       "do": "highlight",
+       "dur": 1,
+       "target": "farstar"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "const"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "s1star",
+        "s2star",
+        "s3star",
+        "s4star"
+       ]
+      },
+      {
+       "at": 1.4,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "pattern",
+        "sap",
+        "ori"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "pattern"
+      },
+      {
+       "at": 1.2,
+       "do": "hide",
+       "dur": 0.5,
+       "target": "s1star"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "earth"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.6,
+       "target": [
+        "east",
+        "west"
+       ]
+      },
+      {
+       "at": 1.2,
+       "do": "flow",
+       "dur": 1,
+       "target": "move",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s5",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "pointers"
+      },
+      {
+       "at": 0.7,
+       "do": "show",
+       "dur": 0.7,
+       "target": "pole"
+      },
+      {
+       "at": 1.3,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "point",
+       "to": 1
+      },
+      {
+       "at": 2.1,
+       "do": "show",
+       "dur": 0.6,
+       "target": "north"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "myth"
+      },
+      {
+       "at": 0.8,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s5",
+     "cues": [
+      {
+       "at": 0,
+       "do": "interactive",
+       "dur": 0.5
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which star helps travellers find north?",
+    "options": [
+     "pole",
+     "shoot"
+    ],
+    "answer": "pole",
+    "src": "c6-science-ch12-t01-i06"
+   }
+  },
+  "repairs": [
+   "string:move.text"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 40
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch12-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "star1",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 1200,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        220,
+        210
+       ],
+       "r": 75,
+       "fill": "accent"
+      },
+      {
+       "id": "glow1",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "soft",
+       "weight": 1,
+       "c": [
+        220,
+        210
+       ],
+       "r": 105
+      },
+      {
+       "id": "gas",
+       "op": "label",
+       "startMs": 1500,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        220,
+        325
+       ],
+       "text": "glowing gas"
+      },
+      {
+       "id": "hot",
+       "op": "label",
+       "startMs": 2500,
+       "endMs": 3400,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        350,
+        150
+       ],
+       "text": "very hot"
+      },
+      {
+       "id": "light",
+       "op": "arrow",
+       "startMs": 3500,
+       "endMs": 4300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        300,
+        210
+       ],
+       "to": [
+        470,
+        210
+       ]
+      },
+      {
+       "id": "own",
+       "op": "label",
+       "startMs": 4300,
+       "endMs": 5300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        480,
+        195
+       ],
+       "text": "own light"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch12-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "sun2",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 1100,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        150,
+        220
+       ],
+       "r": 85,
+       "fill": "accent"
+      },
+      {
+       "id": "sunlabel",
+       "op": "text",
+       "startMs": 1100,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        150,
+        335
+       ],
+       "text": "Sun",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "near",
+       "op": "label",
+       "startMs": 1700,
+       "endMs": 2600,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        260,
+        180
+       ],
+       "text": "nearest",
+       "to": [
+        220,
+        220
+       ]
+      },
+      {
+       "id": "farstar",
+       "op": "circle",
+       "startMs": 2800,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        650,
+        220
+       ],
+       "r": 10,
+       "fill": "chalk"
+      },
+      {
+       "id": "farlabel",
+       "op": "label",
+       "startMs": 3400,
+       "endMs": 4300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        560,
+        170
+       ],
+       "text": "far away",
+       "to": [
+        650,
+        220
+       ]
+      },
+      {
+       "id": "tiny",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 5000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        650,
+        275
+       ],
+       "text": "tiny",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "distance",
+       "op": "line",
+       "startMs": 5100,
+       "endMs": 6200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        235,
+        220
+       ],
+       "to": [
+        630,
+        220
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch12-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "s1",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 300,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        180,
+        170
+       ],
+       "r": 7
+      },
+      {
+       "id": "s2",
+       "op": "circle",
+       "startMs": 300,
+       "endMs": 600,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        250,
+        120
+       ],
+       "r": 7
+      },
+      {
+       "id": "s3",
+       "op": "circle",
+       "startMs": 600,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        330,
+        175
+       ],
+       "r": 7
+      },
+      {
+       "id": "s4",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        410,
+        120
+       ],
+       "r": 7
+      },
+      {
+       "id": "pattern",
+       "op": "line",
+       "startMs": 1300,
+       "endMs": 1700,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        180,
+        170
+       ],
+       "to": [
+        250,
+        120
+       ]
+      },
+      {
+       "id": "pattern2",
+       "op": "line",
+       "startMs": 1700,
+       "endMs": 2100,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        250,
+        120
+       ],
+       "to": [
+        330,
+        175
+       ]
+      },
+      {
+       "id": "pattern3",
+       "op": "line",
+       "startMs": 2100,
+       "endMs": 2500,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        330,
+        175
+       ],
+       "to": [
+        410,
+        120
+       ]
+      },
+      {
+       "id": "const",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        295,
+        260
+       ],
+       "text": "constellation",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "sap",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 5000,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        200,
+        370
+       ],
+       "text": "Saptarishi",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "ori",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 5900,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        570,
+        370
+       ],
+       "text": "Orion",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch12-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9111,
+     "ops": [
+      {
+       "id": "sky",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        80,
+        80
+       ],
+       "w": 640,
+       "h": 300,
+       "fill": "soft"
+      },
+      {
+       "id": "day",
+       "op": "text",
+       "startMs": 1100,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        125
+       ],
+       "text": "day",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "star4",
+       "op": "circle",
+       "startMs": 1800,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        200,
+        230
+       ],
+       "r": 9
+      },
+      {
+       "id": "star5",
+       "op": "circle",
+       "startMs": 2300,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        600,
+        270
+       ],
+       "r": 9
+      },
+      {
+       "id": "sun4",
+       "op": "circle",
+       "startMs": 2900,
+       "endMs": 3600,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        210
+       ],
+       "r": 45,
+       "fill": "accent"
+      },
+      {
+       "id": "sunlight",
+       "op": "arrow",
+       "startMs": 3700,
+       "endMs": 4500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        370,
+        210
+       ],
+       "to": [
+        215,
+        230
+       ]
+      },
+      {
+       "id": "scatter",
+       "op": "label",
+       "startMs": 4600,
+       "endMs": 5900,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        210,
+        315
+       ],
+       "text": "scattered sunlight",
+       "to": [
+        280,
+        245
+       ]
+      },
+      {
+       "id": "bright",
+       "op": "text",
+       "startMs": 6500,
+       "endMs": 7400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        440
+       ],
+       "text": "too bright",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch12-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "earth5",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        250
+       ],
+       "r": 90
+      },
+      {
+       "id": "west",
+       "op": "text",
+       "startMs": 1000,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        105,
+        250
+       ],
+       "text": "west",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "east",
+       "op": "text",
+       "startMs": 1600,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        695,
+        250
+       ],
+       "text": "east",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "spin",
+       "op": "arrow",
+       "startMs": 2300,
+       "endMs": 3500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        335,
+        170
+       ],
+       "to": [
+        465,
+        170
+       ],
+       "bend": 1
+      },
+      {
+       "id": "spinlabel",
+       "op": "label",
+       "startMs": 3500,
+       "endMs": 4600,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        110
+       ],
+       "text": "west to east",
+       "to": [
+        400,
+        170
+       ]
+      },
+      {
+       "id": "move",
+       "op": "arrow",
+       "startMs": 4700,
+       "endMs": 5900,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        600,
+        390
+       ],
+       "to": [
+        200,
+        390
+       ]
+      },
+      {
+       "id": "movelabel",
+       "op": "label",
+       "startMs": 5900,
+       "endMs": 6800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        430
+       ],
+       "text": "east to west",
+       "to": [
+        400,
+        390
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch12-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "ladle",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        280,
+        220
+       ],
+       "rx": 120,
+       "ry": 75
+      },
+      {
+       "id": "p1",
+       "op": "circle",
+       "startMs": 800,
+       "endMs": 1100,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        240,
+        190
+       ],
+       "r": 10
+      },
+      {
+       "id": "p2",
+       "op": "circle",
+       "startMs": 1100,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        300,
+        190
+       ],
+       "r": 10
+      },
+      {
+       "id": "pointer",
+       "op": "line",
+       "startMs": 1500,
+       "endMs": 2100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        240,
+        190
+       ],
+       "to": [
+        300,
+        190
+       ]
+      },
+      {
+       "id": "follow",
+       "op": "line",
+       "startMs": 2200,
+       "endMs": 3300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        300,
+        190
+       ],
+       "to": [
+        600,
+        190
+       ]
+      },
+      {
+       "id": "pole",
+       "op": "circle",
+       "startMs": 3400,
+       "endMs": 3900,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        620,
+        190
+       ],
+       "r": 16
+      },
+      {
+       "id": "sapt",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 4900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        280,
+        340
+       ],
+       "text": "Saptarishi",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "polestar",
+       "op": "text",
+       "startMs": 4900,
+       "endMs": 5900,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        620,
+        240
+       ],
+       "text": "Pole Star",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "north",
+       "op": "arrow",
+       "startMs": 5900,
+       "endMs": 6700,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        620,
+        210
+       ],
+       "to": [
+        620,
+        410
+       ]
+      },
+      {
+       "id": "northlabel",
+       "op": "text",
+       "startMs": 6700,
+       "endMs": 6983,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        620,
+        450
+       ],
+       "text": "north",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch12-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9111,
+     "ops": [
+      {
+       "id": "earth7",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        400
+       ],
+       "rx": 300,
+       "ry": 45
+      },
+      {
+       "id": "air",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        345
+       ],
+       "text": "Earth's air",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "rock",
+       "op": "polygon",
+       "startMs": 1500,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         210,
+         120
+        ],
+        [
+         235,
+         105
+        ],
+        [
+         255,
+         130
+        ],
+        [
+         230,
+         150
+        ]
+       ]
+      },
+      {
+       "id": "dust",
+       "op": "circle",
+       "startMs": 2100,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        300,
+        165
+       ],
+       "r": 9
+      },
+      {
+       "id": "fall",
+       "op": "arrow",
+       "startMs": 2600,
+       "endMs": 3700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        230,
+        145
+       ],
+       "to": [
+        380,
+        350
+       ]
+      },
+      {
+       "id": "burn",
+       "op": "ellipse",
+       "startMs": 3800,
+       "endMs": 4500,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        380,
+        350
+       ],
+       "rx": 28,
+       "ry": 45,
+       "fill": "accent"
+      },
+      {
+       "id": "shooting",
+       "op": "text",
+       "startMs": 4600,
+       "endMs": 5700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        540,
+        150
+       ],
+       "text": "shooting star",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "notstar",
+       "op": "text",
+       "startMs": 5700,
+       "endMs": 6600,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        540,
+        205
+       ],
+       "text": "not a star",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "rockdust",
+       "op": "text",
+       "startMs": 7000,
+       "endMs": 8000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        465
+       ],
+       "text": "rock or dust",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch12-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 4430,
+     "ops": [
+      {
+       "id": "question",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        90
+       ],
+       "text": "find north",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "pole8",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1400,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        620,
+        190
+       ],
+       "r": 18
+      },
+      {
+       "id": "pole8label",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 2300,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        620,
+        245
+       ],
+       "text": "Pole Star",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "north8",
+       "op": "arrow",
+       "startMs": 2400,
+       "endMs": 3400,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        620,
+        215
+       ],
+       "to": [
+        620,
+        390
+       ]
+      },
+      {
+       "id": "north8label",
+       "op": "text",
+       "startMs": 3400,
+       "endMs": 4100,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        620,
+        435
+       ],
+       "text": "north",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1",
+   "key": "polaris",
+   "prompt": "Watch the night sky turn"
+  },
+  {
+   "itemId": "r2",
+   "key": "polaris",
+   "prompt": "Use the pattern in the sky"
+  },
+  {
+   "itemId": "r3",
+   "key": "caph-schedar,schedar-gammacas,gammacas-ruchbah,ruchbah-segin",
+   "prompt": "Make the stars form a pattern"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

@@ -1,0 +1,1679 @@
+{
+ "topicId": "c6-maths-ch04-t01",
+ "title": "Collecting and organising data",
+ "chapter": "Data Handling and Presentation",
+ "subject": "maths",
+ "class": 6,
+ "topicType": "T4",
+ "plan": {
+  "game": "pictograph@1",
+  "hint": "tally then picto modes"
+ },
+ "game": {
+  "archetype": "pictograph@1",
+  "spec": {
+   "archetype": "pictograph@1",
+   "skills": [
+    "c6-maths-ch04-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "right": "right",
+    "coach": "Tap a counter for each answer",
+    "runDone": "Data done",
+    "key": "each symbol =",
+    "half": "½",
+    "check": "CHECK",
+    "trueW": "TRUE",
+    "falseW": "FALSE",
+    "total": "Total"
+   },
+   "title": "Data Desk",
+   "rounds": [
+    {
+     "mode": "tally",
+     "title": "Fruit survey",
+     "sub": "count each fruit and check the total",
+     "cats": [
+      {
+       "label": "Mango",
+       "glyph": "apple",
+       "count": 5
+      },
+      {
+       "label": "Apple",
+       "glyph": "apple",
+       "count": 2
+      },
+      {
+       "label": "Banana",
+       "glyph": "apple",
+       "count": 2
+      },
+      {
+       "label": "Guava",
+       "glyph": "apple",
+       "count": 1
+      }
+     ],
+     "scale": 1,
+     "axisStart": 0,
+     "claims": [],
+     "seed": 11,
+     "speed": 1,
+     "targets": "c6-maths-ch04-t01-m-tally-five"
+    },
+    {
+     "mode": "picto",
+     "title": "Snack picture",
+     "sub": "draw rows using the picture key",
+     "cats": [
+      {
+       "label": "Samosa",
+       "glyph": "plate",
+       "count": 6
+      },
+      {
+       "label": "Poha",
+       "glyph": "plate",
+       "count": 3
+      },
+      {
+       "label": "Idli",
+       "glyph": "plate",
+       "count": 3
+      }
+     ],
+     "scale": 3,
+     "axisStart": 0,
+     "claims": [],
+     "seed": 23,
+     "speed": 0.9
+    },
+    {
+     "mode": "picto",
+     "title": "School travel",
+     "sub": "use full and half symbols",
+     "cats": [
+      {
+       "label": "Walk",
+       "glyph": "person",
+       "count": 14
+      },
+      {
+       "label": "Bus",
+       "glyph": "car",
+       "count": 9
+      },
+      {
+       "label": "Auto",
+       "glyph": "car",
+       "count": 6
+      },
+      {
+       "label": "Cycle",
+       "glyph": "wheel",
+       "count": 11
+      }
+     ],
+     "scale": 2,
+     "axisStart": 0,
+     "claims": [],
+     "seed": 37,
+     "speed": 0.8
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c6-maths-ch04-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "From answers to a frequency table",
+   "accent": "mint",
+   "targets": "c6-maths-ch04-t01-m-raw-organised",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "From answers to a table"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "A raw list is already organised"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "column",
+     "els": [
+      {
+       "id": "question",
+       "type": "label",
+       "text": "Favourite snack?",
+       "x": 150,
+       "y": 190,
+       "color": "ion"
+      },
+      {
+       "id": "raw",
+       "type": "quote",
+       "text": "samosa, poha, samosa, idli, poha, samosa",
+       "hi": [],
+       "hi2": [],
+       "x": 120,
+       "y": 270
+      },
+      {
+       "id": "cat",
+       "type": "node",
+       "text": "Categories",
+       "sub": "samosa, poha, idli",
+       "glyph": "plate",
+       "x": 500,
+       "y": 250,
+       "color": "mint"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "table",
+       "type": "title",
+       "text": "Frequency table"
+      },
+      {
+       "id": "samosa",
+       "type": "node",
+       "text": "Samosa",
+       "sub": "6",
+       "glyph": "plate",
+       "x": 170,
+       "y": 250,
+       "color": "amber"
+      },
+      {
+       "id": "poha",
+       "type": "node",
+       "text": "Poha",
+       "sub": "3",
+       "glyph": "plate",
+       "x": 430,
+       "y": 250,
+       "color": "mint"
+      },
+      {
+       "id": "idli",
+       "type": "node",
+       "text": "Idli",
+       "sub": "3",
+       "glyph": "plate",
+       "x": 690,
+       "y": 250,
+       "color": "ion"
+      },
+      {
+       "id": "sum",
+       "type": "label",
+       "text": "6 + 3 + 3 = 12",
+       "x": 380,
+       "y": 430,
+       "color": "sun"
+      },
+      {
+       "id": "most",
+       "type": "label",
+       "text": "Most: samosa",
+       "x": 400,
+       "y": 500,
+       "color": "amber"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "We can collect answers to a clear question, then organise them so they are easy to count.",
+    "L2": "A raw list is not organised yet. We must group matching answers into categories.",
+    "L3": "Here is a snack list: samosa, poha, samosa, idli, poha, and samosa.",
+    "L4": "The categories are samosa, poha, and idli. Count each answer once with tally marks.",
+    "L5": "Tally marks are grouped in fives: four upright lines and a fifth line across them.",
+    "L6": "The frequency table shows samosa 6, poha 3, and idli 3.",
+    "L7": "Check the total: 6 plus 3 plus 3 equals 12, the number of answers.",
+    "L8": "Now the table answers quickly: samosa is the favourite, and it has three more than poha."
+   },
+   "narration": {
+    "L1": {
+     "text": "We can collect answers to a clear question, then organise them so they are easy to count.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "A raw list is not organised yet. We must group matching answers into categories.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "Here is a snack list: samosa, poha, samosa, idli, poha, and samosa.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "The categories are samosa, poha, and idli. Count each answer once with tally marks.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "Tally marks are grouped in fives: four upright lines and a fifth line across them.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "The frequency table shows samosa 6, poha 3, and idli 3.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Check the total: 6 plus 3 plus 3 equals 12, the number of answers.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Now the table answers quickly: samosa is the favourite, and it has three more than poha.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "title"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "myth"
+      },
+      {
+       "at": 3,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "question"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": "raw"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "cat"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "table"
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 1,
+       "target": "samosa"
+      },
+      {
+       "at": 2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "poha"
+      },
+      {
+       "at": 3,
+       "do": "highlight",
+       "dur": 1,
+       "target": "idli"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "samosa",
+        "poha",
+        "idli"
+       ]
+      },
+      {
+       "at": 2,
+       "do": "count",
+       "dur": 1.2,
+       "target": "samosa",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "sum"
+      },
+      {
+       "at": 1,
+       "do": "focus",
+       "dur": 1,
+       "target": "sum"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "most"
+      },
+      {
+       "at": 2,
+       "do": "interactive",
+       "dur": 1
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which category has the highest frequency?",
+    "options": [
+     "samosa",
+     "poha",
+     "idli"
+    ],
+    "answer": "samosa",
+    "src": "c6-maths-ch04-t01-i02"
+   }
+  },
+  "repairs": [
+   "arrow:dangling",
+   "cue:target",
+   "clamp:count.to"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 68
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch04-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "qbox",
+       "op": "rect",
+       "startMs": 300,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        70,
+        100
+       ],
+       "w": 250,
+       "h": 150,
+       "round": 12
+      },
+      {
+       "id": "ql",
+       "op": "text",
+       "startMs": 1300,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        195,
+        180
+       ],
+       "text": "question",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "abox",
+       "op": "rect",
+       "startMs": 1500,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        480,
+        100
+       ],
+       "w": 250,
+       "h": 150,
+       "round": 12
+      },
+      {
+       "id": "al",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        605,
+        180
+       ],
+       "text": "answers",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "organise",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        345,
+        350
+       ],
+       "text": "organise",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "arr1",
+       "op": "arrow",
+       "startMs": 4200,
+       "endMs": 5000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        320,
+        175
+       ],
+       "to": [
+        470,
+        175
+       ]
+      },
+      {
+       "id": "arr2",
+       "op": "arrow",
+       "startMs": 5000,
+       "endMs": 5800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        605,
+        250
+       ],
+       "to": [
+        605,
+        320
+       ]
+      },
+      {
+       "id": "count",
+       "op": "text",
+       "startMs": 5800,
+       "endMs": 6800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        605,
+        370
+       ],
+       "text": "easy to count",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch04-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "raw",
+       "op": "text",
+       "startMs": 300,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        150,
+        100
+       ],
+       "text": "raw list",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "rawline",
+       "op": "line",
+       "startMs": 900,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        70,
+        140
+       ],
+       "to": [
+        230,
+        140
+       ]
+      },
+      {
+       "id": "group",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        570,
+        100
+       ],
+       "text": "categories",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "g1",
+       "op": "rect",
+       "startMs": 2300,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        150
+       ],
+       "w": 120,
+       "h": 70,
+       "round": 10
+      },
+      {
+       "id": "g2",
+       "op": "rect",
+       "startMs": 2800,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        540,
+        150
+       ],
+       "w": 120,
+       "h": 70,
+       "round": 10
+      },
+      {
+       "id": "g3",
+       "op": "rect",
+       "startMs": 3300,
+       "endMs": 3800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        680,
+        150
+       ],
+       "w": 90,
+       "h": 70,
+       "round": 10
+      },
+      {
+       "id": "grp",
+       "op": "arrow",
+       "startMs": 3900,
+       "endMs": 4700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        235,
+        140
+       ],
+       "to": [
+        390,
+        185
+       ]
+      },
+      {
+       "id": "cnt",
+       "op": "text",
+       "startMs": 4800,
+       "endMs": 5400,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        470,
+        300
+       ],
+       "text": "count",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch04-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "title",
+       "op": "text",
+       "startMs": 200,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "snack list",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "s1",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        140
+       ],
+       "text": "samosa",
+       "size": "m"
+      },
+      {
+       "id": "p1",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        250,
+        140
+       ],
+       "text": "poha",
+       "size": "m"
+      },
+      {
+       "id": "s2",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        370,
+        140
+       ],
+       "text": "samosa",
+       "size": "m"
+      },
+      {
+       "id": "i1",
+       "op": "text",
+       "startMs": 2400,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        520,
+        140
+       ],
+       "text": "idli",
+       "size": "m"
+      },
+      {
+       "id": "p2",
+       "op": "text",
+       "startMs": 2900,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        640,
+        140
+       ],
+       "text": "poha",
+       "size": "m"
+      },
+      {
+       "id": "s3",
+       "op": "text",
+       "startMs": 3400,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        250,
+        230
+       ],
+       "text": "samosa",
+       "size": "m"
+      },
+      {
+       "id": "listline",
+       "op": "line",
+       "startMs": 4000,
+       "endMs": 4500,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        80,
+        275
+       ],
+       "to": [
+        720,
+        275
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch04-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "cat1",
+       "op": "text",
+       "startMs": 300,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        130,
+        100
+       ],
+       "text": "samosa",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "cat2",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        100
+       ],
+       "text": "poha",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "cat3",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        660,
+        100
+       ],
+       "text": "idli",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "tally1",
+       "op": "numwork",
+       "startMs": 2300,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        70,
+        180
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "||||||"
+        ]
+       ]
+      },
+      {
+       "id": "tally2",
+       "op": "numwork",
+       "startMs": 3300,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        340,
+        180
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "|||"
+        ]
+       ]
+      },
+      {
+       "id": "tally3",
+       "op": "numwork",
+       "startMs": 4100,
+       "endMs": 4900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        600,
+        180
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "|||"
+        ]
+       ]
+      },
+      {
+       "id": "once",
+       "op": "text",
+       "startMs": 5100,
+       "endMs": 5600,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        350
+       ],
+       "text": "once",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch04-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "five",
+       "op": "text",
+       "startMs": 300,
+       "endMs": 800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "fives",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "u1",
+       "op": "line",
+       "startMs": 900,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        180,
+        150
+       ],
+       "to": [
+        180,
+        290
+       ]
+      },
+      {
+       "id": "u2",
+       "op": "line",
+       "startMs": 1300,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        215,
+        150
+       ],
+       "to": [
+        215,
+        290
+       ]
+      },
+      {
+       "id": "u3",
+       "op": "line",
+       "startMs": 1700,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        250,
+        150
+       ],
+       "to": [
+        250,
+        290
+       ]
+      },
+      {
+       "id": "u4",
+       "op": "line",
+       "startMs": 2100,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        285,
+        150
+       ],
+       "to": [
+        285,
+        290
+       ]
+      },
+      {
+       "id": "across",
+       "op": "line",
+       "startMs": 2600,
+       "endMs": 3300,
+       "ink": "mark",
+       "weight": 3,
+       "from": [
+        155,
+        275
+       ],
+       "to": [
+        305,
+        155
+       ]
+      },
+      {
+       "id": "four",
+       "op": "text",
+       "startMs": 3600,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        245,
+        340
+       ],
+       "text": "four",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "fifth",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 4800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        245,
+        390
+       ],
+       "text": "fifth",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch04-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "ftitle",
+       "op": "text",
+       "startMs": 200,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        65
+       ],
+       "text": "frequency table",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "table",
+       "op": "rect",
+       "startMs": 1000,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        110
+       ],
+       "w": 600,
+       "h": 260
+      },
+      {
+       "id": "vline",
+       "op": "line",
+       "startMs": 1600,
+       "endMs": 2000,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        330,
+        110
+       ],
+       "to": [
+        330,
+        370
+       ]
+      },
+      {
+       "id": "h1",
+       "op": "line",
+       "startMs": 2000,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        100,
+        175
+       ],
+       "to": [
+        700,
+        175
+       ]
+      },
+      {
+       "id": "h2",
+       "op": "line",
+       "startMs": 2300,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        100,
+        240
+       ],
+       "to": [
+        700,
+        240
+       ]
+      },
+      {
+       "id": "h3",
+       "op": "line",
+       "startMs": 2600,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        100,
+        305
+       ],
+       "to": [
+        700,
+        305
+       ]
+      },
+      {
+       "id": "heads",
+       "op": "numwork",
+       "startMs": 2900,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        130,
+        125
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "catego",
+         "freque"
+        ]
+       ]
+      },
+      {
+       "id": "vals",
+       "op": "numwork",
+       "startMs": 3500,
+       "endMs": 4700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        130,
+        190
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "samosa",
+         "6"
+        ],
+        [
+         "poha",
+         "3"
+        ],
+        [
+         "idli",
+         "3"
+        ]
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch04-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "check",
+       "op": "text",
+       "startMs": 300,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        95
+       ],
+       "text": "check total",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "sum",
+       "op": "numwork",
+       "startMs": 1100,
+       "endMs": 2500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        190,
+        180
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "6",
+         "+",
+         "3",
+         "+",
+         "3",
+         "=",
+         "12"
+        ]
+       ]
+      },
+      {
+       "id": "answers",
+       "op": "text",
+       "startMs": 2800,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        300
+       ],
+       "text": "answers",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "brace",
+       "op": "line",
+       "startMs": 3500,
+       "endMs": 4100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        170,
+        340
+       ],
+       "to": [
+        630,
+        340
+       ]
+      },
+      {
+       "id": "total",
+       "op": "text",
+       "startMs": 4200,
+       "endMs": 4700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        390
+       ],
+       "text": "12",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch04-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "quick",
+       "op": "text",
+       "startMs": 300,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        65
+       ],
+       "text": "quick answers",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "fav",
+       "op": "text",
+       "startMs": 1100,
+       "endMs": 1700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        170,
+        140
+       ],
+       "text": "samosa",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "poha",
+       "op": "text",
+       "startMs": 2400,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        560,
+        140
+       ],
+       "text": "poha",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "difference",
+       "op": "numwork",
+       "startMs": 3200,
+       "endMs": 4400,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        250,
+        310
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "6",
+         "-",
+         "3",
+         "=",
+         "3"
+        ]
+       ]
+      },
+      {
+       "id": "more",
+       "op": "text",
+       "startMs": 4600,
+       "endMs": 5300,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        410
+       ],
+       "text": "three more",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "link",
+       "op": "arrow",
+       "startMs": 5400,
+       "endMs": 6200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        250,
+        150
+       ],
+       "to": [
+        480,
+        150
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "5",
+   "prompt": "tally: Mango"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "2",
+   "prompt": "tally: Apple"
+  },
+  {
+   "itemId": "r1:2",
+   "key": "2",
+   "prompt": "tally: Banana"
+  },
+  {
+   "itemId": "r1:3",
+   "key": "1",
+   "prompt": "tally: Guava"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "2 symbols",
+   "prompt": "picto: Samosa"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "1 symbols",
+   "prompt": "picto: Poha"
+  },
+  {
+   "itemId": "r2:2",
+   "key": "1 symbols",
+   "prompt": "picto: Idli"
+  },
+  {
+   "itemId": "r3:0",
+   "key": "7 symbols",
+   "prompt": "picto: Walk"
+  },
+  {
+   "itemId": "r3:1",
+   "key": "4.5 symbols",
+   "prompt": "picto: Bus"
+  },
+  {
+   "itemId": "r3:2",
+   "key": "3 symbols",
+   "prompt": "picto: Auto"
+  },
+  {
+   "itemId": "r3:3",
+   "key": "5.5 symbols",
+   "prompt": "picto: Cycle"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

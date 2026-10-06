@@ -1,0 +1,1437 @@
+{
+ "topicId": "c5-maths-ch07-t02",
+ "title": "Growing shape patterns",
+ "chapter": "Shapes and Patterns",
+ "subject": "maths",
+ "class": 5,
+ "topicType": "T5",
+ "plan": {
+  "game": "rule-machine@1",
+  "hint": "seq and build modes: number patterns and growing patterns"
+ },
+ "game": {
+  "archetype": "rule-machine@1",
+  "spec": {
+   "archetype": "rule-machine@1",
+   "skills": [
+    "c5-maths-ch07-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "built": "machines",
+    "run": "RUN",
+    "want": "order",
+    "got": "made",
+    "coach": "Tap tiles to build the rule, then RUN",
+    "runDone": "Factory closed",
+    "step": "step",
+    "predict": "predict",
+    "inverse": "run it backwards",
+    "target": "target",
+    "steps": "steps",
+    "pick": "Pick a start",
+    "works": "WORKS",
+    "fix": "try a different rule"
+   },
+   "title": "Growing Shape Machine",
+   "rounds": [
+    {
+     "mode": "seq",
+     "title": "Stick squares",
+     "sub": "predict a far step from the rule",
+     "pattern": "sticks-squares",
+     "rule": [
+      "×3",
+      "+1"
+     ],
+     "tiles": [
+      "×3",
+      "+1",
+      "+2",
+      "×4"
+     ],
+     "ask": 6,
+     "targets": "c5-maths-ch07-t02-m-guess-next"
+    },
+    {
+     "mode": "build",
+     "title": "Matchstick houses",
+     "sub": "fill every house order",
+     "rule": [
+      "×4",
+      "+1"
+     ],
+     "inputs": [
+      1,
+      2,
+      4,
+      10
+     ],
+     "tiles": [
+      "×4",
+      "+1",
+      "+4",
+      "+5"
+     ],
+     "targets": "c5-maths-ch07-t02-m-forget-start"
+    },
+    {
+     "mode": "seq",
+     "title": "Stick triangles",
+     "sub": "use the change each time",
+     "pattern": "sticks-triangles",
+     "rule": [
+      "×2",
+      "+1"
+     ],
+     "tiles": [
+      "×2",
+      "+1",
+      "+2",
+      "×3"
+     ],
+     "ask": 8,
+     "targets": "c5-maths-ch07-t02-m-whole-object"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c5-maths-ch07-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "How shape patterns grow",
+   "accent": "amber",
+   "targets": "c5-maths-ch07-t02-m-whole-object",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "row",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "How shape patterns grow"
+      },
+      {
+       "id": "h1",
+       "type": "node",
+       "text": "1 house",
+       "sub": "5 sticks",
+       "glyph": "house",
+       "color": "amber"
+      },
+      {
+       "id": "h2",
+       "type": "node",
+       "text": "2 houses",
+       "sub": "9 sticks",
+       "glyph": "house",
+       "color": "sun"
+      },
+      {
+       "id": "h3",
+       "type": "node",
+       "text": "3 houses",
+       "sub": "13 sticks",
+       "glyph": "house",
+       "color": "mint"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "h1",
+       "to": "h2",
+       "text": "+4"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "h2",
+       "to": "h3",
+       "text": "+4"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "split",
+     "els": [
+      {
+       "id": "house",
+       "type": "glyph",
+       "name": "house",
+       "x": 180,
+       "y": 340,
+       "size": 130,
+       "color": "amber"
+      },
+      {
+       "id": "wall",
+       "type": "label",
+       "text": "shared wall",
+       "x": 420,
+       "y": 300,
+       "color": "mint"
+      },
+      {
+       "id": "add4",
+       "type": "bar",
+       "parts": 4,
+       "shaded": 4,
+       "x": 560,
+       "y": 330,
+       "w": 260,
+       "text": "new sticks"
+      },
+      {
+       "id": "start",
+       "type": "label",
+       "text": "Start with 5",
+       "x": 180,
+       "y": 500,
+       "color": "sun"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "MYTH: Double houses, double sticks"
+      },
+      {
+       "id": "calc",
+       "type": "node",
+       "text": "10 houses",
+       "sub": "5 + 9 × 4",
+       "glyph": "ruler",
+       "color": "ion"
+      },
+      {
+       "id": "result",
+       "type": "node",
+       "text": "41 sticks",
+       "sub": "not 50",
+       "color": "mint"
+      },
+      {
+       "id": "eq",
+       "type": "arrow",
+       "from": "calc",
+       "to": "result",
+       "text": "calculate"
+      },
+      {
+       "id": "opt17",
+       "type": "label",
+       "text": "17 sticks",
+       "x": 120,
+       "y": 480,
+       "color": "mint"
+      },
+      {
+       "id": "opt40",
+       "type": "label",
+       "text": "40 sticks",
+       "x": 390,
+       "y": 480,
+       "color": "sun"
+      },
+      {
+       "id": "opt41",
+       "type": "label",
+       "text": "41 sticks",
+       "x": 660,
+       "y": 480,
+       "color": "amber"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "A growing shape pattern changes from one step to the next.",
+    "L2": "Do not guess the next term. Find the change and check that it stays the same.",
+    "L3": "One matchstick house needs 5 sticks. A second house adds only 4 because one wall is shared.",
+    "L4": "So the pattern is 5, 9, 13. Four sticks are added for each new house.",
+    "L5": "To find a far step, keep the starting 5 and add 4 for every extra house.",
+    "L6": "Ten houses need 5 plus 9 times 4, which is 41 sticks.",
+    "L7": "It is not 50, because shared walls mean each new house does not need 5 new sticks.",
+    "L8": "Now check the rule: how many sticks are needed for four houses?"
+   },
+   "narration": {
+    "L1": {
+     "text": "A growing shape pattern changes from one step to the next.",
+     "dur": 4.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L2": {
+     "text": "Do not guess the next term. Find the change and check that it stays the same.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L3": {
+     "text": "One matchstick house needs 5 sticks. A second house adds only 4 because one wall is shared.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L4": {
+     "text": "So the pattern is 5, 9, 13. Four sticks are added for each new house.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L5": {
+     "text": "To find a far step, keep the starting 5 and add 4 for every extra house.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Ten houses need 5 plus 9 times 4, which is 41 sticks.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L7": {
+     "text": "It is not 50, because shared walls mean each new house does not need 5 new sticks.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Now check the rule: how many sticks are needed for four houses?",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "title"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 1.2,
+       "target": [
+        "h1",
+        "h2",
+        "h3"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1.2,
+       "target": [
+        "a1",
+        "a2"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "house",
+        "wall",
+        "start"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.8,
+       "target": "add4"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "focus",
+       "dur": 1.2,
+       "target": [
+        "h1",
+        "h2",
+        "h3"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 1,
+       "target": [
+        "a1",
+        "a2"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "start"
+      },
+      {
+       "at": 0.8,
+       "do": "count",
+       "dur": 1.2,
+       "target": "add4",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "calc",
+        "result"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 1,
+       "target": "eq",
+       "to": 1
+      },
+      {
+       "at": 2,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "result"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "myth"
+      },
+      {
+       "at": 1,
+       "do": "bust",
+       "dur": 1.2,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "opt17",
+        "opt40",
+        "opt41"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Choose the number of sticks needed for four houses.",
+    "options": [
+     "opt17",
+     "opt40",
+     "opt41"
+    ],
+    "answer": "opt17",
+    "src": "c5-maths-ch07-t02-i02"
+   }
+  },
+  "repairs": [
+   "meter:not-devanagari",
+   "glyph",
+   "arrow:dangling",
+   "cue:target"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 50
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch07-t02-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "shape1",
+       "op": "polygon",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         100,
+         330
+        ],
+        [
+         150,
+         260
+        ],
+        [
+         200,
+         330
+        ]
+       ]
+      },
+      {
+       "id": "shape2",
+       "op": "polygon",
+       "startMs": 900,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         300,
+         330
+        ],
+        [
+         350,
+         240
+        ],
+        [
+         400,
+         330
+        ]
+       ]
+      },
+      {
+       "id": "step",
+       "op": "arrow",
+       "startMs": 1900,
+       "endMs": 2700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        220,
+        300
+       ],
+       "to": [
+        280,
+        300
+       ]
+      },
+      {
+       "id": "pattern",
+       "op": "text",
+       "startMs": 2800,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        100
+       ],
+       "text": "shape pattern",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "change",
+       "op": "label",
+       "startMs": 3700,
+       "endMs": 4500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        245,
+        275
+       ],
+       "text": "change",
+       "to": [
+        250,
+        300
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch07-t02-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "term1",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        180
+       ],
+       "w": 100,
+       "h": 70
+      },
+      {
+       "id": "term2",
+       "op": "rect",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        260,
+        180
+       ],
+       "w": 100,
+       "h": 70
+      },
+      {
+       "id": "change2",
+       "op": "arrow",
+       "startMs": 1500,
+       "endMs": 2300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        195,
+        215
+       ],
+       "to": [
+        255,
+        215
+       ]
+      },
+      {
+       "id": "next",
+       "op": "label",
+       "startMs": 2300,
+       "endMs": 3200,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        270,
+        155
+       ],
+       "text": "next term",
+       "to": [
+        310,
+        180
+       ]
+      },
+      {
+       "id": "same",
+       "op": "text",
+       "startMs": 3400,
+       "endMs": 4200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        470,
+        215
+       ],
+       "text": "same",
+       "size": "m"
+      },
+      {
+       "id": "check",
+       "op": "highlight",
+       "startMs": 4500,
+       "endMs": 5700,
+       "ink": "good",
+       "weight": 2,
+       "target": "change2",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch07-t02-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "h1a",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        120,
+        330
+       ],
+       "to": [
+        120,
+        220
+       ]
+      },
+      {
+       "id": "h1b",
+       "op": "line",
+       "startMs": 500,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        120,
+        220
+       ],
+       "to": [
+        190,
+        170
+       ]
+      },
+      {
+       "id": "h1c",
+       "op": "line",
+       "startMs": 1000,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        190,
+        170
+       ],
+       "to": [
+        260,
+        220
+       ]
+      },
+      {
+       "id": "h1d",
+       "op": "line",
+       "startMs": 1500,
+       "endMs": 2000,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        260,
+        220
+       ],
+       "to": [
+        260,
+        330
+       ]
+      },
+      {
+       "id": "h1e",
+       "op": "line",
+       "startMs": 2000,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        120,
+        330
+       ],
+       "to": [
+        260,
+        330
+       ]
+      },
+      {
+       "id": "h2a",
+       "op": "line",
+       "startMs": 2700,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        260,
+        220
+       ],
+       "to": [
+        330,
+        170
+       ]
+      },
+      {
+       "id": "h2b",
+       "op": "line",
+       "startMs": 3200,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        330,
+        170
+       ],
+       "to": [
+        400,
+        220
+       ]
+      },
+      {
+       "id": "h2c",
+       "op": "line",
+       "startMs": 3700,
+       "endMs": 4200,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        400,
+        220
+       ],
+       "to": [
+        400,
+        330
+       ]
+      },
+      {
+       "id": "h2d",
+       "op": "line",
+       "startMs": 4200,
+       "endMs": 4700,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        260,
+        330
+       ],
+       "to": [
+        400,
+        330
+       ]
+      },
+      {
+       "id": "five",
+       "op": "text",
+       "startMs": 4800,
+       "endMs": 5600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        190,
+        390
+       ],
+       "text": "5 sticks",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "four",
+       "op": "text",
+       "startMs": 5600,
+       "endMs": 6300,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        330,
+        140
+       ],
+       "text": "4",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "shared",
+       "op": "label",
+       "startMs": 6300,
+       "endMs": 7400,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        275,
+        245
+       ],
+       "text": "shared",
+       "to": [
+        260,
+        270
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch07-t02-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "seq",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        180
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "5",
+         ",",
+         "9",
+         ",",
+         "13"
+        ]
+       ]
+      },
+      {
+       "id": "add4a",
+       "op": "arrow",
+       "startMs": 1900,
+       "endMs": 2700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        185,
+        170
+       ],
+       "to": [
+        245,
+        170
+       ]
+      },
+      {
+       "id": "add4b",
+       "op": "arrow",
+       "startMs": 2700,
+       "endMs": 3500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        305,
+        170
+       ],
+       "to": [
+        365,
+        170
+       ]
+      },
+      {
+       "id": "add4text",
+       "op": "text",
+       "startMs": 3600,
+       "endMs": 4500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        275,
+        110
+       ],
+       "text": "4 sticks",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "each",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        275,
+        280
+       ],
+       "text": "each new house",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch07-t02-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "rule",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        170
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "5",
+         "+",
+         "4",
+         "×",
+         "extra "
+        ]
+       ]
+      },
+      {
+       "id": "start5",
+       "op": "highlight",
+       "startMs": 2400,
+       "endMs": 3400,
+       "ink": "accent",
+       "weight": 2,
+       "target": "rule",
+       "style": "circle"
+      },
+      {
+       "id": "extra",
+       "op": "highlight",
+       "startMs": 3500,
+       "endMs": 4500,
+       "ink": "good",
+       "weight": 2,
+       "target": "rule",
+       "style": "underline"
+      },
+      {
+       "id": "far",
+       "op": "arrow",
+       "startMs": 4700,
+       "endMs": 5900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        470,
+        215
+       ],
+       "to": [
+        610,
+        215
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch07-t02-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "tenrule",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        170
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "5",
+         "+",
+         "9",
+         "×",
+         "4",
+         "=",
+         "41"
+        ]
+       ]
+      },
+      {
+       "id": "ten",
+       "op": "text",
+       "startMs": 2600,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        110,
+        110
+       ],
+       "text": "Ten houses",
+       "size": "m"
+      },
+      {
+       "id": "answer41",
+       "op": "highlight",
+       "startMs": 3800,
+       "endMs": 5000,
+       "ink": "good",
+       "weight": 2,
+       "target": "tenrule",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch07-t02-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "wrong",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        170
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "10",
+         "×",
+         "5",
+         "=",
+         "50"
+        ]
+       ]
+      },
+      {
+       "id": "not50",
+       "op": "highlight",
+       "startMs": 2100,
+       "endMs": 3100,
+       "ink": "accent",
+       "weight": 2,
+       "target": "wrong",
+       "style": "underline"
+      },
+      {
+       "id": "sharedwall",
+       "op": "label",
+       "startMs": 3300,
+       "endMs": 4500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        470,
+        150
+       ],
+       "text": "shared walls",
+       "to": [
+        420,
+        240
+       ]
+      },
+      {
+       "id": "new4",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        470,
+        270
+       ],
+       "text": "4 new sticks",
+       "size": "m"
+      },
+      {
+       "id": "not",
+       "op": "text",
+       "startMs": 6100,
+       "endMs": 7000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        300,
+        310
+       ],
+       "text": "not 5",
+       "size": "m"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch07-t02-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "fourrule",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        170
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "5",
+         "+",
+         "3",
+         "×",
+         "4",
+         "=",
+         "17"
+        ]
+       ]
+      },
+      {
+       "id": "fourhouses",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3700,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        110,
+        110
+       ],
+       "text": "four houses",
+       "size": "m"
+      },
+      {
+       "id": "fouranswer",
+       "op": "highlight",
+       "startMs": 3900,
+       "endMs": 5100,
+       "ink": "good",
+       "weight": 2,
+       "target": "fourrule",
+       "style": "circle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1",
+   "key": "×3 then +1",
+   "prompt": "sticks-squares: 4,7,10"
+  },
+  {
+   "itemId": "r2",
+   "key": "×4 then +1",
+   "prompt": "inputs 1,2,4,10 → 5,9,17,41"
+  },
+  {
+   "itemId": "r3",
+   "key": "×2 then +1",
+   "prompt": "sticks-triangles: 3,5,7"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

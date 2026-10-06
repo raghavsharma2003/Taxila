@@ -1,0 +1,1830 @@
+{
+ "topicId": "c6-sst-ch10-t01",
+ "title": "Grassroots Democracy — Part 1: Governance",
+ "chapter": "Grassroots Democracy — Part 1: Governance",
+ "subject": "sst",
+ "class": 6,
+ "topicType": "T3",
+ "plan": {
+  "game": "town-lab@1",
+  "hint": "council mode: gram sabha / panchayat / ward decisions within a budget"
+ },
+ "game": {
+  "archetype": "town-lab@1",
+  "spec": {
+   "archetype": "town-lab@1",
+   "skills": [
+    "c6-sst-ch10-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "done": "right",
+    "have": "you have",
+    "need": "you need",
+    "has": "has",
+    "wants": "wants",
+    "trades": "trades",
+    "market": "market",
+    "coins": "coins",
+    "open": "OPEN",
+    "price": "price",
+    "cost": "cost",
+    "profit": "profit",
+    "sold": "sold",
+    "target": "target",
+    "stock": "stock",
+    "lock": "LOCK",
+    "run": "RUN",
+    "perMonth": "per month",
+    "years": "years",
+    "goal": "goal",
+    "saved": "saved",
+    "interest": "interest",
+    "budget": "budget",
+    "left": "left",
+    "families": "families helped",
+    "runDone": "Town closed",
+    "noDeal": "no deal",
+    "reset": "start again",
+    "rupee": "₹"
+   },
+   "title": "People Plan the Town",
+   "rounds": [
+    {
+     "mode": "council",
+     "title": "Gram sabha choices",
+     "sub": "Take part and choose local services",
+     "budget": 20,
+     "projects": [
+      {
+       "name": "handpump",
+       "glyph": "tap",
+       "cost": 8,
+       "helps": 90
+      },
+      {
+       "name": "school repair",
+       "glyph": "school",
+       "cost": 12,
+       "helps": 110
+      },
+      {
+       "name": "village road",
+       "glyph": "road",
+       "cost": 15,
+       "helps": 120
+      },
+      {
+       "name": "garbage pickup",
+       "glyph": "recycle",
+       "cost": 6,
+       "helps": 50
+      }
+     ],
+     "targets": "c6-sst-ch10-t01-m1"
+    },
+    {
+     "mode": "council",
+     "title": "Ward budget",
+     "sub": "Discuss projects and help families",
+     "budget": 35,
+     "projects": [
+      {
+       "name": "drinking water",
+       "glyph": "tap",
+       "cost": 14,
+       "helps": 180
+      },
+      {
+       "name": "streetlights",
+       "glyph": "bulb",
+       "cost": 9,
+       "helps": 100
+      },
+      {
+       "name": "school work",
+       "glyph": "school",
+       "cost": 18,
+       "helps": 210
+      },
+      {
+       "name": "road repair",
+       "glyph": "road",
+       "cost": 16,
+       "helps": 160
+      }
+     ]
+    }
+   ]
+  },
+  "repairs": [
+   "string:project.name"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c6-sst-ch10-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Governance: Power with a Purpose",
+   "accent": "ion",
+   "targets": "c6-sst-ch10-t01-m2",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "What is governance?"
+      },
+      {
+       "id": "gov",
+       "type": "node",
+       "text": "Governance",
+       "sub": "running society",
+       "glyph": "globe",
+       "color": "ion"
+      },
+      {
+       "id": "rules",
+       "type": "node",
+       "text": "Rules",
+       "glyph": "scroll",
+       "color": "amber"
+      },
+      {
+       "id": "services",
+       "type": "node",
+       "text": "Services",
+       "glyph": "road",
+       "color": "mint"
+      },
+      {
+       "id": "disputes",
+       "type": "node",
+       "text": "Disputes",
+       "glyph": "balance",
+       "color": "sci"
+      },
+      {
+       "id": "g1",
+       "type": "arrow",
+       "from": "gov",
+       "to": "rules",
+       "text": "makes"
+      },
+      {
+       "id": "g2",
+       "type": "arrow",
+       "from": "gov",
+       "to": "services",
+       "text": "provides"
+      },
+      {
+       "id": "g3",
+       "type": "arrow",
+       "from": "gov",
+       "to": "disputes",
+       "text": "settles"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "myth1",
+       "type": "myth",
+       "text": "Courts make laws and police judge disputes"
+      },
+      {
+       "id": "separate",
+       "type": "node",
+       "text": "Separate powers",
+       "sub": "checks power",
+       "glyph": "balance",
+       "color": "amber"
+      },
+      {
+       "id": "check1",
+       "type": "label",
+       "text": "No one has all power",
+       "x": 420,
+       "y": 300,
+       "color": "mint"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "leg",
+       "type": "node",
+       "text": "Legislature",
+       "sub": "makes laws",
+       "glyph": "scroll",
+       "color": "amber"
+      },
+      {
+       "id": "exe",
+       "type": "node",
+       "text": "Executive",
+       "sub": "carries out",
+       "glyph": "gear",
+       "color": "mint"
+      },
+      {
+       "id": "jud",
+       "type": "node",
+       "text": "Judiciary",
+       "sub": "settles disputes",
+       "glyph": "balance",
+       "color": "sci"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "leg",
+       "to": "exe",
+       "text": "law in action"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "exe",
+       "to": "jud",
+       "text": "dispute"
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "jud",
+       "to": "leg",
+       "text": "interprets law"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Governance is the way a society is run. It includes rules, services and settling disputes.",
+    "L2": "A government is the body that carries out this work for people.",
+    "L3": "The legislature makes laws. The executive carries them out.",
+    "L4": "The judiciary interprets laws and settles disputes in courts.",
+    "L5": "These powers are kept separate. This stops one person or group from having all the power.",
+    "L6": "Each organ can check the others, helping prevent misuse of power.",
+    "L7": "For example, a helmet rule is made, checked by officials and decided by a court when disputed.",
+    "L8": "Now tap the organ that settles disputes in courts."
+   },
+   "narration": {
+    "L1": {
+     "text": "Governance is the way a society is run. It includes rules, services and settling disputes.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "A government is the body that carries out this work for people.",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "The legislature makes laws. The executive carries them out.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "The judiciary interprets laws and settles disputes in courts.",
+     "dur": 3.2,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "These powers are kept separate. This stops one person or group from having all the power.",
+     "dur": 4.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Each organ can check the others, helping prevent misuse of power.",
+     "dur": 3.2,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "For example, a helmet rule is made, checked by officials and decided by a court when disputed.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Now tap the organ that settles disputes in courts.",
+     "dur": 2.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "title"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": "gov"
+      },
+      {
+       "at": 1.2,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "rules",
+        "services",
+        "disputes"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "gov"
+      },
+      {
+       "at": 0.5,
+       "do": "flow",
+       "dur": 1,
+       "target": [
+        "g1",
+        "g2",
+        "g3"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "leg"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.7,
+       "target": "exe"
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "a1",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "jud"
+      },
+      {
+       "at": 0.5,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "a2",
+       "to": 1
+      },
+      {
+       "at": 1.2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "jud"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.5,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth1"
+      },
+      {
+       "at": 0.8,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth1"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "separate"
+      },
+      {
+       "at": 0.6,
+       "do": "show",
+       "dur": 0.7,
+       "target": "check1"
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 1,
+       "target": "separate"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "a1",
+       "to": 1
+      },
+      {
+       "at": 0.7,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "a2",
+       "to": 1
+      },
+      {
+       "at": 1.4,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "a3",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which organ settles disputes in courts?",
+    "options": [
+     "leg",
+     "exe",
+     "jud"
+    ],
+    "answer": "jud",
+    "src": "c6-sst-ch10-t01-i01"
+   }
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg",
+  "passes": 2,
+  "seconds": 34
+ },
+ "keys": [
+  {
+   "itemId": "r1",
+   "key": "200 families: handpump, school repair",
+   "prompt": "Take part and choose local services"
+  },
+  {
+   "itemId": "r2",
+   "key": "390 families: drinking water, school work",
+   "prompt": "Discuss projects and help families"
+  }
+ ],
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch10-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "gov",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "Governance",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "soc",
+       "op": "ellipse",
+       "startMs": 700,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        250
+       ],
+       "rx": 270,
+       "ry": 130
+      },
+      {
+       "id": "run",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        150
+       ],
+       "text": "society is run",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "rules",
+       "op": "rect",
+       "startMs": 2400,
+       "endMs": 3200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        105,
+        315
+       ],
+       "w": 150,
+       "h": 70,
+       "round": 12
+      },
+      {
+       "id": "services",
+       "op": "rect",
+       "startMs": 3000,
+       "endMs": 3800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        325,
+        315
+       ],
+       "w": 150,
+       "h": 70,
+       "round": 12
+      },
+      {
+       "id": "disputes",
+       "op": "rect",
+       "startMs": 3600,
+       "endMs": 4400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        545,
+        315
+       ],
+       "w": 150,
+       "h": 70,
+       "round": 12
+      },
+      {
+       "id": "rlabel",
+       "op": "text",
+       "startMs": 4400,
+       "endMs": 4800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        357
+       ],
+       "text": "rules",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "slabel",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        357
+       ],
+       "text": "services",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "dlabel",
+       "op": "text",
+       "startMs": 5100,
+       "endMs": 5600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        620,
+        357
+       ],
+       "text": "disputes",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "g1",
+       "op": "arrow",
+       "startMs": 5600,
+       "endMs": 6100,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        400,
+        180
+       ],
+       "to": [
+        180,
+        315
+       ]
+      },
+      {
+       "id": "g2",
+       "op": "arrow",
+       "startMs": 5900,
+       "endMs": 6400,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        400,
+        180
+       ],
+       "to": [
+        400,
+        315
+       ]
+      },
+      {
+       "id": "g3",
+       "op": "arrow",
+       "startMs": 6200,
+       "endMs": 6900,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        400,
+        180
+       ],
+       "to": [
+        620,
+        315
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch10-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "body",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        230
+       ],
+       "rx": 170,
+       "ry": 90
+      },
+      {
+       "id": "government",
+       "op": "text",
+       "startMs": 800,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        225
+       ],
+       "text": "government",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "work",
+       "op": "arrow",
+       "startMs": 1700,
+       "endMs": 2400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        325
+       ],
+       "to": [
+        400,
+        395
+       ]
+      },
+      {
+       "id": "people",
+       "op": "text",
+       "startMs": 2400,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        440
+       ],
+       "text": "people",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "carry",
+       "op": "text",
+       "startMs": 3200,
+       "endMs": 4300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        115
+       ],
+       "text": "carries out this work",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch10-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4430,
+     "ops": [
+      {
+       "id": "leg",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        75,
+        150
+       ],
+       "w": 280,
+       "h": 170,
+       "round": 14
+      },
+      {
+       "id": "exe",
+       "op": "rect",
+       "startMs": 500,
+       "endMs": 1200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        445,
+        150
+       ],
+       "w": 280,
+       "h": 170,
+       "round": 14
+      },
+      {
+       "id": "legtxt",
+       "op": "text",
+       "startMs": 1200,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        215,
+        205
+       ],
+       "text": "legislature",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "laws",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        215,
+        270
+       ],
+       "text": "makes laws",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "exetxt",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        585,
+        205
+       ],
+       "text": "executive",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "carrylaws",
+       "op": "text",
+       "startMs": 2600,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        585,
+        270
+       ],
+       "text": "carries them out",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "flow",
+       "op": "arrow",
+       "startMs": 3500,
+       "endMs": 4430,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        355,
+        235
+       ],
+       "to": [
+        445,
+        235
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch10-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4430,
+     "ops": [
+      {
+       "id": "jud",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        170,
+        125
+       ],
+       "w": 460,
+       "h": 230,
+       "round": 16
+      },
+      {
+       "id": "judtxt",
+       "op": "text",
+       "startMs": 800,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        190
+       ],
+       "text": "judiciary",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "interp",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        250
+       ],
+       "text": "interprets laws",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "court",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        310
+       ],
+       "text": "courts",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "settle",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        400
+       ],
+       "text": "settles disputes",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "down",
+       "op": "arrow",
+       "startMs": 3900,
+       "endMs": 4430,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        400,
+        350
+       ],
+       "to": [
+        400,
+        390
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch10-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "sep",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "separate",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "a",
+       "op": "circle",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        190,
+        220
+       ],
+       "r": 85
+      },
+      {
+       "id": "b",
+       "op": "circle",
+       "startMs": 1000,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        220
+       ],
+       "r": 85
+      },
+      {
+       "id": "c",
+       "op": "circle",
+       "startMs": 1300,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        610,
+        220
+       ],
+       "r": 85
+      },
+      {
+       "id": "lt",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        190,
+        220
+       ],
+       "text": "legislature",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "et",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        220
+       ],
+       "text": "executive",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "jt",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        610,
+        220
+       ],
+       "text": "judiciary",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "bar",
+       "op": "line",
+       "startMs": 3200,
+       "endMs": 3800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        90,
+        360
+       ],
+       "to": [
+        710,
+        360
+       ]
+      },
+      {
+       "id": "one",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        410
+       ],
+       "text": "one person or group",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "power",
+       "op": "text",
+       "startMs": 4800,
+       "endMs": 5600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        455
+       ],
+       "text": "all the power",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "stop",
+       "op": "text",
+       "startMs": 5900,
+       "endMs": 6500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        105
+       ],
+       "text": "stops",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "down",
+       "op": "arrow",
+       "startMs": 6500,
+       "endMs": 7409,
+       "ink": "good",
+       "weight": 1,
+       "from": [
+        400,
+        120
+       ],
+       "to": [
+        400,
+        175
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch10-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "org1",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        180,
+        190
+       ],
+       "r": 70
+      },
+      {
+       "id": "org2",
+       "op": "circle",
+       "startMs": 400,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        190
+       ],
+       "r": 70
+      },
+      {
+       "id": "org3",
+       "op": "circle",
+       "startMs": 800,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        620,
+        190
+       ],
+       "r": 70
+      },
+      {
+       "id": "t1",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        190
+       ],
+       "text": "organ",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "t2",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        190
+       ],
+       "text": "organ",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "t3",
+       "op": "text",
+       "startMs": 2000,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        620,
+        190
+       ],
+       "text": "organ",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "c1",
+       "op": "arrow",
+       "startMs": 2500,
+       "endMs": 3100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        250,
+        190
+       ],
+       "to": [
+        330,
+        190
+       ]
+      },
+      {
+       "id": "c2",
+       "op": "arrow",
+       "startMs": 3000,
+       "endMs": 3600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        470,
+        190
+       ],
+       "to": [
+        550,
+        190
+       ]
+      },
+      {
+       "id": "c3",
+       "op": "arrow",
+       "startMs": 3500,
+       "endMs": 4100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        280
+       ],
+       "to": [
+        180,
+        280
+       ]
+      },
+      {
+       "id": "check",
+       "op": "text",
+       "startMs": 4100,
+       "endMs": 4700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        380
+       ],
+       "text": "check",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "prevent",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5281,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        440
+       ],
+       "text": "prevent misuse of power",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch10-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "helmet",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        105,
+        120
+       ],
+       "r": 55
+      },
+      {
+       "id": "helmtext",
+       "op": "text",
+       "startMs": 600,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        105,
+        120
+       ],
+       "text": "helmet",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "rule",
+       "op": "rect",
+       "startMs": 1100,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        250,
+        70
+       ],
+       "w": 150,
+       "h": 100,
+       "round": 12
+      },
+      {
+       "id": "law",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        325,
+        120
+       ],
+       "text": "law",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "arrow1",
+       "op": "arrow",
+       "startMs": 2300,
+       "endMs": 2700,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        160,
+        120
+       ],
+       "to": [
+        250,
+        120
+       ]
+      },
+      {
+       "id": "officials",
+       "op": "rect",
+       "startMs": 2600,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        455,
+        70
+       ],
+       "w": 170,
+       "h": 100,
+       "round": 12
+      },
+      {
+       "id": "offtext",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        540,
+        120
+       ],
+       "text": "officials",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "arrow2",
+       "op": "arrow",
+       "startMs": 3900,
+       "endMs": 4300,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        400,
+        120
+       ],
+       "to": [
+        455,
+        120
+       ]
+      },
+      {
+       "id": "courtbox",
+       "op": "rect",
+       "startMs": 4400,
+       "endMs": 5100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        250,
+        285
+       ],
+       "w": 300,
+       "h": 110,
+       "round": 12
+      },
+      {
+       "id": "courtlabel",
+       "op": "text",
+       "startMs": 5100,
+       "endMs": 5600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        340
+       ],
+       "text": "court",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "disputed",
+       "op": "text",
+       "startMs": 5700,
+       "endMs": 6500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        440
+       ],
+       "text": "when disputed",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "arrow3",
+       "op": "arrow",
+       "startMs": 6500,
+       "endMs": 7100,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        540,
+        170
+       ],
+       "to": [
+        500,
+        285
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch10-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 4430,
+     "ops": [
+      {
+       "id": "prompt",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "organ",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "judbox",
+       "op": "rect",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        230,
+        145
+       ],
+       "w": 340,
+       "h": 190,
+       "round": 16
+      },
+      {
+       "id": "judanswer",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 2200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        220
+       ],
+       "text": "judiciary",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "courtanswer",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        285
+       ],
+       "text": "courts",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "settles",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3900,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        410
+       ],
+       "text": "settles disputes",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "highlight",
+       "op": "highlight",
+       "startMs": 3900,
+       "endMs": 4430,
+       "ink": "good",
+       "weight": 2,
+       "target": "judanswer",
+       "style": "circle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

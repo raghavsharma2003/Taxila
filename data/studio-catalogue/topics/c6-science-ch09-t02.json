@@ -1,0 +1,2360 @@
+{
+ "topicId": "c6-science-ch09-t02",
+ "title": "Sedimentation, decantation, filtration, evaporation",
+ "chapter": "Methods of Separation in Everyday Life",
+ "subject": "science",
+ "class": 6,
+ "topicType": "T4",
+ "plan": {
+  "game": "heat-lab@1",
+  "hint": "separate mode: water, filter, evaporate (sand, salt, chalk, sugar)"
+ },
+ "game": {
+  "archetype": "heat-lab@1",
+  "spec": {
+   "archetype": "heat-lab@1",
+   "skills": [
+    "c6-science-ch09-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "done": "right",
+    "heat": "HEAT",
+    "lock": "LOCK",
+    "run": "RUN",
+    "first": "falls first",
+    "last": "last",
+    "land": "land",
+    "sea": "sea",
+    "hour": "time",
+    "seaBreeze": "→ to land",
+    "landBreeze": "← to sea",
+    "keepCool": "keep it cool",
+    "keepWarm": "keep it warm",
+    "runDone": "Lab closed",
+    "caught": "caught",
+    "passed": "passed",
+    "keep": "keep which?",
+    "target": "get",
+    "steps": "steps",
+    "reset": "start again",
+    "black": "black",
+    "dark": "dark",
+    "white": "white",
+    "shiny": "shiny",
+    "copper": "copper",
+    "aluminium": "aluminium",
+    "iron": "iron",
+    "steel": "steel",
+    "glass": "glass",
+    "wood": "wood",
+    "plastic": "plastic",
+    "stones": "stones",
+    "rice": "rice",
+    "flour": "flour",
+    "husk": "husk",
+    "sand": "sand",
+    "salt": "salt",
+    "sugar": "sugar",
+    "sawdust": "sawdust",
+    "chalk": "chalk",
+    "handpick": "pick out",
+    "sieve": "sieve",
+    "winnow": "winnow",
+    "magnet": "magnet",
+    "water": "add water",
+    "filter": "filter",
+    "evaporate": "evaporate",
+    "wet": "in water"
+   },
+   "title": "Heat & Matter Lab",
+   "rounds": [
+    {
+     "mode": "separate",
+     "title": "Salt from sand",
+     "sub": "choose steps to get one solid",
+     "mix": [
+      "sand",
+      "salt"
+     ],
+     "target": "salt",
+     "maxSteps": 3,
+     "targets": "c6-science-ch09-t02-m1"
+    },
+    {
+     "mode": "separate",
+     "title": "Clean muddy water",
+     "sub": "choose steps to get the solid",
+     "mix": [
+      "chalk",
+      "sugar"
+     ],
+     "target": "chalk",
+     "maxSteps": 2,
+     "targets": "c6-science-ch09-t02-m2"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c6-science-ch09-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Separating mixtures",
+   "accent": "sci",
+   "targets": "c6-science-ch09-t02-m2",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Separating mixtures"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "A filter removes dissolved salt"
+      },
+      {
+       "id": "saltwater",
+       "type": "node",
+       "text": "Salt water",
+       "glyph": "beaker",
+       "color": "sci"
+      },
+      {
+       "id": "filter",
+       "type": "node",
+       "text": "Filter",
+       "glyph": "recycle",
+       "color": "ion"
+      },
+      {
+       "id": "salty",
+       "type": "node",
+       "text": "Salty water",
+       "glyph": "drop",
+       "color": "amber"
+      },
+      {
+       "id": "fm",
+       "type": "arrow",
+       "from": "saltwater",
+       "to": "filter",
+       "text": "passes through"
+      },
+      {
+       "id": "fs",
+       "type": "arrow",
+       "from": "filter",
+       "to": "salty",
+       "text": "still salty"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "mudwater",
+       "type": "node",
+       "text": "Muddy water",
+       "glyph": "jug",
+       "color": "sci"
+      },
+      {
+       "id": "settled",
+       "type": "node",
+       "text": "Settled mud",
+       "glyph": "mountain",
+       "color": "amber"
+      },
+      {
+       "id": "clear",
+       "type": "node",
+       "text": "Clearer liquid",
+       "glyph": "drop",
+       "color": "ion"
+      },
+      {
+       "id": "cloth",
+       "type": "node",
+       "text": "Filter paper",
+       "glyph": "recycle",
+       "color": "mint"
+      },
+      {
+       "id": "residue",
+       "type": "node",
+       "text": "Mud residue",
+       "glyph": "mountain",
+       "color": "amber"
+      },
+      {
+       "id": "filtrate",
+       "type": "node",
+       "text": "Filtrate",
+       "glyph": "beaker",
+       "color": "ion"
+      },
+      {
+       "id": "seta",
+       "type": "arrow",
+       "from": "mudwater",
+       "to": "settled",
+       "text": "settles"
+      },
+      {
+       "id": "deca",
+       "type": "arrow",
+       "from": "settled",
+       "to": "clear",
+       "text": "pour gently"
+      },
+      {
+       "id": "fa",
+       "type": "arrow",
+       "from": "clear",
+       "to": "cloth",
+       "text": "filter"
+      },
+      {
+       "id": "fb",
+       "type": "arrow",
+       "from": "cloth",
+       "to": "residue",
+       "text": "traps mud"
+      },
+      {
+       "id": "fc",
+       "type": "arrow",
+       "from": "cloth",
+       "to": "filtrate"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "saltmix",
+       "type": "node",
+       "text": "Salt water",
+       "glyph": "beaker",
+       "color": "sci"
+      },
+      {
+       "id": "sun",
+       "type": "glyph",
+       "name": "sun",
+       "color": "sun"
+      },
+      {
+       "id": "watergone",
+       "type": "node",
+       "text": "Water evaporates",
+       "glyph": "wind",
+       "color": "ion"
+      },
+      {
+       "id": "crystals",
+       "type": "node",
+       "text": "Salt crystals",
+       "glyph": "spark",
+       "color": "amber"
+      },
+      {
+       "id": "ea",
+       "type": "arrow",
+       "from": "saltmix",
+       "to": "watergone",
+       "text": "sun and wind"
+      },
+      {
+       "id": "eb",
+       "type": "arrow",
+       "from": "watergone",
+       "to": "crystals",
+       "text": "salt remains"
+      },
+      {
+       "id": "pan",
+       "type": "label",
+       "text": "Wide shallow pan",
+       "x": 420,
+       "y": 470,
+       "color": "mint"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "row",
+     "els": [
+      {
+       "id": "sed",
+       "type": "node",
+       "text": "Sedimentation",
+       "glyph": "mountain",
+       "color": "amber"
+      },
+      {
+       "id": "dec",
+       "type": "node",
+       "text": "Decantation",
+       "glyph": "jug",
+       "color": "ion"
+      },
+      {
+       "id": "fil",
+       "type": "node",
+       "text": "Filtration",
+       "glyph": "recycle",
+       "color": "mint"
+      },
+      {
+       "id": "eva",
+       "type": "node",
+       "text": "Evaporation",
+       "glyph": "sun",
+       "color": "sun"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "sed",
+       "to": "dec",
+       "text": "then"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "dec",
+       "to": "fil",
+       "text": "then"
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "fil",
+       "to": "eva"
+      },
+      {
+       "id": "safe",
+       "type": "label",
+       "text": "Clear is not always safe",
+       "x": 330,
+       "y": 500,
+       "color": "volt"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Mixtures can be separated by choosing a method for the materials inside them.",
+    "L2": "First, leave muddy water undisturbed. Heavier insoluble particles settle at the bottom; this is sedimentation.",
+    "L3": "Now gently pour off the clearer liquid above the settled layer. This is decantation.",
+    "L4": "Filtration passes the mixture through cloth, paper, or a strainer. Insoluble solids stay behind, while the liquid passes through.",
+    "L5": "But dissolved salt passes through a filter with the water. So filtering salt water does not remove its salt.",
+    "L6": "To get the salt back, leave the salt water in the sun. The water evaporates and salt crystals remain.",
+    "L7": "For sand, salt, and water, use sedimentation, decantation, filtration, then evaporation.",
+    "L8": "Clear-looking water may still contain germs or dissolved substances. It needs boiling or purifying before drinking."
+   },
+   "narration": {
+    "L1": {
+     "text": "Mixtures can be separated by choosing a method for the materials inside them.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "First, leave muddy water undisturbed. Heavier insoluble particles settle at the bottom; this is sedimentation.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "Now gently pour off the clearer liquid above the settled layer. This is decantation.",
+     "dur": 4.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "Filtration passes the mixture through cloth, paper, or a strainer. Insoluble solids stay behind, while the liquid passes through.",
+     "dur": 5.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "But dissolved salt passes through a filter with the water. So filtering salt water does not remove its salt.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "To get the salt back, leave the salt water in the sun. The water evaporates and salt crystals remain.",
+     "dur": 4.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "For sand, salt, and water, use sedimentation, decantation, filtration, then evaporation.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Clear-looking water may still contain germs or dissolved substances. It needs boiling or purifying before drinking.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.6,
+       "target": "saltwater"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "mudwater"
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.6,
+       "target": "seta"
+      },
+      {
+       "at": 1.2,
+       "do": "flow",
+       "dur": 1,
+       "target": "seta",
+       "to": 1
+      },
+      {
+       "at": 2.2,
+       "do": "show",
+       "dur": 0.6,
+       "target": "settled"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "deca"
+      },
+      {
+       "at": 0.5,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "deca",
+       "to": 1
+      },
+      {
+       "at": 1.4,
+       "do": "show",
+       "dur": 0.6,
+       "target": "clear"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "cloth",
+        "fa"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "fa",
+       "to": 1
+      },
+      {
+       "at": 1.6,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "residue",
+        "filtrate"
+       ]
+      },
+      {
+       "at": 2.4,
+       "do": "flow",
+       "dur": 0.8,
+       "target": [
+        "fb",
+        "fc"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "filter",
+        "fm"
+       ]
+      },
+      {
+       "at": 0.7,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "fm",
+       "to": 1
+      },
+      {
+       "at": 1.5,
+       "do": "show",
+       "dur": 0.6,
+       "target": "salty"
+      },
+      {
+       "at": 2,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "saltmix",
+        "sun"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.7,
+       "target": "ea"
+      },
+      {
+       "at": 1.4,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "ea",
+       "to": 1
+      },
+      {
+       "at": 2.3,
+       "do": "show",
+       "dur": 0.6,
+       "target": "watergone"
+      },
+      {
+       "at": 3,
+       "do": "show",
+       "dur": 0.6,
+       "target": "crystals"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.5,
+       "target": "sed"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.5,
+       "target": "dec"
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.5,
+       "target": "fil"
+      },
+      {
+       "at": 1.5,
+       "do": "show",
+       "dur": 0.5,
+       "target": "eva"
+      },
+      {
+       "at": 2,
+       "do": "flow",
+       "dur": 1.2,
+       "target": [
+        "a1",
+        "a2",
+        "a3"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "safe"
+      },
+      {
+       "at": 1,
+       "do": "camera",
+       "dur": 1.5,
+       "zoom": 1.05
+      },
+      {
+       "at": "end",
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which method gets dissolved salt back from salt water?",
+    "options": [
+     "sed",
+     "dec",
+     "fil",
+     "eva"
+    ],
+    "answer": "eva",
+    "src": "c6-science-ch09-t02-i13"
+   }
+  },
+  "repairs": [
+   "string:fc.text",
+   "string:a3.text"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 40
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch09-t02-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "mix",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        180,
+        220
+       ],
+       "r": 85
+      },
+      {
+       "id": "mat1",
+       "op": "circle",
+       "startMs": 400,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        155,
+        195
+       ],
+       "r": 18,
+       "fill": "accent"
+      },
+      {
+       "id": "mat2",
+       "op": "circle",
+       "startMs": 500,
+       "endMs": 1000,
+       "ink": "soft",
+       "weight": 2,
+       "c": [
+        205,
+        245
+       ],
+       "r": 14,
+       "fill": "soft"
+      },
+      {
+       "id": "mixlab",
+       "op": "label",
+       "startMs": 1000,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        335
+       ],
+       "text": "mixtures",
+       "to": [
+        180,
+        305
+       ]
+      },
+      {
+       "id": "choose",
+       "op": "arrow",
+       "startMs": 1800,
+       "endMs": 2700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        300,
+        220
+       ],
+       "to": [
+        520,
+        220
+       ]
+      },
+      {
+       "id": "method",
+       "op": "rect",
+       "startMs": 2700,
+       "endMs": 3600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        540,
+        165
+       ],
+       "w": 180,
+       "h": 110,
+       "round": 12
+      },
+      {
+       "id": "methodlab",
+       "op": "label",
+       "startMs": 3600,
+       "endMs": 4300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        630,
+        220
+       ],
+       "text": "method",
+       "to": [
+        630,
+        165
+       ]
+      },
+      {
+       "id": "inside",
+       "op": "label",
+       "startMs": 4400,
+       "endMs": 5100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        390
+       ],
+       "text": "materials",
+       "to": [
+        180,
+        305
+       ]
+      },
+      {
+       "id": "result",
+       "op": "arrow",
+       "startMs": 5000,
+       "endMs": 5700,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        630,
+        280
+       ],
+       "to": [
+        630,
+        365
+       ]
+      },
+      {
+       "id": "separate",
+       "op": "label",
+       "startMs": 5700,
+       "endMs": 6132,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        630,
+        405
+       ],
+       "text": "separated",
+       "to": [
+        630,
+        365
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch09-t02-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "jar",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        145,
+        100
+       ],
+       "w": 220,
+       "h": 300,
+       "round": 18
+      },
+      {
+       "id": "mudwater",
+       "op": "ellipse",
+       "startMs": 700,
+       "endMs": 1500,
+       "ink": "soft",
+       "weight": 2,
+       "c": [
+        255,
+        300
+       ],
+       "rx": 95,
+       "ry": 75,
+       "fill": "soft"
+      },
+      {
+       "id": "heavy",
+       "op": "circle",
+       "startMs": 1200,
+       "endMs": 1800,
+       "ink": "mark",
+       "weight": 2,
+       "c": [
+        210,
+        355
+       ],
+       "r": 12,
+       "fill": "mark"
+      },
+      {
+       "id": "heavy2",
+       "op": "circle",
+       "startMs": 1300,
+       "endMs": 1900,
+       "ink": "mark",
+       "weight": 2,
+       "c": [
+        250,
+        365
+       ],
+       "r": 10,
+       "fill": "mark"
+      },
+      {
+       "id": "heavy3",
+       "op": "circle",
+       "startMs": 1400,
+       "endMs": 2000,
+       "ink": "mark",
+       "weight": 2,
+       "c": [
+        295,
+        350
+       ],
+       "r": 11,
+       "fill": "mark"
+      },
+      {
+       "id": "settle",
+       "op": "arrow",
+       "startMs": 2100,
+       "endMs": 3000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        255,
+        230
+       ],
+       "to": [
+        255,
+        330
+       ]
+      },
+      {
+       "id": "sed",
+       "op": "label",
+       "startMs": 3000,
+       "endMs": 4200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        410,
+        345
+       ],
+       "text": "sedimentation",
+       "to": [
+        305,
+        350
+       ]
+      },
+      {
+       "id": "insol",
+       "op": "label",
+       "startMs": 4200,
+       "endMs": 5000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        410,
+        390
+       ],
+       "text": "insoluble",
+       "to": [
+        305,
+        350
+       ]
+      },
+      {
+       "id": "bottom",
+       "op": "label",
+       "startMs": 5000,
+       "endMs": 5700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        185,
+        440
+       ],
+       "text": "bottom",
+       "to": [
+        255,
+        390
+       ]
+      },
+      {
+       "id": "still",
+       "op": "label",
+       "startMs": 5700,
+       "endMs": 6983,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        500,
+        120
+       ],
+       "text": "undisturbed"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch09-t02-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "pourjar",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        145,
+        100
+       ],
+       "w": 220,
+       "h": 300,
+       "round": 18
+      },
+      {
+       "id": "clear",
+       "op": "ellipse",
+       "startMs": 500,
+       "endMs": 1200,
+       "ink": "soft",
+       "weight": 2,
+       "c": [
+        255,
+        205
+       ],
+       "rx": 90,
+       "ry": 70,
+       "fill": "soft"
+      },
+      {
+       "id": "layer",
+       "op": "line",
+       "startMs": 1000,
+       "endMs": 1500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        165,
+        285
+       ],
+       "to": [
+        345,
+        285
+       ]
+      },
+      {
+       "id": "pourarrow",
+       "op": "arrow",
+       "startMs": 1700,
+       "endMs": 3300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        365,
+        180
+       ],
+       "to": [
+        560,
+        260
+       ]
+      },
+      {
+       "id": "cup",
+       "op": "rect",
+       "startMs": 3000,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        555,
+        245
+       ],
+       "w": 150,
+       "h": 130,
+       "round": 14
+      },
+      {
+       "id": "liquid",
+       "op": "ellipse",
+       "startMs": 3500,
+       "endMs": 4200,
+       "ink": "soft",
+       "weight": 2,
+       "c": [
+        630,
+        335
+       ],
+       "rx": 55,
+       "ry": 22,
+       "fill": "soft"
+      },
+      {
+       "id": "clearlabel",
+       "op": "label",
+       "startMs": 3900,
+       "endMs": 4900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        470,
+        230
+       ],
+       "text": "clearer liquid",
+       "to": [
+        530,
+        255
+       ]
+      },
+      {
+       "id": "decant",
+       "op": "label",
+       "startMs": 5000,
+       "endMs": 6557,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        620,
+        415
+       ],
+       "text": "decantation",
+       "to": [
+        630,
+        375
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch09-t02-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "filter",
+       "op": "polygon",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         285,
+         145
+        ],
+        [
+         515,
+         145
+        ],
+        [
+         455,
+         290
+        ],
+        [
+         345,
+         290
+        ]
+       ]
+      },
+      {
+       "id": "cloth",
+       "op": "text",
+       "startMs": 500,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        125
+       ],
+       "text": "cloth",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "mixture",
+       "op": "ellipse",
+       "startMs": 1000,
+       "endMs": 1700,
+       "ink": "soft",
+       "weight": 2,
+       "c": [
+        400,
+        170
+       ],
+       "rx": 85,
+       "ry": 25,
+       "fill": "soft"
+      },
+      {
+       "id": "pass",
+       "op": "arrow",
+       "startMs": 1800,
+       "endMs": 3000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        190
+       ],
+       "to": [
+        400,
+        350
+       ]
+      },
+      {
+       "id": "solid",
+       "op": "circle",
+       "startMs": 2500,
+       "endMs": 3300,
+       "ink": "mark",
+       "weight": 2,
+       "c": [
+        370,
+        235
+       ],
+       "r": 12,
+       "fill": "mark"
+      },
+      {
+       "id": "solid2",
+       "op": "circle",
+       "startMs": 2600,
+       "endMs": 3400,
+       "ink": "mark",
+       "weight": 2,
+       "c": [
+        405,
+        240
+       ],
+       "r": 10,
+       "fill": "mark"
+      },
+      {
+       "id": "stay",
+       "op": "label",
+       "startMs": 3400,
+       "endMs": 4700,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        205,
+        250
+       ],
+       "text": "insoluble solids",
+       "to": [
+        355,
+        240
+       ]
+      },
+      {
+       "id": "liquid",
+       "op": "ellipse",
+       "startMs": 4200,
+       "endMs": 5200,
+       "ink": "soft",
+       "weight": 2,
+       "c": [
+        400,
+        375
+       ],
+       "rx": 75,
+       "ry": 25,
+       "fill": "soft"
+      },
+      {
+       "id": "through",
+       "op": "label",
+       "startMs": 5200,
+       "endMs": 6500,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        535,
+        365
+       ],
+       "text": "liquid passes",
+       "to": [
+        475,
+        375
+       ]
+      },
+      {
+       "id": "paper",
+       "op": "label",
+       "startMs": 6500,
+       "endMs": 7300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        430
+       ],
+       "text": "paper",
+       "to": [
+        400,
+        290
+       ]
+      },
+      {
+       "id": "strainer",
+       "op": "label",
+       "startMs": 7300,
+       "endMs": 8685,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        620,
+        150
+       ],
+       "text": "strainer"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch09-t02-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "saltwater",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        170
+       ],
+       "w": 190,
+       "h": 220,
+       "round": 16
+      },
+      {
+       "id": "water",
+       "op": "ellipse",
+       "startMs": 600,
+       "endMs": 1200,
+       "ink": "soft",
+       "weight": 2,
+       "c": [
+        215,
+        330
+       ],
+       "rx": 75,
+       "ry": 25,
+       "fill": "soft"
+      },
+      {
+       "id": "salt",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        180,
+        300
+       ],
+       "r": 7,
+       "fill": "accent"
+      },
+      {
+       "id": "salt2",
+       "op": "circle",
+       "startMs": 1000,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        230,
+        315
+       ],
+       "r": 7,
+       "fill": "accent"
+      },
+      {
+       "id": "filterpaper",
+       "op": "polygon",
+       "startMs": 1500,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         440,
+         150
+        ],
+        [
+         600,
+         150
+        ],
+        [
+         565,
+         260
+        ],
+        [
+         475,
+         260
+        ]
+       ]
+      },
+      {
+       "id": "flow",
+       "op": "arrow",
+       "startMs": 2400,
+       "endMs": 3600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        520,
+        245
+       ],
+       "to": [
+        520,
+        370
+       ]
+      },
+      {
+       "id": "dissolved",
+       "op": "label",
+       "startMs": 3600,
+       "endMs": 4900,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        120,
+        120
+       ],
+       "text": "dissolved salt",
+       "to": [
+        205,
+        300
+       ]
+      },
+      {
+       "id": "passes",
+       "op": "label",
+       "startMs": 4900,
+       "endMs": 5700,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        575,
+        330
+       ],
+       "text": "passes",
+       "to": [
+        535,
+        300
+       ]
+      },
+      {
+       "id": "notremove",
+       "op": "label",
+       "startMs": 5700,
+       "endMs": 7200,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        430
+       ],
+       "text": "does not remove salt",
+       "to": [
+        520,
+        370
+       ]
+      },
+      {
+       "id": "filterlabel",
+       "op": "label",
+       "startMs": 7200,
+       "endMs": 8685,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        475,
+        125
+       ],
+       "text": "filter",
+       "to": [
+        520,
+        150
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch09-t02-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "plate",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        370
+       ],
+       "rx": 220,
+       "ry": 45
+      },
+      {
+       "id": "sun",
+       "op": "circle",
+       "startMs": 500,
+       "endMs": 1300,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        135,
+        115
+       ],
+       "r": 55,
+       "fill": "accent"
+      },
+      {
+       "id": "ray1",
+       "op": "line",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        170,
+        145
+       ],
+       "to": [
+        250,
+        220
+       ]
+      },
+      {
+       "id": "ray2",
+       "op": "line",
+       "startMs": 1000,
+       "endMs": 1600,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        175,
+        105
+       ],
+       "to": [
+        270,
+        125
+       ]
+      },
+      {
+       "id": "saltwater",
+       "op": "ellipse",
+       "startMs": 1300,
+       "endMs": 2100,
+       "ink": "soft",
+       "weight": 2,
+       "c": [
+        400,
+        350
+       ],
+       "rx": 160,
+       "ry": 25,
+       "fill": "soft"
+      },
+      {
+       "id": "vapour1",
+       "op": "arrow",
+       "startMs": 2200,
+       "endMs": 3200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        350,
+        320
+       ],
+       "to": [
+        320,
+        220
+       ]
+      },
+      {
+       "id": "vapour2",
+       "op": "arrow",
+       "startMs": 2300,
+       "endMs": 3300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        450,
+        320
+       ],
+       "to": [
+        480,
+        220
+       ]
+      },
+      {
+       "id": "evap",
+       "op": "label",
+       "startMs": 3300,
+       "endMs": 4700,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        290,
+        190
+       ],
+       "text": "water evaporates",
+       "to": [
+        320,
+        220
+       ]
+      },
+      {
+       "id": "crystal1",
+       "op": "polygon",
+       "startMs": 4700,
+       "endMs": 5500,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         350,
+         360
+        ],
+        [
+         365,
+         340
+        ],
+        [
+         380,
+         360
+        ]
+       ],
+       "fill": "accent"
+      },
+      {
+       "id": "crystal2",
+       "op": "polygon",
+       "startMs": 4800,
+       "endMs": 5600,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         420,
+         365
+        ],
+        [
+         438,
+         340
+        ],
+        [
+         455,
+         365
+        ]
+       ],
+       "fill": "accent"
+      },
+      {
+       "id": "remain",
+       "op": "label",
+       "startMs": 5600,
+       "endMs": 7000,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        500,
+        410
+       ],
+       "text": "salt crystals remain",
+       "to": [
+        450,
+        360
+       ]
+      },
+      {
+       "id": "sunlabel",
+       "op": "label",
+       "startMs": 7000,
+       "endMs": 7685,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        115,
+        190
+       ],
+       "text": "sun",
+       "to": [
+        135,
+        170
+       ]
+      },
+      {
+       "id": "saltlabel",
+       "op": "label",
+       "startMs": 7685,
+       "endMs": 8685,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        370,
+        450
+       ],
+       "text": "salt",
+       "to": [
+        400,
+        370
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch09-t02-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "sand",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "mark",
+       "weight": 2,
+       "c": [
+        155,
+        150
+       ],
+       "r": 38,
+       "fill": "mark"
+      },
+      {
+       "id": "salt",
+       "op": "circle",
+       "startMs": 300,
+       "endMs": 800,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        275,
+        150
+       ],
+       "r": 38,
+       "fill": "accent"
+      },
+      {
+       "id": "water",
+       "op": "circle",
+       "startMs": 600,
+       "endMs": 1100,
+       "ink": "soft",
+       "weight": 2,
+       "c": [
+        395,
+        150
+       ],
+       "r": 38,
+       "fill": "soft"
+      },
+      {
+       "id": "sandlabel",
+       "op": "label",
+       "startMs": 900,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        155,
+        215
+       ],
+       "text": "sand",
+       "to": [
+        155,
+        188
+       ]
+      },
+      {
+       "id": "saltlabel",
+       "op": "label",
+       "startMs": 1000,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        275,
+        215
+       ],
+       "text": "salt",
+       "to": [
+        275,
+        188
+       ]
+      },
+      {
+       "id": "waterlabel",
+       "op": "label",
+       "startMs": 1100,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        395,
+        215
+       ],
+       "text": "water",
+       "to": [
+        395,
+        188
+       ]
+      },
+      {
+       "id": "step1",
+       "op": "text",
+       "startMs": 1600,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        155,
+        300
+       ],
+       "text": "sedimentation",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "step2",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        315,
+        300
+       ],
+       "text": "decantation",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "step3",
+       "op": "text",
+       "startMs": 2600,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        475,
+        300
+       ],
+       "text": "filtration",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "step4",
+       "op": "text",
+       "startMs": 3100,
+       "endMs": 3800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        635,
+        300
+       ],
+       "text": "evaporation",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "a1",
+       "op": "arrow",
+       "startMs": 3800,
+       "endMs": 4150,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        205,
+        300
+       ],
+       "to": [
+        260,
+        300
+       ]
+      },
+      {
+       "id": "a2",
+       "op": "arrow",
+       "startMs": 4000,
+       "endMs": 4350,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        365,
+        300
+       ],
+       "to": [
+        420,
+        300
+       ]
+      },
+      {
+       "id": "a3",
+       "op": "arrow",
+       "startMs": 4200,
+       "endMs": 4550,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        525,
+        300
+       ],
+       "to": [
+        580,
+        300
+       ]
+      },
+      {
+       "id": "order",
+       "op": "label",
+       "startMs": 4550,
+       "endMs": 5281,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        420
+       ],
+       "text": "sand salt water",
+       "to": [
+        400,
+        150
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch09-t02-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "glass",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        135,
+        150
+       ],
+       "w": 190,
+       "h": 245,
+       "round": 16
+      },
+      {
+       "id": "clearwater",
+       "op": "ellipse",
+       "startMs": 600,
+       "endMs": 1200,
+       "ink": "soft",
+       "weight": 2,
+       "c": [
+        230,
+        335
+       ],
+       "rx": 75,
+       "ry": 25,
+       "fill": "soft"
+      },
+      {
+       "id": "germ1",
+       "op": "circle",
+       "startMs": 1000,
+       "endMs": 1500,
+       "ink": "mark",
+       "weight": 2,
+       "c": [
+        190,
+        300
+       ],
+       "r": 7,
+       "fill": "mark"
+      },
+      {
+       "id": "germ2",
+       "op": "circle",
+       "startMs": 1100,
+       "endMs": 1600,
+       "ink": "mark",
+       "weight": 2,
+       "c": [
+        250,
+        320
+       ],
+       "r": 6,
+       "fill": "mark"
+      },
+      {
+       "id": "dissolved",
+       "op": "circle",
+       "startMs": 1200,
+       "endMs": 1700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        220,
+        350
+       ],
+       "r": 6,
+       "fill": "accent"
+      },
+      {
+       "id": "clearlabel",
+       "op": "label",
+       "startMs": 1700,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        115,
+        115
+       ],
+       "text": "clear-looking water",
+       "to": [
+        230,
+        300
+       ]
+      },
+      {
+       "id": "germslabel",
+       "op": "label",
+       "startMs": 3000,
+       "endMs": 3700,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        410,
+        260
+       ],
+       "text": "germs",
+       "to": [
+        255,
+        315
+       ]
+      },
+      {
+       "id": "substances",
+       "op": "label",
+       "startMs": 3700,
+       "endMs": 4900,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        410,
+        320
+       ],
+       "text": "dissolved substances",
+       "to": [
+        225,
+        350
+       ]
+      },
+      {
+       "id": "boil",
+       "op": "arrow",
+       "startMs": 4900,
+       "endMs": 5700,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        430,
+        170
+       ],
+       "to": [
+        600,
+        170
+       ]
+      },
+      {
+       "id": "purify",
+       "op": "arrow",
+       "startMs": 5200,
+       "endMs": 6000,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        430,
+        370
+       ],
+       "to": [
+        600,
+        370
+       ]
+      },
+      {
+       "id": "boiling",
+       "op": "label",
+       "startMs": 5700,
+       "endMs": 6400,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        505,
+        140
+       ],
+       "text": "boiling",
+       "to": [
+        500,
+        170
+       ]
+      },
+      {
+       "id": "purifying",
+       "op": "label",
+       "startMs": 6000,
+       "endMs": 6800,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        500,
+        405
+       ],
+       "text": "purifying",
+       "to": [
+        600,
+        370
+       ]
+      },
+      {
+       "id": "drink",
+       "op": "label",
+       "startMs": 6800,
+       "endMs": 7409,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        625,
+        270
+       ],
+       "text": "drinking",
+       "to": [
+        600,
+        270
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1",
+   "key": "water → filter → evaporate",
+   "prompt": "salt from sand+salt"
+  },
+  {
+   "itemId": "r2",
+   "key": "water → filter",
+   "prompt": "chalk from chalk+sugar"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

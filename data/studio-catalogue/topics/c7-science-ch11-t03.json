@@ -1,0 +1,1726 @@
+{
+ "topicId": "c7-science-ch11-t03",
+ "title": "Reflection and plane mirrors",
+ "chapter": "Light: Shadows and Reflections",
+ "subject": "science",
+ "class": 7,
+ "topicType": "T3",
+ "plan": {
+  "game": "ray-lab@1",
+  "hint": "angle mode then mirror mode"
+ },
+ "game": {
+  "archetype": "ray-lab@1",
+  "spec": {
+   "archetype": "ray-lab@1",
+   "skills": [
+    "c7-science-ch11-t03"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "done": "right",
+    "fire": "FIRE",
+    "lock": "LOCK",
+    "mirrors": "mirrors",
+    "target": "target",
+    "tapCell": "Tap a cell to stand a mirror",
+    "rotate": "Drag the mirror to turn it",
+    "incidence": "i",
+    "reflection": "r",
+    "screen": "screen",
+    "image": "image",
+    "object": "candle",
+    "height": "height",
+    "runDone": "Lab closed",
+    "hit": "HIT",
+    "miss": "MISSED",
+    "inverted": "upside down"
+   },
+   "title": "Ray Lab",
+   "rounds": [
+    {
+     "mode": "angle",
+     "title": "Bounce the ray",
+     "sub": "turn the mirror to hit the target",
+     "laser": [
+      180,
+      230
+     ],
+     "pivot": [
+      430,
+      470
+     ],
+     "goal": [
+      660,
+      240
+     ],
+     "tol": 14
+    },
+    {
+     "mode": "mirror",
+     "title": "Periscope Path",
+     "sub": "guide the beam around the walls",
+     "w": 7,
+     "h": 6,
+     "source": [
+      0,
+      5
+     ],
+     "dir": "E",
+     "target": [
+      6,
+      0
+     ],
+     "walls": [
+      [
+       4,
+       5
+      ],
+      [
+       4,
+       4
+      ],
+      [
+       4,
+       3
+      ],
+      [
+       5,
+       3
+      ],
+      [
+       6,
+       3
+      ]
+     ],
+     "maxMirrors": 2
+    },
+    {
+     "mode": "pinhole",
+     "title": "Screen or mirror?",
+     "sub": "catch this image, unlike a mirror image",
+     "objH": 15,
+     "objD": 40,
+     "imgH": 6,
+     "tol": 0.6,
+     "targets": "c7-science-ch11-t03-m1"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-science-ch11-t03"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Reflection and plane mirrors",
+   "accent": "sci",
+   "targets": "c7-science-ch11-t03-m1",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Reflection"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "The image is on the mirror surface"
+      },
+      {
+       "id": "obj",
+       "type": "glyph",
+       "name": "person",
+       "x": 240,
+       "y": 350,
+       "size": 120,
+       "color": "sci"
+      },
+      {
+       "id": "mir",
+       "type": "label",
+       "text": "Plane mirror",
+       "x": 500,
+       "y": 330,
+       "color": "ion"
+      },
+      {
+       "id": "img",
+       "type": "glyph",
+       "name": "person",
+       "x": 760,
+       "y": 350,
+       "size": 120,
+       "color": "mint"
+      },
+      {
+       "id": "wrong",
+       "type": "label",
+       "text": "Not on surface",
+       "x": 430,
+       "y": 470,
+       "color": "amber"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "light",
+       "type": "node",
+       "text": "Light ray",
+       "glyph": "sun",
+       "color": "sun"
+      },
+      {
+       "id": "mirror",
+       "type": "node",
+       "text": "Smooth mirror",
+       "glyph": "mirror",
+       "color": "ion"
+      },
+      {
+       "id": "bounce",
+       "type": "node",
+       "text": "Reflected ray",
+       "glyph": "lightning",
+       "color": "mint"
+      },
+      {
+       "id": "ar1",
+       "type": "arrow",
+       "from": "light",
+       "to": "mirror",
+       "text": "strikes"
+      },
+      {
+       "id": "ar2",
+       "type": "arrow",
+       "from": "mirror",
+       "to": "bounce",
+       "text": "bounces"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "split",
+     "els": [
+      {
+       "id": "front",
+       "type": "node",
+       "text": "Object 1 m",
+       "glyph": "person",
+       "color": "sci"
+      },
+      {
+       "id": "plane",
+       "type": "node",
+       "text": "Mirror",
+       "glyph": "mirror",
+       "color": "ion"
+      },
+      {
+       "id": "behind",
+       "type": "node",
+       "text": "Image 1 m",
+       "glyph": "person",
+       "color": "mint"
+      },
+      {
+       "id": "upright",
+       "type": "label",
+       "text": "upright",
+       "x": 170,
+       "y": 500,
+       "color": "mint"
+      },
+      {
+       "id": "size",
+       "type": "label",
+       "text": "same size",
+       "x": 400,
+       "y": 500,
+       "color": "mint"
+      },
+      {
+       "id": "behindlab",
+       "type": "label",
+       "text": "behind mirror",
+       "x": 690,
+       "y": 500,
+       "color": "mint"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "row",
+     "els": [
+      {
+       "id": "left",
+       "type": "label",
+       "text": "left"
+      },
+      {
+       "id": "right",
+       "type": "label",
+       "text": "right"
+      },
+      {
+       "id": "write",
+       "type": "label",
+       "text": "writing reversed",
+       "color": "amber"
+      }
+     ]
+    },
+    {
+     "id": "s5",
+     "layout": "free",
+     "els": [
+      {
+       "id": "normal",
+       "type": "label",
+       "text": "normal",
+       "x": 470,
+       "y": 210,
+       "color": "ion"
+      },
+      {
+       "id": "equal",
+       "type": "label",
+       "text": "incidence = reflection",
+       "x": 370,
+       "y": 520,
+       "color": "mint"
+      }
+     ]
+    },
+    {
+     "id": "s6",
+     "layout": "row",
+     "els": [
+      {
+       "id": "check",
+       "type": "title",
+       "text": "Your turn"
+      },
+      {
+       "id": "one",
+       "type": "node",
+       "text": "Upright",
+       "glyph": "person",
+       "color": "mint"
+      },
+      {
+       "id": "two",
+       "type": "node",
+       "text": "Same size",
+       "glyph": "balance",
+       "color": "mint"
+      },
+      {
+       "id": "three",
+       "type": "node",
+       "text": "Behind mirror",
+       "glyph": "mirror",
+       "color": "ion"
+      },
+      {
+       "id": "four",
+       "type": "node",
+       "text": "Upside down",
+       "glyph": "question",
+       "color": "amber"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Reflection is the bouncing back of light from a surface.",
+    "L2": "A smooth, shiny surface, such as a plane mirror, can form a clear image.",
+    "L3": "The image is not on the mirror surface. It appears behind the mirror, as far behind as the object is in front.",
+    "L4": "A plane mirror image is upright and the same size as the object.",
+    "L5": "A mirror swaps left and right. This is called lateral inversion, not an upside-down flip.",
+    "L6": "If a ray strikes at 30 degrees to the normal, it reflects at 30 degrees on the other side.",
+    "L7": "So a clear plane-mirror image is upright, the same size, behind the mirror, and laterally inverted.",
+    "L8": "Tap the three true features of a plane-mirror image."
+   },
+   "narration": {
+    "L1": {
+     "text": "Reflection is the bouncing back of light from a surface.",
+     "dur": 2,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "A smooth, shiny surface, such as a plane mirror, can form a clear image.",
+     "dur": 2.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "The image is not on the mirror surface. It appears behind the mirror, as far behind as the object is in front.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "A plane mirror image is upright and the same size as the object.",
+     "dur": 2.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "A mirror swaps left and right. This is called lateral inversion, not an upside-down flip.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "If a ray strikes at 30 degrees to the normal, it reflects at 30 degrees on the other side.",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "So a clear plane-mirror image is upright, the same size, behind the mirror, and laterally inverted.",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Tap the three true features of a plane-mirror image.",
+     "dur": 2,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "light"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.6,
+       "target": "mirror"
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.6,
+       "target": "bounce"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "mirror"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "myth"
+      },
+      {
+       "at": 1,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      },
+      {
+       "at": 1.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": "img"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.3,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "front",
+        "plane",
+        "behind"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "upright",
+        "size",
+        "behindlab"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.3,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 1,
+       "target": [
+        "left",
+        "right",
+        "write"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.3,
+     "scene": "s5",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "normal"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.3,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1.5,
+       "target": [
+        "upright",
+        "size",
+        "behindlab"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s6",
+     "cues": [
+      {
+       "at": 0,
+       "do": "interactive",
+       "dur": 1
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Tap the three true features of a plane-mirror image.",
+    "options": [
+     "one",
+     "two",
+     "three",
+     "four"
+    ],
+    "answer": "three",
+    "src": "c7-science-ch11-t03-i03"
+   }
+  },
+  "repairs": [
+   "string:swap.text",
+   "el:id",
+   "el:id",
+   "el:id",
+   "arrow:dangling",
+   "arrow:dangling",
+   "cue:target",
+   "cue:target"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 26
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch11-t03-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "surface",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        120,
+        340
+       ],
+       "to": [
+        680,
+        340
+       ]
+      },
+      {
+       "id": "rayin",
+       "op": "arrow",
+       "startMs": 700,
+       "endMs": 1800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        180,
+        120
+       ],
+       "to": [
+        400,
+        340
+       ]
+      },
+      {
+       "id": "rayout",
+       "op": "arrow",
+       "startMs": 1900,
+       "endMs": 3000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        340
+       ],
+       "to": [
+        640,
+        120
+       ]
+      },
+      {
+       "id": "reflection",
+       "op": "label",
+       "startMs": 3100,
+       "endMs": 3900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        390
+       ],
+       "text": "Reflection",
+       "to": [
+        400,
+        340
+       ]
+      },
+      {
+       "id": "light",
+       "op": "label",
+       "startMs": 3300,
+       "endMs": 4000,
+       "weight": 1,
+       "at": [
+        190,
+        95
+       ],
+       "text": "light",
+       "to": [
+        180,
+        120
+       ]
+      },
+      {
+       "id": "surfaceLabel",
+       "op": "label",
+       "startMs": 3900,
+       "endMs": 4700,
+       "weight": 1,
+       "at": [
+        590,
+        375
+       ],
+       "text": "surface",
+       "to": [
+        600,
+        340
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch11-t03-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "mirror",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        390,
+        80
+       ],
+       "w": 20,
+       "h": 300,
+       "fill": "soft"
+      },
+      {
+       "id": "shiny",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        55
+       ],
+       "text": "shiny",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "object",
+       "op": "rect",
+       "startMs": 1200,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        230,
+        260
+       ],
+       "w": 70,
+       "h": 100
+      },
+      {
+       "id": "clearImage",
+       "op": "rect",
+       "startMs": 2300,
+       "endMs": 3300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        510,
+        260
+       ],
+       "w": 70,
+       "h": 100
+      },
+      {
+       "id": "imageLabel",
+       "op": "label",
+       "startMs": 3400,
+       "endMs": 4500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        545,
+        400
+       ],
+       "text": "clear image",
+       "to": [
+        545,
+        360
+       ]
+      },
+      {
+       "id": "planeMirror",
+       "op": "label",
+       "startMs": 4600,
+       "endMs": 5700,
+       "weight": 1,
+       "at": [
+        425,
+        420
+       ],
+       "text": "plane mirror",
+       "to": [
+        400,
+        380
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch11-t03-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 9962,
+     "ops": [
+      {
+       "id": "mirrorLine",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        400,
+        70
+       ],
+       "to": [
+        400,
+        430
+       ]
+      },
+      {
+       "id": "mirrorWord",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1400,
+       "weight": 1,
+       "at": [
+        400,
+        55
+       ],
+       "text": "mirror",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "objectBox",
+       "op": "rect",
+       "startMs": 1100,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        220,
+        260
+       ],
+       "w": 65,
+       "h": 90
+      },
+      {
+       "id": "imageBox",
+       "op": "rect",
+       "startMs": 2000,
+       "endMs": 2800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        515,
+        260
+       ],
+       "w": 65,
+       "h": 90
+      },
+      {
+       "id": "frontDistance",
+       "op": "line",
+       "startMs": 3000,
+       "endMs": 3900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        285,
+        220
+       ],
+       "to": [
+        400,
+        220
+       ]
+      },
+      {
+       "id": "backDistance",
+       "op": "line",
+       "startMs": 4000,
+       "endMs": 4900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        245
+       ],
+       "to": [
+        515,
+        245
+       ]
+      },
+      {
+       "id": "objectLabel",
+       "op": "label",
+       "startMs": 5000,
+       "endMs": 5700,
+       "weight": 1,
+       "at": [
+        245,
+        390
+       ],
+       "text": "object",
+       "to": [
+        252,
+        350
+       ]
+      },
+      {
+       "id": "imageLabel3",
+       "op": "label",
+       "startMs": 5700,
+       "endMs": 6400,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        530,
+        390
+       ],
+       "text": "image",
+       "to": [
+        547,
+        350
+       ]
+      },
+      {
+       "id": "behind",
+       "op": "label",
+       "startMs": 6500,
+       "endMs": 7800,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        470,
+        150
+       ],
+       "text": "behind the mirror",
+       "to": [
+        470,
+        245
+       ]
+      },
+      {
+       "id": "equal",
+       "op": "text",
+       "startMs": 8000,
+       "endMs": 8500,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        400,
+        285
+       ],
+       "text": "=",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch11-t03-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "uprightObject",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        190,
+        250
+       ],
+       "w": 70,
+       "h": 110
+      },
+      {
+       "id": "uprightImage",
+       "op": "rect",
+       "startMs": 1000,
+       "endMs": 1900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        540,
+        250
+       ],
+       "w": 70,
+       "h": 110
+      },
+      {
+       "id": "mirror4",
+       "op": "line",
+       "startMs": 2000,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        430,
+        100
+       ],
+       "to": [
+        430,
+        410
+       ]
+      },
+      {
+       "id": "upright",
+       "op": "label",
+       "startMs": 2900,
+       "endMs": 3900,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        225,
+        210
+       ],
+       "text": "upright",
+       "to": [
+        225,
+        250
+       ]
+      },
+      {
+       "id": "sameSize",
+       "op": "label",
+       "startMs": 3900,
+       "endMs": 4900,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        565,
+        210
+       ],
+       "text": "same size",
+       "to": [
+        575,
+        250
+       ]
+      },
+      {
+       "id": "equalSize",
+       "op": "line",
+       "startMs": 5000,
+       "endMs": 5700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        270,
+        405
+       ],
+       "to": [
+        540,
+        405
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch11-t03-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "mirror5",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        400,
+        90
+       ],
+       "to": [
+        400,
+        410
+       ]
+      },
+      {
+       "id": "leftArrow",
+       "op": "arrow",
+       "startMs": 900,
+       "endMs": 1900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        300,
+        220
+       ],
+       "to": [
+        190,
+        220
+       ]
+      },
+      {
+       "id": "rightArrow",
+       "op": "arrow",
+       "startMs": 2000,
+       "endMs": 3000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        500,
+        220
+       ],
+       "to": [
+        610,
+        220
+       ]
+      },
+      {
+       "id": "left",
+       "op": "text",
+       "startMs": 3100,
+       "endMs": 3700,
+       "weight": 1,
+       "at": [
+        245,
+        180
+       ],
+       "text": "left",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "right",
+       "op": "text",
+       "startMs": 3700,
+       "endMs": 4300,
+       "weight": 1,
+       "at": [
+        555,
+        180
+       ],
+       "text": "right",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "lateral",
+       "op": "text",
+       "startMs": 4400,
+       "endMs": 5600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        450
+       ],
+       "text": "lateral inversion",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "notFlip",
+       "op": "text",
+       "startMs": 5700,
+       "endMs": 6700,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        400,
+        55
+       ],
+       "text": "not an upside-down flip",
+       "size": "s",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch11-t03-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "mirror6",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        400,
+        100
+       ],
+       "to": [
+        400,
+        430
+       ]
+      },
+      {
+       "id": "normal",
+       "op": "line",
+       "startMs": 700,
+       "endMs": 1500,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        250,
+        270
+       ],
+       "to": [
+        550,
+        270
+       ],
+       "dashed": true
+      },
+      {
+       "id": "rayIncoming",
+       "op": "arrow",
+       "startMs": 1500,
+       "endMs": 2600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        230,
+        100
+       ],
+       "to": [
+        400,
+        270
+       ]
+      },
+      {
+       "id": "rayReflected",
+       "op": "arrow",
+       "startMs": 2700,
+       "endMs": 3800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        270
+       ],
+       "to": [
+        570,
+        100
+       ]
+      },
+      {
+       "id": "angleLeft",
+       "op": "sector",
+       "startMs": 3900,
+       "endMs": 4800,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        400,
+        270
+       ],
+       "r": 75,
+       "fromDeg": 225,
+       "toDeg": 270
+      },
+      {
+       "id": "angleRight",
+       "op": "sector",
+       "startMs": 4900,
+       "endMs": 5800,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        400,
+        270
+       ],
+       "r": 75,
+       "fromDeg": 270,
+       "toDeg": 315
+      },
+      {
+       "id": "thirtyLeft",
+       "op": "text",
+       "startMs": 5900,
+       "endMs": 6800,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        320,
+        235
+       ],
+       "text": "30 degrees",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "thirtyRight",
+       "op": "text",
+       "startMs": 6800,
+       "endMs": 7700,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        480,
+        235
+       ],
+       "text": "30 degrees",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "normalLabel",
+       "op": "label",
+       "startMs": 7700,
+       "endMs": 8500,
+       "weight": 1,
+       "at": [
+        520,
+        290
+       ],
+       "text": "normal",
+       "to": [
+        520,
+        270
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch11-t03-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "summaryBox",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        70,
+        70
+       ],
+       "w": 660,
+       "h": 350
+      },
+      {
+       "id": "upright7",
+       "op": "text",
+       "startMs": 1100,
+       "endMs": 1900,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        150,
+        145
+       ],
+       "text": "upright",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "same7",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2700,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        145
+       ],
+       "text": "same size",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "behind7",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3800,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        640,
+        145
+       ],
+       "text": "behind the mirror",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "inverted7",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 5100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        300
+       ],
+       "text": "laterally inverted",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "connector1",
+       "op": "line",
+       "startMs": 5200,
+       "endMs": 5600,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        150,
+        175
+       ],
+       "to": [
+        150,
+        250
+       ]
+      },
+      {
+       "id": "connector2",
+       "op": "line",
+       "startMs": 5600,
+       "endMs": 6000,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        400,
+        175
+       ],
+       "to": [
+        400,
+        250
+       ]
+      },
+      {
+       "id": "connector3",
+       "op": "line",
+       "startMs": 6000,
+       "endMs": 6400,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        640,
+        175
+       ],
+       "to": [
+        560,
+        250
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch11-t03-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 4430,
+     "ops": [
+      {
+       "id": "tap1",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        160,
+        180
+       ],
+       "r": 70
+      },
+      {
+       "id": "feature1",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        160,
+        180
+       ],
+       "text": "upright",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "tap2",
+       "op": "circle",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        180
+       ],
+       "r": 70
+      },
+      {
+       "id": "feature2",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 3000,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        180
+       ],
+       "text": "same size",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "tap3",
+       "op": "circle",
+       "startMs": 3000,
+       "endMs": 3700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        640,
+        180
+       ],
+       "r": 70
+      },
+      {
+       "id": "feature3",
+       "op": "text",
+       "startMs": 3700,
+       "endMs": 4300,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        640,
+        180
+       ],
+       "text": "behind mirror",
+       "size": "s",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1",
+   "key": "179.4°",
+   "prompt": "turn the mirror to hit the target"
+  },
+  {
+   "itemId": "r2",
+   "key": "/@1,5 /@1,0",
+   "prompt": "guide the beam around the walls"
+  },
+  {
+   "itemId": "r3",
+   "key": "screen at 16.0 cm",
+   "prompt": "catch this image, unlike a mirror image"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ },
+ "firstCheck": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "Round 2 'Periscope Path' targets 'c7-science-ch11-t03-m1' (misconception: 'The image in a mirror is on the surface of the mirror.'), but the round is a periscope-style laser puzzle with walls and mirrors; it does not address or illustrate that misconception at all.",
+    "severity": "high"
+   },
+   {
+    "where": "explainer",
+    "what": "Explainer targets 'c7-science-ch11-t03-m1', but scene s6 uses 'upside down' as a distractor option. While the kit mentions that misconception, the explainer does not explicitly correct it or tie it to the answer.",
+    "severity": "low"
+   }
+  ],
+  "verdict": "fail",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

@@ -1,0 +1,1431 @@
+{
+ "topicId": "c4-maths-ch09-t02",
+ "title": "Division as equal grouping and sharing",
+ "chapter": "Equal Groups",
+ "subject": "maths",
+ "class": 4,
+ "topicType": "T3",
+ "plan": {
+  "game": "dukaan@1",
+  "hint": "pack mode: crates of k (full / all, remainders)"
+ },
+ "game": {
+  "archetype": "dukaan@1",
+  "spec": {
+   "archetype": "dukaan@1",
+   "skills": [
+    "c4-maths-ch09-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "served": "served",
+    "patience": "patience",
+    "bill": "Bill",
+    "pays": "Pays",
+    "change": "Change",
+    "pack": "Pack",
+    "crates": "crates",
+    "left": "left over",
+    "enough": "Enough",
+    "notEnough": "Not enough",
+    "budget": "Has",
+    "coach": "Tap notes and coins to put them on the counter",
+    "runDone": "Shop closed",
+    "exact": "EXACT",
+    "short": "short by",
+    "over": "over by",
+    "carry": "carry them all",
+    "full": "full crates to sell",
+    "each": "each",
+    "inLast": "in the last"
+   },
+   "title": "Dukaan Rush",
+   "rounds": [
+    {
+     "mode": "pack",
+     "title": "Pack the snack crates",
+     "sub": "Make equal groups",
+     "jobs": [
+      {
+       "thing": "biscuits",
+       "n": 24,
+       "per": 6,
+       "need": "full"
+      }
+     ],
+     "speed": 1.05
+    },
+    {
+     "mode": "pack",
+     "title": "Pack the fruit crates",
+     "sub": "Check what is left",
+     "jobs": [
+      {
+       "thing": "mangoes",
+       "n": 29,
+       "per": 5,
+       "need": "all"
+      }
+     ],
+     "speed": 0.95,
+     "targets": "c4-maths-ch09-t02-m-no-remainder"
+    },
+    {
+     "mode": "pack",
+     "title": "Pack the school kits",
+     "sub": "Keep the remainder small",
+     "jobs": [
+      {
+       "thing": "pencils",
+       "n": 23,
+       "per": 4,
+       "need": "all"
+      }
+     ],
+     "speed": 0.85,
+     "targets": "c4-maths-ch09-t02-m-remainder-too-big"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c4-maths-ch09-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Division: equal groups",
+   "accent": "mint",
+   "targets": "c4-maths-ch09-t02-m-remainder-too-big",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Division: equal groups"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "A remainder can be as big as the group"
+      },
+      {
+       "id": "group",
+       "type": "node",
+       "text": "Equal groups",
+       "sub": "share or pack",
+       "glyph": "group",
+       "color": "mint"
+      },
+      {
+       "id": "divide",
+       "type": "node",
+       "text": "Division",
+       "sub": "fair amounts",
+       "glyph": "balance",
+       "color": "ion"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "share",
+       "type": "node",
+       "text": "Sharing",
+       "sub": "how many each",
+       "glyph": "hand",
+       "color": "mint"
+      },
+      {
+       "id": "pack",
+       "type": "node",
+       "text": "Grouping",
+       "sub": "how many groups",
+       "color": "amber"
+      },
+      {
+       "id": "total",
+       "type": "node",
+       "text": "12 rotis",
+       "sub": "same total",
+       "glyph": "plate",
+       "color": "sun"
+      },
+      {
+       "id": "toShare",
+       "type": "arrow",
+       "from": "total",
+       "to": "share",
+       "text": "divide"
+      },
+      {
+       "id": "toPack",
+       "type": "arrow",
+       "from": "total",
+       "to": "pack",
+       "text": "divide"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "column",
+     "els": [
+      {
+       "id": "work",
+       "type": "title",
+       "text": "27 pencils among 4"
+      },
+      {
+       "id": "pencils",
+       "type": "grid",
+       "cols": 4,
+       "rows": 7,
+       "shaded": 27,
+       "x": 120,
+       "y": 230
+      },
+      {
+       "id": "four",
+       "type": "label",
+       "text": "4 children",
+       "x": 560,
+       "y": 250,
+       "color": "mint"
+      },
+      {
+       "id": "six",
+       "type": "label",
+       "text": "6 each",
+       "x": 560,
+       "y": 320,
+       "color": "ion"
+      },
+      {
+       "id": "left",
+       "type": "label",
+       "text": "3 left",
+       "x": 560,
+       "y": 390,
+       "color": "amber"
+      },
+      {
+       "id": "facts",
+       "type": "node",
+       "text": "4 × 6 = 24",
+       "sub": "closest number",
+       "glyph": "ruler",
+       "color": "ion"
+      },
+      {
+       "id": "remain",
+       "type": "node",
+       "text": "27 − 24 = 3",
+       "sub": "3 is less than 4",
+       "glyph": "spark",
+       "color": "amber"
+      },
+      {
+       "id": "f1",
+       "type": "arrow",
+       "from": "facts",
+       "to": "six",
+       "text": "gives"
+      },
+      {
+       "id": "f2",
+       "type": "arrow",
+       "from": "remain",
+       "to": "left",
+       "text": "leaves"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "checkTitle",
+       "type": "title",
+       "text": "Check your thinking"
+      },
+      {
+       "id": "optA",
+       "type": "node",
+       "text": "4 groups, 7 left",
+       "sub": "remainder too big",
+       "glyph": "question",
+       "color": "amber"
+      },
+      {
+       "id": "optB",
+       "type": "node",
+       "text": "5 groups, 3 left",
+       "glyph": "spark",
+       "color": "mint"
+      },
+      {
+       "id": "optC",
+       "type": "node",
+       "text": "6 groups, 1 left",
+       "sub": "not enough total",
+       "glyph": "question",
+       "color": "ion"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Division makes equal groups. It can mean sharing or grouping.",
+    "L2": "Sharing asks, “How many does each get?” Grouping asks, “How many groups can we make?”",
+    "L3": "Both meanings use the same division idea, but the question changes.",
+    "L4": "Every division matches a multiplication. For example, 48 divided by 6 is 8 because 6 times 8 is 48.",
+    "L5": "Let us share 27 pencils among 4 children. The biggest 4-table number not over 27 is 4 times 6, or 24.",
+    "L6": "Each child gets 6 pencils, and 3 pencils are left. The leftover is smaller than 4, so there is no more full group.",
+    "L7": "A remainder cannot be as big as the group size. If it were 4 or more, another group could be made.",
+    "L8": "Now choose the correct result for 23 divided by 4. The host will check your choice."
+   },
+   "narration": {
+    "L1": {
+     "text": "Division makes equal groups. It can mean sharing or grouping.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L2": {
+     "text": "Sharing asks, “How many does each get?” Grouping asks, “How many groups can we make?”",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L3": {
+     "text": "Both meanings use the same division idea, but the question changes.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L4": {
+     "text": "Every division matches a multiplication. For example, 48 divided by 6 is 8 because 6 times 8 is 48.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0.5,
+     "pauses": []
+    },
+    "L5": {
+     "text": "Let us share 27 pencils among 4 children. The biggest 4-table number not over 27 is 4 times 6, or 24.",
+     "dur": 9,
+     "lead": 0,
+     "tail": 0.5,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Each child gets 6 pencils, and 3 pencils are left. The leftover is smaller than 4, so there is no more full group.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0.5,
+     "pauses": []
+    },
+    "L7": {
+     "text": "A remainder cannot be as big as the group size. If it were 4 or more, another group could be made.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Now choose the correct result for 23 divided by 4. The host will check your choice.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.5,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.7,
+       "target": "divide"
+      },
+      {
+       "at": 1.4,
+       "do": "show",
+       "dur": 0.7,
+       "target": "group"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "share"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.7,
+       "target": "pack"
+      },
+      {
+       "at": 1.2,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "toShare",
+       "to": 1
+      },
+      {
+       "at": 1.8,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "toPack",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "share"
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "pack"
+      },
+      {
+       "at": 2,
+       "do": "focus",
+       "dur": 0.8,
+       "target": "total"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "total"
+      },
+      {
+       "at": 0.6,
+       "do": "show",
+       "dur": 0.6,
+       "target": "toPack"
+      },
+      {
+       "at": 1.3,
+       "do": "highlight",
+       "dur": 1,
+       "target": "pack"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "work"
+      },
+      {
+       "at": 0.6,
+       "do": "show",
+       "dur": 1,
+       "target": "pencils"
+      },
+      {
+       "at": 1.8,
+       "do": "show",
+       "dur": 0.8,
+       "target": "facts"
+      },
+      {
+       "at": 2.5,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "f1",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "six"
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.8,
+       "target": "remain"
+      },
+      {
+       "at": 1.6,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "f2",
+       "to": 1
+      },
+      {
+       "at": 2.5,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "left"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      },
+      {
+       "at": 1,
+       "do": "bust",
+       "dur": 1.2,
+       "target": "myth"
+      },
+      {
+       "at": 2.4,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "group"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "checkTitle"
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "optA",
+        "optB",
+        "optC"
+       ]
+      },
+      {
+       "at": 2.2,
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "For 23 divided by 4, which result is correct?",
+    "options": [
+     "optA",
+     "optB",
+     "optC"
+    ],
+    "answer": "optB",
+    "src": "c4-maths-ch09-t02-i08"
+   }
+  },
+  "repairs": [
+   "glyph",
+   "string:optB.sub"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 60
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch09-t02-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "div",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        250,
+        220
+       ],
+       "r": 70
+      },
+      {
+       "id": "split",
+       "op": "line",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        180,
+        220
+       ],
+       "to": [
+        320,
+        220
+       ]
+      },
+      {
+       "id": "groups",
+       "op": "circle",
+       "startMs": 1500,
+       "endMs": 2000,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        550,
+        170
+       ],
+       "r": 45
+      },
+      {
+       "id": "groups2",
+       "op": "circle",
+       "startMs": 1800,
+       "endMs": 2300,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        550,
+        270
+       ],
+       "r": 45
+      },
+      {
+       "id": "sharing",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        250,
+        340
+       ],
+       "text": "sharing",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "grouping",
+       "op": "text",
+       "startMs": 3100,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        550,
+        350
+       ],
+       "text": "grouping",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch09-t02-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "shareq",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        100,
+        90
+       ],
+       "text": "how many each",
+       "size": "m"
+      },
+      {
+       "id": "sharearrow",
+       "op": "arrow",
+       "startMs": 1000,
+       "endMs": 1600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        250,
+        120
+       ],
+       "to": [
+        250,
+        210
+       ]
+      },
+      {
+       "id": "groupq",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        430,
+        90
+       ],
+       "text": "how many groups",
+       "size": "m"
+      },
+      {
+       "id": "grouparrow",
+       "op": "arrow",
+       "startMs": 3000,
+       "endMs": 3600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        590,
+        120
+       ],
+       "to": [
+        590,
+        210
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch09-t02-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "same",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        250,
+        110
+       ],
+       "text": "division idea",
+       "size": "m"
+      },
+      {
+       "id": "samebox",
+       "op": "rect",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        150,
+        75
+       ],
+       "w": 220,
+       "h": 70,
+       "round": 12
+      },
+      {
+       "id": "question",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        520,
+        110
+       ],
+       "text": "question",
+       "size": "m"
+      },
+      {
+       "id": "change",
+       "op": "arrow",
+       "startMs": 2500,
+       "endMs": 3300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        380,
+        110
+       ],
+       "to": [
+        470,
+        110
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch09-t02-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "eq1",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        100
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "48",
+         "÷",
+         "6",
+         "=",
+         "8"
+        ]
+       ]
+      },
+      {
+       "id": "eq2",
+       "op": "numwork",
+       "startMs": 2200,
+       "endMs": 4000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        100,
+        220
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "6",
+         "×",
+         "8",
+         "=",
+         "48"
+        ]
+       ]
+      },
+      {
+       "id": "match",
+       "op": "arrow",
+       "startMs": 4200,
+       "endMs": 5000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        350,
+        145
+       ],
+       "to": [
+        350,
+        245
+       ]
+      },
+      {
+       "id": "highlight1",
+       "op": "highlight",
+       "startMs": 5600,
+       "endMs": 6500,
+       "ink": "good",
+       "weight": 2,
+       "target": "eq1",
+       "style": "underline"
+      },
+      {
+       "id": "highlight2",
+       "op": "highlight",
+       "startMs": 6500,
+       "endMs": 7400,
+       "ink": "good",
+       "weight": 2,
+       "target": "eq2",
+       "style": "underline"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch09-t02-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9536,
+     "ops": [
+      {
+       "id": "problem",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        80
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "27",
+         "÷",
+         "4"
+        ]
+       ]
+      },
+      {
+       "id": "children",
+       "op": "circle",
+       "startMs": 1200,
+       "endMs": 1600,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        570,
+        120
+       ],
+       "r": 28
+      },
+      {
+       "id": "child2",
+       "op": "circle",
+       "startMs": 1400,
+       "endMs": 1800,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        640,
+        120
+       ],
+       "r": 28
+      },
+      {
+       "id": "child3",
+       "op": "circle",
+       "startMs": 1600,
+       "endMs": 2000,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        570,
+        200
+       ],
+       "r": 28
+      },
+      {
+       "id": "child4",
+       "op": "circle",
+       "startMs": 1800,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        640,
+        200
+       ],
+       "r": 28
+      },
+      {
+       "id": "table",
+       "op": "numwork",
+       "startMs": 3000,
+       "endMs": 4800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        250
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "4",
+         "×",
+         "6",
+         "=",
+         "24"
+        ]
+       ]
+      },
+      {
+       "id": "bound",
+       "op": "arrow",
+       "startMs": 5000,
+       "endMs": 5900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        330,
+        285
+       ],
+       "to": [
+        480,
+        285
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch09-t02-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 10387,
+     "ops": [
+      {
+       "id": "each",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        100,
+        90
+       ],
+       "text": "6 pencils",
+       "size": "m"
+      },
+      {
+       "id": "left",
+       "op": "numwork",
+       "startMs": 1500,
+       "endMs": 3300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        100,
+        190
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "27",
+         "−",
+         "24",
+         "=",
+         "3"
+        ]
+       ]
+      },
+      {
+       "id": "noMore",
+       "op": "text",
+       "startMs": 6000,
+       "endMs": 7300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        350
+       ],
+       "text": "no more full group",
+       "size": "m"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch09-t02-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 9536,
+     "ops": [
+      {
+       "id": "bad",
+       "op": "numwork",
+       "startMs": 2200,
+       "endMs": 3700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        100,
+        190
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "remain",
+         "≥",
+         "4"
+        ]
+       ]
+      },
+      {
+       "id": "another",
+       "op": "arrow",
+       "startMs": 4000,
+       "endMs": 5000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        330,
+        225
+       ],
+       "to": [
+        500,
+        225
+       ]
+      },
+      {
+       "id": "group",
+       "op": "text",
+       "startMs": 5200,
+       "endMs": 6000,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        530,
+        210
+       ],
+       "text": "group",
+       "size": "m"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch09-t02-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "choice",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        100,
+        100
+       ],
+       "text": "correct result",
+       "size": "m"
+      },
+      {
+       "id": "problem8",
+       "op": "numwork",
+       "startMs": 1200,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        190
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "23",
+         "÷",
+         "4",
+         "=",
+         "?"
+        ]
+       ]
+      },
+      {
+       "id": "option1",
+       "op": "numwork",
+       "startMs": 3000,
+       "endMs": 4300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        100,
+        310
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "4",
+         "×",
+         "5",
+         "=",
+         "20"
+        ]
+       ]
+      },
+      {
+       "id": "option2",
+       "op": "numwork",
+       "startMs": 3500,
+       "endMs": 4800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        310
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "4",
+         "×",
+         "6",
+         "=",
+         "24"
+        ]
+       ]
+      },
+      {
+       "id": "host",
+       "op": "text",
+       "startMs": 5200,
+       "endMs": 6000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        560,
+        110
+       ],
+       "text": "host",
+       "size": "m"
+      },
+      {
+       "id": "hostarrow",
+       "op": "arrow",
+       "startMs": 6000,
+       "endMs": 6900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        600,
+        140
+       ],
+       "to": [
+        500,
+        285
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "4",
+   "prompt": "24 biscuits in crates of 6, full crates"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "6",
+   "prompt": "29 mangoes in crates of 5, carry all"
+  },
+  {
+   "itemId": "r3:0",
+   "key": "6",
+   "prompt": "23 pencils in crates of 4, carry all"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

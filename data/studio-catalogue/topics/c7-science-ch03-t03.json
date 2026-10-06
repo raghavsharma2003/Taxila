@@ -1,0 +1,1836 @@
+{
+ "topicId": "c7-science-ch03-t03",
+ "title": "Conductors and insulators",
+ "chapter": "Electricity: Circuits and their Components",
+ "subject": "science",
+ "class": 7,
+ "topicType": "T3",
+ "plan": {
+  "game": "circuit-bench@1",
+  "hint": "Circuit Lab: closed circuits, switches, conductors"
+ },
+ "game": {
+  "archetype": "circuit-bench@1",
+  "spec": {
+   "archetype": "circuit-bench@1",
+   "skills": [
+    "c7-science-ch03-t03"
+   ],
+   "lang": "en",
+   "strings": {
+    "stepOf": "of",
+    "short": "Check the gap before testing",
+    "fight": "Check both wire ends and keep them apart",
+    "conducts": "Lets current through",
+    "blocks": "Does not let current through",
+    "flow": "FLOW",
+    "labDone": "Lab complete",
+    "free": "Free build: test materials safely"
+   },
+   "steps": [
+    {
+     "id": "tester",
+     "goal": "Build a tester with a gap",
+     "done": "The tester is ready. A glowing bulb shows that the gap is closed.",
+     "then": [],
+     "tray": [
+      "wire",
+      "bulb",
+      "cell"
+     ],
+     "preset": [
+      {
+       "at": "0,0-0,1",
+       "put": "cell",
+       "plus": "0,0",
+       "locked": true
+      },
+      {
+       "at": "0,0-1,0",
+       "put": "wire",
+       "locked": false
+      },
+      {
+       "at": "1,0-2,0",
+       "put": "bulb",
+       "locked": false
+      },
+      {
+       "at": "2,0-3,0",
+       "put": "wire",
+       "locked": false
+      },
+      {
+       "at": "0,1-1,1",
+       "put": "wire",
+       "locked": false
+      },
+      {
+       "at": "0,1-1,1",
+       "put": "empty",
+       "locked": true
+      },
+      {
+       "at": "3,0-3,1",
+       "put": "empty",
+       "locked": true
+      }
+     ],
+     "cue": null,
+     "check": {
+      "bulbLit": true
+     },
+     "hint": "Leave a gap for the material."
+    },
+    {
+     "id": "sort",
+     "goal": "Test the materials in the gap",
+     "done": "Metals and graphite conduct. Plastic, rubber, wood and glass block current.",
+     "then": [],
+     "tray": [],
+     "preset": [
+      {
+       "at": "1,1-2,1",
+       "put": "tester",
+       "locked": false
+      }
+     ],
+     "cue": "1,1-2,1",
+     "check": {
+      "tested": {
+       "n": 4,
+       "must": []
+      }
+     },
+     "hint": "If the bulb glows, current passed through the material."
+    },
+    {
+     "id": "water",
+     "goal": "Test tap water, then add a little salt",
+     "done": "Done.",
+     "then": [
+      "Test tap water without touching the wire ends together",
+      "Add salt and test again",
+      "Keep away from mains appliances"
+     ],
+     "tray": [
+      "glass"
+     ],
+     "preset": [],
+     "cue": null,
+     "check": {
+      "tested": {
+       "n": 4,
+       "must": []
+      }
+     },
+     "hint": "A dark torch bulb does not prove water is a perfect insulator."
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-science-ch03-t03"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "BUSTED",
+    "order": "Tap them in order"
+   },
+   "title": "Conductors and insulators",
+   "accent": "sci",
+   "targets": "c7-science-ch03-t03-m2",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Conductors and insulators"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "No glow means water is safe"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "cell",
+       "type": "node",
+       "text": "Cell",
+       "sub": "source",
+       "glyph": "battery",
+       "color": "sci"
+      },
+      {
+       "id": "bulb",
+       "type": "node",
+       "text": "Bulb",
+       "sub": "indicator",
+       "glyph": "bulb",
+       "color": "amber"
+      },
+      {
+       "id": "gap",
+       "type": "node",
+       "text": "Gap",
+       "sub": "test space",
+       "glyph": "question",
+       "color": "volt"
+      },
+      {
+       "id": "hairpin",
+       "type": "node",
+       "text": "Hairpin",
+       "sub": "material",
+       "glyph": "magnet",
+       "color": "mint"
+      },
+      {
+       "id": "e1",
+       "type": "arrow",
+       "from": "cell",
+       "to": "bulb",
+       "text": "wire"
+      },
+      {
+       "id": "e2",
+       "type": "arrow",
+       "from": "bulb",
+       "to": "gap",
+       "text": "wire"
+      },
+      {
+       "id": "e3",
+       "type": "arrow",
+       "from": "gap",
+       "to": "cell",
+       "text": "wire"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "metal",
+       "type": "node",
+       "text": "Metal",
+       "sub": "conductor",
+       "glyph": "magnet",
+       "color": "sci"
+      },
+      {
+       "id": "plastic",
+       "type": "node",
+       "text": "Plastic",
+       "sub": "insulator",
+       "glyph": "shield",
+       "color": "mint"
+      },
+      {
+       "id": "graphite",
+       "type": "node",
+       "text": "Graphite",
+       "glyph": "pen",
+       "color": "amber"
+      },
+      {
+       "id": "water",
+       "type": "node",
+       "text": "Tap water",
+       "sub": "weak conductor",
+       "glyph": "drop",
+       "color": "ion"
+      },
+      {
+       "id": "wire",
+       "type": "label",
+       "text": "Copper inside; plastic outside",
+       "x": 120,
+       "y": 500,
+       "color": "volt"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "A conductor lets electric current pass easily. An insulator does not let current pass, or hardly at all.",
+    "L2": "A simple tester uses a cell, a bulb, and two wires with a gap.",
+    "L3": "Touch the free wire ends to a material. If the bulb glows, the material completes the circuit and is a conductor.",
+    "L4": "A steel hairpin makes the bulb glow, but a plastic button does not.",
+    "L5": "Copper, aluminium, and iron are good conductors. Graphite also conducts, even though it is a non-metal.",
+    "L6": "Plastic, rubber, wood, glass, paper, and dry cloth are insulators.",
+    "L7": "Copper or aluminium inside a wire carries current. Plastic outside insulates it and helps keep us safe.",
+    "L8": "Tap water may not light a torch bulb, but it conducts weakly. Wet hands and mains electricity are dangerous, so never use appliances with wet hands."
+   },
+   "narration": {
+    "L1": {
+     "text": "A conductor lets electric current pass easily. An insulator does not let current pass, or hardly at all.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "A simple tester uses a cell, a bulb, and two wires with a gap.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "Touch the free wire ends to a material. If the bulb glows, the material completes the circuit and is a conductor.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "A steel hairpin makes the bulb glow, but a plastic button does not.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "Copper, aluminium, and iron are good conductors. Graphite also conducts, even though it is a non-metal.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Plastic, rubber, wood, glass, paper, and dry cloth are insulators.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Copper or aluminium inside a wire carries current. Plastic outside insulates it and helps keep us safe.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Tap water may not light a torch bulb, but it conducts weakly. Wet hands and mains electricity are dangerous, so never use appliances with wet hands.",
+     "dur": 10,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0.2,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "cell",
+        "bulb",
+        "gap"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "e1",
+        "e2",
+        "e3"
+       ]
+      },
+      {
+       "at": 0.6,
+       "do": "flow",
+       "dur": 1,
+       "target": [
+        "e1",
+        "e2",
+        "e3"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "hairpin"
+      },
+      {
+       "at": 0.7,
+       "do": "highlight",
+       "dur": 1,
+       "target": [
+        "hairpin",
+        "bulb"
+       ]
+      },
+      {
+       "at": 2,
+       "do": "count",
+       "dur": 0.5,
+       "target": "bulb",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "metal",
+        "graphite"
+       ]
+      },
+      {
+       "at": 0.6,
+       "do": "highlight",
+       "dur": 1,
+       "target": [
+        "metal",
+        "graphite"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "plastic"
+      },
+      {
+       "at": 0.5,
+       "do": "highlight",
+       "dur": 1,
+       "target": "plastic"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "wire"
+      },
+      {
+       "at": 0.7,
+       "do": "focus",
+       "dur": 1,
+       "target": "wire"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "water"
+      },
+      {
+       "at": 2,
+       "do": "interactive",
+       "dur": 0.5
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Tap the material that would let current pass easily in the tester.",
+    "options": [
+     "metal",
+     "plastic",
+     "water"
+    ],
+    "answer": "metal",
+    "src": "c7-science-ch03-t03-i03"
+   }
+  },
+  "repairs": [
+   "string:graphite.sub",
+   "cue:target",
+   "cue:target"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "passes": 2,
+  "seconds": 62
+ },
+ "keys": [],
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch03-t03-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "cond",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        80,
+        100
+       ],
+       "w": 260,
+       "h": 100,
+       "round": 10
+      },
+      {
+       "id": "ct",
+       "op": "text",
+       "startMs": 1000,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        210,
+        140
+       ],
+       "text": "conductor",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "ca",
+       "op": "arrow",
+       "startMs": 1600,
+       "endMs": 2400,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        110,
+        175
+       ],
+       "to": [
+        310,
+        175
+       ]
+      },
+      {
+       "id": "cur",
+       "op": "text",
+       "startMs": 2400,
+       "endMs": 2900,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        210,
+        235
+       ],
+       "text": "current",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "ins",
+       "op": "rect",
+       "startMs": 3100,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        460,
+        100
+       ],
+       "w": 260,
+       "h": 100,
+       "round": 10
+      },
+      {
+       "id": "it",
+       "op": "text",
+       "startMs": 4100,
+       "endMs": 4600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        590,
+        140
+       ],
+       "text": "insulator",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "ia",
+       "op": "line",
+       "startMs": 4700,
+       "endMs": 5200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        490,
+        175
+       ],
+       "to": [
+        545,
+        175
+       ]
+      },
+      {
+       "id": "ib",
+       "op": "line",
+       "startMs": 4700,
+       "endMs": 5200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        635,
+        175
+       ],
+       "to": [
+        690,
+        175
+       ]
+      },
+      {
+       "id": "no",
+       "op": "text",
+       "startMs": 5300,
+       "endMs": 5900,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        590,
+        235
+       ],
+       "text": "hardly",
+       "size": "s",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch03-t03-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "cell",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        80,
+        170
+       ],
+       "w": 90,
+       "h": 120
+      },
+      {
+       "id": "cellt",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        125,
+        230
+       ],
+       "text": "cell",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "bulb",
+       "op": "circle",
+       "startMs": 1000,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        390,
+        230
+       ],
+       "r": 42
+      },
+      {
+       "id": "bulbt",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        390,
+        300
+       ],
+       "text": "bulb",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "w1",
+       "op": "line",
+       "startMs": 2300,
+       "endMs": 3200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        170,
+        200
+       ],
+       "to": [
+        348,
+        220
+       ]
+      },
+      {
+       "id": "w2",
+       "op": "line",
+       "startMs": 3200,
+       "endMs": 4100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        432,
+        240
+       ],
+       "to": [
+        650,
+        260
+       ]
+      },
+      {
+       "id": "gap",
+       "op": "line",
+       "startMs": 4100,
+       "endMs": 4700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        650,
+        260
+       ],
+       "to": [
+        700,
+        260
+       ],
+       "dashed": true
+      },
+      {
+       "id": "gapt",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        675,
+        310
+       ],
+       "text": "gap",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch03-t03-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 9536,
+     "ops": [
+      {
+       "id": "mat",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        560,
+        170
+       ],
+       "w": 130,
+       "h": 110,
+       "round": 10
+      },
+      {
+       "id": "mt",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        625,
+        225
+       ],
+       "text": "material",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "touch1",
+       "op": "line",
+       "startMs": 1500,
+       "endMs": 2400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        650,
+        260
+       ],
+       "to": [
+        590,
+        220
+       ]
+      },
+      {
+       "id": "touch2",
+       "op": "line",
+       "startMs": 1500,
+       "endMs": 2400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        700,
+        260
+       ],
+       "to": [
+        660,
+        220
+       ]
+      },
+      {
+       "id": "glow",
+       "op": "circle",
+       "startMs": 3000,
+       "endMs": 4100,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        390,
+        230
+       ],
+       "r": 52,
+       "fill": "accent"
+      },
+      {
+       "id": "glowt",
+       "op": "text",
+       "startMs": 4100,
+       "endMs": 4600,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        390,
+        145
+       ],
+       "text": "glows",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "complete",
+       "op": "label",
+       "startMs": 5000,
+       "endMs": 5900,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        475,
+        180
+       ],
+       "text": "completes",
+       "to": [
+        520,
+        220
+       ]
+      },
+      {
+       "id": "conduct",
+       "op": "label",
+       "startMs": 6500,
+       "endMs": 7400,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        500,
+        330
+       ],
+       "text": "conductor",
+       "to": [
+        625,
+        280
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch03-t03-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "hairpin",
+       "op": "polygon",
+       "startMs": 0,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         150,
+         150
+        ],
+        [
+         190,
+         150
+        ],
+        [
+         190,
+         300
+        ],
+        [
+         230,
+         300
+        ],
+        [
+         230,
+         150
+        ],
+        [
+         270,
+         150
+        ],
+        [
+         270,
+         330
+        ],
+        [
+         230,
+         370
+        ],
+        [
+         190,
+         370
+        ],
+        [
+         150,
+         330
+        ]
+       ]
+      },
+      {
+       "id": "ht",
+       "op": "text",
+       "startMs": 1200,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        210,
+        410
+       ],
+       "text": "steel hairpin",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "bulb2",
+       "op": "circle",
+       "startMs": 2100,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        600,
+        220
+       ],
+       "r": 48
+      },
+      {
+       "id": "glow2",
+       "op": "circle",
+       "startMs": 3000,
+       "endMs": 3800,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        600,
+        220
+       ],
+       "r": 62,
+       "fill": "accent"
+      },
+      {
+       "id": "glowlabel",
+       "op": "text",
+       "startMs": 3800,
+       "endMs": 4300,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        600,
+        130
+       ],
+       "text": "glow",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "button",
+       "op": "circle",
+       "startMs": 4300,
+       "endMs": 5000,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        220
+       ],
+       "r": 42
+      },
+      {
+       "id": "bt",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 5800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        300
+       ],
+       "text": "plastic button",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "cross",
+       "op": "line",
+       "startMs": 5000,
+       "endMs": 5700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        370,
+        190
+       ],
+       "to": [
+        430,
+        250
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch03-t03-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "metals",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        70,
+        100
+       ],
+       "w": 300,
+       "h": 240,
+       "round": 10
+      },
+      {
+       "id": "mhead",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        220,
+        135
+       ],
+       "text": "good conductors",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "graph",
+       "op": "ellipse",
+       "startMs": 1200,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        590,
+        220
+       ],
+       "rx": 150,
+       "ry": 110
+      },
+      {
+       "id": "copper",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        120,
+        195
+       ],
+       "text": "Copper",
+       "size": "m"
+      },
+      {
+       "id": "gt",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        590,
+        190
+       ],
+       "text": "graphite",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "al",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        120,
+        245
+       ],
+       "text": "aluminium",
+       "size": "m"
+      },
+      {
+       "id": "iron",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        120,
+        295
+       ],
+       "text": "iron",
+       "size": "m"
+      },
+      {
+       "id": "nm",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        590,
+        250
+       ],
+       "text": "non-metal",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "ga",
+       "op": "arrow",
+       "startMs": 3900,
+       "endMs": 4700,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        520,
+        300
+       ],
+       "to": [
+        660,
+        300
+       ]
+      },
+      {
+       "id": "conducts",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5300,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        590,
+        350
+       ],
+       "text": "conducts",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch03-t03-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "inslist",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        100
+       ],
+       "w": 620,
+       "h": 260,
+       "round": 10
+      },
+      {
+       "id": "plastic",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        130,
+        155
+       ],
+       "text": "plastic",
+       "size": "m"
+      },
+      {
+       "id": "rubber",
+       "op": "text",
+       "startMs": 1300,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        300,
+        155
+       ],
+       "text": "rubber",
+       "size": "m"
+      },
+      {
+       "id": "wood",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2050,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        470,
+        155
+       ],
+       "text": "wood",
+       "size": "m"
+      },
+      {
+       "id": "glass",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 2450,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        130,
+        225
+       ],
+       "text": "glass",
+       "size": "m"
+      },
+      {
+       "id": "paper",
+       "op": "text",
+       "startMs": 2450,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        300,
+        225
+       ],
+       "text": "paper",
+       "size": "m"
+      },
+      {
+       "id": "cloth",
+       "op": "text",
+       "startMs": 2800,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        470,
+        225
+       ],
+       "text": "dry cloth",
+       "size": "m"
+      },
+      {
+       "id": "insulator2",
+       "op": "text",
+       "startMs": 3600,
+       "endMs": 4200,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        315
+       ],
+       "text": "insulators",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch03-t03-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "wire",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        170
+       ],
+       "w": 600,
+       "h": 130,
+       "round": 30
+      },
+      {
+       "id": "metalcore",
+       "op": "line",
+       "startMs": 1200,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 3,
+       "from": [
+        125,
+        235
+       ],
+       "to": [
+        675,
+        235
+       ]
+      },
+      {
+       "id": "coppercore",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 2700,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        210
+       ],
+       "text": "Copper",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "or",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        260
+       ],
+       "text": "or",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "alcore",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        285
+       ],
+       "text": "aluminium",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "outer",
+       "op": "label",
+       "startMs": 3700,
+       "endMs": 4400,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        125
+       ],
+       "text": "plastic",
+       "to": [
+        400,
+        170
+       ]
+      },
+      {
+       "id": "current7",
+       "op": "arrow",
+       "startMs": 4500,
+       "endMs": 5600,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        180,
+        235
+       ],
+       "to": [
+        610,
+        235
+       ]
+      },
+      {
+       "id": "safe",
+       "op": "text",
+       "startMs": 6000,
+       "endMs": 6600,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        390
+       ],
+       "text": "safe",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch03-t03-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 11664,
+     "ops": [
+      {
+       "id": "water",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        230,
+        220
+       ],
+       "rx": 150,
+       "ry": 90,
+       "fill": "soft"
+      },
+      {
+       "id": "wt",
+       "op": "text",
+       "startMs": 1000,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        230,
+        220
+       ],
+       "text": "tap water",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "torch",
+       "op": "circle",
+       "startMs": 1400,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        570,
+        220
+       ],
+       "r": 45
+      },
+      {
+       "id": "dim",
+       "op": "circle",
+       "startMs": 2300,
+       "endMs": 3000,
+       "ink": "mark",
+       "weight": 1,
+       "c": [
+        570,
+        220
+       ],
+       "r": 55,
+       "fill": "soft"
+      },
+      {
+       "id": "notlight",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3800,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        570,
+        310
+       ],
+       "text": "may not light",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "weak",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 4700,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        230,
+        350
+       ],
+       "text": "conducts weakly",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "hands",
+       "op": "ellipse",
+       "startMs": 5000,
+       "endMs": 5700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        230,
+        430
+       ],
+       "rx": 85,
+       "ry": 28
+      },
+      {
+       "id": "wet",
+       "op": "text",
+       "startMs": 5700,
+       "endMs": 6300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        230,
+        470
+       ],
+       "text": "wet hands",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "mains",
+       "op": "rect",
+       "startMs": 6200,
+       "endMs": 7000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        500,
+        390
+       ],
+       "w": 170,
+       "h": 70,
+       "round": 8
+      },
+      {
+       "id": "mainst",
+       "op": "text",
+       "startMs": 7000,
+       "endMs": 7700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        585,
+        430
+       ],
+       "text": "mains electricity",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "danger",
+       "op": "line",
+       "startMs": 8000,
+       "endMs": 9000,
+       "ink": "mark",
+       "weight": 3,
+       "from": [
+        470,
+        370
+       ],
+       "to": [
+        700,
+        480
+       ]
+      },
+      {
+       "id": "never",
+       "op": "text",
+       "startMs": 9200,
+       "endMs": 9800,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        585,
+        350
+       ],
+       "text": "never",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

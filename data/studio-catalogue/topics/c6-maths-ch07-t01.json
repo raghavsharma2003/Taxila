@@ -1,0 +1,1794 @@
+{
+ "topicId": "c6-maths-ch07-t01",
+ "title": "Fractional units and equal shares",
+ "chapter": "Fractions",
+ "subject": "maths",
+ "class": 6,
+ "topicType": "T3",
+ "plan": {
+  "game": "slice-at@1",
+  "hint": "fraction slices: equal shares and fractional units"
+ },
+ "game": {
+  "archetype": "slice-at@1",
+  "spec": {
+   "archetype": "slice-at@1",
+   "skills": [
+    "c6-maths-ch07-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "coach": "Swipe through the bar",
+    "wave": "Wave",
+    "cut": "Cut",
+    "parts": "Equal parts",
+    "exact": "CLEAN CUT",
+    "close": "CLOSE",
+    "offBy": "off by",
+    "runDone": "Run complete",
+    "accuracy": "accuracy",
+    "sliced": "sliced",
+    "chain": "chain",
+    "smaller": "smaller piece"
+   },
+   "waves": [
+    {
+     "title": "Fractional units",
+     "sub": "make equal pieces of the whole",
+     "items": [
+      {
+       "cut": "1/2"
+      },
+      {
+       "cut": "1/3"
+      },
+      {
+       "cut": "1/4"
+      }
+     ],
+     "gravity": 0.8,
+     "gap": 2.8,
+     "marks": true
+    },
+    {
+     "title": "Share the bar",
+     "sub": "slice carefully into equal shares",
+     "items": [
+      {
+       "parts": 3
+      },
+      {
+       "parts": 4
+      },
+      {
+       "parts": 5
+      }
+     ],
+     "gravity": 0.9,
+     "gap": 2.6,
+     "marks": false,
+     "targets": "c6-maths-ch07-t01-m-unequal-parts"
+    },
+    {
+     "title": "More pieces, smaller",
+     "sub": "compare unit fractions on one bar",
+     "items": [
+      {
+       "cut": "1/4"
+      },
+      {
+       "cut": "1/5"
+      },
+      {
+       "cut": "1/6"
+      },
+      {
+       "cut": "1/8"
+      }
+     ],
+     "gravity": 1,
+     "gap": 2.3,
+     "marks": false,
+     "targets": "c6-maths-ch07-t01-m-bigger-denominator"
+    },
+    {
+     "title": "Parts of a whole",
+     "sub": "use the same whole each time",
+     "items": [
+      {
+       "cut": "2/3"
+      },
+      {
+       "cut": "3/4"
+      },
+      {
+       "cut": "2/5"
+      },
+      {
+       "cut": "5/6"
+      }
+     ],
+     "gravity": 1.1,
+     "gap": 2.1,
+     "marks": false
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c6-maths-ch07-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Fractions: equal shares",
+   "accent": "mint",
+   "targets": "c6-maths-ch07-t01-m-unequal-parts",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Fractional units"
+      },
+      {
+       "id": "myth1",
+       "type": "myth",
+       "text": "Unequal pieces can be thirds"
+      },
+      {
+       "id": "bar4",
+       "type": "bar",
+       "parts": 4,
+       "shaded": 1,
+       "x": 120,
+       "y": 330,
+       "w": 520,
+       "text": "1/4"
+      },
+      {
+       "id": "equal",
+       "type": "label",
+       "text": "4 equal parts",
+       "x": 270,
+       "y": 270,
+       "color": "mint"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "whole",
+       "type": "node",
+       "text": "Whole",
+       "sub": "one roti",
+       "glyph": "plate",
+       "color": "amber"
+      },
+      {
+       "id": "parts",
+       "type": "node",
+       "text": "Equal parts",
+       "sub": "same size",
+       "glyph": "balance",
+       "color": "mint"
+      },
+      {
+       "id": "unit",
+       "type": "node",
+       "text": "1/n",
+       "sub": "one part",
+       "glyph": "ruler",
+       "color": "ion"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "whole",
+       "to": "parts",
+       "text": "cut equally"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "parts",
+       "to": "unit",
+       "text": "one part"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "orderTitle",
+       "type": "title",
+       "text": "More parts, smaller unit"
+      },
+      {
+       "id": "one2",
+       "type": "node",
+       "text": "1/2",
+       "sub": "larger",
+       "color": "amber"
+      },
+      {
+       "id": "one3",
+       "type": "node",
+       "text": "1/3",
+       "sub": "smaller",
+       "color": "mint"
+      },
+      {
+       "id": "one4",
+       "type": "node",
+       "text": "1/4",
+       "sub": "smaller",
+       "color": "ion"
+      },
+      {
+       "id": "one5",
+       "type": "node",
+       "text": "1/5",
+       "sub": "smallest",
+       "color": "sci"
+      },
+      {
+       "id": "o1",
+       "type": "arrow",
+       "from": "one5",
+       "to": "one4",
+       "text": "less than"
+      },
+      {
+       "id": "o2",
+       "type": "arrow",
+       "from": "one4",
+       "to": "one3",
+       "text": "less than"
+      },
+      {
+       "id": "o3",
+       "type": "arrow",
+       "from": "one3",
+       "to": "one2",
+       "text": "less than"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "shareTitle",
+       "type": "title",
+       "text": "Sharing equally"
+      },
+      {
+       "id": "rotis",
+       "type": "bar",
+       "parts": 3,
+       "shaded": 3,
+       "x": 80,
+       "y": 300,
+       "w": 480,
+       "text": "3 rotis"
+      },
+      {
+       "id": "children",
+       "type": "node",
+       "text": "4 children",
+       "sub": "equal shares",
+       "glyph": "group",
+       "color": "mint"
+      },
+      {
+       "id": "each",
+       "type": "node",
+       "text": "3/4",
+       "sub": "each child",
+       "glyph": "plate",
+       "color": "amber"
+      },
+      {
+       "id": "optA",
+       "type": "label",
+       "text": "1/3",
+       "x": 100,
+       "y": 500,
+       "color": "ion"
+      },
+      {
+       "id": "optB",
+       "type": "label",
+       "text": "1/5",
+       "x": 300,
+       "y": 500,
+       "color": "sci"
+      },
+      {
+       "id": "optC",
+       "type": "label",
+       "text": "1/4",
+       "x": 500,
+       "y": 500,
+       "color": "mint"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "A fraction names equal parts of a whole.",
+    "L2": "A quarter is one of four equal parts. Unequal pieces are not quarters.",
+    "L3": "To make a fractional unit, cut the whole into equal parts and take one part.",
+    "L4": "When the same whole has more equal parts, each part is smaller.",
+    "L5": "So one fifth is smaller than one fourth, which is smaller than one third and one half.",
+    "L6": "Sharing three rotis equally among four children gives each child three fourths of a roti.",
+    "L7": "The numerator counts the parts shared, while the denominator names the equal parts in one whole.",
+    "L8": "Now choose the fractional unit that represents one piece of four equal parts."
+   },
+   "narration": {
+    "L1": {
+     "text": "A fraction names equal parts of a whole.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L2": {
+     "text": "A quarter is one of four equal parts. Unequal pieces are not quarters.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L3": {
+     "text": "To make a fractional unit, cut the whole into equal parts and take one part.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L4": {
+     "text": "When the same whole has more equal parts, each part is smaller.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L5": {
+     "text": "So one fifth is smaller than one fourth, which is smaller than one third and one half.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Sharing three rotis equally among four children gives each child three fourths of a roti.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L7": {
+     "text": "The numerator counts the parts shared, while the denominator names the equal parts in one whole.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Now choose the fractional unit that represents one piece of four equal parts.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": "bar4"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "myth1"
+      },
+      {
+       "at": 1,
+       "do": "bust",
+       "dur": 1.2,
+       "target": "myth1"
+      },
+      {
+       "at": 1.4,
+       "do": "highlight",
+       "dur": 1,
+       "target": "bar4"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "whole"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "parts",
+        "a1"
+       ]
+      },
+      {
+       "at": 1.2,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "a1",
+       "to": 1
+      },
+      {
+       "at": 2,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "unit",
+        "a2"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "orderTitle"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "one2",
+        "one3",
+        "one4",
+        "one5"
+       ]
+      },
+      {
+       "at": 1.7,
+       "do": "highlight",
+       "dur": 1,
+       "target": [
+        "one4",
+        "one5"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "o1",
+        "o2",
+        "o3"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 1.2,
+       "target": [
+        "o1",
+        "o2",
+        "o3"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "shareTitle",
+        "rotis",
+        "children"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.8,
+       "target": "each"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1.2,
+       "target": "each"
+      },
+      {
+       "at": 1.3,
+       "do": "count",
+       "dur": 1,
+       "target": "rotis",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "optA",
+        "optB",
+        "optC"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "interactive",
+       "dur": 0.5
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which fraction is one piece of four equal parts?",
+    "options": [
+     "optA",
+     "optB",
+     "optC"
+    ],
+    "answer": "optC",
+    "src": "c6-maths-ch07-t01-i01"
+   }
+  },
+  "repairs": [
+   "glyph",
+   "glyph",
+   "glyph",
+   "glyph",
+   "arrow:dangling",
+   "cue:target"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 59
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch07-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4004,
+     "ops": [
+      {
+       "id": "whole",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        220,
+        250
+       ],
+       "r": 150
+      },
+      {
+       "id": "cut1",
+       "op": "line",
+       "startMs": 1000,
+       "endMs": 1500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        70,
+        250
+       ],
+       "to": [
+        370,
+        250
+       ]
+      },
+      {
+       "id": "cut2",
+       "op": "line",
+       "startMs": 1500,
+       "endMs": 2000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        220,
+        100
+       ],
+       "to": [
+        220,
+        400
+       ]
+      },
+      {
+       "id": "parts",
+       "op": "highlight",
+       "startMs": 2100,
+       "endMs": 2700,
+       "ink": "accent",
+       "weight": 1,
+       "target": "whole",
+       "style": "circle"
+      },
+      {
+       "id": "frac",
+       "op": "numwork",
+       "startMs": 2800,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        470,
+        190
+       ],
+       "layout": "fraction",
+       "rows": [
+        [
+         "1"
+        ],
+        [
+         "4"
+        ]
+       ]
+      },
+      {
+       "id": "lab",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4004,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        540,
+        390
+       ],
+       "text": "whole",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch07-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "qcircle",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        180,
+        240
+       ],
+       "r": 120
+      },
+      {
+       "id": "qcut1",
+       "op": "line",
+       "startMs": 800,
+       "endMs": 1200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        60,
+        240
+       ],
+       "to": [
+        300,
+        240
+       ]
+      },
+      {
+       "id": "qcut2",
+       "op": "line",
+       "startMs": 1200,
+       "endMs": 1600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        180,
+        120
+       ],
+       "to": [
+        180,
+        360
+       ]
+      },
+      {
+       "id": "qnum",
+       "op": "numwork",
+       "startMs": 1800,
+       "endMs": 2400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        390,
+        160
+       ],
+       "layout": "fraction",
+       "rows": [
+        [
+         "1"
+        ],
+        [
+         "4"
+        ]
+       ]
+      },
+      {
+       "id": "unequal",
+       "op": "polygon",
+       "startMs": 2700,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         520,
+         150
+        ],
+        [
+         690,
+         190
+        ],
+        [
+         640,
+         330
+        ],
+        [
+         500,
+         310
+        ]
+       ]
+      },
+      {
+       "id": "diag",
+       "op": "line",
+       "startMs": 3500,
+       "endMs": 3900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        520,
+        150
+       ],
+       "to": [
+        640,
+        330
+       ]
+      },
+      {
+       "id": "notq",
+       "op": "text",
+       "startMs": 4200,
+       "endMs": 5000,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        600,
+        390
+       ],
+       "text": "not quarters",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch07-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "whole3",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        80,
+        150
+       ],
+       "w": 260,
+       "h": 220
+      },
+      {
+       "id": "partline1",
+       "op": "line",
+       "startMs": 900,
+       "endMs": 1400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        210,
+        150
+       ],
+       "to": [
+        210,
+        370
+       ]
+      },
+      {
+       "id": "partline2",
+       "op": "line",
+       "startMs": 1400,
+       "endMs": 1900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        80,
+        260
+       ],
+       "to": [
+        340,
+        260
+       ]
+      },
+      {
+       "id": "take",
+       "op": "highlight",
+       "startMs": 2100,
+       "endMs": 2900,
+       "ink": "accent",
+       "weight": 2,
+       "target": "partline1",
+       "style": "circle"
+      },
+      {
+       "id": "unit",
+       "op": "numwork",
+       "startMs": 3000,
+       "endMs": 3800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        450,
+        190
+       ],
+       "layout": "fraction",
+       "rows": [
+        [
+         "1"
+        ],
+        [
+         "4"
+        ]
+       ]
+      },
+      {
+       "id": "arrowtake",
+       "op": "arrow",
+       "startMs": 4000,
+       "endMs": 4800,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        340,
+        260
+       ],
+       "to": [
+        250,
+        205
+       ]
+      },
+      {
+       "id": "onepart",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 5900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        560,
+        380
+       ],
+       "text": "one part",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch07-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "large",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        70,
+        150
+       ],
+       "w": 250,
+       "h": 220
+      },
+      {
+       "id": "largecut",
+       "op": "line",
+       "startMs": 700,
+       "endMs": 1100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        195,
+        150
+       ],
+       "to": [
+        195,
+        370
+       ]
+      },
+      {
+       "id": "small",
+       "op": "rect",
+       "startMs": 1300,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        450,
+        150
+       ],
+       "w": 250,
+       "h": 220
+      },
+      {
+       "id": "smallcut1",
+       "op": "line",
+       "startMs": 2000,
+       "endMs": 2400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        533,
+        150
+       ],
+       "to": [
+        533,
+        370
+       ]
+      },
+      {
+       "id": "smallcut2",
+       "op": "line",
+       "startMs": 2400,
+       "endMs": 2800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        616,
+        150
+       ],
+       "to": [
+        616,
+        370
+       ]
+      },
+      {
+       "id": "smallpart",
+       "op": "highlight",
+       "startMs": 3100,
+       "endMs": 3900,
+       "ink": "accent",
+       "weight": 2,
+       "target": "smallcut1",
+       "style": "circle"
+      },
+      {
+       "id": "smaller",
+       "op": "arrow",
+       "startMs": 4100,
+       "endMs": 4800,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        320,
+        400
+       ],
+       "to": [
+        450,
+        400
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch07-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "fifth",
+       "op": "rect",
+       "startMs": 2100,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        80,
+        230
+       ],
+       "w": 100,
+       "h": 150
+      },
+      {
+       "id": "fifthlines",
+       "op": "line",
+       "startMs": 2500,
+       "endMs": 2900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        130,
+        230
+       ],
+       "to": [
+        130,
+        380
+       ]
+      },
+      {
+       "id": "fourth",
+       "op": "rect",
+       "startMs": 3000,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        250,
+        230
+       ],
+       "w": 120,
+       "h": 150
+      },
+      {
+       "id": "fourthlines",
+       "op": "line",
+       "startMs": 3400,
+       "endMs": 3800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        310,
+        230
+       ],
+       "to": [
+        310,
+        380
+       ]
+      },
+      {
+       "id": "third",
+       "op": "rect",
+       "startMs": 3900,
+       "endMs": 4300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        420,
+        230
+       ],
+       "w": 150,
+       "h": 150
+      },
+      {
+       "id": "thirdlines",
+       "op": "line",
+       "startMs": 4300,
+       "endMs": 4600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        470,
+        230
+       ],
+       "to": [
+        470,
+        380
+       ]
+      },
+      {
+       "id": "half",
+       "op": "rect",
+       "startMs": 4700,
+       "endMs": 5100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        610,
+        230
+       ],
+       "w": 150,
+       "h": 150
+      },
+      {
+       "id": "halfline",
+       "op": "line",
+       "startMs": 5100,
+       "endMs": 5400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        685,
+        230
+       ],
+       "to": [
+        685,
+        380
+       ]
+      },
+      {
+       "id": "less",
+       "op": "text",
+       "startMs": 5800,
+       "endMs": 6600,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        450
+       ],
+       "text": "smaller",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch07-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "roti1",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 400,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        130,
+        170
+       ],
+       "r": 55
+      },
+      {
+       "id": "roti2",
+       "op": "circle",
+       "startMs": 400,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        130,
+        300
+       ],
+       "r": 55
+      },
+      {
+       "id": "roti3",
+       "op": "circle",
+       "startMs": 800,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        260,
+        170
+       ],
+       "r": 55
+      },
+      {
+       "id": "share1",
+       "op": "line",
+       "startMs": 1300,
+       "endMs": 1600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        75,
+        170
+       ],
+       "to": [
+        185,
+        170
+       ]
+      },
+      {
+       "id": "share2",
+       "op": "line",
+       "startMs": 1600,
+       "endMs": 1900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        75,
+        300
+       ],
+       "to": [
+        185,
+        300
+       ]
+      },
+      {
+       "id": "share3",
+       "op": "line",
+       "startMs": 1900,
+       "endMs": 2200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        205,
+        170
+       ],
+       "to": [
+        315,
+        170
+       ]
+      },
+      {
+       "id": "children",
+       "op": "circle",
+       "startMs": 2500,
+       "endMs": 2800,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        500,
+        130
+       ],
+       "r": 28
+      },
+      {
+       "id": "children2",
+       "op": "circle",
+       "startMs": 2800,
+       "endMs": 3100,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        590,
+        130
+       ],
+       "r": 28
+      },
+      {
+       "id": "children3",
+       "op": "circle",
+       "startMs": 3100,
+       "endMs": 3400,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        500,
+        230
+       ],
+       "r": 28
+      },
+      {
+       "id": "children4",
+       "op": "circle",
+       "startMs": 3400,
+       "endMs": 3700,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        590,
+        230
+       ],
+       "r": 28
+      },
+      {
+       "id": "answer",
+       "op": "numwork",
+       "startMs": 4300,
+       "endMs": 5200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        450,
+        330
+       ],
+       "layout": "fraction",
+       "rows": [
+        [
+         "3"
+        ],
+        [
+         "4"
+        ]
+       ]
+      },
+      {
+       "id": "rotianswer",
+       "op": "text",
+       "startMs": 5500,
+       "endMs": 6500,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        590,
+        450
+       ],
+       "text": "3/4 roti",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch07-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "fraction7",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        120
+       ],
+       "layout": "fraction",
+       "rows": [
+        [
+         "3"
+        ],
+        [
+         "4"
+        ]
+       ]
+      },
+      {
+       "id": "numarrow",
+       "op": "arrow",
+       "startMs": 1200,
+       "endMs": 1900,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        170,
+        135
+       ],
+       "to": [
+        300,
+        135
+       ]
+      },
+      {
+       "id": "denarrow",
+       "op": "arrow",
+       "startMs": 1900,
+       "endMs": 2600,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        170,
+        205
+       ],
+       "to": [
+        300,
+        205
+       ]
+      },
+      {
+       "id": "numerator",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        390,
+        135
+       ],
+       "text": "numerator",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "denominator",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        410,
+        205
+       ],
+       "text": "denominator",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "parts7",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        580,
+        135
+       ],
+       "text": "parts shared",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "wholeparts",
+       "op": "text",
+       "startMs": 5400,
+       "endMs": 6400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        590,
+        205
+       ],
+       "text": "equal parts",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch07-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "choosewhole",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        170,
+        250
+       ],
+       "r": 130
+      },
+      {
+       "id": "choosecut1",
+       "op": "line",
+       "startMs": 900,
+       "endMs": 1300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        40,
+        250
+       ],
+       "to": [
+        300,
+        250
+       ]
+      },
+      {
+       "id": "choosecut2",
+       "op": "line",
+       "startMs": 1300,
+       "endMs": 1700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        170,
+        120
+       ],
+       "to": [
+        170,
+        380
+       ]
+      },
+      {
+       "id": "onepiece",
+       "op": "highlight",
+       "startMs": 1900,
+       "endMs": 2800,
+       "ink": "accent",
+       "weight": 2,
+       "target": "choosecut1",
+       "style": "circle"
+      },
+      {
+       "id": "choice",
+       "op": "numwork",
+       "startMs": 3000,
+       "endMs": 3900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        440,
+        170
+       ],
+       "layout": "fraction",
+       "rows": [
+        [
+         "1"
+        ],
+        [
+         "4"
+        ]
+       ]
+      },
+      {
+       "id": "choicearrow",
+       "op": "arrow",
+       "startMs": 4000,
+       "endMs": 4700,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        300,
+        250
+       ],
+       "to": [
+        430,
+        230
+       ]
+      },
+      {
+       "id": "unitlabel",
+       "op": "text",
+       "startMs": 4800,
+       "endMs": 5900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        580,
+        370
+       ],
+       "text": "fractional unit",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

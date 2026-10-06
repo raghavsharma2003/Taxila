@@ -1,0 +1,1620 @@
+{
+ "topicId": "c7-maths-ch03-t02",
+ "title": "Decimal place value",
+ "chapter": "A Peek Beyond the Point",
+ "subject": "maths",
+ "class": 7,
+ "topicType": "T3",
+ "plan": {
+  "game": "instrument@1",
+  "hint": "cut and weigh modes with decimal targets (tenths, hundredths)"
+ },
+ "game": {
+  "archetype": "instrument@1",
+  "spec": {
+   "archetype": "instrument@1",
+   "skills": [
+    "c7-maths-ch03-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "measured": "measured",
+    "precision": "precision",
+    "hold": "Hold to pour",
+    "release": "Release",
+    "cut": "Tap to cut",
+    "set": "Set",
+    "am": "a.m.",
+    "pm": "p.m.",
+    "tapAt": "Tap when it reads",
+    "runDone": "Bench clear",
+    "offBy": "off by",
+    "exact": "EXACT",
+    "after": "after",
+    "minutes": "min",
+    "balanced": "BALANCED",
+    "heavy": "parcel heavier",
+    "light": "weights heavier"
+   },
+   "title": "Decimal Instrument Bench",
+   "rounds": [
+    {
+     "mode": "cut",
+     "title": "Cut the cloth",
+     "sub": "use the centimetre rule",
+     "items": [
+      {
+       "target": 1350,
+       "show": "m"
+      },
+      {
+       "target": 2350,
+       "show": "m"
+      }
+     ],
+     "scaleMax": 3000,
+     "minor": 25,
+     "tol": 10,
+     "speed": 1,
+     "targets": "c7-maths-ch03-t02-m-oneths"
+    },
+    {
+     "mode": "weigh",
+     "title": "Balance the rice",
+     "sub": "read the scale carefully",
+     "items": [
+      {
+       "target": 3450,
+       "show": "kg"
+      },
+      {
+       "target": 3460,
+       "show": "kg"
+      }
+     ],
+     "scaleMax": 5000,
+     "minor": 50,
+     "tol": 0,
+     "speed": 0.9,
+     "targets": "c7-maths-ch03-t02-m-face-value"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-maths-ch03-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Decimal place value",
+   "accent": "ion",
+   "targets": "c7-maths-ch03-t02-m-oneths",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "row",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Decimal place value"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "The first place is oneths"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "tens",
+       "type": "label",
+       "text": "tens",
+       "x": 80,
+       "y": 300,
+       "color": "ion"
+      },
+      {
+       "id": "ones",
+       "type": "label",
+       "text": "ones",
+       "x": 260,
+       "y": 300,
+       "color": "sun"
+      },
+      {
+       "id": "point",
+       "type": "label",
+       "text": "decimal point",
+       "x": 405,
+       "y": 300,
+       "color": "amber"
+      },
+      {
+       "id": "tenths",
+       "type": "label",
+       "text": "tenths",
+       "x": 560,
+       "y": 300,
+       "color": "mint"
+      },
+      {
+       "id": "hundredths",
+       "type": "label",
+       "text": "hundredths",
+       "x": 720,
+       "y": 300,
+       "color": "sci"
+      },
+      {
+       "id": "thousandths",
+       "type": "label",
+       "text": "thousandths",
+       "x": 880,
+       "y": 300,
+       "color": "volt"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "tens",
+       "to": "ones",
+       "text": "ten times",
+       "bend": 0
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "ones",
+       "to": "tenths",
+       "text": "one tenth",
+       "bend": 0
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "tenths",
+       "to": "hundredths",
+       "text": "one tenth",
+       "bend": 0
+      },
+      {
+       "id": "a4",
+       "type": "arrow",
+       "from": "hundredths",
+       "to": "thousandths",
+       "text": "one tenth",
+       "bend": 0
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "num",
+       "type": "node",
+       "text": "3.472",
+       "sub": "place value",
+       "glyph": "ruler",
+       "color": "ion"
+      },
+      {
+       "id": "ones3",
+       "type": "label",
+       "text": "3 ones",
+       "x": 120,
+       "y": 350,
+       "color": "sun"
+      },
+      {
+       "id": "tenths4",
+       "type": "label",
+       "text": "4 tenths",
+       "x": 320,
+       "y": 350,
+       "color": "mint"
+      },
+      {
+       "id": "hund7",
+       "type": "label",
+       "text": "7 hundredths",
+       "x": 520,
+       "y": 350,
+       "color": "sci"
+      },
+      {
+       "id": "thou2",
+       "type": "label",
+       "text": "2 thousandths",
+       "x": 740,
+       "y": 350,
+       "color": "volt"
+      },
+      {
+       "id": "b1",
+       "type": "arrow",
+       "from": "num",
+       "to": "ones3",
+       "text": "digit value",
+       "bend": 0
+      },
+      {
+       "id": "b2",
+       "type": "arrow",
+       "from": "num",
+       "to": "tenths4",
+       "text": "digit value",
+       "bend": 0
+      },
+      {
+       "id": "b3",
+       "type": "arrow",
+       "from": "num",
+       "to": "hund7",
+       "text": "digit value",
+       "bend": 0
+      },
+      {
+       "id": "b4",
+       "type": "arrow",
+       "from": "num",
+       "to": "thou2",
+       "text": "digit value",
+       "bend": 0
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "split",
+     "els": [
+      {
+       "id": "compare",
+       "type": "node",
+       "text": "0.19",
+       "sub": "compare places",
+       "glyph": "balance",
+       "color": "amber"
+      },
+      {
+       "id": "one",
+       "type": "label",
+       "text": "1 tenth",
+       "x": 220,
+       "y": 350,
+       "color": "mint"
+      },
+      {
+       "id": "nine",
+       "type": "label",
+       "text": "9 hundredths",
+       "x": 560,
+       "y": 350,
+       "color": "sci"
+      },
+      {
+       "id": "c1",
+       "type": "arrow",
+       "from": "one",
+       "to": "nine",
+       "text": "worth more",
+       "bend": 0
+      }
+     ]
+    },
+    {
+     "id": "s5",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "taskTitle",
+       "type": "title",
+       "text": "Check your thinking"
+      },
+      {
+       "id": "q1",
+       "type": "node",
+       "text": "5.27",
+       "sub": "value of 2",
+       "glyph": "question",
+       "color": "ion"
+      },
+      {
+       "id": "optA",
+       "type": "label",
+       "text": "2 tenths",
+       "x": 180,
+       "y": 350,
+       "color": "mint"
+      },
+      {
+       "id": "optB",
+       "type": "label",
+       "text": "2 ones",
+       "x": 420,
+       "y": 350,
+       "color": "amber"
+      },
+      {
+       "id": "optC",
+       "type": "label",
+       "text": "2 hundredths",
+       "x": 680,
+       "y": 350,
+       "color": "sci"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "A decimal place tells us the value of each digit.",
+    "L2": "The ones place is the centre. There is no oneths place.",
+    "L3": "Moving right, each place is one tenth of the place before it: tenths, hundredths, then thousandths.",
+    "L4": "In 3.472, the digits mean 3 ones, 4 tenths, 7 hundredths and 2 thousandths.",
+    "L5": "So 3.472 equals 3 plus 4 tenths plus 7 hundredths plus 2 thousandths.",
+    "L6": "A digit's value depends on its place, not only on its face value.",
+    "L7": "For example, in 0.19, 1 tenth is worth more than 9 hundredths.",
+    "L8": "Now tap the value of the 2 in 5.27."
+   },
+   "narration": {},
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "myth"
+      },
+      {
+       "at": 0.8,
+       "do": "bust",
+       "dur": 0.8,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.5,
+       "target": "ones"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "tenths",
+        "hundredths",
+        "thousandths"
+       ]
+      },
+      {
+       "at": 1.3,
+       "do": "flow",
+       "dur": 0.8,
+       "target": [
+        "a2",
+        "a3",
+        "a4"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "num"
+      },
+      {
+       "at": 0.6,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "ones3",
+        "tenths4",
+        "hund7",
+        "thou2"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "num"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "compare"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "one",
+        "nine"
+       ]
+      },
+      {
+       "at": 0.7,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "one"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s5",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "taskTitle",
+        "q1",
+        "optA",
+        "optB",
+        "optC"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive",
+       "dur": 0.5
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "In 5.27, what is the value of the 2?",
+    "options": [
+     "optA",
+     "optB",
+     "optC"
+    ],
+    "answer": "optA",
+    "src": "c7-maths-ch03-t02-i01"
+   }
+  },
+  "repairs": [],
+  "attempts": 2,
+  "model": "taxila-fast-bg",
+  "seconds": 48
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch03-t02-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "title",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "decimal place",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "digits",
+       "op": "rect",
+       "startMs": 700,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        170,
+        170
+       ],
+       "w": 460,
+       "h": 100
+      },
+      {
+       "id": "d1",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        230,
+        220
+       ],
+       "text": "digit",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "d2",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        220
+       ],
+       "text": "digit",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "d3",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        570,
+        220
+       ],
+       "text": "digit",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "value",
+       "op": "arrow",
+       "startMs": 2800,
+       "endMs": 3500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        290
+       ],
+       "to": [
+        400,
+        370
+       ]
+      },
+      {
+       "id": "valueLabel",
+       "op": "label",
+       "startMs": 3500,
+       "endMs": 4100,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        455,
+        350
+       ],
+       "text": "value",
+       "to": [
+        400,
+        350
+       ]
+      },
+      {
+       "id": "placeLabel",
+       "op": "label",
+       "startMs": 4100,
+       "endMs": 4855,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        130
+       ],
+       "text": "place",
+       "to": [
+        400,
+        170
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch03-t02-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "centre",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        120
+       ],
+       "to": [
+        400,
+        380
+       ]
+      },
+      {
+       "id": "ones",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        100
+       ],
+       "text": "ones",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "left",
+       "op": "arrow",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        380,
+        220
+       ],
+       "to": [
+        250,
+        220
+       ]
+      },
+      {
+       "id": "right",
+       "op": "arrow",
+       "startMs": 1900,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        420,
+        220
+       ],
+       "to": [
+        550,
+        220
+       ]
+      },
+      {
+       "id": "noOneths",
+       "op": "text",
+       "startMs": 2600,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        550,
+        300
+       ],
+       "text": "no oneths",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "centreLabel",
+       "op": "label",
+       "startMs": 3500,
+       "endMs": 4300,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        455,
+        390
+       ],
+       "text": "centre",
+       "to": [
+        400,
+        360
+       ]
+      },
+      {
+       "id": "pair",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 5281,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        240,
+        180
+       ],
+       "text": "tens",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch03-t02-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "places",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        150,
+        220
+       ],
+       "to": [
+        650,
+        220
+       ]
+      },
+      {
+       "id": "rightArrow",
+       "op": "arrow",
+       "startMs": 900,
+       "endMs": 1700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        500,
+        220
+       ],
+       "to": [
+        650,
+        220
+       ]
+      },
+      {
+       "id": "tenths",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2600,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        280,
+        160
+       ],
+       "text": "tenths",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "hundredths",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3600,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        450,
+        160
+       ],
+       "text": "hundredths",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "thousandths",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4800,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        620,
+        160
+       ],
+       "text": "thousandths",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "oneTenth",
+       "op": "text",
+       "startMs": 4800,
+       "endMs": 5800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        320
+       ],
+       "text": "one tenth",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "before",
+       "op": "label",
+       "startMs": 5800,
+       "endMs": 6600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        170,
+        270
+       ],
+       "text": "place before",
+       "to": [
+        150,
+        220
+       ]
+      },
+      {
+       "id": "rightWord",
+       "op": "label",
+       "startMs": 6600,
+       "endMs": 7409,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        650,
+        270
+       ],
+       "text": "moving right",
+       "to": [
+        600,
+        220
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch03-t02-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "decimal",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        170,
+        90
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "3",
+         ".",
+         "4",
+         "7",
+         "2"
+        ]
+       ]
+      },
+      {
+       "id": "ones",
+       "op": "label",
+       "startMs": 1000,
+       "endMs": 1900,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        210,
+        180
+       ],
+       "text": "3 ones"
+      },
+      {
+       "id": "tenths",
+       "op": "label",
+       "startMs": 1700,
+       "endMs": 2800,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        330,
+        250
+       ],
+       "text": "4 tenths"
+      },
+      {
+       "id": "hundredths",
+       "op": "label",
+       "startMs": 2600,
+       "endMs": 3900,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        450,
+        320
+       ],
+       "text": "7 hundredths"
+      },
+      {
+       "id": "thousandths",
+       "op": "label",
+       "startMs": 3700,
+       "endMs": 5200,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        570,
+        390
+       ],
+       "text": "2 thousandths"
+      },
+      {
+       "id": "under",
+       "op": "line",
+       "startMs": 5200,
+       "endMs": 5800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        185,
+        135
+       ],
+       "to": [
+        595,
+        135
+       ]
+      },
+      {
+       "id": "place",
+       "op": "text",
+       "startMs": 5800,
+       "endMs": 6557,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        460
+       ],
+       "text": "place",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch03-t02-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "sum",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        100
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "3.472",
+         "=",
+         "3",
+         "+",
+         "4/10",
+         "+",
+         "7/100",
+         "+",
+         "2/1000"
+        ]
+       ]
+      },
+      {
+       "id": "three",
+       "op": "text",
+       "startMs": 2600,
+       "endMs": 3200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        150,
+        260
+       ],
+       "text": "3",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "four",
+       "op": "text",
+       "startMs": 3100,
+       "endMs": 3900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        300,
+        260
+       ],
+       "text": "4/10",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "seven",
+       "op": "text",
+       "startMs": 3800,
+       "endMs": 4700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        470,
+        260
+       ],
+       "text": "7/100",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "two",
+       "op": "text",
+       "startMs": 4600,
+       "endMs": 5500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        650,
+        260
+       ],
+       "text": "2/1000",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "equals",
+       "op": "label",
+       "startMs": 5500,
+       "endMs": 6132,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        370
+       ],
+       "text": "equals",
+       "to": [
+        400,
+        300
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch03-t02-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "face",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        220,
+        190
+       ],
+       "r": 55
+      },
+      {
+       "id": "digit",
+       "op": "text",
+       "startMs": 800,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        220,
+        205
+       ],
+       "text": "digit",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "placeBox",
+       "op": "rect",
+       "startMs": 1500,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        500,
+        135
+       ],
+       "w": 170,
+       "h": 110
+      },
+      {
+       "id": "place",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 3000,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        585,
+        195
+       ],
+       "text": "place",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "depends",
+       "op": "arrow",
+       "startMs": 3000,
+       "endMs": 3900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        275,
+        190
+       ],
+       "to": [
+        490,
+        190
+       ]
+      },
+      {
+       "id": "value",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        330
+       ],
+       "text": "value",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "notOnly",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 6132,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        410
+       ],
+       "text": "not only face value",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch03-t02-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "decimal",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        170,
+        100
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "0",
+         ".",
+         "1",
+         "9"
+        ]
+       ]
+      },
+      {
+       "id": "oneTenth",
+       "op": "text",
+       "startMs": 1100,
+       "endMs": 2100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        330,
+        220
+       ],
+       "text": "1 tenth",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "nineHundredths",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        520,
+        220
+       ],
+       "text": "9 hundredths",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "more",
+       "op": "arrow",
+       "startMs": 3000,
+       "endMs": 3900,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        330,
+        275
+       ],
+       "to": [
+        520,
+        275
+       ]
+      },
+      {
+       "id": "worth",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        350
+       ],
+       "text": "worth more",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "highlightOne",
+       "op": "highlight",
+       "startMs": 4800,
+       "endMs": 5706,
+       "ink": "good",
+       "weight": 2,
+       "target": "oneTenth",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch03-t02-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4430,
+     "ops": [
+      {
+       "id": "number",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        230,
+        110
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "5",
+         ".",
+         "2",
+         "7"
+        ]
+       ]
+      },
+      {
+       "id": "two",
+       "op": "highlight",
+       "startMs": 1000,
+       "endMs": 1700,
+       "ink": "accent",
+       "weight": 2,
+       "target": "number",
+       "style": "circle"
+      },
+      {
+       "id": "arrow",
+       "op": "arrow",
+       "startMs": 1700,
+       "endMs": 2500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        360,
+        270
+       ],
+       "to": [
+        360,
+        180
+       ]
+      },
+      {
+       "id": "value",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3300,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        360,
+        330
+       ],
+       "text": "value",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "tap",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 4430,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        420
+       ],
+       "text": "tap",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "1350 mm",
+   "prompt": "cut: 1.35 m"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "2350 mm",
+   "prompt": "cut: 2.35 m"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "3450 g",
+   "prompt": "weigh: 3.45 kg"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "3460 g",
+   "prompt": "weigh: 3.46 kg"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

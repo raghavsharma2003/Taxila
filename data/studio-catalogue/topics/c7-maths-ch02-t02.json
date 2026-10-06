@@ -1,0 +1,1683 @@
+{
+ "topicId": "c7-maths-ch02-t02",
+ "title": "Terms, brackets and order of evaluation",
+ "chapter": "Arithmetic Expressions",
+ "subject": "maths",
+ "class": 7,
+ "topicType": "T4",
+ "plan": {
+  "game": "rule-machine@1",
+  "hint": "build and brackets modes: writing expressions for situations, order of evaluation"
+ },
+ "game": {
+  "archetype": "rule-machine@1",
+  "spec": {
+   "archetype": "rule-machine@1",
+   "skills": [
+    "c7-maths-ch02-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "built": "machines",
+    "run": "RUN",
+    "want": "order",
+    "got": "made",
+    "coach": "Tap tiles to fill the machine, then RUN",
+    "runDone": "Factory closed",
+    "step": "step",
+    "predict": "step",
+    "inverse": "run it backwards",
+    "target": "target",
+    "steps": "steps",
+    "pick": "Pick a start",
+    "works": "WORKS",
+    "fix": "Try a new rule"
+   },
+   "title": "Rule Machine",
+   "rounds": [
+    {
+     "mode": "build",
+     "title": "Build the machine",
+     "sub": "one rule for every input",
+     "rule": [
+      "×3",
+      "+2"
+     ],
+     "inputs": [
+      2,
+      5,
+      7,
+      10
+     ],
+     "tiles": [
+      "×3",
+      "+2",
+      "+5",
+      "×4",
+      "-1"
+     ]
+    },
+    {
+     "mode": "brackets",
+     "title": "Place the brackets",
+     "sub": "take away the whole bracket",
+     "tokens": [
+      "100",
+      "-",
+      "30",
+      "+",
+      "20"
+     ],
+     "target": 50,
+     "targets": "c7-maths-ch02-t02-m-minus-first-only"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-maths-ch02-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Terms, brackets and order",
+   "accent": "ion",
+   "targets": "c7-maths-ch02-t02-m-left-to-right",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Terms and order"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "MYTH: Work strictly left to right"
+      },
+      {
+       "id": "expr",
+       "type": "label",
+       "text": "3 + 4 × 2",
+       "x": 540,
+       "y": 300,
+       "color": "amber"
+      },
+      {
+       "id": "wrong",
+       "type": "label",
+       "text": "14",
+       "x": 700,
+       "y": 300,
+       "color": "volt"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "head",
+       "type": "title",
+       "text": "Split at + and −"
+      },
+      {
+       "id": "term1",
+       "type": "node",
+       "text": "12",
+       "sub": "term",
+       "color": "ion"
+      },
+      {
+       "id": "term2",
+       "type": "node",
+       "text": "3 × 5",
+       "sub": "term",
+       "glyph": "gear",
+       "color": "sci"
+      },
+      {
+       "id": "term3",
+       "type": "node",
+       "text": "− 8 ÷ 2",
+       "sub": "term",
+       "glyph": "ruler",
+       "color": "mint"
+      },
+      {
+       "id": "plus1",
+       "type": "arrow",
+       "from": "term1",
+       "to": "term2",
+       "text": "plus"
+      },
+      {
+       "id": "minus1",
+       "type": "arrow",
+       "from": "term2",
+       "to": "term3",
+       "text": "minus"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "bracket",
+       "type": "node",
+       "text": "(12 − 4)",
+       "sub": "bracket first",
+       "glyph": "book",
+       "color": "amber"
+      },
+      {
+       "id": "inside",
+       "type": "label",
+       "text": "12 − 4 = 8",
+       "x": 450,
+       "y": 300,
+       "color": "sun"
+      },
+      {
+       "id": "whole",
+       "type": "node",
+       "text": "40 − 8 + 3 × 5",
+       "sub": "new expression",
+       "glyph": "scroll",
+       "color": "ion"
+      },
+      {
+       "id": "barr",
+       "type": "arrow",
+       "from": "bracket",
+       "to": "whole",
+       "text": "becomes"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "row",
+     "els": [
+      {
+       "id": "forty",
+       "type": "node",
+       "text": "40",
+       "sub": "+40",
+       "glyph": "coin",
+       "color": "ion"
+      },
+      {
+       "id": "eight",
+       "type": "node",
+       "text": "8",
+       "sub": "−8",
+       "glyph": "coin",
+       "color": "sci"
+      },
+      {
+       "id": "fifteen",
+       "type": "node",
+       "text": "15",
+       "sub": "+15",
+       "glyph": "coin",
+       "color": "mint"
+      },
+      {
+       "id": "sum",
+       "type": "label",
+       "text": "40 − 8 + 15 = 47",
+       "x": 400,
+       "y": 470,
+       "color": "amber"
+      },
+      {
+       "id": "a40",
+       "type": "arrow",
+       "from": "forty",
+       "to": "sum",
+       "text": "keep sign"
+      },
+      {
+       "id": "a8",
+       "type": "arrow",
+       "from": "eight",
+       "to": "sum",
+       "text": "keep sign"
+      },
+      {
+       "id": "a15",
+       "type": "arrow",
+       "from": "fifteen",
+       "to": "sum",
+       "text": "keep sign"
+      }
+     ]
+    },
+    {
+     "id": "s5",
+     "layout": "split",
+     "els": [
+      {
+       "id": "swap",
+       "type": "title",
+       "text": "Swap complete terms"
+      },
+      {
+       "id": "before",
+       "type": "label",
+       "text": "20 − 7 + 3",
+       "x": 260,
+       "y": 300,
+       "color": "ion"
+      },
+      {
+       "id": "after",
+       "type": "label",
+       "text": "20 + 3 − 7",
+       "x": 680,
+       "y": 300,
+       "color": "mint"
+      },
+      {
+       "id": "sign",
+       "type": "node",
+       "text": "sign + term",
+       "sub": "stay together",
+       "glyph": "magnet",
+       "color": "amber"
+      },
+      {
+       "id": "swaparr",
+       "type": "arrow",
+       "from": "before",
+       "to": "after",
+       "text": "safe swap"
+      }
+     ]
+    },
+    {
+     "id": "s6",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "checktitle",
+       "type": "title",
+       "text": "Quick check"
+      },
+      {
+       "id": "op14",
+       "type": "label",
+       "text": "14",
+       "x": 180,
+       "y": 330,
+       "color": "volt"
+      },
+      {
+       "id": "op11",
+       "type": "label",
+       "text": "11",
+       "x": 390,
+       "y": 330,
+       "color": "sci"
+      },
+      {
+       "id": "op23",
+       "type": "label",
+       "text": "23",
+       "x": 600,
+       "y": 330,
+       "color": "mint"
+      },
+      {
+       "id": "op27",
+       "type": "label",
+       "text": "27",
+       "x": 810,
+       "y": 330,
+       "color": "amber"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "An arithmetic expression is a sum of terms. We must evaluate each part in the right order.",
+    "L2": "First, split an expression at plus and minus signs outside brackets.",
+    "L3": "Products and quotients inside each term are worked out before the terms are added or subtracted.",
+    "L4": "So 3 plus 4 times 2 is 11, not 14. The multiplication term is worked out first.",
+    "L5": "Brackets come first. In 40 minus bracket 12 minus 4 bracket plus 3 times 5, the bracket becomes 8.",
+    "L6": "Now the terms are 40, minus 8, and plus 15. Adding them gives 47.",
+    "L7": "Terms may be swapped, but each term keeps its own sign. Twenty minus 7 plus 3 can become 20 plus 3 minus 7.",
+    "L8": "Now check this expression: 12 plus 3 times 5 minus 8 divided by 2. Choose its value."
+   },
+   "narration": {
+    "L1": {
+     "text": "An arithmetic expression is a sum of terms. We must evaluate each part in the right order.",
+     "dur": 7.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L2": {
+     "text": "First, split an expression at plus and minus signs outside brackets.",
+     "dur": 6.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L3": {
+     "text": "Products and quotients inside each term are worked out before the terms are added or subtracted.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L4": {
+     "text": "So 3 plus 4 times 2 is 11, not 14. The multiplication term is worked out first.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L5": {
+     "text": "Brackets come first. In 40 minus bracket 12 minus 4 bracket plus 3 times 5, the bracket becomes 8.",
+     "dur": 8.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Now the terms are 40, minus 8, and plus 15. Adding them gives 47.",
+     "dur": 6.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Terms may be swapped, but each term keeps its own sign. Twenty minus 7 plus 3 can become 20 plus 3 minus 7.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Now check this expression: 12 plus 3 times 5 minus 8 divided by 2. Choose its value.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.7,
+       "target": "expr"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0.2,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "head",
+        "term1",
+        "term2",
+        "term3"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 0.7,
+       "target": [
+        "plus1",
+        "minus1"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1.2,
+       "target": [
+        "term2",
+        "term3"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "wrong"
+      },
+      {
+       "at": 0.4,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      },
+      {
+       "at": 1.2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "expr"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "bracket",
+        "inside"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "barr",
+       "to": 1
+      },
+      {
+       "at": 1.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": "whole"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "forty",
+        "eight",
+        "fifteen"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 1,
+       "target": [
+        "a40",
+        "a8",
+        "a15"
+       ]
+      },
+      {
+       "at": 1.8,
+       "do": "show",
+       "dur": 0.8,
+       "target": "sum"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s5",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "before",
+        "sign"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "swaparr",
+       "to": 1
+      },
+      {
+       "at": 1.6,
+       "do": "show",
+       "dur": 0.8,
+       "target": "after"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s6",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "checktitle",
+        "op14",
+        "op11",
+        "op23",
+        "op27"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "What is the value of 12 + 3 × 5 − 8 ÷ 2?",
+    "options": [
+     "op14",
+     "op11",
+     "op23",
+     "op27"
+    ],
+    "answer": "op23",
+    "src": "c7-maths-ch02-t02-i02"
+   }
+  },
+  "repairs": [
+   "glyph",
+   "cue:target"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 64
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch02-t02-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "expr",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "expression",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "sum",
+       "op": "numwork",
+       "startMs": 900,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        160,
+        150
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "term",
+         "+",
+         "term",
+         "+",
+         "term"
+        ]
+       ]
+      },
+      {
+       "id": "parts",
+       "op": "label",
+       "startMs": 2200,
+       "endMs": 3000,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        170,
+        245
+       ],
+       "text": "terms",
+       "to": [
+        210,
+        185
+       ]
+      },
+      {
+       "id": "order",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 4300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        330
+       ],
+       "text": "right order",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "one",
+       "op": "circle",
+       "startMs": 4500,
+       "endMs": 5200,
+       "ink": "mark",
+       "weight": 2,
+       "c": [
+        210,
+        185
+       ],
+       "r": 35
+      },
+      {
+       "id": "two",
+       "op": "circle",
+       "startMs": 5200,
+       "endMs": 5900,
+       "ink": "mark",
+       "weight": 2,
+       "c": [
+        400,
+        185
+       ],
+       "r": 35
+      },
+      {
+       "id": "three",
+       "op": "circle",
+       "startMs": 5900,
+       "endMs": 6600,
+       "ink": "mark",
+       "weight": 2,
+       "c": [
+        590,
+        185
+       ],
+       "r": 35
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch02-t02-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "ex2",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        100
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "a",
+         "+",
+         "b",
+         "-",
+         "c",
+         "+",
+         "d"
+        ]
+       ]
+      },
+      {
+       "id": "br1",
+       "op": "line",
+       "startMs": 1400,
+       "endMs": 1900,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        265,
+        75
+       ],
+       "to": [
+        265,
+        175
+       ]
+      },
+      {
+       "id": "br2",
+       "op": "line",
+       "startMs": 1900,
+       "endMs": 2400,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        455,
+        75
+       ],
+       "to": [
+        455,
+        175
+       ]
+      },
+      {
+       "id": "plus",
+       "op": "label",
+       "startMs": 2500,
+       "endMs": 3200,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        245,
+        230
+       ],
+       "text": "plus",
+       "to": [
+        250,
+        125
+       ]
+      },
+      {
+       "id": "minus",
+       "op": "label",
+       "startMs": 3300,
+       "endMs": 4000,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        435,
+        280
+       ],
+       "text": "minus",
+       "to": [
+        440,
+        125
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch02-t02-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "terms3",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        80,
+        90
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "3",
+         "×",
+         "4",
+         "+",
+         "12",
+         "÷",
+         "2"
+        ]
+       ]
+      },
+      {
+       "id": "prod",
+       "op": "circle",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        145,
+        115
+       ],
+       "r": 50
+      },
+      {
+       "id": "quot",
+       "op": "circle",
+       "startMs": 2200,
+       "endMs": 2900,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        505,
+        115
+       ],
+       "r": 50
+      },
+      {
+       "id": "first",
+       "op": "arrow",
+       "startMs": 3000,
+       "endMs": 3700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        145,
+        220
+       ],
+       "to": [
+        145,
+        150
+       ]
+      },
+      {
+       "id": "second",
+       "op": "arrow",
+       "startMs": 3700,
+       "endMs": 4400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        505,
+        220
+       ],
+       "to": [
+        505,
+        150
+       ]
+      },
+      {
+       "id": "later",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        350
+       ],
+       "text": "add or subtract",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch02-t02-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "ex4",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        100
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "3",
+         "+",
+         "4",
+         "×",
+         "2",
+         "=",
+         "11"
+        ]
+       ]
+      },
+      {
+       "id": "mul4",
+       "op": "circle",
+       "startMs": 1900,
+       "endMs": 2600,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        360,
+        125
+       ],
+       "r": 45
+      },
+      {
+       "id": "calc4",
+       "op": "numwork",
+       "startMs": 2700,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        250,
+        230
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "4",
+         "×",
+         "2",
+         "=",
+         "8"
+        ]
+       ]
+      },
+      {
+       "id": "result4",
+       "op": "numwork",
+       "startMs": 4000,
+       "endMs": 5200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        250,
+        330
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "3",
+         "+",
+         "8",
+         "=",
+         "11"
+        ]
+       ]
+      },
+      {
+       "id": "not14",
+       "op": "text",
+       "startMs": 5400,
+       "endMs": 6300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        570,
+        330
+       ],
+       "text": "not 14",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch02-t02-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "ex5",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        50,
+        90
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "40",
+         "-",
+         "(",
+         "12",
+         "-",
+         "4",
+         ")",
+         "+",
+         "3",
+         "×",
+         "5"
+        ]
+       ]
+      },
+      {
+       "id": "bracket5",
+       "op": "rect",
+       "startMs": 1900,
+       "endMs": 2700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        235,
+        65
+       ],
+       "w": 150,
+       "h": 70,
+       "round": 12
+      },
+      {
+       "id": "inside5",
+       "op": "numwork",
+       "startMs": 2900,
+       "endMs": 4300,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        260,
+        180
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "12",
+         "-",
+         "4",
+         "=",
+         "8"
+        ]
+       ]
+      },
+      {
+       "id": "replace5",
+       "op": "numwork",
+       "startMs": 4500,
+       "endMs": 6100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        80,
+        310
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "40",
+         "-",
+         "8",
+         "+",
+         "3",
+         "×",
+         "5"
+        ]
+       ]
+      },
+      {
+       "id": "brfirst",
+       "op": "label",
+       "startMs": 6300,
+       "endMs": 7500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        430,
+        220
+       ],
+       "text": "brackets first",
+       "to": [
+        310,
+        100
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch02-t02-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "terms6",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        100
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "40",
+         "-",
+         "8",
+         "+",
+         "15"
+        ]
+       ]
+      },
+      {
+       "id": "t40",
+       "op": "circle",
+       "startMs": 1500,
+       "endMs": 2100,
+       "ink": "mark",
+       "weight": 1,
+       "c": [
+        115,
+        125
+       ],
+       "r": 38
+      },
+      {
+       "id": "t8",
+       "op": "circle",
+       "startMs": 2100,
+       "endMs": 2700,
+       "ink": "mark",
+       "weight": 1,
+       "c": [
+        265,
+        125
+       ],
+       "r": 38
+      },
+      {
+       "id": "t15",
+       "op": "circle",
+       "startMs": 2700,
+       "endMs": 3300,
+       "ink": "mark",
+       "weight": 1,
+       "c": [
+        415,
+        125
+       ],
+       "r": 38
+      },
+      {
+       "id": "sum6",
+       "op": "numwork",
+       "startMs": 3500,
+       "endMs": 5000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        180,
+        260
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "40",
+         "-",
+         "8",
+         "+",
+         "15",
+         "=",
+         "47"
+        ]
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch02-t02-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 10387,
+     "ops": [
+      {
+       "id": "orig7",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        90
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "20",
+         "-",
+         "7",
+         "+",
+         "3"
+        ]
+       ]
+      },
+      {
+       "id": "swap7",
+       "op": "numwork",
+       "startMs": 1900,
+       "endMs": 3300,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        90,
+        250
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "20",
+         "+",
+         "3",
+         "-",
+         "7"
+        ]
+       ]
+      },
+      {
+       "id": "sign7a",
+       "op": "label",
+       "startMs": 3500,
+       "endMs": 4100,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        125,
+        180
+       ],
+       "text": "20",
+       "to": [
+        125,
+        115
+       ]
+      },
+      {
+       "id": "sign7b",
+       "op": "label",
+       "startMs": 4100,
+       "endMs": 4800,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        275,
+        180
+       ],
+       "text": "- 7",
+       "to": [
+        275,
+        115
+       ]
+      },
+      {
+       "id": "sign7c",
+       "op": "label",
+       "startMs": 4800,
+       "endMs": 5500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        425,
+        180
+       ],
+       "text": "+ 3",
+       "to": [
+        425,
+        115
+       ]
+      },
+      {
+       "id": "keep",
+       "op": "text",
+       "startMs": 6000,
+       "endMs": 7200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        410
+       ],
+       "text": "keep each sign",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch02-t02-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "check8",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        55,
+        95
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "12",
+         "+",
+         "3",
+         "×",
+         "5",
+         "-",
+         "8",
+         "÷",
+         "2"
+        ]
+       ]
+      },
+      {
+       "id": "mul8",
+       "op": "circle",
+       "startMs": 1900,
+       "endMs": 2500,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        245,
+        120
+       ],
+       "r": 42
+      },
+      {
+       "id": "div8",
+       "op": "circle",
+       "startMs": 2500,
+       "endMs": 3100,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        515,
+        120
+       ],
+       "r": 42
+      },
+      {
+       "id": "work8",
+       "op": "numwork",
+       "startMs": 3300,
+       "endMs": 4700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        130,
+        240
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "3",
+         "×",
+         "5",
+         "=",
+         "15"
+        ],
+        [
+         "8",
+         "÷",
+         "2",
+         "=",
+         "4"
+        ]
+       ]
+      },
+      {
+       "id": "final8",
+       "op": "numwork",
+       "startMs": 5000,
+       "endMs": 6800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        120,
+        370
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "12",
+         "+",
+         "15",
+         "-",
+         "4",
+         "=",
+         "23"
+        ]
+       ]
+      },
+      {
+       "id": "choose",
+       "op": "text",
+       "startMs": 7000,
+       "endMs": 7600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        600,
+        380
+       ],
+       "text": "23",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1",
+   "key": "×3 then +2",
+   "prompt": "inputs 2,5,7,10 → 8,17,23,32"
+  },
+  {
+   "itemId": "r2",
+   "key": "50",
+   "prompt": "100 - 30 + 20 = 50?"
+  }
+ ],
+ "check": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "Round 2 (brackets) uses tokens ['100','-','30','+','20'] and target 50, but without brackets 100-30+20 = 90, not 50. To get 50, brackets must be placed as 100-(30+20). However the round tokens do not include brackets and the target indicates the misinterpretation 'c7-maths-ch02-t02-m-minus-first-only' — but the kit item c7-maths-ch02-t02-i05 states 60-20+10 = 50, not 100-30+20. The round's numbers are independent and acceptable, but the target statement says 'take away the whole bracket', which is correct. No factual error — numbers are new. No issue.",
+    "severity": "high"
+   }
+  ],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

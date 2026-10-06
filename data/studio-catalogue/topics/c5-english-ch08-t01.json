@@ -1,0 +1,1847 @@
+{
+ "topicId": "c5-english-ch08-t01",
+ "title": "The Decision of the Panchayat",
+ "chapter": "The Decision of the Panchayat",
+ "subject": "english",
+ "class": 5,
+ "topicType": "T3",
+ "plan": {
+  "game": "story-rail@1",
+  "hint": "sequence, cause and who modes from the lesson's events and speakers"
+ },
+ "game": {
+  "archetype": "story-rail@1",
+  "spec": {
+   "archetype": "story-rail@1",
+   "skills": [
+    "c5-english-ch08-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "picked": "coupled",
+    "streak": "streak",
+    "next": "What happens next?",
+    "effect": "What does this lead to?",
+    "who": "Who said this?",
+    "runDone": "Line complete",
+    "order": "your train",
+    "right": "Coupled",
+    "wrong": "Not this one",
+    "coach": "Tap a wagon before the train reaches the fork"
+   },
+   "title": "The Panchayat Decision",
+   "rounds": [
+    {
+     "mode": "sequence",
+     "title": "Story order",
+     "sub": "couple the events in order",
+     "cards": [
+      {
+       "id": "e1",
+       "text": "Kaki gives land to Jeevan",
+       "glyph": "house",
+       "src": "c5-english-ch08-t01-i01"
+      },
+      {
+       "id": "e2",
+       "text": "Jeevan stops caring for Kaki",
+       "glyph": "person",
+       "src": "c5-english-ch08-t01-i01"
+      },
+      {
+       "id": "e3",
+       "text": "Kaki chooses Moti",
+       "glyph": "person",
+       "src": "c5-english-ch08-t01-i03"
+      },
+      {
+       "id": "e4",
+       "text": "Moti decides by what is right",
+       "glyph": "balance",
+       "src": "c5-english-ch08-t01-i04"
+      },
+      {
+       "id": "e5",
+       "text": "Jeevan must give monthly money",
+       "glyph": "coin",
+       "src": "c5-english-ch08-t01-i05"
+      }
+     ],
+     "speed": 0.9,
+     "targets": "c5-english-ch08-t01-m-fair-friend"
+    },
+    {
+     "mode": "cause",
+     "title": "Cause and result",
+     "sub": "match each cause to its result",
+     "pairs": [
+      {
+       "cause": {
+        "id": "c1",
+        "text": "Jeevan takes Kaki's land",
+        "glyph": "house",
+        "src": "c5-english-ch08-t01-i01"
+       },
+       "effect": {
+        "id": "f1",
+        "text": "He stops caring for her",
+        "glyph": "person",
+        "src": "c5-english-ch08-t01-i01"
+       }
+      },
+      {
+       "cause": {
+        "id": "c2",
+        "text": "Moti is a fair judge",
+        "glyph": "balance",
+        "src": "c5-english-ch08-t01-i05"
+       },
+       "effect": {
+        "id": "f2",
+        "text": "He decides against Jeevan",
+        "src": "c5-english-ch08-t01-i05"
+       }
+      },
+      {
+       "cause": {
+        "id": "c3",
+        "text": "Moti decides fairly",
+        "glyph": "balance",
+        "src": "c5-english-ch08-t01-i04"
+       },
+       "effect": {
+        "id": "f3",
+        "text": "Jeevan gives Kaki money",
+        "glyph": "coin",
+        "src": "c5-english-ch08-t01-i05"
+       }
+      }
+     ],
+     "speed": 0.85
+    },
+    {
+     "mode": "who",
+     "title": "Who said it?",
+     "sub": "send each line to its speaker",
+     "speakers": [
+      {
+       "id": "kaki",
+       "name": "Kaki",
+       "glyph": "person"
+      },
+      {
+       "id": "moti",
+       "name": "Moti",
+       "glyph": "balance"
+      },
+      {
+       "id": "jeevan",
+       "name": "Jeevan",
+       "glyph": "person"
+      }
+     ],
+     "lines": [
+      {
+       "id": "w1",
+       "text": "Jeevan took my land.",
+       "speaker": "kaki",
+       "src": "c5-english-ch08-t01-i01"
+      },
+      {
+       "id": "w2",
+       "text": "There is no friend here.",
+       "speaker": "moti",
+       "src": "c5-english-ch08-t01-i04"
+      },
+      {
+       "id": "w3",
+       "text": "Moti was my best friend.",
+       "speaker": "jeevan",
+       "src": "c5-english-ch08-t01-i03"
+      }
+     ],
+     "speed": 0.85
+    }
+   ]
+  },
+  "repairs": [
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c5-english-ch08-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Moti Chooses What Is Right",
+   "accent": "amber",
+   "targets": "c5-english-ch08-t01-m-fair-friend",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Moti Chooses What Is Right"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "A good friend always takes his friend's side"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "kaki",
+       "type": "node",
+       "text": "Kaki",
+       "sub": "gave land",
+       "glyph": "house",
+       "color": "amber"
+      },
+      {
+       "id": "jeevan",
+       "type": "node",
+       "text": "Jeevan",
+       "sub": "stopped care",
+       "glyph": "person",
+       "color": "volt"
+      },
+      {
+       "id": "problem",
+       "type": "label",
+       "text": "Kaki needs help",
+       "x": 390,
+       "y": 280,
+       "color": "amber"
+      },
+      {
+       "id": "take",
+       "type": "arrow",
+       "from": "kaki",
+       "to": "jeevan",
+       "text": "land",
+       "bend": 0
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "moti",
+       "type": "node",
+       "text": "Moti",
+       "sub": "best friend",
+       "glyph": "balance",
+       "color": "sci"
+      },
+      {
+       "id": "right",
+       "type": "node",
+       "text": "What is right",
+       "sub": "fair judge",
+       "color": "mint"
+      },
+      {
+       "id": "money",
+       "type": "node",
+       "text": "Monthly money",
+       "sub": "for Kaki",
+       "glyph": "coin",
+       "color": "sun"
+      },
+      {
+       "id": "decide",
+       "type": "arrow",
+       "from": "moti",
+       "to": "right",
+       "text": "decides fairly"
+      },
+      {
+       "id": "solution",
+       "type": "arrow",
+       "from": "right",
+       "to": "money",
+       "text": "decision",
+       "bend": 0
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "row",
+     "els": [
+      {
+       "id": "honest",
+       "type": "node",
+       "text": "honest",
+       "sub": "trait word",
+       "glyph": "shield",
+       "color": "mint"
+      },
+      {
+       "id": "lazy",
+       "type": "node",
+       "text": "lazy",
+       "sub": "trait word",
+       "glyph": "clock",
+       "color": "volt"
+      },
+      {
+       "id": "greedy",
+       "type": "node",
+       "text": "greedy",
+       "sub": "trait word",
+       "glyph": "coin",
+       "color": "amber"
+      },
+      {
+       "id": "because",
+       "type": "label",
+       "text": "because = reason",
+       "x": 180,
+       "y": 400,
+       "color": "sci"
+      },
+      {
+       "id": "so",
+       "type": "label",
+       "text": "so = result",
+       "x": 620,
+       "y": 400,
+       "color": "sci"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Kaki gave her land to Jeevan, but he stopped looking after her.",
+    "L2": "A good friend does not always take his friend's side. A judge must decide by what is right.",
+    "L3": "Moti was Jeevan's best friend, so the village people expected him to support Jeevan.",
+    "L4": "Moti chose to be fair. He decided that Jeevan must give Kaki money every month.",
+    "L5": "Moti was an honest person because he made a fair decision, even against his friend.",
+    "L6": "The story teaches us that fairness matters more than friendship in a judge's seat.",
+    "L7": "Use one joiner when you give a reason: because or so, not both together.",
+    "L8": "For example, Moti was fair, so everyone trusted him."
+   },
+   "narration": {
+    "L1": {
+     "text": "Kaki gave her land to Jeevan, but he stopped looking after her.",
+     "dur": 3.2,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "A good friend does not always take his friend's side. A judge must decide by what is right.",
+     "dur": 4.1,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "Moti was Jeevan's best friend, so the village people expected him to support Jeevan.",
+     "dur": 3.8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "Moti chose to be fair. He decided that Jeevan must give Kaki money every month.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "Moti was an honest person because he made a fair decision, even against his friend.",
+     "dur": 3.7,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "The story teaches us that fairness matters more than friendship in a judge's seat.",
+     "dur": 3.4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Use one joiner when you give a reason: because or so, not both together.",
+     "dur": 3.6,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "For example, Moti was fair, so everyone trusted him.",
+     "dur": 2.8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.5,
+       "target": "kaki"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.5,
+       "target": "jeevan"
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "take",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "myth"
+      },
+      {
+       "at": 1.2,
+       "do": "bust",
+       "dur": 1.2,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "moti"
+      },
+      {
+       "at": 0.6,
+       "do": "highlight",
+       "dur": 1,
+       "target": "moti"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "right"
+      },
+      {
+       "at": 0.6,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "decide",
+       "to": 1
+      },
+      {
+       "at": 1.4,
+       "do": "show",
+       "dur": 0.6,
+       "target": "money"
+      },
+      {
+       "at": 2,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "solution",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "honest"
+      },
+      {
+       "at": 0.7,
+       "do": "highlight",
+       "dur": 1,
+       "target": "honest"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1.2,
+       "target": "right"
+      },
+      {
+       "at": 1.3,
+       "do": "camera",
+       "dur": 1,
+       "zoom": 1.05
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "because",
+        "so"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "because"
+      },
+      {
+       "at": 1.7,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "so"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "so"
+      },
+      {
+       "at": "end",
+       "do": "interactive"
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which word best describes Moti?",
+    "options": [
+     "honest",
+     "lazy",
+     "greedy"
+    ],
+    "answer": "honest",
+    "src": "c5-english-ch08-t01-i06"
+   }
+  },
+  "repairs": [
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 32
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-english-ch08-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "land",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        90,
+        170
+       ],
+       "w": 180,
+       "h": 120,
+       "fill": "soft"
+      },
+      {
+       "id": "kaki",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        330
+       ],
+       "text": "Kaki",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "jee",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        610,
+        330
+       ],
+       "text": "Jeevan",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "give",
+       "op": "arrow",
+       "startMs": 1300,
+       "endMs": 2300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        275,
+        220
+       ],
+       "to": [
+        515,
+        220
+       ]
+      },
+      {
+       "id": "landlabel",
+       "op": "label",
+       "startMs": 1900,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        395,
+        180
+       ],
+       "text": "land",
+       "to": [
+        390,
+        220
+       ]
+      },
+      {
+       "id": "look",
+       "op": "circle",
+       "startMs": 2800,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        610,
+        220
+       ],
+       "r": 45
+      },
+      {
+       "id": "stop",
+       "op": "line",
+       "startMs": 3500,
+       "endMs": 4000,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        575,
+        185
+       ],
+       "to": [
+        645,
+        255
+       ]
+      },
+      {
+       "id": "care",
+       "op": "text",
+       "startMs": 4100,
+       "endMs": 4700,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        610,
+        300
+       ],
+       "text": "stopped",
+       "size": "s",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-english-ch08-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "friend",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        180,
+        190
+       ],
+       "r": 60
+      },
+      {
+       "id": "side",
+       "op": "text",
+       "startMs": 500,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        290
+       ],
+       "text": "friend",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "judge",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1600,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        600,
+        190
+       ],
+       "r": 60
+      },
+      {
+       "id": "jlabel",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 1900,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        600,
+        290
+       ],
+       "text": "judge",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "notalways",
+       "op": "line",
+       "startMs": 2100,
+       "endMs": 2600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        135,
+        145
+       ],
+       "to": [
+        225,
+        235
+       ]
+      },
+      {
+       "id": "right",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        600,
+        370
+       ],
+       "text": "right",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "choice",
+       "op": "arrow",
+       "startMs": 3800,
+       "endMs": 4500,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        600,
+        260
+       ],
+       "to": [
+        600,
+        340
+       ]
+      },
+      {
+       "id": "balance",
+       "op": "line",
+       "startMs": 4800,
+       "endMs": 5400,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        500,
+        420
+       ],
+       "to": [
+        700,
+        420
+       ]
+      },
+      {
+       "id": "seat",
+       "op": "text",
+       "startMs": 5600,
+       "endMs": 6300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        600,
+        465
+       ],
+       "text": "judge's seat",
+       "size": "s",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-english-ch08-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "moti",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        400,
+        170
+       ],
+       "r": 55
+      },
+      {
+       "id": "mlabel",
+       "op": "text",
+       "startMs": 500,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        260
+       ],
+       "text": "Moti",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "jee2",
+       "op": "circle",
+       "startMs": 1000,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        180,
+        370
+       ],
+       "r": 45
+      },
+      {
+       "id": "jlabel2",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        440
+       ],
+       "text": "Jeevan",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "best",
+       "op": "line",
+       "startMs": 2000,
+       "endMs": 2800,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        350,
+        200
+       ],
+       "to": [
+        220,
+        350
+       ]
+      },
+      {
+       "id": "bestlabel",
+       "op": "label",
+       "startMs": 2700,
+       "endMs": 3400,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        260,
+        260
+       ],
+       "text": "best friend",
+       "to": [
+        285,
+        275
+       ]
+      },
+      {
+       "id": "people",
+       "op": "ellipse",
+       "startMs": 3500,
+       "endMs": 4300,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        620,
+        360
+       ],
+       "rx": 110,
+       "ry": 65
+      },
+      {
+       "id": "village",
+       "op": "text",
+       "startMs": 4200,
+       "endMs": 5000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        620,
+        455
+       ],
+       "text": "village people",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "expect",
+       "op": "arrow",
+       "startMs": 5000,
+       "endMs": 5900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        620,
+        300
+       ],
+       "to": [
+        450,
+        210
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-english-ch08-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "moti2",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        180,
+        170
+       ],
+       "r": 55
+      },
+      {
+       "id": "moti2label",
+       "op": "text",
+       "startMs": 500,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        260
+       ],
+       "text": "Moti",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "fair",
+       "op": "text",
+       "startMs": 1000,
+       "endMs": 1600,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        180,
+        315
+       ],
+       "text": "fair",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "jee3",
+       "op": "circle",
+       "startMs": 1300,
+       "endMs": 2000,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        620,
+        170
+       ],
+       "r": 55
+      },
+      {
+       "id": "jee3label",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        620,
+        260
+       ],
+       "text": "Jeevan",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "decision",
+       "op": "arrow",
+       "startMs": 2400,
+       "endMs": 3300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        235,
+        170
+       ],
+       "to": [
+        565,
+        170
+       ]
+      },
+      {
+       "id": "money",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4100,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        350
+       ],
+       "text": "money",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "month",
+       "op": "circle",
+       "startMs": 4200,
+       "endMs": 4700,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        400,
+        430
+       ],
+       "r": 35
+      },
+      {
+       "id": "monthly",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        485
+       ],
+       "text": "every month",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "pay",
+       "op": "arrow",
+       "startMs": 5500,
+       "endMs": 6400,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        600,
+        300
+       ],
+       "to": [
+        430,
+        415
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-english-ch08-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "honest",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        90
+       ],
+       "text": "honest",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "moti3",
+       "op": "circle",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        400,
+        220
+       ],
+       "r": 60
+      },
+      {
+       "id": "moti3label",
+       "op": "text",
+       "startMs": 1200,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        315
+       ],
+       "text": "Moti",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "fair2",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2300,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        370
+       ],
+       "text": "fair",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "friend2",
+       "op": "circle",
+       "startMs": 2300,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        180,
+        430
+       ],
+       "r": 35
+      },
+      {
+       "id": "friendlabel",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        480
+       ],
+       "text": "friend",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "against",
+       "op": "line",
+       "startMs": 3400,
+       "endMs": 4000,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        145,
+        395
+       ],
+       "to": [
+        215,
+        465
+       ]
+      },
+      {
+       "id": "decision2",
+       "op": "arrow",
+       "startMs": 4100,
+       "endMs": 5100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        340,
+        260
+       ],
+       "to": [
+        230,
+        420
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-english-ch08-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "friendship",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        190,
+        190
+       ],
+       "r": 70
+      },
+      {
+       "id": "friendshiplabel",
+       "op": "text",
+       "startMs": 500,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        190,
+        290
+       ],
+       "text": "friendship",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "fairness",
+       "op": "circle",
+       "startMs": 800,
+       "endMs": 1500,
+       "ink": "good",
+       "weight": 1,
+       "c": [
+        610,
+        190
+       ],
+       "r": 70
+      },
+      {
+       "id": "fairnesslabel",
+       "op": "text",
+       "startMs": 1300,
+       "endMs": 2000,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        610,
+        290
+       ],
+       "text": "fairness",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "more",
+       "op": "arrow",
+       "startMs": 2100,
+       "endMs": 3000,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        270,
+        190
+       ],
+       "to": [
+        520,
+        190
+       ]
+      },
+      {
+       "id": "judge2",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 4100,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        380
+       ],
+       "text": "judge's seat",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "right2",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 5100,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        440
+       ],
+       "text": "right",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-english-ch08-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "joiner",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        80
+       ],
+       "text": "one joiner",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "because",
+       "op": "rect",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        120,
+        170
+       ],
+       "w": 210,
+       "h": 80
+      },
+      {
+       "id": "becauseText",
+       "op": "text",
+       "startMs": 1200,
+       "endMs": 1800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        225,
+        220
+       ],
+       "text": "because",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "or",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        215
+       ],
+       "text": "or",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "so",
+       "op": "rect",
+       "startMs": 2400,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        470,
+        170
+       ],
+       "w": 210,
+       "h": 80
+      },
+      {
+       "id": "soText",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3300,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        575,
+        220
+       ],
+       "text": "so",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "notboth",
+       "op": "line",
+       "startMs": 3500,
+       "endMs": 4100,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        250,
+        300
+       ],
+       "to": [
+        550,
+        300
+       ]
+      },
+      {
+       "id": "both",
+       "op": "text",
+       "startMs": 4200,
+       "endMs": 5100,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        370
+       ],
+       "text": "not both together",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-english-ch08-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 4430,
+     "ops": [
+      {
+       "id": "example",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        80
+       ],
+       "text": "For example",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "moti4",
+       "op": "text",
+       "startMs": 500,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        180,
+        180
+       ],
+       "text": "Moti",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "fair3",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1400,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        180,
+        250
+       ],
+       "text": "fair",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "so3",
+       "op": "text",
+       "startMs": 1300,
+       "endMs": 1900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        215
+       ],
+       "text": "so",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "everyone",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        620,
+        180
+       ],
+       "text": "everyone",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "trusted",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 3000,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        620,
+        250
+       ],
+       "text": "trusted him",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "underline",
+       "op": "line",
+       "startMs": 3100,
+       "endMs": 3700,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        430,
+        270
+       ],
+       "to": [
+        690,
+        270
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "Jeevan stops caring for Kaki",
+   "prompt": "sequence: after/for \"Kaki gives land to Jeevan\"",
+   "src": "c5-english-ch08-t01-i01"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "Kaki chooses Moti",
+   "prompt": "sequence: after/for \"Jeevan stops caring for Kaki\"",
+   "src": "c5-english-ch08-t01-i03"
+  },
+  {
+   "itemId": "r1:2",
+   "key": "Moti decides by what is right",
+   "prompt": "sequence: after/for \"Kaki chooses Moti\"",
+   "src": "c5-english-ch08-t01-i04"
+  },
+  {
+   "itemId": "r1:3",
+   "key": "Jeevan must give monthly money",
+   "prompt": "sequence: after/for \"Moti decides by what is right\"",
+   "src": "c5-english-ch08-t01-i05"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "He stops caring for her",
+   "prompt": "cause: after/for \"Jeevan takes Kaki's land\"",
+   "src": "c5-english-ch08-t01-i01"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "He decides against Jeevan",
+   "prompt": "cause: after/for \"Moti is a fair judge\"",
+   "src": "c5-english-ch08-t01-i05"
+  },
+  {
+   "itemId": "r2:2",
+   "key": "Jeevan gives Kaki money",
+   "prompt": "cause: after/for \"Moti decides fairly\"",
+   "src": "c5-english-ch08-t01-i05"
+  },
+  {
+   "itemId": "r3:0",
+   "key": "Kaki",
+   "prompt": "who: after/for \"Jeevan took my land.\"",
+   "src": "c5-english-ch08-t01-i01"
+  },
+  {
+   "itemId": "r3:1",
+   "key": "Moti",
+   "prompt": "who: after/for \"There is no friend here.\"",
+   "src": "c5-english-ch08-t01-i04"
+  },
+  {
+   "itemId": "r3:2",
+   "key": "Jeevan",
+   "prompt": "who: after/for \"Moti was my best friend.\"",
+   "src": "c5-english-ch08-t01-i03"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

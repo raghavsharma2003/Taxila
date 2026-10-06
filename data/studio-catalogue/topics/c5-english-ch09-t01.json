@@ -1,0 +1,1790 @@
+{
+ "topicId": "c5-english-ch09-t01",
+ "title": "Vocation",
+ "chapter": "Vocation",
+ "subject": "english",
+ "class": 5,
+ "topicType": "T1",
+ "plan": {
+  "game": "beat-line@1",
+  "hint": "beat and rhyme rounds (Hindi: matra round on a doha/chaupai line)"
+ },
+ "game": {
+  "archetype": "beat-line@1",
+  "spec": {
+   "archetype": "beat-line@1",
+   "skills": [
+    "c5-english-ch09-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "onBeat": "on beat",
+    "combo": "combo",
+    "tap": "Tap on the beat",
+    "catch": "Catch the rhyme",
+    "mark": "Short or long?",
+    "short": "। short",
+    "long": "ऽ long",
+    "practice": "PRACTICE LINE",
+    "runDone": "Poem played",
+    "perfect": "ON BEAT",
+    "early": "early",
+    "late": "late",
+    "meter": "मात्रा"
+   },
+   "title": "Vocation Beat Path",
+   "bpm": 78,
+   "lines": [
+    {
+     "text": "I wish I were the fruit-seller",
+     "beats": [
+      1,
+      4
+     ],
+     "own": true
+    },
+    {
+     "text": "Who sings along the lane",
+     "beats": [
+      1,
+      3
+     ],
+     "own": true
+    },
+    {
+     "text": "Or the watchman with his lantern",
+     "beats": [
+      1,
+      4
+     ],
+     "own": true
+    },
+    {
+     "text": "Who keeps away our worries",
+     "beats": [
+      1,
+      3
+     ],
+     "own": true
+    }
+   ],
+   "rounds": [
+    {
+     "mode": "beat",
+     "title": "Feel the work beat",
+     "sub": "Tap the strong beats as you recite",
+     "lines": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "mode": "rhyme",
+     "title": "Catch the rhyme",
+     "sub": "Listen for matching end sounds",
+     "items": [
+      {
+       "cue": "Which word rhymes with lane?",
+       "options": [
+        "rain",
+        "land"
+       ],
+       "answer": "rain",
+       "src": "c5-english-ch09-t01-i02"
+      },
+      {
+       "cue": "The watchman carries a bright ____ at night.",
+       "options": [
+        "lantern",
+        "garden",
+        "lane"
+       ],
+       "answer": "lantern",
+       "src": "c5-english-ch09-t01-i09"
+      }
+     ],
+     "targets": "c5-english-ch09-t01-m-who-which"
+    }
+   ]
+  },
+  "repairs": [
+   "round:lines"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c5-english-ch09-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Every job matters",
+   "accent": "mint",
+   "targets": "c5-english-ch09-t01-m-small-work",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "row",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Every job matters"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Some jobs are small"
+      },
+      {
+       "id": "worker",
+       "type": "glyph",
+       "name": "person",
+       "x": 500,
+       "y": 330,
+       "size": 150,
+       "color": "mint"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "fruit",
+       "type": "node",
+       "text": "Fruit-seller",
+       "sub": "sings in the lane",
+       "glyph": "apple",
+       "x": 150,
+       "y": 300,
+       "color": "sun"
+      },
+      {
+       "id": "garden",
+       "type": "node",
+       "text": "Gardener",
+       "sub": "never hurries",
+       "glyph": "tree",
+       "x": 500,
+       "y": 300,
+       "color": "mint"
+      },
+      {
+       "id": "watch",
+       "type": "node",
+       "text": "Watchman",
+       "sub": "keeps us safe",
+       "glyph": "shield",
+       "x": 850,
+       "y": 300,
+       "color": "ion"
+      },
+      {
+       "id": "ar1",
+       "type": "arrow",
+       "from": "fruit",
+       "to": "garden",
+       "text": "wish"
+      },
+      {
+       "id": "ar2",
+       "type": "arrow",
+       "from": "garden",
+       "to": "watch",
+       "text": "wish"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "split",
+     "els": [
+      {
+       "id": "person",
+       "type": "node",
+       "text": "Person",
+       "sub": "the potter",
+       "glyph": "person",
+       "x": 250,
+       "y": 320,
+       "color": "amber"
+      },
+      {
+       "id": "who",
+       "type": "label",
+       "text": "who",
+       "x": 500,
+       "y": 300,
+       "color": "mint"
+      },
+      {
+       "id": "action",
+       "type": "node",
+       "text": "makes pots",
+       "sub": "joins the idea",
+       "glyph": "pot",
+       "x": 760,
+       "y": 320,
+       "color": "sci"
+      },
+      {
+       "id": "ar3",
+       "type": "arrow",
+       "from": "person",
+       "to": "who",
+       "text": "join"
+      },
+      {
+       "id": "ar4",
+       "type": "arrow",
+       "from": "who",
+       "to": "action",
+       "text": "describes"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "row",
+     "els": [
+      {
+       "id": "a",
+       "type": "label",
+       "text": "a teacher",
+       "x": 200,
+       "y": 300,
+       "color": "ion"
+      },
+      {
+       "id": "an",
+       "type": "label",
+       "text": "an electrician",
+       "x": 500,
+       "y": 300,
+       "color": "sun"
+      },
+      {
+       "id": "job",
+       "type": "label",
+       "text": "a job matters",
+       "x": 800,
+       "y": 300,
+       "color": "mint"
+      }
+     ]
+    },
+    {
+     "id": "s5",
+     "layout": "row",
+     "els": [
+      {
+       "id": "optFruit",
+       "type": "label",
+       "text": "fruit-seller",
+       "x": 150,
+       "y": 300,
+       "color": "sun"
+      },
+      {
+       "id": "optGarden",
+       "type": "label",
+       "text": "gardener",
+       "x": 350,
+       "y": 300,
+       "color": "mint"
+      },
+      {
+       "id": "optWatch",
+       "type": "label",
+       "text": "watchman",
+       "x": 550,
+       "y": 300,
+       "color": "ion"
+      },
+      {
+       "id": "optWho",
+       "type": "label",
+       "text": "who",
+       "x": 750,
+       "y": 300,
+       "color": "amber"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "In the poem, a child wishes to be different workers. Each worker has something the child likes.",
+    "L2": "The fruit-seller sings along the lane, and the gardener digs and never hurries.",
+    "L3": "The watchman uses his lantern and keeps away our worries. His work helps keep us safe.",
+    "L4": "The poem teaches us to respect every kind of work. No honest job is small or less important.",
+    "L5": "When we describe a person, we use who. This is the potter who makes clay pots.",
+    "L6": "Use an article before a job: my mother is a teacher, and he is an electrician.",
+    "L7": "Now make a wish line: I wish I were the worker who does a useful job."
+   },
+   "narration": {
+    "L1": {
+     "text": "In the poem, a child wishes to be different workers. Each worker has something the child likes.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "The fruit-seller sings along the lane, and the gardener digs and never hurries.",
+     "dur": 4.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "The watchman uses his lantern and keeps away our worries. His work helps keep us safe.",
+     "dur": 4.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "The poem teaches us to respect every kind of work. No honest job is small or less important.",
+     "dur": 4.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "When we describe a person, we use who. This is the potter who makes clay pots.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Use an article before a job: my mother is a teacher, and he is an electrician.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Now make a wish line: I wish I were the worker who does a useful job.",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "title"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.7,
+       "target": "worker"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "fruit"
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.7,
+       "target": "garden"
+      },
+      {
+       "at": 1.8,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "ar1",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "watch"
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "ar2",
+       "to": 1
+      },
+      {
+       "at": 1.6,
+       "do": "highlight",
+       "dur": 1,
+       "target": "watch"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "myth"
+      },
+      {
+       "at": 1,
+       "do": "bust",
+       "dur": 1.2,
+       "target": "myth"
+      },
+      {
+       "at": 2.2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "worker"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "person"
+      },
+      {
+       "at": 0.7,
+       "do": "show",
+       "dur": 0.6,
+       "target": "who"
+      },
+      {
+       "at": 1.4,
+       "do": "show",
+       "dur": 0.6,
+       "target": "action"
+      },
+      {
+       "at": 2,
+       "do": "flow",
+       "dur": 0.8,
+       "target": [
+        "ar3",
+        "ar4"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "a"
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.7,
+       "target": "an"
+      },
+      {
+       "at": 1.6,
+       "do": "highlight",
+       "dur": 1,
+       "target": "job"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0,
+     "scene": "s5",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "optFruit",
+        "optGarden",
+        "optWatch",
+        "optWho"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which word describes a person in this wish line: I wish I were the gardener ___ digs?",
+    "options": [
+     "optFruit",
+     "optGarden",
+     "optWatch",
+     "optWho"
+    ],
+    "answer": "optWho",
+    "src": "c5-english-ch09-t01-i05"
+   }
+  },
+  "repairs": [],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 33
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-english-ch09-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "title",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "child wishes",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "child",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        150,
+        210
+       ],
+       "r": 48
+      },
+      {
+       "id": "childLabel",
+       "op": "label",
+       "startMs": 1500,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        150,
+        290
+       ],
+       "text": "child",
+       "target": "child"
+      },
+      {
+       "id": "workers",
+       "op": "rect",
+       "startMs": 2200,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        500,
+        145
+       ],
+       "w": 180,
+       "h": 150,
+       "round": 12
+      },
+      {
+       "id": "workerLabel",
+       "op": "label",
+       "startMs": 3000,
+       "endMs": 3600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        590,
+        330
+       ],
+       "text": "workers",
+       "target": "workers"
+      },
+      {
+       "id": "wish1",
+       "op": "arrow",
+       "startMs": 3700,
+       "endMs": 4500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        205,
+        210
+       ],
+       "to": [
+        490,
+        190
+       ]
+      },
+      {
+       "id": "wish2",
+       "op": "arrow",
+       "startMs": 4500,
+       "endMs": 5300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        205,
+        220
+       ],
+       "to": [
+        490,
+        245
+       ]
+      },
+      {
+       "id": "likes",
+       "op": "text",
+       "startMs": 5500,
+       "endMs": 6500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        410
+       ],
+       "text": "something child likes",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "likeArrow",
+       "op": "arrow",
+       "startMs": 6500,
+       "endMs": 7300,
+       "ink": "accent",
+       "weight": 1,
+       "from": [
+        590,
+        305
+       ],
+       "to": [
+        500,
+        390
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-english-ch09-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "fruit",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        125,
+        150
+       ],
+       "r": 42,
+       "fill": "accent"
+      },
+      {
+       "id": "fruitLabel",
+       "op": "label",
+       "startMs": 500,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        125,
+        215
+       ],
+       "text": "fruit-seller",
+       "target": "fruit"
+      },
+      {
+       "id": "song",
+       "op": "text",
+       "startMs": 1200,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        105,
+        275
+       ],
+       "text": "sings",
+       "size": "m"
+      },
+      {
+       "id": "lane",
+       "op": "line",
+       "startMs": 1700,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        45,
+        350
+       ],
+       "to": [
+        310,
+        350
+       ]
+      },
+      {
+       "id": "laneLabel",
+       "op": "label",
+       "startMs": 2300,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        385
+       ],
+       "text": "lane",
+       "target": "lane"
+      },
+      {
+       "id": "garden",
+       "op": "rect",
+       "startMs": 2900,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        455,
+        145
+       ],
+       "w": 220,
+       "h": 150,
+       "round": 10
+      },
+      {
+       "id": "gardenLabel",
+       "op": "label",
+       "startMs": 3500,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        565,
+        330
+       ],
+       "text": "gardener",
+       "target": "garden"
+      },
+      {
+       "id": "dig",
+       "op": "line",
+       "startMs": 4100,
+       "endMs": 4700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        500,
+        275
+       ],
+       "to": [
+        550,
+        220
+       ]
+      },
+      {
+       "id": "hurry",
+       "op": "text",
+       "startMs": 4800,
+       "endMs": 5700,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        565,
+        385
+       ],
+       "text": "never hurries",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-english-ch09-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "watch",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        160,
+        180
+       ],
+       "r": 55
+      },
+      {
+       "id": "watchLabel",
+       "op": "label",
+       "startMs": 600,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        160,
+        265
+       ],
+       "text": "watchman",
+       "target": "watch"
+      },
+      {
+       "id": "lantern",
+       "op": "circle",
+       "startMs": 1300,
+       "endMs": 1800,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        275,
+        180
+       ],
+       "r": 28,
+       "fill": "accent"
+      },
+      {
+       "id": "lanternLabel",
+       "op": "label",
+       "startMs": 1800,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        275,
+        235
+       ],
+       "text": "lantern",
+       "target": "lantern"
+      },
+      {
+       "id": "light",
+       "op": "line",
+       "startMs": 2400,
+       "endMs": 3000,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        300,
+        180
+       ],
+       "to": [
+        410,
+        180
+       ]
+      },
+      {
+       "id": "worry",
+       "op": "circle",
+       "startMs": 3100,
+       "endMs": 3700,
+       "ink": "soft",
+       "weight": 2,
+       "c": [
+        570,
+        180
+       ],
+       "r": 58
+      },
+      {
+       "id": "worryLabel",
+       "op": "label",
+       "startMs": 3700,
+       "endMs": 4300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        570,
+        275
+       ],
+       "text": "worries",
+       "target": "worry"
+      },
+      {
+       "id": "away",
+       "op": "arrow",
+       "startMs": 4300,
+       "endMs": 4900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        510,
+        180
+       ],
+       "to": [
+        430,
+        180
+       ]
+      },
+      {
+       "id": "safe",
+       "op": "rect",
+       "startMs": 5100,
+       "endMs": 5900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        300,
+        355
+       ],
+       "w": 200,
+       "h": 70,
+       "round": 12
+      },
+      {
+       "id": "safeLabel",
+       "op": "label",
+       "startMs": 5900,
+       "endMs": 6600,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        400
+       ],
+       "text": "safe",
+       "target": "safe"
+      },
+      {
+       "id": "helps",
+       "op": "text",
+       "startMs": 6600,
+       "endMs": 7200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        465
+       ],
+       "text": "work helps",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-english-ch09-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "respect",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        65
+       ],
+       "text": "respect",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "every",
+       "op": "circle",
+       "startMs": 1000,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        180,
+        190
+       ],
+       "r": 70
+      },
+      {
+       "id": "everyLabel",
+       "op": "label",
+       "startMs": 1600,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        290
+       ],
+       "text": "every job",
+       "target": "every"
+      },
+      {
+       "id": "jobs",
+       "op": "rect",
+       "startMs": 2300,
+       "endMs": 3100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        390,
+        120
+       ],
+       "w": 250,
+       "h": 140,
+       "round": 12
+      },
+      {
+       "id": "jobsLabel",
+       "op": "label",
+       "startMs": 3100,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        515,
+        300
+       ],
+       "text": "honest job",
+       "target": "jobs"
+      },
+      {
+       "id": "link",
+       "op": "arrow",
+       "startMs": 3900,
+       "endMs": 4600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        250,
+        190
+       ],
+       "to": [
+        380,
+        190
+       ]
+      },
+      {
+       "id": "small",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        390
+       ],
+       "text": "no job is small",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "important",
+       "op": "text",
+       "startMs": 5800,
+       "endMs": 6700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        445
+       ],
+       "text": "important",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "underline",
+       "op": "highlight",
+       "startMs": 6700,
+       "endMs": 7600,
+       "ink": "good",
+       "weight": 2,
+       "target": "important",
+       "style": "underline"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-english-ch09-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "person",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        120,
+        150
+       ],
+       "r": 45
+      },
+      {
+       "id": "potter",
+       "op": "label",
+       "startMs": 500,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        120,
+        220
+       ],
+       "text": "potter",
+       "target": "person"
+      },
+      {
+       "id": "who",
+       "op": "text",
+       "startMs": 1200,
+       "endMs": 1800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        365,
+        155
+       ],
+       "text": "who",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "link",
+       "op": "arrow",
+       "startMs": 1800,
+       "endMs": 2500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        180,
+        150
+       ],
+       "to": [
+        320,
+        150
+       ]
+      },
+      {
+       "id": "pot",
+       "op": "ellipse",
+       "startMs": 2600,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        605,
+        170
+       ],
+       "rx": 65,
+       "ry": 35
+      },
+      {
+       "id": "clay",
+       "op": "label",
+       "startMs": 3200,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        605,
+        245
+       ],
+       "text": "clay pots",
+       "target": "pot"
+      },
+      {
+       "id": "makes",
+       "op": "line",
+       "startMs": 4000,
+       "endMs": 4600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        535,
+        210
+       ],
+       "to": [
+        500,
+        290
+       ]
+      },
+      {
+       "id": "equation",
+       "op": "numwork",
+       "startMs": 4700,
+       "endMs": 6200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        350
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "potter",
+         "who",
+         "makes",
+         "clay",
+         "pots"
+        ]
+       ]
+      },
+      {
+       "id": "join",
+       "op": "highlight",
+       "startMs": 6300,
+       "endMs": 7100,
+       "ink": "accent",
+       "weight": 2,
+       "target": "who",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-english-ch09-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "article",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        60
+       ],
+       "text": "article + job",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "a",
+       "op": "text",
+       "startMs": 1000,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        170
+       ],
+       "text": "a",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "teacher",
+       "op": "rect",
+       "startMs": 1400,
+       "endMs": 2000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        170,
+        130
+       ],
+       "w": 180,
+       "h": 80,
+       "round": 10
+      },
+      {
+       "id": "teacherLabel",
+       "op": "label",
+       "startMs": 2000,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        260,
+        255
+       ],
+       "text": "teacher",
+       "target": "teacher"
+      },
+      {
+       "id": "mother",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        260,
+        310
+       ],
+       "text": "mother",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "and",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 3800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        170
+       ],
+       "text": "and",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "an",
+       "op": "text",
+       "startMs": 3800,
+       "endMs": 4300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        470,
+        170
+       ],
+       "text": "an",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "electrician",
+       "op": "rect",
+       "startMs": 4300,
+       "endMs": 5000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        520,
+        130
+       ],
+       "w": 200,
+       "h": 80,
+       "round": 10
+      },
+      {
+       "id": "electricianLabel",
+       "op": "label",
+       "startMs": 5000,
+       "endMs": 5800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        620,
+        255
+       ],
+       "text": "electrician",
+       "target": "electrician"
+      },
+      {
+       "id": "is",
+       "op": "text",
+       "startMs": 5900,
+       "endMs": 6300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        350
+       ],
+       "text": "is",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "articleMark",
+       "op": "highlight",
+       "startMs": 6400,
+       "endMs": 7200,
+       "ink": "accent",
+       "weight": 2,
+       "target": "an",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-english-ch09-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "wish",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "I wish",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "person",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        130,
+        180
+       ],
+       "r": 45
+      },
+      {
+       "id": "worker",
+       "op": "label",
+       "startMs": 1400,
+       "endMs": 2000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        130,
+        250
+       ],
+       "text": "worker",
+       "target": "person"
+      },
+      {
+       "id": "were",
+       "op": "text",
+       "startMs": 2000,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        270,
+        180
+       ],
+       "text": "were",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "who",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        390,
+        180
+       ],
+       "text": "who",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "useful",
+       "op": "rect",
+       "startMs": 3100,
+       "endMs": 3800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        500,
+        135
+       ],
+       "w": 190,
+       "h": 90,
+       "round": 12
+      },
+      {
+       "id": "usefulLabel",
+       "op": "label",
+       "startMs": 3800,
+       "endMs": 4600,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        595,
+        275
+       ],
+       "text": "useful job",
+       "target": "useful"
+      },
+      {
+       "id": "does",
+       "op": "arrow",
+       "startMs": 4600,
+       "endMs": 5200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        440,
+        180
+       ],
+       "to": [
+        490,
+        180
+       ]
+      },
+      {
+       "id": "wishLine",
+       "op": "numwork",
+       "startMs": 5300,
+       "endMs": 6500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        100,
+        350
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "I",
+         "wish",
+         "I",
+         "were",
+         "the",
+         "worker"
+        ]
+       ]
+      },
+      {
+       "id": "whoMark",
+       "op": "highlight",
+       "startMs": 6500,
+       "endMs": 7200,
+       "ink": "accent",
+       "weight": 2,
+       "target": "who",
+       "style": "circle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "b0:*",
+   "key": "wish · the",
+   "prompt": "stressed words in: I wish I were the fruit-seller"
+  },
+  {
+   "itemId": "b1:*",
+   "key": "sings · the",
+   "prompt": "stressed words in: Who sings along the lane"
+  },
+  {
+   "itemId": "b2:*",
+   "key": "the · his",
+   "prompt": "stressed words in: Or the watchman with his lantern"
+  },
+  {
+   "itemId": "b3:*",
+   "key": "keeps · our",
+   "prompt": "stressed words in: Who keeps away our worries"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "rain",
+   "prompt": "Which word rhymes with lane? [rain / land]",
+   "src": "c5-english-ch09-t01-i02"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "lantern",
+   "prompt": "The watchman carries a bright ____ at night. [lantern / garden / lane]",
+   "src": "c5-english-ch09-t01-i09"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

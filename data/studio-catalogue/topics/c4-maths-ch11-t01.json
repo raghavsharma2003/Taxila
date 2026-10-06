@@ -1,0 +1,1747 @@
+{
+ "topicId": "c4-maths-ch11-t01",
+ "title": "Lines of symmetry",
+ "chapter": "Fun with Symmetry",
+ "subject": "maths",
+ "class": 4,
+ "topicType": "T3",
+ "plan": {
+  "game": "mirror-paint@1",
+  "hint": "lines mode then complete mode"
+ },
+ "game": {
+  "archetype": "mirror-paint@1",
+  "spec": {
+   "archetype": "mirror-paint@1",
+   "skills": [
+    "c4-maths-ch11-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "done": "designs",
+    "check": "CHECK",
+    "rotate": "TURN",
+    "flip": "FLIP",
+    "coach": "Paint the mirror half: tap the squares",
+    "runDone": "Studio closed",
+    "lines": "Mark every line of symmetry",
+    "turn": "How many times the same in one full turn?",
+    "twin": "Turn and flip it to fit its twin",
+    "same": "SAME",
+    "order": "order",
+    "fold": "FOLD"
+   },
+   "title": "Mirror Studio",
+   "rounds": [
+    {
+     "mode": "lines",
+     "title": "Fold the rectangle",
+     "sub": "mark every fold that matches",
+     "size": 8,
+     "cells": [
+      [
+       1,
+       2
+      ],
+      [
+       2,
+       2
+      ],
+      [
+       3,
+       2
+      ],
+      [
+       4,
+       2
+      ],
+      [
+       5,
+       2
+      ],
+      [
+       6,
+       2
+      ],
+      [
+       1,
+       3
+      ],
+      [
+       2,
+       3
+      ],
+      [
+       3,
+       3
+      ],
+      [
+       4,
+       3
+      ],
+      [
+       5,
+       3
+      ],
+      [
+       6,
+       3
+      ],
+      [
+       1,
+       4
+      ],
+      [
+       2,
+       4
+      ],
+      [
+       3,
+       4
+      ],
+      [
+       4,
+       4
+      ],
+      [
+       5,
+       4
+      ],
+      [
+       6,
+       4
+      ],
+      [
+       1,
+       5
+      ],
+      [
+       2,
+       5
+      ],
+      [
+       3,
+       5
+      ],
+      [
+       4,
+       5
+      ],
+      [
+       5,
+       5
+      ],
+      [
+       6,
+       5
+      ]
+     ],
+     "time": 50,
+     "targets": "c4-maths-ch11-t01-m-diagonal-rectangle"
+    },
+    {
+     "mode": "complete",
+     "title": "Finish the toran",
+     "sub": "paint the other half before the scan",
+     "size": 8,
+     "cells": [
+      [
+       3,
+       0
+      ],
+      [
+       2,
+       1
+      ],
+      [
+       3,
+       1
+      ],
+      [
+       1,
+       2
+      ],
+      [
+       2,
+       2
+      ],
+      [
+       3,
+       2
+      ],
+      [
+       0,
+       3
+      ],
+      [
+       1,
+       3
+      ],
+      [
+       2,
+       3
+      ],
+      [
+       3,
+       3
+      ]
+     ],
+     "axis": "v",
+     "time": 60
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c4-maths-ch11-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Correct",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "BUSTED",
+    "order": "Tap them in order"
+   },
+   "title": "Lines of symmetry",
+   "accent": "ion",
+   "targets": "c4-maths-ch11-t01-m-diagonal-rectangle",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Lines of symmetry"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Every shape has one line"
+      },
+      {
+       "id": "fold",
+       "type": "label",
+       "text": "Fold and match"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "square",
+       "type": "node",
+       "text": "Square",
+       "sub": "4 lines",
+       "glyph": "balance",
+       "color": "ion"
+      },
+      {
+       "id": "rect",
+       "type": "node",
+       "text": "Rectangle",
+       "sub": "2 lines",
+       "glyph": "balance",
+       "color": "sci"
+      },
+      {
+       "id": "circle",
+       "type": "node",
+       "text": "Circle",
+       "sub": "Endless",
+       "glyph": "globe",
+       "color": "mint"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "split",
+     "els": [
+      {
+       "id": "shape",
+       "type": "node",
+       "text": "Rectangle",
+       "sub": "not square",
+       "glyph": "ruler",
+       "color": "amber"
+      },
+      {
+       "id": "good",
+       "type": "label",
+       "text": "Top to bottom"
+      },
+      {
+       "id": "side",
+       "type": "label",
+       "text": "Side to side"
+      },
+      {
+       "id": "diag",
+       "type": "label",
+       "text": "Corner to corner"
+      },
+      {
+       "id": "bad",
+       "type": "myth",
+       "text": "Equal halves always match"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "row",
+     "els": [
+      {
+       "id": "rule",
+       "type": "node",
+       "text": "Check",
+       "sub": "fold or mirror",
+       "glyph": "mirror",
+       "color": "volt"
+      },
+      {
+       "id": "match",
+       "type": "label",
+       "text": "Exact mirror images"
+      },
+      {
+       "id": "no",
+       "type": "label",
+       "text": "Nothing sticks out"
+      }
+     ]
+    },
+    {
+     "id": "s5",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "answer",
+       "type": "node",
+       "text": "Your turn",
+       "sub": "Choose the count",
+       "glyph": "question",
+       "color": "sun"
+      },
+      {
+       "id": "o2",
+       "type": "label",
+       "text": "2 lines"
+      },
+      {
+       "id": "o3",
+       "type": "label",
+       "text": "3 lines"
+      },
+      {
+       "id": "o4",
+       "type": "label",
+       "text": "4 lines"
+      },
+      {
+       "id": "oe",
+       "type": "label",
+       "text": "Endless"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "A line of symmetry folds a shape into two mirror images.",
+    "L2": "The halves must lie exactly on top of each other. Equal-sized halves alone are not enough.",
+    "L3": "A square has four lines of symmetry, while a rectangle that is not a square has two.",
+    "L4": "A circle has endless lines of symmetry because every line through its centre works.",
+    "L5": "Let us test a rectangle by folding it top to bottom and side to side.",
+    "L6": "Both folds match exactly, so these are the rectangle's two lines of symmetry.",
+    "L7": "A corner-to-corner fold makes equal-sized triangles, but the corners do not match.",
+    "L8": "So check by folding or using a mirror, then count only exact matches."
+   },
+   "narration": {
+    "L1": {
+     "text": "A line of symmetry folds a shape into two mirror images.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "The halves must lie exactly on top of each other. Equal-sized halves alone are not enough.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "A square has four lines of symmetry, while a rectangle that is not a square has two.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "A circle has endless lines of symmetry because every line through its centre works.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "Let us test a rectangle by folding it top to bottom and side to side.",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Both folds match exactly, so these are the rectangle's two lines of symmetry.",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "A corner-to-corner fold makes equal-sized triangles, but the corners do not match.",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "So check by folding or using a mirror, then count only exact matches.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "title"
+      },
+      {
+       "at": 0.4,
+       "do": "show",
+       "dur": 0.6,
+       "target": "fold"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "myth"
+      },
+      {
+       "at": 1,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "square",
+        "rect"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "square"
+      },
+      {
+       "at": 1.6,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "rect"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "circle"
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 1,
+       "target": "circle"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "shape",
+        "good",
+        "side"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": [
+        "good",
+        "side"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "diag",
+        "bad"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "bust",
+       "dur": 1,
+       "target": "bad"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "rule",
+        "match",
+        "no"
+       ]
+      },
+      {
+       "at": 2,
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "How many lines of symmetry does a square have?",
+    "options": [
+     "o2",
+     "o3",
+     "o4",
+     "oe"
+    ],
+    "answer": "o4",
+    "src": "c4-maths-ch11-t01-i02"
+   }
+  },
+  "repairs": [],
+  "attempts": 2,
+  "model": "taxila-fast-bg",
+  "seconds": 32
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch11-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "shape",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        260,
+        120
+       ],
+       "w": 280,
+       "h": 220
+      },
+      {
+       "id": "fold",
+       "op": "line",
+       "startMs": 900,
+       "endMs": 1700,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        400,
+        100
+       ],
+       "to": [
+        400,
+        360
+       ]
+      },
+      {
+       "id": "left",
+       "op": "polygon",
+       "startMs": 1700,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 1,
+       "points": [
+        [
+         260,
+         120
+        ],
+        [
+         400,
+         120
+        ],
+        [
+         400,
+         340
+        ],
+        [
+         260,
+         340
+        ]
+       ]
+      },
+      {
+       "id": "right",
+       "op": "polygon",
+       "startMs": 1700,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 1,
+       "points": [
+        [
+         400,
+         120
+        ],
+        [
+         540,
+         120
+        ],
+        [
+         540,
+         340
+        ],
+        [
+         400,
+         340
+        ]
+       ]
+      },
+      {
+       "id": "mirror",
+       "op": "text",
+       "startMs": 2900,
+       "endMs": 3700,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        410
+       ],
+       "text": "mirror images",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "lab",
+       "op": "label",
+       "startMs": 3700,
+       "endMs": 5000,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        430,
+        90
+       ],
+       "text": "line of symmetry",
+       "to": [
+        400,
+        180
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch11-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "outline",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        120
+       ],
+       "w": 240,
+       "h": 180
+      },
+      {
+       "id": "split",
+       "op": "line",
+       "startMs": 700,
+       "endMs": 1200,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        220,
+        120
+       ],
+       "to": [
+        220,
+        300
+       ]
+      },
+      {
+       "id": "equal",
+       "op": "text",
+       "startMs": 1300,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        220,
+        350
+       ],
+       "text": "equal-sized halves",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "cross",
+       "op": "line",
+       "startMs": 2500,
+       "endMs": 3200,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        120,
+        370
+       ],
+       "to": [
+        320,
+        450
+       ]
+      },
+      {
+       "id": "cross2",
+       "op": "line",
+       "startMs": 2500,
+       "endMs": 3200,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        320,
+        370
+       ],
+       "to": [
+        120,
+        450
+       ]
+      },
+      {
+       "id": "not",
+       "op": "text",
+       "startMs": 3400,
+       "endMs": 4400,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        500,
+        220
+       ],
+       "text": "not enough",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "mirror2",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5800,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        500,
+        290
+       ],
+       "text": "mirror images",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch11-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "sq",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        150
+       ],
+       "w": 180,
+       "h": 180
+      },
+      {
+       "id": "sqv",
+       "op": "line",
+       "startMs": 700,
+       "endMs": 1200,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        180,
+        130
+       ],
+       "to": [
+        180,
+        350
+       ]
+      },
+      {
+       "id": "sqh",
+       "op": "line",
+       "startMs": 1200,
+       "endMs": 1700,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        70,
+        240
+       ],
+       "to": [
+        290,
+        240
+       ]
+      },
+      {
+       "id": "sqd1",
+       "op": "line",
+       "startMs": 1700,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 1,
+       "from": [
+        70,
+        140
+       ],
+       "to": [
+        290,
+        340
+       ]
+      },
+      {
+       "id": "sqd2",
+       "op": "line",
+       "startMs": 2200,
+       "endMs": 2700,
+       "ink": "accent",
+       "weight": 1,
+       "from": [
+        290,
+        140
+       ],
+       "to": [
+        70,
+        340
+       ]
+      },
+      {
+       "id": "sqcount",
+       "op": "text",
+       "startMs": 2800,
+       "endMs": 3400,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        180,
+        390
+       ],
+       "text": "4",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "rect",
+       "op": "rect",
+       "startMs": 3500,
+       "endMs": 4200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        470,
+        160
+       ],
+       "w": 240,
+       "h": 140
+      },
+      {
+       "id": "rv",
+       "op": "line",
+       "startMs": 4200,
+       "endMs": 4700,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        590,
+        140
+       ],
+       "to": [
+        590,
+        320
+       ]
+      },
+      {
+       "id": "rh",
+       "op": "line",
+       "startMs": 4700,
+       "endMs": 5200,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        450,
+        230
+       ],
+       "to": [
+        730,
+        230
+       ]
+      },
+      {
+       "id": "rcount",
+       "op": "text",
+       "startMs": 5300,
+       "endMs": 5900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        590,
+        370
+       ],
+       "text": "2",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "sqlabel",
+       "op": "label",
+       "startMs": 6000,
+       "endMs": 6600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        110
+       ],
+       "text": "square",
+       "to": [
+        180,
+        150
+       ]
+      },
+      {
+       "id": "rlabel",
+       "op": "label",
+       "startMs": 6600,
+       "endMs": 7300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        590,
+        110
+       ],
+       "text": "rectangle",
+       "to": [
+        590,
+        160
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch11-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "circle",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        250
+       ],
+       "r": 130
+      },
+      {
+       "id": "centre",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1200,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        400,
+        250
+       ],
+       "r": 5,
+       "fill": "accent"
+      },
+      {
+       "id": "d1",
+       "op": "line",
+       "startMs": 1300,
+       "endMs": 1900,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        270,
+        250
+       ],
+       "to": [
+        530,
+        250
+       ]
+      },
+      {
+       "id": "d2",
+       "op": "line",
+       "startMs": 1900,
+       "endMs": 2500,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        308,
+        158
+       ],
+       "to": [
+        492,
+        342
+       ]
+      },
+      {
+       "id": "d3",
+       "op": "line",
+       "startMs": 2500,
+       "endMs": 3100,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        492,
+        158
+       ],
+       "to": [
+        308,
+        342
+       ]
+      },
+      {
+       "id": "d4",
+       "op": "line",
+       "startMs": 3100,
+       "endMs": 3700,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        400,
+        120
+       ],
+       "to": [
+        400,
+        380
+       ]
+      },
+      {
+       "id": "endless",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 4800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        440
+       ],
+       "text": "endless",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "through",
+       "op": "label",
+       "startMs": 4900,
+       "endMs": 6100,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        550,
+        245
+       ],
+       "text": "through its centre",
+       "to": [
+        405,
+        250
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch11-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "rect5",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        260,
+        130
+       ],
+       "w": 280,
+       "h": 220
+      },
+      {
+       "id": "topbottom",
+       "op": "line",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        250,
+        240
+       ],
+       "to": [
+        550,
+        240
+       ]
+      },
+      {
+       "id": "side",
+       "op": "line",
+       "startMs": 1700,
+       "endMs": 2300,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        400,
+        120
+       ],
+       "to": [
+        400,
+        360
+       ]
+      },
+      {
+       "id": "top",
+       "op": "label",
+       "startMs": 2400,
+       "endMs": 3500,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        570,
+        180
+       ],
+       "text": "top to bottom",
+       "to": [
+        500,
+        240
+       ]
+      },
+      {
+       "id": "sides",
+       "op": "label",
+       "startMs": 3500,
+       "endMs": 4500,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        430,
+        380
+       ],
+       "text": "side to side",
+       "to": [
+        400,
+        300
+       ]
+      },
+      {
+       "id": "fold1",
+       "op": "arrow",
+       "startMs": 4600,
+       "endMs": 5200,
+       "ink": "accent",
+       "weight": 1,
+       "from": [
+        300,
+        190
+       ],
+       "to": [
+        500,
+        190
+       ]
+      },
+      {
+       "id": "fold2",
+       "op": "arrow",
+       "startMs": 5200,
+       "endMs": 5800,
+       "ink": "accent",
+       "weight": 1,
+       "from": [
+        350,
+        300
+       ],
+       "to": [
+        350,
+        180
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 2,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch11-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "exact",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 3300,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        410
+       ],
+       "text": "match exactly",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "num",
+       "op": "numwork",
+       "startMs": 3400,
+       "endMs": 4300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        300,
+        80
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "1",
+         "+",
+         "1",
+         "=",
+         "2"
+        ]
+       ]
+      },
+      {
+       "id": "label1",
+       "op": "label",
+       "startMs": 4400,
+       "endMs": 5900,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        560,
+        240
+       ],
+       "text": "two lines of symmetry",
+       "to": [
+        500,
+        240
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch11-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "diag",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        260,
+        130
+       ],
+       "to": [
+        540,
+        350
+       ]
+      },
+      {
+       "id": "tri1",
+       "op": "polygon",
+       "startMs": 800,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 1,
+       "points": [
+        [
+         260,
+         130
+        ],
+        [
+         540,
+         130
+        ],
+        [
+         540,
+         350
+        ]
+       ]
+      },
+      {
+       "id": "tri2",
+       "op": "polygon",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 1,
+       "points": [
+        [
+         260,
+         130
+        ],
+        [
+         260,
+         350
+        ],
+        [
+         540,
+         350
+        ]
+       ]
+      },
+      {
+       "id": "equal",
+       "op": "text",
+       "startMs": 2400,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        400
+       ],
+       "text": "equal-sized triangles",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "corner1",
+       "op": "circle",
+       "startMs": 3600,
+       "endMs": 4100,
+       "ink": "mark",
+       "weight": 2,
+       "c": [
+        260,
+        130
+       ],
+       "r": 14
+      },
+      {
+       "id": "corner2",
+       "op": "circle",
+       "startMs": 4100,
+       "endMs": 4600,
+       "ink": "mark",
+       "weight": 2,
+       "c": [
+        540,
+        350
+       ],
+       "r": 14
+      },
+      {
+       "id": "no",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5500,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        400,
+        460
+       ],
+       "text": "corners do not match",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch11-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "fold",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        140
+       ],
+       "w": 220,
+       "h": 160
+      },
+      {
+       "id": "crease",
+       "op": "line",
+       "startMs": 700,
+       "endMs": 1200,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        210,
+        130
+       ],
+       "to": [
+        210,
+        310
+       ]
+      },
+      {
+       "id": "mirror",
+       "op": "rect",
+       "startMs": 1300,
+       "endMs": 2000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        480,
+        140
+       ],
+       "w": 220,
+       "h": 160
+      },
+      {
+       "id": "mirrorline",
+       "op": "line",
+       "startMs": 2000,
+       "endMs": 2500,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        590,
+        130
+       ],
+       "to": [
+        590,
+        310
+       ]
+      },
+      {
+       "id": "arrow",
+       "op": "arrow",
+       "startMs": 2600,
+       "endMs": 3200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        330,
+        220
+       ],
+       "to": [
+        460,
+        220
+       ]
+      },
+      {
+       "id": "check",
+       "op": "text",
+       "startMs": 3400,
+       "endMs": 4400,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        370
+       ],
+       "text": "exact matches",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "count",
+       "op": "text",
+       "startMs": 4600,
+       "endMs": 5200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        440
+       ],
+       "text": "count",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1",
+   "key": "v,h",
+   "prompt": "lines 8×8"
+  },
+  {
+   "itemId": "r2",
+   "key": "complete",
+   "prompt": "complete 8×8"
+  }
+ ],
+ "check": {
+  "issues": [
+   {
+    "where": "explainer",
+    "what": "The explainer's task asks 'How many lines of symmetry does a square have?' with answer 'o4', which correctly names the kit item (src: c4-maths-ch11-t01-i02) and gives the right answer (4). However, this is a direct recitation of a kit item without the interactive component typical of a game; this is not a factual error or violation of guidelines.",
+    "severity": "low"
+   }
+  ],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

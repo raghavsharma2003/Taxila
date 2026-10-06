@@ -1,0 +1,1721 @@
+{
+ "topicId": "c7-science-ch08-t03",
+ "title": "Uniform and non-uniform motion",
+ "chapter": "Measurement of Time and Motion",
+ "subject": "science",
+ "class": 7,
+ "topicType": "T3",
+ "plan": {
+  "game": "motion-lab@1",
+  "hint": "drive mode (uniform and non-uniform graphs)"
+ },
+ "game": {
+  "archetype": "motion-lab@1",
+  "spec": {
+   "archetype": "motion-lab@1",
+   "skills": [
+    "c7-science-ch08-t03"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "done": "right",
+    "length": "length",
+    "mass": "mass",
+    "release": "SWING",
+    "stop": "STOP",
+    "lock": "LOCK",
+    "period": "one swing",
+    "swings": "swings",
+    "timer": "timer",
+    "run": "RUN",
+    "hold": "HOLD to drive",
+    "target": "target",
+    "yours": "yours",
+    "runDone": "Lab closed",
+    "coach": "Check each equal time gap",
+    "speed": "speed",
+    "time": "time",
+    "distance": "distance",
+    "train": "train",
+    "you": "you",
+    "together": "TOGETHER",
+    "early": "too early",
+    "late": "too late"
+   },
+   "title": "Motion Lab",
+   "rounds": [
+    {
+     "mode": "race",
+     "title": "Metro journey",
+     "sub": "a metro covers 120 m in 8 s",
+     "ask": "speed",
+     "d": 120,
+     "t": 8,
+     "unitD": "m",
+     "unitT": "s",
+     "tolPct": 5
+    },
+    {
+     "mode": "drive",
+     "title": "Steady school run",
+     "sub": "match the straight rising graph",
+     "pts": [
+      [
+       0,
+       0
+      ],
+      [
+       2,
+       20
+      ],
+      [
+       4,
+       40
+      ],
+      [
+       6,
+       60
+      ]
+     ],
+     "vmax": 20,
+     "tol": 6
+    },
+    {
+     "mode": "drive",
+     "title": "Busy road",
+     "sub": "keep moving as the graph bends",
+     "pts": [
+      [
+       0,
+       0
+      ],
+      [
+       2,
+       10
+      ],
+      [
+       4,
+       30
+      ],
+      [
+       6,
+       36
+      ],
+      [
+       8,
+       60
+      ]
+     ],
+     "vmax": 20,
+     "tol": 6,
+     "targets": "c7-science-ch08-t03-m1"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-science-ch08-t03"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Uniform or non-uniform motion?",
+   "accent": "sci",
+   "targets": "c7-science-ch08-t03-m1",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Uniform or non-uniform?"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Moving means uniform motion"
+      },
+      {
+       "id": "rule",
+       "type": "label",
+       "text": "Check equal time intervals"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "u",
+       "type": "node",
+       "text": "Uniform",
+       "sub": "equal distances",
+       "x": 150,
+       "y": 300,
+       "color": "sci"
+      },
+      {
+       "id": "u1",
+       "type": "label",
+       "text": "1 m",
+       "x": 120,
+       "y": 420,
+       "color": "mint"
+      },
+      {
+       "id": "u2",
+       "type": "label",
+       "text": "1 m",
+       "x": 300,
+       "y": 420,
+       "color": "mint"
+      },
+      {
+       "id": "u3",
+       "type": "label",
+       "text": "1 m",
+       "x": 480,
+       "y": 420,
+       "color": "mint"
+      },
+      {
+       "id": "ua1",
+       "type": "arrow",
+       "from": "u1",
+       "to": "u2",
+       "text": "same time"
+      },
+      {
+       "id": "ua2",
+       "type": "arrow",
+       "from": "u2",
+       "to": "u3",
+       "text": "same time"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "n",
+       "type": "node",
+       "text": "Non-uniform",
+       "sub": "speed changes",
+       "x": 150,
+       "y": 300,
+       "color": "amber"
+      },
+      {
+       "id": "n1",
+       "type": "label",
+       "text": "0.5 km",
+       "x": 100,
+       "y": 420,
+       "color": "amber"
+      },
+      {
+       "id": "n2",
+       "type": "label",
+       "text": "0.5 km",
+       "x": 250,
+       "y": 420,
+       "color": "amber"
+      },
+      {
+       "id": "n3",
+       "type": "label",
+       "text": "0.6 km",
+       "x": 400,
+       "y": 420,
+       "color": "amber"
+      },
+      {
+       "id": "n4",
+       "type": "label",
+       "text": "0.4 km",
+       "x": 550,
+       "y": 420,
+       "color": "amber"
+      },
+      {
+       "id": "na1",
+       "type": "arrow",
+       "from": "n1",
+       "to": "n2",
+       "text": "1 min"
+      },
+      {
+       "id": "na2",
+       "type": "arrow",
+       "from": "n2",
+       "to": "n3",
+       "text": "1 min"
+      },
+      {
+       "id": "na3",
+       "type": "arrow",
+       "from": "n3",
+       "to": "n4",
+       "text": "1 min"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "column",
+     "els": [
+      {
+       "id": "total",
+       "type": "label",
+       "text": "Total distance ÷ total time",
+       "x": 180,
+       "y": 260,
+       "color": "ion"
+      },
+      {
+       "id": "avg",
+       "type": "node",
+       "text": "Average speed",
+       "sub": "whole journey",
+       "x": 450,
+       "y": 360,
+       "color": "mint"
+      },
+      {
+       "id": "calc",
+       "type": "label",
+       "text": "2.0 km ÷ 4 min",
+       "x": 300,
+       "y": 480,
+       "color": "sci"
+      },
+      {
+       "id": "p1",
+       "type": "label",
+       "text": "Choose the rule",
+       "x": 220,
+       "y": 540,
+       "color": "sun"
+      },
+      {
+       "id": "p2",
+       "type": "label",
+       "text": "Use the data",
+       "x": 520,
+       "y": 540,
+       "color": "volt"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "An object keeps moving, but that alone does not make its motion uniform.",
+    "L2": "Uniform linear motion means equal distances in equal intervals of time along a straight line.",
+    "L3": "For example, one metre in each equal interval shows uniform motion.",
+    "L4": "Now consider a scooter covering 0.5, 0.5, 0.6 and 0.4 kilometres each minute.",
+    "L5": "These distances are not all equal, so the scooter's motion is non-uniform.",
+    "L6": "The key is to compare distances in equal time intervals, not just the total distance.",
+    "L7": "For non-uniform motion, average speed is total distance divided by total time.",
+    "L8": "Now choose the motion that is uniform."
+   },
+   "narration": {
+    "L1": {
+     "text": "An object keeps moving, but that alone does not make its motion uniform.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "Uniform linear motion means equal distances in equal intervals of time along a straight line.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "For example, one metre in each equal interval shows uniform motion.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "Now consider a scooter covering 0.5, 0.5, 0.6 and 0.4 kilometres each minute.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "These distances are not all equal, so the scooter's motion is non-uniform.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "The key is to compare distances in equal time intervals, not just the total distance.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "For non-uniform motion, average speed is total distance divided by total time.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Now choose the motion that is uniform.",
+     "dur": 2,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.3,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "title"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.6,
+       "target": "myth"
+      },
+      {
+       "at": 1.5,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "u"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "u1",
+        "u2",
+        "u3"
+       ]
+      },
+      {
+       "at": 1.2,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "ua1",
+        "ua2"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": [
+        "u1",
+        "u2",
+        "u3"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.3,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.5,
+       "target": "n"
+      },
+      {
+       "at": 0.4,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "n1",
+        "n2",
+        "n3",
+        "n4"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.3,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "na1",
+        "na2",
+        "na3"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 1,
+       "target": [
+        "n3",
+        "n4"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.3,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "focus",
+       "dur": 1,
+       "target": "n"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.3,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "total",
+        "avg",
+        "calc"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 1,
+       "target": "calc"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "p1",
+        "p2"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "interactive",
+       "dur": 0.5
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which data pattern shows uniform motion?",
+    "options": [
+     "p1",
+     "p2"
+    ],
+    "answer": "p1",
+    "src": "c7-science-ch08-t03-i02"
+   }
+  },
+  "repairs": [],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 29
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch08-t03-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "path",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        120,
+        260
+       ],
+       "to": [
+        650,
+        260
+       ]
+      },
+      {
+       "id": "obj",
+       "op": "circle",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        170,
+        260
+       ],
+       "r": 22
+      },
+      {
+       "id": "move",
+       "op": "arrow",
+       "startMs": 1200,
+       "endMs": 2200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        210,
+        260
+       ],
+       "to": [
+        560,
+        260
+       ]
+      },
+      {
+       "id": "moving",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        385,
+        220
+       ],
+       "text": "moving",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "uniform",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        350
+       ],
+       "text": "uniform",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "cross",
+       "op": "line",
+       "startMs": 4300,
+       "endMs": 4800,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        300,
+        330
+       ],
+       "to": [
+        500,
+        370
+       ]
+      },
+      {
+       "id": "notalone",
+       "op": "text",
+       "startMs": 4900,
+       "endMs": 5800,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        400,
+        430
+       ],
+       "text": "moving ≠ uniform",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch08-t03-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "straight",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        90,
+        260
+       ],
+       "to": [
+        700,
+        260
+       ]
+      },
+      {
+       "id": "p1",
+       "op": "line",
+       "startMs": 700,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        220,
+        245
+       ],
+       "to": [
+        220,
+        275
+       ]
+      },
+      {
+       "id": "p2",
+       "op": "line",
+       "startMs": 900,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        380,
+        245
+       ],
+       "to": [
+        380,
+        275
+       ]
+      },
+      {
+       "id": "p3",
+       "op": "line",
+       "startMs": 1100,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        540,
+        245
+       ],
+       "to": [
+        540,
+        275
+       ]
+      },
+      {
+       "id": "equald",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        380,
+        185
+       ],
+       "text": "equal distances",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "time1",
+       "op": "line",
+       "startMs": 2900,
+       "endMs": 3500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        220,
+        320
+       ],
+       "to": [
+        380,
+        320
+       ]
+      },
+      {
+       "id": "time2",
+       "op": "line",
+       "startMs": 3500,
+       "endMs": 4100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        380,
+        320
+       ],
+       "to": [
+        540,
+        320
+       ]
+      },
+      {
+       "id": "equalt",
+       "op": "text",
+       "startMs": 4200,
+       "endMs": 5000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        380,
+        370
+       ],
+       "text": "equal time",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "linear",
+       "op": "text",
+       "startMs": 5200,
+       "endMs": 6500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        440
+       ],
+       "text": "uniform linear motion",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch08-t03-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "meterpath",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        90,
+        250
+       ],
+       "to": [
+        690,
+        250
+       ]
+      },
+      {
+       "id": "m1",
+       "op": "line",
+       "startMs": 700,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        210,
+        235
+       ],
+       "to": [
+        210,
+        265
+       ]
+      },
+      {
+       "id": "m2",
+       "op": "line",
+       "startMs": 900,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        390,
+        235
+       ],
+       "to": [
+        390,
+        265
+       ]
+      },
+      {
+       "id": "m3",
+       "op": "line",
+       "startMs": 1100,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        570,
+        235
+       ],
+       "to": [
+        570,
+        265
+       ]
+      },
+      {
+       "id": "one",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        300,
+        190
+       ],
+       "text": "1 metre",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "one2",
+       "op": "text",
+       "startMs": 2400,
+       "endMs": 3100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        480,
+        190
+       ],
+       "text": "1 metre",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "equal",
+       "op": "text",
+       "startMs": 3200,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        340
+       ],
+       "text": "equal intervals",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "uniformmark",
+       "op": "highlight",
+       "startMs": 4200,
+       "endMs": 5000,
+       "ink": "good",
+       "weight": 2,
+       "target": "one",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch08-t03-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "scooter",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        105,
+        180
+       ],
+       "r": 20
+      },
+      {
+       "id": "road",
+       "op": "line",
+       "startMs": 300,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        125,
+        180
+       ],
+       "to": [
+        700,
+        180
+       ]
+      },
+      {
+       "id": "minute",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        110
+       ],
+       "text": "each minute",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "d1",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        190,
+        250
+       ],
+       "text": "0.5 km",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "d2",
+       "op": "text",
+       "startMs": 2400,
+       "endMs": 3100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        340,
+        250
+       ],
+       "text": "0.5 km",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "d3",
+       "op": "text",
+       "startMs": 3100,
+       "endMs": 3800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        490,
+        250
+       ],
+       "text": "0.6 km",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "d4",
+       "op": "text",
+       "startMs": 3800,
+       "endMs": 4500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        640,
+        250
+       ],
+       "text": "0.4 km",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "ticks",
+       "op": "numwork",
+       "startMs": 4600,
+       "endMs": 5400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        170,
+        330
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "0.5",
+         "0.5",
+         "0.6",
+         "0.4"
+        ]
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch08-t03-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "drow",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        150,
+        120
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "0.5",
+         "0.5",
+         "0.6",
+         "0.4"
+        ]
+       ]
+      },
+      {
+       "id": "unequal1",
+       "op": "highlight",
+       "startMs": 1300,
+       "endMs": 2100,
+       "ink": "accent",
+       "weight": 2,
+       "target": "drow",
+       "style": "circle"
+      },
+      {
+       "id": "unequal2",
+       "op": "highlight",
+       "startMs": 2100,
+       "endMs": 2900,
+       "ink": "accent",
+       "weight": 2,
+       "target": "drow",
+       "style": "underline"
+      },
+      {
+       "id": "notall",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        270
+       ],
+       "text": "not all equal",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "nonuniform",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 4900,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        400,
+        370
+       ],
+       "text": "non-uniform",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "change",
+       "op": "arrow",
+       "startMs": 4800,
+       "endMs": 5500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        260,
+        430
+       ],
+       "to": [
+        540,
+        430
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch08-t03-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "intervals",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        100,
+        180
+       ],
+       "to": [
+        700,
+        180
+       ]
+      },
+      {
+       "id": "t1",
+       "op": "line",
+       "startMs": 600,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        220,
+        160
+       ],
+       "to": [
+        220,
+        200
+       ]
+      },
+      {
+       "id": "t2",
+       "op": "line",
+       "startMs": 800,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        380,
+        160
+       ],
+       "to": [
+        380,
+        200
+       ]
+      },
+      {
+       "id": "t3",
+       "op": "line",
+       "startMs": 1000,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        540,
+        160
+       ],
+       "to": [
+        540,
+        200
+       ]
+      },
+      {
+       "id": "distances",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        380,
+        270
+       ],
+       "text": "distances",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "compare",
+       "op": "arrow",
+       "startMs": 2500,
+       "endMs": 3300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        250,
+        300
+       ],
+       "to": [
+        550,
+        300
+       ]
+      },
+      {
+       "id": "equalintervals",
+       "op": "text",
+       "startMs": 3400,
+       "endMs": 4300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        380,
+        350
+       ],
+       "text": "equal intervals",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "total",
+       "op": "text",
+       "startMs": 4600,
+       "endMs": 5900,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        400,
+        430
+       ],
+       "text": "not total distance",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch08-t03-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "average",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        90
+       ],
+       "text": "average speed",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "formula",
+       "op": "numwork",
+       "startMs": 800,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        180,
+        170
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "averag",
+         "=",
+         "total ",
+         "÷",
+         "total "
+        ]
+       ]
+      },
+      {
+       "id": "distance",
+       "op": "arrow",
+       "startMs": 2400,
+       "endMs": 3200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        260,
+        290
+       ],
+       "to": [
+        540,
+        290
+       ]
+      },
+      {
+       "id": "totaldistance",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        340
+       ],
+       "text": "total distance",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "time",
+       "op": "line",
+       "startMs": 3900,
+       "endMs": 4500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        300,
+        420
+       ],
+       "to": [
+        500,
+        420
+       ]
+      },
+      {
+       "id": "totaltime",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        465
+       ],
+       "text": "total time",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch08-t03-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 3579,
+     "ops": [
+      {
+       "id": "prompt",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        80
+       ],
+       "text": "choose",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "track",
+       "op": "line",
+       "startMs": 500,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        90,
+        220
+       ],
+       "to": [
+        700,
+        220
+       ]
+      },
+      {
+       "id": "equal1",
+       "op": "line",
+       "startMs": 900,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        220,
+        205
+       ],
+       "to": [
+        220,
+        235
+       ]
+      },
+      {
+       "id": "equal2",
+       "op": "line",
+       "startMs": 1100,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        380,
+        205
+       ],
+       "to": [
+        380,
+        235
+       ]
+      },
+      {
+       "id": "equal3",
+       "op": "line",
+       "startMs": 1300,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        540,
+        205
+       ],
+       "to": [
+        540,
+        235
+       ]
+      },
+      {
+       "id": "equaldist",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2600,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        380,
+        300
+       ],
+       "text": "equal distances",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "uniformchoice",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3400,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        400
+       ],
+       "text": "uniform",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1",
+   "key": "15 m/s",
+   "prompt": "speed?"
+  },
+  {
+   "itemId": "r2",
+   "key": "uniform",
+   "prompt": "follow the graph"
+  },
+  {
+   "itemId": "r3",
+   "key": "non-uniform",
+   "prompt": "follow the graph"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

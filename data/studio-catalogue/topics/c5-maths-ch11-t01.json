@@ -1,0 +1,2066 @@
+{
+ "topicId": "c5-maths-ch11-t01",
+ "title": "Area by counting squares",
+ "chapter": "Grandmother’s Quilt",
+ "subject": "maths",
+ "class": 5,
+ "topicType": "T3",
+ "plan": {
+  "game": "area-claim@1",
+  "hint": "Plot: area by squares, perimeter, same area different shapes"
+ },
+ "game": {
+  "archetype": "area-claim@1",
+  "spec": {
+   "archetype": "area-claim@1",
+   "skills": [
+    "c5-maths-ch11-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "coach": "Drag to claim your quilt plot",
+    "round": "Round",
+    "area": "area",
+    "perimeter": "perimeter",
+    "claim": "CLAIMED",
+    "need": "need",
+    "sq": "sq",
+    "units": "units",
+    "newShape": "make a new shape",
+    "maxArea": "most area for",
+    "runDone": "Plot complete",
+    "timeUp": "Time is up"
+   },
+   "grid": {
+    "cols": 14,
+    "rows": 8
+   },
+   "drift": 0.7,
+   "rounds": [
+    {
+     "goal": "area",
+     "target": 12,
+     "seconds": 32,
+     "different": false
+    },
+    {
+     "goal": "perimeter",
+     "target": 16,
+     "seconds": 30,
+     "different": false,
+     "targets": "c5-maths-ch11-t01-m-area-perimeter"
+    },
+    {
+     "goal": "area",
+     "target": 12,
+     "seconds": 28,
+     "different": true,
+     "targets": "c5-maths-ch11-t01-m-same-perimeter-same-area"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c5-maths-ch11-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Area by counting squares",
+   "accent": "mint",
+   "targets": "c5-maths-ch11-t01-m-area-perimeter",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Area by counting squares"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Area and perimeter are the same"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "patch",
+       "type": "grid",
+       "cols": 4,
+       "rows": 3,
+       "shaded": 12,
+       "x": 120,
+       "y": 220
+      },
+      {
+       "id": "inside",
+       "type": "label",
+       "text": "inside: area",
+       "x": 160,
+       "y": 180,
+       "color": "mint"
+      },
+      {
+       "id": "areaNode",
+       "type": "node",
+       "text": "Area",
+       "sub": "square units",
+       "color": "mint"
+      },
+      {
+       "id": "edgeNode",
+       "type": "node",
+       "text": "Perimeter",
+       "sub": "units around",
+       "glyph": "ruler",
+       "color": "amber"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "full",
+       "type": "node",
+       "text": "9 full",
+       "sub": "squares",
+       "color": "mint"
+      },
+      {
+       "id": "halves",
+       "type": "node",
+       "text": "6 halves",
+       "sub": "3 squares",
+       "glyph": "balance",
+       "color": "amber"
+      },
+      {
+       "id": "bits",
+       "type": "node",
+       "text": "tiny bits",
+       "sub": "leave out",
+       "glyph": "spark",
+       "color": "ion"
+      },
+      {
+       "id": "sum",
+       "type": "arrow",
+       "from": "full",
+       "to": "halves",
+       "text": "add"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "split",
+     "els": [
+      {
+       "id": "strip",
+       "type": "node",
+       "text": "1 by 5",
+       "sub": "5 squares",
+       "color": "ion"
+      },
+      {
+       "id": "square",
+       "type": "node",
+       "text": "3 by 3",
+       "sub": "9 squares",
+       "color": "mint"
+      },
+      {
+       "id": "sameEdge",
+       "type": "label",
+       "text": "boundary 12",
+       "x": 330,
+       "y": 190,
+       "color": "amber"
+      },
+      {
+       "id": "different",
+       "type": "label",
+       "text": "different areas",
+       "x": 330,
+       "y": 420,
+       "color": "mint"
+      }
+     ]
+    },
+    {
+     "id": "s5",
+     "layout": "row",
+     "els": [
+      {
+       "id": "qfull",
+       "type": "node",
+       "text": "6 full",
+       "sub": "squares",
+       "color": "mint"
+      },
+      {
+       "id": "qhalf",
+       "type": "node",
+       "text": "4 halves",
+       "sub": "2 squares",
+       "glyph": "balance",
+       "color": "amber"
+      },
+      {
+       "id": "qtotal",
+       "type": "node",
+       "text": "8 square units",
+       "sub": "total area",
+       "color": "sun"
+      },
+      {
+       "id": "qarrow",
+       "type": "arrow",
+       "from": "qfull",
+       "to": "qtotal",
+       "text": "count"
+      }
+     ]
+    },
+    {
+     "id": "s6",
+     "layout": "row",
+     "els": [
+      {
+       "id": "opt6",
+       "type": "node",
+       "text": "6 units",
+       "sub": "choice",
+       "glyph": "question",
+       "color": "ion"
+      },
+      {
+       "id": "opt8",
+       "type": "node",
+       "text": "8 units",
+       "sub": "choice",
+       "glyph": "question",
+       "color": "mint"
+      },
+      {
+       "id": "opt10",
+       "type": "node",
+       "text": "10 units",
+       "sub": "choice",
+       "glyph": "question",
+       "color": "amber"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Area tells us how much flat space a shape covers. We count the unit squares inside it.",
+    "L2": "A common mistake is to confuse area with perimeter. Area counts squares inside; perimeter counts units around the edge.",
+    "L3": "This 4-square by 3-square patch covers 12 squares. So its area is 12 square units.",
+    "L4": "For an uneven shape, count full squares first. Pair two half squares to make one whole square.",
+    "L5": "Leave out pieces that are less than half a square. In the worked example, 9 full squares and 6 halves give about 12 square units.",
+    "L6": "Shapes can have the same perimeter but different areas. A 1 by 5 strip covers 5 squares, while a 3 by 3 square covers 9.",
+    "L7": "Now count 6 full squares and 4 half squares. The four halves make two whole squares.",
+    "L8": "Choose the area of this shape. Tap your answer."
+   },
+   "narration": {},
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "patch"
+      },
+      {
+       "at": 0.5,
+       "do": "highlight",
+       "dur": 1,
+       "target": "inside"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "myth"
+      },
+      {
+       "at": 0.8,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "count",
+       "dur": 1.2,
+       "target": "patch",
+       "to": 1
+      },
+      {
+       "at": 1.2,
+       "do": "show",
+       "dur": 0.6,
+       "target": "areaNode"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "full",
+        "halves"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "sum",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "bits"
+      },
+      {
+       "at": 0.7,
+       "do": "highlight",
+       "dur": 1,
+       "target": "halves"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "strip",
+        "square"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "sameEdge"
+      },
+      {
+       "at": 1.7,
+       "do": "show",
+       "dur": 0.8,
+       "target": "different"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s5",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "qfull",
+        "qhalf"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "qarrow",
+       "to": 1
+      },
+      {
+       "at": 1.5,
+       "do": "show",
+       "dur": 0.7,
+       "target": "qtotal"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s6",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "opt6",
+        "opt8",
+        "opt10"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive"
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "What is the area of the shape with 6 full squares and 4 half squares?",
+    "options": [
+     "opt6",
+     "opt8",
+     "opt10"
+    ],
+    "answer": "opt8",
+    "src": "c5-maths-ch11-t01-i02"
+   }
+  },
+  "repairs": [
+   "glyph",
+   "glyph",
+   "glyph",
+   "glyph",
+   "glyph",
+   "glyph",
+   "arrow:dangling",
+   "clamp:count.to"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 67
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch11-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "title",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        45
+       ],
+       "text": "Area",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "shape",
+       "op": "rect",
+       "startMs": 700,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        180,
+        120
+       ],
+       "w": 360,
+       "h": 240
+      },
+      {
+       "id": "v1",
+       "op": "line",
+       "startMs": 1600,
+       "endMs": 1900,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        270,
+        120
+       ],
+       "to": [
+        270,
+        360
+       ]
+      },
+      {
+       "id": "v2",
+       "op": "line",
+       "startMs": 1900,
+       "endMs": 2200,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        360,
+        120
+       ],
+       "to": [
+        360,
+        360
+       ]
+      },
+      {
+       "id": "v3",
+       "op": "line",
+       "startMs": 2200,
+       "endMs": 2500,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        450,
+        120
+       ],
+       "to": [
+        450,
+        360
+       ]
+      },
+      {
+       "id": "h1",
+       "op": "line",
+       "startMs": 2500,
+       "endMs": 2800,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        180,
+        200
+       ],
+       "to": [
+        540,
+        200
+       ]
+      },
+      {
+       "id": "h2",
+       "op": "line",
+       "startMs": 2800,
+       "endMs": 3100,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        180,
+        280
+       ],
+       "to": [
+        540,
+        280
+       ]
+      },
+      {
+       "id": "count",
+       "op": "numwork",
+       "startMs": 3400,
+       "endMs": 4300,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        245,
+        145
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "unit",
+         "square"
+        ]
+       ]
+      },
+      {
+       "id": "inside",
+       "op": "label",
+       "startMs": 4500,
+       "endMs": 5300,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        575,
+        235
+       ],
+       "text": "inside",
+       "to": [
+        500,
+        235
+       ]
+      },
+      {
+       "id": "area",
+       "op": "label",
+       "startMs": 5600,
+       "endMs": 6500,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        330,
+        410
+       ],
+       "text": "flat space",
+       "to": [
+        360,
+        360
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch11-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "areaBox",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        70,
+        120
+       ],
+       "w": 270,
+       "h": 250
+      },
+      {
+       "id": "perimBox",
+       "op": "rect",
+       "startMs": 800,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        460,
+        120
+       ],
+       "w": 270,
+       "h": 250
+      },
+      {
+       "id": "areaLabel",
+       "op": "text",
+       "startMs": 1600,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        205,
+        80
+       ],
+       "text": "area",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "perimLabel",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 2900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        595,
+        80
+       ],
+       "text": "perimeter",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "grid1",
+       "op": "line",
+       "startMs": 3000,
+       "endMs": 3300,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        160,
+        120
+       ],
+       "to": [
+        160,
+        370
+       ]
+      },
+      {
+       "id": "grid2",
+       "op": "line",
+       "startMs": 3300,
+       "endMs": 3600,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        250,
+        120
+       ],
+       "to": [
+        250,
+        370
+       ]
+      },
+      {
+       "id": "grid3",
+       "op": "line",
+       "startMs": 3600,
+       "endMs": 3900,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        70,
+        245
+       ],
+       "to": [
+        340,
+        245
+       ]
+      },
+      {
+       "id": "inside",
+       "op": "label",
+       "startMs": 4100,
+       "endMs": 5000,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        205,
+        420
+       ],
+       "text": "squares inside",
+       "to": [
+        205,
+        300
+       ]
+      },
+      {
+       "id": "edge",
+       "op": "label",
+       "startMs": 5000,
+       "endMs": 6000,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        595,
+        420
+       ],
+       "text": "units around",
+       "to": [
+        595,
+        120
+       ]
+      },
+      {
+       "id": "edgeTop",
+       "op": "line",
+       "startMs": 6100,
+       "endMs": 6500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        460,
+        120
+       ],
+       "to": [
+        730,
+        120
+       ]
+      },
+      {
+       "id": "edgeSide",
+       "op": "line",
+       "startMs": 6500,
+       "endMs": 6900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        730,
+        120
+       ],
+       "to": [
+        730,
+        370
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch11-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "patch",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        170,
+        100
+       ],
+       "w": 360,
+       "h": 270
+      },
+      {
+       "id": "g1",
+       "op": "line",
+       "startMs": 700,
+       "endMs": 1000,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        260,
+        100
+       ],
+       "to": [
+        260,
+        370
+       ]
+      },
+      {
+       "id": "g2",
+       "op": "line",
+       "startMs": 1000,
+       "endMs": 1300,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        350,
+        100
+       ],
+       "to": [
+        350,
+        370
+       ]
+      },
+      {
+       "id": "g3",
+       "op": "line",
+       "startMs": 1300,
+       "endMs": 1600,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        440,
+        100
+       ],
+       "to": [
+        440,
+        370
+       ]
+      },
+      {
+       "id": "r1",
+       "op": "line",
+       "startMs": 1600,
+       "endMs": 1900,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        170,
+        190
+       ],
+       "to": [
+        530,
+        190
+       ]
+      },
+      {
+       "id": "r2",
+       "op": "line",
+       "startMs": 1900,
+       "endMs": 2200,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        170,
+        280
+       ],
+       "to": [
+        530,
+        280
+       ]
+      },
+      {
+       "id": "dims",
+       "op": "numwork",
+       "startMs": 2600,
+       "endMs": 3900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        270,
+        400
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "4",
+         "×",
+         "3",
+         "=",
+         "12"
+        ]
+       ]
+      },
+      {
+       "id": "answer",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 5500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        570,
+        235
+       ],
+       "text": "12 square units",
+       "size": "m"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch11-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "uneven",
+       "op": "polygon",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         120,
+         150
+        ],
+        [
+         210,
+         100
+        ],
+        [
+         390,
+         100
+        ],
+        [
+         480,
+         180
+        ],
+        [
+         430,
+         330
+        ],
+        [
+         230,
+         360
+        ],
+        [
+         120,
+         280
+        ]
+       ],
+       "fill": "soft"
+      },
+      {
+       "id": "gridA",
+       "op": "line",
+       "startMs": 900,
+       "endMs": 1200,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        210,
+        100
+       ],
+       "to": [
+        210,
+        350
+       ]
+      },
+      {
+       "id": "gridB",
+       "op": "line",
+       "startMs": 1200,
+       "endMs": 1500,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        300,
+        100
+       ],
+       "to": [
+        300,
+        350
+       ]
+      },
+      {
+       "id": "gridC",
+       "op": "line",
+       "startMs": 1500,
+       "endMs": 1800,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        390,
+        100
+       ],
+       "to": [
+        390,
+        350
+       ]
+      },
+      {
+       "id": "gridD",
+       "op": "line",
+       "startMs": 1800,
+       "endMs": 2100,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        120,
+        185
+       ],
+       "to": [
+        460,
+        185
+       ]
+      },
+      {
+       "id": "gridE",
+       "op": "line",
+       "startMs": 2100,
+       "endMs": 2400,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        120,
+        270
+       ],
+       "to": [
+        450,
+        270
+       ]
+      },
+      {
+       "id": "full",
+       "op": "label",
+       "startMs": 2800,
+       "endMs": 3900,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        155,
+        415
+       ],
+       "text": "full squares",
+       "to": [
+        260,
+        220
+       ]
+      },
+      {
+       "id": "halves",
+       "op": "label",
+       "startMs": 4000,
+       "endMs": 5100,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        430,
+        415
+       ],
+       "text": "two halves",
+       "to": [
+        390,
+        330
+       ]
+      },
+      {
+       "id": "pair",
+       "op": "numwork",
+       "startMs": 5400,
+       "endMs": 6800,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        285,
+        390
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "half",
+         "+",
+         "half",
+         "=",
+         "whole"
+        ]
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch11-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 11238,
+     "ops": [
+      {
+       "id": "leaf",
+       "op": "polygon",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         120,
+         220
+        ],
+        [
+         190,
+         120
+        ],
+        [
+         350,
+         90
+        ],
+        [
+         500,
+         150
+        ],
+        [
+         600,
+         260
+        ],
+        [
+         500,
+         350
+        ],
+        [
+         300,
+         370
+        ],
+        [
+         160,
+         320
+        ]
+       ],
+       "fill": "soft"
+      },
+      {
+       "id": "grid1",
+       "op": "line",
+       "startMs": 900,
+       "endMs": 1200,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        210,
+        105
+       ],
+       "to": [
+        210,
+        345
+       ]
+      },
+      {
+       "id": "grid2",
+       "op": "line",
+       "startMs": 1200,
+       "endMs": 1500,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        300,
+        95
+       ],
+       "to": [
+        300,
+        370
+       ]
+      },
+      {
+       "id": "grid3",
+       "op": "line",
+       "startMs": 1500,
+       "endMs": 1800,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        390,
+        105
+       ],
+       "to": [
+        390,
+        365
+       ]
+      },
+      {
+       "id": "grid4",
+       "op": "line",
+       "startMs": 1800,
+       "endMs": 2100,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        480,
+        140
+       ],
+       "to": [
+        480,
+        355
+       ]
+      },
+      {
+       "id": "fullCount",
+       "op": "numwork",
+       "startMs": 2500,
+       "endMs": 3500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        90,
+        400
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "9",
+         "full"
+        ]
+       ]
+      },
+      {
+       "id": "halfCount",
+       "op": "numwork",
+       "startMs": 3600,
+       "endMs": 5000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        280,
+        400
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "6",
+         "halves",
+         "=",
+         "3"
+        ]
+       ]
+      },
+      {
+       "id": "tiny",
+       "op": "label",
+       "startMs": 5100,
+       "endMs": 6100,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        535,
+        400
+       ],
+       "text": "tiny bits",
+       "to": [
+        550,
+        300
+       ]
+      },
+      {
+       "id": "omit",
+       "op": "label",
+       "startMs": 6200,
+       "endMs": 7200,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        535,
+        440
+       ],
+       "text": "leave out",
+       "to": [
+        550,
+        300
+       ]
+      },
+      {
+       "id": "result",
+       "op": "numwork",
+       "startMs": 7800,
+       "endMs": 9300,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        250,
+        55
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "9",
+         "+",
+         "3",
+         "=",
+         "12"
+        ]
+       ]
+      },
+      {
+       "id": "units",
+       "op": "text",
+       "startMs": 9400,
+       "endMs": 10300,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        575,
+        55
+       ],
+       "text": "square units",
+       "size": "m"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch11-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 11238,
+     "ops": [
+      {
+       "id": "left",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        170
+       ],
+       "w": 350,
+       "h": 70
+      },
+      {
+       "id": "leftGrid",
+       "op": "line",
+       "startMs": 700,
+       "endMs": 950,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        170,
+        170
+       ],
+       "to": [
+        170,
+        240
+       ]
+      },
+      {
+       "id": "leftGrid2",
+       "op": "line",
+       "startMs": 950,
+       "endMs": 1200,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        240,
+        170
+       ],
+       "to": [
+        240,
+        240
+       ]
+      },
+      {
+       "id": "leftGrid3",
+       "op": "line",
+       "startMs": 1200,
+       "endMs": 1450,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        310,
+        170
+       ],
+       "to": [
+        310,
+        240
+       ]
+      },
+      {
+       "id": "leftGrid4",
+       "op": "line",
+       "startMs": 1450,
+       "endMs": 1700,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        380,
+        170
+       ],
+       "to": [
+        380,
+        240
+       ]
+      },
+      {
+       "id": "leftLabel",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2600,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        275,
+        125
+       ],
+       "text": "1 by 5",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "leftArea",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3500,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        275,
+        285
+       ],
+       "text": "5 squares",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "right",
+       "op": "rect",
+       "startMs": 3800,
+       "endMs": 4500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        540,
+        140
+       ],
+       "w": 180,
+       "h": 180
+      },
+      {
+       "id": "rightV",
+       "op": "line",
+       "startMs": 4500,
+       "endMs": 4750,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        600,
+        140
+       ],
+       "to": [
+        600,
+        320
+       ]
+      },
+      {
+       "id": "rightV2",
+       "op": "line",
+       "startMs": 4750,
+       "endMs": 5000,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        660,
+        140
+       ],
+       "to": [
+        660,
+        320
+       ]
+      },
+      {
+       "id": "rightH",
+       "op": "line",
+       "startMs": 5000,
+       "endMs": 5250,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        540,
+        200
+       ],
+       "to": [
+        720,
+        200
+       ]
+      },
+      {
+       "id": "rightH2",
+       "op": "line",
+       "startMs": 5250,
+       "endMs": 5500,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        540,
+        260
+       ],
+       "to": [
+        720,
+        260
+       ]
+      },
+      {
+       "id": "rightLabel",
+       "op": "text",
+       "startMs": 5700,
+       "endMs": 6400,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        630,
+        95
+       ],
+       "text": "3 by 3",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "rightArea",
+       "op": "text",
+       "startMs": 6500,
+       "endMs": 7300,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        630,
+        365
+       ],
+       "text": "9 squares",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "same",
+       "op": "label",
+       "startMs": 7800,
+       "endMs": 9000,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        390,
+        420
+       ],
+       "text": "same perimeter",
+       "to": [
+        450,
+        205
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch11-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "shape",
+       "op": "polygon",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         150,
+         120
+        ],
+        [
+         450,
+         120
+        ],
+        [
+         520,
+         220
+        ],
+        [
+         450,
+         340
+        ],
+        [
+         180,
+         340
+        ],
+        [
+         100,
+         240
+        ]
+       ],
+       "fill": "soft"
+      },
+      {
+       "id": "g1",
+       "op": "line",
+       "startMs": 800,
+       "endMs": 1050,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        200,
+        120
+       ],
+       "to": [
+        200,
+        340
+       ]
+      },
+      {
+       "id": "g2",
+       "op": "line",
+       "startMs": 1050,
+       "endMs": 1300,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        300,
+        120
+       ],
+       "to": [
+        300,
+        340
+       ]
+      },
+      {
+       "id": "g3",
+       "op": "line",
+       "startMs": 1300,
+       "endMs": 1550,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        400,
+        120
+       ],
+       "to": [
+        400,
+        340
+       ]
+      },
+      {
+       "id": "h1",
+       "op": "line",
+       "startMs": 1550,
+       "endMs": 1850,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        100,
+        230
+       ],
+       "to": [
+        490,
+        230
+       ]
+      },
+      {
+       "id": "full",
+       "op": "numwork",
+       "startMs": 2200,
+       "endMs": 3200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        120,
+        390
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "6",
+         "full"
+        ]
+       ]
+      },
+      {
+       "id": "half",
+       "op": "numwork",
+       "startMs": 3300,
+       "endMs": 5000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        340,
+        390
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "4",
+         "halves",
+         "=",
+         "2"
+        ]
+       ]
+      },
+      {
+       "id": "answer",
+       "op": "numwork",
+       "startMs": 5300,
+       "endMs": 6800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        520,
+        390
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "6",
+         "+",
+         "2",
+         "=",
+         "8"
+        ]
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch11-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4430,
+     "ops": [
+      {
+       "id": "question",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "area",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "shape",
+       "op": "polygon",
+       "startMs": 700,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         180,
+         150
+        ],
+        [
+         420,
+         150
+        ],
+        [
+         500,
+         240
+        ],
+        [
+         420,
+         340
+        ],
+        [
+         220,
+         340
+        ],
+        [
+         140,
+         250
+        ]
+       ],
+       "fill": "soft"
+      },
+      {
+       "id": "v1",
+       "op": "line",
+       "startMs": 1500,
+       "endMs": 1750,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        260,
+        150
+       ],
+       "to": [
+        260,
+        340
+       ]
+      },
+      {
+       "id": "v2",
+       "op": "line",
+       "startMs": 1750,
+       "endMs": 2000,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        340,
+        150
+       ],
+       "to": [
+        340,
+        340
+       ]
+      },
+      {
+       "id": "h1",
+       "op": "line",
+       "startMs": 2000,
+       "endMs": 2300,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        140,
+        245
+       ],
+       "to": [
+        470,
+        245
+       ]
+      },
+      {
+       "id": "tap",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        430
+       ],
+       "text": "tap answer",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ },
+ "firstCheck": {
+  "issues": [
+   {
+    "where": "explainer",
+    "what": "The explainer states 'Here is a common mistake: area is the length around the edge. That is perimeter, not area.' This misrepresents the misconception: the mistake is confusing area with perimeter, not claiming that area is the length around the edge.",
+    "severity": "high"
+   }
+  ],
+  "verdict": "fail",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

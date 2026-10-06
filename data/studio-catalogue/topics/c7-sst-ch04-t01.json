@@ -1,0 +1,1872 @@
+{
+ "topicId": "c7-sst-ch04-t01",
+ "title": "New Beginnings: Cities and States",
+ "chapter": "New Beginnings: Cities and States",
+ "subject": "sst",
+ "class": 7,
+ "topicType": "T3",
+ "plan": {
+  "game": "era-drop@1",
+  "hint": "place / century / order modes with BCE and CE dates from the kit"
+ },
+ "game": {
+  "archetype": "era-drop@1",
+  "spec": {
+   "archetype": "era-drop@1",
+   "skills": [
+    "c7-sst-ch04-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "landed": "landed",
+    "precision": "precision",
+    "coach": "Drag the dock along the timeline",
+    "first": "Which came first?",
+    "runDone": "Timeline complete",
+    "offBy": "off by",
+    "years": "years",
+    "exact": "SPOT ON",
+    "century": "century",
+    "bce": "BCE",
+    "ce": "CE",
+    "earlier": "EARLIER"
+   },
+   "title": "New Beginnings",
+   "axis": {
+    "min": -2700,
+    "max": 2000
+   },
+   "rounds": [
+    {
+     "mode": "place",
+     "title": "Place the events",
+     "sub": "BCE years count DOWN toward 1 CE",
+     "ticks": 0,
+     "speed": 0.8,
+     "tol": 40,
+     "items": [
+      {
+       "text": "Harappan cities at height",
+       "value": -2600,
+       "src": "c7-sst-ch04-t01-i02"
+      },
+      {
+       "text": "Mahajanapadas emerge",
+       "value": -600,
+       "src": "c7-sst-ch04-t01-i01"
+      },
+      {
+       "text": "Chandragupta founds empire",
+       "value": -321,
+       "src": "c7-sst-ch04-t01-i02"
+      },
+      {
+       "text": "Constitution in force",
+       "value": 1950,
+       "src": "c7-sst-ch04-t01-i02"
+      }
+     ]
+    },
+    {
+     "mode": "century",
+     "title": "Find the century",
+     "sub": "Match each event to its century",
+     "ticks": 0,
+     "speed": 0.95,
+     "tol": 40,
+     "items": [
+      {
+       "text": "Harappan cities at height",
+       "value": -2600,
+       "src": "c7-sst-ch04-t01-i02"
+      },
+      {
+       "text": "Mahajanapadas emerge",
+       "value": -600,
+       "src": "c7-sst-ch04-t01-i01"
+      },
+      {
+       "text": "Chandragupta founds empire",
+       "value": -321,
+       "src": "c7-sst-ch04-t01-i02"
+      },
+      {
+       "text": "Constitution in force",
+       "value": 1950,
+       "src": "c7-sst-ch04-t01-i02"
+      }
+     ]
+    },
+    {
+     "mode": "order",
+     "title": "Which came first?",
+     "sub": "A bigger BCE number is earlier",
+     "ticks": 0,
+     "speed": 1.1,
+     "tol": 40,
+     "items": [
+      {
+       "text": "Mahajanapadas emerge",
+       "value": -600,
+       "src": "c7-sst-ch04-t01-i01"
+      },
+      {
+       "text": "Constitution in force",
+       "value": 1950,
+       "src": "c7-sst-ch04-t01-i02"
+      },
+      {
+       "text": "Harappan cities at height",
+       "value": -2600,
+       "src": "c7-sst-ch04-t01-i02"
+      },
+      {
+       "text": "Chandragupta founds empire",
+       "value": -321,
+       "src": "c7-sst-ch04-t01-i02"
+      }
+     ],
+     "targets": "c7-sst-ch04-t01-m1"
+    }
+   ]
+  },
+  "repairs": [
+   "ticks:dense",
+   "ticks:dense"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-sst-ch04-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "From Villages to Cities",
+   "accent": "amber",
+   "targets": "c7-sst-ch04-t01-m1",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "From Villages to Cities"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "600 BCE comes after 500 BCE"
+      },
+      {
+       "id": "old",
+       "type": "label",
+       "text": "Harappan cities decline",
+       "x": 100,
+       "y": 300,
+       "color": "sci"
+      },
+      {
+       "id": "new",
+       "type": "label",
+       "text": "Cities grow again",
+       "x": 650,
+       "y": 300,
+       "color": "amber"
+      },
+      {
+       "id": "arrow1",
+       "type": "arrow",
+       "from": "old",
+       "to": "new",
+       "text": "later",
+       "bend": 0
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "jana",
+       "type": "node",
+       "text": "Jana",
+       "sub": "people settle",
+       "glyph": "group",
+       "color": "mint"
+      },
+      {
+       "id": "jnp",
+       "type": "node",
+       "text": "Janapada",
+       "sub": "settled land",
+       "glyph": "map",
+       "color": "sci"
+      },
+      {
+       "id": "mah",
+       "type": "node",
+       "text": "Mahajanapada",
+       "sub": "large state",
+       "glyph": "crown",
+       "color": "amber"
+      },
+      {
+       "id": "city",
+       "type": "node",
+       "text": "Capital",
+       "sub": "fortified city",
+       "glyph": "temple",
+       "color": "sun"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "jana",
+       "to": "jnp",
+       "text": "settles"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "jnp",
+       "to": "mah",
+       "text": "grows"
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "mah",
+       "to": "city",
+       "text": "builds"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "iron",
+       "type": "node",
+       "text": "Iron tools",
+       "sub": "clear land",
+       "glyph": "pick",
+       "color": "sci"
+      },
+      {
+       "id": "food",
+       "type": "node",
+       "text": "Surplus food",
+       "sub": "extra grain",
+       "glyph": "wheat",
+       "color": "mint"
+      },
+      {
+       "id": "trade",
+       "type": "node",
+       "text": "Trade",
+       "sub": "crafts and coins",
+       "glyph": "coin",
+       "color": "amber"
+      },
+      {
+       "id": "army",
+       "type": "node",
+       "text": "Army",
+       "sub": "forts and walls",
+       "glyph": "shield",
+       "color": "sun"
+      },
+      {
+       "id": "b1",
+       "type": "arrow",
+       "from": "iron",
+       "to": "food",
+       "text": "supports"
+      },
+      {
+       "id": "b2",
+       "type": "arrow",
+       "from": "food",
+       "to": "trade",
+       "text": "feeds"
+      },
+      {
+       "id": "b3",
+       "type": "arrow",
+       "from": "food",
+       "to": "army",
+       "text": "taxes"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "split",
+     "els": [
+      {
+       "id": "king",
+       "type": "node",
+       "text": "Raja",
+       "sub": "one ruler",
+       "glyph": "crown",
+       "color": "amber"
+      },
+      {
+       "id": "assembly",
+       "type": "node",
+       "text": "Assembly",
+       "sub": "many leaders",
+       "glyph": "group",
+       "color": "mint"
+      },
+      {
+       "id": "vajji",
+       "type": "label",
+       "text": "Vajji sangha",
+       "x": 620,
+       "y": 260,
+       "color": "sci"
+      },
+      {
+       "id": "vaishali",
+       "type": "label",
+       "text": "Vaishali",
+       "x": 620,
+       "y": 350,
+       "color": "sci"
+      },
+      {
+       "id": "c1",
+       "type": "arrow",
+       "from": "assembly",
+       "to": "vajji",
+       "text": "decides",
+       "bend": 0
+      }
+     ]
+    },
+    {
+     "id": "s5",
+     "layout": "row",
+     "els": [
+      {
+       "id": "texts",
+       "type": "node",
+       "text": "Texts",
+       "sub": "written records",
+       "glyph": "scroll",
+       "color": "ion"
+      },
+      {
+       "id": "walls",
+       "type": "node",
+       "text": "Fort walls",
+       "sub": "archaeology",
+       "glyph": "pillar",
+       "color": "sci"
+      },
+      {
+       "id": "coins",
+       "type": "node",
+       "text": "Coins",
+       "sub": "punch-marked",
+       "glyph": "coin",
+       "color": "amber"
+      },
+      {
+       "id": "evidence",
+       "type": "node",
+       "text": "Evidence",
+       "sub": "past clues",
+       "color": "mint"
+      },
+      {
+       "id": "d1",
+       "type": "arrow",
+       "from": "texts",
+       "to": "evidence",
+       "text": "shows"
+      },
+      {
+       "id": "d2",
+       "type": "arrow",
+       "from": "walls",
+       "to": "evidence",
+       "text": "shows"
+      },
+      {
+       "id": "d3",
+       "type": "arrow",
+       "from": "coins",
+       "to": "evidence",
+       "text": "shows"
+      }
+     ]
+    },
+    {
+     "id": "s6",
+     "layout": "row",
+     "els": [
+      {
+       "id": "har",
+       "type": "label",
+       "text": "2600 BCE",
+       "x": 80,
+       "y": 300,
+       "color": "sci"
+      },
+      {
+       "id": "rise",
+       "type": "label",
+       "text": "600 BCE",
+       "x": 300,
+       "y": 300,
+       "color": "amber"
+      },
+      {
+       "id": "empire",
+       "type": "label",
+       "text": "321 BCE",
+       "x": 520,
+       "y": 300,
+       "color": "sun"
+      },
+      {
+       "id": "constitution",
+       "type": "label",
+       "text": "1950 CE",
+       "x": 740,
+       "y": 300,
+       "color": "mint"
+      },
+      {
+       "id": "e1",
+       "type": "arrow",
+       "from": "har",
+       "to": "rise",
+       "text": "later"
+      },
+      {
+       "id": "e2",
+       "type": "arrow",
+       "from": "rise",
+       "to": "empire",
+       "text": "later"
+      },
+      {
+       "id": "e3",
+       "type": "arrow",
+       "from": "empire",
+       "to": "constitution",
+       "text": "later"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "After the Harappan cities declined, people lived mainly in villages for many centuries. Around 600 BCE, cities grew again, especially in the Ganga plains.",
+    "L2": "A janapada was the land where a jana, or people, settled. Some janapadas became powerful mahajanapadas.",
+    "L3": "Iron tools helped clear land and grow extra food, called a surplus. The surplus supported crafts, trade, taxes, armies and fortified capitals.",
+    "L4": "Some mahajanapadas were kingdoms ruled by a raja. Others were gana-sanghas, where many leaders made decisions together in an assembly.",
+    "L5": "Magadha grew strong and had the fortified capital Rajagriha. We learn about this period from texts, archaeology and punch-marked coins.",
+    "L6": "Remember the BCE order: a bigger number means earlier. So 600 BCE is earlier than 500 BCE.",
+    "L7": "Put the key dates in order from earliest to latest. Then check your understanding."
+   },
+   "narration": {},
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      },
+      {
+       "at": 0.4,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "old",
+        "new",
+        "arrow1"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.5,
+       "target": "jana"
+      },
+      {
+       "at": 0.5,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "a1",
+       "to": 1
+      },
+      {
+       "at": 1.1,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "jnp",
+        "mah",
+        "a2"
+       ]
+      },
+      {
+       "at": 1.9,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "city",
+        "a3"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.5,
+       "target": "iron"
+      },
+      {
+       "at": 0.5,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "b1",
+       "to": 1
+      },
+      {
+       "at": 1.1,
+       "do": "show",
+       "dur": 0.6,
+       "target": "food"
+      },
+      {
+       "at": 1.7,
+       "do": "show",
+       "dur": 0.9,
+       "target": [
+        "trade",
+        "army",
+        "b2",
+        "b3"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "king",
+        "assembly"
+       ]
+      },
+      {
+       "at": 0.7,
+       "do": "highlight",
+       "dur": 1,
+       "target": "assembly"
+      },
+      {
+       "at": 1.7,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "vajji",
+        "vaishali",
+        "c1"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s5",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "texts",
+        "walls",
+        "coins"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 0.8,
+       "target": [
+        "d1",
+        "d2",
+        "d3"
+       ],
+       "to": 1
+      },
+      {
+       "at": 1.6,
+       "do": "show",
+       "dur": 0.6,
+       "target": "evidence"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "myth"
+      },
+      {
+       "at": 0.8,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0,
+     "scene": "s6",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "har",
+        "rise",
+        "empire",
+        "constitution",
+        "e1",
+        "e2",
+        "e3"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "order",
+    "prompt": "Tap these dates from earliest to latest.",
+    "items": [
+     "har",
+     "rise",
+     "empire",
+     "constitution"
+    ],
+    "src": "c7-sst-ch04-t01-i02"
+   }
+  },
+  "repairs": [
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 62
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": false,
+    "errors": [
+     "harappan:inside_board"
+    ],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch04-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 10813,
+     "ops": [
+      {
+       "id": "decline",
+       "op": "arrow",
+       "startMs": 0,
+       "endMs": 1200,
+       "ink": "soft",
+       "weight": 2,
+       "from": [
+        120,
+        130
+       ],
+       "to": [
+        300,
+        130
+       ]
+      },
+      {
+       "id": "village",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        105
+       ],
+       "text": "villages",
+       "size": "m"
+      },
+      {
+       "id": "village_line",
+       "op": "line",
+       "startMs": 1500,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        300,
+        130
+       ],
+       "to": [
+        520,
+        130
+       ]
+      },
+      {
+       "id": "date",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 3000,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        535,
+        105
+       ],
+       "text": "600 BCE",
+       "size": "m"
+      },
+      {
+       "id": "city",
+       "op": "rect",
+       "startMs": 3500,
+       "endMs": 4800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        570,
+        250
+       ],
+       "w": 130,
+       "h": 90,
+       "round": 8
+      },
+      {
+       "id": "city_label",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        635,
+        370
+       ],
+       "text": "cities",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "ganga",
+       "op": "text",
+       "startMs": 5500,
+       "endMs": 6500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        560,
+        420
+       ],
+       "text": "Ganga plains",
+       "size": "m"
+      },
+      {
+       "id": "growth",
+       "op": "arrow",
+       "startMs": 6500,
+       "endMs": 7800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        520,
+        220
+       ],
+       "to": [
+        620,
+        250
+       ]
+      },
+      {
+       "id": "harappan",
+       "op": "text",
+       "startMs": 7800,
+       "endMs": 9000,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        80,
+        220
+       ],
+       "text": "Harappan cities",
+       "size": "m"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch04-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "jana",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        180,
+        170
+       ],
+       "r": 55
+      },
+      {
+       "id": "jana_label",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        170
+       ],
+       "text": "jana",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "land",
+       "op": "rect",
+       "startMs": 1300,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        280
+       ],
+       "w": 180,
+       "h": 90,
+       "round": 8
+      },
+      {
+       "id": "land_label",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 2900,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        180,
+        330
+       ],
+       "text": "janapada",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "arrow1",
+       "op": "arrow",
+       "startMs": 2900,
+       "endMs": 3700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        180,
+        230
+       ],
+       "to": [
+        180,
+        280
+       ]
+      },
+      {
+       "id": "large",
+       "op": "rect",
+       "startMs": 3900,
+       "endMs": 5200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        430,
+        220
+       ],
+       "w": 260,
+       "h": 150,
+       "round": 10
+      },
+      {
+       "id": "large_label",
+       "op": "text",
+       "startMs": 5100,
+       "endMs": 6500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        560,
+        295
+       ],
+       "text": "mahajanapadas",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "arrow2",
+       "op": "arrow",
+       "startMs": 5800,
+       "endMs": 7000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        270,
+        325
+       ],
+       "to": [
+        430,
+        295
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch04-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9962,
+     "ops": [
+      {
+       "id": "iron",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        90,
+        90
+       ],
+       "text": "iron tools",
+       "size": "m"
+      },
+      {
+       "id": "tool",
+       "op": "polygon",
+       "startMs": 900,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         110,
+         140
+        ],
+        [
+         145,
+         125
+        ],
+        [
+         175,
+         140
+        ],
+        [
+         145,
+         155
+        ]
+       ]
+      },
+      {
+       "id": "field",
+       "op": "rect",
+       "startMs": 1700,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        70,
+        230
+       ],
+       "w": 190,
+       "h": 100
+      },
+      {
+       "id": "clear",
+       "op": "arrow",
+       "startMs": 2900,
+       "endMs": 3900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        180,
+        210
+       ],
+       "to": [
+        180,
+        150
+       ]
+      },
+      {
+       "id": "surplus",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4900,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        115,
+        370
+       ],
+       "text": "surplus",
+       "size": "m"
+      },
+      {
+       "id": "support",
+       "op": "arrow",
+       "startMs": 4900,
+       "endMs": 6000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        270,
+        280
+       ],
+       "to": [
+        430,
+        280
+       ]
+      },
+      {
+       "id": "uses",
+       "op": "numwork",
+       "startMs": 5900,
+       "endMs": 8500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        450,
+        150
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "crafts",
+         "+",
+         "trade"
+        ],
+        [
+         "taxes",
+         "+",
+         "armies"
+        ],
+        [
+         "fortif",
+         "capita"
+        ]
+       ]
+      },
+      {
+       "id": "capital",
+       "op": "rect",
+       "startMs": 8500,
+       "endMs": 9500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        650,
+        330
+       ],
+       "w": 100,
+       "h": 70,
+       "round": 6
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch04-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9111,
+     "ops": [
+      {
+       "id": "kingdom",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        70,
+        100
+       ],
+       "w": 250,
+       "h": 150,
+       "round": 10
+      },
+      {
+       "id": "raja",
+       "op": "circle",
+       "startMs": 1000,
+       "endMs": 1700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        195,
+        165
+       ],
+       "r": 35
+      },
+      {
+       "id": "raja_label",
+       "op": "text",
+       "startMs": 1600,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        195,
+        170
+       ],
+       "text": "raja",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "kingdom_label",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        195,
+        290
+       ],
+       "text": "kingdoms",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "versus",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3500,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        400,
+        180
+       ],
+       "text": "or",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "assembly",
+       "op": "ellipse",
+       "startMs": 3500,
+       "endMs": 4700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        610,
+        180
+       ],
+       "rx": 150,
+       "ry": 85
+      },
+      {
+       "id": "leaders",
+       "op": "circle",
+       "startMs": 4500,
+       "endMs": 5000,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        540,
+        180
+       ],
+       "r": 18
+      },
+      {
+       "id": "leaders2",
+       "op": "circle",
+       "startMs": 4800,
+       "endMs": 5300,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        610,
+        150
+       ],
+       "r": 18
+      },
+      {
+       "id": "leaders3",
+       "op": "circle",
+       "startMs": 5100,
+       "endMs": 5600,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        680,
+        180
+       ],
+       "r": 18
+      },
+      {
+       "id": "assembly_label",
+       "op": "text",
+       "startMs": 5600,
+       "endMs": 6500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        610,
+        310
+       ],
+       "text": "assembly",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "decision",
+       "op": "arrow",
+       "startMs": 6500,
+       "endMs": 7800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        610,
+        245
+       ],
+       "to": [
+        610,
+        360
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch04-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9111,
+     "ops": [
+      {
+       "id": "magadha",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        90,
+        90
+       ],
+       "text": "Magadha",
+       "size": "l"
+      },
+      {
+       "id": "fort",
+       "op": "polygon",
+       "startMs": 1000,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         70,
+         260
+        ],
+        [
+         110,
+         220
+        ],
+        [
+         180,
+         220
+        ],
+        [
+         220,
+         260
+        ],
+        [
+         220,
+         350
+        ],
+        [
+         70,
+         350
+        ]
+       ]
+      },
+      {
+       "id": "fort_label",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        145,
+        390
+       ],
+       "text": "fortified capital",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "rajagriha",
+       "op": "text",
+       "startMs": 3400,
+       "endMs": 4400,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        145,
+        430
+       ],
+       "text": "Rajagriha",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "sources",
+       "op": "text",
+       "startMs": 4400,
+       "endMs": 5100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        90
+       ],
+       "text": "texts",
+       "size": "m"
+      },
+      {
+       "id": "arch",
+       "op": "text",
+       "startMs": 5100,
+       "endMs": 6200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        180
+       ],
+       "text": "archaeology",
+       "size": "m"
+      },
+      {
+       "id": "coins",
+       "op": "circle",
+       "startMs": 6200,
+       "endMs": 7000,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        450,
+        310
+       ],
+       "r": 45
+      },
+      {
+       "id": "coin_label",
+       "op": "text",
+       "startMs": 7000,
+       "endMs": 8500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        450,
+        390
+       ],
+       "text": "punch-marked coins",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch04-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "bce",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        90,
+        100
+       ],
+       "text": "BCE",
+       "size": "l"
+      },
+      {
+       "id": "line",
+       "op": "line",
+       "startMs": 700,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        100,
+        210
+       ],
+       "to": [
+        700,
+        210
+       ]
+      },
+      {
+       "id": "early",
+       "op": "arrow",
+       "startMs": 1500,
+       "endMs": 2800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        650,
+        210
+       ],
+       "to": [
+        150,
+        210
+       ]
+      },
+      {
+       "id": "six",
+       "op": "text",
+       "startMs": 2800,
+       "endMs": 3700,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        220,
+        180
+       ],
+       "text": "600 BCE",
+       "size": "m"
+      },
+      {
+       "id": "five",
+       "op": "text",
+       "startMs": 3700,
+       "endMs": 4600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        560,
+        180
+       ],
+       "text": "500 BCE",
+       "size": "m"
+      },
+      {
+       "id": "earlier",
+       "op": "text",
+       "startMs": 4600,
+       "endMs": 5400,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        180,
+        280
+       ],
+       "text": "earlier",
+       "size": "m"
+      },
+      {
+       "id": "compare",
+       "op": "arrow",
+       "startMs": 5400,
+       "endMs": 6500,
+       "ink": "soft",
+       "weight": 2,
+       "from": [
+        270,
+        210
+       ],
+       "to": [
+        500,
+        210
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch04-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "dates",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        90,
+        90
+       ],
+       "text": "key dates",
+       "size": "l"
+      },
+      {
+       "id": "timeline",
+       "op": "line",
+       "startMs": 900,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        100,
+        220
+       ],
+       "to": [
+        700,
+        220
+       ]
+      },
+      {
+       "id": "d1",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        120,
+        180
+       ],
+       "text": "1900 BCE",
+       "size": "m"
+      },
+      {
+       "id": "d2",
+       "op": "text",
+       "startMs": 2600,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        350,
+        180
+       ],
+       "text": "600 BCE",
+       "size": "m"
+      },
+      {
+       "id": "d3",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        610,
+        180
+       ],
+       "text": "1950 CE",
+       "size": "m"
+      },
+      {
+       "id": "order",
+       "op": "arrow",
+       "startMs": 4400,
+       "endMs": 5400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        130,
+        270
+       ],
+       "to": [
+        670,
+        270
+       ]
+      },
+      {
+       "id": "check",
+       "op": "highlight",
+       "startMs": 5400,
+       "endMs": 6200,
+       "ink": "good",
+       "weight": 2,
+       "target": "d2",
+       "style": "circle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "2600 BCE",
+   "prompt": "Harappan cities at height",
+   "src": "c7-sst-ch04-t01-i02"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "600 BCE",
+   "prompt": "Mahajanapadas emerge",
+   "src": "c7-sst-ch04-t01-i01"
+  },
+  {
+   "itemId": "r1:2",
+   "key": "321 BCE",
+   "prompt": "Chandragupta founds empire",
+   "src": "c7-sst-ch04-t01-i02"
+  },
+  {
+   "itemId": "r1:3",
+   "key": "1950 CE",
+   "prompt": "Constitution in force",
+   "src": "c7-sst-ch04-t01-i02"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "26th century BCE",
+   "prompt": "Harappan cities at height",
+   "src": "c7-sst-ch04-t01-i02"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "6th century BCE",
+   "prompt": "Mahajanapadas emerge",
+   "src": "c7-sst-ch04-t01-i01"
+  },
+  {
+   "itemId": "r2:2",
+   "key": "4th century BCE",
+   "prompt": "Chandragupta founds empire",
+   "src": "c7-sst-ch04-t01-i02"
+  },
+  {
+   "itemId": "r2:3",
+   "key": "20th century CE",
+   "prompt": "Constitution in force",
+   "src": "c7-sst-ch04-t01-i02"
+  },
+  {
+   "itemId": "r3:0",
+   "key": "Mahajanapadas emerge",
+   "prompt": "earlier: Mahajanapadas emerge (600 BCE) vs Constitution in force (1950 CE)"
+  },
+  {
+   "itemId": "r3:1",
+   "key": "Harappan cities at height",
+   "prompt": "earlier: Harappan cities at height (2600 BCE) vs Chandragupta founds empire (321 BCE)"
+  }
+ ],
+ "check": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "In round 2 (century mode), the value for 'Harappan cities at height' is -2600, which should map to the 27th century BCE (2600 BCE is in the 27th century), not the 26th. The kit says c. 2600 BCE, which is the 27th century BCE.",
+    "severity": "low"
+   }
+  ],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ },
+ "firstCheck": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "Round 2 item 'Rajagriha wall' with value -500 (500 BCE) uses a year from kit item c7-sst-ch04-t01-i03, but the kit item mentions a wall built in 500 BCE as part of a 'find the mistake' scenario, not as a factual event date. The kit does not affirm that Rajagriha's wall was actually built in 500 BCE; it only uses that number hypothetically to teach BCE order. Using it as a factual date is misleading and factually unsourced.",
+    "severity": "high"
+   },
+   {
+    "where": "game",
+    "what": "Round 3 includes 'Rajagriha wall' with value -500 (500 BCE) as a factual item in a timeline order, but the kit does not confirm that the wall was built in that year; it only appears in a 'find the mistake' example with a wrong assumption. This presents a kit scenario as fact, changing its status.",
+    "severity": "high"
+   }
+  ],
+  "verdict": "fail",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

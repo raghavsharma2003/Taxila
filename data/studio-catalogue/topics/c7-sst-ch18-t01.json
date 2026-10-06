@@ -1,0 +1,2190 @@
+{
+ "topicId": "c7-sst-ch18-t01",
+ "title": "The State, the Government, and You",
+ "chapter": "The State, the Government, and You",
+ "subject": "sst",
+ "class": 7,
+ "topicType": "T3",
+ "plan": {
+  "game": "town-lab@1",
+  "hint": "council mode: gram sabha / panchayat / ward decisions within a budget"
+ },
+ "game": {
+  "archetype": "town-lab@1",
+  "spec": {
+   "archetype": "town-lab@1",
+   "skills": [
+    "c7-sst-ch18-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "done": "right",
+    "have": "you have",
+    "need": "you need",
+    "has": "has",
+    "wants": "wants",
+    "trades": "trades",
+    "market": "market",
+    "coins": "coins",
+    "open": "OPEN",
+    "price": "price",
+    "cost": "cost",
+    "profit": "profit",
+    "sold": "sold",
+    "target": "target",
+    "stock": "stock",
+    "lock": "LOCK",
+    "run": "RUN",
+    "perMonth": "per month",
+    "years": "years",
+    "goal": "goal",
+    "saved": "saved",
+    "interest": "interest",
+    "budget": "budget",
+    "left": "left",
+    "families": "families helped",
+    "runDone": "Town closed",
+    "noDeal": "no deal",
+    "reset": "start again",
+    "rupee": "₹"
+   },
+   "title": "Town Lab",
+   "rounds": [
+    {
+     "mode": "barter",
+     "title": "Swap through town",
+     "sub": "trade what each person wants",
+     "start": "rice",
+     "goal": "pot",
+     "traders": [
+      {
+       "name": "Weaver",
+       "glyph": "person",
+       "has": "cloth",
+       "wants": "rice"
+      },
+      {
+       "name": "Potter",
+       "glyph": "pot",
+       "has": "pot",
+       "wants": "salt"
+      },
+      {
+       "name": "Trader",
+       "glyph": "boat",
+       "has": "salt",
+       "wants": "cloth"
+      },
+      {
+       "name": "Farmer",
+       "glyph": "wheat",
+       "has": "wheat",
+       "wants": "pot"
+      }
+     ],
+     "money": false,
+     "targets": "c7-sst-ch18-t01-m1"
+    },
+    {
+     "mode": "market",
+     "title": "Price your stall",
+     "sub": "customers choose what to buy",
+     "good": "mango",
+     "glyph": "apple",
+     "cost": 20,
+     "stock": 6,
+     "buyers": [
+      30,
+      40,
+      50,
+      60,
+      70,
+      80,
+      90,
+      100
+     ],
+     "target": 120
+    },
+    {
+     "mode": "savings",
+     "title": "Save for a goal",
+     "sub": "choose a monthly saving plan",
+     "goal": 6000,
+     "years": 2,
+     "rate": 5
+    },
+    {
+     "mode": "council",
+     "title": "Ward budget",
+     "sub": "help the most families",
+     "budget": 50,
+     "projects": [
+      {
+       "name": "handpumps",
+       "glyph": "tap",
+       "cost": 12,
+       "helps": 180
+      },
+      {
+       "name": "school roof",
+       "glyph": "school",
+       "cost": 25,
+       "helps": 220
+      },
+      {
+       "name": "streetlights",
+       "glyph": "bulb",
+       "cost": 15,
+       "helps": 150
+      },
+      {
+       "name": "drain repair",
+       "glyph": "road",
+       "cost": 20,
+       "helps": 200
+      },
+      {
+       "name": "clean water",
+       "glyph": "drop",
+       "cost": 18,
+       "helps": 160
+      }
+     ]
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 2,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-sst-ch18-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "The State, the Government, and You",
+   "accent": "ion",
+   "targets": "c7-sst-ch18-t01-m1",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "State and government"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "A new government means a new state"
+      },
+      {
+       "id": "state",
+       "type": "node",
+       "text": "State",
+       "sub": "lasting",
+       "glyph": "globe",
+       "color": "ion"
+      },
+      {
+       "id": "government",
+       "type": "node",
+       "text": "Government",
+       "sub": "changes",
+       "glyph": "group",
+       "color": "amber"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "state",
+       "to": "government",
+       "text": "includes"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "leg",
+       "type": "node",
+       "text": "Legislature",
+       "sub": "makes laws",
+       "glyph": "scroll",
+       "color": "ion"
+      },
+      {
+       "id": "exe",
+       "type": "node",
+       "text": "Executive",
+       "sub": "carries out",
+       "glyph": "gear",
+       "color": "amber"
+      },
+      {
+       "id": "jud",
+       "type": "node",
+       "text": "Judiciary",
+       "sub": "settles disputes",
+       "glyph": "balance",
+       "color": "mint"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "leg",
+       "to": "exe",
+       "text": "laws guide"
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "exe",
+       "to": "jud",
+       "text": "disputes"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "column",
+     "els": [
+      {
+       "id": "union",
+       "type": "node",
+       "text": "Union",
+       "sub": "defence, railways",
+       "glyph": "map",
+       "color": "ion"
+      },
+      {
+       "id": "statelev",
+       "type": "node",
+       "text": "States",
+       "sub": "police, schools",
+       "glyph": "road",
+       "color": "amber"
+      },
+      {
+       "id": "local",
+       "type": "node",
+       "text": "Local bodies",
+       "sub": "water, lights",
+       "glyph": "tap",
+       "color": "mint"
+      },
+      {
+       "id": "pothole",
+       "type": "node",
+       "text": "Pothole",
+       "glyph": "pick",
+       "color": "sun"
+      },
+      {
+       "id": "a4",
+       "type": "arrow",
+       "from": "pothole",
+       "to": "local",
+       "text": "local street"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "A state and a government are connected, but they are not the same thing.",
+    "L2": "A state has people, territory, a government and sovereignty. The state is lasting, while governments can change after elections.",
+    "L3": "So a new government does not make a new state. The people, territory and sovereignty remain.",
+    "L4": "Government has three organs. The legislature makes laws, the executive carries them out, and the judiciary interprets laws and settles disputes.",
+    "L5": "Government works at three levels: Union, state and local. Different jobs fit different levels.",
+    "L6": "The Union handles defence and railways. States handle police and many schools and hospitals.",
+    "L7": "Local bodies handle services such as water, streetlights and cleanliness. For a local pothole, report it and follow up with the local body.",
+    "L8": "Government affects daily life through documents and services, and taxes help pay for them. Citizens also shape government by voting and speaking up peacefully."
+   },
+   "narration": {
+    "L1": {
+     "text": "A state and a government are connected, but they are not the same thing.",
+     "dur": 3.4,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L2": {
+     "text": "A state has people, territory, a government and sovereignty. The state is lasting, while governments can change after elections.",
+     "dur": 5.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L3": {
+     "text": "So a new government does not make a new state. The people, territory and sovereignty remain.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L4": {
+     "text": "Government has three organs. The legislature makes laws, the executive carries them out, and the judiciary interprets laws and settles disputes.",
+     "dur": 5.6,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L5": {
+     "text": "Government works at three levels: Union, state and local. Different jobs fit different levels.",
+     "dur": 3.8,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L6": {
+     "text": "The Union handles defence and railways. States handle police and many schools and hospitals.",
+     "dur": 3.8,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Local bodies handle services such as water, streetlights and cleanliness. For a local pothole, report it and follow up with the local body.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Government affects daily life through documents and services, and taxes help pay for them. Citizens also shape government by voting and speaking up peacefully.",
+     "dur": 5.2,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "state",
+        "government",
+        "a1"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "myth"
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 1,
+       "target": "state"
+      },
+      {
+       "at": 1.8,
+       "do": "highlight",
+       "dur": 1,
+       "target": "government"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      },
+      {
+       "at": 1.2,
+       "do": "focus",
+       "dur": 1,
+       "target": "state"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "leg",
+        "exe",
+        "jud"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 1,
+       "target": [
+        "a2",
+        "a3"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.9,
+       "target": [
+        "union",
+        "statelev",
+        "local"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 0.7,
+       "target": "union"
+      },
+      {
+       "at": 1.8,
+       "do": "highlight",
+       "dur": 0.7,
+       "target": "statelev"
+      },
+      {
+       "at": 2.6,
+       "do": "highlight",
+       "dur": 0.7,
+       "target": "local"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "union"
+      },
+      {
+       "at": 1.2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "statelev"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "pothole"
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.7,
+       "target": "a4"
+      },
+      {
+       "at": 1.6,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "a4",
+       "to": 1
+      },
+      {
+       "at": 3,
+       "do": "focus",
+       "dur": 0.8,
+       "target": "local"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "camera",
+       "dur": 2,
+       "zoom": 1.05
+      },
+      {
+       "at": "end",
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which level mainly handles village streetlights and drinking water?",
+    "options": [
+     "union",
+     "statelev",
+     "local"
+    ],
+    "answer": "local",
+    "src": "c7-sst-ch18-t01-i05"
+   }
+  },
+  "repairs": [
+   "string:pothole.sub"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 40
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch18-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "state",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        80,
+        150
+       ],
+       "w": 250,
+       "h": 140
+      },
+      {
+       "id": "government",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        470,
+        150
+       ],
+       "w": 250,
+       "h": 140
+      },
+      {
+       "id": "stateText",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        205,
+        220
+       ],
+       "text": "state",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "govText",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        595,
+        220
+       ],
+       "text": "government",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "connect",
+       "op": "line",
+       "startMs": 1800,
+       "endMs": 2600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        330,
+        220
+       ],
+       "to": [
+        470,
+        220
+       ]
+      },
+      {
+       "id": "different",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        360
+       ],
+       "text": "not the same",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "cross",
+       "op": "line",
+       "startMs": 3900,
+       "endMs": 4500,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        350,
+        345
+       ],
+       "to": [
+        450,
+        375
+       ]
+      },
+      {
+       "id": "cross2",
+       "op": "line",
+       "startMs": 3900,
+       "endMs": 4500,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        450,
+        345
+       ],
+       "to": [
+        350,
+        375
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch18-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "features",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "state",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "people",
+       "op": "rect",
+       "startMs": 700,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        40,
+        130
+       ],
+       "w": 160,
+       "h": 90
+      },
+      {
+       "id": "territory",
+       "op": "rect",
+       "startMs": 1200,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        230,
+        130
+       ],
+       "w": 160,
+       "h": 90
+      },
+      {
+       "id": "gov",
+       "op": "rect",
+       "startMs": 1700,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        420,
+        130
+       ],
+       "w": 160,
+       "h": 90
+      },
+      {
+       "id": "sovereignty",
+       "op": "rect",
+       "startMs": 2200,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        610,
+        130
+       ],
+       "w": 160,
+       "h": 90
+      },
+      {
+       "id": "pText",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        120,
+        180
+       ],
+       "text": "people",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "tText",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        310,
+        180
+       ],
+       "text": "territory",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "gText",
+       "op": "text",
+       "startMs": 3100,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        500,
+        180
+       ],
+       "text": "government",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "sText",
+       "op": "text",
+       "startMs": 3100,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        690,
+        180
+       ],
+       "text": "sovereignty",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "lasting",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 5000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        180,
+        350
+       ],
+       "text": "state: lasting",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "change",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 5900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        600,
+        350
+       ],
+       "text": "government: change",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "election",
+       "op": "arrow",
+       "startMs": 6200,
+       "endMs": 6900,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        600,
+        315
+       ],
+       "to": [
+        600,
+        245
+       ]
+      },
+      {
+       "id": "elections",
+       "op": "text",
+       "startMs": 6900,
+       "endMs": 7400,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        600,
+        420
+       ],
+       "text": "elections",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch18-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "oldState",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        170,
+        190
+       ],
+       "r": 90
+      },
+      {
+       "id": "stateLabel",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        170,
+        190
+       ],
+       "text": "state",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "newGov",
+       "op": "rect",
+       "startMs": 1200,
+       "endMs": 1900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        500,
+        140
+       ],
+       "w": 220,
+       "h": 100
+      },
+      {
+       "id": "newLabel",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        610,
+        190
+       ],
+       "text": "new government",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "arrow",
+       "op": "arrow",
+       "startMs": 2600,
+       "endMs": 3400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        270,
+        190
+       ],
+       "to": [
+        500,
+        190
+       ]
+      },
+      {
+       "id": "notNew",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4300,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        300
+       ],
+       "text": "not a new state",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "people",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 4900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        150,
+        390
+       ],
+       "text": "people",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "territory",
+       "op": "text",
+       "startMs": 4900,
+       "endMs": 5400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        390
+       ],
+       "text": "territory",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "sovereignty",
+       "op": "text",
+       "startMs": 5400,
+       "endMs": 6000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        650,
+        390
+       ],
+       "text": "sovereignty",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch18-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9536,
+     "ops": [
+      {
+       "id": "govTitle",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        45
+       ],
+       "text": "government",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "legBox",
+       "op": "rect",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        40,
+        130
+       ],
+       "w": 220,
+       "h": 120
+      },
+      {
+       "id": "execBox",
+       "op": "rect",
+       "startMs": 1300,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        290,
+        130
+       ],
+       "w": 220,
+       "h": 120
+      },
+      {
+       "id": "judBox",
+       "op": "rect",
+       "startMs": 1900,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        540,
+        130
+       ],
+       "w": 220,
+       "h": 120
+      },
+      {
+       "id": "leg",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        150,
+        175
+       ],
+       "text": "legislature",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "exec",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        175
+       ],
+       "text": "executive",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "jud",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        650,
+        175
+       ],
+       "text": "judiciary",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "laws",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 3900,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        150,
+        320
+       ],
+       "text": "makes laws",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "carry",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4500,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        320
+       ],
+       "text": "carries out",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "interpret",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5200,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        650,
+        320
+       ],
+       "text": "interprets laws",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "disputes",
+       "op": "text",
+       "startMs": 5700,
+       "endMs": 6500,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        650,
+        390
+       ],
+       "text": "settles disputes",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "a1",
+       "op": "arrow",
+       "startMs": 6700,
+       "endMs": 7100,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        150,
+        250
+       ],
+       "to": [
+        150,
+        290
+       ]
+      },
+      {
+       "id": "a2",
+       "op": "arrow",
+       "startMs": 7100,
+       "endMs": 7500,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        400,
+        250
+       ],
+       "to": [
+        400,
+        290
+       ]
+      },
+      {
+       "id": "a3",
+       "op": "arrow",
+       "startMs": 7500,
+       "endMs": 7900,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        650,
+        250
+       ],
+       "to": [
+        650,
+        290
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch18-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "levels",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "three levels",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "union",
+       "op": "rect",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        60,
+        150
+       ],
+       "w": 200,
+       "h": 130
+      },
+      {
+       "id": "state",
+       "op": "rect",
+       "startMs": 1500,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        300,
+        150
+       ],
+       "w": 200,
+       "h": 130
+      },
+      {
+       "id": "local",
+       "op": "rect",
+       "startMs": 2100,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        540,
+        150
+       ],
+       "w": 200,
+       "h": 130
+      },
+      {
+       "id": "uText",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        160,
+        215
+       ],
+       "text": "Union",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "sText",
+       "op": "text",
+       "startMs": 3200,
+       "endMs": 3600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        215
+       ],
+       "text": "state",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "lText",
+       "op": "text",
+       "startMs": 3600,
+       "endMs": 4000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        640,
+        215
+       ],
+       "text": "local",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "down1",
+       "op": "arrow",
+       "startMs": 4200,
+       "endMs": 4700,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        160,
+        290
+       ],
+       "to": [
+        160,
+        350
+       ]
+      },
+      {
+       "id": "down2",
+       "op": "arrow",
+       "startMs": 4700,
+       "endMs": 5200,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        400,
+        290
+       ],
+       "to": [
+        400,
+        350
+       ]
+      },
+      {
+       "id": "down3",
+       "op": "arrow",
+       "startMs": 5200,
+       "endMs": 5700,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        640,
+        290
+       ],
+       "to": [
+        640,
+        350
+       ]
+      },
+      {
+       "id": "jobs",
+       "op": "text",
+       "startMs": 5700,
+       "endMs": 6300,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        430
+       ],
+       "text": "different jobs",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch18-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "union",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        60,
+        100
+       ],
+       "w": 300,
+       "h": 300
+      },
+      {
+       "id": "states",
+       "op": "rect",
+       "startMs": 800,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        440,
+        100
+       ],
+       "w": 300,
+       "h": 300
+      },
+      {
+       "id": "unionLabel",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        210,
+        150
+       ],
+       "text": "Union",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "stateLabel",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        590,
+        150
+       ],
+       "text": "States",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "defence",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 2900,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        210,
+        230
+       ],
+       "text": "defence",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "railways",
+       "op": "text",
+       "startMs": 2900,
+       "endMs": 3400,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        210,
+        285
+       ],
+       "text": "railways",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "police",
+       "op": "text",
+       "startMs": 3400,
+       "endMs": 3800,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        590,
+        230
+       ],
+       "text": "police",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "schools",
+       "op": "text",
+       "startMs": 3800,
+       "endMs": 4300,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        590,
+        285
+       ],
+       "text": "schools",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "hospitals",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 4800,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        590,
+        340
+       ],
+       "text": "hospitals",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "uArrow",
+       "op": "arrow",
+       "startMs": 5000,
+       "endMs": 5400,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        210,
+        400
+       ],
+       "to": [
+        210,
+        350
+       ]
+      },
+      {
+       "id": "sArrow",
+       "op": "arrow",
+       "startMs": 5400,
+       "endMs": 5800,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        590,
+        400
+       ],
+       "to": [
+        590,
+        350
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch18-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 10387,
+     "ops": [
+      {
+       "id": "localBox",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        40,
+        80
+       ],
+       "w": 300,
+       "h": 300
+      },
+      {
+       "id": "localTitle",
+       "op": "text",
+       "startMs": 800,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        190,
+        125
+       ],
+       "text": "local bodies",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "water",
+       "op": "text",
+       "startMs": 1600,
+       "endMs": 2000,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        190,
+        190
+       ],
+       "text": "water",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "lights",
+       "op": "text",
+       "startMs": 2000,
+       "endMs": 2500,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        190,
+        240
+       ],
+       "text": "streetlights",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "clean",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3000,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        190,
+        290
+       ],
+       "text": "cleanliness",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "pothole",
+       "op": "circle",
+       "startMs": 3200,
+       "endMs": 3800,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        590,
+        190
+       ],
+       "r": 55
+      },
+      {
+       "id": "road",
+       "op": "line",
+       "startMs": 3200,
+       "endMs": 3800,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        470,
+        300
+       ],
+       "to": [
+        710,
+        300
+       ]
+      },
+      {
+       "id": "potholeLabel",
+       "op": "text",
+       "startMs": 3800,
+       "endMs": 4300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        590,
+        190
+       ],
+       "text": "pothole",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "report",
+       "op": "arrow",
+       "startMs": 4500,
+       "endMs": 5300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        590,
+        250
+       ],
+       "to": [
+        590,
+        350
+       ]
+      },
+      {
+       "id": "reportText",
+       "op": "text",
+       "startMs": 5300,
+       "endMs": 5800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        590,
+        390
+       ],
+       "text": "report it",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "follow",
+       "op": "arrow",
+       "startMs": 6000,
+       "endMs": 6600,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        590,
+        410
+       ],
+       "to": [
+        590,
+        450
+       ]
+      },
+      {
+       "id": "followText",
+       "op": "text",
+       "startMs": 6600,
+       "endMs": 7200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        590,
+        475
+       ],
+       "text": "follow up",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch18-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 10813,
+     "ops": [
+      {
+       "id": "daily",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        40,
+        80
+       ],
+       "w": 220,
+       "h": 150
+      },
+      {
+       "id": "services",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        150,
+        155
+       ],
+       "text": "services",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "taxBox",
+       "op": "rect",
+       "startMs": 1200,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        290,
+        80
+       ],
+       "w": 220,
+       "h": 150
+      },
+      {
+       "id": "taxes",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        155
+       ],
+       "text": "taxes",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "citizenBox",
+       "op": "rect",
+       "startMs": 2400,
+       "endMs": 3100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        540,
+        80
+       ],
+       "w": 220,
+       "h": 150
+      },
+      {
+       "id": "citizens",
+       "op": "text",
+       "startMs": 3100,
+       "endMs": 3600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        650,
+        155
+       ],
+       "text": "citizens",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "birth",
+       "op": "text",
+       "startMs": 3800,
+       "endMs": 4300,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        150,
+        285
+       ],
+       "text": "documents",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "servicesArrow",
+       "op": "arrow",
+       "startMs": 4400,
+       "endMs": 4800,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        260,
+        155
+       ],
+       "to": [
+        290,
+        155
+       ]
+      },
+      {
+       "id": "pay",
+       "op": "arrow",
+       "startMs": 4900,
+       "endMs": 5700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        230
+       ],
+       "to": [
+        400,
+        350
+       ]
+      },
+      {
+       "id": "fund",
+       "op": "text",
+       "startMs": 5700,
+       "endMs": 6100,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        390
+       ],
+       "text": "pay",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "vote",
+       "op": "text",
+       "startMs": 6100,
+       "endMs": 6600,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        650,
+        285
+       ],
+       "text": "voting",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "speak",
+       "op": "text",
+       "startMs": 6600,
+       "endMs": 7200,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        650,
+        340
+       ],
+       "text": "speaking up",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "peace",
+       "op": "text",
+       "startMs": 7200,
+       "endMs": 7800,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        650,
+        395
+       ],
+       "text": "peacefully",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "citizenArrow",
+       "op": "arrow",
+       "startMs": 8000,
+       "endMs": 8500,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        650,
+        230
+       ],
+       "to": [
+        650,
+        260
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1",
+   "key": "3 trades",
+   "prompt": "trade what each person wants"
+  },
+  {
+   "itemId": "r2",
+   "key": "₹60 → profit 200 (target 120)",
+   "prompt": "customers choose what to buy"
+  },
+  {
+   "itemId": "r3",
+   "key": "₹244 a month",
+   "prompt": "choose a monthly saving plan"
+  },
+  {
+   "itemId": "r4",
+   "key": "540 families: handpumps, drain repair, clean water",
+   "prompt": "help the most families"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

@@ -1,0 +1,1850 @@
+{
+ "topicId": "c6-english-ch01-t01",
+ "title": "A Bottle of Dew",
+ "chapter": "A Bottle of Dew",
+ "subject": "english",
+ "class": 6,
+ "topicType": "T3",
+ "plan": {
+  "game": "story-rail@1",
+  "hint": "sequence, cause and who modes from the lesson's events and speakers"
+ },
+ "game": {
+  "archetype": "story-rail@1",
+  "spec": {
+   "archetype": "story-rail@1",
+   "skills": [
+    "c6-english-ch01-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "picked": "coupled",
+    "streak": "streak",
+    "next": "What happens next?",
+    "effect": "What does this lead to?",
+    "who": "Who said this?",
+    "runDone": "Line complete",
+    "order": "your train",
+    "right": "Coupled",
+    "wrong": "Not this one",
+    "coach": "Tap a wagon before the train reaches the fork"
+   },
+   "title": "A Bottle of Dew",
+   "rounds": [
+    {
+     "mode": "sequence",
+     "title": "Story order",
+     "sub": "couple the events in order",
+     "cards": [
+      {
+       "id": "e1",
+       "text": "Sage asks for five litres",
+       "glyph": "drop",
+       "src": "c6-english-ch01-t01-i02"
+      },
+      {
+       "id": "e2",
+       "text": "Rama Natha plants bananas",
+       "glyph": "seed",
+       "src": "c6-english-ch01-t01-i02"
+      },
+      {
+       "id": "e3",
+       "text": "Nothing happens to the vessel",
+       "glyph": "pot",
+       "src": "c6-english-ch01-t01-i02"
+      },
+      {
+       "id": "e4",
+       "text": "Madhumati opens the gold box",
+       "glyph": "coin",
+       "src": "c6-english-ch01-t01-i02"
+      }
+     ],
+     "speed": 0.9
+    },
+    {
+     "mode": "cause",
+     "title": "Cause and effect",
+     "sub": "match each cause to its result",
+     "pairs": [
+      {
+       "cause": {
+        "id": "c1",
+        "text": "Rama Natha wanted magic wealth",
+        "glyph": "spark",
+        "src": "c6-english-ch01-t01-i03"
+       },
+       "effect": {
+        "id": "f1",
+        "text": "The sage used a clever trick",
+        "glyph": "mirror",
+        "src": "c6-english-ch01-t01-i03"
+       }
+      },
+      {
+       "cause": {
+        "id": "c3",
+        "text": "Madhumati sold the bananas",
+        "glyph": "shop",
+        "src": "c6-english-ch01-t01-i06"
+       },
+       "effect": {
+        "id": "f3",
+        "text": "Their hard work made wealth",
+        "glyph": "coin",
+        "src": "c6-english-ch01-t01-i06"
+       }
+      }
+     ],
+     "speed": 0.85,
+     "targets": "c6-english-ch01-t01-m-real-magic"
+    },
+    {
+     "mode": "who",
+     "title": "Who said it?",
+     "sub": "send each line to its speaker",
+     "speakers": [
+      {
+       "id": "sage",
+       "name": "Sage",
+       "glyph": "person"
+      },
+      {
+       "id": "rama",
+       "name": "Rama Natha",
+       "glyph": "person"
+      },
+      {
+       "id": "madhumati",
+       "name": "Madhumati",
+       "glyph": "shop"
+      }
+     ],
+     "lines": [
+      {
+       "id": "w1",
+       "text": "Collect five litres of dew",
+       "speaker": "sage",
+       "src": "c6-english-ch01-t01-i01"
+      },
+      {
+       "id": "w2",
+       "text": "You have cheated me",
+       "speaker": "rama",
+       "src": "c6-english-ch01-t01-i05"
+      },
+      {
+       "id": "w3",
+       "text": "I sold the bananas",
+       "speaker": "madhumati",
+       "src": "c6-english-ch01-t01-i06"
+      }
+     ],
+     "speed": 0.85
+    }
+   ]
+  },
+  "repairs": [
+   "string:card.text"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c6-english-ch01-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "A Bottle of Dew",
+   "accent": "amber",
+   "targets": "c6-english-ch01-t01-m-real-magic",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "A Bottle of Dew"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Magic dew made the gold"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "sage",
+       "type": "node",
+       "text": "Sage",
+       "sub": "a clever plan",
+       "glyph": "person",
+       "color": "amber"
+      },
+      {
+       "id": "plants",
+       "type": "node",
+       "text": "Banana plants",
+       "sub": "six years",
+       "glyph": "leaf",
+       "color": "mint"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "plantation",
+       "type": "node",
+       "text": "Plantation",
+       "glyph": "tree",
+       "color": "mint"
+      },
+      {
+       "id": "market",
+       "type": "node",
+       "text": "Market",
+       "glyph": "shop",
+       "color": "amber"
+      },
+      {
+       "id": "gold",
+       "type": "node",
+       "text": "Gold coins",
+       "sub": "in a box",
+       "glyph": "coin",
+       "color": "sun"
+      },
+      {
+       "id": "sell",
+       "type": "arrow",
+       "from": "plantation",
+       "to": "market",
+       "text": "bananas sold"
+      },
+      {
+       "id": "earn",
+       "type": "arrow",
+       "from": "market",
+       "to": "gold",
+       "text": "wealth grew"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "column",
+     "els": [
+      {
+       "id": "worried",
+       "type": "node",
+       "text": "Worried",
+       "sub": "spent money",
+       "glyph": "question",
+       "color": "amber"
+      },
+      {
+       "id": "angry",
+       "type": "node",
+       "text": "Angry",
+       "sub": "nothing happened",
+       "glyph": "lightning",
+       "color": "volt"
+      },
+      {
+       "id": "surprised",
+       "type": "node",
+       "text": "Surprised",
+       "sub": "saw gold coins",
+       "glyph": "spark",
+       "color": "sun"
+      },
+      {
+       "id": "actions",
+       "type": "arrow",
+       "from": "worried",
+       "to": "angry",
+       "text": "then"
+      },
+      {
+       "id": "change",
+       "type": "arrow",
+       "from": "angry",
+       "to": "surprised",
+       "text": "then truth"
+      }
+     ]
+    },
+    {
+     "id": "s5",
+     "layout": "row",
+     "els": [
+      {
+       "id": "eventB",
+       "type": "label",
+       "text": "Sage asked for dew"
+      },
+      {
+       "id": "eventD",
+       "type": "label",
+       "text": "Rama planted plants"
+      },
+      {
+       "id": "eventA",
+       "type": "label",
+       "text": "Vessel stayed unchanged"
+      },
+      {
+       "id": "eventC",
+       "type": "label",
+       "text": "Madhumati opened gold"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Rama Natha believed the sage could make gold with a magic potion.",
+    "L2": "That belief was wrong. The sage asked for dew because Rama Natha would not have listened to plain advice.",
+    "L3": "Rama Natha collected five litres of dew from banana leaves, then planted and tended the land for six years.",
+    "L4": "Madhumati sold the bananas in the market. Their hard work created the wealth, not magic.",
+    "L5": "Rama Natha felt worried when money was spent, and angry when nothing happened to the copper vessel.",
+    "L6": "He was surprised when Madhumati opened a box of gold coins. The coins came from selling their bananas.",
+    "L7": "The message is simple: hard work brings results, while shortcuts do not.",
+    "L8": "Now put the important events in the order they happened."
+   },
+   "narration": {},
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "bust",
+       "dur": 1.2,
+       "target": "myth"
+      },
+      {
+       "at": 0,
+       "do": "hide",
+       "dur": 0.5,
+       "target": "title"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "sage"
+      },
+      {
+       "at": 1.2,
+       "do": "show",
+       "dur": 0.8,
+       "target": "plants"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "plantation"
+      },
+      {
+       "at": 0.4,
+       "do": "show",
+       "dur": 0.7,
+       "target": "market"
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "sell",
+       "to": 1
+      },
+      {
+       "at": 1.3,
+       "do": "show",
+       "dur": 0.7,
+       "target": "gold"
+      },
+      {
+       "at": 1.7,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "earn",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "worried"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.7,
+       "target": "angry"
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "actions",
+       "to": 1
+      },
+      {
+       "at": 1.4,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "angry"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "surprised"
+      },
+      {
+       "at": 0.5,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "change",
+       "to": 1
+      },
+      {
+       "at": 1.2,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "surprised"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "camera",
+       "dur": 1.5,
+       "zoom": 1.05
+      },
+      {
+       "at": 0.2,
+       "do": "highlight",
+       "dur": 1.2,
+       "target": [
+        "plantation",
+        "market",
+        "gold"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s5",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "eventB",
+        "eventD",
+        "eventA",
+        "eventC"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive"
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "order",
+    "prompt": "Tap the events in the order they happened.",
+    "items": [
+     "eventB",
+     "eventD",
+     "eventA",
+     "eventC"
+    ],
+    "src": "c6-english-ch01-t01-i02"
+   }
+  },
+  "repairs": [
+   "string:dew.text",
+   "string:plantation.sub",
+   "string:market.sub",
+   "arrow:dangling",
+   "arrow:dangling",
+   "cue:target",
+   "cue:target"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 58
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-english-ch01-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "rama",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        150,
+        180
+       ],
+       "r": 55
+      },
+      {
+       "id": "sage",
+       "op": "circle",
+       "startMs": 500,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        650,
+        180
+       ],
+       "r": 55
+      },
+      {
+       "id": "rlabel",
+       "op": "text",
+       "startMs": 800,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        150,
+        270
+       ],
+       "text": "Rama Natha",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "slabel",
+       "op": "text",
+       "startMs": 1000,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        650,
+        270
+       ],
+       "text": "sage",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "potion",
+       "op": "ellipse",
+       "startMs": 1500,
+       "endMs": 2300,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        170
+       ],
+       "rx": 45,
+       "ry": 70
+      },
+      {
+       "id": "plabel",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 2900,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        285
+       ],
+       "text": "magic potion",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "gold",
+       "op": "polygon",
+       "startMs": 3000,
+       "endMs": 3900,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         375,
+         390
+        ],
+        [
+         425,
+         390
+        ],
+        [
+         445,
+         430
+        ],
+        [
+         355,
+         430
+        ]
+       ],
+       "fill": "accent"
+      },
+      {
+       "id": "glabel",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4400,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        465
+       ],
+       "text": "gold",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "belief",
+       "op": "arrow",
+       "startMs": 4400,
+       "endMs": 5200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        210,
+        180
+       ],
+       "to": [
+        355,
+        180
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-english-ch01-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "wrong",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "wrong",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "cross",
+       "op": "line",
+       "startMs": 700,
+       "endMs": 1200,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        330,
+        45
+       ],
+       "to": [
+        470,
+        90
+       ]
+      },
+      {
+       "id": "dew",
+       "op": "ellipse",
+       "startMs": 1300,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        180,
+        300
+       ],
+       "rx": 70,
+       "ry": 35
+      },
+      {
+       "id": "dewlabel",
+       "op": "text",
+       "startMs": 2000,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        370
+       ],
+       "text": "dew",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "sageask",
+       "op": "arrow",
+       "startMs": 2600,
+       "endMs": 3600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        600,
+        180
+       ],
+       "to": [
+        260,
+        300
+       ]
+      },
+      {
+       "id": "plain",
+       "op": "text",
+       "startMs": 3700,
+       "endMs": 4500,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        590,
+        390
+       ],
+       "text": "plain advice",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "no_listen",
+       "op": "arrow",
+       "startMs": 4500,
+       "endMs": 5500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        520,
+        390
+       ],
+       "to": [
+        270,
+        320
+       ]
+      },
+      {
+       "id": "reason",
+       "op": "label",
+       "startMs": 5600,
+       "endMs": 6800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        470,
+        285
+       ],
+       "text": "would not listen",
+       "to": [
+        400,
+        300
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-english-ch01-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "leaves",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        180,
+        150
+       ],
+       "rx": 120,
+       "ry": 55
+      },
+      {
+       "id": "dew5",
+       "op": "numwork",
+       "startMs": 800,
+       "endMs": 1700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        90,
+        245
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "5",
+         "litres",
+         "dew"
+        ]
+       ]
+      },
+      {
+       "id": "collect",
+       "op": "arrow",
+       "startMs": 1700,
+       "endMs": 2400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        180,
+        215
+       ],
+       "to": [
+        180,
+        280
+       ]
+      },
+      {
+       "id": "land",
+       "op": "rect",
+       "startMs": 2200,
+       "endMs": 3100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        420,
+        210
+       ],
+       "w": 260,
+       "h": 130,
+       "fill": "soft"
+      },
+      {
+       "id": "plant",
+       "op": "stroke",
+       "startMs": 3000,
+       "endMs": 3700,
+       "ink": "good",
+       "weight": 2,
+       "points": [
+        [
+         470,
+         300
+        ],
+        [
+         470,
+         250
+        ],
+        [
+         455,
+         230
+        ],
+        [
+         485,
+         230
+        ],
+        [
+         470,
+         250
+        ]
+       ]
+      },
+      {
+       "id": "tend",
+       "op": "arrow",
+       "startMs": 3700,
+       "endMs": 4400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        550,
+        370
+       ],
+       "to": [
+        550,
+        315
+       ]
+      },
+      {
+       "id": "years",
+       "op": "text",
+       "startMs": 4400,
+       "endMs": 5100,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        550,
+        410
+       ],
+       "text": "six years",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "banana",
+       "op": "text",
+       "startMs": 5100,
+       "endMs": 5900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        550,
+        180
+       ],
+       "text": "banana leaves",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-english-ch01-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "madhumati",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        160,
+        180
+       ],
+       "r": 55
+      },
+      {
+       "id": "mlabel",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        160,
+        265
+       ],
+       "text": "Madhumati",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "bananas",
+       "op": "ellipse",
+       "startMs": 1300,
+       "endMs": 2200,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        400,
+        180
+       ],
+       "rx": 90,
+       "ry": 45
+      },
+      {
+       "id": "blabel",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 2700,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        260
+       ],
+       "text": "bananas",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "market",
+       "op": "rect",
+       "startMs": 2700,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        590,
+        120
+       ],
+       "w": 130,
+       "h": 100
+      },
+      {
+       "id": "marketlabel",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        655,
+        255
+       ],
+       "text": "market",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "sell",
+       "op": "arrow",
+       "startMs": 4000,
+       "endMs": 4800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        490,
+        180
+       ],
+       "to": [
+        585,
+        180
+       ]
+      },
+      {
+       "id": "hard",
+       "op": "text",
+       "startMs": 4900,
+       "endMs": 5700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        260,
+        420
+       ],
+       "text": "hard work",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "wealth",
+       "op": "text",
+       "startMs": 5700,
+       "endMs": 6500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        580,
+        420
+       ],
+       "text": "wealth",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-english-ch01-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "rama2",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        150,
+        170
+       ],
+       "r": 55
+      },
+      {
+       "id": "worried",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        150,
+        270
+       ],
+       "text": "worried",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "money",
+       "op": "circle",
+       "startMs": 1400,
+       "endMs": 2100,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        170
+       ],
+       "r": 45
+      },
+      {
+       "id": "spent",
+       "op": "arrow",
+       "startMs": 2100,
+       "endMs": 2900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        350,
+        170
+       ],
+       "to": [
+        250,
+        170
+       ]
+      },
+      {
+       "id": "angry",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        150,
+        380
+       ],
+       "text": "angry",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "vessel",
+       "op": "ellipse",
+       "startMs": 3400,
+       "endMs": 4400,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        500,
+        340
+       ],
+       "rx": 70,
+       "ry": 90
+      },
+      {
+       "id": "copper",
+       "op": "text",
+       "startMs": 4400,
+       "endMs": 5200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        500,
+        460
+       ],
+       "text": "copper vessel",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "nothing",
+       "op": "text",
+       "startMs": 5200,
+       "endMs": 5900,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        650,
+        180
+       ],
+       "text": "nothing",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "wait",
+       "op": "arrow",
+       "startMs": 5900,
+       "endMs": 6800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        500,
+        250
+       ],
+       "to": [
+        500,
+        300
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-english-ch01-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "surprise",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        150,
+        100
+       ],
+       "text": "surprised",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "madhumati2",
+       "op": "circle",
+       "startMs": 800,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        160,
+        230
+       ],
+       "r": 50
+      },
+      {
+       "id": "box",
+       "op": "rect",
+       "startMs": 1500,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        350,
+        170
+       ],
+       "w": 140,
+       "h": 110
+      },
+      {
+       "id": "open",
+       "op": "line",
+       "startMs": 2400,
+       "endMs": 3100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        350,
+        170
+       ],
+       "to": [
+        420,
+        125
+       ]
+      },
+      {
+       "id": "coins",
+       "op": "circle",
+       "startMs": 3000,
+       "endMs": 3700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        420,
+        225
+       ],
+       "r": 30,
+       "fill": "accent"
+      },
+      {
+       "id": "coinslabel",
+       "op": "text",
+       "startMs": 3700,
+       "endMs": 4400,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        420,
+        340
+       ],
+       "text": "gold coins",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "banana2",
+       "op": "text",
+       "startMs": 4400,
+       "endMs": 5000,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        650,
+        180
+       ],
+       "text": "bananas",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "sell2",
+       "op": "arrow",
+       "startMs": 5000,
+       "endMs": 5900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        600,
+        220
+       ],
+       "to": [
+        500,
+        240
+       ]
+      },
+      {
+       "id": "source",
+       "op": "text",
+       "startMs": 6000,
+       "endMs": 6600,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        570,
+        400
+       ],
+       "text": "selling",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-english-ch01-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "message",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        75
+       ],
+       "text": "message",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "work",
+       "op": "rect",
+       "startMs": 900,
+       "endMs": 1700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        120,
+        170
+       ],
+       "w": 220,
+       "h": 120
+      },
+      {
+       "id": "worklabel",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2400,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        230,
+        235
+       ],
+       "text": "hard work",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "results",
+       "op": "arrow",
+       "startMs": 2400,
+       "endMs": 3300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        350,
+        230
+       ],
+       "to": [
+        465,
+        230
+       ]
+      },
+      {
+       "id": "resultlabel",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 4000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        550,
+        180
+       ],
+       "text": "results",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "shortcut",
+       "op": "line",
+       "startMs": 4000,
+       "endMs": 4600,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        120,
+        390
+       ],
+       "to": [
+        340,
+        390
+       ]
+      },
+      {
+       "id": "shortlabel",
+       "op": "text",
+       "startMs": 4600,
+       "endMs": 5200,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        230,
+        450
+       ],
+       "text": "shortcuts",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-english-ch01-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "important",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        65
+       ],
+       "text": "important events",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "one",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        120,
+        180
+       ],
+       "r": 35
+      },
+      {
+       "id": "two",
+       "op": "circle",
+       "startMs": 1400,
+       "endMs": 1900,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        300,
+        180
+       ],
+       "r": 35
+      },
+      {
+       "id": "three",
+       "op": "circle",
+       "startMs": 1900,
+       "endMs": 2400,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        480,
+        180
+       ],
+       "r": 35
+      },
+      {
+       "id": "four",
+       "op": "circle",
+       "startMs": 2400,
+       "endMs": 2900,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        660,
+        180
+       ],
+       "r": 35
+      },
+      {
+       "id": "arrow1",
+       "op": "arrow",
+       "startMs": 2900,
+       "endMs": 3300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        160,
+        180
+       ],
+       "to": [
+        260,
+        180
+       ]
+      },
+      {
+       "id": "arrow2",
+       "op": "arrow",
+       "startMs": 3300,
+       "endMs": 3700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        340,
+        180
+       ],
+       "to": [
+        440,
+        180
+       ]
+      },
+      {
+       "id": "arrow3",
+       "op": "arrow",
+       "startMs": 3700,
+       "endMs": 4100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        520,
+        180
+       ],
+       "to": [
+        620,
+        180
+       ]
+      },
+      {
+       "id": "order",
+       "op": "text",
+       "startMs": 4100,
+       "endMs": 4700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        330
+       ],
+       "text": "order",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "Rama Natha plants bananas",
+   "prompt": "sequence: after/for \"Sage asks for five litres\"",
+   "src": "c6-english-ch01-t01-i02"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "Nothing happens to the vessel",
+   "prompt": "sequence: after/for \"Rama Natha plants bananas\"",
+   "src": "c6-english-ch01-t01-i02"
+  },
+  {
+   "itemId": "r1:2",
+   "key": "Madhumati opens the gold box",
+   "prompt": "sequence: after/for \"Nothing happens to the vessel\"",
+   "src": "c6-english-ch01-t01-i02"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "The sage used a clever trick",
+   "prompt": "cause: after/for \"Rama Natha wanted magic wealth\"",
+   "src": "c6-english-ch01-t01-i03"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "Their hard work made wealth",
+   "prompt": "cause: after/for \"Madhumati sold the bananas\"",
+   "src": "c6-english-ch01-t01-i06"
+  },
+  {
+   "itemId": "r3:0",
+   "key": "Sage",
+   "prompt": "who: after/for \"Collect five litres of dew\"",
+   "src": "c6-english-ch01-t01-i01"
+  },
+  {
+   "itemId": "r3:1",
+   "key": "Rama Natha",
+   "prompt": "who: after/for \"You have cheated me\"",
+   "src": "c6-english-ch01-t01-i05"
+  },
+  {
+   "itemId": "r3:2",
+   "key": "Madhumati",
+   "prompt": "who: after/for \"I sold the bananas\"",
+   "src": "c6-english-ch01-t01-i06"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

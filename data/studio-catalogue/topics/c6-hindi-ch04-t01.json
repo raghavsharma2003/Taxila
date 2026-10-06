@@ -1,0 +1,1605 @@
+{
+ "topicId": "c6-hindi-ch04-t01",
+ "title": "हार की जीत",
+ "chapter": "हार की जीत",
+ "subject": "hindi",
+ "class": 6,
+ "topicType": "T3",
+ "plan": {
+  "game": "story-rail@1",
+  "hint": "sequence, cause and who modes from the lesson's events and speakers"
+ },
+ "game": {
+  "archetype": "story-rail@1",
+  "spec": {
+   "archetype": "story-rail@1",
+   "skills": [
+    "c6-hindi-ch04-t01"
+   ],
+   "lang": "hi",
+   "strings": {
+    "round": "दौर",
+    "picked": "चुना गया",
+    "streak": "लगातार सही",
+    "next": "इसके बाद क्या हुआ?",
+    "effect": "इससे क्या हुआ?",
+    "who": "यह किसने कहा?",
+    "runDone": "कहानी पूरी हुई",
+    "order": "क्रम",
+    "right": "सही जोड़ी",
+    "wrong": "यह जोड़ी नहीं",
+    "coach": "मोड़ से पहले सही डिब्बा चुनो"
+   },
+   "title": "हार की जीत",
+   "rounds": [
+    {
+     "mode": "sequence",
+     "title": "घटनाओं का क्रम",
+     "sub": "कहानी की घटनाएँ जोड़ो",
+     "cards": [
+      {
+       "id": "e1",
+       "text": "खड़गसिंह घोड़ा देखने आया",
+       "src": "c6-hindi-ch04-t01-i03"
+      },
+      {
+       "id": "e2",
+       "text": "अपाहिज बनकर घोड़ा छीना",
+       "src": "c6-hindi-ch04-t01-i03"
+      },
+      {
+       "id": "e3",
+       "text": "बाबा ने बात छिपाने को कहा",
+       "src": "c6-hindi-ch04-t01-i03"
+      },
+      {
+       "id": "e4",
+       "text": "रात को घोड़ा लौट आया",
+       "src": "c6-hindi-ch04-t01-i03"
+      }
+     ],
+     "speed": 0.9
+    },
+    {
+     "mode": "cause",
+     "title": "कारण और परिणाम",
+     "sub": "हर कारण का फल जोड़ो",
+     "pairs": [
+      {
+       "cause": {
+        "id": "c1",
+        "text": "बाबा दयालु थे",
+        "src": "c6-hindi-ch04-t01-i04"
+       },
+       "effect": {
+        "id": "f1",
+        "text": "उन्होंने दुखी की मदद की",
+        "src": "c6-hindi-ch04-t01-i04"
+       }
+      },
+      {
+       "cause": {
+        "id": "c2",
+        "text": "बाबा ने बात छिपाई",
+        "src": "c6-hindi-ch04-t01-i05"
+       },
+       "effect": {
+        "id": "f2",
+        "text": "लोग गरीबों पर विश्वास रखें",
+        "src": "c6-hindi-ch04-t01-i05"
+       }
+      },
+      {
+       "cause": {
+        "id": "c3",
+        "text": "खड़गसिंह का मन बदल गया",
+        "src": "c6-hindi-ch04-t01-i05"
+       },
+       "effect": {
+        "id": "f3",
+        "text": "उसने घोड़ा वापस कर दिया",
+        "src": "c6-hindi-ch04-t01-i05"
+       }
+      }
+     ],
+     "speed": 0.85
+    },
+    {
+     "mode": "who",
+     "title": "किसने कहा?",
+     "sub": "बात को सही पात्र तक पहुँचाओ",
+     "speakers": [
+      {
+       "id": "baba",
+       "name": "बाबा भारती"
+      },
+      {
+       "id": "khadag",
+       "name": "खड़गसिंह"
+      }
+     ],
+     "lines": [
+      {
+       "id": "w1",
+       "text": "यह बात किसी को मत बताना।",
+       "speaker": "baba",
+       "src": "c6-hindi-ch04-t01-i05"
+      },
+      {
+       "id": "w2",
+       "text": "मुझे आपका घोड़ा चाहिए।",
+       "speaker": "khadag",
+       "src": "c6-hindi-ch04-t01-i02"
+      }
+     ],
+     "speed": 0.85
+    }
+   ]
+  },
+  "repairs": [
+   "targets",
+   "string:card.text"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c6-hindi-ch04-t01"
+   ],
+   "lang": "hi",
+   "strings": {
+    "again": "फिर दिखाएँ",
+    "yourTurn": "अब आपकी बारी",
+    "check": "जाँचें",
+    "right": "सही",
+    "look": "फिर देखें",
+    "myth": "भ्रम",
+    "busted": "गलत",
+    "order": "क्रम में लगाएँ"
+   },
+   "title": "हार की जीत",
+   "accent": "amber",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "row",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "हार की जीत"
+      },
+      {
+       "id": "baba",
+       "type": "node",
+       "text": "बाबा भारती",
+       "sub": "दयालु",
+       "glyph": "person",
+       "color": "amber"
+      },
+      {
+       "id": "sultan",
+       "type": "node",
+       "text": "सुल्तान",
+       "sub": "प्यारा घोड़ा",
+       "color": "sun"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "घोड़ा गया, बाबा हार गए"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "want",
+       "type": "node",
+       "text": "घोड़े की चाह",
+       "sub": "खड़गसिंह",
+       "glyph": "person",
+       "color": "volt"
+      },
+      {
+       "id": "trick",
+       "type": "node",
+       "text": "अपाहिज का ढोंग",
+       "sub": "धोखा",
+       "glyph": "question",
+       "color": "sci"
+      },
+      {
+       "id": "loss",
+       "type": "node",
+       "text": "घोड़ा छीना",
+       "sub": "बाबा की हार",
+       "glyph": "road",
+       "color": "amber"
+      },
+      {
+       "id": "request",
+       "type": "node",
+       "text": "बात गुप्त रखो",
+       "sub": "दीनों का विश्वास",
+       "glyph": "shield",
+       "color": "mint"
+      },
+      {
+       "id": "change",
+       "type": "node",
+       "text": "मन बदल गया",
+       "sub": "शर्म आई",
+       "glyph": "spark",
+       "color": "sun"
+      },
+      {
+       "id": "return",
+       "type": "node",
+       "text": "घोड़ा लौट आया",
+       "sub": "जीत",
+       "color": "mint"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "want",
+       "to": "trick",
+       "text": "योजना"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "trick",
+       "to": "loss",
+       "text": "धोखा"
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "loss",
+       "to": "request",
+       "text": "बाबा बोले"
+      },
+      {
+       "id": "a4",
+       "type": "arrow",
+       "from": "request",
+       "to": "change",
+       "text": "असर"
+      },
+      {
+       "id": "a5",
+       "type": "arrow",
+       "from": "change",
+       "to": "return",
+       "text": "वापसी"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "split",
+     "els": [
+      {
+       "id": "loss2",
+       "type": "label",
+       "text": "घोड़ा खोया",
+       "x": 120,
+       "y": 300,
+       "color": "amber"
+      },
+      {
+       "id": "win2",
+       "type": "label",
+       "text": "मन जीत लिया",
+       "x": 620,
+       "y": 300,
+       "color": "mint"
+      },
+      {
+       "id": "arrowwin",
+       "type": "arrow",
+       "from": "loss2",
+       "to": "win2",
+       "text": "इसलिए",
+       "bend": 0.2
+      },
+      {
+       "id": "message",
+       "type": "title",
+       "text": "हार में ही जीत"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "column",
+     "els": [
+      {
+       "id": "checktitle",
+       "type": "title",
+       "text": "अब क्रम पहचानो"
+      },
+      {
+       "id": "opt1",
+       "type": "label",
+       "text": "खड़गसिंह घोड़ा देखने आया",
+       "x": 100,
+       "y": 260
+      },
+      {
+       "id": "opt2",
+       "type": "label",
+       "text": "अपाहिज बनकर घोड़ा छीना",
+       "x": 100,
+       "y": 330
+      },
+      {
+       "id": "opt3",
+       "type": "label",
+       "text": "बाबा ने बात गुप्त रखी",
+       "x": 100,
+       "y": 400
+      },
+      {
+       "id": "opt4",
+       "type": "label",
+       "text": "घोड़ा अस्तबल में लौट आया",
+       "x": 100,
+       "y": 470
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "बाबा भारती को अपना घोड़ा सुल्तान बहुत प्यारा था। डाकू खड़गसिंह उसे पाना चाहता था।",
+    "L2": "खड़गसिंह ने अपाहिज बनने का ढोंग किया और धोखे से घोड़ा छीन लिया।",
+    "L3": "बाबा ने उससे कहा, यह बात किसी को मत बताना।",
+    "L4": "बाबा को अपनी बदनामी की चिंता नहीं थी। वे चाहते थे कि लोग दीन-दुखियों पर विश्वास करना न छोड़ें।",
+    "L5": "बाबा की बात सुनकर खड़गसिंह का मन बदल गया और उसे अपने किए पर शर्म आई।",
+    "L6": "रात को सुल्तान अस्तबल में लौट आया। बाबा ने घोड़ा खोया, पर खड़गसिंह का मन जीत लिया।",
+    "L7": "इसीलिए कहानी का शीर्षक है ‘हार की जीत’—हार में ही जीत हुई।"
+   },
+   "narration": {
+    "L1": {
+     "text": "बाबा भारती को अपना घोड़ा सुल्तान बहुत प्यारा था। डाकू खड़गसिंह उसे पाना चाहता था।",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "खड़गसिंह ने अपाहिज बनने का ढोंग किया और धोखे से घोड़ा छीन लिया।",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "बाबा ने उससे कहा, यह बात किसी को मत बताना।",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "बाबा को अपनी बदनामी की चिंता नहीं थी। वे चाहते थे कि लोग दीन-दुखियों पर विश्वास करना न छोड़ें।",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "बाबा की बात सुनकर खड़गसिंह का मन बदल गया और उसे अपने किए पर शर्म आई।",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "रात को सुल्तान अस्तबल में लौट आया। बाबा ने घोड़ा खोया, पर खड़गसिंह का मन जीत लिया।",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "इसीलिए कहानी का शीर्षक है ‘हार की जीत’—हार में ही जीत हुई।",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "title"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "baba",
+        "sultan"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "want",
+        "trick"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 0.5,
+       "target": "a1",
+       "to": 1
+      },
+      {
+       "at": 1.2,
+       "do": "show",
+       "dur": 0.7,
+       "target": "loss"
+      },
+      {
+       "at": 1.8,
+       "do": "flow",
+       "dur": 0.5,
+       "target": "a2",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "request"
+      },
+      {
+       "at": 0.6,
+       "do": "flow",
+       "dur": 0.5,
+       "target": "a3",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "myth"
+      },
+      {
+       "at": 0.7,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "change"
+      },
+      {
+       "at": 0.7,
+       "do": "flow",
+       "dur": 0.5,
+       "target": "a4",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "return"
+      },
+      {
+       "at": 0.7,
+       "do": "flow",
+       "dur": 0.5,
+       "target": "a5",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "loss2",
+        "win2",
+        "message"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 1,
+       "target": "win2"
+      },
+      {
+       "at": "end",
+       "do": "interactive"
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "order",
+    "prompt": "घटनाओं को सही क्रम में लगाओ।",
+    "items": [
+     "opt1",
+     "opt2",
+     "opt3",
+     "opt4"
+    ],
+    "src": "c6-hindi-ch04-t01-i03"
+   }
+  },
+  "repairs": [
+   "glyph",
+   "glyph",
+   "targets"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 33
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-hindi-ch04-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "baba",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        150,
+        180
+       ],
+       "r": 55
+      },
+      {
+       "id": "babaT",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        150,
+        270
+       ],
+       "text": "बाबा भारती",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "horse",
+       "op": "ellipse",
+       "startMs": 1100,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        210
+       ],
+       "rx": 105,
+       "ry": 55
+      },
+      {
+       "id": "sultan",
+       "op": "label",
+       "startMs": 1900,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        300
+       ],
+       "text": "सुल्तान",
+       "to": [
+        400,
+        265
+       ]
+      },
+      {
+       "id": "dacoit",
+       "op": "circle",
+       "startMs": 3300,
+       "endMs": 4000,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        650,
+        180
+       ],
+       "r": 55
+      },
+      {
+       "id": "kharg",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 4700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        650,
+        270
+       ],
+       "text": "खड़गसिंह",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "want",
+       "op": "arrow",
+       "startMs": 4800,
+       "endMs": 5600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        590,
+        190
+       ],
+       "to": [
+        500,
+        210
+       ]
+      },
+      {
+       "id": "wantT",
+       "op": "text",
+       "startMs": 5600,
+       "endMs": 6400,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        650,
+        350
+       ],
+       "text": "पाना चाहता था",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-hindi-ch04-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "poor",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        150,
+        150
+       ],
+       "r": 42
+      },
+      {
+       "id": "poorT",
+       "op": "text",
+       "startMs": 500,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        150,
+        225
+       ],
+       "text": "अपाहिज",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "trick",
+       "op": "arrow",
+       "startMs": 1000,
+       "endMs": 1800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        220,
+        160
+       ],
+       "to": [
+        330,
+        190
+       ]
+      },
+      {
+       "id": "mask",
+       "op": "polygon",
+       "startMs": 1800,
+       "endMs": 2500,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         300,
+         130
+        ],
+        [
+         350,
+         110
+        ],
+        [
+         380,
+         150
+        ],
+        [
+         345,
+         185
+        ],
+        [
+         305,
+         170
+        ]
+       ]
+      },
+      {
+       "id": "deceit",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3000,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        340,
+        235
+       ],
+       "text": "ढोंग",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "take",
+       "op": "arrow",
+       "startMs": 3100,
+       "endMs": 4000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        200
+       ],
+       "to": [
+        580,
+        200
+       ]
+      },
+      {
+       "id": "snatch",
+       "op": "label",
+       "startMs": 4000,
+       "endMs": 4700,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        590,
+        280
+       ],
+       "text": "छीन लिया",
+       "to": [
+        570,
+        220
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-hindi-ch04-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "baba2",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        180,
+        180
+       ],
+       "r": 50
+      },
+      {
+       "id": "speak",
+       "op": "arrow",
+       "startMs": 600,
+       "endMs": 1200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        235,
+        180
+       ],
+       "to": [
+        350,
+        180
+       ]
+      },
+      {
+       "id": "say",
+       "op": "text",
+       "startMs": 1200,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        290,
+        140
+       ],
+       "text": "कहा",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "secret",
+       "op": "rect",
+       "startMs": 1800,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        420,
+        130
+       ],
+       "w": 190,
+       "h": 100,
+       "round": 12
+      },
+      {
+       "id": "secretT",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        515,
+        175
+       ],
+       "text": "किसी को मत बताना",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "lock",
+       "op": "circle",
+       "startMs": 3500,
+       "endMs": 4100,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        515,
+        275
+       ],
+       "r": 22
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-hindi-ch04-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "worry",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        100
+       ],
+       "text": "बदनामी",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "cross",
+       "op": "line",
+       "startMs": 900,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        120,
+        120
+       ],
+       "to": [
+        240,
+        120
+       ]
+      },
+      {
+       "id": "trust",
+       "op": "circle",
+       "startMs": 1500,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        220
+       ],
+       "r": 90
+      },
+      {
+       "id": "trustT",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        220
+       ],
+       "text": "विश्वास",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "poor4",
+       "op": "circle",
+       "startMs": 3300,
+       "endMs": 3800,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        620,
+        160
+       ],
+       "r": 35
+      },
+      {
+       "id": "help",
+       "op": "arrow",
+       "startMs": 3800,
+       "endMs": 4700,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        520,
+        230
+       ],
+       "to": [
+        610,
+        180
+       ]
+      },
+      {
+       "id": "helpT",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5300,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        620,
+        270
+       ],
+       "text": "मदद",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "dontStop",
+       "op": "text",
+       "startMs": 5600,
+       "endMs": 6500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        390
+       ],
+       "text": "छोड़ें न",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-hindi-ch04-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "kharg5",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        180,
+        180
+       ],
+       "r": 52
+      },
+      {
+       "id": "mind",
+       "op": "circle",
+       "startMs": 600,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        180,
+        100
+       ],
+       "r": 28
+      },
+      {
+       "id": "change",
+       "op": "arrow",
+       "startMs": 1200,
+       "endMs": 2100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        250,
+        180
+       ],
+       "to": [
+        390,
+        180
+       ]
+      },
+      {
+       "id": "heart5",
+       "op": "circle",
+       "startMs": 2200,
+       "endMs": 2900,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        500,
+        180
+       ],
+       "r": 65
+      },
+      {
+       "id": "changeT",
+       "op": "text",
+       "startMs": 2900,
+       "endMs": 3800,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        500,
+        285
+       ],
+       "text": "मन बदल गया",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "shame",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 4800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        300,
+        390
+       ],
+       "text": "शर्म",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "down",
+       "op": "line",
+       "startMs": 4800,
+       "endMs": 5300,
+       "ink": "soft",
+       "weight": 2,
+       "from": [
+        270,
+        365
+       ],
+       "to": [
+        330,
+        415
+       ]
+      },
+      {
+       "id": "done",
+       "op": "label",
+       "startMs": 5400,
+       "endMs": 6500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        610,
+        180
+       ],
+       "text": "अपने किए पर",
+       "to": [
+        550,
+        180
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-hindi-ch04-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "night",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "soft",
+       "weight": 2,
+       "c": [
+        680,
+        90
+       ],
+       "r": 35
+      },
+      {
+       "id": "stable",
+       "op": "rect",
+       "startMs": 500,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        270,
+        230
+       ],
+       "w": 260,
+       "h": 150
+      },
+      {
+       "id": "stableT",
+       "op": "text",
+       "startMs": 1300,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        420
+       ],
+       "text": "अस्तबल",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "horse6",
+       "op": "ellipse",
+       "startMs": 2000,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        290
+       ],
+       "rx": 85,
+       "ry": 42
+      },
+      {
+       "id": "return",
+       "op": "arrow",
+       "startMs": 2800,
+       "endMs": 4000,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        170,
+        180
+       ],
+       "to": [
+        320,
+        270
+       ],
+       "bend": 0.2
+      },
+      {
+       "id": "returnT",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 4700,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        150,
+        320
+       ],
+       "text": "लौट आया",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "loss",
+       "op": "text",
+       "startMs": 4800,
+       "endMs": 5500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        150,
+        100
+       ],
+       "text": "घोड़ा खोया",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "winheart",
+       "op": "text",
+       "startMs": 5700,
+       "endMs": 6800,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        620,
+        300
+       ],
+       "text": "मन जीत लिया",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-hindi-ch04-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "title",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        80
+       ],
+       "text": "हार की जीत",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "loss7",
+       "op": "text",
+       "startMs": 1100,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        190
+       ],
+       "text": "हार",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "arrow7",
+       "op": "arrow",
+       "startMs": 1800,
+       "endMs": 2700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        260,
+        190
+       ],
+       "to": [
+        520,
+        190
+       ]
+      },
+      {
+       "id": "win7",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3400,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        620,
+        190
+       ],
+       "text": "जीत",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "inside",
+       "op": "circle",
+       "startMs": 3500,
+       "endMs": 4200,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        350
+       ],
+       "r": 70
+      },
+      {
+       "id": "insideT",
+       "op": "text",
+       "startMs": 4200,
+       "endMs": 5200,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        350
+       ],
+       "text": "हार में ही जीत",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "अपाहिज बनकर घोड़ा छीना",
+   "prompt": "sequence: after/for \"खड़गसिंह घोड़ा देखने आया\"",
+   "src": "c6-hindi-ch04-t01-i03"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "बाबा ने बात छिपाने को कहा",
+   "prompt": "sequence: after/for \"अपाहिज बनकर घोड़ा छीना\"",
+   "src": "c6-hindi-ch04-t01-i03"
+  },
+  {
+   "itemId": "r1:2",
+   "key": "रात को घोड़ा लौट आया",
+   "prompt": "sequence: after/for \"बाबा ने बात छिपाने को कहा\"",
+   "src": "c6-hindi-ch04-t01-i03"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "उन्होंने दुखी की मदद की",
+   "prompt": "cause: after/for \"बाबा दयालु थे\"",
+   "src": "c6-hindi-ch04-t01-i04"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "लोग गरीबों पर विश्वास रखें",
+   "prompt": "cause: after/for \"बाबा ने बात छिपाई\"",
+   "src": "c6-hindi-ch04-t01-i05"
+  },
+  {
+   "itemId": "r2:2",
+   "key": "उसने घोड़ा वापस कर दिया",
+   "prompt": "cause: after/for \"खड़गसिंह का मन बदल गया\"",
+   "src": "c6-hindi-ch04-t01-i05"
+  },
+  {
+   "itemId": "r3:0",
+   "key": "बाबा भारती",
+   "prompt": "who: after/for \"यह बात किसी को मत बताना।\"",
+   "src": "c6-hindi-ch04-t01-i05"
+  },
+  {
+   "itemId": "r3:1",
+   "key": "खड़गसिंह",
+   "prompt": "who: after/for \"मुझे आपका घोड़ा चाहिए।\"",
+   "src": "c6-hindi-ch04-t01-i02"
+  }
+ ],
+ "check": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "राउंड 1 (sequence) का क्रम किट के अनुसार गलत है: किट (c6-hindi-ch04-t01-i03) में क्रम है: खड़गसिंह घोड़ा देखने आया → अपाहिज बनकर घोड़ा छीना → बाबा ने कहा, यह बात किसी को मत बताना → रात को घोड़ा अस्तबल में लौट आया। गेम में बाबा की बात को 'बाबा ने बात छिपाने को कहा' लिखा है, जो सही है, परंतु क्रम सही है? देखें: कार्ड e3 'बाबा ने बात छिपाने को कहा' अपाहिज के बाद आना चाहिए, और e4 'रात को घोड़ा लौट आया' अंत में। गेम में e2 (अपाहिज) के बाद e3 (बाबा ने कहा) आता है, फिर e4 (लौटा)। यह किट के क्रम से मेल खाता है। क्रम सही है। कोई गलती नहीं।",
+    "severity": "low"
+   }
+  ],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

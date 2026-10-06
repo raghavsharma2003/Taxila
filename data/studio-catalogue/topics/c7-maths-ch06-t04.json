@@ -1,0 +1,1451 @@
+{
+ "topicId": "c7-maths-ch06-t04",
+ "title": "Digits in disguise",
+ "chapter": "Number Play",
+ "subject": "maths",
+ "class": 7,
+ "topicType": "T5",
+ "plan": {
+  "game": "pattern-lab@1",
+  "hint": "cipher mode (letters for digits in sums)"
+ },
+ "game": {
+  "archetype": "pattern-lab@1",
+  "spec": {
+   "archetype": "pattern-lab@1",
+   "skills": [
+    "c7-maths-ch06-t04"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "done": "right",
+    "check": "CHECK",
+    "add": "ADD",
+    "clear": "CLEAR",
+    "sum": "sum",
+    "found": "found",
+    "short": "short",
+    "long": "long",
+    "beats": "beats",
+    "cipher": "Turn the dials until the sum is true",
+    "tiles": "tiles",
+    "gap": "gap",
+    "overlap": "overlap",
+    "runDone": "Lab closed",
+    "repeat": "already found",
+    "magic": "magic",
+    "rows": "rows",
+    "cols": "columns"
+   },
+   "title": "Digits in Disguise",
+   "rounds": [
+    {
+     "mode": "cipher",
+     "title": "Start with the ones",
+     "sub": "Keep track of each carry",
+     "terms": [
+      "A",
+      "A"
+     ],
+     "total": "CB",
+     "targets": "c7-maths-ch06-t04-m-ignore-carry"
+    },
+    {
+     "mode": "cipher",
+     "title": "A bigger sum",
+     "sub": "Use place value and carries",
+     "terms": [
+      "AB",
+      "BA"
+     ],
+     "total": "CDE"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 2,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-maths-ch06-t04"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Digits in disguise",
+   "accent": "ion",
+   "targets": "c7-maths-ch06-t04-m-ignore-carry",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Digits in disguise"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Solve each column without carries"
+      },
+      {
+       "id": "rule",
+       "type": "label",
+       "text": "Same letter, same digit"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "column",
+     "els": [
+      {
+       "id": "sum",
+       "type": "label",
+       "text": "A5 + 1A = 92"
+      },
+      {
+       "id": "ones",
+       "type": "node",
+       "text": "Ones",
+       "sub": "5 + A ends in 2",
+       "glyph": "ruler",
+       "color": "ion"
+      },
+      {
+       "id": "carry",
+       "type": "node",
+       "text": "Carry 1",
+       "sub": "12 becomes 2",
+       "color": "amber"
+      },
+      {
+       "id": "tens",
+       "type": "node",
+       "text": "Tens",
+       "sub": "7 + 1 + 1 = 9",
+       "glyph": "ruler",
+       "color": "mint"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "ones",
+       "to": "carry",
+       "text": "carry",
+       "bend": 0
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "carry",
+       "to": "tens",
+       "text": "next column",
+       "bend": 0
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "check",
+       "type": "title",
+       "text": "Check the addition"
+      },
+      {
+       "id": "n75",
+       "type": "node",
+       "text": "75",
+       "sub": "A = 7",
+       "glyph": "book",
+       "color": "ion"
+      },
+      {
+       "id": "n17",
+       "type": "node",
+       "text": "17",
+       "sub": "1A",
+       "glyph": "book",
+       "color": "mint"
+      },
+      {
+       "id": "n92",
+       "type": "node",
+       "text": "92",
+       "sub": "answer",
+       "glyph": "spark",
+       "color": "amber"
+      },
+      {
+       "id": "plus",
+       "type": "label",
+       "text": "+"
+      },
+      {
+       "id": "eq",
+       "type": "arrow",
+       "from": "n75",
+       "to": "n92",
+       "text": "adds to",
+       "bend": 0
+      },
+      {
+       "id": "tap1",
+       "type": "node",
+       "text": "Ones first",
+       "sub": "5 + A",
+       "glyph": "hand",
+       "color": "volt"
+      },
+      {
+       "id": "tap2",
+       "type": "node",
+       "text": "Carry next",
+       "sub": "0 or 1",
+       "glyph": "hand",
+       "color": "volt"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "In a letter puzzle, the same letter always means the same digit.",
+    "L2": "Different letters mean different digits, and a leading digit cannot be zero.",
+    "L3": "We solve from the ones column first, and we keep every carry.",
+    "L4": "For A5 plus 1A equals 92, the ones say 5 plus A ends in 2.",
+    "L5": "So 5 plus A is 12, not 2. That makes A equal to 7, with a carry of 1.",
+    "L6": "Now check the tens: 7 plus 1 plus the carry 1 equals 9.",
+    "L7": "The myth is wrong: solving columns alone can miss the carry into the next column.",
+    "L8": "So 75 plus 17 equals 92. What should we inspect first?"
+   },
+   "narration": {},
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.3,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "title"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.7,
+       "target": "rule"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.3,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 0.9,
+       "target": "rule"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "sum"
+      },
+      {
+       "at": 0.4,
+       "do": "show",
+       "dur": 0.7,
+       "target": "ones"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "ones"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.5,
+       "target": "a1"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "carry"
+      },
+      {
+       "at": 0.5,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "a1",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "tens"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.5,
+       "target": "a2"
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "a2",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.3,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "myth"
+      },
+      {
+       "at": 0.7,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "n75",
+        "n17",
+        "n92"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "interactive"
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which step comes first when solving a letter-sum puzzle?",
+    "options": [
+     "tap1",
+     "tap2",
+     "n92"
+    ],
+    "answer": "tap1",
+    "src": "c7-maths-ch06-t04-i12"
+   }
+  },
+  "repairs": [
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 52
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch06-t04-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "title1",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "letter puzzle",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "same1",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        170,
+        150
+       ],
+       "text": "same letter",
+       "size": "m"
+      },
+      {
+       "id": "eq1",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        150
+       ],
+       "text": "=",
+       "size": "m"
+      },
+      {
+       "id": "digit1",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 2900,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        610,
+        150
+       ],
+       "text": "same digit",
+       "size": "m"
+      },
+      {
+       "id": "a1",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        250,
+        270
+       ],
+       "text": "A",
+       "size": "l"
+      },
+      {
+       "id": "arrow1",
+       "op": "arrow",
+       "startMs": 3500,
+       "endMs": 4200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        290,
+        270
+       ],
+       "to": [
+        490,
+        270
+       ]
+      },
+      {
+       "id": "seven1",
+       "op": "text",
+       "startMs": 4200,
+       "endMs": 4700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        535,
+        270
+       ],
+       "text": "7",
+       "size": "l"
+      },
+      {
+       "id": "circle1",
+       "op": "circle",
+       "startMs": 4700,
+       "endMs": 5200,
+       "ink": "soft",
+       "weight": 1,
+       "c": [
+        250,
+        270
+       ],
+       "r": 38
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch06-t04-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "different2",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        170,
+        90
+       ],
+       "text": "different letters",
+       "size": "m"
+      },
+      {
+       "id": "neq2",
+       "op": "text",
+       "startMs": 800,
+       "endMs": 1300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        90
+       ],
+       "text": "≠",
+       "size": "l"
+      },
+      {
+       "id": "digits2",
+       "op": "text",
+       "startMs": 1300,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        600,
+        90
+       ],
+       "text": "different digits",
+       "size": "m"
+      },
+      {
+       "id": "lead2",
+       "op": "text",
+       "startMs": 2400,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        140,
+        210
+       ],
+       "text": "leading digit",
+       "size": "m"
+      },
+      {
+       "id": "zero2",
+       "op": "text",
+       "startMs": 3200,
+       "endMs": 3800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        210
+       ],
+       "text": "≠ 0",
+       "size": "l"
+      },
+      {
+       "id": "arrow2",
+       "op": "arrow",
+       "startMs": 3900,
+       "endMs": 4500,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        300,
+        270
+       ],
+       "to": [
+        500,
+        270
+       ]
+      },
+      {
+       "id": "note2",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        340
+       ],
+       "text": "0",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch06-t04-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "ones3",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        150,
+        90
+       ],
+       "text": "ones",
+       "size": "l"
+      },
+      {
+       "id": "arrow3",
+       "op": "arrow",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        210,
+        130
+       ],
+       "to": [
+        210,
+        300
+       ]
+      },
+      {
+       "id": "column3",
+       "op": "numwork",
+       "startMs": 1500,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        300,
+        120
+       ],
+       "layout": "column_add",
+       "rows": [
+        [
+         "A",
+         "5"
+        ],
+        [
+         "1",
+         "A"
+        ],
+        [
+         "9",
+         "2"
+        ]
+       ]
+      },
+      {
+       "id": "carry3",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3600,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        530,
+        115
+       ],
+       "text": "carry",
+       "size": "m"
+      },
+      {
+       "id": "one3",
+       "op": "text",
+       "startMs": 3600,
+       "endMs": 4100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        600,
+        170
+       ],
+       "text": "1",
+       "size": "l"
+      },
+      {
+       "id": "arrowcarry3",
+       "op": "arrow",
+       "startMs": 4100,
+       "endMs": 4800,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        580,
+        190
+       ],
+       "to": [
+        500,
+        220
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch06-t04-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "prob4",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        280,
+        90
+       ],
+       "layout": "column_add",
+       "rows": [
+        [
+         "A",
+         "5"
+        ],
+        [
+         "1",
+         "A"
+        ],
+        [
+         "9",
+         "2"
+        ]
+       ]
+      },
+      {
+       "id": "ones4",
+       "op": "text",
+       "startMs": 1600,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        500,
+        100
+       ],
+       "text": "ones",
+       "size": "m"
+      },
+      {
+       "id": "sum4",
+       "op": "numwork",
+       "startMs": 2200,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        500,
+        180
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "5",
+         "+",
+         "A",
+         "ends",
+         "in",
+         "2"
+        ]
+       ]
+      },
+      {
+       "id": "arrow4",
+       "op": "arrow",
+       "startMs": 4700,
+       "endMs": 5400,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        450,
+        230
+       ],
+       "to": [
+        450,
+        300
+       ]
+      },
+      {
+       "id": "two4",
+       "op": "text",
+       "startMs": 5400,
+       "endMs": 6000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        450,
+        340
+       ],
+       "text": "2",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch06-t04-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "sum5",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        90
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "5",
+         "+",
+         "A",
+         "=",
+         "12"
+        ]
+       ]
+      },
+      {
+       "id": "not5",
+       "op": "text",
+       "startMs": 1600,
+       "endMs": 2400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        470,
+        90
+       ],
+       "text": "not 2",
+       "size": "m"
+      },
+      {
+       "id": "aresult5",
+       "op": "numwork",
+       "startMs": 2500,
+       "endMs": 3700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        120,
+        190
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "A",
+         "=",
+         "7"
+        ]
+       ]
+      },
+      {
+       "id": "carrylabel5",
+       "op": "text",
+       "startMs": 3800,
+       "endMs": 4400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        430,
+        190
+       ],
+       "text": "carry",
+       "size": "m"
+      },
+      {
+       "id": "carryfive5",
+       "op": "numwork",
+       "startMs": 4400,
+       "endMs": 5000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        560,
+        180
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "1"
+        ]
+       ]
+      },
+      {
+       "id": "arrow5",
+       "op": "arrow",
+       "startMs": 5000,
+       "endMs": 5600,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        590,
+        215
+       ],
+       "to": [
+        590,
+        290
+       ]
+      },
+      {
+       "id": "twelve5",
+       "op": "text",
+       "startMs": 5700,
+       "endMs": 6300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        120,
+        290
+       ],
+       "text": "12",
+       "size": "l"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch06-t04-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "tens6",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        150,
+        90
+       ],
+       "text": "tens",
+       "size": "l"
+      },
+      {
+       "id": "eq6",
+       "op": "numwork",
+       "startMs": 800,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        170
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "7",
+         "+",
+         "1",
+         "+",
+         "1",
+         "=",
+         "9"
+        ]
+       ]
+      },
+      {
+       "id": "seven6",
+       "op": "text",
+       "startMs": 2800,
+       "endMs": 3300,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        170,
+        290
+       ],
+       "text": "7",
+       "size": "l"
+      },
+      {
+       "id": "plusone6",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 3800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        270,
+        290
+       ],
+       "text": "+ 1",
+       "size": "m"
+      },
+      {
+       "id": "carryone6",
+       "op": "text",
+       "startMs": 3800,
+       "endMs": 4300,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        390,
+        290
+       ],
+       "text": "+ 1",
+       "size": "m"
+      },
+      {
+       "id": "resultnine6",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 5000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        550,
+        290
+       ],
+       "text": "= 9",
+       "size": "l"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch06-t04-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "myth7",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "myth",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "cross7",
+       "op": "line",
+       "startMs": 700,
+       "endMs": 1100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        300,
+        45
+       ],
+       "to": [
+        500,
+        95
+       ]
+      },
+      {
+       "id": "columns7",
+       "op": "numwork",
+       "startMs": 1300,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        150,
+        150
+       ],
+       "layout": "column_add",
+       "rows": [
+        [
+         "A",
+         "5"
+        ],
+        [
+         "1",
+         "A"
+        ],
+        [
+         "9",
+         "2"
+        ]
+       ]
+      },
+      {
+       "id": "alone7",
+       "op": "text",
+       "startMs": 2800,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        450,
+        150
+       ],
+       "text": "columns alone",
+       "size": "m"
+      },
+      {
+       "id": "miss7",
+       "op": "text",
+       "startMs": 3800,
+       "endMs": 4600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        450,
+        230
+       ],
+       "text": "miss carry",
+       "size": "m"
+      },
+      {
+       "id": "arrow7",
+       "op": "arrow",
+       "startMs": 4700,
+       "endMs": 5400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        380,
+        280
+       ],
+       "to": [
+        530,
+        280
+       ]
+      },
+      {
+       "id": "next7",
+       "op": "text",
+       "startMs": 5400,
+       "endMs": 6300,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        550,
+        330
+       ],
+       "text": "next column",
+       "size": "m"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch06-t04-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "answer8",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1600,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        120,
+        80
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "75",
+         "+",
+         "17",
+         "=",
+         "92"
+        ]
+       ]
+      },
+      {
+       "id": "check8",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        150,
+        190
+       ],
+       "text": "check",
+       "size": "m"
+      },
+      {
+       "id": "onescheck8",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 2900,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        300,
+        190
+       ],
+       "text": "ones",
+       "size": "m"
+      },
+      {
+       "id": "arrow8",
+       "op": "arrow",
+       "startMs": 2900,
+       "endMs": 3500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        360,
+        220
+       ],
+       "to": [
+        360,
+        300
+       ]
+      },
+      {
+       "id": "inspect8",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        420,
+        300
+       ],
+       "text": "ones first",
+       "size": "l"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1",
+   "key": "{\"A\":5,\"C\":1,\"B\":0}",
+   "prompt": "Keep track of each carry"
+  },
+  {
+   "itemId": "r2",
+   "key": "{\"A\":4,\"B\":8,\"C\":1,\"D\":3,\"E\":2}",
+   "prompt": "Use place value and carries"
+  }
+ ],
+ "check": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "Round 2 terms AB + BA, answer has E = 2, but the sum CDE for two 2-digit numbers AB+BA cannot be a 3-digit number less than 200, so E should be 1? Actually the computed key says A=4,B=8 gives 48+84=132 (CDE=132, E=2), but the content specifies total as CDE (3-digit), and the computed key gives E=2, which is correct. No issue.",
+    "severity": "low"
+   },
+   {
+    "where": "explainer",
+    "what": "Task prompt asks 'which step comes first' with options 'tap1', 'tap2', 'n92'. The correct answer is 'tap1' ('Ones first'). That matches kit item i12, which says to start from the ones. No issue."
+   }
+  ],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

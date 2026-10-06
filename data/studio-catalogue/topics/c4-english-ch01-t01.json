@@ -1,0 +1,1683 @@
+{
+ "topicId": "c4-english-ch01-t01",
+ "title": "Together We Can",
+ "chapter": "Together We Can",
+ "subject": "english",
+ "class": 4,
+ "topicType": "T1",
+ "plan": {
+  "game": "beat-line@1",
+  "hint": "beat and rhyme rounds (Hindi: matra round on a doha/chaupai line)"
+ },
+ "game": {
+  "archetype": "beat-line@1",
+  "spec": {
+   "archetype": "beat-line@1",
+   "skills": [
+    "c4-english-ch01-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "onBeat": "on beat",
+    "combo": "combo",
+    "tap": "Tap on the beat",
+    "catch": "Catch the rhyme",
+    "mark": "Short or long?",
+    "short": "। short",
+    "long": "ऽ long",
+    "practice": "PRACTICE LINE",
+    "runDone": "Poem played",
+    "perfect": "ON BEAT",
+    "early": "early",
+    "late": "late",
+    "meter": "मात्रा"
+   },
+   "title": "Together We Can",
+   "bpm": 78,
+   "lines": [
+    {
+     "text": "One small stick will snap in two",
+     "beats": [
+      0,
+      2,
+      5
+     ],
+     "own": true
+    },
+    {
+     "text": "Tie ten together, strong and true",
+     "beats": [
+      0,
+      2,
+      5
+     ],
+     "own": true
+    },
+    {
+     "text": "One raindrop alone is very small",
+     "beats": [
+      0,
+      2,
+      4
+     ],
+     "own": true
+    },
+    {
+     "text": "But many drops make a waterfall",
+     "beats": [
+      0,
+      2,
+      5
+     ],
+     "own": true
+    }
+   ],
+   "rounds": [
+    {
+     "mode": "beat",
+     "title": "Feel the team beat",
+     "sub": "Tap the strong words in order",
+     "lines": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "mode": "rhyme",
+     "title": "Catch the rhyme",
+     "sub": "Listen to the ending sounds",
+     "items": [
+      {
+       "cue": "One small stick will snap in ____",
+       "options": [
+        "two",
+        "to",
+        "ten"
+       ],
+       "answer": "two",
+       "src": "c4-english-ch01-t01-i01"
+      },
+      {
+       "cue": "Tie ten together, strong and ____",
+       "options": [
+        "true",
+        "tree",
+        "try"
+       ],
+       "answer": "true",
+       "src": "c4-english-ch01-t01-i01"
+      },
+      {
+       "cue": "One raindrop alone is very ____",
+       "options": [
+        "small",
+        "smile",
+        "strong"
+       ],
+       "answer": "small"
+      },
+      {
+       "cue": "Many drops make a ____",
+       "options": [
+        "waterfall",
+        "waterfalling"
+       ],
+       "answer": "waterfall",
+       "src": "c4-english-ch01-t01-i03"
+      }
+     ],
+     "targets": "c4-english-ch01-t01-m-rhyme-spelling"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c4-english-ch01-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Together We Can",
+   "accent": "mint",
+   "targets": "c4-english-ch01-t01-m-literal-only",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Together We Can"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Only about sticks and doors"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "one",
+       "type": "node",
+       "text": "One stick",
+       "sub": "weak alone"
+      },
+      {
+       "id": "many",
+       "type": "node",
+       "text": "Many sticks",
+       "sub": "strong together"
+      },
+      {
+       "id": "drop",
+       "type": "node",
+       "text": "Raindrops",
+       "sub": "many together"
+      },
+      {
+       "id": "fall",
+       "type": "node",
+       "text": "Waterfall",
+       "sub": "made by drops"
+      },
+      {
+       "id": "open",
+       "type": "node",
+       "text": "Open doors",
+       "sub": "new chances"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "one",
+       "to": "many",
+       "text": "bundle"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "drop",
+       "to": "fall",
+       "text": "together"
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "many",
+       "to": "open",
+       "text": "can"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "two",
+       "type": "node",
+       "text": "two",
+       "sub": "ending sound"
+      },
+      {
+       "id": "true",
+       "type": "node",
+       "text": "true",
+       "sub": "ending sound"
+      },
+      {
+       "id": "yes",
+       "type": "node",
+       "text": "They rhyme",
+       "sub": "same sound"
+      },
+      {
+       "id": "opt1",
+       "type": "node",
+       "text": "yes",
+       "sub": "rhymes"
+      },
+      {
+       "id": "opt2",
+       "type": "node",
+       "text": "no",
+       "sub": "does not rhyme"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "This poem says that together we can do more than we can do alone.",
+    "L2": "One small stick will snap, but a bundle of sticks is hard to break.",
+    "L3": "One raindrop is small, but many raindrops make a waterfall.",
+    "L4": "So the big idea is simple: together we are stronger than alone.",
+    "L5": "The words two and true are spelt differently, but their ending sounds rhyme.",
+    "L6": "Open doors means finding new chances or doing hard things, not only real doors.",
+    "L7": "After can, use the plain action word: we can carry, not can carries.",
+    "L8": "Now show what you know: do two and true rhyme?"
+   },
+   "narration": {
+    "L1": {
+     "text": "This poem says that together we can do more than we can do alone.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "One small stick will snap, but a bundle of sticks is hard to break.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "One raindrop is small, but many raindrops make a waterfall.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "So the big idea is simple: together we are stronger than alone.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "The words two and true are spelt differently, but their ending sounds rhyme.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Open doors means finding new chances or doing hard things, not only real doors.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "After can, use the plain action word: we can carry, not can carries.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Now show what you know: do two and true rhyme?",
+     "dur": 2,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.3,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "one"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "many",
+        "a1"
+       ]
+      },
+      {
+       "at": 1.2,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "a1",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "drop"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "fall",
+        "a2"
+       ]
+      },
+      {
+       "at": 1.2,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "a2",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1.2,
+       "target": "many"
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 1.2,
+       "target": "fall"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.3,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "two",
+        "true"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.7,
+       "target": "yes"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "open"
+      },
+      {
+       "at": 0.7,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "a3",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "many"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "interactive",
+       "dur": 0.5
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Do two and true rhyme?",
+    "options": [
+     "opt1",
+     "opt2"
+    ],
+    "answer": "opt1",
+    "src": "c4-english-ch01-t01-i02"
+   }
+  },
+  "repairs": [],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 26
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-english-ch01-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "together",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        90
+       ],
+       "text": "together",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "alone",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        220,
+        300
+       ],
+       "text": "alone",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "more",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2400,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        580,
+        300
+       ],
+       "text": "more",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "a1",
+       "op": "arrow",
+       "startMs": 2500,
+       "endMs": 3300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        285,
+        285
+       ],
+       "to": [
+        365,
+        125
+       ]
+      },
+      {
+       "id": "a2",
+       "op": "arrow",
+       "startMs": 3300,
+       "endMs": 4100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        515,
+        285
+       ],
+       "to": [
+        435,
+        125
+       ]
+      },
+      {
+       "id": "plus",
+       "op": "text",
+       "startMs": 4100,
+       "endMs": 4500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        270
+       ],
+       "text": "+",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "h",
+       "op": "highlight",
+       "startMs": 5700,
+       "endMs": 6557,
+       "ink": "accent",
+       "weight": 2,
+       "target": "together",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-english-ch01-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "stick1",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        180,
+        150
+       ],
+       "to": [
+        300,
+        350
+       ]
+      },
+      {
+       "id": "snap",
+       "op": "line",
+       "startMs": 700,
+       "endMs": 1200,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        300,
+        250
+       ],
+       "to": [
+        410,
+        250
+       ]
+      },
+      {
+       "id": "bundle1",
+       "op": "line",
+       "startMs": 1500,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        500,
+        140
+       ],
+       "to": [
+        580,
+        360
+       ]
+      },
+      {
+       "id": "bundle2",
+       "op": "line",
+       "startMs": 1800,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        525,
+        140
+       ],
+       "to": [
+        605,
+        360
+       ]
+      },
+      {
+       "id": "bundle3",
+       "op": "line",
+       "startMs": 2100,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        550,
+        140
+       ],
+       "to": [
+        630,
+        360
+       ]
+      },
+      {
+       "id": "one",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        240,
+        400
+       ],
+       "text": "One",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "bundle",
+       "op": "text",
+       "startMs": 3200,
+       "endMs": 3800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        565,
+        400
+       ],
+       "text": "bundle",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "hard",
+       "op": "text",
+       "startMs": 3800,
+       "endMs": 4300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        565,
+        450
+       ],
+       "text": "hard",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "arrow",
+       "op": "arrow",
+       "startMs": 4500,
+       "endMs": 5300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        350,
+        250
+       ],
+       "to": [
+        480,
+        250
+       ]
+      },
+      {
+       "id": "break",
+       "op": "text",
+       "startMs": 5300,
+       "endMs": 6000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        250
+       ],
+       "text": "break",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-english-ch01-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "drop1",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        180,
+        150
+       ],
+       "r": 22,
+       "fill": "soft"
+      },
+      {
+       "id": "drop2",
+       "op": "circle",
+       "startMs": 500,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        300,
+        150
+       ],
+       "r": 22,
+       "fill": "soft"
+      },
+      {
+       "id": "drop3",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        420,
+        150
+       ],
+       "r": 22,
+       "fill": "soft"
+      },
+      {
+       "id": "small",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 1900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        300,
+        220
+       ],
+       "text": "small",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "falls",
+       "op": "line",
+       "startMs": 2000,
+       "endMs": 2900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        220,
+        300
+       ],
+       "to": [
+        580,
+        420
+       ]
+      },
+      {
+       "id": "drops",
+       "op": "text",
+       "startMs": 2000,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        280
+       ],
+       "text": "raindrops",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "waterfall",
+       "op": "text",
+       "startMs": 2900,
+       "endMs": 3700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        580,
+        450
+       ],
+       "text": "waterfall",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "many",
+       "op": "text",
+       "startMs": 3700,
+       "endMs": 4200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        110
+       ],
+       "text": "many",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-english-ch01-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "big",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        80
+       ],
+       "text": "big idea",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "together",
+       "op": "text",
+       "startMs": 1000,
+       "endMs": 1700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        220,
+        250
+       ],
+       "text": "together",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "stronger",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        250
+       ],
+       "text": "stronger",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "alone",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        620,
+        250
+       ],
+       "text": "alone",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "a1",
+       "op": "arrow",
+       "startMs": 3200,
+       "endMs": 3700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        270,
+        225
+       ],
+       "to": [
+        350,
+        225
+       ]
+      },
+      {
+       "id": "a2",
+       "op": "arrow",
+       "startMs": 3700,
+       "endMs": 4200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        530,
+        225
+       ],
+       "to": [
+        450,
+        225
+       ]
+      },
+      {
+       "id": "example",
+       "op": "text",
+       "startMs": 4200,
+       "endMs": 4800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        370
+       ],
+       "text": "sticks",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "or",
+       "op": "text",
+       "startMs": 4800,
+       "endMs": 5500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        415
+       ],
+       "text": "raindrops",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-english-ch01-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "two",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        220,
+        150
+       ],
+       "text": "two",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "true",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        580,
+        150
+       ],
+       "text": "true",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "spell1",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        220,
+        230
+       ],
+       "text": "t-w-o",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "spell2",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 3100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        580,
+        230
+       ],
+       "text": "t-r-u-e",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "end1",
+       "op": "ellipse",
+       "startMs": 3200,
+       "endMs": 3700,
+       "ink": "mark",
+       "weight": 2,
+       "c": [
+        220,
+        150
+       ],
+       "rx": 55,
+       "ry": 45
+      },
+      {
+       "id": "end2",
+       "op": "ellipse",
+       "startMs": 3700,
+       "endMs": 4200,
+       "ink": "mark",
+       "weight": 2,
+       "c": [
+        580,
+        150
+       ],
+       "rx": 60,
+       "ry": 45
+      },
+      {
+       "id": "rhyme",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 5100,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        350
+       ],
+       "text": "rhyme",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "link",
+       "op": "arrow",
+       "startMs": 5100,
+       "endMs": 6000,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        275,
+        175
+       ],
+       "to": [
+        525,
+        175
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-english-ch01-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "doors",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        80
+       ],
+       "text": "open doors",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "door1",
+       "op": "rect",
+       "startMs": 1000,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        130,
+        160
+       ],
+       "w": 130,
+       "h": 230,
+       "round": 4
+      },
+      {
+       "id": "door2",
+       "op": "rect",
+       "startMs": 1700,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        540,
+        160
+       ],
+       "w": 130,
+       "h": 230,
+       "round": 4
+      },
+      {
+       "id": "open",
+       "op": "arrow",
+       "startMs": 2400,
+       "endMs": 3200,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        540,
+        280
+       ],
+       "to": [
+        690,
+        210
+       ]
+      },
+      {
+       "id": "chances",
+       "op": "text",
+       "startMs": 3200,
+       "endMs": 4000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        180
+       ],
+       "text": "new chances",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "hard",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 4800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        280
+       ],
+       "text": "hard things",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "not",
+       "op": "text",
+       "startMs": 4800,
+       "endMs": 5900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        390
+       ],
+       "text": "not only real doors",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-english-ch01-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "can",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        150,
+        100
+       ],
+       "text": "can",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "carry",
+       "op": "text",
+       "startMs": 600,
+       "endMs": 1300,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        100
+       ],
+       "text": "carry",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "plain",
+       "op": "text",
+       "startMs": 1300,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        650,
+        100
+       ],
+       "text": "plain action word",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "eq",
+       "op": "numwork",
+       "startMs": 2400,
+       "endMs": 3400,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        120,
+        230
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "we",
+         "can",
+         "carry"
+        ]
+       ]
+      },
+      {
+       "id": "bad",
+       "op": "numwork",
+       "startMs": 3400,
+       "endMs": 4300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        350
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "can",
+         "carrie"
+        ]
+       ]
+      },
+      {
+       "id": "no",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 4900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        430,
+        350
+       ],
+       "text": "not",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "slash",
+       "op": "line",
+       "startMs": 4900,
+       "endMs": 5400,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        390,
+        315
+       ],
+       "to": [
+        500,
+        385
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-english-ch01-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "now",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "Now",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "two",
+       "op": "text",
+       "startMs": 600,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        220,
+        180
+       ],
+       "text": "two",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "true",
+       "op": "text",
+       "startMs": 1200,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        580,
+        180
+       ],
+       "text": "true",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "rhyme",
+       "op": "text",
+       "startMs": 2000,
+       "endMs": 2800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        330
+       ],
+       "text": "rhyme",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "arrow",
+       "op": "arrow",
+       "startMs": 2800,
+       "endMs": 3800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        280,
+        180
+       ],
+       "to": [
+        520,
+        180
+       ]
+      },
+      {
+       "id": "question",
+       "op": "text",
+       "startMs": 3800,
+       "endMs": 4500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        430
+       ],
+       "text": "?",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "b0:*",
+   "key": "One · stick · in",
+   "prompt": "stressed words in: One small stick will snap in two"
+  },
+  {
+   "itemId": "b1:*",
+   "key": "Tie · together, · true",
+   "prompt": "stressed words in: Tie ten together, strong and true"
+  },
+  {
+   "itemId": "b2:*",
+   "key": "One · alone · very",
+   "prompt": "stressed words in: One raindrop alone is very small"
+  },
+  {
+   "itemId": "b3:*",
+   "key": "But · drops · waterfall",
+   "prompt": "stressed words in: But many drops make a waterfall"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "two",
+   "prompt": "One small stick will snap in ____ [two / to / ten]",
+   "src": "c4-english-ch01-t01-i01"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "true",
+   "prompt": "Tie ten together, strong and ____ [true / tree / try]",
+   "src": "c4-english-ch01-t01-i01"
+  },
+  {
+   "itemId": "r2:2",
+   "key": "small",
+   "prompt": "One raindrop alone is very ____ [small / smile / strong]"
+  },
+  {
+   "itemId": "r2:3",
+   "key": "waterfall",
+   "prompt": "Many drops make a ____ [waterfall / waterfalling]",
+   "src": "c4-english-ch01-t01-i03"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

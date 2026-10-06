@@ -11,7 +11,19 @@ Inputs: `RESEARCH-SCIENCE.md` (RS) and `RESEARCH-PLACEMENT.md` (RP) in this fold
 `shared/signals.ts`; `context/rejected.md`.
 
 Owner directive (2026-10-04, binding): *"Voice signal will be a MAJOR part in checking that the student has understood
-or not. If Microsoft has a problem, use AWS or Neon."*
+or not. If Microsoft has a problem, use AWS or Neon."* (The AWS half is superseded by the Azure-only directive of
+2026-10-02 as restated 2026-10-05: nothing in this build calls a non-Azure AI or compute service; onnxruntime-web runs on
+the child's device from same-origin assets.)
+
+**Ship5 status (2026-10-06).** Built end to end behind `TAXILA_VOICESIG` (unset = shadow = ON; `off` = kill) as
+`docs/design/ship5/p3-voicesig/APPLY.md` describes. Per-state precision / recall shipped in `server/voicesig/gate.js`
+`EVIDENCE` and served at `GET /api/voicesig/status`. Population today: SIMULATED for seven states
+(`evals/voicesig/results/2026-10-05/state-precision-sim-e1.json`, 126,000 turns, 1,000 simulated children, effect sizes
+assumed [E]), none for `workingAloud`; the one real-speech number is the filled-pause detector on ADULT speech (AMI,
+precision 0.753, recall 0.601, n = 1,241 events). Therefore every state runs in SHADOW (VALUES-100 V2 item 3: live only at
+precision >= 0.80 measured on children) and the status page says so. Added value on delayed-check prediction is
+simulated only (ΔAUROC +0.071 to +0.112 at effect 1, three seeds; +0.009 to +0.020 at the true null, one seed's CI
+excluding 0): it shows the pipeline can carry signal if the assumed effect exists, not that it does in children.
 
 ---
 

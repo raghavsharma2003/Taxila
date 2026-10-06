@@ -1,0 +1,1646 @@
+{
+ "topicId": "c6-maths-ch01-t02",
+ "title": "Visualising sequences with pictures",
+ "chapter": "Patterns in Mathematics",
+ "subject": "maths",
+ "class": 6,
+ "topicType": "T3",
+ "plan": {
+  "game": "rule-machine@1",
+  "hint": "seq and build modes: number patterns and growing patterns"
+ },
+ "game": {
+  "archetype": "rule-machine@1",
+  "spec": {
+   "archetype": "rule-machine@1",
+   "skills": [
+    "c6-maths-ch01-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "built": "machines",
+    "run": "RUN",
+    "want": "order",
+    "got": "made",
+    "coach": "Tap tiles to build the rule, then RUN",
+    "runDone": "Factory closed",
+    "step": "step",
+    "predict": "step",
+    "inverse": "run it backwards",
+    "target": "target",
+    "steps": "steps",
+    "pick": "Pick a start",
+    "works": "WORKS",
+    "fix": "not for every input"
+   },
+   "title": "Picture Pattern Machine",
+   "rounds": [
+    {
+     "mode": "build",
+     "title": "Square dot orders",
+     "sub": "match each side length to its dots",
+     "rule": [
+      "²"
+     ],
+     "inputs": [
+      3,
+      4,
+      5,
+      6
+     ],
+     "tiles": [
+      "²",
+      "+1",
+      "×2"
+     ],
+     "targets": "c6-maths-ch01-t02-m-any-arrangement"
+    },
+    {
+     "mode": "seq",
+     "title": "Square picture steps",
+     "sub": "predict the dots at a new step",
+     "pattern": "dots-square",
+     "rule": [
+      "²"
+     ],
+     "tiles": [
+      "²",
+      "+1",
+      "×2",
+      "×3"
+     ],
+     "ask": 6,
+     "targets": "c6-maths-ch01-t02-m-any-arrangement"
+    },
+    {
+     "mode": "build",
+     "title": "Grow the square",
+     "sub": "find the new border dots",
+     "rule": [
+      "×2",
+      "+1"
+     ],
+     "inputs": [
+      4,
+      5,
+      6,
+      8
+     ],
+     "tiles": [
+      "×2",
+      "+1",
+      "+2",
+      "×3"
+     ],
+     "targets": "c6-maths-ch01-t02-m-corner"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c6-maths-ch01-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Pictures explain patterns",
+   "accent": "amber",
+   "targets": "c6-maths-ch01-t02-m-corner",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "row",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Pictures explain patterns"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "The shared corner counts twice"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "sq5",
+       "type": "grid",
+       "cols": 5,
+       "rows": 5,
+       "shaded": 25,
+       "x": 120,
+       "y": 260
+      },
+      {
+       "id": "sq6",
+       "type": "grid",
+       "cols": 6,
+       "rows": 6,
+       "shaded": 36,
+       "x": 570,
+       "y": 260
+      },
+      {
+       "id": "row5",
+       "type": "node",
+       "text": "row 5",
+       "sub": "5 dots",
+       "glyph": "wheat",
+       "x": 270,
+       "y": 500,
+       "color": "amber"
+      },
+      {
+       "id": "col5",
+       "type": "node",
+       "text": "column 5",
+       "sub": "5 dots",
+       "glyph": "ruler",
+       "x": 480,
+       "y": 500,
+       "color": "amber"
+      },
+      {
+       "id": "corner",
+       "type": "node",
+       "text": "corner",
+       "sub": "1 dot",
+       "glyph": "spark",
+       "x": 690,
+       "y": 500,
+       "color": "amber"
+      },
+      {
+       "id": "new11",
+       "type": "bar",
+       "parts": 11,
+       "shaded": 11,
+       "x": 300,
+       "y": 120,
+       "w": 400,
+       "text": "11 new dots"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "split",
+     "els": [
+      {
+       "id": "tri1",
+       "type": "node",
+       "text": "triangle",
+       "sub": "10 dots",
+       "glyph": "mountain",
+       "x": 180,
+       "y": 300,
+       "color": "mint"
+      },
+      {
+       "id": "tri2",
+       "type": "node",
+       "text": "triangle",
+       "sub": "10 dots",
+       "glyph": "mountain",
+       "x": 450,
+       "y": 300,
+       "color": "mint"
+      },
+      {
+       "id": "rect",
+       "type": "node",
+       "text": "rectangle",
+       "sub": "4 by 5",
+       "glyph": "school",
+       "x": 730,
+       "y": 300,
+       "color": "mint"
+      },
+      {
+       "id": "join",
+       "type": "arrow",
+       "from": "tri1",
+       "to": "rect",
+       "text": "fit together"
+      },
+      {
+       "id": "join2",
+       "type": "arrow",
+       "from": "tri2",
+       "to": "rect",
+       "text": "fit together"
+      },
+      {
+       "id": "rows",
+       "type": "label",
+       "text": "Rows: 1, 2, 3, 4",
+       "x": 280,
+       "y": 500,
+       "color": "mint"
+      },
+      {
+       "id": "half",
+       "type": "label",
+       "text": "Triangle is half",
+       "x": 650,
+       "y": 500,
+       "color": "mint"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "row",
+     "els": [
+      {
+       "id": "checkTitle",
+       "type": "title",
+       "text": "Choose the new dots"
+      },
+      {
+       "id": "opt8",
+       "type": "label",
+       "text": "8 dots",
+       "x": 100,
+       "y": 340,
+       "color": "volt"
+      },
+      {
+       "id": "opt13",
+       "type": "label",
+       "text": "13 dots",
+       "x": 340,
+       "y": 340,
+       "color": "amber"
+      },
+      {
+       "id": "opt14",
+       "type": "label",
+       "text": "14 dots",
+       "x": 580,
+       "y": 340,
+       "color": "ion"
+      },
+      {
+       "id": "opt25",
+       "type": "label",
+       "text": "25 dots",
+       "x": 820,
+       "y": 340,
+       "color": "sci"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "A dot picture can show why a number pattern works, not just what the numbers are.",
+    "L2": "Here is a common mistake: when a square grows, some people count the shared corner twice.",
+    "L3": "A square number has equal rows and columns, like this 5 by 5 picture.",
+    "L4": "To make it 6 by 6, add a new row and a new column around the old square.",
+    "L5": "The new row and column share one corner dot, so the new dots are 5 plus 5 plus 1: 11.",
+    "L6": "Triangular numbers also have a picture: their rows contain 1, 2, 3, and so on dots.",
+    "L7": "Two matching triangles fit into a rectangle, so one triangle is half of that rectangle.",
+    "L8": "Now use the shared-corner rule to choose how many dots turn 6 by 6 into 7 by 7."
+   },
+   "narration": {
+    "L1": {
+     "text": "A dot picture can show why a number pattern works, not just what the numbers are.",
+     "dur": 4.2,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L2": {
+     "text": "Here is a common mistake: when a square grows, some people count the shared corner twice.",
+     "dur": 4.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L3": {
+     "text": "A square number has equal rows and columns, like this 5 by 5 picture.",
+     "dur": 3.8,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L4": {
+     "text": "To make it 6 by 6, add a new row and a new column around the old square.",
+     "dur": 4.4,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L5": {
+     "text": "The new row and column share one corner dot, so the new dots are 5 plus 5 plus 1: 11.",
+     "dur": 5.2,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Triangular numbers also have a picture: their rows contain 1, 2, 3, and so on dots.",
+     "dur": 4.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Two matching triangles fit into a rectangle, so one triangle is half of that rectangle.",
+     "dur": 4.3,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Now use the shared-corner rule to choose how many dots turn 6 by 6 into 7 by 7.",
+     "dur": 4.6,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "myth"
+      },
+      {
+       "at": 1.5,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "sq5"
+      },
+      {
+       "at": 0.7,
+       "do": "highlight",
+       "dur": 1.2,
+       "target": "sq5"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "sq6"
+      },
+      {
+       "at": 1.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "row5",
+        "col5",
+        "corner"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "corner"
+      },
+      {
+       "at": 1.1,
+       "do": "show",
+       "dur": 0.8,
+       "target": "new11"
+      },
+      {
+       "at": 1.8,
+       "do": "count",
+       "dur": 1,
+       "target": "new11",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "tri1",
+        "tri2"
+       ]
+      },
+      {
+       "at": 0.9,
+       "do": "show",
+       "dur": 0.7,
+       "target": "rows"
+      },
+      {
+       "at": 1.5,
+       "do": "highlight",
+       "dur": 1,
+       "target": [
+        "tri1",
+        "tri2"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "rect",
+        "join",
+        "join2"
+       ]
+      },
+      {
+       "at": 0.9,
+       "do": "flow",
+       "dur": 0.8,
+       "target": [
+        "join",
+        "join2"
+       ],
+       "to": 1
+      },
+      {
+       "at": 1.8,
+       "do": "show",
+       "dur": 0.7,
+       "target": "half"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "checkTitle"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "opt8",
+        "opt13",
+        "opt14",
+        "opt25"
+       ]
+      },
+      {
+       "at": 1.5,
+       "do": "interactive"
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "How many new dots turn a 6 by 6 square into a 7 by 7 square?",
+    "options": [
+     "opt8",
+     "opt13",
+     "opt14",
+     "opt25"
+    ],
+    "answer": "opt13",
+    "src": "c6-maths-ch01-t02-i03"
+   }
+  },
+  "repairs": [
+   "arrow:dangling",
+   "cue:target"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 39
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch01-t02-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "dots",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        190,
+        180
+       ],
+       "r": 7
+      },
+      {
+       "id": "dots2",
+       "op": "circle",
+       "startMs": 200,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        250,
+        180
+       ],
+       "r": 7
+      },
+      {
+       "id": "dots3",
+       "op": "circle",
+       "startMs": 400,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        310,
+        180
+       ],
+       "r": 7
+      },
+      {
+       "id": "dots4",
+       "op": "circle",
+       "startMs": 600,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        190,
+        240
+       ],
+       "r": 7
+      },
+      {
+       "id": "dots5",
+       "op": "circle",
+       "startMs": 800,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        250,
+        240
+       ],
+       "r": 7
+      },
+      {
+       "id": "dots6",
+       "op": "circle",
+       "startMs": 1000,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        310,
+        240
+       ],
+       "r": 7
+      },
+      {
+       "id": "l1",
+       "op": "label",
+       "startMs": 2500,
+       "endMs": 3400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        390,
+        210
+       ],
+       "text": "why",
+       "to": [
+        310,
+        210
+       ]
+      },
+      {
+       "id": "l2",
+       "op": "label",
+       "startMs": 3700,
+       "endMs": 4800,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        390,
+        280
+       ],
+       "text": "pattern",
+       "to": [
+        310,
+        240
+       ]
+      },
+      {
+       "id": "h1",
+       "op": "highlight",
+       "startMs": 5400,
+       "endMs": 7000,
+       "ink": "good",
+       "weight": 2,
+       "target": "dots",
+       "style": "pulse"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch01-t02-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "sq",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        150,
+        110
+       ],
+       "w": 220,
+       "h": 220
+      },
+      {
+       "id": "corner",
+       "op": "circle",
+       "startMs": 1200,
+       "endMs": 1900,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        370,
+        330
+       ],
+       "r": 10
+      },
+      {
+       "id": "mist",
+       "op": "label",
+       "startMs": 2300,
+       "endMs": 3600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        430,
+        330
+       ],
+       "text": "shared corner",
+       "to": [
+        370,
+        330
+       ]
+      },
+      {
+       "id": "cross",
+       "op": "line",
+       "startMs": 4000,
+       "endMs": 4700,
+       "ink": "mark",
+       "weight": 3,
+       "from": [
+        420,
+        105
+       ],
+       "to": [
+        500,
+        185
+       ]
+      },
+      {
+       "id": "cross2",
+       "op": "line",
+       "startMs": 4700,
+       "endMs": 5400,
+       "ink": "mark",
+       "weight": 3,
+       "from": [
+        500,
+        105
+       ],
+       "to": [
+        420,
+        185
+       ]
+      },
+      {
+       "id": "count",
+       "op": "label",
+       "startMs": 5700,
+       "endMs": 7000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        170,
+        390
+       ],
+       "text": "count twice",
+       "to": [
+        370,
+        330
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch01-t02-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "sq5",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        150,
+        100
+       ],
+       "w": 250,
+       "h": 250
+      },
+      {
+       "id": "r1",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        175,
+        125
+       ],
+       "r": 6
+      },
+      {
+       "id": "r2",
+       "op": "circle",
+       "startMs": 1000,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        225,
+        125
+       ],
+       "r": 6
+      },
+      {
+       "id": "r3",
+       "op": "circle",
+       "startMs": 1100,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        275,
+        125
+       ],
+       "r": 6
+      },
+      {
+       "id": "r4",
+       "op": "circle",
+       "startMs": 1200,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        325,
+        125
+       ],
+       "r": 6
+      },
+      {
+       "id": "r5",
+       "op": "circle",
+       "startMs": 1300,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        375,
+        125
+       ],
+       "r": 6
+      },
+      {
+       "id": "grid",
+       "op": "numwork",
+       "startMs": 2600,
+       "endMs": 3900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        450,
+        150
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "5",
+         "×",
+         "5",
+         "=",
+         "25"
+        ]
+       ]
+      },
+      {
+       "id": "lab",
+       "op": "label",
+       "startMs": 4300,
+       "endMs": 5500,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        275,
+        390
+       ],
+       "text": "5 by 5",
+       "to": [
+        275,
+        350
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch01-t02-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "row",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 1300,
+       "ink": "accent",
+       "weight": 3,
+       "from": [
+        150,
+        360
+       ],
+       "to": [
+        400,
+        360
+       ]
+      },
+      {
+       "id": "col",
+       "op": "line",
+       "startMs": 1300,
+       "endMs": 2600,
+       "ink": "accent",
+       "weight": 3,
+       "from": [
+        410,
+        100
+       ],
+       "to": [
+        410,
+        360
+       ]
+      },
+      {
+       "id": "rowdots",
+       "op": "circle",
+       "startMs": 2700,
+       "endMs": 2900,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        200,
+        360
+       ],
+       "r": 7
+      },
+      {
+       "id": "coldots",
+       "op": "circle",
+       "startMs": 2900,
+       "endMs": 3100,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        410,
+        200
+       ],
+       "r": 7
+      },
+      {
+       "id": "new",
+       "op": "label",
+       "startMs": 3900,
+       "endMs": 5500,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        470,
+        230
+       ],
+       "text": "new row + column",
+       "to": [
+        410,
+        230
+       ]
+      },
+      {
+       "id": "six",
+       "op": "label",
+       "startMs": 5900,
+       "endMs": 7000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        470,
+        300
+       ],
+       "text": "6 by 6",
+       "to": [
+        410,
+        360
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch01-t02-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 9111,
+     "ops": [
+      {
+       "id": "corner5",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 3,
+       "c": [
+        410,
+        360
+       ],
+       "r": 12
+      },
+      {
+       "id": "eq5",
+       "op": "numwork",
+       "startMs": 1500,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        120,
+        410
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "5",
+         "+",
+         "5",
+         "+",
+         "1",
+         "=",
+         "11"
+        ]
+       ]
+      },
+      {
+       "id": "arrowrow",
+       "op": "arrow",
+       "startMs": 3800,
+       "endMs": 4700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        275,
+        360
+       ],
+       "to": [
+        350,
+        360
+       ]
+      },
+      {
+       "id": "arrowcol",
+       "op": "arrow",
+       "startMs": 4700,
+       "endMs": 5600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        410,
+        230
+       ],
+       "to": [
+        410,
+        310
+       ]
+      },
+      {
+       "id": "cornerlab",
+       "op": "label",
+       "startMs": 5800,
+       "endMs": 7000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        500,
+        360
+       ],
+       "text": "1 corner",
+       "to": [
+        410,
+        360
+       ]
+      },
+      {
+       "id": "newdots",
+       "op": "label",
+       "startMs": 7200,
+       "endMs": 8400,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        300,
+        450
+       ],
+       "text": "11 new dots",
+       "to": [
+        270,
+        410
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch01-t02-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "t1",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 400,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        170,
+        130
+       ],
+       "r": 7
+      },
+      {
+       "id": "t2",
+       "op": "circle",
+       "startMs": 400,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        150,
+        180
+       ],
+       "r": 7
+      },
+      {
+       "id": "t3",
+       "op": "circle",
+       "startMs": 500,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        190,
+        180
+       ],
+       "r": 7
+      },
+      {
+       "id": "t4",
+       "op": "circle",
+       "startMs": 800,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        130,
+        230
+       ],
+       "r": 7
+      },
+      {
+       "id": "t5",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        170,
+        230
+       ],
+       "r": 7
+      },
+      {
+       "id": "t6",
+       "op": "circle",
+       "startMs": 1000,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        210,
+        230
+       ],
+       "r": 7
+      },
+      {
+       "id": "rows",
+       "op": "label",
+       "startMs": 2200,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        300,
+        190
+       ],
+       "text": "1, 2, 3",
+       "to": [
+        210,
+        230
+       ]
+      },
+      {
+       "id": "tri",
+       "op": "label",
+       "startMs": 3900,
+       "endMs": 5600,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        300,
+        250
+       ],
+       "text": "triangular numbers",
+       "to": [
+        210,
+        230
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch01-t02-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "tri2",
+       "op": "polygon",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         130,
+         300
+        ],
+        [
+         230,
+         300
+        ],
+        [
+         230,
+         200
+        ]
+       ]
+      },
+      {
+       "id": "tri3",
+       "op": "polygon",
+       "startMs": 1000,
+       "endMs": 1900,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         230,
+         200
+        ],
+        [
+         330,
+         200
+        ],
+        [
+         230,
+         300
+        ]
+       ]
+      },
+      {
+       "id": "rect",
+       "op": "rect",
+       "startMs": 2100,
+       "endMs": 3000,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        130,
+        200
+       ],
+       "w": 200,
+       "h": 100
+      },
+      {
+       "id": "fit",
+       "op": "label",
+       "startMs": 3200,
+       "endMs": 4400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        370,
+        245
+       ],
+       "text": "rectangle",
+       "to": [
+        330,
+        245
+       ]
+      },
+      {
+       "id": "half",
+       "op": "numwork",
+       "startMs": 4600,
+       "endMs": 6200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        390,
+        300
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "triang",
+         "=",
+         "half",
+         "rectan"
+        ]
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch01-t02-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "old6",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        130,
+        100
+       ],
+       "w": 240,
+       "h": 240
+      },
+      {
+       "id": "borderrow",
+       "op": "line",
+       "startMs": 1100,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 3,
+       "from": [
+        130,
+        360
+       ],
+       "to": [
+        400,
+        360
+       ]
+      },
+      {
+       "id": "bordercol",
+       "op": "line",
+       "startMs": 2200,
+       "endMs": 3300,
+       "ink": "accent",
+       "weight": 3,
+       "from": [
+        400,
+        100
+       ],
+       "to": [
+        400,
+        360
+       ]
+      },
+      {
+       "id": "corner7",
+       "op": "circle",
+       "startMs": 3400,
+       "endMs": 4200,
+       "ink": "accent",
+       "weight": 3,
+       "c": [
+        400,
+        360
+       ],
+       "r": 11
+      },
+      {
+       "id": "rule7",
+       "op": "numwork",
+       "startMs": 4500,
+       "endMs": 6500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        120,
+        410
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "6",
+         "+",
+         "6",
+         "+",
+         "1",
+         "=",
+         "13"
+        ]
+       ]
+      },
+      {
+       "id": "answer7",
+       "op": "label",
+       "startMs": 6800,
+       "endMs": 7900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        500,
+        250
+       ],
+       "text": "13 dots",
+       "to": [
+        400,
+        360
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1",
+   "key": "²",
+   "prompt": "inputs 3,4,5,6 → 9,16,25,36"
+  },
+  {
+   "itemId": "r2",
+   "key": "²",
+   "prompt": "dots-square: 1,4,9"
+  },
+  {
+   "itemId": "r3",
+   "key": "×2 then +1",
+   "prompt": "inputs 4,5,6,8 → 9,11,13,17"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

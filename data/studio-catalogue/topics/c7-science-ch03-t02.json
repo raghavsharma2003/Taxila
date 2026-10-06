@@ -1,0 +1,1553 @@
+{
+ "topicId": "c7-science-ch03-t02",
+ "title": "Circuit diagrams and switches",
+ "chapter": "Electricity: Circuits and their Components",
+ "subject": "science",
+ "class": 7,
+ "topicType": "T4",
+ "plan": {
+  "game": "circuit-bench@1",
+  "hint": "Circuit Lab: closed circuits, switches, conductors"
+ },
+ "game": {
+  "archetype": "circuit-bench@1",
+  "spec": {
+   "archetype": "circuit-bench@1",
+   "skills": [
+    "c7-science-ch03-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "stepOf": "of",
+    "short": "Short circuit: check the cell direction",
+    "fight": "Cell lines mixed up? Tap the cell to flip it",
+    "conducts": "Let current through",
+    "blocks": "Blocked it",
+    "flow": "FLOW",
+    "labDone": "Lab complete",
+    "free": "Free build: drag parts in, tap to flip or switch"
+   },
+   "steps": [
+    {
+     "id": "closed",
+     "goal": "Make the bulb glow with a closed switch",
+     "done": "The closed switch completes the loop, so the bulb glows.",
+     "then": [],
+     "tray": [
+      "wire",
+      "bulb",
+      "switch"
+     ],
+     "preset": [
+      {
+       "at": "0,0-0,1",
+       "put": "cell",
+       "plus": "0,0",
+       "locked": true
+      },
+      {
+       "at": "0,0-1,0",
+       "put": "wire",
+       "locked": false
+      },
+      {
+       "at": "1,0-2,0",
+       "put": "switch",
+       "locked": false
+      },
+      {
+       "at": "2,0-3,0",
+       "put": "wire",
+       "locked": false
+      },
+      {
+       "at": "3,0-3,1",
+       "put": "bulb",
+       "locked": false
+      },
+      {
+       "at": "2,1-3,1",
+       "put": "wire",
+       "locked": false
+      },
+      {
+       "at": "1,1-2,1",
+       "put": "wire",
+       "locked": false
+      },
+      {
+       "at": "0,1-1,1",
+       "put": "wire",
+       "locked": false
+      }
+     ],
+     "cue": null,
+     "check": {
+      "bulbLit": true
+     },
+     "hint": "The cell supplies energy; the switch only opens or closes the path."
+    },
+    {
+     "id": "move",
+     "goal": "Place the switch after the bulb and test it",
+     "done": "The switch works after the bulb too. A break anywhere stops the loop.",
+     "then": [
+      "Turn the switch off",
+      "Turn the switch on again"
+     ],
+     "tray": [
+      "switch",
+      "wire"
+     ],
+     "preset": [
+      {
+       "at": "0,0-0,1",
+       "put": "cell",
+       "plus": "0,0",
+       "locked": true
+      },
+      {
+       "at": "0,0-1,0",
+       "put": "wire",
+       "locked": false
+      },
+      {
+       "at": "1,0-2,0",
+       "put": "bulb",
+       "locked": false
+      },
+      {
+       "at": "2,0-3,0",
+       "put": "wire",
+       "locked": false
+      },
+      {
+       "at": "3,0-3,1",
+       "put": "switch",
+       "locked": false
+      },
+      {
+       "at": "2,1-3,1",
+       "put": "wire",
+       "locked": false
+      },
+      {
+       "at": "1,1-2,1",
+       "put": "wire",
+       "locked": false
+      },
+      {
+       "at": "0,1-1,1",
+       "put": "wire",
+       "locked": false
+      }
+     ],
+     "cue": null,
+     "check": {
+      "switchCycle": true
+     },
+     "hint": "In one loop, before or after the bulb works."
+    }
+   ]
+  },
+  "repairs": [
+   "predicate:batteryCells"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-science-ch03-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Circuit diagrams and switches",
+   "accent": "sci",
+   "targets": "c7-science-ch03-t02-m1",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Circuit diagrams"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "A switch makes electricity"
+      },
+      {
+       "id": "source",
+       "type": "node",
+       "text": "Cell",
+       "sub": "source",
+       "glyph": "battery",
+       "x": 180,
+       "y": 330,
+       "color": "sci"
+      },
+      {
+       "id": "control",
+       "type": "node",
+       "text": "Switch",
+       "sub": "controls path",
+       "glyph": "tap",
+       "x": 500,
+       "y": 330,
+       "color": "amber"
+      },
+      {
+       "id": "bulb",
+       "type": "node",
+       "text": "Bulb",
+       "sub": "circle + cross",
+       "glyph": "bulb",
+       "x": 820,
+       "y": 330,
+       "color": "sun"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "cell1",
+       "type": "node",
+       "text": "Cell 1",
+       "sub": "+ long line",
+       "glyph": "battery",
+       "x": 150,
+       "y": 300,
+       "color": "sci"
+      },
+      {
+       "id": "cell2",
+       "type": "node",
+       "text": "Cell 2",
+       "sub": "+ to −",
+       "glyph": "battery",
+       "x": 300,
+       "y": 300,
+       "color": "sci"
+      },
+      {
+       "id": "plus",
+       "type": "label",
+       "text": "+",
+       "x": 120,
+       "y": 220,
+       "color": "sun"
+      },
+      {
+       "id": "minus",
+       "type": "label",
+       "text": "−",
+       "x": 330,
+       "y": 380,
+       "color": "ion"
+      },
+      {
+       "id": "switch",
+       "type": "node",
+       "text": "Switch ON",
+       "sub": "closed gap",
+       "glyph": "tap",
+       "x": 500,
+       "y": 300,
+       "color": "mint"
+      },
+      {
+       "id": "lamp",
+       "type": "node",
+       "text": "Bulb",
+       "sub": "circle + cross",
+       "glyph": "bulb",
+       "x": 760,
+       "y": 300,
+       "color": "sun"
+      },
+      {
+       "id": "p1",
+       "type": "arrow",
+       "from": "cell2",
+       "to": "switch",
+       "text": "wire",
+       "bend": 0
+      },
+      {
+       "id": "p2",
+       "type": "arrow",
+       "from": "switch",
+       "to": "lamp",
+       "text": "wire",
+       "bend": 0
+      },
+      {
+       "id": "p3",
+       "type": "arrow",
+       "from": "lamp",
+       "to": "cell1",
+       "text": "return path",
+       "bend": 0
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "sourceOpt",
+       "type": "node",
+       "text": "Cell",
+       "sub": "supplies energy",
+       "glyph": "battery",
+       "x": 170,
+       "y": 330,
+       "color": "sci"
+      },
+      {
+       "id": "controlOpt",
+       "type": "node",
+       "text": "Switch",
+       "sub": "opens or closes",
+       "glyph": "tap",
+       "x": 500,
+       "y": 330,
+       "color": "amber"
+      },
+      {
+       "id": "pathOpt",
+       "type": "node",
+       "text": "Complete path",
+       "sub": "current can flow",
+       "glyph": "road",
+       "x": 830,
+       "y": 330,
+       "color": "mint"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "A circuit diagram uses standard symbols, so anyone can read the same circuit.",
+    "L2": "A cell is shown by two unequal parallel lines. The longer thin line is positive.",
+    "L3": "Two or more cells joined positive to negative make a battery.",
+    "L4": "A bulb is a circle with a cross, and a switch is a gap in the line.",
+    "L5": "When the switch is ON, it closes the gap and completes the circuit.",
+    "L6": "When the switch is OFF, it opens the gap and breaks the circuit everywhere in one loop.",
+    "L7": "The cell is the source of electricity. The switch only controls the path; it does not make or store electricity.",
+    "L8": "A switch works before or after the bulb because any break stops the whole loop."
+   },
+   "narration": {},
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "source"
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 1,
+       "target": "source"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "cell1",
+        "cell2"
+       ]
+      },
+      {
+       "at": 0.5,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "p1",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "switch",
+        "lamp"
+       ]
+      },
+      {
+       "at": 0.6,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "switch"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "flow",
+       "dur": 1,
+       "target": [
+        "p1",
+        "p2",
+        "p3"
+       ],
+       "to": 1
+      },
+      {
+       "at": 0.5,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "switch"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "hide",
+       "dur": 0.4,
+       "target": "switch"
+      },
+      {
+       "at": 0.4,
+       "do": "show",
+       "dur": 0.5,
+       "target": "switch"
+      },
+      {
+       "at": 0.8,
+       "do": "focus",
+       "dur": 1,
+       "target": "p2"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "myth"
+      },
+      {
+       "at": 0.5,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 1,
+       "target": "source"
+      },
+      {
+       "at": 1.8,
+       "do": "highlight",
+       "dur": 1,
+       "target": "control"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "camera",
+       "dur": 2,
+       "zoom": 1.05
+      },
+      {
+       "at": "end",
+       "do": "interactive"
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which part supplies energy to the circuit?",
+    "options": [
+     "sourceOpt",
+     "controlOpt",
+     "pathOpt"
+    ],
+    "answer": "sourceOpt",
+    "src": "c7-science-ch03-t02-i06"
+   }
+  },
+  "repairs": [
+   "cue:target"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 58
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch03-t02-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "loop",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        160,
+        110
+       ],
+       "w": 480,
+       "h": 260,
+       "round": 12
+      },
+      {
+       "id": "symcell",
+       "op": "line",
+       "startMs": 1900,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        270,
+        110
+       ],
+       "to": [
+        270,
+        75
+       ]
+      },
+      {
+       "id": "symcell2",
+       "op": "line",
+       "startMs": 2300,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 3,
+       "from": [
+        290,
+        110
+       ],
+       "to": [
+        290,
+        90
+       ]
+      },
+      {
+       "id": "symbulb",
+       "op": "circle",
+       "startMs": 2800,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        520,
+        110
+       ],
+       "r": 30
+      },
+      {
+       "id": "cross1",
+       "op": "line",
+       "startMs": 3400,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        500,
+        90
+       ],
+       "to": [
+        540,
+        130
+       ]
+      },
+      {
+       "id": "cross2",
+       "op": "line",
+       "startMs": 3700,
+       "endMs": 4000,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        540,
+        90
+       ],
+       "to": [
+        500,
+        130
+       ]
+      },
+      {
+       "id": "circuit",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 5000,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        430
+       ],
+       "text": "circuit diagram",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "standard",
+       "op": "label",
+       "startMs": 5000,
+       "endMs": 5900,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        65
+       ],
+       "text": "standard symbols",
+       "to": [
+        400,
+        105
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch03-t02-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "longline",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        250,
+        190
+       ],
+       "to": [
+        250,
+        100
+       ]
+      },
+      {
+       "id": "shortline",
+       "op": "line",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 3,
+       "from": [
+        280,
+        170
+       ],
+       "to": [
+        280,
+        120
+       ]
+      },
+      {
+       "id": "cell",
+       "op": "label",
+       "startMs": 1700,
+       "endMs": 2500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        265,
+        220
+       ],
+       "text": "cell",
+       "to": [
+        265,
+        160
+       ]
+      },
+      {
+       "id": "positive",
+       "op": "text",
+       "startMs": 2800,
+       "endMs": 3600,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        250,
+        85
+       ],
+       "text": "positive",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "unequal",
+       "op": "label",
+       "startMs": 3900,
+       "endMs": 5200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        350,
+        145
+       ],
+       "text": "unequal parallel lines",
+       "to": [
+        280,
+        145
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch03-t02-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "cellb1",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        400,
+        190
+       ],
+       "to": [
+        400,
+        100
+       ]
+      },
+      {
+       "id": "cellb2",
+       "op": "line",
+       "startMs": 600,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 3,
+       "from": [
+        430,
+        170
+       ],
+       "to": [
+        430,
+        120
+       ]
+      },
+      {
+       "id": "join",
+       "op": "line",
+       "startMs": 1300,
+       "endMs": 1800,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        400,
+        100
+       ],
+       "to": [
+        430,
+        100
+       ]
+      },
+      {
+       "id": "battery",
+       "op": "label",
+       "startMs": 2100,
+       "endMs": 3000,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        420,
+        235
+       ],
+       "text": "battery",
+       "to": [
+        415,
+        165
+       ]
+      },
+      {
+       "id": "polarity",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 4700,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        415,
+        80
+       ],
+       "text": "positive to negative",
+       "size": "s",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch03-t02-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "bulb",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        250,
+        220
+       ],
+       "r": 55
+      },
+      {
+       "id": "bulbx",
+       "op": "line",
+       "startMs": 800,
+       "endMs": 1250,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        215,
+        185
+       ],
+       "to": [
+        285,
+        255
+       ]
+      },
+      {
+       "id": "bulby",
+       "op": "line",
+       "startMs": 1250,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        285,
+        185
+       ],
+       "to": [
+        215,
+        255
+       ]
+      },
+      {
+       "id": "bulblabel",
+       "op": "label",
+       "startMs": 1900,
+       "endMs": 2600,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        250,
+        310
+       ],
+       "text": "bulb",
+       "to": [
+        250,
+        275
+       ]
+      },
+      {
+       "id": "wire1",
+       "op": "line",
+       "startMs": 2800,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        400,
+        220
+       ],
+       "to": [
+        520,
+        220
+       ]
+      },
+      {
+       "id": "wire2",
+       "op": "line",
+       "startMs": 3400,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        520,
+        220
+       ],
+       "to": [
+        570,
+        220
+       ]
+      },
+      {
+       "id": "gap",
+       "op": "line",
+       "startMs": 3700,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        570,
+        220
+       ],
+       "to": [
+        600,
+        220
+       ]
+      },
+      {
+       "id": "switcharm",
+       "op": "line",
+       "startMs": 4100,
+       "endMs": 4600,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        570,
+        220
+       ],
+       "to": [
+        600,
+        195
+       ]
+      },
+      {
+       "id": "switchlabel",
+       "op": "label",
+       "startMs": 4800,
+       "endMs": 5700,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        585,
+        290
+       ],
+       "text": "switch",
+       "to": [
+        585,
+        220
+       ]
+      },
+      {
+       "id": "gaplabel",
+       "op": "text",
+       "startMs": 6000,
+       "endMs": 6600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        585,
+        175
+       ],
+       "text": "gap",
+       "size": "s",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch03-t02-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "closearm",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "good",
+       "weight": 3,
+       "from": [
+        570,
+        220
+       ],
+       "to": [
+        600,
+        220
+       ]
+      },
+      {
+       "id": "closedpath",
+       "op": "arrow",
+       "startMs": 1200,
+       "endMs": 2200,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        470,
+        220
+       ],
+       "to": [
+        540,
+        220
+       ]
+      },
+      {
+       "id": "onlabel",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        585,
+        175
+       ],
+       "text": "ON",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "complete",
+       "op": "label",
+       "startMs": 3500,
+       "endMs": 5000,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        400
+       ],
+       "text": "completes the circuit",
+       "to": [
+        600,
+        220
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch03-t02-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "openarm",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 3,
+       "from": [
+        570,
+        220
+       ],
+       "to": [
+        600,
+        195
+       ]
+      },
+      {
+       "id": "offlabel",
+       "op": "text",
+       "startMs": 1100,
+       "endMs": 1800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        585,
+        175
+       ],
+       "text": "OFF",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "breaklabel",
+       "op": "label",
+       "startMs": 3300,
+       "endMs": 4600,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        400
+       ],
+       "text": "breaks the circuit",
+       "to": [
+        585,
+        215
+       ]
+      },
+      {
+       "id": "looplabel",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 5800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        85
+       ],
+       "text": "one loop",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 2,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch03-t02-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9111,
+     "ops": [
+      {
+       "id": "sourcecell1",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        170,
+        190
+       ],
+       "to": [
+        170,
+        100
+       ]
+      },
+      {
+       "id": "sourcecell2",
+       "op": "line",
+       "startMs": 600,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 3,
+       "from": [
+        200,
+        175
+       ],
+       "to": [
+        200,
+        115
+       ]
+      },
+      {
+       "id": "source",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 2600,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        185,
+        245
+       ],
+       "text": "source of electricity",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "switchline1",
+       "op": "line",
+       "startMs": 2800,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        380,
+        190
+       ],
+       "to": [
+        430,
+        190
+       ]
+      },
+      {
+       "id": "switchline2",
+       "op": "line",
+       "startMs": 3300,
+       "endMs": 3800,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        470,
+        190
+       ],
+       "to": [
+        520,
+        190
+       ]
+      },
+      {
+       "id": "switchgap",
+       "op": "line",
+       "startMs": 3800,
+       "endMs": 4400,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        430,
+        190
+       ],
+       "to": [
+        470,
+        165
+       ]
+      },
+      {
+       "id": "control",
+       "op": "text",
+       "startMs": 4600,
+       "endMs": 5700,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        450,
+        250
+       ],
+       "text": "controls the path",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch03-t02-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "loopwire",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        160,
+        110
+       ],
+       "w": 480,
+       "h": 260,
+       "round": 10
+      },
+      {
+       "id": "bulb8",
+       "op": "circle",
+       "startMs": 1400,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        110
+       ],
+       "r": 35
+      },
+      {
+       "id": "cross8a",
+       "op": "line",
+       "startMs": 1900,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        378,
+        88
+       ],
+       "to": [
+        422,
+        132
+       ]
+      },
+      {
+       "id": "cross8b",
+       "op": "line",
+       "startMs": 2200,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        422,
+        88
+       ],
+       "to": [
+        378,
+        132
+       ]
+      },
+      {
+       "id": "switch8",
+       "op": "line",
+       "startMs": 2600,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        270,
+        370
+       ],
+       "to": [
+        315,
+        370
+       ]
+      },
+      {
+       "id": "switch8arm",
+       "op": "line",
+       "startMs": 3000,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        315,
+        370
+       ],
+       "to": [
+        350,
+        345
+       ]
+      },
+      {
+       "id": "before",
+       "op": "text",
+       "startMs": 3700,
+       "endMs": 4300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        250,
+        425
+       ],
+       "text": "before",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "after",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 4900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        550,
+        425
+       ],
+       "text": "after",
+       "size": "s",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

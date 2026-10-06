@@ -15,7 +15,7 @@ index 0000000..5fe25eb
 +-- Consent: rows exist ONLY for children whose parent chose "Remember your child's usual answering pace" (consent purpose
 +-- voice_pace_memory; off by default). Withdrawal deletes voicesig.subject at once (cascade; server/routes/account.js).
 +-- Account / child deletion cascades through child(id). The subject key is HMAC(child_id, VOICESIG_SUBJECT_KEY).
-+-- Residency: Neon has no India region (nearest Singapore); the parent copy names it.
++-- Residency: these rows live wherever the production database lives (docs/ops/INDIA-MOVE.md); the parent copy names no region.
 +-- Additive only.
 +
 +create schema if not exists voicesig;

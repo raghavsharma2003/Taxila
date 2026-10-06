@@ -1,0 +1,1522 @@
+{
+ "topicId": "c7-maths-ch07-t01",
+ "title": "Constructing triangles",
+ "chapter": "A Tale of Three Intersecting Lines",
+ "subject": "maths",
+ "class": 7,
+ "topicType": "T3",
+ "plan": {
+  "game": "geo-forge@1",
+  "hint": "sticks challenges (can three sticks close a triangle?) and triangle builds"
+ },
+ "game": {
+  "archetype": "geo-forge@1",
+  "spec": {
+   "archetype": "geo-forge@1",
+   "skills": [
+    "c7-maths-ch07-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "built": "built",
+    "check": "CHECK",
+    "undo": "UNDO",
+    "coach": "Tap pins to place corners; tap the first pin to close",
+    "runDone": "Blueprints done",
+    "perimeter": "perimeter",
+    "area": "area",
+    "units": "units",
+    "sq": "sq units",
+    "polygon": "sides",
+    "sticks": "Pick three sticks",
+    "rigid": "Brace it: it must not wobble",
+    "parallel": "Through the dot, parallel to the line",
+    "perpendicular": "Through the dot, at right angles",
+    "equidistant": "Place a pin the same distance from each dot",
+    "angle": "Make an angle of",
+    "right": "right-angled triangle",
+    "isosceles": "isosceles triangle",
+    "scalene": "scalene triangle",
+    "obtuse": "obtuse-angled triangle",
+    "acute": "acute-angled triangle",
+    "square": "square",
+    "rectangle": "rectangle",
+    "parallelogram": "parallelogram",
+    "rhombus": "rhombus",
+    "trapezium": "trapezium",
+    "kite": "kite",
+    "any": "shape",
+    "triangle": "triangle",
+    "make": "Make a",
+    "withArea": "with area",
+    "withPerim": "with perimeter",
+    "noTriangle": "Pick three that CANNOT close",
+    "wobbles": "WOBBLES",
+    "holds": "HOLDS",
+    "closes": "CLOSES",
+    "gap": "GAP",
+    "time": "time"
+   },
+   "title": "Triangle Builders",
+   "rounds": [
+    {
+     "title": "Can they close?",
+     "sub": "Test the longest stick",
+     "time": 50,
+     "challenges": [
+      {
+       "kind": "sticks",
+       "sticks": [
+        5,
+        6,
+        7
+       ],
+       "want": "triangle"
+      },
+      {
+       "kind": "sticks",
+       "sticks": [
+        2,
+        3,
+        8
+       ],
+       "want": "no-triangle"
+      },
+      {
+       "kind": "sticks",
+       "sticks": [
+        4,
+        5,
+        9
+       ],
+       "want": "no-triangle"
+      }
+     ],
+     "targets": "c7-maths-ch07-t01-m-any-three"
+    },
+    {
+     "title": "Check the edge",
+     "sub": "Look for a gap or a flat line",
+     "time": 55,
+     "challenges": [
+      {
+       "kind": "sticks",
+       "sticks": [
+        4,
+        6,
+        10
+       ],
+       "want": "no-triangle"
+      },
+      {
+       "kind": "sticks",
+       "sticks": [
+        4,
+        5,
+        8
+       ],
+       "want": "triangle"
+      },
+      {
+       "kind": "sticks",
+       "sticks": [
+        3,
+        4,
+        9
+       ],
+       "want": "no-triangle"
+      }
+     ],
+     "targets": "c7-maths-ch07-t01-m-equal-sum"
+    },
+    {
+     "title": "Build triangles",
+     "sub": "Place the third pin where arcs meet",
+     "time": 70,
+     "challenges": [
+      {
+       "kind": "triangle",
+       "type": "scalene"
+      },
+      {
+       "kind": "triangle",
+       "type": "isosceles"
+      },
+      {
+       "kind": "triangle",
+       "type": "right"
+      }
+     ],
+     "targets": "c7-maths-ch07-t01-m-check-one-pair"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-maths-ch07-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Constructing triangles",
+   "accent": "ion",
+   "targets": "c7-maths-ch07-t01-m-any-three",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Constructing triangles"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Any three lengths make a triangle"
+      },
+      {
+       "id": "wrong",
+       "type": "label",
+       "text": "Three lengths",
+       "x": 120,
+       "y": 400,
+       "color": "amber"
+      },
+      {
+       "id": "flat",
+       "type": "label",
+       "text": "Check first",
+       "x": 650,
+       "y": 400,
+       "color": "ion"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "long",
+       "type": "node",
+       "text": "Longest",
+       "sub": "13 cm",
+       "glyph": "ruler",
+       "color": "ion"
+      },
+      {
+       "id": "shorts",
+       "type": "node",
+       "text": "Other sides",
+       "sub": "6 + 8 = 14",
+       "glyph": "ruler",
+       "color": "mint"
+      },
+      {
+       "id": "possible",
+       "type": "node",
+       "text": "Possible",
+       "color": "sun"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "long",
+       "to": "shorts",
+       "text": "compare"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "shorts",
+       "to": "possible",
+       "text": "more than"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "base",
+       "type": "node",
+       "text": "Base",
+       "sub": "13 cm",
+       "glyph": "ruler",
+       "color": "ion"
+      },
+      {
+       "id": "arc6",
+       "type": "node",
+       "text": "Arc",
+       "sub": "6 cm",
+       "glyph": "compass",
+       "color": "mint"
+      },
+      {
+       "id": "arc8",
+       "type": "node",
+       "text": "Arc",
+       "sub": "8 cm",
+       "glyph": "compass",
+       "color": "amber"
+      },
+      {
+       "id": "cross",
+       "type": "node",
+       "text": "Crossing",
+       "sub": "third vertex",
+       "glyph": "spark",
+       "color": "sun"
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "base",
+       "to": "arc6",
+       "text": "draw"
+      },
+      {
+       "id": "a4",
+       "type": "arrow",
+       "from": "base",
+       "to": "arc8",
+       "text": "draw"
+      },
+      {
+       "id": "a5",
+       "type": "arrow",
+       "from": "arc6",
+       "to": "cross",
+       "text": "crosses"
+      },
+      {
+       "id": "a6",
+       "type": "arrow",
+       "from": "arc8",
+       "to": "cross",
+       "text": "crosses"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "row",
+     "els": [
+      {
+       "id": "yes",
+       "type": "node",
+       "text": "Yes",
+       "sub": "triangle possible",
+       "color": "mint"
+      },
+      {
+       "id": "no",
+       "type": "node",
+       "text": "No",
+       "sub": "not a triangle",
+       "glyph": "question",
+       "color": "amber"
+      },
+      {
+       "id": "taskmark",
+       "type": "node",
+       "text": "Your turn",
+       "sub": "choose one",
+       "glyph": "hand",
+       "color": "sun"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Three lengths do not always make a triangle. First, find the longest length.",
+    "L2": "Check whether the other two lengths add to more than the longest.",
+    "L3": "For 6, 8 and 13, the longest is 13, and 6 plus 8 equals 14.",
+    "L4": "Because 14 is more than 13, these three lengths can make a triangle.",
+    "L5": "If the longest equals the sum of the other two, the shape flattens into a straight line.",
+    "L6": "To construct one, draw a side first. Then draw arcs of the other two lengths from its ends.",
+    "L7": "The arcs cross at the third vertex. Join that point to both ends of the first side.",
+    "L8": "Now use the longest-side check: can 2, 3 and 8 make a triangle?"
+   },
+   "narration": {
+    "L1": {
+     "text": "Three lengths do not always make a triangle. First, find the longest length.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "Check whether the other two lengths add to more than the longest.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "For 6, 8 and 13, the longest is 13, and 6 plus 8 equals 14.",
+     "dur": 9,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "Because 14 is more than 13, these three lengths can make a triangle.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "If the longest equals the sum of the other two, the shape flattens into a straight line.",
+     "dur": 9,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "To construct one, draw a side first. Then draw arcs of the other two lengths from its ends.",
+     "dur": 10,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "The arcs cross at the third vertex. Join that point to both ends of the first side.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Now use the longest-side check: can 2, 3 and 8 make a triangle?",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "title"
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 1,
+       "target": "wrong"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.5,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "long"
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 1,
+       "target": "shorts"
+      },
+      {
+       "at": 2,
+       "do": "flow",
+       "dur": 1,
+       "target": "a1",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "long"
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 1,
+       "target": "shorts"
+      },
+      {
+       "at": 3,
+       "do": "show",
+       "dur": 1,
+       "target": "possible"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.5,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "flow",
+       "dur": 1,
+       "target": "a2",
+       "to": 1
+      },
+      {
+       "at": 2,
+       "do": "highlight",
+       "dur": 2,
+       "target": "possible"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "myth"
+      },
+      {
+       "at": 2,
+       "do": "bust",
+       "dur": 2,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.5,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "base"
+      },
+      {
+       "at": 2,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "arc6",
+        "arc8"
+       ]
+      },
+      {
+       "at": 4,
+       "do": "flow",
+       "dur": 2,
+       "target": [
+        "a3",
+        "a4"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.5,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "cross"
+      },
+      {
+       "at": 2,
+       "do": "flow",
+       "dur": 2,
+       "target": [
+        "a5",
+        "a6"
+       ],
+       "to": 1
+      },
+      {
+       "at": 5,
+       "do": "highlight",
+       "dur": 1,
+       "target": "cross"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 2,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "yes",
+        "no",
+        "taskmark"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive",
+       "dur": 1
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Can sticks of 2 cm, 3 cm and 8 cm make a triangle?",
+    "options": [
+     "yes",
+     "no"
+    ],
+    "answer": "no",
+    "src": "c7-maths-ch07-t01-i02"
+   }
+  },
+  "repairs": [
+   "glyph",
+   "string:possible.sub",
+   "string:rule.text",
+   "glyph",
+   "cue:target"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 71
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch07-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "title",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "Triangle check",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "tri",
+       "op": "polygon",
+       "startMs": 900,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         180,
+         370
+        ],
+        [
+         400,
+         120
+        ],
+        [
+         650,
+         370
+        ]
+       ]
+      },
+      {
+       "id": "a",
+       "op": "label",
+       "startMs": 2200,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        275,
+        245
+       ],
+       "text": "length",
+       "to": [
+        290,
+        245
+       ]
+      },
+      {
+       "id": "b",
+       "op": "label",
+       "startMs": 2900,
+       "endMs": 3600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        520,
+        245
+       ],
+       "text": "length",
+       "to": [
+        510,
+        245
+       ]
+      },
+      {
+       "id": "long",
+       "op": "highlight",
+       "startMs": 3600,
+       "endMs": 4600,
+       "ink": "accent",
+       "weight": 2,
+       "target": "tri",
+       "style": "circle"
+      },
+      {
+       "id": "longlab",
+       "op": "text",
+       "startMs": 4600,
+       "endMs": 5300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        410
+       ],
+       "text": "longest",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch07-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "left",
+       "op": "line",
+       "startMs": 1800,
+       "endMs": 2700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        180,
+        250
+       ],
+       "to": [
+        390,
+        250
+       ]
+      },
+      {
+       "id": "right",
+       "op": "line",
+       "startMs": 1800,
+       "endMs": 2700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        410,
+        250
+       ],
+       "to": [
+        620,
+        250
+       ]
+      },
+      {
+       "id": "sum",
+       "op": "label",
+       "startMs": 2700,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        285,
+        295
+       ],
+       "text": "other 1 + other 2",
+       "to": [
+        285,
+        250
+       ]
+      },
+      {
+       "id": "long2",
+       "op": "label",
+       "startMs": 3700,
+       "endMs": 4500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        505,
+        295
+       ],
+       "text": "longest",
+       "to": [
+        505,
+        250
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch07-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "six",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        190,
+        300
+       ],
+       "text": "6",
+       "size": "m"
+      },
+      {
+       "id": "eight",
+       "op": "text",
+       "startMs": 2800,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        395,
+        120
+       ],
+       "text": "8",
+       "size": "m"
+      },
+      {
+       "id": "thirteen",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 3800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        390,
+        390
+       ],
+       "text": "13",
+       "size": "m"
+      },
+      {
+       "id": "shape",
+       "op": "polygon",
+       "startMs": 3800,
+       "endMs": 5100,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         180,
+         360
+        ],
+        [
+         400,
+         120
+        ],
+        [
+         650,
+         360
+        ]
+       ]
+      },
+      {
+       "id": "longest",
+       "op": "highlight",
+       "startMs": 5100,
+       "endMs": 5900,
+       "ink": "accent",
+       "weight": 2,
+       "target": "thirteen",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch07-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "triangle4",
+       "op": "polygon",
+       "startMs": 1500,
+       "endMs": 2900,
+       "ink": "good",
+       "weight": 2,
+       "points": [
+        [
+         180,
+         370
+        ],
+        [
+         400,
+         120
+        ],
+        [
+         650,
+         370
+        ]
+       ]
+      },
+      {
+       "id": "can",
+       "op": "text",
+       "startMs": 2900,
+       "endMs": 4100,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        440
+       ],
+       "text": "triangle possible",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "mark",
+       "op": "highlight",
+       "startMs": 4100,
+       "endMs": 5200,
+       "ink": "accent",
+       "weight": 2,
+       "target": "triangle4",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch07-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "flat",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        130,
+        300
+       ],
+       "to": [
+        670,
+        300
+       ]
+      },
+      {
+       "id": "leftend",
+       "op": "circle",
+       "startMs": 1300,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        130,
+        300
+       ],
+       "r": 7
+      },
+      {
+       "id": "rightend",
+       "op": "circle",
+       "startMs": 1700,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        670,
+        300
+       ],
+       "r": 7
+      },
+      {
+       "id": "sumline",
+       "op": "numwork",
+       "startMs": 2100,
+       "endMs": 3800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        230,
+        90
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "longes",
+         "=",
+         "other",
+         "1",
+         "+",
+         "other",
+         "2"
+        ]
+       ]
+      },
+      {
+       "id": "straight",
+       "op": "text",
+       "startMs": 3800,
+       "endMs": 4900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        390
+       ],
+       "text": "straight line",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "flatten",
+       "op": "arrow",
+       "startMs": 4900,
+       "endMs": 5700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        260
+       ],
+       "to": [
+        400,
+        300
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 2,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch07-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "base",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        170,
+        350
+       ],
+       "to": [
+        600,
+        350
+       ]
+      },
+      {
+       "id": "end1",
+       "op": "circle",
+       "startMs": 1200,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        170,
+        350
+       ],
+       "r": 7
+      },
+      {
+       "id": "end2",
+       "op": "circle",
+       "startMs": 1500,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        600,
+        350
+       ],
+       "r": 7
+      },
+      {
+       "id": "side",
+       "op": "label",
+       "startMs": 1800,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        385,
+        390
+       ],
+       "text": "first side",
+       "to": [
+        385,
+        350
+       ]
+      },
+      {
+       "id": "arc1",
+       "op": "sector",
+       "startMs": 2600,
+       "endMs": 4100,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        170,
+        350
+       ],
+       "r": 150,
+       "fromDeg": 270,
+       "toDeg": 360
+      },
+      {
+       "id": "arc2",
+       "op": "sector",
+       "startMs": 4100,
+       "endMs": 5600,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        600,
+        350
+       ],
+       "r": 150,
+       "fromDeg": 180,
+       "toDeg": 270
+      },
+      {
+       "id": "six",
+       "op": "label",
+       "startMs": 5600,
+       "endMs": 6500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        215,
+        205
+       ],
+       "text": "other length",
+       "to": [
+        270,
+        235
+       ]
+      },
+      {
+       "id": "eight",
+       "op": "label",
+       "startMs": 6500,
+       "endMs": 7400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        540,
+        170
+       ],
+       "text": "other length",
+       "to": [
+        505,
+        235
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch07-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "vertex",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        390,
+        145
+       ],
+       "r": 10,
+       "fill": "accent"
+      },
+      {
+       "id": "cross",
+       "op": "text",
+       "startMs": 600,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        390,
+        105
+       ],
+       "text": "third vertex",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "join1",
+       "op": "line",
+       "startMs": 1500,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        170,
+        350
+       ],
+       "to": [
+        390,
+        145
+       ]
+      },
+      {
+       "id": "join2",
+       "op": "line",
+       "startMs": 2700,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        600,
+        350
+       ],
+       "to": [
+        390,
+        145
+       ]
+      },
+      {
+       "id": "tri7",
+       "op": "polygon",
+       "startMs": 3900,
+       "endMs": 5200,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         170,
+         350
+        ],
+        [
+         390,
+         145
+        ],
+        [
+         600,
+         350
+        ]
+       ]
+      },
+      {
+       "id": "ends",
+       "op": "label",
+       "startMs": 5200,
+       "endMs": 6200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        430
+       ],
+       "text": "both ends",
+       "to": [
+        385,
+        350
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 3,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch07-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "sum",
+       "op": "numwork",
+       "startMs": 1700,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        250,
+        190
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "2",
+         "+",
+         "3",
+         "=",
+         "5"
+        ]
+       ]
+      },
+      {
+       "id": "no",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 5200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        400
+       ],
+       "text": "not a triangle",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "{\"kind\":\"sticks\",\"sticks\":[5,6,7],\"want\":\"triangle\"}",
+   "prompt": "sticks"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "{\"kind\":\"sticks\",\"sticks\":[2,3,8],\"want\":\"no-triangle\"}",
+   "prompt": "sticks"
+  },
+  {
+   "itemId": "r1:2",
+   "key": "{\"kind\":\"sticks\",\"sticks\":[4,5,9],\"want\":\"no-triangle\"}",
+   "prompt": "sticks"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "{\"kind\":\"sticks\",\"sticks\":[4,6,10],\"want\":\"no-triangle\"}",
+   "prompt": "sticks"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "{\"kind\":\"sticks\",\"sticks\":[4,5,8],\"want\":\"triangle\"}",
+   "prompt": "sticks"
+  },
+  {
+   "itemId": "r2:2",
+   "key": "{\"kind\":\"sticks\",\"sticks\":[3,4,9],\"want\":\"no-triangle\"}",
+   "prompt": "sticks"
+  },
+  {
+   "itemId": "r3:0",
+   "key": "{\"kind\":\"triangle\",\"type\":\"scalene\"}",
+   "prompt": "triangle"
+  },
+  {
+   "itemId": "r3:1",
+   "key": "{\"kind\":\"triangle\",\"type\":\"isosceles\"}",
+   "prompt": "triangle"
+  },
+  {
+   "itemId": "r3:2",
+   "key": "{\"kind\":\"triangle\",\"type\":\"right\"}",
+   "prompt": "triangle"
+  }
+ ],
+ "check": {
+  "issues": [
+   {
+    "where": "explainer",
+    "what": "Explainer scene s2 shows 'Other sides' as '6 + 8 = 14', but the explainer text refers to 6, 8, 13 from worked example. The kit's worked example uses 6, 8, 13 but the picture and text here say '13 cm' for longest and show 'Other sides: 6 + 8 = 14' which is consistent. However, the explainer's scene s2 includes a node 'Longest 13 cm' and 'Other sides 6 + 8 = 14', and later text L3-L4 says 'For 6, 8 and 13, ... 6 plus 8 equals 14' which is fine. But scene s3 shows 'Base 13 cm', 'Arc 6 cm', 'Arc 8 cm', and text L6-L7 describe constructing 6,8,13 which is from worked example. That's okay. But in scene s4 it says 'Your turn: can 2, 3 and 8 make a triangle?' which matches kit item i02. No factual error here. However, the explainer node 'myth' says 'Any three lengths make a triangle' which is the misconception, that's fine. No issue. Thus none of these are actual problems; the content is factually correct and age-appropriate. But note: The explainer's scene s3 shows 'Base 13 cm', 'Arc 6 cm', 'Arc 8 cm' and says 'draw arcs of the other two lengths from its ends.' That works for triangle inequality as 6+8>13. All correct. I see no issue.",
+    "severity": "low"
+   }
+  ],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

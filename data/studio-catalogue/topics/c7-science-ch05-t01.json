@@ -1,0 +1,2028 @@
+{
+ "topicId": "c7-science-ch05-t01",
+ "title": "Physical and chemical changes",
+ "chapter": "Changes Around Us: Physical and Chemical",
+ "subject": "science",
+ "class": 7,
+ "topicType": "T3",
+ "plan": {
+  "game": "sort-storm@1",
+  "hint": "bins physical / chemical change (new substance formed?)"
+ },
+ "game": {
+  "archetype": "sort-storm@1",
+  "spec": {
+   "archetype": "sort-storm@1",
+   "skills": [
+    "c7-science-ch05-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "sorted": "sorted",
+    "tests": "tests",
+    "coach": "Test it, then drag it into a bin",
+    "runDone": "Belt cleared",
+    "missed": "missed",
+    "why": "because",
+    "yes": "yes",
+    "no": "no",
+    "magnetic": "magnetic",
+    "light": "light",
+    "floats": "floats",
+    "conducts": "conducts",
+    "burns": "burns",
+    "starch": "starch",
+    "tMagnet": "Magnet",
+    "tTorch": "Torch",
+    "tTank": "Water",
+    "tTester": "Circuit",
+    "tFlame": "Flame",
+    "tIodine": "Iodine",
+    "tPaper": "Paper",
+    "tBiuret": "Copper test",
+    "tTurmeric": "Turmeric",
+    "tLitmus": "Litmus",
+    "tRose": "China rose",
+    "fat": "fat",
+    "protein": "protein",
+    "acidity": "acidity",
+    "acid": "acid",
+    "base": "base",
+    "neutral": "neutral"
+   },
+   "title": "Change detectives",
+   "rounds": [
+    {
+     "title": "New substance check",
+     "sub": "Sort each kitchen change",
+     "bins": [
+      {
+       "id": "physical",
+       "label": "Physical"
+      },
+      {
+       "id": "chemical",
+       "label": "Chemical",
+       "glyph": "fire"
+      }
+     ],
+     "tools": [],
+     "items": [
+      {
+       "id": "ghee",
+       "text": "Melting ghee",
+       "glyph": "pot",
+       "bin": "physical",
+       "src": "c7-science-ch05-t01-i01"
+      },
+      {
+       "id": "ice",
+       "text": "Freezing water",
+       "bin": "physical",
+       "src": "c7-science-ch05-t01-i13"
+      },
+      {
+       "id": "paper",
+       "text": "Tearing paper",
+       "glyph": "book",
+       "bin": "physical",
+       "src": "c7-science-ch05-t01-i06"
+      },
+      {
+       "id": "sugar",
+       "text": "Dissolving sugar",
+       "glyph": "wheat",
+       "bin": "physical",
+       "src": "c7-science-ch05-t01-i04"
+      },
+      {
+       "id": "milk",
+       "text": "Sour milk lumps",
+       "glyph": "jug",
+       "bin": "chemical",
+       "src": "c7-science-ch05-t01-i08"
+      },
+      {
+       "id": "banana",
+       "text": "Banana ripening",
+       "glyph": "apple",
+       "bin": "chemical",
+       "src": "c7-science-ch05-t01-i11"
+      },
+      {
+       "id": "bread",
+       "text": "Toasting bread",
+       "glyph": "fire",
+       "bin": "chemical",
+       "src": "c7-science-ch05-t01-i11"
+      },
+      {
+       "id": "egg",
+       "text": "Cooking an egg",
+       "glyph": "plate",
+       "bin": "chemical",
+       "src": "c7-science-ch05-t01-i02"
+      }
+     ],
+     "speed": 0.85
+    }
+   ]
+  },
+  "repairs": [
+   "string:item.text",
+   "item:missing-prop-for-tool",
+   "item:missing-prop-for-tool",
+   "item:missing-prop-for-tool",
+   "item:missing-prop-for-tool",
+   "item:missing-prop-for-tool",
+   "item:missing-prop-for-tool",
+   "round:items",
+   "string:item.text",
+   "string:item.text",
+   "item:missing-prop-for-tool",
+   "item:missing-prop-for-tool",
+   "string:item.text",
+   "item:missing-prop-for-tool",
+   "round:items"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-science-ch05-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Physical or chemical change?",
+   "accent": "sci",
+   "targets": "c7-science-ch05-t01-m4",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "row",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Physical or chemical?"
+      },
+      {
+       "id": "change",
+       "type": "label",
+       "text": "Changes around us",
+       "x": 120,
+       "y": 330,
+       "color": "sci"
+      },
+      {
+       "id": "question",
+       "type": "glyph",
+       "name": "question",
+       "x": 760,
+       "y": 330,
+       "size": 120,
+       "color": "amber"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "physical",
+       "type": "node",
+       "text": "Physical",
+       "sub": "no new substance",
+       "glyph": "ruler",
+       "color": "mint"
+      },
+      {
+       "id": "shape",
+       "type": "node",
+       "text": "Shape, size",
+       "sub": "or state changes",
+       "glyph": "gear",
+       "color": "mint"
+      },
+      {
+       "id": "same",
+       "type": "node",
+       "text": "Same substance",
+       "sub": "still there",
+       "glyph": "mirror",
+       "color": "mint"
+      },
+      {
+       "id": "p1",
+       "type": "arrow",
+       "from": "physical",
+       "to": "shape",
+       "text": "changes"
+      },
+      {
+       "id": "p2",
+       "type": "arrow",
+       "from": "shape",
+       "to": "same",
+       "text": "remains"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "chemical",
+       "type": "node",
+       "text": "Chemical",
+       "sub": "new substance",
+       "glyph": "beaker",
+       "color": "sci"
+      },
+      {
+       "id": "signs",
+       "type": "label",
+       "text": "Evidence",
+       "x": 420,
+       "y": 320,
+       "color": "amber"
+      },
+      {
+       "id": "gas",
+       "type": "node",
+       "text": "Gas bubbles",
+       "sub": "new gas",
+       "glyph": "wind",
+       "color": "amber"
+      },
+      {
+       "id": "colour",
+       "type": "node",
+       "text": "Colour change",
+       "sub": "new colour",
+       "glyph": "spark",
+       "color": "amber"
+      },
+      {
+       "id": "heat",
+       "type": "node",
+       "text": "Heat or light",
+       "sub": "given out",
+       "glyph": "fire",
+       "color": "amber"
+      },
+      {
+       "id": "c1",
+       "type": "arrow",
+       "from": "chemical",
+       "to": "gas",
+       "text": "may show"
+      },
+      {
+       "id": "c2",
+       "type": "arrow",
+       "from": "chemical",
+       "to": "colour",
+       "text": "may show"
+      },
+      {
+       "id": "c3",
+       "type": "arrow",
+       "from": "chemical",
+       "to": "heat",
+       "text": "may show"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "split",
+     "els": [
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Dissolved sugar has disappeared and has no mass"
+      },
+      {
+       "id": "bust",
+       "type": "label",
+       "text": "Dissolving is physical",
+       "x": 510,
+       "y": 245,
+       "color": "mint"
+      },
+      {
+       "id": "sugar",
+       "type": "node",
+       "text": "Sugar",
+       "sub": "still in water",
+       "color": "mint"
+      },
+      {
+       "id": "water",
+       "type": "node",
+       "text": "Water",
+       "sub": "forms solution",
+       "glyph": "drop",
+       "color": "sci"
+      },
+      {
+       "id": "d1",
+       "type": "arrow",
+       "from": "sugar",
+       "to": "water",
+       "text": "spreads into"
+      }
+     ]
+    },
+    {
+     "id": "s5",
+     "layout": "row",
+     "els": [
+      {
+       "id": "checkTitle",
+       "type": "title",
+       "text": "Your turn"
+      },
+      {
+       "id": "physOpt",
+       "type": "label",
+       "text": "Physical",
+       "x": 190,
+       "y": 350,
+       "color": "mint"
+      },
+      {
+       "id": "chemOpt",
+       "type": "label",
+       "text": "Chemical",
+       "x": 650,
+       "y": 350,
+       "color": "amber"
+      },
+      {
+       "id": "tapIcon",
+       "type": "glyph",
+       "name": "hand",
+       "x": 500,
+       "y": 210,
+       "size": 100,
+       "color": "ion"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "A change can be physical or chemical. The key question is: has a new substance formed?",
+    "L2": "In a physical change, shape, size or state changes, but no new substance forms.",
+    "L3": "Melting ghee is physical. It is still ghee, and it becomes solid again when cooled.",
+    "L4": "Dissolving is also physical. Sugar spreads into water, but it is still there and still has mass.",
+    "L5": "In a chemical change, one or more new substances with different properties are formed.",
+    "L6": "Gas bubbles, a colour change, heat or light, a new smell, or a new solid can be evidence.",
+    "L7": "Here is a common myth: dissolved sugar has disappeared and has no mass. Not true; dissolving does not make the sugar vanish.",
+    "L8": "Baking soda and lemon juice fizz because a new gas forms. That is a chemical change."
+   },
+   "narration": {
+    "L1": {
+     "text": "A change can be physical or chemical. The key question is: has a new substance formed?",
+     "dur": 5.2,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L2": {
+     "text": "In a physical change, shape, size or state changes, but no new substance forms.",
+     "dur": 4.6,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L3": {
+     "text": "Melting ghee is physical. It is still ghee, and it becomes solid again when cooled.",
+     "dur": 4.4,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L4": {
+     "text": "Dissolving is also physical. Sugar spreads into water, but it is still there and still has mass.",
+     "dur": 4.8,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L5": {
+     "text": "In a chemical change, one or more new substances with different properties are formed.",
+     "dur": 4.1,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Gas bubbles, a colour change, heat or light, a new smell, or a new solid can be evidence.",
+     "dur": 4.8,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Here is a common myth: dissolved sugar has disappeared and has no mass. Not true; dissolving does not make the sugar vanish.",
+     "dur": 6.1,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Baking soda and lemon juice fizz because a new gas forms. That is a chemical change.",
+     "dur": 4.3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      },
+      {
+       "at": 0.6,
+       "do": "show",
+       "dur": 0.7,
+       "target": "question"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "physical"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "p1",
+        "shape"
+       ]
+      },
+      {
+       "at": 1.1,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "p2",
+        "same"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "physical"
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 1,
+       "target": "same"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "sugar",
+        "water"
+       ]
+      },
+      {
+       "at": 0.5,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "d1",
+       "to": 1
+      },
+      {
+       "at": 1.2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "sugar"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "chemical"
+      },
+      {
+       "at": 0.6,
+       "do": "highlight",
+       "dur": 1,
+       "target": "chemical"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.9,
+       "target": [
+        "signs",
+        "gas",
+        "colour",
+        "heat"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 0.8,
+       "target": [
+        "c1",
+        "c2",
+        "c3"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.5,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      },
+      {
+       "at": 1,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      },
+      {
+       "at": 1.4,
+       "do": "show",
+       "dur": 0.7,
+       "target": "bust"
+      },
+      {
+       "at": 2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "sugar"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s5",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "checkTitle",
+        "physOpt",
+        "chemOpt"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "interactive",
+       "dur": 0.5
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Baking soda and lemon juice fizz as a new gas forms. Which type of change is this?",
+    "options": [
+     "physOpt",
+     "chemOpt"
+    ],
+    "answer": "chemOpt",
+    "src": "c7-science-ch05-t01-i03"
+   }
+  },
+  "repairs": [
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 42
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch05-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "title",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "physical or chemical",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "split",
+       "op": "line",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        400,
+        90
+       ],
+       "to": [
+        400,
+        440
+       ]
+      },
+      {
+       "id": "phys",
+       "op": "text",
+       "startMs": 1200,
+       "endMs": 1900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        210,
+        125
+       ],
+       "text": "physical",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "chem",
+       "op": "text",
+       "startMs": 1200,
+       "endMs": 1900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        590,
+        125
+       ],
+       "text": "chemical",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "q",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 3200,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        400,
+        250
+       ],
+       "text": "new substance?",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "left",
+       "op": "arrow",
+       "startMs": 3400,
+       "endMs": 4300,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        370,
+        275
+       ],
+       "to": [
+        230,
+        275
+       ]
+      },
+      {
+       "id": "right",
+       "op": "arrow",
+       "startMs": 3400,
+       "endMs": 4300,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        430,
+        275
+       ],
+       "to": [
+        570,
+        275
+       ]
+      },
+      {
+       "id": "yes",
+       "op": "text",
+       "startMs": 4600,
+       "endMs": 5100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        590,
+        330
+       ],
+       "text": "yes",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "no",
+       "op": "text",
+       "startMs": 4600,
+       "endMs": 5100,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        210,
+        330
+       ],
+       "text": "no",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch05-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "head",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        60
+       ],
+       "text": "physical change",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "shape1",
+       "op": "rect",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        150
+       ],
+       "w": 120,
+       "h": 90
+      },
+      {
+       "id": "shape2",
+       "op": "rect",
+       "startMs": 1600,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        270,
+        130
+       ],
+       "w": 170,
+       "h": 130
+      },
+      {
+       "id": "shape",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        150,
+        300
+       ],
+       "text": "shape",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "size",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        355,
+        300
+       ],
+       "text": "size",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "state",
+       "op": "text",
+       "startMs": 2900,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        625,
+        180
+       ],
+       "text": "solid",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "state2",
+       "op": "text",
+       "startMs": 3400,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        625,
+        240
+       ],
+       "text": "liquid",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "state3",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        625,
+        300
+       ],
+       "text": "gas",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "none",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        420
+       ],
+       "text": "no new substance",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch05-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "ghee",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "ghee",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "solid",
+       "op": "rect",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        190
+       ],
+       "w": 180,
+       "h": 80,
+       "fill": "accent",
+       "round": 12
+      },
+      {
+       "id": "melt",
+       "op": "arrow",
+       "startMs": 1700,
+       "endMs": 2700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        300,
+        230
+       ],
+       "to": [
+        470,
+        230
+       ]
+      },
+      {
+       "id": "liquid",
+       "op": "ellipse",
+       "startMs": 2800,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        630,
+        240
+       ],
+       "rx": 100,
+       "ry": 35,
+       "fill": "accent"
+      },
+      {
+       "id": "heat",
+       "op": "text",
+       "startMs": 3600,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        190,
+        330
+       ],
+       "text": "solid",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "liquidlabel",
+       "op": "text",
+       "startMs": 3600,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        630,
+        320
+       ],
+       "text": "liquid",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "cool",
+       "op": "arrow",
+       "startMs": 4500,
+       "endMs": 5500,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        630,
+        390
+       ],
+       "to": [
+        190,
+        390
+       ]
+      },
+      {
+       "id": "again",
+       "op": "text",
+       "startMs": 5700,
+       "endMs": 6400,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        455
+       ],
+       "text": "ghee again",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch05-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "sugar",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        170,
+        60
+       ],
+       "text": "sugar",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "water",
+       "op": "ellipse",
+       "startMs": 700,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        600,
+        270
+       ],
+       "rx": 150,
+       "ry": 100
+      },
+      {
+       "id": "sugarbits",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        150,
+        180
+       ],
+       "r": 10
+      },
+      {
+       "id": "pour",
+       "op": "arrow",
+       "startMs": 1600,
+       "endMs": 2600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        220,
+        100
+       ],
+       "to": [
+        500,
+        220
+       ]
+      },
+      {
+       "id": "spread1",
+       "op": "circle",
+       "startMs": 2800,
+       "endMs": 3300,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        540,
+        240
+       ],
+       "r": 8
+      },
+      {
+       "id": "spread2",
+       "op": "circle",
+       "startMs": 3300,
+       "endMs": 3800,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        620,
+        290
+       ],
+       "r": 8
+      },
+      {
+       "id": "spread3",
+       "op": "circle",
+       "startMs": 3800,
+       "endMs": 4300,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        680,
+        230
+       ],
+       "r": 8
+      },
+      {
+       "id": "there",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        440
+       ],
+       "text": "still there",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "mass",
+       "op": "text",
+       "startMs": 5600,
+       "endMs": 6400,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        475
+       ],
+       "text": "still has mass",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch05-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "head",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        60
+       ],
+       "text": "chemical change",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "old",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        180,
+        230
+       ],
+       "r": 60
+      },
+      {
+       "id": "oldlabel",
+       "op": "text",
+       "startMs": 1600,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        330
+       ],
+       "text": "substance",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "arrow",
+       "op": "arrow",
+       "startMs": 2300,
+       "endMs": 3400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        260,
+        230
+       ],
+       "to": [
+        520,
+        230
+       ]
+      },
+      {
+       "id": "new1",
+       "op": "circle",
+       "startMs": 3500,
+       "endMs": 4100,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        600,
+        200
+       ],
+       "r": 45
+      },
+      {
+       "id": "new2",
+       "op": "circle",
+       "startMs": 3900,
+       "endMs": 4500,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        680,
+        270
+       ],
+       "r": 35
+      },
+      {
+       "id": "newlabel",
+       "op": "text",
+       "startMs": 4600,
+       "endMs": 5400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        620,
+        370
+       ],
+       "text": "new substances",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "different",
+       "op": "text",
+       "startMs": 5500,
+       "endMs": 6300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        440
+       ],
+       "text": "different properties",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch05-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "head",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        50
+       ],
+       "text": "evidence",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "bubble",
+       "op": "circle",
+       "startMs": 800,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        120,
+        180
+       ],
+       "r": 30
+      },
+      {
+       "id": "bubtext",
+       "op": "text",
+       "startMs": 1300,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        120,
+        250
+       ],
+       "text": "gas bubbles",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "colour",
+       "op": "rect",
+       "startMs": 1900,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        260,
+        150
+       ],
+       "w": 80,
+       "h": 80,
+       "fill": "accent"
+      },
+      {
+       "id": "colourtext",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        300,
+        280
+       ],
+       "text": "colour change",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "heat",
+       "op": "polygon",
+       "startMs": 3200,
+       "endMs": 3800,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         440,
+         220
+        ],
+        [
+         455,
+         180
+        ],
+        [
+         470,
+         220
+        ],
+        [
+         490,
+         190
+        ],
+        [
+         480,
+         240
+        ]
+       ],
+       "fill": "accent"
+      },
+      {
+       "id": "heattext",
+       "op": "text",
+       "startMs": 3800,
+       "endMs": 4500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        465,
+        280
+       ],
+       "text": "heat or light",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "smell",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        620,
+        190
+       ],
+       "text": "new smell",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "solid",
+       "op": "rect",
+       "startMs": 5400,
+       "endMs": 6000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        570,
+        300
+       ],
+       "w": 100,
+       "h": 60,
+       "fill": "soft",
+       "round": 8
+      },
+      {
+       "id": "solidtext",
+       "op": "text",
+       "startMs": 6000,
+       "endMs": 6700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        620,
+        400
+       ],
+       "text": "new solid",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch05-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9962,
+     "ops": [
+      {
+       "id": "myth",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "myth",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "sugar",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        170,
+        140
+       ],
+       "text": "sugar",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "water",
+       "op": "ellipse",
+       "startMs": 1000,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        570,
+        230
+       ],
+       "rx": 150,
+       "ry": 100
+      },
+      {
+       "id": "vanish",
+       "op": "line",
+       "startMs": 1400,
+       "endMs": 1900,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        100,
+        120
+       ],
+       "to": [
+        240,
+        170
+       ]
+      },
+      {
+       "id": "vanish2",
+       "op": "line",
+       "startMs": 1400,
+       "endMs": 1900,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        240,
+        120
+       ],
+       "to": [
+        100,
+        170
+       ]
+      },
+      {
+       "id": "no",
+       "op": "text",
+       "startMs": 2000,
+       "endMs": 2700,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        170,
+        230
+       ],
+       "text": "disappeared",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "dots",
+       "op": "circle",
+       "startMs": 2800,
+       "endMs": 3300,
+       "ink": "good",
+       "weight": 1,
+       "c": [
+        500,
+        210
+       ],
+       "r": 8
+      },
+      {
+       "id": "dots2",
+       "op": "circle",
+       "startMs": 3300,
+       "endMs": 3800,
+       "ink": "good",
+       "weight": 1,
+       "c": [
+        580,
+        270
+       ],
+       "r": 8
+      },
+      {
+       "id": "dots3",
+       "op": "circle",
+       "startMs": 3800,
+       "endMs": 4300,
+       "ink": "good",
+       "weight": 1,
+       "c": [
+        650,
+        200
+       ],
+       "r": 8
+      },
+      {
+       "id": "mass",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5600,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        400
+       ],
+       "text": "still has mass",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "true",
+       "op": "text",
+       "startMs": 5800,
+       "endMs": 6500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        455
+       ],
+       "text": "not vanish",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch05-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "soda",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        150,
+        150
+       ],
+       "w": 150,
+       "h": 190,
+       "round": 14
+      },
+      {
+       "id": "lemon",
+       "op": "ellipse",
+       "startMs": 700,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        575,
+        245
+       ],
+       "rx": 95,
+       "ry": 65,
+       "fill": "accent"
+      },
+      {
+       "id": "sodalabel",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        225,
+        245
+       ],
+       "text": "baking soda",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "lemonlabel",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        575,
+        335
+       ],
+       "text": "lemon juice",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "mix",
+       "op": "arrow",
+       "startMs": 2100,
+       "endMs": 3100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        320,
+        245
+       ],
+       "to": [
+        470,
+        245
+       ]
+      },
+      {
+       "id": "fizz",
+       "op": "circle",
+       "startMs": 3200,
+       "endMs": 3700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        150
+       ],
+       "r": 18
+      },
+      {
+       "id": "fizz2",
+       "op": "circle",
+       "startMs": 3500,
+       "endMs": 4000,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        450,
+        110
+       ],
+       "r": 12
+      },
+      {
+       "id": "fizz3",
+       "op": "circle",
+       "startMs": 3800,
+       "endMs": 4300,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        490,
+        165
+       ],
+       "r": 14
+      },
+      {
+       "id": "gas",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        400
+       ],
+       "text": "new gas",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "chemical",
+       "op": "text",
+       "startMs": 5600,
+       "endMs": 6500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        455
+       ],
+       "text": "chemical change",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:ghee",
+   "key": "Physical",
+   "prompt": "Melting ghee → which of [Physical | Chemical]",
+   "src": "c7-science-ch05-t01-i01"
+  },
+  {
+   "itemId": "r1:ice",
+   "key": "Physical",
+   "prompt": "Freezing water → which of [Physical | Chemical]",
+   "src": "c7-science-ch05-t01-i13"
+  },
+  {
+   "itemId": "r1:paper",
+   "key": "Physical",
+   "prompt": "Tearing paper → which of [Physical | Chemical]",
+   "src": "c7-science-ch05-t01-i06"
+  },
+  {
+   "itemId": "r1:sugar",
+   "key": "Physical",
+   "prompt": "Dissolving sugar → which of [Physical | Chemical]",
+   "src": "c7-science-ch05-t01-i04"
+  },
+  {
+   "itemId": "r1:milk",
+   "key": "Chemical",
+   "prompt": "Sour milk lumps → which of [Physical | Chemical]",
+   "src": "c7-science-ch05-t01-i08"
+  },
+  {
+   "itemId": "r1:banana",
+   "key": "Chemical",
+   "prompt": "Banana ripening → which of [Physical | Chemical]",
+   "src": "c7-science-ch05-t01-i11"
+  },
+  {
+   "itemId": "r1:bread",
+   "key": "Chemical",
+   "prompt": "Toasting bread → which of [Physical | Chemical]",
+   "src": "c7-science-ch05-t01-i11"
+  },
+  {
+   "itemId": "r1:egg",
+   "key": "Chemical",
+   "prompt": "Cooking an egg → which of [Physical | Chemical]",
+   "src": "c7-science-ch05-t01-i02"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

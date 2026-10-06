@@ -1,0 +1,1491 @@
+{
+ "topicId": "c7-maths-ch04-t03",
+ "title": "Patterns and relationships with algebra",
+ "chapter": "Expressions using Letter-Numbers",
+ "subject": "maths",
+ "class": 7,
+ "topicType": "T5",
+ "plan": {
+  "game": "rule-machine@1",
+  "hint": "seq and build modes: number patterns and growing patterns"
+ },
+ "game": {
+  "archetype": "rule-machine@1",
+  "spec": {
+   "archetype": "rule-machine@1",
+   "skills": [
+    "c7-maths-ch04-t03"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "built": "machines",
+    "run": "RUN",
+    "want": "order",
+    "got": "made",
+    "coach": "Tap tiles to fill the machine, then RUN",
+    "runDone": "Factory closed",
+    "step": "step",
+    "predict": "step",
+    "inverse": "run it backwards",
+    "target": "target",
+    "steps": "steps",
+    "pick": "Pick a start",
+    "works": "WORKS",
+    "fix": "not for every input"
+   },
+   "title": "Pattern Rule Machine",
+   "rounds": [
+    {
+     "mode": "build",
+     "title": "Fill every order",
+     "sub": "one rule for every input",
+     "rule": [
+      "×3",
+      "+1"
+     ],
+     "inputs": [
+      1,
+      4,
+      7,
+      10
+     ],
+     "tiles": [
+      "×3",
+      "+1",
+      "+2",
+      "×2"
+     ],
+     "targets": "c7-maths-ch04-t03-m-cant-generalise"
+    },
+    {
+     "mode": "seq",
+     "title": "Triangle stick steps",
+     "sub": "find the count at a later step",
+     "pattern": "sticks-triangles",
+     "rule": [
+      "×2",
+      "+1"
+     ],
+     "tiles": [
+      "×2",
+      "+1",
+      "+3",
+      "×3"
+     ],
+     "ask": 25,
+     "targets": "c7-maths-ch04-t03-m-recursive-only"
+    },
+    {
+     "mode": "inverse",
+     "title": "Think of a number",
+     "sub": "a rule ran forward; work backwards",
+     "rule": [
+      "×3",
+      "+2"
+     ],
+     "secret": 7,
+     "tiles": [
+      "-2",
+      "÷3",
+      "+2",
+      "×3"
+     ],
+     "targets": "c7-maths-ch04-t03-m-proportional"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-maths-ch04-t03"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "A rule for every step",
+   "accent": "ion",
+   "targets": "c7-maths-ch04-t03-m-proportional",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "A rule for every step"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Double the step, double the term"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "step",
+       "type": "label",
+       "text": "Step number n",
+       "x": 120,
+       "y": 300,
+       "color": "ion"
+      },
+      {
+       "id": "add",
+       "type": "label",
+       "text": "Add 3 each step",
+       "x": 390,
+       "y": 300,
+       "color": "mint"
+      },
+      {
+       "id": "rule",
+       "type": "node",
+       "text": "3n + 1",
+       "sub": "algebraic rule",
+       "glyph": "gear",
+       "color": "amber"
+      },
+      {
+       "id": "arrow1",
+       "type": "arrow",
+       "from": "step",
+       "to": "rule",
+       "text": "multiply",
+       "bend": 0
+      },
+      {
+       "id": "arrow2",
+       "type": "arrow",
+       "from": "add",
+       "to": "rule",
+       "text": "fixed part",
+       "bend": 0
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "column",
+     "els": [
+      {
+       "id": "axis",
+       "type": "axis",
+       "min": 1,
+       "max": 4,
+       "step": 1,
+       "unit": "step",
+       "scale": "linear",
+       "y": 430
+      },
+      {
+       "id": "m1",
+       "type": "mark",
+       "axis": "axis",
+       "value": 1,
+       "text": "4",
+       "color": "ion"
+      },
+      {
+       "id": "m2",
+       "type": "mark",
+       "axis": "axis",
+       "value": 2,
+       "text": "7",
+       "color": "ion"
+      },
+      {
+       "id": "m3",
+       "type": "mark",
+       "axis": "axis",
+       "value": 3,
+       "text": "10",
+       "color": "ion"
+      },
+      {
+       "id": "m4",
+       "type": "mark",
+       "axis": "axis",
+       "value": 4,
+       "text": "13",
+       "color": "ion"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "row",
+     "els": [
+      {
+       "id": "n10",
+       "type": "node",
+       "text": "n = 10",
+       "sub": "step",
+       "glyph": "ruler",
+       "color": "ion"
+      },
+      {
+       "id": "calc",
+       "type": "node",
+       "text": "3 × 10 + 1",
+       "sub": "rule",
+       "glyph": "gear",
+       "color": "amber"
+      },
+      {
+       "id": "ans31",
+       "type": "node",
+       "text": "31",
+       "sub": "term",
+       "glyph": "spark",
+       "color": "mint"
+      },
+      {
+       "id": "flow1",
+       "type": "arrow",
+       "from": "n10",
+       "to": "calc",
+       "text": "use rule"
+      },
+      {
+       "id": "flow2",
+       "type": "arrow",
+       "from": "calc",
+       "to": "ans31",
+       "text": "gives"
+      }
+     ]
+    },
+    {
+     "id": "s5",
+     "layout": "row",
+     "els": [
+      {
+       "id": "n20",
+       "type": "node",
+       "text": "n = 20",
+       "sub": "step",
+       "glyph": "ruler",
+       "color": "ion"
+      },
+      {
+       "id": "calc20",
+       "type": "node",
+       "text": "3 × 20 + 1",
+       "sub": "rule",
+       "glyph": "gear",
+       "color": "amber"
+      },
+      {
+       "id": "ans61",
+       "type": "node",
+       "text": "61",
+       "sub": "term",
+       "glyph": "spark",
+       "color": "mint"
+      },
+      {
+       "id": "wrong62",
+       "type": "node",
+       "text": "62",
+       "sub": "wrong",
+       "glyph": "question",
+       "color": "volt"
+      },
+      {
+       "id": "a20",
+       "type": "arrow",
+       "from": "n20",
+       "to": "calc20",
+       "text": "use rule"
+      },
+      {
+       "id": "a21",
+       "type": "arrow",
+       "from": "calc20",
+       "to": "ans61",
+       "text": "gives"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "A pattern can have a rule that works for every step, not just a list of terms.",
+    "L2": "If each step adds 3, the rule starts with 3n. The fixed part makes step 1 correct, so the rule is 3n + 1.",
+    "L3": "Check it: for steps 1, 2, 3 and 4, the terms are 4, 7, 10 and 13.",
+    "L4": "Now use the rule directly. At step 10, 3 times 10 plus 1 gives 31.",
+    "L5": "Doubling the step does not double the term when there is a fixed part.",
+    "L6": "So at step 20, calculate 3 times 20 plus 1, rather than doubling 31.",
+    "L7": "The answer is 61. Algebra lets us predict without drawing every step."
+   },
+   "narration": {
+    "L1": {
+     "text": "A pattern can have a rule that works for every step, not just a list of terms.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "If each step adds 3, the rule starts with 3n. The fixed part makes step 1 correct, so the rule is 3n + 1.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "Check it: for steps 1, 2, 3 and 4, the terms are 4, 7, 10 and 13.",
+     "dur": 4.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "Now use the rule directly. At step 10, 3 times 10 plus 1 gives 31.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "Doubling the step does not double the term when there is a fixed part.",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "So at step 20, calculate 3 times 20 plus 1, rather than doubling 31.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "The answer is 61. Algebra lets us predict without drawing every step.",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "step",
+        "add",
+        "rule"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 0.8,
+       "target": [
+        "arrow1",
+        "arrow2"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "axis"
+      },
+      {
+       "at": 0.6,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "m1",
+        "m2",
+        "m3",
+        "m4"
+       ]
+      },
+      {
+       "at": 1.5,
+       "do": "highlight",
+       "dur": 0.7,
+       "target": "m4"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "n10"
+      },
+      {
+       "at": 0.5,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "flow1",
+       "to": 1
+      },
+      {
+       "at": 1.1,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "flow2",
+       "to": 1
+      },
+      {
+       "at": 1.8,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "ans31"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "myth"
+      },
+      {
+       "at": 0.8,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s5",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "n20",
+        "calc20"
+       ]
+      },
+      {
+       "at": 0.7,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "a20",
+       "to": 1
+      },
+      {
+       "at": 1.3,
+       "do": "show",
+       "dur": 0.6,
+       "target": "ans61"
+      },
+      {
+       "at": 1.8,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "a21",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0,
+     "scene": "s5",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "ans61"
+      },
+      {
+       "at": 1,
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "What is the term at step 20 for the rule 3n + 1?",
+    "options": [
+     "ans61",
+     "wrong62"
+    ],
+    "answer": "ans61",
+    "src": "c7-maths-ch04-t03-i04"
+   }
+  },
+  "repairs": [],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 33
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch04-t03-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "p1",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        120,
+        230
+       ],
+       "r": 28
+      },
+      {
+       "id": "p2",
+       "op": "circle",
+       "startMs": 500,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        250,
+        230
+       ],
+       "r": 28
+      },
+      {
+       "id": "p3",
+       "op": "circle",
+       "startMs": 1000,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        380,
+        230
+       ],
+       "r": 28
+      },
+      {
+       "id": "p4",
+       "op": "circle",
+       "startMs": 1500,
+       "endMs": 2000,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        510,
+        230
+       ],
+       "r": 28
+      },
+      {
+       "id": "a1",
+       "op": "arrow",
+       "startMs": 2200,
+       "endMs": 2700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        155,
+        230
+       ],
+       "to": [
+        215,
+        230
+       ]
+      },
+      {
+       "id": "a2",
+       "op": "arrow",
+       "startMs": 2700,
+       "endMs": 3200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        285,
+        230
+       ],
+       "to": [
+        345,
+        230
+       ]
+      },
+      {
+       "id": "a3",
+       "op": "arrow",
+       "startMs": 3200,
+       "endMs": 3700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        415,
+        230
+       ],
+       "to": [
+        475,
+        230
+       ]
+      },
+      {
+       "id": "t1",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 4600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        315,
+        110
+       ],
+       "text": "pattern",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "t2",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 5600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        380
+       ],
+       "text": "rule",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "a4",
+       "op": "arrow",
+       "startMs": 5700,
+       "endMs": 6500,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        315,
+        140
+       ],
+       "to": [
+        400,
+        350
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch04-t03-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 10813,
+     "ops": [
+      {
+       "id": "e1",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        100
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "3n",
+         "+",
+         "1"
+        ]
+       ]
+      },
+      {
+       "id": "l1",
+       "op": "label",
+       "startMs": 1800,
+       "endMs": 2400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        340,
+        125
+       ],
+       "text": "rule",
+       "to": [
+        285,
+        125
+       ]
+      },
+      {
+       "id": "e2",
+       "op": "numwork",
+       "startMs": 2800,
+       "endMs": 4600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        220
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "3n",
+         "+",
+         "1",
+         "=",
+         "4"
+        ]
+       ]
+      },
+      {
+       "id": "l2",
+       "op": "label",
+       "startMs": 4600,
+       "endMs": 5300,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        470,
+        245
+       ],
+       "text": "step 1",
+       "to": [
+        285,
+        245
+       ]
+      },
+      {
+       "id": "h1",
+       "op": "highlight",
+       "startMs": 5400,
+       "endMs": 6200,
+       "ink": "good",
+       "weight": 2,
+       "target": "e2",
+       "style": "circle"
+      },
+      {
+       "id": "e3",
+       "op": "numwork",
+       "startMs": 6500,
+       "endMs": 8200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        120,
+        340
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "term",
+         "=",
+         "3n",
+         "+",
+         "1"
+        ]
+       ]
+      },
+      {
+       "id": "t1",
+       "op": "text",
+       "startMs": 8400,
+       "endMs": 9200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        520,
+        365
+       ],
+       "text": "fixed part",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch04-t03-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "n1",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        110
+       ],
+       "layout": "number_line",
+       "rows": [
+        [
+         "1",
+         "2",
+         "3",
+         "4"
+        ]
+       ],
+       "range": [
+        1,
+        4
+       ]
+      },
+      {
+       "id": "n2",
+       "op": "numwork",
+       "startMs": 2200,
+       "endMs": 4200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        100,
+        250
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "4",
+         ",",
+         "7",
+         ",",
+         "10",
+         ",",
+         "13"
+        ]
+       ]
+      },
+      {
+       "id": "l1",
+       "op": "label",
+       "startMs": 4300,
+       "endMs": 4700,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        145,
+        210
+       ],
+       "text": "4",
+       "target": "n2"
+      },
+      {
+       "id": "l2",
+       "op": "label",
+       "startMs": 4700,
+       "endMs": 5100,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        275,
+        210
+       ],
+       "text": "7",
+       "target": "n2"
+      },
+      {
+       "id": "l3",
+       "op": "label",
+       "startMs": 5100,
+       "endMs": 5500,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        405,
+        210
+       ],
+       "text": "10",
+       "target": "n2"
+      },
+      {
+       "id": "l4",
+       "op": "label",
+       "startMs": 5500,
+       "endMs": 5900,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        535,
+        210
+       ],
+       "text": "13",
+       "target": "n2"
+      },
+      {
+       "id": "h1",
+       "op": "highlight",
+       "startMs": 6200,
+       "endMs": 7000,
+       "ink": "good",
+       "weight": 2,
+       "target": "n2",
+       "style": "underline"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch04-t03-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "e1",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        140
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "3",
+         "×",
+         "10",
+         "+",
+         "1",
+         "=",
+         "31"
+        ]
+       ]
+      },
+      {
+       "id": "l1",
+       "op": "label",
+       "startMs": 2400,
+       "endMs": 3000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        155,
+        100
+       ],
+       "text": "step 10",
+       "to": [
+        245,
+        140
+       ]
+      },
+      {
+       "id": "h1",
+       "op": "highlight",
+       "startMs": 3300,
+       "endMs": 4200,
+       "ink": "good",
+       "weight": 2,
+       "target": "e1",
+       "style": "circle"
+      },
+      {
+       "id": "t1",
+       "op": "text",
+       "startMs": 4600,
+       "endMs": 5300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        330
+       ],
+       "text": "directly",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch04-t03-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "t1",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "fixed part",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "e1",
+       "op": "numwork",
+       "startMs": 1000,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        150
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "step",
+         "=",
+         "10",
+         "term",
+         "=",
+         "31"
+        ]
+       ]
+      },
+      {
+       "id": "e2",
+       "op": "numwork",
+       "startMs": 2400,
+       "endMs": 3600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        280
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "step",
+         "=",
+         "20",
+         "term",
+         "=",
+         "61"
+        ]
+       ]
+      },
+      {
+       "id": "a1",
+       "op": "arrow",
+       "startMs": 3800,
+       "endMs": 4600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        420,
+        190
+       ],
+       "to": [
+        420,
+        320
+       ]
+      },
+      {
+       "id": "t2",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5500,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        560,
+        255
+       ],
+       "text": "not double",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "h1",
+       "op": "highlight",
+       "startMs": 5600,
+       "endMs": 6300,
+       "ink": "good",
+       "weight": 2,
+       "target": "a1",
+       "style": "pulse"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch04-t03-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "e1",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        120
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "3",
+         "×",
+         "20",
+         "+",
+         "1"
+        ]
+       ]
+      },
+      {
+       "id": "e2",
+       "op": "numwork",
+       "startMs": 2100,
+       "endMs": 3900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        100,
+        250
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "3",
+         "×",
+         "20",
+         "+",
+         "1",
+         "=",
+         "61"
+        ]
+       ]
+      },
+      {
+       "id": "l1",
+       "op": "label",
+       "startMs": 4100,
+       "endMs": 4700,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        500,
+        145
+       ],
+       "text": "step 20",
+       "to": [
+        285,
+        145
+       ]
+      },
+      {
+       "id": "h1",
+       "op": "highlight",
+       "startMs": 4900,
+       "endMs": 5700,
+       "ink": "good",
+       "weight": 2,
+       "target": "e2",
+       "style": "underline"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch04-t03-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "e1",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        120
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "3",
+         "×",
+         "20",
+         "+",
+         "1",
+         "=",
+         "61"
+        ]
+       ]
+      },
+      {
+       "id": "h1",
+       "op": "highlight",
+       "startMs": 2000,
+       "endMs": 2900,
+       "ink": "good",
+       "weight": 2,
+       "target": "e1",
+       "style": "circle"
+      },
+      {
+       "id": "t1",
+       "op": "text",
+       "startMs": 3200,
+       "endMs": 4000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        330
+       ],
+       "text": "algebra",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "a1",
+       "op": "arrow",
+       "startMs": 4100,
+       "endMs": 4800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        300
+       ],
+       "to": [
+        400,
+        180
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1",
+   "key": "×3 then +1",
+   "prompt": "inputs 1,4,7,10 → 4,13,22,31"
+  },
+  {
+   "itemId": "r2",
+   "key": "×2 then +1",
+   "prompt": "sticks-triangles: 3,5,7"
+  },
+  {
+   "itemId": "r3",
+   "key": "7",
+   "prompt": "×3 then +2 gave 23"
+  }
+ ],
+ "check": {
+  "issues": [
+   {
+    "where": "game/round 1 (rule-machine@1, mode=build)",
+    "what": "The round states inputs 1,4,7,10 and rule ['×3','+1'] which yields outputs 4,13,22,31. However the pattern 4,13,22,31 does not match any kit item or standard stick/triangle pattern; it appears to be a new, unrelated sequence. Moreover, the round's tiles include '×2' and '+2' which are not needed, and the target is 'c7-maths-ch04-t03-m-cant-generalise', but the round does not explicitly address the misconception—it merely asks to fill orders. More critically, the round does not directly contradict the kit, but it introduces a sequence (4,13,22,31) that is not in the kit and has no explanation; a learner might be confused. However this is not a factual error in the round's own data. The real issue is that the round's own text contradicts its own numbers: the pattern given by applying ×3 then +1 to inputs 1,4,7,10 yields 4,13,22,31, but the round's description says 'one rule for every input', yet the inputs are 1,4,7,10—these are not consecutive and the outputs are not a simple pattern that a child would naturally see. This could be confusing but is not factually wrong. I will note it as low severity for clarity.",
+    "severity": "low"
+   },
+   {
+    "where": "game/round 3 (rule-machine@1, mode=inverse)",
+    "what": "The round says rule ['×3','+2'], secret 7. The correct output for secret 7 is 3×7+2=23. But the round's description says 'a rule ran forward; work backwards' and tiles include '-2','÷3','+2','×3'. The secret is given as 7, but the computed key says the answer is 7 (the secret). Actually the round asks to find the secret input given the output 23 and rule ×3+2. That is fine. But the round's targets are 'c7-maths-ch04-t03-m-proportional', which is about doubling the step not doubling the term—this misconception is not addressed by an inverse operation round. The round does not match the target. However this is not a factual error, just a mismatch of target. I will flag as low severity.",
+    "severity": "low"
+   },
+   {
+    "where": "explainer (scene-explainer@1)",
+    "what": "The explainer task asks 'What is the term at step 20 for the rule 3n + 1?' and gives options 'ans61' and 'wrong62', with answer 'ans61'. This directly mirrors kit item i04 where the answer is 61. The explainer also references i04 as src. This is fine. However the explainer text L5 says 'Doubling the step does not double the term when there is a fixed part.' This is correct. The explainer scene s5 shows 'wrong62' node with glyph 'question' and color 'volt' (amber). That is fine. No issues. But the explainer is for target c7-maths-ch04-t03-m-proportional, which it addresses correctly. I see no high-severity issue.",
+    "severity": "low"
+   }
+  ],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ },
+ "firstCheck": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "Round 1 (build) uses rule ×2 then +1, but for inputs 1,4,7,10 the correct outputs are 3,9,15,21. However the kit introduction and expectations always use rules like 3n+1 for patterns that add 3 (4,7,10,13). Here the round's own data (inputs 1,4,7,10) would correspond to a rule that adds 3 (3n+1 gives 4,7,10,13), but the answer tiles are ×2,+1 which produces a different pattern. This creates a contradiction because the pattern 1,4,7,10 is the same as the kit’s step‐number pattern but the round’s rule does not match (the correct rule for that pattern is 3n+1, not 2n+1). The round is factually wrong about the pattern it presents.",
+    "severity": "high"
+   }
+  ],
+  "verdict": "fail",
+  "model": "DeepSeek-V4-Flash"
+ },
+ "regens": 2
+}

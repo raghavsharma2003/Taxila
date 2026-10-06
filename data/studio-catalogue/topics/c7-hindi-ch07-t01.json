@@ -1,0 +1,2057 @@
+{
+ "topicId": "c7-hindi-ch07-t01",
+ "title": "वर्षा-बहार",
+ "chapter": "वर्षा-बहार",
+ "subject": "hindi",
+ "class": 7,
+ "topicType": "T1",
+ "plan": {
+  "game": "beat-line@1",
+  "hint": "beat and rhyme rounds (Hindi: matra round on a doha/chaupai line)"
+ },
+ "game": {
+  "archetype": "beat-line@1",
+  "spec": {
+   "archetype": "beat-line@1",
+   "skills": [
+    "c7-hindi-ch07-t01"
+   ],
+   "lang": "hi",
+   "strings": {
+    "round": "दौर",
+    "onBeat": "लय पर",
+    "combo": "लगातार सही",
+    "tap": "लय पर थपकी दो",
+    "catch": "तुक पकड़ो",
+    "mark": "ह्रस्व या दीर्घ?",
+    "short": "ह्रस्व",
+    "long": "दीर्घ",
+    "practice": "अभ्यास पंक्ति",
+    "runDone": "कविता पूरी हुई",
+    "perfect": "बिलकुल लय पर",
+    "early": "जल्दी",
+    "late": "देर से",
+    "meter": "मात्रा"
+   },
+   "title": "वर्षा-बहार की लय",
+   "bpm": 84,
+   "lines": [
+    {
+     "text": "चम-चम चमकी चंचल चपला",
+     "beats": [
+      0,
+      2
+     ],
+     "own": true
+    },
+    {
+     "text": "घन-घन गरजे काले बादल",
+     "beats": [
+      0,
+      2
+     ],
+     "own": true
+    }
+   ],
+   "rounds": [
+    {
+     "mode": "beat",
+     "title": "लय पर थपकी",
+     "sub": "ध्वनि वाले शब्दों पर ज़ोर दो",
+     "lines": [
+      0,
+      1
+     ]
+    },
+    {
+     "mode": "rhyme",
+     "title": "तुक पकड़ो",
+     "sub": "तुक और अनुप्रास अलग पहचानो",
+     "items": [
+      {
+       "cue": "‘आए’ के साथ तुक वाला शब्द पकड़ो",
+       "options": [
+        "सुनाए",
+        "बादल",
+        "मोर"
+       ],
+       "answer": "सुनाए",
+       "src": "c7-hindi-ch07-t01-i05"
+      },
+      {
+       "cue": "‘सुनाए’ के साथ तुक वाला शब्द पकड़ो",
+       "options": [
+        "आए",
+        "बिजली",
+        "खेत"
+       ],
+       "answer": "आए",
+       "src": "c7-hindi-ch07-t01-i05"
+      }
+     ]
+    },
+    {
+     "mode": "matra",
+     "title": "मात्रा भरो",
+     "sub": "हर हिंदी syllable को ह्रस्व या दीर्घ करो",
+     "lines": [
+      0,
+      1
+     ]
+    }
+   ]
+  },
+  "repairs": [
+   "targets"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-hindi-ch07-t01"
+   ],
+   "lang": "hi",
+   "strings": {
+    "again": "फिर से दिखाएँ",
+    "yourTurn": "अब आपकी बारी",
+    "check": "जाँचें",
+    "right": "सही",
+    "look": "फिर देखें",
+    "myth": "भ्रांति",
+    "busted": "भ्रांति दूर",
+    "order": "क्रम में रखें"
+   },
+   "title": "वर्षा-बहार का आनंद",
+   "accent": "mint",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "वर्षा-बहार"
+      },
+      {
+       "id": "rain",
+       "type": "glyph",
+       "name": "rain",
+       "size": 140,
+       "color": "sci"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "भ्रांति: बहार का अर्थ बाहर है"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "cloud",
+       "type": "node",
+       "text": "बादल",
+       "sub": "घन",
+       "glyph": "cloud",
+       "color": "ion"
+      },
+      {
+       "id": "light",
+       "type": "node",
+       "text": "बिजली",
+       "sub": "चपला",
+       "glyph": "lightning",
+       "color": "sun"
+      },
+      {
+       "id": "peacock",
+       "type": "node",
+       "text": "मोर",
+       "sub": "नाचता है",
+       "glyph": "bird",
+       "color": "mint"
+      },
+      {
+       "id": "farmer",
+       "type": "node",
+       "text": "किसान",
+       "sub": "खुश होता है",
+       "glyph": "person",
+       "color": "amber"
+      },
+      {
+       "id": "field",
+       "type": "node",
+       "text": "हरे खेत",
+       "sub": "फसल",
+       "glyph": "wheat",
+       "color": "mint"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "cloud",
+       "to": "light",
+       "text": "चमकती"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "cloud",
+       "to": "peacock",
+       "text": "नाचता"
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "cloud",
+       "to": "field",
+       "text": "सिंचते"
+      },
+      {
+       "id": "a4",
+       "type": "arrow",
+       "from": "field",
+       "to": "farmer",
+       "text": "फसल"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "qtitle",
+       "type": "title",
+       "text": "जाँचें"
+      },
+      {
+       "id": "opt1",
+       "type": "label",
+       "text": "बहार = रौनक़",
+       "x": 100,
+       "y": 250,
+       "color": "mint"
+      },
+      {
+       "id": "opt2",
+       "type": "label",
+       "text": "बहार = बाहर",
+       "x": 100,
+       "y": 340,
+       "color": "amber"
+      },
+      {
+       "id": "opt3",
+       "type": "label",
+       "text": "बहार = जल्दी",
+       "x": 100,
+       "y": 430,
+       "color": "ion"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "वर्षा-बहार कविता बरसात की रौनक़ और सुंदरता दिखाती है।",
+    "L2": "बादल, बिजली, मोर और हरे-भरे खेत वर्षा के चित्र बनाते हैं।",
+    "L3": "घने बादल घिरते हैं और चंचल बिजली चमकती है।",
+    "L4": "वर्षा देखकर मोर नाचता है, क्योंकि यह उसका प्रिय मौसम है।",
+    "L5": "किसान भी खुश होता है, क्योंकि बारिश से खेत सिंचते हैं और फसल अच्छी होती है।",
+    "L6": "ध्यान रखो, बहार का अर्थ रौनक़ या खिला हुआ सुहावना मौसम है।",
+    "L7": "बाहर का अर्थ किसी जगह के बाहर होता है; इसलिए बहार और बाहर अलग शब्द हैं।",
+    "L8": "‘चम-चम चमकी चंचल चपला’ में ‘च’ वर्ण बार-बार आया है। इसे अनुप्रास अलंकार कहते हैं।",
+    "L9": "अब बताओ, वर्षा-बहार में बहार का सही अर्थ क्या है?"
+   },
+   "narration": {
+    "L1": {
+     "text": "वर्षा-बहार कविता बरसात की रौनक़ और सुंदरता दिखाती है।",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "बादल, बिजली, मोर और हरे-भरे खेत वर्षा के चित्र बनाते हैं।",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "घने बादल घिरते हैं और चंचल बिजली चमकती है।",
+     "dur": 2.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "वर्षा देखकर मोर नाचता है, क्योंकि यह उसका प्रिय मौसम है।",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "किसान भी खुश होता है, क्योंकि बारिश से खेत सिंचते हैं और फसल अच्छी होती है।",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "ध्यान रखो, बहार का अर्थ रौनक़ या खिला हुआ सुहावना मौसम है।",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "बाहर का अर्थ किसी जगह के बाहर होता है; इसलिए बहार और बाहर अलग शब्द हैं।",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "‘चम-चम चमकी चंचल चपला’ में ‘च’ वर्ण बार-बार आया है। इसे अनुप्रास अलंकार कहते हैं।",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L9": {
+     "text": "अब बताओ, वर्षा-बहार में बहार का सही अर्थ क्या है?",
+     "dur": 2.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      },
+      {
+       "at": 0.2,
+       "do": "show",
+       "dur": 0.8,
+       "target": "rain"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "cloud"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.6,
+       "target": "light"
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "peacock",
+        "field"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "a1",
+       "to": 1
+      },
+      {
+       "at": 0.2,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "light"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "a2",
+       "to": 1
+      },
+      {
+       "at": 0.5,
+       "do": "highlight",
+       "dur": 1,
+       "target": "peacock"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "flow",
+       "dur": 1,
+       "target": [
+        "a3",
+        "a4"
+       ],
+       "to": 1
+      },
+      {
+       "at": 0.5,
+       "do": "highlight",
+       "dur": 1,
+       "target": "farmer"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.3,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "bust",
+       "dur": 1.2,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "cloud"
+      }
+     ]
+    },
+    {
+     "line": "L9",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "qtitle"
+      },
+      {
+       "at": 0.4,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "opt1",
+        "opt2",
+        "opt3"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "‘वर्षा-बहार’ में ‘बहार’ का सही अर्थ चुनिए।",
+    "options": [
+     "opt1",
+     "opt2",
+     "opt3"
+    ],
+    "answer": "opt1",
+    "src": "c7-hindi-ch07-t01-i03"
+   }
+  },
+  "repairs": [
+   "targets"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 32
+ },
+ "keys": [
+  {
+   "itemId": "b0:*",
+   "key": "चम-चम · चंचल",
+   "prompt": "stressed words in: चम-चम चमकी चंचल चपला"
+  },
+  {
+   "itemId": "b1:*",
+   "key": "घन-घन · काले",
+   "prompt": "stressed words in: घन-घन गरजे काले बादल"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "सुनाए",
+   "prompt": "‘आए’ के साथ तुक वाला शब्द पकड़ो [सुनाए / बादल / मोर]",
+   "src": "c7-hindi-ch07-t01-i05"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "आए",
+   "prompt": "‘सुनाए’ के साथ तुक वाला शब्द पकड़ो [आए / बिजली / खेत]",
+   "src": "c7-hindi-ch07-t01-i05"
+  },
+  {
+   "itemId": "m0:*",
+   "key": "1111112211112",
+   "prompt": "मात्रा: चम-चम चमकी चंचल चपला"
+  },
+  {
+   "itemId": "m1:*",
+   "key": "111111222211",
+   "prompt": "मात्रा: घन-घन गरजे काले बादल"
+  }
+ ],
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-hindi-ch07-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4430,
+     "ops": [
+      {
+       "id": "rain",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        120,
+        100
+       ],
+       "to": [
+        120,
+        190
+       ]
+      },
+      {
+       "id": "rain2",
+       "op": "line",
+       "startMs": 200,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        180,
+        100
+       ],
+       "to": [
+        180,
+        190
+       ]
+      },
+      {
+       "id": "rain3",
+       "op": "line",
+       "startMs": 400,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        240,
+        100
+       ],
+       "to": [
+        240,
+        190
+       ]
+      },
+      {
+       "id": "cloud",
+       "op": "ellipse",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        180,
+        85
+       ],
+       "rx": 110,
+       "ry": 45
+      },
+      {
+       "id": "fields",
+       "op": "polygon",
+       "startMs": 1300,
+       "endMs": 2000,
+       "ink": "good",
+       "weight": 2,
+       "points": [
+        [
+         80,
+         350
+        ],
+        [
+         250,
+         290
+        ],
+        [
+         430,
+         350
+        ],
+        [
+         430,
+         430
+        ],
+        [
+         80,
+         430
+        ]
+       ]
+      },
+      {
+       "id": "flower",
+       "op": "circle",
+       "startMs": 1800,
+       "endMs": 2300,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        570,
+        330
+       ],
+       "r": 35
+      },
+      {
+       "id": "l1",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        270
+       ],
+       "text": "वर्षा-बहार",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "l2",
+       "op": "label",
+       "startMs": 3000,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        570,
+        405
+       ],
+       "text": "सुंदरता",
+       "to": [
+        570,
+        350
+       ]
+      },
+      {
+       "id": "l3",
+       "op": "label",
+       "startMs": 3500,
+       "endMs": 4200,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        175,
+        465
+       ],
+       "text": "रौनक़",
+       "to": [
+        180,
+        390
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-hindi-ch07-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "bolt",
+       "op": "polygon",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         350,
+         80
+        ],
+        [
+         320,
+         180
+        ],
+        [
+         355,
+         175
+        ],
+        [
+         330,
+         270
+        ],
+        [
+         410,
+         145
+        ],
+        [
+         370,
+         150
+        ]
+       ]
+      },
+      {
+       "id": "peacock",
+       "op": "ellipse",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        555,
+        250
+       ],
+       "rx": 55,
+       "ry": 85
+      },
+      {
+       "id": "feather",
+       "op": "circle",
+       "startMs": 1000,
+       "endMs": 1500,
+       "ink": "good",
+       "weight": 1,
+       "c": [
+        555,
+        170
+       ],
+       "r": 22
+      },
+      {
+       "id": "field2",
+       "op": "polygon",
+       "startMs": 1300,
+       "endMs": 2100,
+       "ink": "good",
+       "weight": 2,
+       "points": [
+        [
+         80,
+         350
+        ],
+        [
+         250,
+         300
+        ],
+        [
+         430,
+         350
+        ],
+        [
+         430,
+         430
+        ],
+        [
+         80,
+         430
+        ]
+       ]
+      },
+      {
+       "id": "l1",
+       "op": "label",
+       "startMs": 2100,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        170,
+        55
+       ],
+       "text": "बादल",
+       "to": [
+        180,
+        70
+       ]
+      },
+      {
+       "id": "l2",
+       "op": "label",
+       "startMs": 2700,
+       "endMs": 3350,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        390,
+        300
+       ],
+       "text": "बिजली",
+       "to": [
+        365,
+        180
+       ]
+      },
+      {
+       "id": "l3",
+       "op": "label",
+       "startMs": 3350,
+       "endMs": 3900,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        555,
+        370
+       ],
+       "text": "मोर",
+       "to": [
+        555,
+        270
+       ]
+      },
+      {
+       "id": "l4",
+       "op": "label",
+       "startMs": 3900,
+       "endMs": 4800,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        240,
+        465
+       ],
+       "text": "हरे-भरे खेत",
+       "to": [
+        245,
+        350
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-hindi-ch07-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 4430,
+     "ops": [
+      {
+       "id": "cloud3",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 3,
+       "c": [
+        210,
+        120
+       ],
+       "rx": 145,
+       "ry": 55
+      },
+      {
+       "id": "cloud4",
+       "op": "ellipse",
+       "startMs": 350,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        330,
+        120
+       ],
+       "rx": 120,
+       "ry": 50
+      },
+      {
+       "id": "bolt3",
+       "op": "polygon",
+       "startMs": 1000,
+       "endMs": 1800,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         400,
+         90
+        ],
+        [
+         365,
+         190
+        ],
+        [
+         400,
+         185
+        ],
+        [
+         375,
+         285
+        ],
+        [
+         455,
+         155
+        ],
+        [
+         420,
+         160
+        ]
+       ]
+      },
+      {
+       "id": "glow",
+       "op": "circle",
+       "startMs": 1600,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        410,
+        165
+       ],
+       "r": 55
+      },
+      {
+       "id": "l1",
+       "op": "label",
+       "startMs": 2200,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        230
+       ],
+       "text": "घने बादल",
+       "to": [
+        210,
+        135
+       ]
+      },
+      {
+       "id": "l2",
+       "op": "label",
+       "startMs": 2900,
+       "endMs": 3800,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        475,
+        300
+       ],
+       "text": "चंचल बिजली",
+       "to": [
+        410,
+        190
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-hindi-ch07-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "peacock4",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        380,
+        260
+       ],
+       "rx": 60,
+       "ry": 100
+      },
+      {
+       "id": "head4",
+       "op": "circle",
+       "startMs": 600,
+       "endMs": 1000,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        380,
+        145
+       ],
+       "r": 28
+      },
+      {
+       "id": "wing4",
+       "op": "ellipse",
+       "startMs": 900,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        350,
+        260
+       ],
+       "rx": 25,
+       "ry": 65
+      },
+      {
+       "id": "tail4",
+       "op": "polygon",
+       "startMs": 1200,
+       "endMs": 1900,
+       "ink": "good",
+       "weight": 2,
+       "points": [
+        [
+         390,
+         330
+        ],
+        [
+         300,
+         430
+        ],
+        [
+         380,
+         390
+        ],
+        [
+         460,
+         430
+        ]
+       ]
+      },
+      {
+       "id": "dance1",
+       "op": "arrow",
+       "startMs": 1900,
+       "endMs": 2500,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        285,
+        350
+       ],
+       "to": [
+        245,
+        300
+       ]
+      },
+      {
+       "id": "dance2",
+       "op": "arrow",
+       "startMs": 2200,
+       "endMs": 2800,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        475,
+        350
+       ],
+       "to": [
+        520,
+        300
+       ]
+      },
+      {
+       "id": "l1",
+       "op": "label",
+       "startMs": 2900,
+       "endMs": 3900,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        380,
+        475
+       ],
+       "text": "मोर नाचता है",
+       "to": [
+        380,
+        370
+       ]
+      },
+      {
+       "id": "l2",
+       "op": "label",
+       "startMs": 3900,
+       "endMs": 4800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        560,
+        180
+       ],
+       "text": "प्रिय मौसम",
+       "to": [
+        430,
+        180
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-hindi-ch07-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "farmer",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        120,
+        180
+       ],
+       "r": 28
+      },
+      {
+       "id": "body",
+       "op": "line",
+       "startMs": 400,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        120,
+        208
+       ],
+       "to": [
+        120,
+        310
+       ]
+      },
+      {
+       "id": "arm",
+       "op": "line",
+       "startMs": 700,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        120,
+        235
+       ],
+       "to": [
+        75,
+        275
+       ]
+      },
+      {
+       "id": "field5",
+       "op": "polygon",
+       "startMs": 1000,
+       "endMs": 1900,
+       "ink": "good",
+       "weight": 2,
+       "points": [
+        [
+         270,
+         300
+        ],
+        [
+         650,
+         250
+        ],
+        [
+         720,
+         420
+        ],
+        [
+         250,
+         420
+        ]
+       ]
+      },
+      {
+       "id": "water1",
+       "op": "line",
+       "startMs": 1900,
+       "endMs": 2400,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        330,
+        300
+       ],
+       "to": [
+        350,
+        410
+       ]
+      },
+      {
+       "id": "water2",
+       "op": "line",
+       "startMs": 2200,
+       "endMs": 2700,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        460,
+        280
+       ],
+       "to": [
+        475,
+        400
+       ]
+      },
+      {
+       "id": "rain5",
+       "op": "line",
+       "startMs": 2700,
+       "endMs": 3200,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        300,
+        90
+       ],
+       "to": [
+        300,
+        210
+       ]
+      },
+      {
+       "id": "rain6",
+       "op": "line",
+       "startMs": 2900,
+       "endMs": 3400,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        420,
+        90
+       ],
+       "to": [
+        420,
+        190
+       ]
+      },
+      {
+       "id": "crop",
+       "op": "stroke",
+       "startMs": 3400,
+       "endMs": 3900,
+       "ink": "good",
+       "weight": 2,
+       "points": [
+        [
+         390,
+         380
+        ],
+        [
+         390,
+         330
+        ],
+        [
+         375,
+         345
+        ],
+        [
+         390,
+         330
+        ],
+        [
+         405,
+         345
+        ],
+        [
+         390,
+         330
+        ]
+       ]
+      },
+      {
+       "id": "l1",
+       "op": "label",
+       "startMs": 3900,
+       "endMs": 4500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        115,
+        350
+       ],
+       "text": "किसान",
+       "to": [
+        120,
+        270
+       ]
+      },
+      {
+       "id": "l2",
+       "op": "label",
+       "startMs": 4500,
+       "endMs": 5500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        540,
+        465
+       ],
+       "text": "खेत सिंचते हैं",
+       "to": [
+        500,
+        350
+       ]
+      },
+      {
+       "id": "l3",
+       "op": "label",
+       "startMs": 5500,
+       "endMs": 6500,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        610,
+        210
+       ],
+       "text": "फसल अच्छी",
+       "to": [
+        500,
+        300
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-hindi-ch07-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "bahar",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        180,
+        150
+       ],
+       "text": "बहार",
+       "size": "l"
+      },
+      {
+       "id": "eq6",
+       "op": "numwork",
+       "startMs": 900,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        180,
+        220
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "बहार",
+         "=",
+         "रौनक़"
+        ]
+       ]
+      },
+      {
+       "id": "flower6",
+       "op": "circle",
+       "startMs": 1600,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        500,
+        160
+       ],
+       "r": 45
+      },
+      {
+       "id": "petal1",
+       "op": "circle",
+       "startMs": 1900,
+       "endMs": 2300,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        500,
+        105
+       ],
+       "r": 22
+      },
+      {
+       "id": "petal2",
+       "op": "circle",
+       "startMs": 2100,
+       "endMs": 2500,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        550,
+        160
+       ],
+       "r": 22
+      },
+      {
+       "id": "petal3",
+       "op": "circle",
+       "startMs": 2300,
+       "endMs": 2700,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        500,
+        215
+       ],
+       "r": 22
+      },
+      {
+       "id": "l1",
+       "op": "label",
+       "startMs": 2900,
+       "endMs": 3700,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        180,
+        330
+       ],
+       "text": "खिला हुआ",
+       "to": [
+        180,
+        160
+       ]
+      },
+      {
+       "id": "l2",
+       "op": "label",
+       "startMs": 3700,
+       "endMs": 4900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        500,
+        330
+       ],
+       "text": "सुहावना मौसम",
+       "to": [
+        500,
+        220
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 2,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-hindi-ch07-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "bahar7",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        160,
+        120
+       ],
+       "text": "बहार",
+       "size": "l"
+      },
+      {
+       "id": "bahar7eq",
+       "op": "numwork",
+       "startMs": 1100,
+       "endMs": 2000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        120,
+        190
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "बहार",
+         "=",
+         "रौनक़"
+        ]
+       ]
+      },
+      {
+       "id": "bahar7out",
+       "op": "text",
+       "startMs": 2000,
+       "endMs": 2700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        520,
+        120
+       ],
+       "text": "बाहर",
+       "size": "l"
+      },
+      {
+       "id": "place",
+       "op": "rect",
+       "startMs": 3100,
+       "endMs": 3800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        475,
+        190
+       ],
+       "w": 170,
+       "h": 100
+      },
+      {
+       "id": "outside",
+       "op": "arrow",
+       "startMs": 3800,
+       "endMs": 4400,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        560,
+        240
+       ],
+       "to": [
+        700,
+        240
+       ]
+      },
+      {
+       "id": "l1",
+       "op": "label",
+       "startMs": 4400,
+       "endMs": 5200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        475,
+        350
+       ],
+       "text": "किसी जगह",
+       "to": [
+        560,
+        290
+       ]
+      },
+      {
+       "id": "l2",
+       "op": "label",
+       "startMs": 5200,
+       "endMs": 6000,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        625,
+        300
+       ],
+       "text": "के बाहर",
+       "to": [
+        680,
+        240
+       ]
+      },
+      {
+       "id": "l3",
+       "op": "text",
+       "startMs": 6100,
+       "endMs": 6900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        430
+       ],
+       "text": "अलग शब्द",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-hindi-ch07-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "phrase",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        90
+       ],
+       "text": "चम-चम चमकी चंचल चपला",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "cha1",
+       "op": "circle",
+       "startMs": 1400,
+       "endMs": 1800,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        118,
+        88
+       ],
+       "r": 20
+      },
+      {
+       "id": "cha2",
+       "op": "circle",
+       "startMs": 1800,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        215,
+        88
+       ],
+       "r": 20
+      },
+      {
+       "id": "cha3",
+       "op": "circle",
+       "startMs": 2200,
+       "endMs": 2600,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        315,
+        88
+       ],
+       "r": 20
+      },
+      {
+       "id": "cha4",
+       "op": "circle",
+       "startMs": 2600,
+       "endMs": 3000,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        415,
+        88
+       ],
+       "r": 20
+      },
+      {
+       "id": "repeat",
+       "op": "arrow",
+       "startMs": 3100,
+       "endMs": 4000,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        120,
+        150
+       ],
+       "to": [
+        415,
+        150
+       ]
+      },
+      {
+       "id": "l1",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 4500,
+       "ink": "accent",
+       "weight": 3,
+       "at": [
+        270,
+        260
+       ],
+       "text": "च",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "l2",
+       "op": "label",
+       "startMs": 4500,
+       "endMs": 5500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        270,
+        330
+       ],
+       "text": "वर्ण बार-बार",
+       "to": [
+        270,
+        275
+       ]
+      },
+      {
+       "id": "l3",
+       "op": "text",
+       "startMs": 5500,
+       "endMs": 6600,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        270,
+        410
+       ],
+       "text": "अनुप्रास अलंकार",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L9",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-hindi-ch07-t01-wb-L9",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "question",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        100
+       ],
+       "text": "वर्षा-बहार",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "qmark",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        180
+       ],
+       "text": "?",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "choice1",
+       "op": "rect",
+       "startMs": 1500,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        100,
+        260
+       ],
+       "w": 220,
+       "h": 85
+      },
+      {
+       "id": "choice2",
+       "op": "rect",
+       "startMs": 1900,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        480,
+        260
+       ],
+       "w": 220,
+       "h": 85
+      },
+      {
+       "id": "a1",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3100,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        210,
+        315
+       ],
+       "text": "रौनक़",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "a2",
+       "op": "text",
+       "startMs": 2900,
+       "endMs": 3600,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        590,
+        315
+       ],
+       "text": "के बाहर",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "prompt",
+       "op": "label",
+       "startMs": 3700,
+       "endMs": 4600,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        430
+       ],
+       "text": "सही अर्थ",
+       "to": [
+        210,
+        350
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ },
+ "firstCheck": {
+  "issues": [
+   {
+    "where": "explainer",
+    "what": "सीन s1 में 'myth' एलिमेंट कहता है 'बहार का अर्थ बाहर है' — यह एक भ्रांति है जिसे गलत तरीके से सही बताया जा रहा है। बच्चों को यह सीधे सिखाना समस्या है, क्योंकि यह बिना किसी स्पष्टीकरण के गलत जानकारी दे सकता है।",
+    "severity": "high"
+   }
+  ],
+  "verdict": "fail",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

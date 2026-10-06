@@ -1,0 +1,1698 @@
+{
+ "topicId": "c5-english-ch10-t01",
+ "title": "Glass Bangles",
+ "chapter": "Glass Bangles",
+ "subject": "english",
+ "class": 5,
+ "topicType": "T3",
+ "plan": {
+  "game": "story-rail@1",
+  "hint": "sequence, cause and who modes from the lesson's events and speakers"
+ },
+ "game": {
+  "archetype": "story-rail@1",
+  "spec": {
+   "archetype": "story-rail@1",
+   "skills": [
+    "c5-english-ch10-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "picked": "coupled",
+    "streak": "streak",
+    "next": "What happens next?",
+    "effect": "What does this lead to?",
+    "who": "Who said this?",
+    "runDone": "Line complete",
+    "order": "your train",
+    "right": "Coupled",
+    "wrong": "Not this one",
+    "coach": "Tap a wagon before the train reaches the fork"
+   },
+   "title": "Glass Bangles",
+   "rounds": [
+    {
+     "mode": "sequence",
+     "title": "Bangle making",
+     "sub": "couple the steps in order",
+     "cards": [
+      {
+       "id": "s1",
+       "text": "Glass is melted",
+       "glyph": "fire",
+       "src": "c5-english-ch10-t01-i02"
+      },
+      {
+       "id": "s2",
+       "text": "Glass is pulled into a coil",
+       "glyph": "gear",
+       "src": "c5-english-ch10-t01-i02"
+      },
+      {
+       "id": "s3",
+       "text": "The coil is cut into rings",
+       "glyph": "ruler",
+       "src": "c5-english-ch10-t01-i02"
+      },
+      {
+       "id": "s4",
+       "text": "Rings are joined over a flame",
+       "glyph": "fire",
+       "src": "c5-english-ch10-t01-i02"
+      },
+      {
+       "id": "s5",
+       "text": "The bangles are painted",
+       "src": "c5-english-ch10-t01-i02"
+      }
+     ],
+     "speed": 0.9
+    },
+    {
+     "mode": "cause",
+     "title": "What follows?",
+     "sub": "match each cause to its effect",
+     "pairs": [
+      {
+       "cause": {
+        "id": "c1",
+        "text": "Glass is heated in a furnace",
+        "glyph": "fire",
+        "src": "c5-english-ch10-t01-i02"
+       },
+       "effect": {
+        "id": "e1",
+        "text": "The glass is melted",
+        "glyph": "drop",
+        "src": "c5-english-ch10-t01-i02"
+       }
+      },
+      {
+       "cause": {
+        "id": "c2",
+        "text": "The coil is ready",
+        "glyph": "gear",
+        "src": "c5-english-ch10-t01-i02"
+       },
+       "effect": {
+        "id": "e2",
+        "text": "It is cut into rings",
+        "glyph": "ruler",
+        "src": "c5-english-ch10-t01-i02"
+       }
+      }
+     ],
+     "speed": 0.85,
+     "targets": "c5-english-ch10-t01-m-passive-base"
+    },
+    {
+     "mode": "who",
+     "title": "Who said it?",
+     "sub": "send each line to its speaker",
+     "speakers": [
+      {
+       "id": "noor",
+       "name": "Noor",
+       "glyph": "person"
+      },
+      {
+       "id": "papa",
+       "name": "Papa",
+       "glyph": "person"
+      }
+     ],
+     "lines": [
+      {
+       "id": "w1",
+       "text": "I love the clink of bangles",
+       "speaker": "noor",
+       "src": "c5-english-ch10-t01-i06"
+      },
+      {
+       "id": "w3",
+       "text": "The work is hot and hard",
+       "speaker": "noor",
+       "src": "c5-english-ch10-t01-i06"
+      }
+     ],
+     "speed": 0.8
+    }
+   ]
+  },
+  "repairs": [
+   "glyph",
+   "string:card.text",
+   "string:card.text"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c5-english-ch10-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Right",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "BUSTED",
+    "order": "Tap them in order"
+   },
+   "title": "How Glass Bangles Are Made",
+   "accent": "amber",
+   "targets": "c5-english-ch10-t01-m-passive-base",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "How Glass Bangles Are Made"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Bangles are make by workers"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "city",
+       "type": "node",
+       "text": "Firozabad",
+       "sub": "glass bangles",
+       "glyph": "shop",
+       "color": "amber"
+      },
+      {
+       "id": "melt",
+       "type": "node",
+       "text": "Melt glass",
+       "sub": "hot furnace",
+       "glyph": "fire",
+       "color": "sun"
+      },
+      {
+       "id": "coil",
+       "type": "node",
+       "text": "Pull coil",
+       "sub": "shape glass",
+       "glyph": "wheel",
+       "color": "amber"
+      },
+      {
+       "id": "cut",
+       "type": "node",
+       "text": "Cut rings",
+       "sub": "make circles",
+       "glyph": "ruler",
+       "color": "ion"
+      },
+      {
+       "id": "join",
+       "type": "node",
+       "text": "Join rings",
+       "sub": "over a flame",
+       "glyph": "spark",
+       "color": "sun"
+      },
+      {
+       "id": "paint",
+       "type": "node",
+       "text": "Paint",
+       "sub": "add lines",
+       "color": "mint"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "city",
+       "to": "melt",
+       "text": "starts"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "melt",
+       "to": "coil",
+       "text": "then"
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "coil",
+       "to": "cut",
+       "text": "next"
+      },
+      {
+       "id": "a4",
+       "type": "arrow",
+       "from": "cut",
+       "to": "join",
+       "text": "next"
+      },
+      {
+       "id": "a5",
+       "type": "arrow",
+       "from": "join",
+       "to": "paint",
+       "text": "finally"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "melt2",
+       "type": "node",
+       "text": "Melt glass",
+       "sub": "first",
+       "glyph": "fire",
+       "color": "sun"
+      },
+      {
+       "id": "coil2",
+       "type": "node",
+       "text": "Pull coil",
+       "sub": "then",
+       "glyph": "wheel",
+       "color": "amber"
+      },
+      {
+       "id": "cut2",
+       "type": "node",
+       "text": "Cut rings",
+       "sub": "next",
+       "glyph": "ruler",
+       "color": "ion"
+      },
+      {
+       "id": "join2",
+       "type": "node",
+       "text": "Join rings",
+       "sub": "then",
+       "glyph": "spark",
+       "color": "sun"
+      },
+      {
+       "id": "paint2",
+       "type": "node",
+       "text": "Paint",
+       "sub": "finally",
+       "glyph": "pen",
+       "color": "mint"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Firozabad in Uttar Pradesh is famous for glass bangles.",
+    "L2": "A bangle is made through several steps, and many workers help.",
+    "L3": "First, glass is melted in a hot furnace and pulled into a coil.",
+    "L4": "Then the coil is cut into rings, and the rings are joined over a flame.",
+    "L5": "Finally, the bangles are painted.",
+    "L6": "Every bangle is made by many hands means that workers each do one step.",
+    "L7": "In process sentences, use are with the done-form: bangles are made, not bangles are make.",
+    "L8": "The order is melt, pull, cut, join, and paint."
+   },
+   "narration": {
+    "L1": {
+     "text": "Firozabad in Uttar Pradesh is famous for glass bangles.",
+     "dur": 2.4,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L2": {
+     "text": "A bangle is made through several steps, and many workers help.",
+     "dur": 2.8,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L3": {
+     "text": "First, glass is melted in a hot furnace and pulled into a coil.",
+     "dur": 3.2,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L4": {
+     "text": "Then the coil is cut into rings, and the rings are joined over a flame.",
+     "dur": 3.2,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L5": {
+     "text": "Finally, the bangles are painted.",
+     "dur": 2,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Every bangle is made by many hands means that workers each do one step.",
+     "dur": 3.4,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L7": {
+     "text": "In process sentences, use are with the done-form: bangles are made, not bangles are make.",
+     "dur": 3.8,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L8": {
+     "text": "The order is melt, pull, cut, join, and paint.",
+     "dur": 2.8,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      },
+      {
+       "at": 1,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.5,
+       "target": "city"
+      },
+      {
+       "at": 0.4,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "melt",
+        "coil",
+        "a1",
+        "a2"
+       ]
+      },
+      {
+       "at": 1.2,
+       "do": "flow",
+       "dur": 0.7,
+       "target": [
+        "a1",
+        "a2"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "cut",
+        "join",
+        "a3",
+        "a4"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 0.7,
+       "target": [
+        "a3",
+        "a4"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "paint",
+        "a5"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "a5",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1.4,
+       "target": [
+        "melt",
+        "coil",
+        "cut",
+        "join",
+        "paint"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.5,
+       "target": "myth"
+      },
+      {
+       "at": 0.7,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "melt2",
+        "coil2",
+        "cut2",
+        "join2",
+        "paint2"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive"
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "order",
+    "prompt": "Tap the steps in the order used to make the bangles.",
+    "items": [
+     "melt2",
+     "coil2",
+     "cut2",
+     "join2",
+     "paint2"
+    ],
+    "src": "c5-english-ch10-t01-i02"
+   }
+  },
+  "repairs": [
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "passes": 2,
+  "seconds": 27
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "Glass is pulled into a coil",
+   "prompt": "sequence: after/for \"Glass is melted\"",
+   "src": "c5-english-ch10-t01-i02"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "The coil is cut into rings",
+   "prompt": "sequence: after/for \"Glass is pulled into a coil\"",
+   "src": "c5-english-ch10-t01-i02"
+  },
+  {
+   "itemId": "r1:2",
+   "key": "Rings are joined over a flame",
+   "prompt": "sequence: after/for \"The coil is cut into rings\"",
+   "src": "c5-english-ch10-t01-i02"
+  },
+  {
+   "itemId": "r1:3",
+   "key": "The bangles are painted",
+   "prompt": "sequence: after/for \"Rings are joined over a flame\"",
+   "src": "c5-english-ch10-t01-i02"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "The glass is melted",
+   "prompt": "cause: after/for \"Glass is heated in a furnace\"",
+   "src": "c5-english-ch10-t01-i02"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "It is cut into rings",
+   "prompt": "cause: after/for \"The coil is ready\"",
+   "src": "c5-english-ch10-t01-i02"
+  },
+  {
+   "itemId": "r3:0",
+   "key": "Noor",
+   "prompt": "who: after/for \"I love the clink of bangles\"",
+   "src": "c5-english-ch10-t01-i06"
+  },
+  {
+   "itemId": "r3:1",
+   "key": "Noor",
+   "prompt": "who: after/for \"The work is hot and hard\"",
+   "src": "c5-english-ch10-t01-i06"
+  }
+ ],
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-english-ch10-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4430,
+     "ops": [
+      {
+       "id": "place",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        100
+       ],
+       "text": "Firozabad",
+       "size": "l"
+      },
+      {
+       "id": "state",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        120,
+        155
+       ],
+       "text": "Uttar Pradesh",
+       "size": "m"
+      },
+      {
+       "id": "bangle1",
+       "op": "circle",
+       "startMs": 1500,
+       "endMs": 2400,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        430,
+        220
+       ],
+       "r": 70
+      },
+      {
+       "id": "bangle2",
+       "op": "circle",
+       "startMs": 1800,
+       "endMs": 2600,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        430,
+        220
+       ],
+       "r": 42
+      },
+      {
+       "id": "glass",
+       "op": "label",
+       "startMs": 2400,
+       "endMs": 3100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        520,
+        180
+       ],
+       "text": "glass",
+       "to": [
+        480,
+        205
+       ]
+      },
+      {
+       "id": "famous",
+       "op": "label",
+       "startMs": 3200,
+       "endMs": 4100,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        280,
+        330
+       ],
+       "text": "famous",
+       "to": [
+        430,
+        290
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-english-ch10-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "bangle",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        170,
+        230
+       ],
+       "r": 65
+      },
+      {
+       "id": "ring",
+       "op": "circle",
+       "startMs": 300,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        170,
+        230
+       ],
+       "r": 38
+      },
+      {
+       "id": "steps",
+       "op": "arrow",
+       "startMs": 1100,
+       "endMs": 1900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        260,
+        230
+       ],
+       "to": [
+        470,
+        230
+       ]
+      },
+      {
+       "id": "step1",
+       "op": "circle",
+       "startMs": 2000,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        540,
+        180
+       ],
+       "r": 28
+      },
+      {
+       "id": "step2",
+       "op": "circle",
+       "startMs": 2300,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        620,
+        180
+       ],
+       "r": 28
+      },
+      {
+       "id": "workers",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        500,
+        310
+       ],
+       "text": "many workers",
+       "size": "m"
+      },
+      {
+       "id": "help",
+       "op": "arrow",
+       "startMs": 3900,
+       "endMs": 4500,
+       "ink": "good",
+       "weight": 1,
+       "from": [
+        535,
+        285
+       ],
+       "to": [
+        540,
+        215
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-english-ch10-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "furnace",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        80,
+        180
+       ],
+       "w": 180,
+       "h": 150,
+       "fill": "soft",
+       "round": 12
+      },
+      {
+       "id": "hot",
+       "op": "text",
+       "startMs": 500,
+       "endMs": 1200,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        170,
+        145
+       ],
+       "text": "hot furnace",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "flame",
+       "op": "sector",
+       "startMs": 1000,
+       "endMs": 1800,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        170,
+        300
+       ],
+       "r": 55,
+       "fill": "accent",
+       "fromDeg": 210,
+       "toDeg": 330
+      },
+      {
+       "id": "glass",
+       "op": "circle",
+       "startMs": 1700,
+       "endMs": 2300,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        300,
+        255
+       ],
+       "r": 24,
+       "fill": "accent"
+      },
+      {
+       "id": "pull",
+       "op": "arrow",
+       "startMs": 2200,
+       "endMs": 3900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        330,
+        255
+       ],
+       "to": [
+        570,
+        255
+       ],
+       "bend": -1
+      },
+      {
+       "id": "coil",
+       "op": "ellipse",
+       "startMs": 3900,
+       "endMs": 4800,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        650,
+        255
+       ],
+       "rx": 80,
+       "ry": 55
+      },
+      {
+       "id": "coil2",
+       "op": "ellipse",
+       "startMs": 4300,
+       "endMs": 5100,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        650,
+        255
+       ],
+       "rx": 48,
+       "ry": 30
+      },
+      {
+       "id": "coilLabel",
+       "op": "label",
+       "startMs": 5100,
+       "endMs": 5800,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        620,
+        365
+       ],
+       "text": "coil",
+       "to": [
+        650,
+        310
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-english-ch10-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "coil",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        120,
+        220
+       ],
+       "rx": 75,
+       "ry": 45
+      },
+      {
+       "id": "cut",
+       "op": "line",
+       "startMs": 800,
+       "endMs": 1400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        120,
+        160
+       ],
+       "to": [
+        120,
+        280
+       ]
+      },
+      {
+       "id": "ring1",
+       "op": "circle",
+       "startMs": 1500,
+       "endMs": 2300,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        300,
+        220
+       ],
+       "r": 48
+      },
+      {
+       "id": "ring2",
+       "op": "circle",
+       "startMs": 1800,
+       "endMs": 2600,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        430,
+        220
+       ],
+       "r": 48
+      },
+      {
+       "id": "join",
+       "op": "arrow",
+       "startMs": 2600,
+       "endMs": 3300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        350,
+        220
+       ],
+       "to": [
+        410,
+        220
+       ]
+      },
+      {
+       "id": "flame",
+       "op": "sector",
+       "startMs": 3400,
+       "endMs": 4300,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        560,
+        290
+       ],
+       "r": 55,
+       "fill": "accent",
+       "fromDeg": 210,
+       "toDeg": 330
+      },
+      {
+       "id": "joined",
+       "op": "circle",
+       "startMs": 4300,
+       "endMs": 5200,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        560,
+        190
+       ],
+       "r": 65
+      },
+      {
+       "id": "over",
+       "op": "label",
+       "startMs": 5200,
+       "endMs": 6400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        520,
+        115
+       ],
+       "text": "over a flame",
+       "to": [
+        560,
+        170
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-english-ch10-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 2728,
+     "ops": [
+      {
+       "id": "bangle",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        260,
+        240
+       ],
+       "r": 85
+      },
+      {
+       "id": "bangleIn",
+       "op": "circle",
+       "startMs": 300,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        260,
+        240
+       ],
+       "r": 52
+      },
+      {
+       "id": "paint",
+       "op": "stroke",
+       "startMs": 900,
+       "endMs": 1600,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         390,
+         190
+        ],
+        [
+         470,
+         170
+        ],
+        [
+         550,
+         200
+        ],
+        [
+         620,
+         180
+        ]
+       ]
+      },
+      {
+       "id": "paintLabel",
+       "op": "label",
+       "startMs": 1600,
+       "endMs": 2400,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        470,
+        120
+       ],
+       "text": "painted",
+       "to": [
+        500,
+        180
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-english-ch10-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "bangle",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        150,
+        240
+       ],
+       "r": 75
+      },
+      {
+       "id": "inside",
+       "op": "circle",
+       "startMs": 300,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        150,
+        240
+       ],
+       "r": 45
+      },
+      {
+       "id": "workers",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        390,
+        130
+       ],
+       "r": 32
+      },
+      {
+       "id": "workers2",
+       "op": "circle",
+       "startMs": 1100,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        490,
+        130
+       ],
+       "r": 32
+      },
+      {
+       "id": "workers3",
+       "op": "circle",
+       "startMs": 1300,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        590,
+        130
+       ],
+       "r": 32
+      },
+      {
+       "id": "hands",
+       "op": "label",
+       "startMs": 1900,
+       "endMs": 2900,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        465,
+        215
+       ],
+       "text": "many hands",
+       "to": [
+        490,
+        165
+       ]
+      },
+      {
+       "id": "step1",
+       "op": "arrow",
+       "startMs": 3000,
+       "endMs": 3700,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        360,
+        160
+       ],
+       "to": [
+        220,
+        240
+       ]
+      },
+      {
+       "id": "step2",
+       "op": "arrow",
+       "startMs": 3400,
+       "endMs": 4100,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        490,
+        165
+       ],
+       "to": [
+        220,
+        240
+       ]
+      },
+      {
+       "id": "step3",
+       "op": "arrow",
+       "startMs": 3800,
+       "endMs": 4500,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        620,
+        165
+       ],
+       "to": [
+        220,
+        240
+       ]
+      },
+      {
+       "id": "one",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        330,
+        355
+       ],
+       "text": "one step",
+       "size": "m"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-english-ch10-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "good",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        70,
+        100
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "bangle",
+         "are",
+         "made"
+        ]
+       ]
+      },
+      {
+       "id": "bad",
+       "op": "numwork",
+       "startMs": 1500,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        70,
+        220
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "bangle",
+         "are",
+         "make"
+        ]
+       ]
+      },
+      {
+       "id": "cross",
+       "op": "line",
+       "startMs": 3000,
+       "endMs": 3600,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        275,
+        215
+       ],
+       "to": [
+        275,
+        275
+       ]
+      },
+      {
+       "id": "done",
+       "op": "text",
+       "startMs": 3600,
+       "endMs": 4500,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        145
+       ],
+       "text": "done-form",
+       "size": "m"
+      },
+      {
+       "id": "workers",
+       "op": "label",
+       "startMs": 4700,
+       "endMs": 5600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        420,
+        265
+       ],
+       "text": "workers",
+       "to": [
+        250,
+        245
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-english-ch10-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4430,
+     "ops": [
+      {
+       "id": "melt",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        90,
+        150
+       ],
+       "text": "melt",
+       "size": "m"
+      },
+      {
+       "id": "a1",
+       "op": "arrow",
+       "startMs": 500,
+       "endMs": 900,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        145,
+        150
+       ],
+       "to": [
+        205,
+        150
+       ]
+      },
+      {
+       "id": "pull",
+       "op": "text",
+       "startMs": 800,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        220,
+        150
+       ],
+       "text": "pull",
+       "size": "m"
+      },
+      {
+       "id": "a2",
+       "op": "arrow",
+       "startMs": 1300,
+       "endMs": 1700,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        275,
+        150
+       ],
+       "to": [
+        335,
+        150
+       ]
+      },
+      {
+       "id": "cut",
+       "op": "text",
+       "startMs": 1600,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        350,
+        150
+       ],
+       "text": "cut",
+       "size": "m"
+      },
+      {
+       "id": "a3",
+       "op": "arrow",
+       "startMs": 2100,
+       "endMs": 2500,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        395,
+        150
+       ],
+       "to": [
+        455,
+        150
+       ]
+      },
+      {
+       "id": "join",
+       "op": "text",
+       "startMs": 2400,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        470,
+        150
+       ],
+       "text": "join",
+       "size": "m"
+      },
+      {
+       "id": "a4",
+       "op": "arrow",
+       "startMs": 2900,
+       "endMs": 3300,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        525,
+        150
+       ],
+       "to": [
+        585,
+        150
+       ]
+      },
+      {
+       "id": "paint",
+       "op": "text",
+       "startMs": 3200,
+       "endMs": 3900,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        600,
+        150
+       ],
+       "text": "paint",
+       "size": "m"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

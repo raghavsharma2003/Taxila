@@ -1,0 +1,1752 @@
+{
+ "topicId": "c7-science-ch12-t03",
+ "title": "Solar and lunar eclipses",
+ "chapter": "Earth, Moon, and the Sun",
+ "subject": "science",
+ "class": 7,
+ "topicType": "T3",
+ "plan": {
+  "game": "sky-lab@1",
+  "hint": "eclipse mode (solar and lunar, with and without nodes)"
+ },
+ "game": {
+  "archetype": "sky-lab@1",
+  "spec": {
+   "archetype": "sky-lab@1",
+   "skills": [
+    "c7-science-ch12-t03"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "done": "right",
+    "lock": "LOCK",
+    "spin": "Drag to spin the Earth",
+    "sun": "Sun",
+    "noon": "noon",
+    "midnight": "midnight",
+    "sunrise": "sunrise",
+    "sunset": "sunset",
+    "localTime": "time in",
+    "north": "North Pole",
+    "dayLength": "day",
+    "sunHigh": "noon Sun",
+    "distance": "Earth–Sun",
+    "orbit": "Drag the Earth along its orbit",
+    "longest": "longest day",
+    "shortest": "shortest day",
+    "equal": "equal day and night",
+    "summerNorth": "summer in the north",
+    "summerSouth": "summer in the south",
+    "solar": "solar eclipse",
+    "lunar": "lunar eclipse",
+    "moon": "Moon",
+    "date": "date",
+    "night": "night",
+    "stillStar": "Tap the star that does not move",
+    "pointer": "Drag from Merak through Dubhe",
+    "join": "Join the stars",
+    "polaris": "Pole Star",
+    "wrongWay": "The Earth spins west to east",
+    "runDone": "Sky closed",
+    "hours": "h",
+    "months": "Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec",
+    "saptarishi": "Saptarishi",
+    "cassiopeia": "Cassiopeia",
+    "new": "new moon",
+    "waxingCrescent": "waxing crescent",
+    "firstQuarter": "first quarter",
+    "waxingGibbous": "waxing gibbous",
+    "full": "full moon",
+    "waningGibbous": "waning gibbous",
+    "lastQuarter": "last quarter",
+    "waningCrescent": "waning crescent",
+    "fromEarth": "seen from Earth",
+    "place": "Drag the Moon round its orbit"
+   },
+   "title": "Eclipse Lab",
+   "rounds": [
+    {
+     "mode": "eclipse",
+     "title": "Line up the Moon",
+     "sub": "make the three objects line up",
+     "ask": "solar",
+     "nodes": true,
+     "node": 42,
+     "targets": "c7-science-ch12-t03-m1"
+    },
+    {
+     "mode": "eclipse",
+     "title": "Find the shadow",
+     "sub": "make the three objects line up",
+     "ask": "lunar",
+     "nodes": true,
+     "node": 218
+    },
+    {
+     "mode": "eclipse",
+     "title": "Try again",
+     "sub": "see what happens without a crossing",
+     "ask": "solar",
+     "nodes": false,
+     "node": 0,
+     "targets": "c7-science-ch12-t03-m1"
+    },
+    {
+     "mode": "eclipse",
+     "title": "Watch the Moon",
+     "sub": "try the line without a crossing",
+     "ask": "lunar",
+     "nodes": false,
+     "node": 0
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-science-ch12-t03"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Solar and lunar eclipses",
+   "accent": "sci",
+   "targets": "c7-science-ch12-t03-m1",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Solar and lunar eclipses"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Eclipses happen every new and full moon"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "sun",
+       "type": "node",
+       "text": "Sun",
+       "sub": "light source",
+       "glyph": "sun",
+       "color": "sun"
+      },
+      {
+       "id": "moon",
+       "type": "node",
+       "text": "Moon",
+       "sub": "small body",
+       "glyph": "moon",
+       "color": "ion"
+      },
+      {
+       "id": "earth",
+       "type": "node",
+       "text": "Earth",
+       "sub": "our planet",
+       "glyph": "earth",
+       "color": "sci"
+      },
+      {
+       "id": "solar",
+       "type": "label",
+       "text": "Solar eclipse",
+       "x": 120,
+       "y": 180,
+       "color": "sun"
+      },
+      {
+       "id": "lunar",
+       "type": "label",
+       "text": "Lunar eclipse",
+       "x": 650,
+       "y": 180,
+       "color": "ion"
+      },
+      {
+       "id": "as1",
+       "type": "arrow",
+       "from": "sun",
+       "to": "moon",
+       "text": "light"
+      },
+      {
+       "id": "as2",
+       "type": "arrow",
+       "from": "moon",
+       "to": "earth",
+       "text": "shadow"
+      },
+      {
+       "id": "al1",
+       "type": "arrow",
+       "from": "sun",
+       "to": "earth",
+       "text": "light"
+      },
+      {
+       "id": "al2",
+       "type": "arrow",
+       "from": "earth",
+       "to": "moon",
+       "text": "shadow"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "tilt",
+       "type": "angle",
+       "deg": 5,
+       "rot": 0,
+       "x": 500,
+       "y": 350,
+       "r": 100
+      },
+      {
+       "id": "tiltlabel",
+       "type": "label",
+       "text": "Orbit tilted about 5°",
+       "x": 370,
+       "y": 220,
+       "color": "volt"
+      },
+      {
+       "id": "new",
+       "type": "node",
+       "text": "New moon",
+       "sub": "solar possible",
+       "glyph": "moon",
+       "color": "sun"
+      },
+      {
+       "id": "full",
+       "type": "node",
+       "text": "Full moon",
+       "sub": "lunar possible",
+       "glyph": "moon",
+       "color": "ion"
+      },
+      {
+       "id": "phase",
+       "type": "label",
+       "text": "Phases: lit half seen",
+       "x": 80,
+       "y": 470,
+       "color": "mint"
+      },
+      {
+       "id": "safe",
+       "type": "node",
+       "text": "Safe viewing",
+       "sub": "project image",
+       "glyph": "eye",
+       "color": "mint"
+      },
+      {
+       "id": "unsafe",
+       "type": "label",
+       "text": "Never look at Sun",
+       "x": 650,
+       "y": 470,
+       "color": "volt"
+      },
+      {
+       "id": "proj",
+       "type": "label",
+       "text": "Pinhole projection",
+       "x": 650,
+       "y": 530,
+       "color": "mint"
+      },
+      {
+       "id": "glass",
+       "type": "label",
+       "text": "Certified glasses",
+       "x": 650,
+       "y": 580,
+       "color": "mint"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "An eclipse needs the Sun, Earth, and Moon in a straight line. The order tells us which shadow falls where.",
+    "L2": "A solar eclipse occurs when the Moon is between the Sun and Earth. The Moon's shadow falls on part of Earth.",
+    "L3": "A lunar eclipse occurs when Earth is between the Sun and Moon. Earth's shadow falls on the Moon.",
+    "L4": "A solar eclipse can happen only at new moon, and a lunar eclipse only at full moon.",
+    "L5": "But eclipses do not happen every month. The Moon's orbit is tilted about five degrees, so the line usually misses.",
+    "L6": "Moon phases are different from eclipses. They show how much of the Moon's sunlit half we see, not Earth's shadow.",
+    "L7": "Never look directly at the Sun, even during an eclipse or through sunglasses. Use pinhole projection or certified eclipse-viewing glasses.",
+    "L8": "A lunar eclipse is safe to watch with your naked eyes because you are looking at the Moon, not the Sun."
+   },
+   "narration": {
+    "L1": {
+     "text": "An eclipse needs the Sun, Earth, and Moon in a straight line. The order tells us which shadow falls where.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "A solar eclipse occurs when the Moon is between the Sun and Earth. The Moon's shadow falls on part of Earth.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "A lunar eclipse occurs when Earth is between the Sun and Moon. Earth's shadow falls on the Moon.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "A solar eclipse can happen only at new moon, and a lunar eclipse only at full moon.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "But eclipses do not happen every month. The Moon's orbit is tilted about five degrees, so the line usually misses.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Moon phases are different from eclipses. They show how much of the Moon's sunlit half we see, not Earth's shadow.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Never look directly at the Sun, even during an eclipse or through sunglasses. Use pinhole projection or certified eclipse-viewing glasses.",
+     "dur": 9,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "A lunar eclipse is safe to watch with your naked eyes because you are looking at the Moon, not the Sun.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "title"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "sun",
+        "moon",
+        "earth",
+        "solar",
+        "as1",
+        "as2"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 1,
+       "target": [
+        "as1",
+        "as2"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "lunar",
+        "al1",
+        "al2"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 1,
+       "target": [
+        "al1",
+        "al2"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "new",
+        "full"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 1,
+       "target": [
+        "new",
+        "full"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1.2,
+       "target": [
+        "tilt",
+        "tiltlabel"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "focus",
+       "dur": 1,
+       "target": "tilt"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "phase"
+      },
+      {
+       "at": 1,
+       "do": "unfocus",
+       "dur": 0.5
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "safe",
+        "unsafe",
+        "proj",
+        "glass"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 1,
+       "target": [
+        "proj",
+        "glass"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "safe"
+      },
+      {
+       "at": "end",
+       "do": "interactive"
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which method is safe for viewing a solar eclipse?",
+    "options": [
+     "unsafe",
+     "proj",
+     "glass",
+     "phase"
+    ],
+    "answer": "proj",
+    "src": "c7-science-ch12-t03-i11"
+   }
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg",
+  "seconds": 67
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch12-t03-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9111,
+     "ops": [
+      {
+       "id": "sun",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        120,
+        250
+       ],
+       "r": 42,
+       "fill": "accent"
+      },
+      {
+       "id": "earth",
+       "op": "circle",
+       "startMs": 500,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        250
+       ],
+       "r": 34
+      },
+      {
+       "id": "moon",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        680,
+        250
+       ],
+       "r": 20
+      },
+      {
+       "id": "sunlabel",
+       "op": "label",
+       "startMs": 1700,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        120,
+        330
+       ],
+       "text": "Sun",
+       "target": "sun"
+      },
+      {
+       "id": "earthlabel",
+       "op": "label",
+       "startMs": 2000,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        320
+       ],
+       "text": "Earth",
+       "target": "earth"
+      },
+      {
+       "id": "moonlabel",
+       "op": "label",
+       "startMs": 2300,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        680,
+        305
+       ],
+       "text": "Moon",
+       "target": "moon"
+      },
+      {
+       "id": "line",
+       "op": "line",
+       "startMs": 3000,
+       "endMs": 4200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        70,
+        250
+       ],
+       "to": [
+        730,
+        250
+       ]
+      },
+      {
+       "id": "shadowlabel",
+       "op": "text",
+       "startMs": 5900,
+       "endMs": 6600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        520,
+        205
+       ],
+       "text": "shadow",
+       "size": "m"
+      },
+      {
+       "id": "order",
+       "op": "arrow",
+       "startMs": 6900,
+       "endMs": 7900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        155,
+        365
+       ],
+       "to": [
+        645,
+        365
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 2,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch12-t03-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 9536,
+     "ops": [
+      {
+       "id": "moonbetween",
+       "op": "circle",
+       "startMs": 500,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        250
+       ],
+       "r": 25,
+       "fill": "soft"
+      },
+      {
+       "id": "earth2",
+       "op": "circle",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        650,
+        250
+       ],
+       "r": 36
+      },
+      {
+       "id": "sun2",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1600,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        120,
+        250
+       ],
+       "r": 42,
+       "fill": "accent"
+      },
+      {
+       "id": "solar",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        350,
+        100
+       ],
+       "text": "solar eclipse",
+       "size": "l"
+      },
+      {
+       "id": "slabel",
+       "op": "label",
+       "startMs": 2600,
+       "endMs": 3100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        120,
+        330
+       ],
+       "text": "Sun",
+       "target": "sun2"
+      },
+      {
+       "id": "mlabel",
+       "op": "label",
+       "startMs": 3000,
+       "endMs": 3600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        320
+       ],
+       "text": "Moon",
+       "target": "moonbetween"
+      },
+      {
+       "id": "elabel",
+       "op": "label",
+       "startMs": 3400,
+       "endMs": 4000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        650,
+        320
+       ],
+       "text": "Earth",
+       "target": "earth2"
+      },
+      {
+       "id": "slab",
+       "op": "text",
+       "startMs": 5700,
+       "endMs": 6800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        515,
+        205
+       ],
+       "text": "Moon's shadow",
+       "size": "m"
+      },
+      {
+       "id": "part",
+       "op": "text",
+       "startMs": 7000,
+       "endMs": 7900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        575,
+        365
+       ],
+       "text": "part of Earth",
+       "size": "m"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch12-t03-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "earthbetween",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        250
+       ],
+       "r": 36
+      },
+      {
+       "id": "moon3",
+       "op": "circle",
+       "startMs": 500,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        650,
+        250
+       ],
+       "r": 25
+      },
+      {
+       "id": "lunar",
+       "op": "text",
+       "startMs": 1000,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        345,
+        100
+       ],
+       "text": "lunar eclipse",
+       "size": "l"
+      },
+      {
+       "id": "sun3",
+       "op": "circle",
+       "startMs": 1200,
+       "endMs": 1900,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        120,
+        250
+       ],
+       "r": 42,
+       "fill": "accent"
+      },
+      {
+       "id": "earthlab3",
+       "op": "label",
+       "startMs": 2000,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        330
+       ],
+       "text": "Earth",
+       "target": "earthbetween"
+      },
+      {
+       "id": "moonlab3",
+       "op": "label",
+       "startMs": 2300,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        650,
+        315
+       ],
+       "text": "Moon",
+       "target": "moon3"
+      },
+      {
+       "id": "eslabel",
+       "op": "text",
+       "startMs": 4600,
+       "endMs": 5600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        500,
+        205
+       ],
+       "text": "Earth's shadow",
+       "size": "m"
+      },
+      {
+       "id": "shadowmoon",
+       "op": "arrow",
+       "startMs": 5800,
+       "endMs": 6600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        600,
+        250
+       ],
+       "to": [
+        625,
+        250
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch12-t03-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "solarword",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        150,
+        100
+       ],
+       "text": "solar eclipse",
+       "size": "l"
+      },
+      {
+       "id": "new",
+       "op": "circle",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        260,
+        250
+       ],
+       "r": 50
+      },
+      {
+       "id": "newdark",
+       "op": "circle",
+       "startMs": 1100,
+       "endMs": 1600,
+       "ink": "soft",
+       "weight": 1,
+       "c": [
+        260,
+        250
+       ],
+       "r": 38,
+       "fill": "soft"
+      },
+      {
+       "id": "newlabel",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        220,
+        335
+       ],
+       "text": "new moon",
+       "size": "m"
+      },
+      {
+       "id": "lunarword",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        500,
+        100
+       ],
+       "text": "lunar eclipse",
+       "size": "l"
+      },
+      {
+       "id": "full",
+       "op": "circle",
+       "startMs": 3000,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        570,
+        250
+       ],
+       "r": 50,
+       "fill": "chalk"
+      },
+      {
+       "id": "fulllabel",
+       "op": "text",
+       "startMs": 3800,
+       "endMs": 4500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        535,
+        335
+       ],
+       "text": "full moon",
+       "size": "m"
+      },
+      {
+       "id": "newarrow",
+       "op": "arrow",
+       "startMs": 4700,
+       "endMs": 5400,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        260,
+        390
+       ],
+       "to": [
+        260,
+        350
+       ]
+      },
+      {
+       "id": "fullarrow",
+       "op": "arrow",
+       "startMs": 5200,
+       "endMs": 5900,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        570,
+        390
+       ],
+       "to": [
+        570,
+        350
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch12-t03-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9111,
+     "ops": [
+      {
+       "id": "orbit",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        260
+       ],
+       "rx": 300,
+       "ry": 100
+      },
+      {
+       "id": "orbitlabel",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        600,
+        160
+       ],
+       "text": "Moon's orbit",
+       "size": "m"
+      },
+      {
+       "id": "earth5",
+       "op": "circle",
+       "startMs": 1800,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        260
+       ],
+       "r": 38
+      },
+      {
+       "id": "moon5",
+       "op": "circle",
+       "startMs": 2300,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        680,
+        260
+       ],
+       "r": 22
+      },
+      {
+       "id": "tilt",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 4900,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        345,
+        410
+       ],
+       "text": "5 degrees",
+       "size": "l"
+      },
+      {
+       "id": "miss",
+       "op": "arrow",
+       "startMs": 5100,
+       "endMs": 6200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        680,
+        260
+       ],
+       "to": [
+        620,
+        180
+       ]
+      },
+      {
+       "id": "misslabel",
+       "op": "text",
+       "startMs": 6300,
+       "endMs": 7000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        590,
+        130
+       ],
+       "text": "misses",
+       "size": "m"
+      },
+      {
+       "id": "monthly",
+       "op": "text",
+       "startMs": 7200,
+       "endMs": 8100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        300,
+        460
+       ],
+       "text": "not every month",
+       "size": "m"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch12-t03-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9111,
+     "ops": [
+      {
+       "id": "moon6",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        250
+       ],
+       "r": 100
+      },
+      {
+       "id": "phase",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        350,
+        90
+       ],
+       "text": "Moon phases",
+       "size": "l"
+      },
+      {
+       "id": "earth6",
+       "op": "circle",
+       "startMs": 2400,
+       "endMs": 3100,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        150,
+        250
+       ],
+       "r": 38
+      },
+      {
+       "id": "sunshadow",
+       "op": "line",
+       "startMs": 3200,
+       "endMs": 4000,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        188,
+        250
+       ],
+       "to": [
+        300,
+        250
+       ],
+       "dashed": true
+      },
+      {
+       "id": "sunlitlabel",
+       "op": "text",
+       "startMs": 4100,
+       "endMs": 4900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        330,
+        390
+       ],
+       "text": "sunlit half",
+       "size": "m"
+      },
+      {
+       "id": "seelabel",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 5700,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        365,
+        440
+       ],
+       "text": "we see",
+       "size": "m"
+      },
+      {
+       "id": "notshadow",
+       "op": "text",
+       "startMs": 6000,
+       "endMs": 7400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        530,
+        390
+       ],
+       "text": "not Earth's shadow",
+       "size": "m"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch12-t03-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9111,
+     "ops": [
+      {
+       "id": "sun7",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        180,
+        180
+       ],
+       "r": 55,
+       "fill": "accent"
+      },
+      {
+       "id": "eye",
+       "op": "ellipse",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        620,
+        180
+       ],
+       "rx": 45,
+       "ry": 25
+      },
+      {
+       "id": "danger",
+       "op": "line",
+       "startMs": 1300,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        245,
+        180
+       ],
+       "to": [
+        575,
+        180
+       ],
+       "dashed": true
+      },
+      {
+       "id": "never",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 3600,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        330,
+        90
+       ],
+       "text": "Never look directly",
+       "size": "l"
+      },
+      {
+       "id": "sunglasses",
+       "op": "text",
+       "startMs": 3800,
+       "endMs": 4600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        300,
+        285
+       ],
+       "text": "sunglasses",
+       "size": "m"
+      },
+      {
+       "id": "cross",
+       "op": "line",
+       "startMs": 4600,
+       "endMs": 5100,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        280,
+        270
+       ],
+       "to": [
+        430,
+        320
+       ]
+      },
+      {
+       "id": "cross2",
+       "op": "line",
+       "startMs": 4700,
+       "endMs": 5200,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        430,
+        270
+       ],
+       "to": [
+        280,
+        320
+       ]
+      },
+      {
+       "id": "pinhole",
+       "op": "rect",
+       "startMs": 5400,
+       "endMs": 6100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        150,
+        370
+       ],
+       "w": 90,
+       "h": 65
+      },
+      {
+       "id": "screen",
+       "op": "rect",
+       "startMs": 5800,
+       "endMs": 6500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        560,
+        370
+       ],
+       "w": 110,
+       "h": 65
+      },
+      {
+       "id": "projection",
+       "op": "arrow",
+       "startMs": 6600,
+       "endMs": 7500,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        240,
+        400
+       ],
+       "to": [
+        550,
+        400
+       ]
+      },
+      {
+       "id": "glasses",
+       "op": "text",
+       "startMs": 7600,
+       "endMs": 8700,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        470,
+        465
+       ],
+       "text": "certified glasses",
+       "size": "m"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch12-t03-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 9536,
+     "ops": [
+      {
+       "id": "lmoon",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        260,
+        240
+       ],
+       "r": 85,
+       "fill": "soft"
+      },
+      {
+       "id": "safe",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2900,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        210,
+        90
+       ],
+       "text": "lunar eclipse safe",
+       "size": "l"
+      },
+      {
+       "id": "eye8",
+       "op": "ellipse",
+       "startMs": 2500,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        650,
+        240
+       ],
+       "rx": 48,
+       "ry": 27
+      },
+      {
+       "id": "watch",
+       "op": "arrow",
+       "startMs": 3300,
+       "endMs": 4100,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        530,
+        240
+       ],
+       "to": [
+        590,
+        240
+       ]
+      },
+      {
+       "id": "naked",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 5100,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        585,
+        330
+       ],
+       "text": "naked eyes",
+       "size": "m"
+      },
+      {
+       "id": "moonlabel8",
+       "op": "label",
+       "startMs": 5300,
+       "endMs": 5800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        220,
+        350
+       ],
+       "text": "Moon",
+       "target": "lmoon"
+      },
+      {
+       "id": "sunabsent",
+       "op": "text",
+       "startMs": 6100,
+       "endMs": 7000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        390,
+        420
+       ],
+       "text": "not the Sun",
+       "size": "m"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1",
+   "key": "solar at node 42°",
+   "prompt": "make the three objects line up"
+  },
+  {
+   "itemId": "r2",
+   "key": "lunar at node 218°",
+   "prompt": "make the three objects line up"
+  },
+  {
+   "itemId": "r3",
+   "key": "solar",
+   "prompt": "see what happens without a crossing"
+  },
+  {
+   "itemId": "r4",
+   "key": "lunar",
+   "prompt": "try the line without a crossing"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

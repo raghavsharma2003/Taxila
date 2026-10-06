@@ -1,0 +1,1747 @@
+{
+ "topicId": "c7-english-ch07-t01",
+ "title": "My Brother’s Great Invention",
+ "chapter": "My Brother’s Great Invention",
+ "subject": "english",
+ "class": 7,
+ "topicType": "T3",
+ "plan": {
+  "game": "story-rail@1",
+  "hint": "sequence, cause and who modes from the lesson's events and speakers"
+ },
+ "game": {
+  "archetype": "story-rail@1",
+  "spec": {
+   "archetype": "story-rail@1",
+   "skills": [
+    "c7-english-ch07-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "picked": "coupled",
+    "streak": "streak",
+    "next": "What happens next?",
+    "effect": "What does this lead to?",
+    "who": "Who said this?",
+    "runDone": "Line complete",
+    "order": "your train",
+    "right": "Coupled",
+    "wrong": "Not this one",
+    "coach": "Tap a wagon before the train reaches the fork"
+   },
+   "title": "Kabir’s Great Invention",
+   "rounds": [
+    {
+     "mode": "sequence",
+     "title": "Story order",
+     "sub": "couple the events in order",
+     "cards": [
+      {
+       "id": "e1",
+       "text": "Kabir starts building",
+       "glyph": "gear",
+       "src": "c7-english-ch07-t01-i04"
+      },
+      {
+       "id": "e2",
+       "text": "Mummy walks in",
+       "glyph": "person",
+       "src": "c7-english-ch07-t01-i04"
+      },
+      {
+       "id": "e3",
+       "text": "Machine shakes and coughs",
+       "glyph": "factory"
+      },
+      {
+       "id": "e4",
+       "text": "Roti flies onto the fan",
+       "glyph": "plate",
+       "src": "c7-english-ch07-t01-i04"
+      },
+      {
+       "id": "e5",
+       "text": "Everyone laughs",
+       "glyph": "group",
+       "src": "c7-english-ch07-t01-i04"
+      }
+     ],
+     "speed": 0.9
+    },
+    {
+     "mode": "cause",
+     "title": "Try again",
+     "sub": "match each cause to its effect",
+     "pairs": [
+      {
+       "cause": {
+        "id": "c1",
+        "text": "The machine fails",
+        "glyph": "gear",
+        "src": "c7-english-ch07-t01-i02"
+       },
+       "effect": {
+        "id": "f1",
+        "text": "Kabir learns what to fix",
+        "glyph": "pick",
+        "src": "c7-english-ch07-t01-i02"
+       }
+      },
+      {
+       "cause": {
+        "id": "c2",
+        "text": "Kabir stays curious",
+        "glyph": "question"
+       },
+       "effect": {
+        "id": "f2",
+        "text": "He tries the machine again",
+        "src": "c7-english-ch07-t01-i03"
+       }
+      },
+      {
+       "cause": {
+        "id": "c3",
+        "text": "The machine shakes and coughs",
+        "glyph": "factory"
+       },
+       "effect": {
+        "id": "f3",
+        "text": "A roti lands on the fan",
+        "glyph": "plate",
+        "src": "c7-english-ch07-t01-i01"
+       }
+      }
+     ],
+     "speed": 0.8,
+     "targets": "c7-english-ch07-t01-m-failure-is-end"
+    },
+    {
+     "mode": "who",
+     "title": "Who said it?",
+     "sub": "send each line to its speaker",
+     "speakers": [
+      {
+       "id": "narrator",
+       "name": "Narrator",
+       "glyph": "book"
+      },
+      {
+       "id": "kabir",
+       "name": "Kabir",
+       "glyph": "gear"
+      }
+     ],
+     "lines": [
+      {
+       "id": "w1",
+       "text": "We all laughed.",
+       "speaker": "narrator",
+       "src": "c7-english-ch07-t01-i12"
+      },
+      {
+       "id": "w2",
+       "text": "I will try it again.",
+       "speaker": "kabir",
+       "src": "c7-english-ch07-t01-i03"
+      },
+      {
+       "id": "w3",
+       "text": "The failure shows what to fix.",
+       "speaker": "kabir",
+       "src": "c7-english-ch07-t01-i02"
+      }
+     ],
+     "speed": 0.75
+    }
+   ]
+  },
+  "repairs": [
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-english-ch07-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Kabir Keeps Inventing",
+   "accent": "volt",
+   "targets": "c7-english-ch07-t01-m-failure-is-end",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Kabir Keeps Inventing"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "A failed invention means stop"
+      },
+      {
+       "id": "curious",
+       "type": "node",
+       "text": "Curious",
+       "sub": "keeps trying",
+       "glyph": "bulb",
+       "color": "volt"
+      },
+      {
+       "id": "fix",
+       "type": "node",
+       "text": "Failure",
+       "sub": "shows what to fix",
+       "glyph": "gear",
+       "color": "amber"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "curious",
+       "to": "fix",
+       "text": "learns"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "start",
+       "type": "node",
+       "text": "Build",
+       "sub": "machine",
+       "glyph": "gear",
+       "color": "ion"
+      },
+      {
+       "id": "interrupt",
+       "type": "node",
+       "text": "Mummy enters",
+       "sub": "during work",
+       "glyph": "person",
+       "color": "mint"
+      },
+      {
+       "id": "fail",
+       "type": "node",
+       "text": "Roti flies",
+       "sub": "onto fan",
+       "glyph": "plate",
+       "color": "amber"
+      },
+      {
+       "id": "laugh",
+       "type": "node",
+       "text": "Everyone laughs",
+       "sub": "together",
+       "glyph": "group",
+       "color": "sun"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "start",
+       "to": "interrupt",
+       "text": "when"
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "interrupt",
+       "to": "fail",
+       "text": "then"
+      },
+      {
+       "id": "a4",
+       "type": "arrow",
+       "from": "fail",
+       "to": "laugh",
+       "text": "so"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "column",
+     "els": [
+      {
+       "id": "ongoing",
+       "type": "node",
+       "text": "was building",
+       "sub": "action in progress",
+       "glyph": "wheel",
+       "color": "ion"
+      },
+      {
+       "id": "simple",
+       "type": "node",
+       "text": "walked in",
+       "sub": "simple past",
+       "glyph": "person",
+       "color": "mint"
+      },
+      {
+       "id": "when",
+       "type": "arrow",
+       "from": "ongoing",
+       "to": "simple",
+       "text": "when"
+      },
+      {
+       "id": "evc",
+       "type": "label",
+       "text": "(c) Started building"
+      },
+      {
+       "id": "evb",
+       "type": "label",
+       "text": "(b) Mummy walked in"
+      },
+      {
+       "id": "evd",
+       "type": "label",
+       "text": "(d) Roti hit fan"
+      },
+      {
+       "id": "eva",
+       "type": "label",
+       "text": "(a) Everyone laughed"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Kabir is always inventing something. His curiosity makes him keep trying.",
+    "L2": "The machine failed, but that did not mean Kabir had failed.",
+    "L3": "The failure showed him what was wrong, so he could improve the machine.",
+    "L4": "First, Kabir started building a machine to fold rotis.",
+    "L5": "While he was building it, Mummy walked in. The machine shook and threw a roti onto the fan.",
+    "L6": "Everyone laughed, but the narrator sounded amused, fond, and a little proud of Kabir.",
+    "L7": "For an action already in progress, use was or were plus the verb ending in -ing.",
+    "L8": "Use the simple past for the action that interrupts it: Kabir was building when Mummy walked in.",
+    "L9": "Now put the story events in the order they happened."
+   },
+   "narration": {
+    "L1": {
+     "text": "Kabir is always inventing something. His curiosity makes him keep trying.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.5,
+     "pauses": []
+    },
+    "L2": {
+     "text": "The machine failed, but that did not mean Kabir had failed.",
+     "dur": 4.5,
+     "lead": 0,
+     "tail": 0.5,
+     "pauses": []
+    },
+    "L3": {
+     "text": "The failure showed him what was wrong, so he could improve the machine.",
+     "dur": 5.5,
+     "lead": 0,
+     "tail": 0.5,
+     "pauses": []
+    },
+    "L4": {
+     "text": "First, Kabir started building a machine to fold rotis.",
+     "dur": 4.5,
+     "lead": 0,
+     "tail": 0.5,
+     "pauses": []
+    },
+    "L5": {
+     "text": "While he was building it, Mummy walked in. The machine shook and threw a roti onto the fan.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.5,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Everyone laughed, but the narrator sounded amused, fond, and a little proud of Kabir.",
+     "dur": 5.5,
+     "lead": 0,
+     "tail": 0.5,
+     "pauses": []
+    },
+    "L7": {
+     "text": "For an action already in progress, use was or were plus the verb ending in -ing.",
+     "dur": 5.5,
+     "lead": 0,
+     "tail": 0.5,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Use the simple past for the action that interrupts it: Kabir was building when Mummy walked in.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.5,
+     "pauses": []
+    },
+    "L9": {
+     "text": "Now put the story events in the order they happened.",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "title"
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.8,
+       "target": "curious"
+      },
+      {
+       "at": 1.8,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "a1",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      },
+      {
+       "at": 2,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "fix"
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 1.2,
+       "target": "fix"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "start"
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 1,
+       "target": "start"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "interrupt",
+        "a2"
+       ]
+      },
+      {
+       "at": 1.4,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "a2",
+       "to": 1
+      },
+      {
+       "at": 2.2,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "fail",
+        "a3"
+       ]
+      },
+      {
+       "at": 3.2,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "a3",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "laugh",
+        "a4"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "a4",
+       "to": 1
+      },
+      {
+       "at": 2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "laugh"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "ongoing"
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 1,
+       "target": "ongoing"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "simple",
+        "when"
+       ]
+      },
+      {
+       "at": 1.2,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "when",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L9",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "evc",
+        "evb",
+        "evd",
+        "eva"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "order",
+    "prompt": "Put the four story events in the order they happened.",
+    "items": [
+     "evc",
+     "evb",
+     "evd",
+     "eva"
+    ],
+    "src": "c7-english-ch07-t01-i04"
+   }
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg",
+  "seconds": 50
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch07-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "kabir",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        100
+       ],
+       "text": "Kabir",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "invent",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        190
+       ],
+       "text": "inventing",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "gear",
+       "op": "circle",
+       "startMs": 1400,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        310
+       ],
+       "r": 70
+      },
+      {
+       "id": "try1",
+       "op": "arrow",
+       "startMs": 2300,
+       "endMs": 3000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        320,
+        400
+       ],
+       "to": [
+        370,
+        350
+       ]
+      },
+      {
+       "id": "try2",
+       "op": "arrow",
+       "startMs": 3000,
+       "endMs": 3700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        480,
+        400
+       ],
+       "to": [
+        430,
+        350
+       ]
+      },
+      {
+       "id": "curious",
+       "op": "label",
+       "startMs": 3800,
+       "endMs": 4500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        450
+       ],
+       "text": "curiosity",
+       "to": [
+        400,
+        310
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch07-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "machine",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        280,
+        150
+       ],
+       "w": 240,
+       "h": 130
+      },
+      {
+       "id": "fail",
+       "op": "text",
+       "startMs": 1100,
+       "endMs": 1900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        340
+       ],
+       "text": "failed",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "kabir2",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        420
+       ],
+       "text": "Kabir",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "notfail",
+       "op": "text",
+       "startMs": 3100,
+       "endMs": 4000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        465
+       ],
+       "text": "not failed",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch07-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "fail3",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        160,
+        100
+       ],
+       "text": "failure",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "wrong",
+       "op": "label",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        160,
+        180
+       ],
+       "text": "wrong",
+       "to": [
+        160,
+        130
+       ]
+      },
+      {
+       "id": "arrowfix",
+       "op": "arrow",
+       "startMs": 1700,
+       "endMs": 2600,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        250,
+        140
+       ],
+       "to": [
+        500,
+        140
+       ]
+      },
+      {
+       "id": "improve",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        600,
+        140
+       ],
+       "text": "improve",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "machine3",
+       "op": "rect",
+       "startMs": 3700,
+       "endMs": 4600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        430,
+        220
+       ],
+       "w": 220,
+       "h": 120
+      },
+      {
+       "id": "fix",
+       "op": "label",
+       "startMs": 4700,
+       "endMs": 5400,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        540,
+        390
+       ],
+       "text": "fix",
+       "to": [
+        540,
+        340
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch07-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4430,
+     "ops": [
+      {
+       "id": "first",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        100,
+        90
+       ],
+       "text": "First",
+       "size": "m"
+      },
+      {
+       "id": "kabir4",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        250,
+        90
+       ],
+       "text": "Kabir",
+       "size": "m"
+      },
+      {
+       "id": "build",
+       "op": "text",
+       "startMs": 1300,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        390,
+        90
+       ],
+       "text": "building",
+       "size": "m"
+      },
+      {
+       "id": "fold",
+       "op": "rect",
+       "startMs": 2100,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        270,
+        220
+       ],
+       "w": 260,
+       "h": 100
+      },
+      {
+       "id": "roti",
+       "op": "text",
+       "startMs": 3200,
+       "endMs": 3900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        380
+       ],
+       "text": "rotis",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch07-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "building5",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 650,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        170,
+        80
+       ],
+       "text": "building",
+       "size": "m"
+      },
+      {
+       "id": "mummy",
+       "op": "text",
+       "startMs": 800,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        390,
+        80
+       ],
+       "text": "Mummy",
+       "size": "m"
+      },
+      {
+       "id": "walk",
+       "op": "arrow",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        390,
+        130
+       ],
+       "to": [
+        390,
+        220
+       ]
+      },
+      {
+       "id": "machine5",
+       "op": "rect",
+       "startMs": 2300,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        260,
+        230
+       ],
+       "w": 220,
+       "h": 100
+      },
+      {
+       "id": "shake",
+       "op": "stroke",
+       "startMs": 3400,
+       "endMs": 4100,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         250,
+         220
+        ],
+        [
+         260,
+         210
+        ],
+        [
+         250,
+         200
+        ],
+        [
+         260,
+         190
+        ],
+        [
+         250,
+         180
+        ]
+       ]
+      },
+      {
+       "id": "roti5",
+       "op": "ellipse",
+       "startMs": 4300,
+       "endMs": 5000,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        560,
+        210
+       ],
+       "rx": 45,
+       "ry": 20
+      },
+      {
+       "id": "fan",
+       "op": "circle",
+       "startMs": 5100,
+       "endMs": 5900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        650,
+        120
+       ],
+       "r": 55
+      },
+      {
+       "id": "throw",
+       "op": "arrow",
+       "startMs": 6000,
+       "endMs": 7000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        480,
+        250
+       ],
+       "to": [
+        620,
+        150
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch07-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "laugh",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        150,
+        100
+       ],
+       "text": "laughed",
+       "size": "l"
+      },
+      {
+       "id": "amused",
+       "op": "text",
+       "startMs": 1100,
+       "endMs": 1800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        100
+       ],
+       "text": "amused",
+       "size": "m"
+      },
+      {
+       "id": "fond",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 2700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        220
+       ],
+       "text": "fond",
+       "size": "m"
+      },
+      {
+       "id": "proud",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        340
+       ],
+       "text": "proud",
+       "size": "m"
+      },
+      {
+       "id": "kabir6",
+       "op": "text",
+       "startMs": 4200,
+       "endMs": 4800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        440
+       ],
+       "text": "Kabir",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch07-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "rule",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "was / were + -ing",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "was",
+       "op": "numwork",
+       "startMs": 1500,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        180
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "was",
+         "+",
+         "verb-i"
+        ]
+       ]
+      },
+      {
+       "id": "were",
+       "op": "numwork",
+       "startMs": 2900,
+       "endMs": 4200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        280
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "were",
+         "+",
+         "verb-i"
+        ]
+       ]
+      },
+      {
+       "id": "progress",
+       "op": "arrow",
+       "startMs": 4500,
+       "endMs": 5300,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        500,
+        220
+       ],
+       "to": [
+        650,
+        220
+       ]
+      },
+      {
+       "id": "action",
+       "op": "text",
+       "startMs": 5400,
+       "endMs": 6300,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        650,
+        280
+       ],
+       "text": "in progress",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch07-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "example",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        70,
+        80
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "Kabir",
+         "was",
+         "buildi"
+        ]
+       ]
+      },
+      {
+       "id": "when",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        390,
+        80
+       ],
+       "text": "when",
+       "size": "m"
+      },
+      {
+       "id": "interrupt",
+       "op": "numwork",
+       "startMs": 2500,
+       "endMs": 4000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        500,
+        80
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "Mummy",
+         "walked",
+         "in"
+        ]
+       ]
+      },
+      {
+       "id": "line1",
+       "op": "line",
+       "startMs": 4300,
+       "endMs": 4800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        70,
+        170
+       ],
+       "to": [
+        350,
+        170
+       ]
+      },
+      {
+       "id": "line2",
+       "op": "line",
+       "startMs": 4900,
+       "endMs": 5400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        500,
+        170
+       ],
+       "to": [
+        730,
+        170
+       ]
+      },
+      {
+       "id": "past",
+       "op": "label",
+       "startMs": 5600,
+       "endMs": 6500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        615,
+        220
+       ],
+       "text": "simple past",
+       "to": [
+        615,
+        170
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L9",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch07-t01-wb-L9",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "order",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "order",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "one",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        130,
+        220
+       ],
+       "r": 45
+      },
+      {
+       "id": "two",
+       "op": "circle",
+       "startMs": 1500,
+       "endMs": 2000,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        330,
+        220
+       ],
+       "r": 45
+      },
+      {
+       "id": "three",
+       "op": "circle",
+       "startMs": 2100,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        530,
+        220
+       ],
+       "r": 45
+      },
+      {
+       "id": "four",
+       "op": "circle",
+       "startMs": 2700,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        700,
+        220
+       ],
+       "r": 45
+      },
+      {
+       "id": "seq",
+       "op": "arrow",
+       "startMs": 3300,
+       "endMs": 3700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        180,
+        220
+       ],
+       "to": [
+        280,
+        220
+       ]
+      },
+      {
+       "id": "seq2",
+       "op": "arrow",
+       "startMs": 3700,
+       "endMs": 4100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        380,
+        220
+       ],
+       "to": [
+        480,
+        220
+       ]
+      },
+      {
+       "id": "seq3",
+       "op": "arrow",
+       "startMs": 4100,
+       "endMs": 4500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        580,
+        220
+       ],
+       "to": [
+        650,
+        220
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "Mummy walks in",
+   "prompt": "sequence: after/for \"Kabir starts building\"",
+   "src": "c7-english-ch07-t01-i04"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "Machine shakes and coughs",
+   "prompt": "sequence: after/for \"Mummy walks in\""
+  },
+  {
+   "itemId": "r1:2",
+   "key": "Roti flies onto the fan",
+   "prompt": "sequence: after/for \"Machine shakes and coughs\"",
+   "src": "c7-english-ch07-t01-i04"
+  },
+  {
+   "itemId": "r1:3",
+   "key": "Everyone laughs",
+   "prompt": "sequence: after/for \"Roti flies onto the fan\"",
+   "src": "c7-english-ch07-t01-i04"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "Kabir learns what to fix",
+   "prompt": "cause: after/for \"The machine fails\"",
+   "src": "c7-english-ch07-t01-i02"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "He tries the machine again",
+   "prompt": "cause: after/for \"Kabir stays curious\"",
+   "src": "c7-english-ch07-t01-i03"
+  },
+  {
+   "itemId": "r2:2",
+   "key": "A roti lands on the fan",
+   "prompt": "cause: after/for \"The machine shakes and coughs\"",
+   "src": "c7-english-ch07-t01-i01"
+  },
+  {
+   "itemId": "r3:0",
+   "key": "Narrator",
+   "prompt": "who: after/for \"We all laughed.\"",
+   "src": "c7-english-ch07-t01-i12"
+  },
+  {
+   "itemId": "r3:1",
+   "key": "Kabir",
+   "prompt": "who: after/for \"I will try it again.\"",
+   "src": "c7-english-ch07-t01-i03"
+  },
+  {
+   "itemId": "r3:2",
+   "key": "Kabir",
+   "prompt": "who: after/for \"The failure shows what to fix.\"",
+   "src": "c7-english-ch07-t01-i02"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

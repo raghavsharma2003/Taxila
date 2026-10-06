@@ -1,0 +1,1644 @@
+{
+ "topicId": "c6-science-ch03-t02",
+ "title": "Testing food for starch, fat and protein",
+ "chapter": "Mindful Eating: A Path to a Healthy Body",
+ "subject": "science",
+ "class": 6,
+ "topicType": "T4",
+ "plan": {
+  "game": "sort-storm@1",
+  "hint": "tools iodine / paper / biuret: sort foods by starch, fat, protein (byProp)"
+ },
+ "game": {
+  "archetype": "sort-storm@1",
+  "spec": {
+   "archetype": "sort-storm@1",
+   "skills": [
+    "c6-science-ch03-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "sorted": "sorted",
+    "tests": "tests",
+    "coach": "Test it, then sort it",
+    "runDone": "Belt cleared",
+    "missed": "missed",
+    "why": "because",
+    "yes": "yes",
+    "no": "no",
+    "magnetic": "magnetic",
+    "light": "light",
+    "floats": "floats",
+    "conducts": "conducts",
+    "burns": "burns",
+    "starch": "starch",
+    "tMagnet": "Magnet",
+    "tTorch": "Torch",
+    "tTank": "Water",
+    "tTester": "Circuit",
+    "tFlame": "Flame",
+    "tIodine": "Iodine",
+    "tPaper": "Paper",
+    "tBiuret": "Protein test",
+    "tTurmeric": "Turmeric",
+    "tLitmus": "Litmus",
+    "tRose": "China rose",
+    "fat": "fat",
+    "protein": "protein",
+    "acidity": "acidity",
+    "acid": "acid",
+    "base": "base",
+    "neutral": "neutral"
+   },
+   "title": "Food test station",
+   "rounds": [
+    {
+     "title": "Iodine check",
+     "sub": "Use iodine with care",
+     "byProp": "starch",
+     "bins": [
+      {
+       "id": "yes",
+       "label": "Shows starch",
+       "glyph": "drop"
+      },
+      {
+       "id": "no",
+       "label": "No starch",
+       "glyph": "moon"
+      }
+     ],
+     "tools": [
+      "iodine"
+     ],
+     "items": [
+      {
+       "id": "potato",
+       "text": "Potato",
+       "glyph": "apple",
+       "bin": "yes",
+       "props": {
+        "starch": "yes"
+       },
+       "src": "c6-science-ch03-t02-i03"
+      },
+      {
+       "id": "rice",
+       "text": "Rice",
+       "glyph": "wheat",
+       "bin": "yes",
+       "props": {
+        "starch": "yes"
+       },
+       "src": "c6-science-ch03-t02-i04"
+      },
+      {
+       "id": "roti",
+       "text": "Roti",
+       "glyph": "wheat",
+       "bin": "yes",
+       "props": {
+        "starch": "yes"
+       }
+      },
+      {
+       "id": "sugar",
+       "text": "Sugar",
+       "glyph": "seed",
+       "bin": "no",
+       "props": {
+        "starch": "no"
+       },
+       "src": "c6-science-ch03-t02-i04"
+      },
+      {
+       "id": "cucumber",
+       "text": "Cucumber",
+       "glyph": "leaf",
+       "bin": "no",
+       "props": {
+        "starch": "no"
+       },
+       "src": "c6-science-ch03-t02-i03"
+      }
+     ],
+     "speed": 0.8
+    },
+    {
+     "title": "Paper check",
+     "sub": "Let the patch dry",
+     "byProp": "fat",
+     "bins": [
+      {
+       "id": "yes",
+       "label": "Oily patch",
+       "glyph": "sun"
+      },
+      {
+       "id": "no",
+       "label": "Patch fades",
+       "glyph": "cloud"
+      }
+     ],
+     "tools": [
+      "paper"
+     ],
+     "items": [
+      {
+       "id": "groundnut",
+       "text": "Groundnut",
+       "glyph": "seed",
+       "bin": "yes",
+       "props": {
+        "fat": "yes"
+       },
+       "src": "c6-science-ch03-t02-i02"
+      },
+      {
+       "id": "coconut",
+       "text": "Coconut",
+       "glyph": "apple",
+       "bin": "yes",
+       "props": {
+        "fat": "yes"
+       },
+       "src": "c6-science-ch03-t02-i05"
+      },
+      {
+       "id": "oil",
+       "text": "Coconut oil",
+       "glyph": "drop",
+       "bin": "yes",
+       "props": {
+        "fat": "yes"
+       },
+       "src": "c6-science-ch03-t02-i05"
+      },
+      {
+       "id": "water",
+       "text": "Water",
+       "glyph": "drop",
+       "bin": "no",
+       "props": {
+        "fat": "no"
+       },
+       "src": "c6-science-ch03-t02-i05"
+      },
+      {
+       "id": "ricewater",
+       "text": "Rice water",
+       "glyph": "jug",
+       "bin": "no",
+       "props": {
+        "fat": "no"
+       }
+      }
+     ],
+     "speed": 1,
+     "targets": "c6-science-ch03-t02-m3"
+    },
+    {
+     "title": "Protein check",
+     "sub": "Teacher handles chemicals",
+     "byProp": "protein",
+     "bins": [
+      {
+       "id": "yes",
+       "label": "Violet colour",
+       "glyph": "spark"
+      },
+      {
+       "id": "no",
+       "label": "Not violet",
+       "glyph": "moon"
+      }
+     ],
+     "tools": [
+      "biuret"
+     ],
+     "items": [
+      {
+       "id": "milk",
+       "text": "Milk",
+       "glyph": "jug",
+       "bin": "yes",
+       "props": {
+        "protein": "yes"
+       },
+       "src": "c6-science-ch03-t02-i07"
+      },
+      {
+       "id": "moong",
+       "text": "Moong dal",
+       "glyph": "seed",
+       "bin": "yes",
+       "props": {
+        "protein": "yes"
+       }
+      },
+      {
+       "id": "eggwhite",
+       "text": "Egg white",
+       "glyph": "apple",
+       "bin": "yes",
+       "props": {
+        "protein": "yes"
+       },
+       "src": "c6-science-ch03-t02-i10"
+      },
+      {
+       "id": "groundnutprotein",
+       "text": "Groundnut",
+       "glyph": "seed",
+       "bin": "yes",
+       "props": {
+        "protein": "yes"
+       },
+       "src": "c6-science-ch03-t02-i11"
+      },
+      {
+       "id": "potatoprotein",
+       "text": "Potato",
+       "glyph": "apple",
+       "bin": "no",
+       "props": {
+        "protein": "no"
+       },
+       "src": "c6-science-ch03-t02-i10"
+      }
+     ],
+     "speed": 1.2,
+     "targets": "c6-science-ch03-t02-m1"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 2,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c6-science-ch03-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Testing food nutrients",
+   "accent": "sci",
+   "targets": "c6-science-ch03-t02-m1",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Testing food nutrients"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "One food has one nutrient"
+      },
+      {
+       "id": "food",
+       "type": "node",
+       "text": "Food sample",
+       "sub": "test safely",
+       "glyph": "plate",
+       "color": "mint"
+      },
+      {
+       "id": "starch",
+       "type": "node",
+       "text": "Starch",
+       "sub": "iodine",
+       "glyph": "beaker",
+       "color": "sci"
+      },
+      {
+       "id": "fat",
+       "type": "node",
+       "text": "Fat",
+       "sub": "paper test",
+       "glyph": "mirror",
+       "color": "amber"
+      },
+      {
+       "id": "protein",
+       "type": "node",
+       "text": "Protein",
+       "sub": "teacher test",
+       "glyph": "beaker",
+       "color": "ion"
+      },
+      {
+       "id": "ar1",
+       "type": "arrow",
+       "from": "food",
+       "to": "starch",
+       "text": "test"
+      },
+      {
+       "id": "ar2",
+       "type": "arrow",
+       "from": "food",
+       "to": "fat",
+       "text": "test"
+      },
+      {
+       "id": "ar3",
+       "type": "arrow",
+       "from": "food",
+       "to": "protein",
+       "text": "test"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "potato",
+       "type": "node",
+       "text": "Potato",
+       "sub": "starch",
+       "glyph": "pot",
+       "color": "sci"
+      },
+      {
+       "id": "groundnut",
+       "type": "node",
+       "text": "Groundnut",
+       "sub": "fat + protein",
+       "glyph": "seed",
+       "color": "amber"
+      },
+      {
+       "id": "egg",
+       "type": "node",
+       "text": "Egg white",
+       "sub": "protein",
+       "glyph": "apple",
+       "color": "ion"
+      },
+      {
+       "id": "iodine",
+       "type": "label",
+       "text": "Iodine: blue-black",
+       "color": "sci"
+      },
+      {
+       "id": "paper",
+       "type": "label",
+       "text": "Paper: oily patch stays",
+       "color": "amber"
+      },
+      {
+       "id": "violet",
+       "type": "label",
+       "text": "Protein: violet",
+       "color": "ion"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "We can test a food for starch, fat, and protein.",
+    "L2": "A food can contain more than one nutrient, so we use separate tests.",
+    "L3": "For starch, the teacher adds dilute iodine. Blue-black shows that starch is present.",
+    "L4": "For fat, rub the food on paper and let it dry. An oily, translucent patch that stays shows fat.",
+    "L5": "For protein, the teacher uses copper sulphate and sodium hydroxide solutions. Violet shows protein.",
+    "L6": "For example, potato has starch, while groundnut has both fat and protein. Never eat tested food, and handle chemicals only with the teacher."
+   },
+   "narration": {},
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.6,
+       "target": "food"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "myth"
+      },
+      {
+       "at": 0.7,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "starch",
+        "fat",
+        "protein"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "ar1",
+       "to": 1
+      },
+      {
+       "at": 0.6,
+       "do": "highlight",
+       "dur": 1,
+       "target": "starch"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "ar2",
+       "to": 1
+      },
+      {
+       "at": 0.6,
+       "do": "highlight",
+       "dur": 1,
+       "target": "fat"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "ar3",
+       "to": 1
+      },
+      {
+       "at": 0.6,
+       "do": "highlight",
+       "dur": 1,
+       "target": "protein"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "potato",
+        "groundnut",
+        "egg",
+        "iodine",
+        "paper",
+        "violet"
+       ]
+      },
+      {
+       "at": 1.2,
+       "do": "focus",
+       "dur": 1,
+       "target": "groundnut"
+      },
+      {
+       "at": "end",
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which food shows both fat and protein in the examples?",
+    "options": [
+     "potato",
+     "groundnut",
+     "egg"
+    ],
+    "answer": "groundnut",
+    "src": "c6-science-ch03-t02-i11"
+   }
+  },
+  "repairs": [],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 44
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch03-t02-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "food",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        230
+       ],
+       "rx": 120,
+       "ry": 75
+      },
+      {
+       "id": "foodlabel",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        235
+       ],
+       "text": "food",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "starch",
+       "op": "rect",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        80,
+        390
+       ],
+       "w": 170,
+       "h": 55,
+       "round": 10
+      },
+      {
+       "id": "fat",
+       "op": "rect",
+       "startMs": 2200,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        315,
+        390
+       ],
+       "w": 170,
+       "h": 55,
+       "round": 10
+      },
+      {
+       "id": "protein",
+       "op": "rect",
+       "startMs": 2900,
+       "endMs": 3600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        550,
+        390
+       ],
+       "w": 170,
+       "h": 55,
+       "round": 10
+      },
+      {
+       "id": "starchlabel",
+       "op": "text",
+       "startMs": 3600,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        165,
+        425
+       ],
+       "text": "starch",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "fatlabel",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        425
+       ],
+       "text": "fat",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "proteinlabel",
+       "op": "text",
+       "startMs": 4200,
+       "endMs": 4500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        635,
+        425
+       ],
+       "text": "protein",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch03-t02-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "multi",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        220
+       ],
+       "r": 105
+      },
+      {
+       "id": "multiLabel",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        225
+       ],
+       "text": "more than one",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "sep1",
+       "op": "line",
+       "startMs": 1400,
+       "endMs": 1900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        330
+       ],
+       "to": [
+        180,
+        390
+       ]
+      },
+      {
+       "id": "sep2",
+       "op": "line",
+       "startMs": 1600,
+       "endMs": 2100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        330
+       ],
+       "to": [
+        400,
+        390
+       ]
+      },
+      {
+       "id": "sep3",
+       "op": "line",
+       "startMs": 1800,
+       "endMs": 2300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        330
+       ],
+       "to": [
+        620,
+        390
+       ]
+      },
+      {
+       "id": "test1",
+       "op": "rect",
+       "startMs": 2400,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        95,
+        390
+       ],
+       "w": 170,
+       "h": 55,
+       "round": 8
+      },
+      {
+       "id": "test2",
+       "op": "rect",
+       "startMs": 2900,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        315,
+        390
+       ],
+       "w": 170,
+       "h": 55,
+       "round": 8
+      },
+      {
+       "id": "test3",
+       "op": "rect",
+       "startMs": 3400,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        535,
+        390
+       ],
+       "w": 170,
+       "h": 55,
+       "round": 8
+      },
+      {
+       "id": "separate",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 5000,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        470
+       ],
+       "text": "separate tests",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch03-t02-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "iodine",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        100,
+        90
+       ],
+       "text": "dilute iodine",
+       "size": "m"
+      },
+      {
+       "id": "drops",
+       "op": "circle",
+       "startMs": 700,
+       "endMs": 1100,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        260,
+        145
+       ],
+       "r": 12,
+       "fill": "accent"
+      },
+      {
+       "id": "dropArrow",
+       "op": "arrow",
+       "startMs": 1100,
+       "endMs": 1800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        270,
+        155
+       ],
+       "to": [
+        350,
+        240
+       ]
+      },
+      {
+       "id": "sample",
+       "op": "ellipse",
+       "startMs": 1400,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        270
+       ],
+       "rx": 105,
+       "ry": 60
+      },
+      {
+       "id": "blueblack",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 3000,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        270
+       ],
+       "text": "blue-black",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "presentArrow",
+       "op": "arrow",
+       "startMs": 3000,
+       "endMs": 3600,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        505,
+        270
+       ],
+       "to": [
+        620,
+        270
+       ]
+      },
+      {
+       "id": "starchPresent",
+       "op": "text",
+       "startMs": 3600,
+       "endMs": 4500,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        620,
+        245
+       ],
+       "text": "starch present",
+       "size": "m"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch03-t02-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "paper",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        95,
+        160
+       ],
+       "w": 610,
+       "h": 230,
+       "fill": "soft"
+      },
+      {
+       "id": "rub",
+       "op": "ellipse",
+       "startMs": 900,
+       "endMs": 1600,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        270,
+        265
+       ],
+       "rx": 70,
+       "ry": 45
+      },
+      {
+       "id": "rubArrow",
+       "op": "arrow",
+       "startMs": 1600,
+       "endMs": 2200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        270,
+        180
+       ],
+       "to": [
+        270,
+        230
+       ]
+      },
+      {
+       "id": "dry",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        125
+       ],
+       "text": "let it dry",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "patch",
+       "op": "ellipse",
+       "startMs": 3000,
+       "endMs": 3900,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        520,
+        265
+       ],
+       "rx": 105,
+       "ry": 65,
+       "fill": "soft"
+      },
+      {
+       "id": "oily",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4700,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        520,
+        265
+       ],
+       "text": "oily patch",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "translucent",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        520,
+        350
+       ],
+       "text": "translucent",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "stays",
+       "op": "arrow",
+       "startMs": 5500,
+       "endMs": 6200,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        520,
+        410
+       ],
+       "to": [
+        520,
+        365
+       ]
+      },
+      {
+       "id": "fatPresent",
+       "op": "text",
+       "startMs": 6200,
+       "endMs": 6800,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        520,
+        445
+       ],
+       "text": "fat",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch03-t02-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "proteinFood",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        175
+       ],
+       "rx": 105,
+       "ry": 55
+      },
+      {
+       "id": "waterMix",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        270
+       ],
+       "text": "water",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "copper",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        180,
+        360
+       ],
+       "text": "copper sulphate",
+       "size": "m"
+      },
+      {
+       "id": "hydroxide",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 3000,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        535,
+        360
+       ],
+       "text": "sodium hydroxide",
+       "size": "m"
+      },
+      {
+       "id": "copperArrow",
+       "op": "arrow",
+       "startMs": 3000,
+       "endMs": 3500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        260,
+        345
+       ],
+       "to": [
+        350,
+        260
+       ]
+      },
+      {
+       "id": "hydroxideArrow",
+       "op": "arrow",
+       "startMs": 3500,
+       "endMs": 4000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        535,
+        345
+       ],
+       "to": [
+        450,
+        260
+       ]
+      },
+      {
+       "id": "violet",
+       "op": "circle",
+       "startMs": 4000,
+       "endMs": 4800,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        175
+       ],
+       "r": 75,
+       "fill": "accent"
+      },
+      {
+       "id": "violetLabel",
+       "op": "text",
+       "startMs": 4800,
+       "endMs": 5500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        180
+       ],
+       "text": "violet",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "proteinPresent",
+       "op": "text",
+       "startMs": 5500,
+       "endMs": 6200,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        410
+       ],
+       "text": "protein",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch03-t02-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 10387,
+     "ops": [
+      {
+       "id": "potato",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        170,
+        150
+       ],
+       "rx": 95,
+       "ry": 55
+      },
+      {
+       "id": "potatoLabel",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        170,
+        150
+       ],
+       "text": "potato",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "potatoStarch",
+       "op": "text",
+       "startMs": 1200,
+       "endMs": 1700,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        170,
+        235
+       ],
+       "text": "starch",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "groundnut",
+       "op": "ellipse",
+       "startMs": 1800,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        150
+       ],
+       "rx": 105,
+       "ry": 55
+      },
+      {
+       "id": "groundnutLabel",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        150
+       ],
+       "text": "groundnut",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "groundnutFat",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3400,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        235
+       ],
+       "text": "fat",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "groundnutProtein",
+       "op": "text",
+       "startMs": 3400,
+       "endMs": 3900,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        275
+       ],
+       "text": "protein",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "warning",
+       "op": "polygon",
+       "startMs": 4200,
+       "endMs": 5000,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         610,
+         105
+        ],
+        [
+         735,
+         105
+        ],
+        [
+         675,
+         215
+        ]
+       ],
+       "fill": "accent"
+      },
+      {
+       "id": "neverEat",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 5700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        675,
+        155
+       ],
+       "text": "never eat",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "teacher",
+       "op": "text",
+       "startMs": 6000,
+       "endMs": 6500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        675,
+        275
+       ],
+       "text": "teacher",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "chemicals",
+       "op": "text",
+       "startMs": 6500,
+       "endMs": 7200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        675,
+        325
+       ],
+       "text": "chemicals",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "teacherArrow",
+       "op": "arrow",
+       "startMs": 7200,
+       "endMs": 7700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        675,
+        360
+       ],
+       "to": [
+        675,
+        325
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:potato",
+   "key": "Shows starch",
+   "prompt": "Potato → which of [Shows starch | No starch] props {\"starch\":\"yes\"}",
+   "src": "c6-science-ch03-t02-i03"
+  },
+  {
+   "itemId": "r1:rice",
+   "key": "Shows starch",
+   "prompt": "Rice → which of [Shows starch | No starch] props {\"starch\":\"yes\"}",
+   "src": "c6-science-ch03-t02-i04"
+  },
+  {
+   "itemId": "r1:roti",
+   "key": "Shows starch",
+   "prompt": "Roti → which of [Shows starch | No starch] props {\"starch\":\"yes\"}"
+  },
+  {
+   "itemId": "r1:sugar",
+   "key": "No starch",
+   "prompt": "Sugar → which of [Shows starch | No starch] props {\"starch\":\"no\"}",
+   "src": "c6-science-ch03-t02-i04"
+  },
+  {
+   "itemId": "r1:cucumber",
+   "key": "No starch",
+   "prompt": "Cucumber → which of [Shows starch | No starch] props {\"starch\":\"no\"}",
+   "src": "c6-science-ch03-t02-i03"
+  },
+  {
+   "itemId": "r2:groundnut",
+   "key": "Oily patch",
+   "prompt": "Groundnut → which of [Oily patch | Patch fades] props {\"fat\":\"yes\"}",
+   "src": "c6-science-ch03-t02-i02"
+  },
+  {
+   "itemId": "r2:coconut",
+   "key": "Oily patch",
+   "prompt": "Coconut → which of [Oily patch | Patch fades] props {\"fat\":\"yes\"}",
+   "src": "c6-science-ch03-t02-i05"
+  },
+  {
+   "itemId": "r2:oil",
+   "key": "Oily patch",
+   "prompt": "Coconut oil → which of [Oily patch | Patch fades] props {\"fat\":\"yes\"}",
+   "src": "c6-science-ch03-t02-i05"
+  },
+  {
+   "itemId": "r2:water",
+   "key": "Patch fades",
+   "prompt": "Water → which of [Oily patch | Patch fades] props {\"fat\":\"no\"}",
+   "src": "c6-science-ch03-t02-i05"
+  },
+  {
+   "itemId": "r2:ricewater",
+   "key": "Patch fades",
+   "prompt": "Rice water → which of [Oily patch | Patch fades] props {\"fat\":\"no\"}"
+  },
+  {
+   "itemId": "r3:milk",
+   "key": "Violet colour",
+   "prompt": "Milk → which of [Violet colour | Not violet] props {\"protein\":\"yes\"}",
+   "src": "c6-science-ch03-t02-i07"
+  },
+  {
+   "itemId": "r3:moong",
+   "key": "Violet colour",
+   "prompt": "Moong dal → which of [Violet colour | Not violet] props {\"protein\":\"yes\"}"
+  },
+  {
+   "itemId": "r3:eggwhite",
+   "key": "Violet colour",
+   "prompt": "Egg white → which of [Violet colour | Not violet] props {\"protein\":\"yes\"}",
+   "src": "c6-science-ch03-t02-i10"
+  },
+  {
+   "itemId": "r3:groundnutprotein",
+   "key": "Violet colour",
+   "prompt": "Groundnut → which of [Violet colour | Not violet] props {\"protein\":\"yes\"}",
+   "src": "c6-science-ch03-t02-i11"
+  },
+  {
+   "itemId": "r3:potatoprotein",
+   "key": "Not violet",
+   "prompt": "Potato → which of [Violet colour | Not violet] props {\"protein\":\"no\"}",
+   "src": "c6-science-ch03-t02-i10"
+  }
+ ],
+ "check": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "R2 item 'ricewater' (rice water) is sorted into 'No starch' in round 1, but in the protein round it lists a duplicate 'ricewater' with 'fat: no'. However, no issue is there. The actual issue is that in round 1 (starch test), 'ricewater' is absent; only in round 2 (fat test) is there an item 'ricewater' sorted as 'Patch fades' (fat: no). The kit item c6-science-ch03-t02-i07 mentions rice water has starch, but the game does not include rice water in the starch round (round 1). This omission does not contradict any fact but it's a missed opportunity. However, not a factual error. No high-severity issue. Also, the explainer's example 'potato has starch, groundnut has both fat and protein' is correct. However, the game's protein round includes 'groundnutprotein' with protein: yes, which matches the kit. The content is factually correct and appropriate. No issues found.",
+    "severity": "low"
+   }
+  ],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

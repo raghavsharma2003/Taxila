@@ -1,0 +1,1681 @@
+{
+ "topicId": "c4-evs-ch10-t02",
+ "title": "The Moon’s changing shape",
+ "chapter": "Our Sky",
+ "subject": "evs",
+ "class": 4,
+ "topicType": "T3",
+ "plan": {
+  "game": "sky-lab@1",
+  "hint": "phase mode (new, crescent, quarter, gibbous, full)"
+ },
+ "game": {
+  "archetype": "sky-lab@1",
+  "spec": {
+   "archetype": "sky-lab@1",
+   "skills": [
+    "c4-evs-ch10-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "done": "Right",
+    "lock": "LOCK",
+    "spin": "Drag to spin the Earth",
+    "sun": "Sun",
+    "noon": "noon",
+    "midnight": "midnight",
+    "sunrise": "sunrise",
+    "sunset": "sunset",
+    "localTime": "time in",
+    "north": "North Pole",
+    "dayLength": "day",
+    "sunHigh": "noon Sun",
+    "distance": "Earth–Sun",
+    "orbit": "Drag the Earth along its orbit",
+    "longest": "longest day in Delhi",
+    "shortest": "shortest day in Delhi",
+    "equal": "equal day and night",
+    "summerNorth": "summer in India",
+    "summerSouth": "summer in Australia",
+    "solar": "solar eclipse",
+    "lunar": "lunar eclipse",
+    "moon": "Moon",
+    "date": "date",
+    "night": "night",
+    "stillStar": "Tap the star that does not move",
+    "pointer": "Drag from Merak through Dubhe",
+    "join": "Join the stars",
+    "polaris": "Pole Star",
+    "wrongWay": "the Earth spins west to east",
+    "runDone": "Sky closed",
+    "hours": "h",
+    "months": "Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec",
+    "saptarishi": "Saptarishi",
+    "cassiopeia": "Cassiopeia",
+    "new": "new moon",
+    "waxingCrescent": "waxing crescent",
+    "firstQuarter": "first quarter",
+    "waxingGibbous": "waxing gibbous",
+    "full": "full moon",
+    "waningGibbous": "waning gibbous",
+    "lastQuarter": "last quarter",
+    "waningCrescent": "waning crescent",
+    "fromEarth": "seen from Earth",
+    "place": "Drag the Moon round its orbit"
+   },
+   "title": "Moon Shape Lab",
+   "rounds": [
+    {
+     "mode": "phase",
+     "title": "Follow the Moon",
+     "sub": "place the Moon and watch its lit part",
+     "ask": "waxingCrescent",
+     "targets": "c4-evs-ch10-t02-m1"
+    },
+    {
+     "mode": "phase",
+     "title": "Moon Diary",
+     "sub": "find the shape seen at Purnima",
+     "ask": "full",
+     "targets": "c4-evs-ch10-t02-m1"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c4-evs-ch10-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "The Moon’s changing shape",
+   "accent": "ion",
+   "targets": "c4-evs-ch10-t02-m1",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "The Moon’s changing shape"
+      },
+      {
+       "id": "myth1",
+       "type": "myth",
+       "text": "The Moon actually changes its shape."
+      },
+      {
+       "id": "moonGlyph",
+       "type": "glyph",
+       "name": "moon",
+       "x": 760,
+       "y": 320,
+       "size": 150,
+       "color": "ion"
+      },
+      {
+       "id": "note",
+       "type": "label",
+       "text": "Look at the lit part",
+       "x": 610,
+       "y": 510,
+       "color": "mint"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "sunNode",
+       "type": "node",
+       "text": "Sunlight",
+       "glyph": "sun",
+       "color": "sun"
+      },
+      {
+       "id": "earthNode",
+       "type": "node",
+       "text": "Earth",
+       "glyph": "earth",
+       "color": "ion"
+      },
+      {
+       "id": "moonNode",
+       "type": "node",
+       "text": "Moon",
+       "sub": "round shape",
+       "glyph": "moon",
+       "color": "sci"
+      },
+      {
+       "id": "lightArrow",
+       "type": "arrow",
+       "from": "sunNode",
+       "to": "moonNode",
+       "text": "lights"
+      },
+      {
+       "id": "viewArrow",
+       "type": "arrow",
+       "from": "moonNode",
+       "to": "earthNode",
+       "text": "we see"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "amavasya",
+       "type": "node",
+       "text": "Amavasya",
+       "sub": "not seen",
+       "glyph": "moon",
+       "color": "ion"
+      },
+      {
+       "id": "crescent",
+       "type": "node",
+       "text": "Thin crescent",
+       "glyph": "moon",
+       "color": "mint"
+      },
+      {
+       "id": "half",
+       "type": "node",
+       "text": "Half-Moon",
+       "glyph": "moon",
+       "color": "amber"
+      },
+      {
+       "id": "almost",
+       "type": "node",
+       "text": "Almost full",
+       "glyph": "moon",
+       "color": "sun"
+      },
+      {
+       "id": "purnima",
+       "type": "node",
+       "text": "Purnima",
+       "sub": "full Moon",
+       "glyph": "moon",
+       "color": "volt"
+      },
+      {
+       "id": "grow1",
+       "type": "arrow",
+       "from": "amavasya",
+       "to": "crescent",
+       "text": "grows"
+      },
+      {
+       "id": "grow2",
+       "type": "arrow",
+       "from": "crescent",
+       "to": "half",
+       "text": "grows"
+      },
+      {
+       "id": "grow3",
+       "type": "arrow",
+       "from": "half",
+       "to": "almost",
+       "text": "grows"
+      },
+      {
+       "id": "grow4",
+       "type": "arrow",
+       "from": "almost",
+       "to": "purnima",
+       "text": "grows"
+      },
+      {
+       "id": "days",
+       "type": "label",
+       "text": "About 15 days to Purnima",
+       "x": 350,
+       "y": 530,
+       "color": "mint"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "The Moon can look like a thin slice, a half-circle, or a full round Moon.",
+    "L2": "Does the Moon really change shape? No. Its real shape stays round.",
+    "L3": "The Moon does not make its own light. Sunlight falls on it and bounces toward us.",
+    "L4": "Half of the Moon is always lit by the Sun. As the Moon goes around Earth, we see different amounts of that lit half.",
+    "L5": "At Amavasya, the new Moon is not seen. After it, the lit part grows night by night.",
+    "L6": "The shape grows from a thin crescent to a half-Moon, then to almost full and Purnima.",
+    "L7": "From Amavasya to Purnima takes about 15 days. After Purnima, the lit part shrinks back toward Amavasya.",
+    "L8": "One full cycle takes about 29 to 30 days. These phases are not caused by Earth’s shadow."
+   },
+   "narration": {
+    "L1": {
+     "text": "The Moon can look like a thin slice, a half-circle, or a full round Moon.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L2": {
+     "text": "Does the Moon really change shape? No. Its real shape stays round.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L3": {
+     "text": "The Moon does not make its own light. Sunlight falls on it and bounces toward us.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L4": {
+     "text": "Half of the Moon is always lit by the Sun. As the Moon goes around Earth, we see different amounts of that lit half.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L5": {
+     "text": "At Amavasya, the new Moon is not seen. After it, the lit part grows night by night.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L6": {
+     "text": "The shape grows from a thin crescent to a half-Moon, then to almost full and Purnima.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L7": {
+     "text": "From Amavasya to Purnima takes about 15 days. After Purnima, the lit part shrinks back toward Amavasya.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L8": {
+     "text": "One full cycle takes about 29 to 30 days. These phases are not caused by Earth’s shadow.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": "moonGlyph"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "myth1"
+      },
+      {
+       "at": 1,
+       "do": "bust",
+       "dur": 1.2,
+       "target": "myth1"
+      },
+      {
+       "at": 1.5,
+       "do": "highlight",
+       "dur": 1,
+       "target": "moonGlyph"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "sunNode"
+      },
+      {
+       "at": 0.4,
+       "do": "show",
+       "dur": 0.7,
+       "target": "moonNode"
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 1.1,
+       "target": "lightArrow",
+       "to": 1
+      },
+      {
+       "at": 1.8,
+       "do": "show",
+       "dur": 0.7,
+       "target": "earthNode"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "viewArrow"
+      },
+      {
+       "at": 0.5,
+       "do": "flow",
+       "dur": 1,
+       "target": "viewArrow",
+       "to": 1
+      },
+      {
+       "at": 1.4,
+       "do": "highlight",
+       "dur": 1.2,
+       "target": "moonNode"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "amavasya"
+      },
+      {
+       "at": 0.6,
+       "do": "show",
+       "dur": 0.7,
+       "target": "grow1"
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "grow1",
+       "to": 1
+      },
+      {
+       "at": 1.7,
+       "do": "show",
+       "dur": 0.7,
+       "target": "crescent"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "half",
+        "almost",
+        "purnima"
+       ]
+      },
+      {
+       "at": 0.6,
+       "do": "flow",
+       "dur": 1.5,
+       "target": [
+        "grow2",
+        "grow3",
+        "grow4"
+       ],
+       "to": 1
+      },
+      {
+       "at": 2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "purnima"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "days"
+      },
+      {
+       "at": 0.7,
+       "do": "count",
+       "dur": 1,
+       "target": "days",
+       "to": 1
+      },
+      {
+       "at": 1.5,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "purnima"
+      },
+      {
+       "at": 2.2,
+       "do": "focus",
+       "dur": 1,
+       "target": "amavasya"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "camera",
+       "dur": 2,
+       "zoom": 1.05
+      },
+      {
+       "at": "end",
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "order",
+    "prompt": "Tap the Moon shapes in order after Amavasya.",
+    "items": [
+     "crescent",
+     "half",
+     "almost",
+     "purnima"
+    ],
+    "src": "c4-evs-ch10-t02-i10"
+   }
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg",
+  "seconds": 52
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-evs-ch10-t02-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "thin",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        150,
+        220
+       ],
+       "rx": 28,
+       "ry": 75,
+       "fill": "soft"
+      },
+      {
+       "id": "half",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        220
+       ],
+       "r": 75,
+       "fill": "soft"
+      },
+      {
+       "id": "full",
+       "op": "circle",
+       "startMs": 1800,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        650,
+        220
+       ],
+       "r": 75,
+       "fill": "soft"
+      },
+      {
+       "id": "t1",
+       "op": "text",
+       "startMs": 2800,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        150,
+        340
+       ],
+       "text": "thin slice",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "t2",
+       "op": "text",
+       "startMs": 3400,
+       "endMs": 4000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        340
+       ],
+       "text": "half-circle",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "t3",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 4700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        650,
+        340
+       ],
+       "text": "full round Moon",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "moon",
+       "op": "label",
+       "startMs": 4800,
+       "endMs": 5400,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        90
+       ],
+       "text": "Moon",
+       "to": [
+        400,
+        145
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-evs-ch10-t02-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "q",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        80
+       ],
+       "text": "change shape?",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "n",
+       "op": "text",
+       "startMs": 1000,
+       "endMs": 1600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        180
+       ],
+       "text": "No",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "round",
+       "op": "circle",
+       "startMs": 1700,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        310
+       ],
+       "r": 90
+      },
+      {
+       "id": "real",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        450
+       ],
+       "text": "real shape: round",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-evs-ch10-t02-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "sun",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        120,
+        150
+       ],
+       "r": 55,
+       "fill": "accent"
+      },
+      {
+       "id": "moon",
+       "op": "circle",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        650,
+        300
+       ],
+       "r": 65
+      },
+      {
+       "id": "ray1",
+       "op": "arrow",
+       "startMs": 1600,
+       "endMs": 2600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        180,
+        150
+       ],
+       "to": [
+        585,
+        270
+       ]
+      },
+      {
+       "id": "ray2",
+       "op": "arrow",
+       "startMs": 2100,
+       "endMs": 3000,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        180,
+        170
+       ],
+       "to": [
+        585,
+        300
+       ]
+      },
+      {
+       "id": "sunlabel",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        120,
+        250
+       ],
+       "text": "Sun",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "moonlabel",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        650,
+        410
+       ],
+       "text": "Moon",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "light",
+       "op": "text",
+       "startMs": 4200,
+       "endMs": 4900,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        350,
+        120
+       ],
+       "text": "Sunlight",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "us",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 5400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        700,
+        220
+       ],
+       "text": "us",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "bounce",
+       "op": "arrow",
+       "startMs": 5400,
+       "endMs": 6300,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        585,
+        270
+       ],
+       "to": [
+        730,
+        210
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-evs-ch10-t02-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 10813,
+     "ops": [
+      {
+       "id": "sun",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        120,
+        100
+       ],
+       "r": 45,
+       "fill": "accent"
+      },
+      {
+       "id": "earth",
+       "op": "circle",
+       "startMs": 600,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        280
+       ],
+       "r": 65
+      },
+      {
+       "id": "moon",
+       "op": "circle",
+       "startMs": 1300,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        650,
+        280
+       ],
+       "r": 38
+      },
+      {
+       "id": "orbit",
+       "op": "ellipse",
+       "startMs": 1900,
+       "endMs": 3000,
+       "ink": "soft",
+       "weight": 1,
+       "c": [
+        400,
+        280
+       ],
+       "rx": 260,
+       "ry": 150
+      },
+      {
+       "id": "lit",
+       "op": "sector",
+       "startMs": 3000,
+       "endMs": 3900,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        650,
+        280
+       ],
+       "r": 38,
+       "fill": "accent",
+       "fromDeg": 90,
+       "toDeg": 270
+      },
+      {
+       "id": "ray",
+       "op": "arrow",
+       "startMs": 3900,
+       "endMs": 4900,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        165,
+        120
+       ],
+       "to": [
+        615,
+        265
+       ]
+      },
+      {
+       "id": "half",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 5700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        650,
+        370
+       ],
+       "text": "half lit",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "different",
+       "op": "text",
+       "startMs": 6500,
+       "endMs": 7400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        470
+       ],
+       "text": "different amounts",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "arrow",
+       "op": "arrow",
+       "startMs": 7600,
+       "endMs": 8500,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        680,
+        250
+       ],
+       "to": [
+        575,
+        165
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-evs-ch10-t02-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "am",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        120,
+        220
+       ],
+       "r": 55,
+       "fill": "soft"
+      },
+      {
+       "id": "amlabel",
+       "op": "text",
+       "startMs": 800,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        120,
+        330
+       ],
+       "text": "Amavasya",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "notseen",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        120,
+        390
+       ],
+       "text": "not seen",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "c1",
+       "op": "ellipse",
+       "startMs": 2200,
+       "endMs": 2900,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        270,
+        220
+       ],
+       "rx": 18,
+       "ry": 55,
+       "fill": "accent"
+      },
+      {
+       "id": "c3",
+       "op": "circle",
+       "startMs": 3600,
+       "endMs": 4300,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        570,
+        220
+       ],
+       "r": 55,
+       "fill": "accent"
+      },
+      {
+       "id": "grow",
+       "op": "arrow",
+       "startMs": 4500,
+       "endMs": 5500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        180,
+        120
+       ],
+       "to": [
+        570,
+        120
+       ]
+      },
+      {
+       "id": "night",
+       "op": "text",
+       "startMs": 5700,
+       "endMs": 6500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        420
+       ],
+       "text": "night by night",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 2,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-evs-ch10-t02-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "cres",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        100,
+        220
+       ],
+       "rx": 20,
+       "ry": 65,
+       "fill": "accent"
+      },
+      {
+       "id": "full",
+       "op": "circle",
+       "startMs": 2100,
+       "endMs": 2800,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        700,
+        220
+       ],
+       "r": 65,
+       "fill": "accent"
+      },
+      {
+       "id": "l1",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        100,
+        340
+       ],
+       "text": "crescent",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "l2",
+       "op": "text",
+       "startMs": 3600,
+       "endMs": 4200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        300,
+        340
+       ],
+       "text": "half-Moon",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "l3",
+       "op": "text",
+       "startMs": 4200,
+       "endMs": 4800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        500,
+        340
+       ],
+       "text": "almost full",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "l4",
+       "op": "text",
+       "startMs": 4800,
+       "endMs": 5400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        700,
+        340
+       ],
+       "text": "Purnima",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "grow",
+       "op": "arrow",
+       "startMs": 5500,
+       "endMs": 6500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        130,
+        120
+       ],
+       "to": [
+        650,
+        120
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-evs-ch10-t02-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "am",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        90,
+        230
+       ],
+       "r": 45,
+       "fill": "soft"
+      },
+      {
+       "id": "full",
+       "op": "circle",
+       "startMs": 1100,
+       "endMs": 1700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        450,
+        230
+       ],
+       "r": 60,
+       "fill": "accent"
+      },
+      {
+       "id": "shrink",
+       "op": "sector",
+       "startMs": 1700,
+       "endMs": 2300,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        630,
+        230
+       ],
+       "r": 55,
+       "fill": "accent",
+       "fromDeg": 90,
+       "toDeg": 270
+      },
+      {
+       "id": "back",
+       "op": "arrow",
+       "startMs": 2500,
+       "endMs": 3700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        680,
+        130
+       ],
+       "to": [
+        130,
+        130
+       ]
+      },
+      {
+       "id": "days",
+       "op": "numwork",
+       "startMs": 4000,
+       "endMs": 4900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        280,
+        390
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "15",
+         "days"
+        ]
+       ]
+      },
+      {
+       "id": "amlabel",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 5500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        90,
+        330
+       ],
+       "text": "Amavasya",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "plabel",
+       "op": "text",
+       "startMs": 5500,
+       "endMs": 6000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        450,
+        330
+       ],
+       "text": "Purnima",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "shrinklabel",
+       "op": "text",
+       "startMs": 6000,
+       "endMs": 6600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        630,
+        330
+       ],
+       "text": "shrinks",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-evs-ch10-t02-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "cycle",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        240
+       ],
+       "rx": 300,
+       "ry": 150
+      },
+      {
+       "id": "am",
+       "op": "circle",
+       "startMs": 1000,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        100,
+        240
+       ],
+       "r": 38,
+       "fill": "soft"
+      },
+      {
+       "id": "purnima",
+       "op": "circle",
+       "startMs": 1500,
+       "endMs": 2100,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        700,
+        240
+       ],
+       "r": 55,
+       "fill": "accent"
+      },
+      {
+       "id": "arrow1",
+       "op": "arrow",
+       "startMs": 2100,
+       "endMs": 3000,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        145,
+        170
+       ],
+       "to": [
+        650,
+        170
+       ]
+      },
+      {
+       "id": "arrow2",
+       "op": "arrow",
+       "startMs": 3000,
+       "endMs": 3900,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        650,
+        310
+       ],
+       "to": [
+        145,
+        310
+       ]
+      },
+      {
+       "id": "days",
+       "op": "numwork",
+       "startMs": 4000,
+       "endMs": 5100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        300,
+        70
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "29",
+         "to",
+         "30",
+         "days"
+        ]
+       ]
+      },
+      {
+       "id": "phases",
+       "op": "text",
+       "startMs": 5200,
+       "endMs": 5600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        440
+       ],
+       "text": "phases",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "shadow",
+       "op": "text",
+       "startMs": 5900,
+       "endMs": 6900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        480
+       ],
+       "text": "not Earth shadow",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "cross",
+       "op": "line",
+       "startMs": 6900,
+       "endMs": 7300,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        300,
+        465
+       ],
+       "to": [
+        500,
+        465
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1",
+   "key": "45° from the Sun",
+   "prompt": "place the Moon and watch its lit part"
+  },
+  {
+   "itemId": "r2",
+   "key": "180° from the Sun",
+   "prompt": "find the shape seen at Purnima"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

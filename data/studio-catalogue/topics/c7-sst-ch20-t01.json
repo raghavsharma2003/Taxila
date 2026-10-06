@@ -1,0 +1,1841 @@
+{
+ "topicId": "c7-sst-ch20-t01",
+ "title": "Banks and the Magic of Finance",
+ "chapter": "Banks and the Magic of Finance",
+ "subject": "sst",
+ "class": 7,
+ "topicType": "T3",
+ "plan": {
+  "game": "town-lab@1",
+  "hint": "savings mode (bank interest) and a loan-vs-save round"
+ },
+ "game": {
+  "archetype": "town-lab@1",
+  "spec": {
+   "archetype": "town-lab@1",
+   "skills": [
+    "c7-sst-ch20-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "done": "right",
+    "have": "you have",
+    "need": "you need",
+    "has": "has",
+    "wants": "wants",
+    "trades": "trades",
+    "market": "market",
+    "coins": "coins",
+    "open": "OPEN",
+    "price": "price",
+    "cost": "cost",
+    "profit": "profit",
+    "sold": "sold",
+    "target": "target",
+    "stock": "stock",
+    "lock": "LOCK",
+    "run": "RUN",
+    "perMonth": "per month",
+    "years": "years",
+    "goal": "goal",
+    "saved": "saved",
+    "interest": "interest",
+    "budget": "budget",
+    "left": "left",
+    "families": "families helped",
+    "runDone": "Town closed",
+    "noDeal": "no deal",
+    "reset": "start again",
+    "rupee": "₹"
+   },
+   "title": "Town Lab",
+   "rounds": [
+    {
+     "mode": "savings",
+     "title": "Bank money magic",
+     "sub": "see how savings help others",
+     "goal": 1100,
+     "years": 2,
+     "rate": 5,
+     "targets": "c7-sst-ch20-t01-m1"
+    },
+    {
+     "mode": "savings",
+     "title": "Save or borrow",
+     "sub": "plan for a ₹1,200 cycle",
+     "goal": 1200,
+     "years": 1,
+     "rate": 5
+    },
+    {
+     "mode": "market",
+     "title": "Mango stall",
+     "sub": "choose a price for today's buyers",
+     "good": "mango box",
+     "glyph": "apple",
+     "cost": 30,
+     "stock": 8,
+     "buyers": [
+      40,
+      55,
+      70,
+      85,
+      100,
+      45,
+      65,
+      90
+     ],
+     "target": 80,
+     "targets": "c7-sst-ch20-t01-m3"
+    },
+    {
+     "mode": "council",
+     "title": "Ward budget",
+     "sub": "help the most families",
+     "budget": 50,
+     "projects": [
+      {
+       "name": "handpumps",
+       "glyph": "tap",
+       "cost": 12,
+       "helps": 180
+      },
+      {
+       "name": "school roof",
+       "glyph": "school",
+       "cost": 25,
+       "helps": 220
+      },
+      {
+       "name": "streetlights",
+       "glyph": "bulb",
+       "cost": 15,
+       "helps": 150
+      },
+      {
+       "name": "drain",
+       "glyph": "road",
+       "cost": 20,
+       "helps": 200
+      },
+      {
+       "name": "park",
+       "glyph": "tree",
+       "cost": 18,
+       "helps": 90
+      }
+     ]
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 2,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-sst-ch20-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Banks and the Magic of Finance",
+   "accent": "mint",
+   "targets": "c7-sst-ch20-t01-m1",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "row",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Banks and Finance"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Banks lock up your exact notes"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "deposit",
+       "type": "node",
+       "text": "Deposits",
+       "sub": "safe money",
+       "glyph": "bank",
+       "color": "mint"
+      },
+      {
+       "id": "reserve",
+       "type": "node",
+       "text": "Reserve",
+       "sub": "withdrawals",
+       "glyph": "shield",
+       "color": "ion"
+      },
+      {
+       "id": "loan",
+       "type": "node",
+       "text": "Loans",
+       "sub": "people and firms",
+       "glyph": "house",
+       "color": "amber"
+      },
+      {
+       "id": "pay",
+       "type": "node",
+       "text": "Payments",
+       "sub": "bank service",
+       "glyph": "tap",
+       "color": "sun"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "deposit",
+       "to": "reserve",
+       "text": "part kept"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "deposit",
+       "to": "loan",
+       "text": "rest lent"
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "loan",
+       "to": "pay",
+       "text": "payments"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "column",
+     "els": [
+      {
+       "id": "formula",
+       "type": "label",
+       "text": "SI = P × R × T ÷ 100"
+      },
+      {
+       "id": "principal",
+       "type": "label",
+       "text": "P ₹5,000"
+      },
+      {
+       "id": "rate",
+       "type": "label",
+       "text": "R 8% yearly"
+      },
+      {
+       "id": "time",
+       "type": "label",
+       "text": "T 2 years"
+      },
+      {
+       "id": "interest",
+       "type": "bar",
+       "parts": 10,
+       "shaded": 2,
+       "text": "SI ₹800"
+      },
+      {
+       "id": "total",
+       "type": "label",
+       "text": "Total ₹5,800"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "row",
+     "els": [
+      {
+       "id": "savings",
+       "type": "node",
+       "text": "Savings",
+       "sub": "withdraw anytime",
+       "glyph": "coin",
+       "color": "mint"
+      },
+      {
+       "id": "fixed",
+       "type": "node",
+       "text": "Fixed deposit",
+       "sub": "locked period",
+       "glyph": "clock",
+       "color": "amber"
+      },
+      {
+       "id": "recurring",
+       "type": "node",
+       "text": "Recurring",
+       "sub": "monthly saving",
+       "color": "ion"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "A bank has three useful jobs: it accepts deposits, gives loans, and helps with payments.",
+    "L2": "Here is a common myth: a bank keeps your exact notes in a locker and does nothing else with them.",
+    "L3": "That is not true. A bank keeps part as a reserve and lends the rest to people and businesses.",
+    "L4": "Your savings can help someone build a house or start a business. The bank pays depositors interest and charges borrowers a higher interest rate.",
+    "L5": "A savings account lets you withdraw anytime. A fixed deposit locks money for a fixed period, while a recurring deposit saves a fixed amount each month.",
+    "L6": "Simple interest equals principal times rate times time divided by one hundred.",
+    "L7": "For ₹5,000 at 8% per year for 2 years, the interest is ₹800 and the total is ₹5,800.",
+    "L8": "Now check the idea: which account lets you withdraw your money anytime?"
+   },
+   "narration": {
+    "L1": {
+     "text": "A bank has three useful jobs: it accepts deposits, gives loans, and helps with payments.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L2": {
+     "text": "Here is a common myth: a bank keeps your exact notes in a locker and does nothing else with them.",
+     "dur": 4.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L3": {
+     "text": "That is not true. A bank keeps part as a reserve and lends the rest to people and businesses.",
+     "dur": 4.2,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L4": {
+     "text": "Your savings can help someone build a house or start a business. The bank pays depositors interest and charges borrowers a higher interest rate.",
+     "dur": 5.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L5": {
+     "text": "A savings account lets you withdraw anytime. A fixed deposit locks money for a fixed period, while a recurring deposit saves a fixed amount each month.",
+     "dur": 5.2,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Simple interest equals principal times rate times time divided by one hundred.",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L7": {
+     "text": "For ₹5,000 at 8% per year for 2 years, the interest is ₹800 and the total is ₹5,800.",
+     "dur": 4.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Now check the idea: which account lets you withdraw your money anytime?",
+     "dur": 3.2,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "deposit",
+        "loan",
+        "pay"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "reserve",
+        "a1",
+        "a2"
+       ]
+      },
+      {
+       "at": 1.5,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "a2",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1.2,
+       "target": "loan"
+      },
+      {
+       "at": 1.2,
+       "do": "highlight",
+       "dur": 1.2,
+       "target": "deposit"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "savings",
+        "fixed",
+        "recurring"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "formula"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "principal",
+        "rate",
+        "time",
+        "interest",
+        "total"
+       ]
+      },
+      {
+       "at": 1.2,
+       "do": "count",
+       "dur": 1,
+       "target": "interest",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "interactive",
+       "dur": 1
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which account lets you withdraw money anytime?",
+    "options": [
+     "savings",
+     "fixed",
+     "recurring"
+    ],
+    "answer": "savings",
+    "src": "c7-sst-ch20-t01-i05"
+   }
+  },
+  "repairs": [
+   "glyph",
+   "cue:target"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 38
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch20-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "bank",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        270,
+        90
+       ],
+       "w": 260,
+       "h": 100
+      },
+      {
+       "id": "bankText",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        145
+       ],
+       "text": "bank",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "deposit",
+       "op": "arrow",
+       "startMs": 1300,
+       "endMs": 2100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        120,
+        250
+       ],
+       "to": [
+        270,
+        170
+       ]
+      },
+      {
+       "id": "depositLabel",
+       "op": "label",
+       "startMs": 1900,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        70,
+        275
+       ],
+       "text": "deposits",
+       "to": [
+        180,
+        220
+       ]
+      },
+      {
+       "id": "loan",
+       "op": "arrow",
+       "startMs": 2700,
+       "endMs": 3500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        530,
+        170
+       ],
+       "to": [
+        680,
+        250
+       ]
+      },
+      {
+       "id": "loanLabel",
+       "op": "label",
+       "startMs": 3300,
+       "endMs": 3800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        650,
+        275
+       ],
+       "text": "loans",
+       "to": [
+        620,
+        215
+       ]
+      },
+      {
+       "id": "payment",
+       "op": "arrow",
+       "startMs": 4100,
+       "endMs": 4900,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        400,
+        190
+       ],
+       "to": [
+        400,
+        350
+       ]
+      },
+      {
+       "id": "paymentLabel",
+       "op": "label",
+       "startMs": 4700,
+       "endMs": 5300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        390
+       ],
+       "text": "payments",
+       "target": "payment"
+      },
+      {
+       "id": "jobs",
+       "op": "text",
+       "startMs": 5600,
+       "endMs": 6300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        450
+       ],
+       "text": "three useful jobs",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch20-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9111,
+     "ops": [
+      {
+       "id": "locker",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        250,
+        100
+       ],
+       "w": 300,
+       "h": 240
+      },
+      {
+       "id": "lockerLabel",
+       "op": "text",
+       "startMs": 800,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        75
+       ],
+       "text": "locker",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "notes",
+       "op": "rect",
+       "startMs": 1500,
+       "endMs": 2100,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        305,
+        160
+       ],
+       "w": 80,
+       "h": 45
+      },
+      {
+       "id": "notesLabel",
+       "op": "label",
+       "startMs": 2100,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        345,
+        225
+       ],
+       "text": "notes",
+       "target": "notes"
+      },
+      {
+       "id": "exact",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        285
+       ],
+       "text": "exact notes",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "myth",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        390
+       ],
+       "text": "myth",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "cross1",
+       "op": "line",
+       "startMs": 4700,
+       "endMs": 5300,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        340,
+        370
+       ],
+       "to": [
+        460,
+        420
+       ]
+      },
+      {
+       "id": "cross2",
+       "op": "line",
+       "startMs": 5300,
+       "endMs": 5900,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        460,
+        370
+       ],
+       "to": [
+        340,
+        420
+       ]
+      },
+      {
+       "id": "nothing",
+       "op": "text",
+       "startMs": 6500,
+       "endMs": 7300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        465
+       ],
+       "text": "does nothing else",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch20-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "reserve",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        120,
+        150
+       ],
+       "w": 190,
+       "h": 120
+      },
+      {
+       "id": "reserveLabel",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        215,
+        215
+       ],
+       "text": "reserve",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "lend",
+       "op": "rect",
+       "startMs": 1100,
+       "endMs": 2000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        490,
+        150
+       ],
+       "w": 190,
+       "h": 120
+      },
+      {
+       "id": "lendLabel",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        585,
+        215
+       ],
+       "text": "lends the rest",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "split",
+       "op": "arrow",
+       "startMs": 2700,
+       "endMs": 3500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        100
+       ],
+       "to": [
+        215,
+        150
+       ]
+      },
+      {
+       "id": "split2",
+       "op": "arrow",
+       "startMs": 3000,
+       "endMs": 3800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        100
+       ],
+       "to": [
+        585,
+        150
+       ]
+      },
+      {
+       "id": "people",
+       "op": "text",
+       "startMs": 4100,
+       "endMs": 4600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        585,
+        330
+       ],
+       "text": "people",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "businesses",
+       "op": "text",
+       "startMs": 4600,
+       "endMs": 5200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        585,
+        380
+       ],
+       "text": "businesses",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "true",
+       "op": "text",
+       "startMs": 6000,
+       "endMs": 6800,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        440
+       ],
+       "text": "not exact notes",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch20-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 10813,
+     "ops": [
+      {
+       "id": "savings",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        150,
+        160
+       ],
+       "r": 70
+      },
+      {
+       "id": "savingsLabel",
+       "op": "text",
+       "startMs": 600,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        150,
+        165
+       ],
+       "text": "savings",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "house",
+       "op": "polygon",
+       "startMs": 1400,
+       "endMs": 2300,
+       "ink": "good",
+       "weight": 2,
+       "points": [
+        [
+         330,
+         210
+        ],
+        [
+         400,
+         150
+        ],
+        [
+         470,
+         210
+        ],
+        [
+         470,
+         300
+        ],
+        [
+         330,
+         300
+        ]
+       ]
+      },
+      {
+       "id": "houseLabel",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        335
+       ],
+       "text": "house",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "business",
+       "op": "rect",
+       "startMs": 2900,
+       "endMs": 3700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        560,
+        180
+       ],
+       "w": 130,
+       "h": 110
+      },
+      {
+       "id": "businessLabel",
+       "op": "text",
+       "startMs": 3600,
+       "endMs": 4200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        625,
+        325
+       ],
+       "text": "business",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "saveArrow",
+       "op": "arrow",
+       "startMs": 4200,
+       "endMs": 4900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        220,
+        160
+       ],
+       "to": [
+        330,
+        210
+       ]
+      },
+      {
+       "id": "bankPays",
+       "op": "arrow",
+       "startMs": 5200,
+       "endMs": 6000,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        150,
+        240
+       ],
+       "to": [
+        150,
+        380
+       ]
+      },
+      {
+       "id": "depositors",
+       "op": "label",
+       "startMs": 5900,
+       "endMs": 6500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        150,
+        420
+       ],
+       "text": "depositors",
+       "target": "bankPays"
+      },
+      {
+       "id": "charges",
+       "op": "arrow",
+       "startMs": 6600,
+       "endMs": 7400,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        625,
+        180
+       ],
+       "to": [
+        625,
+        380
+       ]
+      },
+      {
+       "id": "borrowers",
+       "op": "label",
+       "startMs": 7300,
+       "endMs": 7900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        625,
+        420
+       ],
+       "text": "borrowers",
+       "target": "charges"
+      },
+      {
+       "id": "rates",
+       "op": "numwork",
+       "startMs": 8000,
+       "endMs": 9000,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        250,
+        440
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "higher",
+         "intere",
+         "rate"
+        ]
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch20-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 11664,
+     "ops": [
+      {
+       "id": "saveBox",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        70,
+        100
+       ],
+       "w": 200,
+       "h": 100
+      },
+      {
+       "id": "saveText",
+       "op": "text",
+       "startMs": 600,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        170,
+        145
+       ],
+       "text": "savings account",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "anytime",
+       "op": "arrow",
+       "startMs": 1400,
+       "endMs": 2100,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        170,
+        205
+       ],
+       "to": [
+        170,
+        270
+       ]
+      },
+      {
+       "id": "anytimeText",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 2900,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        170,
+        310
+       ],
+       "text": "withdraw anytime",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "fixedBox",
+       "op": "rect",
+       "startMs": 3000,
+       "endMs": 3800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        300,
+        100
+       ],
+       "w": 200,
+       "h": 100
+      },
+      {
+       "id": "fixedText",
+       "op": "text",
+       "startMs": 3600,
+       "endMs": 4300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        145
+       ],
+       "text": "fixed deposit",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "lock",
+       "op": "line",
+       "startMs": 4400,
+       "endMs": 5000,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        350,
+        240
+       ],
+       "to": [
+        450,
+        240
+       ]
+      },
+      {
+       "id": "period",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 5700,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        285
+       ],
+       "text": "fixed period",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "recurringBox",
+       "op": "rect",
+       "startMs": 5800,
+       "endMs": 6600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        530,
+        100
+       ],
+       "w": 200,
+       "h": 100
+      },
+      {
+       "id": "recurringText",
+       "op": "text",
+       "startMs": 6400,
+       "endMs": 7200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        630,
+        145
+       ],
+       "text": "recurring deposit",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "monthArrow",
+       "op": "arrow",
+       "startMs": 7300,
+       "endMs": 8000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        630,
+        205
+       ],
+       "to": [
+        630,
+        270
+       ]
+      },
+      {
+       "id": "monthText",
+       "op": "text",
+       "startMs": 7900,
+       "endMs": 9000,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        630,
+        315
+       ],
+       "text": "fixed amount each month",
+       "size": "s",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch20-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "formula",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        120
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "Simple",
+         "intere",
+         "=",
+         "Princi",
+         "×",
+         "Rate",
+         "×",
+         "Time",
+         "÷",
+         "100"
+        ]
+       ]
+      },
+      {
+       "id": "si",
+       "op": "text",
+       "startMs": 2800,
+       "endMs": 3600,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        260
+       ],
+       "text": "simple interest",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "underline",
+       "op": "line",
+       "startMs": 3600,
+       "endMs": 4300,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        180,
+        285
+       ],
+       "to": [
+        620,
+        285
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch20-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "known",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        80,
+        80
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "₹5,000",
+         "at",
+         "8%",
+         "per",
+         "year",
+         "for",
+         "2",
+         "years"
+        ]
+       ]
+      },
+      {
+       "id": "substitute",
+       "op": "numwork",
+       "startMs": 1700,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        80,
+        180
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "SI",
+         "=",
+         "5,000",
+         "×",
+         "8",
+         "×",
+         "2",
+         "÷",
+         "100"
+        ]
+       ]
+      },
+      {
+       "id": "calc1",
+       "op": "numwork",
+       "startMs": 3300,
+       "endMs": 4500,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        80,
+        280
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "5,000",
+         "×",
+         "8",
+         "=",
+         "40,000"
+        ]
+       ]
+      },
+      {
+       "id": "calc2",
+       "op": "numwork",
+       "startMs": 4400,
+       "endMs": 5700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        80,
+        340
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "40,000",
+         "×",
+         "2",
+         "÷",
+         "100",
+         "=",
+         "₹800"
+        ]
+       ]
+      },
+      {
+       "id": "total",
+       "op": "numwork",
+       "startMs": 5900,
+       "endMs": 7200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        80,
+        420
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "₹5,000",
+         "+",
+         "₹800",
+         "=",
+         "₹5,800"
+        ]
+       ]
+      },
+      {
+       "id": "interestLabel",
+       "op": "text",
+       "startMs": 7300,
+       "endMs": 7800,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        620,
+        330
+       ],
+       "text": "interest",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch20-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "question",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        90
+       ],
+       "text": "which account",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "withdraw",
+       "op": "arrow",
+       "startMs": 1100,
+       "endMs": 1900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        150
+       ],
+       "to": [
+        400,
+        250
+       ]
+      },
+      {
+       "id": "anytime",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2700,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        290
+       ],
+       "text": "withdraw anytime",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "option1",
+       "op": "rect",
+       "startMs": 3000,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        100,
+        360
+       ],
+       "w": 250,
+       "h": 70
+      },
+      {
+       "id": "option2",
+       "op": "rect",
+       "startMs": 3000,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        450,
+        360
+       ],
+       "w": 250,
+       "h": 70
+      },
+      {
+       "id": "option1Text",
+       "op": "text",
+       "startMs": 3600,
+       "endMs": 4400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        225,
+        402
+       ],
+       "text": "savings account",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "option2Text",
+       "op": "text",
+       "startMs": 3600,
+       "endMs": 4400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        575,
+        402
+       ],
+       "text": "fixed deposit",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "answer",
+       "op": "highlight",
+       "startMs": 4500,
+       "endMs": 5400,
+       "ink": "good",
+       "weight": 2,
+       "target": "option1",
+       "style": "circle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1",
+   "key": "₹45 a month",
+   "prompt": "see how savings help others"
+  },
+  {
+   "itemId": "r2",
+   "key": "₹100 a month",
+   "prompt": "plan for a ₹1,200 cycle"
+  },
+  {
+   "itemId": "r3",
+   "key": "₹65 → profit 175 (target 80)",
+   "prompt": "choose a price for today's buyers"
+  },
+  {
+   "itemId": "r4",
+   "key": "530 families: handpumps, streetlights, drain",
+   "prompt": "help the most families"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

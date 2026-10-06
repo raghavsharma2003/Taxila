@@ -21,7 +21,7 @@
     "round": "Round",
     "measured": "measured",
     "precision": "precision",
-    "hold": "Hold to pour",
+    "hold": "Hold steady",
     "release": "Release",
     "cut": "Tap to cut",
     "set": "Set",
@@ -37,72 +37,1441 @@
     "heavy": "parcel heavier",
     "light": "weights heavier"
    },
-   "title": "Measure and Cut",
+   "title": "Measure with a ruler",
    "rounds": [
     {
      "mode": "cut",
-     "title": "Cut a small strip",
+     "title": "Cut a small length",
      "sub": "use centimetres for small things",
      "items": [
       {
-       "target": 12,
+       "target": 90,
        "show": "cm"
       },
       {
-       "target": 9,
+       "target": 150,
        "show": "cm"
       }
      ],
-     "scaleMax": 30,
-     "minor": 1,
-     "tol": 1,
-     "speed": 1,
+     "scaleMax": 3000,
+     "minor": 30,
+     "tol": 5,
+     "speed": 1
+    },
+    {
+     "mode": "cut",
+     "title": "Start away from zero",
+     "sub": "read both ends and subtract",
+     "items": [
+      {
+       "target": 70,
+       "show": "cm"
+      },
+      {
+       "target": 125,
+       "show": "cm"
+      }
+     ],
+     "scaleMax": 3000,
+     "minor": 30,
+     "tol": 5,
+     "speed": 0.9,
      "targets": "c4-maths-ch06-t01-m-edge-start"
     },
     {
      "mode": "cut",
-     "title": "Cut past one metre",
-     "sub": "read metres and centimetres",
-     "items": [
-      {
-       "target": 105,
-       "show": "m+cm"
-      },
-      {
-       "target": 150,
-       "show": "m+cm"
-      }
-     ],
-     "scaleMax": 200,
-     "minor": 5,
-     "tol": 2,
-     "speed": 0.9,
-     "targets": "c4-maths-ch06-t01-m-concat-units"
-    },
-    {
-     "mode": "cut",
      "title": "Measure a long border",
-     "sub": "use metres for a big length",
+     "sub": "change metres into centimetres",
      "items": [
       {
-       "target": 240,
+       "target": 1050,
        "show": "m"
       },
       {
-       "target": 300,
+       "target": 1340,
        "show": "m"
       }
      ],
-     "scaleMax": 400,
-     "minor": 10,
+     "scaleMax": 3000,
+     "minor": 30,
      "tol": 5,
      "speed": 0.8,
-     "targets": "c4-maths-ch06-t01-m-m-is-10cm"
+     "targets": "c4-maths-ch06-t01-m-concat-units"
     }
    ]
   },
-  "repairs": [],
-  "attempts": 2,
+  "repairs": [
+   "minor:too-dense",
+   "minor:too-dense",
+   "minor:too-dense"
+  ],
+  "attempts": 3,
   "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c4-maths-ch06-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Centimetres and metres",
+   "accent": "mint",
+   "targets": "c4-maths-ch06-t01-m-edge-start",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Centimetres and metres"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Start at 1 or the edge"
+      },
+      {
+       "id": "ruler",
+       "type": "glyph",
+       "name": "ruler",
+       "x": 250,
+       "y": 350,
+       "size": 180,
+       "color": "mint"
+      },
+      {
+       "id": "zero",
+       "type": "label",
+       "text": "0",
+       "x": 180,
+       "y": 450,
+       "color": "mint"
+      },
+      {
+       "id": "one",
+       "type": "label",
+       "text": "1",
+       "x": 280,
+       "y": 450,
+       "color": "amber"
+      },
+      {
+       "id": "end",
+       "type": "label",
+       "text": "12",
+       "x": 780,
+       "y": 450,
+       "color": "sun"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "stick",
+       "type": "bar",
+       "parts": 9,
+       "shaded": 9,
+       "x": 120,
+       "y": 300,
+       "w": 600,
+       "text": "stick"
+      },
+      {
+       "id": "start2",
+       "type": "mark",
+       "axis": "axis",
+       "value": 2,
+       "text": "2",
+       "color": "amber"
+      },
+      {
+       "id": "end11",
+       "type": "mark",
+       "axis": "axis",
+       "value": 11,
+       "text": "11",
+       "color": "sun"
+      },
+      {
+       "id": "axis",
+       "type": "axis",
+       "min": 0,
+       "max": 12,
+       "step": 1,
+       "unit": "cm",
+       "scale": "linear",
+       "y": 450
+      },
+      {
+       "id": "sub",
+       "type": "label",
+       "text": "11 − 2 = 9 cm",
+       "x": 350,
+       "y": 520,
+       "color": "mint"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "metre",
+       "type": "node",
+       "text": "1 metre",
+       "sub": "large length",
+       "glyph": "ruler",
+       "color": "mint"
+      },
+      {
+       "id": "hundred",
+       "type": "node",
+       "text": "100 cm",
+       "sub": "same length",
+       "color": "amber"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "metre",
+       "to": "hundred",
+       "text": "equals"
+      },
+      {
+       "id": "mix",
+       "type": "label",
+       "text": "1 m 5 cm = 105 cm",
+       "x": 300,
+       "y": 500,
+       "color": "sun"
+      },
+      {
+       "id": "small",
+       "type": "label",
+       "text": "small: cm",
+       "x": 120,
+       "y": 230,
+       "color": "mint"
+      },
+      {
+       "id": "large",
+       "type": "label",
+       "text": "large: m",
+       "x": 700,
+       "y": 230,
+       "color": "amber"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "split",
+     "els": [
+      {
+       "id": "prompt",
+       "type": "title",
+       "text": "Check the length"
+      },
+      {
+       "id": "opt6",
+       "type": "label",
+       "text": "6 cm",
+       "x": 170,
+       "y": 330,
+       "color": "mint"
+      },
+      {
+       "id": "opt9",
+       "type": "label",
+       "text": "9 cm",
+       "x": 400,
+       "y": 330,
+       "color": "amber"
+      },
+      {
+       "id": "opt12",
+       "type": "label",
+       "text": "12 cm",
+       "x": 630,
+       "y": 330,
+       "color": "sun"
+      },
+      {
+       "id": "from3",
+       "type": "label",
+       "text": "start 3",
+       "x": 200,
+       "y": 450,
+       "color": "ion"
+      },
+      {
+       "id": "to9",
+       "type": "label",
+       "text": "end 9",
+       "x": 620,
+       "y": 450,
+       "color": "ion"
+      },
+      {
+       "id": "calc",
+       "type": "label",
+       "text": "end − start",
+       "x": 380,
+       "y": 520,
+       "color": "mint"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "A length is the number of one-centimetre spaces from one end to the other.",
+    "L2": "So place the start at zero, then read the mark at the other end.",
+    "L3": "If the start is not zero, subtract the start reading from the end reading.",
+    "L4": "For a stick from 2 to 11, the length is 11 minus 2, or 9 centimetres.",
+    "L5": "One metre equals 100 centimetres, so 2 metres equals 200 centimetres.",
+    "L6": "Do not join the digits: 1 metre 5 centimetres is 105 centimetres.",
+    "L7": "Use centimetres for small things and metres for big things such as rooms and pitches.",
+    "L8": "Now a crayon goes from 3 to 9. Tap its length."
+   },
+   "narration": {
+    "L1": {
+     "text": "A length is the number of one-centimetre spaces from one end to the other.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L2": {
+     "text": "So place the start at zero, then read the mark at the other end.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L3": {
+     "text": "If the start is not zero, subtract the start reading from the end reading.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L4": {
+     "text": "For a stick from 2 to 11, the length is 11 minus 2, or 9 centimetres.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L5": {
+     "text": "One metre equals 100 centimetres, so 2 metres equals 200 centimetres.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Do not join the digits: 1 metre 5 centimetres is 105 centimetres.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Use centimetres for small things and metres for big things such as rooms and pitches.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Now a crayon goes from 3 to 9. Tap its length.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "title"
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 1,
+       "target": "ruler"
+      },
+      {
+       "at": 2,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "zero",
+        "one",
+        "end"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "zero"
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 1,
+       "target": "end"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "myth"
+      },
+      {
+       "at": 1,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "axis",
+        "start2",
+        "end11",
+        "stick"
+       ]
+      },
+      {
+       "at": 4,
+       "do": "show",
+       "dur": 1,
+       "target": "sub"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "metre"
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 1,
+       "target": "hundred"
+      },
+      {
+       "at": 2,
+       "do": "flow",
+       "dur": 1,
+       "target": "a2",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "mix"
+      },
+      {
+       "at": 2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "mix"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "small",
+        "large"
+       ]
+      },
+      {
+       "at": 2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "large"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "prompt",
+        "from3",
+        "to9",
+        "calc"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "opt6",
+        "opt9",
+        "opt12"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive"
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "A crayon goes from 3 to 9. How long is it?",
+    "options": [
+     "opt6",
+     "opt9",
+     "opt12"
+    ],
+    "answer": "opt6",
+    "src": "c4-maths-ch06-t01-i04"
+   }
+  },
+  "repairs": [
+   "glyph",
+   "arrow:dangling",
+   "cue:target"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 62
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch06-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "ruler",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 3,
+       "from": [
+        90,
+        250
+       ],
+       "to": [
+        710,
+        250
+       ]
+      },
+      {
+       "id": "ticks",
+       "op": "numwork",
+       "startMs": 1600,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        80,
+        255
+       ],
+       "layout": "number_line",
+       "rows": [
+        [
+         "0",
+         "1",
+         "2",
+         "3",
+         "4",
+         "5",
+         "6",
+         "7",
+         "8",
+         "9",
+         "10"
+        ]
+       ],
+       "range": [
+        0,
+        10
+       ]
+      },
+      {
+       "id": "cm",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 4700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        710,
+        320
+       ],
+       "text": "cm",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch06-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "start",
+       "op": "arrow",
+       "startMs": 1300,
+       "endMs": 2500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        110,
+        180
+       ],
+       "to": [
+        110,
+        235
+       ]
+      },
+      {
+       "id": "end",
+       "op": "arrow",
+       "startMs": 2800,
+       "endMs": 4000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        650,
+        180
+       ],
+       "to": [
+        650,
+        235
+       ]
+      },
+      {
+       "id": "read",
+       "op": "label",
+       "startMs": 4000,
+       "endMs": 5200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        650,
+        150
+       ],
+       "text": "other end",
+       "to": [
+        650,
+        235
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch06-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "startmark",
+       "op": "label",
+       "startMs": 0,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        110,
+        360
+       ],
+       "text": "start",
+       "to": [
+        110,
+        250
+       ]
+      },
+      {
+       "id": "endmark",
+       "op": "label",
+       "startMs": 900,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        650,
+        360
+       ],
+       "text": "end",
+       "to": [
+        650,
+        250
+       ]
+      },
+      {
+       "id": "sub",
+       "op": "numwork",
+       "startMs": 2200,
+       "endMs": 4100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        230,
+        390
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "end",
+         "−",
+         "start",
+         "=",
+         "length"
+        ]
+       ]
+      },
+      {
+       "id": "direction",
+       "op": "arrow",
+       "startMs": 4300,
+       "endMs": 5700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        650,
+        290
+       ],
+       "to": [
+        110,
+        290
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch06-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "stick",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 1200,
+       "ink": "accent",
+       "weight": 3,
+       "from": [
+        200,
+        130
+       ],
+       "to": [
+        650,
+        130
+       ]
+      },
+      {
+       "id": "s2",
+       "op": "label",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        200,
+        95
+       ],
+       "text": "2",
+       "to": [
+        200,
+        130
+       ]
+      },
+      {
+       "id": "s11",
+       "op": "label",
+       "startMs": 1200,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        650,
+        95
+       ],
+       "text": "11",
+       "to": [
+        650,
+        130
+       ]
+      },
+      {
+       "id": "calc",
+       "op": "numwork",
+       "startMs": 2100,
+       "endMs": 3900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        210,
+        230
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "11",
+         "−",
+         "2",
+         "=",
+         "9"
+        ]
+       ]
+      },
+      {
+       "id": "unit",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        500,
+        230
+       ],
+       "text": "cm",
+       "size": "m"
+      },
+      {
+       "id": "answer",
+       "op": "label",
+       "startMs": 4800,
+       "endMs": 6500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        420,
+        320
+       ],
+       "text": "9 centimetres",
+       "to": [
+        420,
+        250
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch06-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "metre",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        130
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "1",
+         "metre",
+         "=",
+         "100",
+         "centim"
+        ]
+       ]
+      },
+      {
+       "id": "convert",
+       "op": "numwork",
+       "startMs": 2100,
+       "endMs": 3900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        120,
+        250
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "2",
+         "metres",
+         "=",
+         "200",
+         "centim"
+        ]
+       ]
+      },
+      {
+       "id": "arrow",
+       "op": "arrow",
+       "startMs": 3900,
+       "endMs": 4700,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        280,
+        180
+       ],
+       "to": [
+        280,
+        235
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch06-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "mixed",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        150,
+        150
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "1",
+         "metre",
+         "5",
+         "centim"
+        ]
+       ]
+      },
+      {
+       "id": "notjoin",
+       "op": "line",
+       "startMs": 1600,
+       "endMs": 2500,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        145,
+        195
+       ],
+       "to": [
+        550,
+        195
+       ]
+      },
+      {
+       "id": "correct",
+       "op": "numwork",
+       "startMs": 2800,
+       "endMs": 4800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        150,
+        280
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "1",
+         "metre",
+         "5",
+         "centim",
+         "=",
+         "105",
+         "centim"
+        ]
+       ]
+      },
+      {
+       "id": "digits",
+       "op": "label",
+       "startMs": 3900,
+       "endMs": 5100,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        360,
+        230
+       ],
+       "text": "105",
+       "to": [
+        360,
+        280
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch06-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "small",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        80,
+        120
+       ],
+       "w": 270,
+       "h": 170
+      },
+      {
+       "id": "smalllabel",
+       "op": "text",
+       "startMs": 1200,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        215,
+        330
+       ],
+       "text": "centimetres",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "big",
+       "op": "rect",
+       "startMs": 2000,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        430,
+        100
+       ],
+       "w": 280,
+       "h": 210
+      },
+      {
+       "id": "biglabel",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 3900,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        570,
+        350
+       ],
+       "text": "metres",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "room",
+       "op": "label",
+       "startMs": 4100,
+       "endMs": 5000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        570,
+        150
+       ],
+       "text": "rooms",
+       "to": [
+        570,
+        100
+       ]
+      },
+      {
+       "id": "pitch",
+       "op": "label",
+       "startMs": 5000,
+       "endMs": 6000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        570,
+        250
+       ],
+       "text": "pitches",
+       "to": [
+        570,
+        310
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch06-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "crayon",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 1100,
+       "ink": "accent",
+       "weight": 3,
+       "from": [
+        230,
+        180
+       ],
+       "to": [
+        590,
+        180
+       ]
+      },
+      {
+       "id": "three",
+       "op": "label",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        230,
+        130
+       ],
+       "text": "3",
+       "to": [
+        230,
+        180
+       ]
+      },
+      {
+       "id": "nine",
+       "op": "label",
+       "startMs": 1200,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        590,
+        130
+       ],
+       "text": "9",
+       "to": [
+        590,
+        180
+       ]
+      },
+      {
+       "id": "length",
+       "op": "numwork",
+       "startMs": 2200,
+       "endMs": 3900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        220,
+        270
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "9",
+         "−",
+         "3",
+         "=",
+         "6"
+        ]
+       ]
+      },
+      {
+       "id": "tap",
+       "op": "highlight",
+       "startMs": 4000,
+       "endMs": 5000,
+       "ink": "accent",
+       "weight": 2,
+       "target": "length",
+       "style": "pulse"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "90 mm",
+   "prompt": "cut: 9 cm"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "150 mm",
+   "prompt": "cut: 15 cm"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "70 mm",
+   "prompt": "cut: 7 cm"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "125 mm",
+   "prompt": "cut: 12.5 cm"
+  },
+  {
+   "itemId": "r3:0",
+   "key": "1050 mm",
+   "prompt": "cut: 1.05 m"
+  },
+  {
+   "itemId": "r3:1",
+   "key": "1340 mm",
+   "prompt": "cut: 1.34 m"
+  }
+ ],
+ "check": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "Round 3 (\"Measure a long border\") shows targets as \"m\" but the kit uses cm for small things; the last round expects cutting a length of 1.05 m or 1.34 m from a ruler of 3000 mm, which is physically unrealistic for a simple ruler game aimed at children (the ruler is only 3 m, so the required cuts are fine, but labelling the target as \"m\" while the tool works in cm/mm is confusing). However, the major issue is that the kit explicitly teaches that metres are for large lengths, but the game rounds 1 and 2 use targets in cm and the third round uses targets in m, which is inconsistent: the player must cut a length of 1.05 m from a ruler that shows cm, so the game effectively forces the player to convert m to cm (which is fine), but the labelling \"show\":\"m\" may mislead children into thinking they are cutting metres directly.",
+    "severity": "low"
+   },
+   {
+    "where": "explainer",
+    "what": "Scene s2 uses a stick from 2 to 11 and computes 9 cm.  The worked example in the kit uses exactly the same numbers (2 to 11 → 9 cm). That is not an issue per se; however, the explainer's scene s4 asks \"A crayon goes from 3 to 9. How long is it?\" and lists options 6, 9, 12. The answer is 6 cm (end − start = 9 − 3 = 6), which matches kit item i04 exactly. No factual error.",
+    "severity": "low"
+   }
+  ],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ },
+ "firstCheck": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "The game has rounds that show targets like '12 cm' but the computed keys say '12 mm'. The game uses centimetres for the show unit but the computed keys are in millimetres. This does not match the kit's expectation that lengths are in cm and m for the class. The mismatch is confusing for the learner.",
+    "severity": "high"
+   },
+   {
+    "where": "game",
+    "what": "The first round targets 'c4-maths-ch06-t01-m-edge-start' but shows target 12 cm with 30 cm ruler scale. The kit's misconception is about starting at the edge or 1. The round does not require starting at a non-zero mark, so it does not target the misconception.",
+    "severity": "low"
+   }
+  ],
+  "verdict": "fail",
+  "model": "DeepSeek-V4-Flash"
  }
 }

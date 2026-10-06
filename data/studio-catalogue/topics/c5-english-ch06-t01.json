@@ -1,0 +1,1516 @@
+{
+ "topicId": "c5-english-ch06-t01",
+ "title": "What a Tank!",
+ "chapter": "What a Tank!",
+ "subject": "english",
+ "class": 5,
+ "topicType": "T3",
+ "plan": {
+  "game": "story-rail@1",
+  "hint": "sequence, cause and who modes from the lesson's events and speakers"
+ },
+ "game": {
+  "archetype": "story-rail@1",
+  "spec": {
+   "archetype": "story-rail@1",
+   "skills": [
+    "c5-english-ch06-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "picked": "coupled",
+    "streak": "streak",
+    "next": "What happens next?",
+    "effect": "What does this lead to?",
+    "who": "Who said this?",
+    "runDone": "Line complete",
+    "order": "your train",
+    "right": "Coupled",
+    "wrong": "Not this one",
+    "coach": "Tap a wagon before the train reaches the fork"
+   },
+   "title": "What a Tank!",
+   "rounds": [
+    {
+     "mode": "sequence",
+     "title": "Tank story",
+     "sub": "couple the events in order",
+     "cards": [
+      {
+       "id": "e1",
+       "text": "Rain is rare in dry places",
+       "glyph": "rain",
+       "src": "c5-english-ch06-t01-i01"
+      },
+      {
+       "id": "e2",
+       "text": "People build a taanka",
+       "glyph": "house",
+       "src": "c5-english-ch06-t01-i01"
+      },
+      {
+       "id": "e3",
+       "text": "Sloping ground guides rain",
+       "glyph": "mountain",
+       "src": "c5-english-ch06-t01-i03"
+      },
+      {
+       "id": "e4",
+       "text": "Rainwater flows into the tank",
+       "glyph": "drop",
+       "src": "c5-english-ch06-t01-i03"
+      },
+      {
+       "id": "e5",
+       "text": "A lid keeps water clean",
+       "glyph": "shield",
+       "src": "c5-english-ch06-t01-i04"
+      }
+     ],
+     "speed": 0.9,
+     "targets": "c5-english-ch06-t01-m-main-vs-detail"
+    },
+    {
+     "mode": "cause",
+     "title": "Because",
+     "sub": "match causes to their effects",
+     "pairs": [
+      {
+       "cause": {
+        "id": "c1",
+        "text": "Rain falls on sloping ground",
+        "glyph": "rain",
+        "src": "c5-english-ch06-t01-i03"
+       },
+       "effect": {
+        "id": "f1",
+        "text": "Water flows into the tank",
+        "glyph": "drop",
+        "src": "c5-english-ch06-t01-i03"
+       }
+      },
+      {
+       "cause": {
+        "id": "c2",
+        "text": "The taanka has a lid",
+        "glyph": "shield",
+        "src": "c5-english-ch06-t01-i04"
+       },
+       "effect": {
+        "id": "f2",
+        "text": "Water stays clean and cool",
+        "glyph": "thermometer",
+        "src": "c5-english-ch06-t01-i04"
+       }
+      },
+      {
+       "cause": {
+        "id": "c3",
+        "text": "Rain is rare in dry places",
+        "glyph": "sun",
+        "src": "c5-english-ch06-t01-i02"
+       },
+       "effect": {
+        "id": "f3",
+        "text": "People store rainwater",
+        "glyph": "jug",
+        "src": "c5-english-ch06-t01-i02"
+       }
+      }
+     ],
+     "speed": 0.85
+    },
+    {
+     "mode": "who",
+     "title": "Who said it?",
+     "sub": "send each line to its speaker",
+     "speakers": [
+      {
+       "id": "guide",
+       "name": "Guide",
+       "glyph": "book"
+      },
+      {
+       "id": "child",
+       "name": "Child",
+       "glyph": "person"
+      },
+      {
+       "id": "reader",
+       "name": "Reader",
+       "glyph": "school"
+      }
+     ],
+     "lines": [
+      {
+       "id": "w1",
+       "text": "We should close the tap.",
+       "speaker": "child",
+       "src": "c5-english-ch06-t01-i09"
+      },
+      {
+       "id": "w2",
+       "text": "The tank holds a lot of water.",
+       "speaker": "guide",
+       "src": "c5-english-ch06-t01-i08"
+      }
+     ],
+     "speed": 0.85,
+     "targets": "c5-english-ch06-t01-m-should-to"
+    }
+   ]
+  },
+  "repairs": [
+   "string:card.text",
+   "string:card.text"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c5-english-ch06-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Right",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "BUSTED",
+    "order": "Tap in order"
+   },
+   "title": "What a Tank!",
+   "accent": "amber",
+   "targets": "c5-english-ch06-t01-m-main-vs-detail",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "What a Tank!"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "The main idea is one detail"
+      },
+      {
+       "id": "rain",
+       "type": "glyph",
+       "name": "rain",
+       "x": 220,
+       "y": 330,
+       "size": 120,
+       "color": "sci"
+      },
+      {
+       "id": "tank",
+       "type": "glyph",
+       "name": "jug",
+       "x": 760,
+       "y": 330,
+       "size": 130,
+       "color": "amber"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "rainwater",
+       "type": "node",
+       "text": "Rainwater",
+       "sub": "rare rain",
+       "glyph": "rain",
+       "color": "sci"
+      },
+      {
+       "id": "slope",
+       "type": "node",
+       "text": "Sloping ground",
+       "sub": "flows down",
+       "glyph": "mountain",
+       "color": "amber"
+      },
+      {
+       "id": "taanka",
+       "type": "node",
+       "text": "Underground tank",
+       "sub": "stores water",
+       "glyph": "jug",
+       "color": "sci"
+      },
+      {
+       "id": "lid",
+       "type": "node",
+       "text": "Lid",
+       "sub": "clean and cool",
+       "glyph": "shield",
+       "color": "mint"
+      },
+      {
+       "id": "flow1",
+       "type": "arrow",
+       "from": "rainwater",
+       "to": "slope",
+       "text": "falls"
+      },
+      {
+       "id": "flow2",
+       "type": "arrow",
+       "from": "slope",
+       "to": "taanka",
+       "text": "flows into"
+      },
+      {
+       "id": "flow3",
+       "type": "arrow",
+       "from": "taanka",
+       "to": "lid",
+       "text": "covered by"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "main",
+       "type": "label",
+       "text": "Main idea",
+       "x": 120,
+       "y": 220,
+       "color": "amber"
+      },
+      {
+       "id": "collect",
+       "type": "node",
+       "text": "Collect rain",
+       "sub": "first step",
+       "glyph": "rain",
+       "color": "sci"
+      },
+      {
+       "id": "store",
+       "type": "node",
+       "text": "Store water",
+       "sub": "for dry months",
+       "glyph": "jug",
+       "color": "amber"
+      },
+      {
+       "id": "save",
+       "type": "node",
+       "text": "Save water",
+       "sub": "use carefully",
+       "glyph": "recycle",
+       "color": "mint"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "collect",
+       "to": "store",
+       "text": "then"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "store",
+       "to": "save",
+       "text": "so"
+      },
+      {
+       "id": "wrong",
+       "type": "label",
+       "text": "Hot weather only",
+       "x": 600,
+       "y": 470,
+       "color": "volt"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "In dry places, rain may fall on only a few days each year.",
+    "L2": "The main idea is not one interesting detail. It is how people collected and stored rainwater.",
+    "L3": "Rainwater flowed down the gently sloping ground into an underground tank called a taanka.",
+    "L4": "The tank stored water for the dry months, when little rain was available.",
+    "L5": "A lid kept the stored water clean and cool.",
+    "L6": "So the whole text is about collecting and conserving water, not just about the lid or the heat.",
+    "L7": "At home, we should save water by closing the tap while brushing."
+   },
+   "narration": {
+    "L1": {
+     "text": "In dry places, rain may fall on only a few days each year.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "The main idea is not one interesting detail. It is how people collected and stored rainwater.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "Rainwater flowed down the gently sloping ground into an underground tank called a taanka.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "The tank stored water for the dry months, when little rain was available.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "A lid kept the stored water clean and cool.",
+     "dur": 2.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "So the whole text is about collecting and conserving water, not just about the lid or the heat.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "At home, we should save water by closing the tap while brushing.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      },
+      {
+       "at": 0.4,
+       "do": "show",
+       "dur": 0.8,
+       "target": "rain"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      },
+      {
+       "at": 1,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "rainwater"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.6,
+       "target": "slope"
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "flow1",
+        "flow2",
+        "taanka"
+       ]
+      },
+      {
+       "at": 1.4,
+       "do": "flow",
+       "dur": 0.7,
+       "target": [
+        "flow1",
+        "flow2"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1.2,
+       "target": "taanka"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "lid"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.7,
+       "target": "flow3"
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 1,
+       "target": "lid"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "main"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "collect",
+        "store",
+        "save",
+        "a1",
+        "a2"
+       ]
+      },
+      {
+       "at": 1.2,
+       "do": "flow",
+       "dur": 0.7,
+       "target": [
+        "a1",
+        "a2"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.5,
+       "target": "wrong"
+      },
+      {
+       "at": 0.6,
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which choice states the main idea of the text?",
+    "options": [
+     "collect",
+     "store",
+     "save",
+     "wrong"
+    ],
+    "answer": "store",
+    "src": "c5-english-ch06-t01-i02"
+   }
+  },
+  "repairs": [],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "passes": 2,
+  "seconds": 27
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "People build a taanka",
+   "prompt": "sequence: after/for \"Rain is rare in dry places\"",
+   "src": "c5-english-ch06-t01-i01"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "Sloping ground guides rain",
+   "prompt": "sequence: after/for \"People build a taanka\"",
+   "src": "c5-english-ch06-t01-i03"
+  },
+  {
+   "itemId": "r1:2",
+   "key": "Rainwater flows into the tank",
+   "prompt": "sequence: after/for \"Sloping ground guides rain\"",
+   "src": "c5-english-ch06-t01-i03"
+  },
+  {
+   "itemId": "r1:3",
+   "key": "A lid keeps water clean",
+   "prompt": "sequence: after/for \"Rainwater flows into the tank\"",
+   "src": "c5-english-ch06-t01-i04"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "Water flows into the tank",
+   "prompt": "cause: after/for \"Rain falls on sloping ground\"",
+   "src": "c5-english-ch06-t01-i03"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "Water stays clean and cool",
+   "prompt": "cause: after/for \"The taanka has a lid\"",
+   "src": "c5-english-ch06-t01-i04"
+  },
+  {
+   "itemId": "r2:2",
+   "key": "People store rainwater",
+   "prompt": "cause: after/for \"Rain is rare in dry places\"",
+   "src": "c5-english-ch06-t01-i02"
+  },
+  {
+   "itemId": "r3:0",
+   "key": "Child",
+   "prompt": "who: after/for \"We should close the tap.\"",
+   "src": "c5-english-ch06-t01-i09"
+  },
+  {
+   "itemId": "r3:1",
+   "key": "Guide",
+   "prompt": "who: after/for \"The tank holds a lot of water.\"",
+   "src": "c5-english-ch06-t01-i08"
+  }
+ ],
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-english-ch06-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "sun",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        650,
+        100
+       ],
+       "r": 42,
+       "fill": "accent"
+      },
+      {
+       "id": "ground",
+       "op": "stroke",
+       "startMs": 500,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         60,
+         365
+        ],
+        [
+         180,
+         350
+        ],
+        [
+         300,
+         370
+        ],
+        [
+         430,
+         350
+        ],
+        [
+         570,
+         365
+        ],
+        [
+         740,
+         350
+        ]
+       ]
+      },
+      {
+       "id": "rain",
+       "op": "arrow",
+       "startMs": 1100,
+       "endMs": 1900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        620,
+        155
+       ],
+       "to": [
+        620,
+        320
+       ]
+      },
+      {
+       "id": "rain2",
+       "op": "arrow",
+       "startMs": 1400,
+       "endMs": 2200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        670,
+        155
+       ],
+       "to": [
+        670,
+        320
+       ]
+      },
+      {
+       "id": "dry",
+       "op": "label",
+       "startMs": 2400,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        625,
+        405
+       ],
+       "text": "dry places",
+       "to": [
+        620,
+        365
+       ]
+      },
+      {
+       "id": "few",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4300,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        450
+       ],
+       "text": "few days",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-english-ch06-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "main",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "main idea",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "people",
+       "op": "circle",
+       "startMs": 1000,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        230,
+        210
+       ],
+       "r": 38
+      },
+      {
+       "id": "collect",
+       "op": "arrow",
+       "startMs": 1500,
+       "endMs": 2300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        280,
+        210
+       ],
+       "to": [
+        390,
+        210
+       ]
+      },
+      {
+       "id": "rainwater",
+       "op": "label",
+       "startMs": 2200,
+       "endMs": 3000,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        420,
+        185
+       ],
+       "text": "rainwater",
+       "to": [
+        390,
+        210
+       ]
+      },
+      {
+       "id": "tank",
+       "op": "rect",
+       "startMs": 2800,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        500,
+        190
+       ],
+       "w": 150,
+       "h": 100
+      },
+      {
+       "id": "store",
+       "op": "label",
+       "startMs": 3700,
+       "endMs": 4500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        575,
+        335
+       ],
+       "text": "stored",
+       "to": [
+        575,
+        290
+       ]
+      },
+      {
+       "id": "idea",
+       "op": "arrow",
+       "startMs": 4700,
+       "endMs": 5500,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        400,
+        105
+       ],
+       "to": [
+        400,
+        165
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-english-ch06-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "slope",
+       "op": "stroke",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         70,
+         170
+        ],
+        [
+         220,
+         205
+        ],
+        [
+         370,
+         245
+        ],
+        [
+         520,
+         290
+        ],
+        [
+         700,
+         335
+        ]
+       ]
+      },
+      {
+       "id": "rain",
+       "op": "arrow",
+       "startMs": 900,
+       "endMs": 1700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        210,
+        100
+       ],
+       "to": [
+        270,
+        215
+       ]
+      },
+      {
+       "id": "flow",
+       "op": "arrow",
+       "startMs": 1700,
+       "endMs": 2600,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        280,
+        220
+       ],
+       "to": [
+        520,
+        290
+       ]
+      },
+      {
+       "id": "tank",
+       "op": "rect",
+       "startMs": 2500,
+       "endMs": 3600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        500,
+        315
+       ],
+       "w": 170,
+       "h": 95
+      },
+      {
+       "id": "underground",
+       "op": "label",
+       "startMs": 3600,
+       "endMs": 4400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        585,
+        450
+       ],
+       "text": "underground",
+       "to": [
+        585,
+        410
+       ]
+      },
+      {
+       "id": "taanka",
+       "op": "label",
+       "startMs": 4500,
+       "endMs": 5300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        585,
+        285
+       ],
+       "text": "taanka",
+       "to": [
+        585,
+        315
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-english-ch06-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "tankfill",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        505,
+        350
+       ],
+       "w": 160,
+       "h": 55,
+       "fill": "soft"
+      },
+      {
+       "id": "water",
+       "op": "label",
+       "startMs": 900,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        585,
+        385
+       ],
+       "text": "water",
+       "to": [
+        585,
+        375
+       ]
+      },
+      {
+       "id": "calendar",
+       "op": "rect",
+       "startMs": 1800,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        180,
+        145
+       ],
+       "w": 170,
+       "h": 130
+      },
+      {
+       "id": "dry",
+       "op": "label",
+       "startMs": 2700,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        265,
+        220
+       ],
+       "text": "dry months",
+       "to": [
+        265,
+        275
+       ]
+      },
+      {
+       "id": "little",
+       "op": "text",
+       "startMs": 3700,
+       "endMs": 4500,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        265,
+        320
+       ],
+       "text": "little rain",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-english-ch06-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 4430,
+     "ops": [
+      {
+       "id": "lid",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        490,
+        300
+       ],
+       "w": 190,
+       "h": 22
+      },
+      {
+       "id": "clean",
+       "op": "label",
+       "startMs": 900,
+       "endMs": 1700,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        180
+       ],
+       "text": "clean",
+       "to": [
+        550,
+        300
+       ]
+      },
+      {
+       "id": "cool",
+       "op": "label",
+       "startMs": 1800,
+       "endMs": 2600,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        230
+       ],
+       "text": "cool",
+       "to": [
+        550,
+        300
+       ]
+      },
+      {
+       "id": "keep",
+       "op": "arrow",
+       "startMs": 2700,
+       "endMs": 3600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        450,
+        205
+       ],
+       "to": [
+        510,
+        300
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-english-ch06-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "whole",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        65
+       ],
+       "text": "whole text",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "collect",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        220,
+        210
+       ],
+       "r": 62
+      },
+      {
+       "id": "collectLabel",
+       "op": "label",
+       "startMs": 1500,
+       "endMs": 2300,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        220,
+        300
+       ],
+       "text": "collecting",
+       "to": [
+        220,
+        275
+       ]
+      },
+      {
+       "id": "conserve",
+       "op": "circle",
+       "startMs": 1800,
+       "endMs": 2400,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        580,
+        210
+       ],
+       "r": 62
+      },
+      {
+       "id": "conserveLabel",
+       "op": "label",
+       "startMs": 2400,
+       "endMs": 3200,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        580,
+        300
+       ],
+       "text": "conserving",
+       "to": [
+        580,
+        275
+       ]
+      },
+      {
+       "id": "water",
+       "op": "text",
+       "startMs": 3400,
+       "endMs": 4200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        410
+       ],
+       "text": "water",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "lid",
+       "op": "text",
+       "startMs": 4800,
+       "endMs": 5400,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        220,
+        420
+       ],
+       "text": "lid",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "heat",
+       "op": "text",
+       "startMs": 5400,
+       "endMs": 6000,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        580,
+        420
+       ],
+       "text": "heat",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "main",
+       "op": "highlight",
+       "startMs": 6200,
+       "endMs": 7200,
+       "ink": "good",
+       "weight": 2,
+       "target": "water",
+       "style": "underline"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-english-ch06-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "tap",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        300,
+        120
+       ],
+       "w": 110,
+       "h": 210
+      },
+      {
+       "id": "water",
+       "op": "line",
+       "startMs": 900,
+       "endMs": 1600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        355,
+        205
+       ],
+       "to": [
+        355,
+        320
+       ]
+      },
+      {
+       "id": "brush",
+       "op": "stroke",
+       "startMs": 1700,
+       "endMs": 2500,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         270,
+         180
+        ],
+        [
+         300,
+         170
+        ],
+        [
+         330,
+         180
+        ],
+        [
+         365,
+         170
+        ],
+        [
+         395,
+         180
+        ]
+       ]
+      },
+      {
+       "id": "close",
+       "op": "arrow",
+       "startMs": 2600,
+       "endMs": 3500,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        445,
+        170
+       ],
+       "to": [
+        390,
+        170
+       ]
+      },
+      {
+       "id": "should",
+       "op": "text",
+       "startMs": 3700,
+       "endMs": 4700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        400
+       ],
+       "text": "should save water",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

@@ -1,0 +1,2213 @@
+{
+ "topicId": "c4-english-ch11-t01",
+ "title": "A Journey to the Magical Mountains",
+ "chapter": "A Journey to the Magical Mountains",
+ "subject": "english",
+ "class": 4,
+ "topicType": "T2",
+ "plan": {
+  "game": "story-rail@1",
+  "hint": "sequence, cause and who modes from the lesson's events and speakers"
+ },
+ "game": {
+  "archetype": "story-rail@1",
+  "spec": {
+   "archetype": "story-rail@1",
+   "skills": [
+    "c4-english-ch11-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "picked": "coupled",
+    "streak": "streak",
+    "next": "What happens next?",
+    "effect": "What does this lead to?",
+    "who": "Who said this?",
+    "runDone": "Line complete",
+    "order": "your train",
+    "right": "Coupled",
+    "wrong": "Not this one",
+    "coach": "Tap a wagon before the train reaches the fork"
+   },
+   "title": "Journey to the Mountains",
+   "rounds": [
+    {
+     "mode": "sequence",
+     "title": "The journey",
+     "sub": "couple the events in order",
+     "cards": [
+      {
+       "id": "e1",
+       "text": "The bus climbs the hills",
+       "src": "c4-english-ch11-t01-i01"
+      },
+      {
+       "id": "e2",
+       "text": "The air becomes cold",
+       "glyph": "wind"
+      },
+      {
+       "id": "e3",
+       "text": "A village has flags"
+      },
+      {
+       "id": "e4",
+       "text": "A yak walks by",
+       "glyph": "cow"
+      },
+      {
+       "id": "e5",
+       "text": "Peaks shine at the pass",
+       "glyph": "mountain",
+       "src": "c4-english-ch11-t01-i02"
+      }
+     ],
+     "speed": 0.9
+    },
+    {
+     "mode": "cause",
+     "title": "Because",
+     "sub": "match each cause to its effect",
+     "pairs": [
+      {
+       "cause": {
+        "id": "c1",
+        "text": "The air is very cold",
+        "glyph": "wind"
+       },
+       "effect": {
+        "id": "f1",
+        "text": "Breath looks like smoke",
+        "glyph": "cloud",
+        "src": "c4-english-ch11-t01-i06"
+       }
+      },
+      {
+       "cause": {
+        "id": "c2",
+        "text": "Snow covers the peaks"
+       },
+       "effect": {
+        "id": "f2",
+        "text": "They look snow-capped",
+        "glyph": "mountain",
+        "src": "c4-english-ch11-t01-i04"
+       }
+      },
+      {
+       "cause": {
+        "id": "c3",
+        "text": "Pine trees stand in lines",
+        "glyph": "tree"
+       },
+       "effect": {
+        "id": "f3",
+        "text": "They look like soldiers",
+        "glyph": "person",
+        "src": "c4-english-ch11-t01-i05"
+       }
+      }
+     ],
+     "speed": 0.85,
+     "targets": "c4-english-ch11-t01-m-simile-literal"
+    },
+    {
+     "mode": "who",
+     "title": "Who said it?",
+     "sub": "send each line to its speaker",
+     "speakers": [
+      {
+       "id": "aditi",
+       "name": "Aditi",
+       "glyph": "person"
+      },
+      {
+       "id": "father",
+       "name": "Father",
+       "glyph": "person"
+      }
+     ],
+     "lines": [
+      {
+       "id": "w1",
+       "text": "The peaks shine like silver.",
+       "speaker": "aditi"
+      },
+      {
+       "id": "w2",
+       "text": "Mountains are homes too.",
+       "speaker": "father",
+       "src": "c4-english-ch11-t01-i10"
+      },
+      {
+       "id": "w3",
+       "text": "We reached the top.",
+       "speaker": "aditi",
+       "src": "c4-english-ch11-t01-i07"
+      }
+     ],
+     "speed": 0.8
+    }
+   ]
+  },
+  "repairs": [
+   "glyph",
+   "glyph",
+   "glyph",
+   "src"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c4-english-ch11-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "A Journey to the Magical Mountains",
+   "accent": "sci",
+   "targets": "c4-english-ch11-t01-m-simile-literal",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "row",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "A Journey to the Magical Mountains"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "The trees were real soldiers"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "bus",
+       "type": "node",
+       "text": "Bus climbs",
+       "sub": "first",
+       "color": "amber"
+      },
+      {
+       "id": "cold",
+       "type": "node",
+       "text": "Cold air",
+       "sub": "then",
+       "glyph": "wind",
+       "color": "ion"
+      },
+      {
+       "id": "village",
+       "type": "node",
+       "text": "Village",
+       "sub": "flags and yak",
+       "glyph": "house",
+       "color": "mint"
+      },
+      {
+       "id": "pass",
+       "type": "node",
+       "text": "Mountain pass",
+       "sub": "at last",
+       "glyph": "mountain",
+       "color": "sci"
+      },
+      {
+       "id": "climb",
+       "type": "arrow",
+       "from": "bus",
+       "to": "cold",
+       "text": "then"
+      },
+      {
+       "id": "villageArrow",
+       "type": "arrow",
+       "from": "cold",
+       "to": "village",
+       "text": "then"
+      },
+      {
+       "id": "passArrow",
+       "type": "arrow",
+       "from": "village",
+       "to": "pass",
+       "text": "at last"
+      },
+      {
+       "id": "yak",
+       "type": "glyph",
+       "name": "cow",
+       "x": 0,
+       "y": 0,
+       "size": 80,
+       "color": "amber"
+      },
+      {
+       "id": "peaks",
+       "type": "node",
+       "text": "Peaks",
+       "sub": "snow-capped",
+       "glyph": "mountain",
+       "color": "ion"
+      },
+      {
+       "id": "peakArrow",
+       "type": "arrow",
+       "from": "pass",
+       "to": "peaks",
+       "text": "shine"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "split",
+     "els": [
+      {
+       "id": "like",
+       "type": "label",
+       "text": "like = comparison"
+      },
+      {
+       "id": "trees",
+       "type": "node",
+       "text": "Pine trees",
+       "sub": "straight rows",
+       "glyph": "tree",
+       "color": "mint"
+      },
+      {
+       "id": "soldiers",
+       "type": "node",
+       "text": "Soldiers",
+       "sub": "straight lines",
+       "glyph": "person",
+       "color": "amber"
+      },
+      {
+       "id": "likeArrow",
+       "type": "arrow",
+       "from": "trees",
+       "to": "soldiers",
+       "text": "like"
+      },
+      {
+       "id": "peakWord",
+       "type": "label",
+       "text": "peak: top of mountain"
+      },
+      {
+       "id": "capWord",
+       "type": "label",
+       "text": "snow-capped: snow on top"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "row",
+     "els": [
+      {
+       "id": "rivers",
+       "type": "node",
+       "text": "Rivers begin",
+       "sub": "like the Ganga",
+       "glyph": "river",
+       "color": "ion"
+      },
+      {
+       "id": "place",
+       "type": "label",
+       "text": "Choose the mountain word"
+      },
+      {
+       "id": "optPeak",
+       "type": "label",
+       "text": "peak"
+      },
+      {
+       "id": "optPass",
+       "type": "label",
+       "text": "pass"
+      },
+      {
+       "id": "optSnow",
+       "type": "label",
+       "text": "snow-capped"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "First, Aditi's family travels up the hills by bus.",
+    "L2": "Then the bus climbs higher, and the air becomes cold.",
+    "L3": "They see a village with flags and a yak.",
+    "L4": "At last, they reach the top of the pass and see snow-capped peaks shining in the sun.",
+    "L5": "A peak is the pointed top of a mountain. A pass is a route through the mountains.",
+    "L6": "Snow-capped means covered with snow on top, like a white cap on a head.",
+    "L7": "The pine trees stood in rows like soldiers. They were not real soldiers; like shows a comparison.",
+    "L8": "The mountains are home to people and animals, and rivers like the Ganga begin there."
+   },
+   "narration": {},
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "bus"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.6,
+       "target": "cold"
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "climb",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "village"
+      },
+      {
+       "at": 0.7,
+       "do": "show",
+       "dur": 0.5,
+       "target": "yak"
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "villageArrow",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "pass"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.7,
+       "target": "peaks"
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "passArrow",
+       "to": 1
+      },
+      {
+       "at": 1.5,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "peakArrow",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "peakWord"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "capWord"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "like"
+      },
+      {
+       "at": 0.4,
+       "do": "show",
+       "dur": 0.6,
+       "target": "trees"
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.6,
+       "target": "soldiers"
+      },
+      {
+       "at": 1.2,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "likeArrow",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.7,
+       "target": "rivers"
+      },
+      {
+       "at": "end",
+       "do": "interactive"
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which word means the pointed top of a mountain?",
+    "options": [
+     "optPeak",
+     "optPass",
+     "optSnow"
+    ],
+    "answer": "optPeak",
+    "src": "c4-english-ch11-t01-i03"
+   }
+  },
+  "repairs": [
+   "glyph",
+   "glyph:name",
+   "string:home.text",
+   "arrow:dangling",
+   "cue:target",
+   "cue:target",
+   "cue:target",
+   "cue:target",
+   "cue:target",
+   "cue:target"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 52
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-english-ch11-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4430,
+     "ops": [
+      {
+       "id": "road",
+       "op": "stroke",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         80,
+         390
+        ],
+        [
+         180,
+         350
+        ],
+        [
+         280,
+         370
+        ],
+        [
+         390,
+         320
+        ],
+        [
+         520,
+         340
+        ],
+        [
+         700,
+         270
+        ]
+       ]
+      },
+      {
+       "id": "bus",
+       "op": "rect",
+       "startMs": 500,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        230,
+        250
+       ],
+       "w": 170,
+       "h": 80,
+       "fill": "accent",
+       "round": 10
+      },
+      {
+       "id": "wheel1",
+       "op": "circle",
+       "startMs": 1200,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        270,
+        345
+       ],
+       "r": 18
+      },
+      {
+       "id": "wheel2",
+       "op": "circle",
+       "startMs": 1300,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        360,
+        345
+       ],
+       "r": 18
+      },
+      {
+       "id": "hill1",
+       "op": "stroke",
+       "startMs": 1700,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         60,
+         390
+        ],
+        [
+         180,
+         250
+        ],
+        [
+         300,
+         390
+        ]
+       ]
+      },
+      {
+       "id": "hill2",
+       "op": "stroke",
+       "startMs": 2100,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         280,
+         390
+        ],
+        [
+         470,
+         190
+        ],
+        [
+         700,
+         390
+        ]
+       ]
+      },
+      {
+       "id": "travel",
+       "op": "arrow",
+       "startMs": 2800,
+       "endMs": 3800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        410,
+        300
+       ],
+       "to": [
+        590,
+        230
+       ]
+      },
+      {
+       "id": "buslabel",
+       "op": "label",
+       "startMs": 3600,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        315,
+        225
+       ],
+       "text": "bus",
+       "to": [
+        315,
+        250
+       ]
+      },
+      {
+       "id": "hillslabel",
+       "op": "label",
+       "startMs": 3800,
+       "endMs": 4300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        500,
+        170
+       ],
+       "text": "hills",
+       "to": [
+        470,
+        205
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-english-ch11-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "higher",
+       "op": "arrow",
+       "startMs": 0,
+       "endMs": 1100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        520,
+        300
+       ],
+       "to": [
+        650,
+        150
+       ]
+      },
+      {
+       "id": "coldair",
+       "op": "arrow",
+       "startMs": 900,
+       "endMs": 1800,
+       "ink": "soft",
+       "weight": 2,
+       "from": [
+        690,
+        130
+       ],
+       "to": [
+        610,
+        250
+       ]
+      },
+      {
+       "id": "higherlabel",
+       "op": "label",
+       "startMs": 1600,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        650,
+        110
+       ],
+       "text": "higher",
+       "to": [
+        650,
+        150
+       ]
+      },
+      {
+       "id": "airlabel",
+       "op": "label",
+       "startMs": 2100,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        700,
+        260
+       ],
+       "text": "air",
+       "to": [
+        650,
+        220
+       ]
+      },
+      {
+       "id": "coldlabel",
+       "op": "label",
+       "startMs": 2700,
+       "endMs": 3200,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        690,
+        310
+       ],
+       "text": "cold",
+       "to": [
+        650,
+        270
+       ]
+      },
+      {
+       "id": "snowdots",
+       "op": "circle",
+       "startMs": 3300,
+       "endMs": 3700,
+       "ink": "soft",
+       "weight": 1,
+       "c": [
+        650,
+        180
+       ],
+       "r": 5,
+       "fill": "soft"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-english-ch11-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 4430,
+     "ops": [
+      {
+       "id": "village",
+       "op": "polygon",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         130,
+         350
+        ],
+        [
+         130,
+         270
+        ],
+        [
+         190,
+         230
+        ],
+        [
+         250,
+         270
+        ],
+        [
+         250,
+         350
+        ]
+       ],
+       "fill": "soft"
+      },
+      {
+       "id": "roof",
+       "op": "stroke",
+       "startMs": 500,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         110,
+         270
+        ],
+        [
+         190,
+         210
+        ],
+        [
+         270,
+         270
+        ]
+       ]
+      },
+      {
+       "id": "flagpole",
+       "op": "line",
+       "startMs": 900,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        185,
+        210
+       ],
+       "to": [
+        185,
+        130
+       ]
+      },
+      {
+       "id": "flag",
+       "op": "polygon",
+       "startMs": 1200,
+       "endMs": 1700,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         185,
+         135
+        ],
+        [
+         225,
+         150
+        ],
+        [
+         185,
+         165
+        ]
+       ],
+       "fill": "accent"
+      },
+      {
+       "id": "yakbody",
+       "op": "ellipse",
+       "startMs": 1700,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        500,
+        335
+       ],
+       "rx": 75,
+       "ry": 38,
+       "fill": "soft"
+      },
+      {
+       "id": "yakhead",
+       "op": "circle",
+       "startMs": 2100,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        570,
+        315
+       ],
+       "r": 28
+      },
+      {
+       "id": "horns",
+       "op": "stroke",
+       "startMs": 2500,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         555,
+         292
+        ],
+        [
+         535,
+         270
+        ],
+        [
+         520,
+         280
+        ]
+       ]
+      },
+      {
+       "id": "villagelabel",
+       "op": "label",
+       "startMs": 3200,
+       "endMs": 3800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        125,
+        395
+       ],
+       "text": "village",
+       "to": [
+        190,
+        350
+       ]
+      },
+      {
+       "id": "yaklabel",
+       "op": "label",
+       "startMs": 3600,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        570,
+        390
+       ],
+       "text": "yak",
+       "to": [
+        570,
+        345
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-english-ch11-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "pass",
+       "op": "stroke",
+       "startMs": 0,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         90,
+         390
+        ],
+        [
+         180,
+         330
+        ],
+        [
+         270,
+         350
+        ],
+        [
+         360,
+         260
+        ],
+        [
+         440,
+         350
+        ],
+        [
+         530,
+         330
+        ],
+        [
+         710,
+         390
+        ]
+       ]
+      },
+      {
+       "id": "peak1",
+       "op": "polygon",
+       "startMs": 700,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         120,
+         330
+        ],
+        [
+         240,
+         100
+        ],
+        [
+         350,
+         330
+        ]
+       ],
+       "fill": "soft"
+      },
+      {
+       "id": "peak2",
+       "op": "polygon",
+       "startMs": 1100,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         330,
+         330
+        ],
+        [
+         470,
+         70
+        ],
+        [
+         610,
+         330
+        ]
+       ],
+       "fill": "soft"
+      },
+      {
+       "id": "snow1",
+       "op": "polygon",
+       "startMs": 1900,
+       "endMs": 2600,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         205,
+         165
+        ],
+        [
+         240,
+         100
+        ],
+        [
+         275,
+         165
+        ],
+        [
+         250,
+         150
+        ],
+        [
+         235,
+         170
+        ]
+       ],
+       "fill": "accent"
+      },
+      {
+       "id": "snow2",
+       "op": "polygon",
+       "startMs": 2200,
+       "endMs": 3000,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         425,
+         155
+        ],
+        [
+         470,
+         70
+        ],
+        [
+         515,
+         155
+        ],
+        [
+         485,
+         135
+        ],
+        [
+         465,
+         160
+        ]
+       ],
+       "fill": "accent"
+      },
+      {
+       "id": "sun",
+       "op": "circle",
+       "startMs": 2700,
+       "endMs": 3400,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        690,
+        90
+       ],
+       "r": 35,
+       "fill": "accent"
+      },
+      {
+       "id": "shine1",
+       "op": "line",
+       "startMs": 3300,
+       "endMs": 3700,
+       "ink": "accent",
+       "weight": 1,
+       "from": [
+        650,
+        90
+       ],
+       "to": [
+        625,
+        90
+       ]
+      },
+      {
+       "id": "shine2",
+       "op": "line",
+       "startMs": 3500,
+       "endMs": 3900,
+       "ink": "accent",
+       "weight": 1,
+       "from": [
+        715,
+        90
+       ],
+       "to": [
+        740,
+        90
+       ]
+      },
+      {
+       "id": "passlabel",
+       "op": "label",
+       "startMs": 4300,
+       "endMs": 4800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        350,
+        410
+       ],
+       "text": "pass",
+       "to": [
+        360,
+        270
+       ]
+      },
+      {
+       "id": "peaklabel",
+       "op": "label",
+       "startMs": 5000,
+       "endMs": 5500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        510,
+        45
+       ],
+       "text": "peaks",
+       "to": [
+        470,
+        80
+       ]
+      },
+      {
+       "id": "toparrow",
+       "op": "arrow",
+       "startMs": 5600,
+       "endMs": 6200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        470,
+        110
+       ],
+       "to": [
+        470,
+        72
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-english-ch11-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "mountain",
+       "op": "polygon",
+       "startMs": 0,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         90,
+         390
+        ],
+        [
+         300,
+         100
+        ],
+        [
+         510,
+         390
+        ]
+       ],
+       "fill": "soft"
+      },
+      {
+       "id": "topdot",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        300,
+        100
+       ],
+       "r": 7,
+       "fill": "accent"
+      },
+      {
+       "id": "peakword",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 2000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        300,
+        60
+       ],
+       "text": "peak",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "peakline",
+       "op": "arrow",
+       "startMs": 1900,
+       "endMs": 2500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        300,
+        75
+       ],
+       "to": [
+        300,
+        105
+       ]
+      },
+      {
+       "id": "passgap",
+       "op": "stroke",
+       "startMs": 2700,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         570,
+         390
+        ],
+        [
+         620,
+         300
+        ],
+        [
+         670,
+         390
+        ]
+       ]
+      },
+      {
+       "id": "password",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        620,
+        270
+       ],
+       "text": "pass",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "routearrow",
+       "op": "arrow",
+       "startMs": 4200,
+       "endMs": 5000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        570,
+        350
+       ],
+       "to": [
+        670,
+        350
+       ]
+      },
+      {
+       "id": "through",
+       "op": "label",
+       "startMs": 5000,
+       "endMs": 5600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        620,
+        430
+       ],
+       "text": "route",
+       "to": [
+        620,
+        350
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-english-ch11-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "head",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        230,
+        260
+       ],
+       "r": 85
+      },
+      {
+       "id": "cap",
+       "op": "ellipse",
+       "startMs": 700,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        230,
+        190
+       ],
+       "rx": 105,
+       "ry": 35,
+       "fill": "accent"
+      },
+      {
+       "id": "capword",
+       "op": "text",
+       "startMs": 1600,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        230,
+        115
+       ],
+       "text": "snow-capped",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "mountain2",
+       "op": "polygon",
+       "startMs": 2400,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         430,
+         390
+        ],
+        [
+         570,
+         130
+        ],
+        [
+         710,
+         390
+        ]
+       ],
+       "fill": "soft"
+      },
+      {
+       "id": "snowtop",
+       "op": "polygon",
+       "startMs": 3300,
+       "endMs": 4200,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         535,
+         195
+        ],
+        [
+         570,
+         130
+        ],
+        [
+         605,
+         195
+        ],
+        [
+         580,
+         180
+        ],
+        [
+         565,
+         200
+        ]
+       ],
+       "fill": "accent"
+      },
+      {
+       "id": "caparrow",
+       "op": "arrow",
+       "startMs": 4300,
+       "endMs": 5000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        420,
+        180
+       ],
+       "to": [
+        535,
+        195
+       ]
+      },
+      {
+       "id": "toplabel",
+       "op": "label",
+       "startMs": 5000,
+       "endMs": 5600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        420,
+        145
+       ],
+       "text": "snow",
+       "to": [
+        535,
+        195
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-english-ch11-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "tree1",
+       "op": "polygon",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         120,
+         380
+        ],
+        [
+         150,
+         230
+        ],
+        [
+         180,
+         380
+        ]
+       ],
+       "fill": "soft"
+      },
+      {
+       "id": "tree2",
+       "op": "polygon",
+       "startMs": 400,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         230,
+         380
+        ],
+        [
+         260,
+         230
+        ],
+        [
+         290,
+         380
+        ]
+       ],
+       "fill": "soft"
+      },
+      {
+       "id": "tree3",
+       "op": "polygon",
+       "startMs": 800,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         340,
+         380
+        ],
+        [
+         370,
+         230
+        ],
+        [
+         400,
+         380
+        ]
+       ],
+       "fill": "soft"
+      },
+      {
+       "id": "tree4",
+       "op": "polygon",
+       "startMs": 1200,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         450,
+         380
+        ],
+        [
+         480,
+         230
+        ],
+        [
+         510,
+         380
+        ]
+       ],
+       "fill": "soft"
+      },
+      {
+       "id": "tree5",
+       "op": "polygon",
+       "startMs": 1600,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         560,
+         380
+        ],
+        [
+         590,
+         230
+        ],
+        [
+         620,
+         380
+        ]
+       ],
+       "fill": "soft"
+      },
+      {
+       "id": "rows",
+       "op": "line",
+       "startMs": 2300,
+       "endMs": 2900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        100,
+        400
+       ],
+       "to": [
+        640,
+        400
+       ]
+      },
+      {
+       "id": "soldier1",
+       "op": "circle",
+       "startMs": 3000,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        220,
+        150
+       ],
+       "r": 20
+      },
+      {
+       "id": "soldier2",
+       "op": "circle",
+       "startMs": 3200,
+       "endMs": 3600,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        350,
+        150
+       ],
+       "r": 20
+      },
+      {
+       "id": "soldier3",
+       "op": "circle",
+       "startMs": 3400,
+       "endMs": 3800,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        480,
+        150
+       ],
+       "r": 20
+      },
+      {
+       "id": "soldiers",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        350,
+        90
+       ],
+       "text": "soldiers",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "like",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        350,
+        455
+       ],
+       "text": "like",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "comparison",
+       "op": "arrow",
+       "startMs": 5400,
+       "endMs": 6100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        350,
+        430
+       ],
+       "to": [
+        350,
+        385
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-english-ch11-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "mountains",
+       "op": "polygon",
+       "startMs": 0,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         70,
+         390
+        ],
+        [
+         230,
+         170
+        ],
+        [
+         370,
+         390
+        ],
+        [
+         520,
+         130
+        ],
+        [
+         730,
+         390
+        ]
+       ],
+       "fill": "soft"
+      },
+      {
+       "id": "person1",
+       "op": "circle",
+       "startMs": 1100,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        150,
+        300
+       ],
+       "r": 16
+      },
+      {
+       "id": "person1body",
+       "op": "line",
+       "startMs": 1300,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        150,
+        316
+       ],
+       "to": [
+        150,
+        370
+       ]
+      },
+      {
+       "id": "animal",
+       "op": "ellipse",
+       "startMs": 1700,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        300,
+        350
+       ],
+       "rx": 45,
+       "ry": 22
+      },
+      {
+       "id": "river",
+       "op": "stroke",
+       "startMs": 2400,
+       "endMs": 3300,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         500,
+         170
+        ],
+        [
+         470,
+         240
+        ],
+        [
+         520,
+         300
+        ],
+        [
+         480,
+         390
+        ]
+       ]
+      },
+      {
+       "id": "home",
+       "op": "polygon",
+       "startMs": 3300,
+       "endMs": 4200,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         570,
+         370
+        ],
+        [
+         570,
+         300
+        ],
+        [
+         630,
+         260
+        ],
+        [
+         690,
+         300
+        ],
+        [
+         690,
+         370
+        ]
+       ],
+       "fill": "soft"
+      },
+      {
+       "id": "peoplelabel",
+       "op": "label",
+       "startMs": 4000,
+       "endMs": 4500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        110,
+        430
+       ],
+       "text": "people",
+       "to": [
+        150,
+        330
+       ]
+      },
+      {
+       "id": "animalslabel",
+       "op": "label",
+       "startMs": 4300,
+       "endMs": 4800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        270,
+        430
+       ],
+       "text": "animals",
+       "to": [
+        300,
+        350
+       ]
+      },
+      {
+       "id": "riverslabel",
+       "op": "label",
+       "startMs": 4900,
+       "endMs": 5500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        455,
+        105
+       ],
+       "text": "rivers",
+       "to": [
+        500,
+        180
+       ]
+      },
+      {
+       "id": "gangalabel",
+       "op": "label",
+       "startMs": 5600,
+       "endMs": 6200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        520,
+        430
+       ],
+       "text": "Ganga",
+       "to": [
+        490,
+        350
+       ]
+      },
+      {
+       "id": "homelabel",
+       "op": "label",
+       "startMs": 5900,
+       "endMs": 6500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        630,
+        410
+       ],
+       "text": "home",
+       "to": [
+        630,
+        350
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "The air becomes cold",
+   "prompt": "sequence: after/for \"The bus climbs the hills\""
+  },
+  {
+   "itemId": "r1:1",
+   "key": "A village has flags",
+   "prompt": "sequence: after/for \"The air becomes cold\""
+  },
+  {
+   "itemId": "r1:2",
+   "key": "A yak walks by",
+   "prompt": "sequence: after/for \"A village has flags\""
+  },
+  {
+   "itemId": "r1:3",
+   "key": "Peaks shine at the pass",
+   "prompt": "sequence: after/for \"A yak walks by\"",
+   "src": "c4-english-ch11-t01-i02"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "Breath looks like smoke",
+   "prompt": "cause: after/for \"The air is very cold\"",
+   "src": "c4-english-ch11-t01-i06"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "They look snow-capped",
+   "prompt": "cause: after/for \"Snow covers the peaks\"",
+   "src": "c4-english-ch11-t01-i04"
+  },
+  {
+   "itemId": "r2:2",
+   "key": "They look like soldiers",
+   "prompt": "cause: after/for \"Pine trees stand in lines\"",
+   "src": "c4-english-ch11-t01-i05"
+  },
+  {
+   "itemId": "r3:0",
+   "key": "Aditi",
+   "prompt": "who: after/for \"The peaks shine like silver.\""
+  },
+  {
+   "itemId": "r3:1",
+   "key": "Father",
+   "prompt": "who: after/for \"Mountains are homes too.\"",
+   "src": "c4-english-ch11-t01-i10"
+  },
+  {
+   "itemId": "r3:2",
+   "key": "Aditi",
+   "prompt": "who: after/for \"We reached the top.\"",
+   "src": "c4-english-ch11-t01-i07"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

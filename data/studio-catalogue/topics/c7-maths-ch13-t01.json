@@ -1,0 +1,1802 @@
+{
+ "topicId": "c7-maths-ch13-t01",
+ "title": "Questions and statements from data",
+ "chapter": "Connecting the Dots...",
+ "subject": "maths",
+ "class": 7,
+ "topicType": "T5",
+ "plan": {
+  "game": "pictograph@1",
+  "hint": "claims mode on real counts (comparing)"
+ },
+ "game": {
+  "archetype": "pictograph@1",
+  "spec": {
+   "archetype": "pictograph@1",
+   "skills": [
+    "c7-maths-ch13-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "right": "right",
+    "coach": "You can do it",
+    "runDone": "Data done",
+    "key": "Each symbol =",
+    "half": "½",
+    "check": "CHECK",
+    "trueW": "TRUE",
+    "falseW": "FALSE",
+    "total": "Total"
+   },
+   "title": "Data Desk",
+   "rounds": [
+    {
+     "mode": "tally",
+     "title": "Canteen choices",
+     "sub": "tap each plate sold",
+     "cats": [
+      {
+       "label": "Idli",
+       "glyph": "plate",
+       "count": 8
+      },
+      {
+       "label": "Poha",
+       "glyph": "plate",
+       "count": 5
+      },
+      {
+       "label": "Dosa",
+       "glyph": "plate",
+       "count": 7
+      }
+     ],
+     "scale": 1,
+     "axisStart": 0,
+     "claims": [],
+     "seed": 17,
+     "speed": 1
+    },
+    {
+     "mode": "picto",
+     "title": "Rain picture",
+     "sub": "draw rows with a useful key",
+     "cats": [
+      {
+       "label": "June",
+       "glyph": "cloud",
+       "count": 6
+      },
+      {
+       "label": "July",
+       "glyph": "cloud",
+       "count": 10
+      },
+      {
+       "label": "August",
+       "glyph": "cloud",
+       "count": 8
+      },
+      {
+       "label": "Sept",
+       "glyph": "cloud",
+       "count": 4
+      }
+     ],
+     "scale": 2,
+     "axisStart": 0,
+     "claims": [],
+     "seed": 29,
+     "speed": 0.9
+    },
+    {
+     "mode": "bars",
+     "title": "Match the runs",
+     "sub": "drag each bar to its count",
+     "cats": [
+      {
+       "label": "Aarav",
+       "count": 45
+      },
+      {
+       "label": "Kabir",
+       "count": 30
+      },
+      {
+       "label": "Meera",
+       "count": 55
+      }
+     ],
+     "scale": 5,
+     "axisStart": 0,
+     "claims": [],
+     "seed": 41,
+     "speed": 1
+    },
+    {
+     "mode": "claims",
+     "title": "Check the chart",
+     "sub": "compare the exact numbers",
+     "cats": [
+      {
+       "label": "Walk",
+       "glyph": "person",
+       "count": 12
+      },
+      {
+       "label": "Bus",
+       "count": 18
+      },
+      {
+       "label": "Cycle",
+       "glyph": "wheel",
+       "count": 15
+      }
+     ],
+     "scale": 3,
+     "axisStart": 10,
+     "claims": [
+      {
+       "kind": "more",
+       "a": 1,
+       "b": 0
+      },
+      {
+       "kind": "twice",
+       "a": 1,
+       "b": 2
+      },
+      {
+       "kind": "total",
+       "a": 0,
+       "b": 1,
+       "value": 0
+      },
+      {
+       "kind": "diff",
+       "a": 1,
+       "b": 2,
+       "value": 0
+      },
+      {
+       "kind": "same",
+       "a": 0,
+       "b": 2
+      }
+     ],
+     "seed": 53,
+     "speed": 1,
+     "targets": "c7-maths-ch13-t01-m-one-case"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-maths-ch13-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Check a statement with data",
+   "accent": "ion",
+   "targets": "c7-maths-ch13-t01-m-data-proves",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Check a statement"
+      },
+      {
+       "id": "claim",
+       "type": "myth",
+       "text": "Data always proves a claim"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "rain",
+       "type": "bars",
+       "values": [
+        140,
+        250,
+        230,
+        120
+       ],
+       "labels": [
+        "June",
+        "July",
+        "August",
+        "Sept"
+       ],
+       "unit": "mm"
+      },
+      {
+       "id": "july",
+       "type": "label",
+       "text": "July 250 mm",
+       "x": 620,
+       "y": 240,
+       "color": "ion"
+      },
+      {
+       "id": "june",
+       "type": "label",
+       "text": "June 140 mm",
+       "x": 620,
+       "y": 300,
+       "color": "sci"
+      },
+      {
+       "id": "sept",
+       "type": "label",
+       "text": "Sept 120 mm",
+       "x": 620,
+       "y": 360,
+       "color": "mint"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "find",
+       "type": "node",
+       "text": "Find numbers",
+       "sub": "needed",
+       "glyph": "eye",
+       "color": "ion"
+      },
+      {
+       "id": "add",
+       "type": "node",
+       "text": "Add",
+       "sub": "140 + 120",
+       "glyph": "note",
+       "color": "sci"
+      },
+      {
+       "id": "compare",
+       "type": "node",
+       "text": "Compare",
+       "sub": "250 and 260",
+       "glyph": "balance",
+       "color": "mint"
+      },
+      {
+       "id": "decide",
+       "type": "node",
+       "text": "Decide",
+       "sub": "true or false",
+       "glyph": "question",
+       "color": "amber"
+      },
+      {
+       "id": "ar1",
+       "type": "arrow",
+       "from": "find",
+       "to": "add",
+       "text": "then"
+      },
+      {
+       "id": "ar2",
+       "type": "arrow",
+       "from": "add",
+       "to": "compare",
+       "text": "next"
+      },
+      {
+       "id": "ar3",
+       "type": "arrow",
+       "from": "compare",
+       "to": "decide",
+       "text": "so"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "row",
+     "els": [
+      {
+       "id": "true",
+       "type": "label",
+       "text": "True",
+       "x": 150,
+       "y": 330,
+       "color": "mint"
+      },
+      {
+       "id": "false",
+       "type": "label",
+       "text": "False",
+       "x": 400,
+       "y": 330,
+       "color": "amber"
+      },
+      {
+       "id": "cant",
+       "type": "label",
+       "text": "Cannot tell",
+       "x": 650,
+       "y": 330,
+       "color": "sci"
+      },
+      {
+       "id": "checkrule",
+       "type": "label",
+       "text": "Use exact numbers",
+       "x": 330,
+       "y": 430,
+       "color": "ion"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Data can answer questions about counts and measurements.",
+    "L2": "But data does not automatically prove every claim. That is our myth to bust.",
+    "L3": "Use the numbers the statement talks about, and find them in the table.",
+    "L4": "For this statement, July is 250 millimetres. June and September together are 140 plus 120, or 260.",
+    "L5": "Now compare 250 with 260. Since 250 is less than 260, the statement is false.",
+    "L6": "A statement checked against data can be true, false, or cannot tell from this data.",
+    "L7": "Also, two things rising together does not prove that one causes the other.",
+    "L8": "And one case or a tiny sample is not enough to claim something about everyone."
+   },
+   "narration": {
+    "L1": {
+     "text": "Data can answer questions about counts and measurements.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "But data does not automatically prove every claim. That is our myth to bust.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "Use the numbers the statement talks about, and find them in the table.",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "For this statement, July is 250 millimetres. June and September together are 140 plus 120, or 260.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "Now compare 250 with 260. Since 250 is less than 260, the statement is false.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "A statement checked against data can be true, false, or cannot tell from this data.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Also, two things rising together does not prove that one causes the other.",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "And one case or a tiny sample is not enough to claim something about everyone.",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "rain"
+      },
+      {
+       "at": 0.5,
+       "do": "highlight",
+       "dur": 1,
+       "target": "rain"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "title"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": "claim"
+      },
+      {
+       "at": 2,
+       "do": "bust",
+       "dur": 1,
+       "target": "claim"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "july"
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "june"
+      },
+      {
+       "at": 2,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "sept"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "find"
+      },
+      {
+       "at": 0.7,
+       "do": "show",
+       "dur": 0.6,
+       "target": "add"
+      },
+      {
+       "at": 1.4,
+       "do": "show",
+       "dur": 0.5,
+       "target": "ar1"
+      },
+      {
+       "at": 2,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "ar1",
+       "to": 1
+      },
+      {
+       "at": 2.8,
+       "do": "show",
+       "dur": 0.6,
+       "target": "compare"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.5,
+       "target": "ar2"
+      },
+      {
+       "at": 0.5,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "ar2",
+       "to": 1
+      },
+      {
+       "at": 1.3,
+       "do": "highlight",
+       "dur": 1,
+       "target": "compare"
+      },
+      {
+       "at": 2.5,
+       "do": "show",
+       "dur": 0.6,
+       "target": "decide"
+      },
+      {
+       "at": 3,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "ar3",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.5,
+       "target": "true"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.5,
+       "target": "false"
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.5,
+       "target": "cant"
+      },
+      {
+       "at": 1.8,
+       "do": "highlight",
+       "dur": 1,
+       "target": "checkrule"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "cant"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "checkrule"
+      },
+      {
+       "at": 2,
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which result follows from the rain table?",
+    "options": [
+     "true",
+     "false",
+     "cant"
+    ],
+    "answer": "false",
+    "src": "c7-maths-ch13-t01-i02"
+   }
+  },
+  "repairs": [],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 34
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch13-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4004,
+     "ops": [
+      {
+       "id": "q",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        110,
+        90
+       ],
+       "text": "questions",
+       "size": "l"
+      },
+      {
+       "id": "count",
+       "op": "rect",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        180
+       ],
+       "w": 220,
+       "h": 150
+      },
+      {
+       "id": "bars",
+       "op": "numwork",
+       "startMs": 1000,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        410,
+        175
+       ],
+       "layout": "number_line",
+       "rows": [
+        [
+         "1",
+         "2",
+         "3",
+         "4"
+        ]
+       ],
+       "range": [
+        1,
+        4
+       ]
+      },
+      {
+       "id": "countlabel",
+       "op": "label",
+       "startMs": 1300,
+       "endMs": 1800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        210,
+        355
+       ],
+       "text": "counts",
+       "target": "count"
+      },
+      {
+       "id": "measure",
+       "op": "line",
+       "startMs": 2200,
+       "endMs": 2800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        410,
+        330
+       ],
+       "to": [
+        680,
+        330
+       ]
+      },
+      {
+       "id": "measurelabel",
+       "op": "label",
+       "startMs": 2800,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        545,
+        365
+       ],
+       "text": "measurements",
+       "target": "measure"
+      },
+      {
+       "id": "answer",
+       "op": "arrow",
+       "startMs": 3300,
+       "endMs": 4004,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        330,
+        255
+       ],
+       "to": [
+        410,
+        255
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch13-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "claim",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        110,
+        90
+       ],
+       "text": "claim",
+       "size": "l"
+      },
+      {
+       "id": "data",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        560,
+        90
+       ],
+       "text": "data",
+       "size": "l"
+      },
+      {
+       "id": "claimline",
+       "op": "line",
+       "startMs": 700,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        105,
+        125
+       ],
+       "to": [
+        245,
+        125
+       ]
+      },
+      {
+       "id": "dataline",
+       "op": "line",
+       "startMs": 700,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        555,
+        125
+       ],
+       "to": [
+        650,
+        125
+       ]
+      },
+      {
+       "id": "cross1",
+       "op": "line",
+       "startMs": 1700,
+       "endMs": 2300,
+       "ink": "accent",
+       "weight": 3,
+       "from": [
+        300,
+        170
+       ],
+       "to": [
+        470,
+        330
+       ]
+      },
+      {
+       "id": "cross2",
+       "op": "line",
+       "startMs": 2300,
+       "endMs": 2900,
+       "ink": "accent",
+       "weight": 3,
+       "from": [
+        470,
+        170
+       ],
+       "to": [
+        300,
+        330
+       ]
+      },
+      {
+       "id": "myth",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        285,
+        385
+       ],
+       "text": "myth",
+       "size": "l"
+      },
+      {
+       "id": "bust",
+       "op": "arrow",
+       "startMs": 4000,
+       "endMs": 4800,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        400,
+        410
+       ],
+       "to": [
+        400,
+        350
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch13-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "statement",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        75
+       ],
+       "text": "statement",
+       "size": "l"
+      },
+      {
+       "id": "table",
+       "op": "rect",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        145
+       ],
+       "w": 620,
+       "h": 250
+      },
+      {
+       "id": "row1",
+       "op": "line",
+       "startMs": 1400,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 1,
+       "from": [
+        90,
+        205
+       ],
+       "to": [
+        710,
+        205
+       ]
+      },
+      {
+       "id": "row2",
+       "op": "line",
+       "startMs": 1700,
+       "endMs": 2000,
+       "ink": "chalk",
+       "weight": 1,
+       "from": [
+        90,
+        265
+       ],
+       "to": [
+        710,
+        265
+       ]
+      },
+      {
+       "id": "row3",
+       "op": "line",
+       "startMs": 2000,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 1,
+       "from": [
+        90,
+        325
+       ],
+       "to": [
+        710,
+        325
+       ]
+      },
+      {
+       "id": "find",
+       "op": "arrow",
+       "startMs": 3000,
+       "endMs": 3900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        60,
+        430
+       ],
+       "to": [
+        170,
+        280
+       ]
+      },
+      {
+       "id": "numbers",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        255,
+        430
+       ],
+       "text": "exact numbers",
+       "size": "m"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch13-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "july",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        75
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "July",
+         "250",
+         "mm"
+        ]
+       ]
+      },
+      {
+       "id": "june",
+       "op": "numwork",
+       "startMs": 1300,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        180
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "June",
+         "140"
+        ]
+       ]
+      },
+      {
+       "id": "sept",
+       "op": "numwork",
+       "startMs": 2300,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        260
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "Septem",
+         "120"
+        ]
+       ]
+      },
+      {
+       "id": "sum",
+       "op": "numwork",
+       "startMs": 3500,
+       "endMs": 5000,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        390,
+        180
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "140",
+         "+",
+         "120",
+         "=",
+         "260"
+        ]
+       ]
+      },
+      {
+       "id": "together",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 5700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        390,
+        280
+       ],
+       "text": "together",
+       "size": "m"
+      },
+      {
+       "id": "bracket",
+       "op": "line",
+       "startMs": 5700,
+       "endMs": 6500,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        350,
+        165
+       ],
+       "to": [
+        350,
+        310
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch13-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "less",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        250,
+        210
+       ],
+       "text": "less than",
+       "size": "m"
+      },
+      {
+       "id": "falsebox",
+       "op": "rect",
+       "startMs": 3000,
+       "endMs": 3900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        430,
+        100
+       ],
+       "w": 220,
+       "h": 130
+      },
+      {
+       "id": "false",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 5000,
+       "ink": "good",
+       "weight": 3,
+       "at": [
+        540,
+        180
+       ],
+       "text": "false",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "check",
+       "op": "arrow",
+       "startMs": 5000,
+       "endMs": 5900,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        350,
+        160
+       ],
+       "to": [
+        430,
+        160
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch13-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "check",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        75
+       ],
+       "text": "check data",
+       "size": "l"
+      },
+      {
+       "id": "true",
+       "op": "rect",
+       "startMs": 1000,
+       "endMs": 1500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        90,
+        170
+       ],
+       "w": 180,
+       "h": 110
+      },
+      {
+       "id": "truelabel",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2300,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        180,
+        235
+       ],
+       "text": "true",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "false",
+       "op": "rect",
+       "startMs": 2300,
+       "endMs": 2800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        310,
+        170
+       ],
+       "w": 180,
+       "h": 110
+      },
+      {
+       "id": "falselabel",
+       "op": "text",
+       "startMs": 2800,
+       "endMs": 3600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        235
+       ],
+       "text": "false",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "cannot",
+       "op": "rect",
+       "startMs": 3600,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        530,
+        170
+       ],
+       "w": 180,
+       "h": 110
+      },
+      {
+       "id": "cannotlabel",
+       "op": "text",
+       "startMs": 4100,
+       "endMs": 5200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        620,
+        220
+       ],
+       "text": "cannot tell",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "fromdata",
+       "op": "text",
+       "startMs": 5200,
+       "endMs": 5900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        620,
+        255
+       ],
+       "text": "from data",
+       "size": "s",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch13-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "one",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        110,
+        75
+       ],
+       "text": "one",
+       "size": "l"
+      },
+      {
+       "id": "two",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        610,
+        75
+       ],
+       "text": "two",
+       "size": "l"
+      },
+      {
+       "id": "axis1",
+       "op": "line",
+       "startMs": 900,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        120,
+        330
+       ],
+       "to": [
+        330,
+        150
+       ]
+      },
+      {
+       "id": "axis2",
+       "op": "line",
+       "startMs": 1700,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        470,
+        330
+       ],
+       "to": [
+        680,
+        150
+       ]
+      },
+      {
+       "id": "rise1",
+       "op": "arrow",
+       "startMs": 2500,
+       "endMs": 3300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        140,
+        300
+       ],
+       "to": [
+        310,
+        170
+       ]
+      },
+      {
+       "id": "rise2",
+       "op": "arrow",
+       "startMs": 3300,
+       "endMs": 4100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        490,
+        300
+       ],
+       "to": [
+        650,
+        170
+       ]
+      },
+      {
+       "id": "doesnot",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 5300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        270,
+        420
+       ],
+       "text": "does not prove",
+       "size": "m"
+      },
+      {
+       "id": "cause",
+       "op": "text",
+       "startMs": 5300,
+       "endMs": 6132,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        550,
+        420
+       ],
+       "text": "causes",
+       "size": "m"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch13-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "case",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        150,
+        190
+       ],
+       "r": 55
+      },
+      {
+       "id": "onecase",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        150,
+        285
+       ],
+       "text": "one case",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "few",
+       "op": "circle",
+       "startMs": 1400,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        330,
+        190
+       ],
+       "r": 35
+      },
+      {
+       "id": "few2",
+       "op": "circle",
+       "startMs": 1900,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        410,
+        190
+       ],
+       "r": 35
+      },
+      {
+       "id": "fewlabel",
+       "op": "text",
+       "startMs": 2400,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        370,
+        285
+       ],
+       "text": "few cases",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "everyone",
+       "op": "ellipse",
+       "startMs": 3200,
+       "endMs": 3900,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        620,
+        210
+       ],
+       "rx": 120,
+       "ry": 90
+      },
+      {
+       "id": "alllabel",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        620,
+        215
+       ],
+       "text": "everyone",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "not",
+       "op": "line",
+       "startMs": 5000,
+       "endMs": 5800,
+       "ink": "accent",
+       "weight": 3,
+       "from": [
+        95,
+        115
+       ],
+       "to": [
+        455,
+        300
+       ]
+      },
+      {
+       "id": "enough",
+       "op": "text",
+       "startMs": 5800,
+       "endMs": 6983,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        300,
+        420
+       ],
+       "text": "not enough",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "8",
+   "prompt": "tally: Idli"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "5",
+   "prompt": "tally: Poha"
+  },
+  {
+   "itemId": "r1:2",
+   "key": "7",
+   "prompt": "tally: Dosa"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "3 symbols",
+   "prompt": "picto: June"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "5 symbols",
+   "prompt": "picto: July"
+  },
+  {
+   "itemId": "r2:2",
+   "key": "4 symbols",
+   "prompt": "picto: August"
+  },
+  {
+   "itemId": "r2:3",
+   "key": "2 symbols",
+   "prompt": "picto: Sept"
+  },
+  {
+   "itemId": "r3:0",
+   "key": "45",
+   "prompt": "bars: Aarav"
+  },
+  {
+   "itemId": "r3:1",
+   "key": "30",
+   "prompt": "bars: Kabir"
+  },
+  {
+   "itemId": "r3:2",
+   "key": "55",
+   "prompt": "bars: Meera"
+  },
+  {
+   "itemId": "r4:0",
+   "key": "true",
+   "prompt": "Bus > Walk"
+  },
+  {
+   "itemId": "r4:1",
+   "key": "false",
+   "prompt": "Bus = 2 × Cycle"
+  },
+  {
+   "itemId": "r4:2",
+   "key": "false",
+   "prompt": "Total = 0"
+  },
+  {
+   "itemId": "r4:3",
+   "key": "false",
+   "prompt": "Bus − Cycle = 0"
+  },
+  {
+   "itemId": "r4:4",
+   "key": "false",
+   "prompt": "Walk = Cycle"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

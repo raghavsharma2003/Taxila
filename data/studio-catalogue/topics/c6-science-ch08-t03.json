@@ -1,0 +1,1622 @@
+{
+ "topicId": "c6-science-ch08-t03",
+ "title": "Factors affecting evaporation and cooling",
+ "chapter": "A Journey through States of Water",
+ "subject": "science",
+ "class": 6,
+ "topicType": "T3",
+ "plan": {
+  "game": "phase-shift@1",
+  "hint": "Phase Shift: states of water, evaporation and condensation, factors"
+ },
+ "game": {
+  "archetype": "phase-shift@1",
+  "spec": {
+   "archetype": "phase-shift@1",
+   "skills": [
+    "c6-science-ch08-t03"
+   ],
+   "lang": "en",
+   "strings": {
+    "step": "Step",
+    "heat": "HEAT",
+    "cool": "COOL",
+    "fan": "FAN",
+    "lid": "COLD LID",
+    "temp": "TEMP",
+    "ice": "ice",
+    "water": "water",
+    "vapour": "vapour",
+    "plateau": "0 °C holds: heat is melting the ice",
+    "boiling": "100 °C holds: heat is making vapour",
+    "invisible": "vapour · invisible",
+    "predict": "First, predict",
+    "done": "Done",
+    "noBoil": "keep it below boiling"
+   },
+   "start": 28,
+   "steps": [
+    {
+     "kind": "goal",
+     "goal": "evaporate",
+     "arg": 0.12,
+     "tMax": 40,
+     "text": "Evaporate some water. Change one factor at a time."
+    },
+    {
+     "kind": "goal",
+     "goal": "evaporate",
+     "arg": 0.25,
+     "tMax": 60,
+     "text": "Use moving air to help the water evaporate."
+    },
+    {
+     "kind": "probe",
+     "probe": "glass"
+    },
+    {
+     "kind": "goal",
+     "goal": "evaporate",
+     "arg": 0.4,
+     "tMax": 80,
+     "text": "Compare a wide spread with a narrow container fairly."
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c6-science-ch08-t03"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Right",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "BUSTED",
+    "order": "Tap them in order"
+   },
+   "title": "How evaporation cools",
+   "accent": "sci",
+   "targets": "c6-science-ch08-t03-m1",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "How evaporation cools"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "A matka cools water because clay is cold"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "inside",
+       "type": "node",
+       "text": "Water inside",
+       "sub": "matka",
+       "glyph": "jug",
+       "color": "sci"
+      },
+      {
+       "id": "pores",
+       "type": "node",
+       "text": "Tiny pores",
+       "sub": "clay",
+       "glyph": "spark",
+       "color": "amber"
+      },
+      {
+       "id": "outside",
+       "type": "node",
+       "text": "Outer water",
+       "sub": "surface",
+       "glyph": "drop",
+       "color": "ion"
+      },
+      {
+       "id": "air",
+       "type": "node",
+       "text": "Water vapour",
+       "sub": "air",
+       "glyph": "wind",
+       "color": "mint"
+      },
+      {
+       "id": "heat",
+       "type": "node",
+       "text": "Heat leaves",
+       "sub": "cooling",
+       "glyph": "thermometer",
+       "color": "volt"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "inside",
+       "to": "pores",
+       "text": "seeps"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "pores",
+       "to": "outside",
+       "text": "reaches"
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "outside",
+       "to": "air",
+       "text": "evaporates"
+      },
+      {
+       "id": "a4",
+       "type": "arrow",
+       "from": "inside",
+       "to": "heat",
+       "text": "loses heat"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "fan",
+       "type": "node",
+       "text": "Fan",
+       "sub": "moving air",
+       "glyph": "wind",
+       "color": "ion"
+      },
+      {
+       "id": "still",
+       "type": "node",
+       "text": "Still air",
+       "sub": "slower",
+       "glyph": "cloud",
+       "color": "amber"
+      },
+      {
+       "id": "wide",
+       "type": "node",
+       "text": "Wide plate",
+       "sub": "large area",
+       "glyph": "plate",
+       "color": "mint"
+      },
+      {
+       "id": "narrow",
+       "type": "node",
+       "text": "Narrow glass",
+       "sub": "small area",
+       "glyph": "beaker",
+       "color": "amber"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "A matka keeps water cool, but the clay is not cold by itself.",
+    "L2": "The cooling comes from evaporation at the matka's outer surface.",
+    "L3": "Water inside seeps through the clay's tiny pores to the outside.",
+    "L4": "That outer water evaporates into the air and takes heat from the pot and water inside.",
+    "L5": "So the water cools. This works best when the air is hot, dry and moving.",
+    "L6": "A fan cools sweaty skin by speeding up sweat evaporation, not by making the air colder.",
+    "L7": "Evaporation is also faster when water is hotter or spread over a larger surface.",
+    "L8": "To test one factor fairly, change only that factor and keep everything else the same."
+   },
+   "narration": {
+    "L1": {
+     "text": "A matka keeps water cool, but the clay is not cold by itself.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "The cooling comes from evaporation at the matka's outer surface.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "Water inside seeps through the clay's tiny pores to the outside.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "That outer water evaporates into the air and takes heat from the pot and water inside.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "So the water cools. This works best when the air is hot, dry and moving.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "A fan cools sweaty skin by speeding up sweat evaporation, not by making the air colder.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Evaporation is also faster when water is hotter or spread over a larger surface.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "To test one factor fairly, change only that factor and keep everything else the same.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.3,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "title"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.3,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "inside"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.6,
+       "target": "pores"
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.6,
+       "target": "a1"
+      },
+      {
+       "at": 1.5,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "a1",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "outside"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.6,
+       "target": "a2"
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.6,
+       "target": "air"
+      },
+      {
+       "at": 1.5,
+       "do": "show",
+       "dur": 0.6,
+       "target": "a3"
+      },
+      {
+       "at": 2,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "a3",
+       "to": 1
+      },
+      {
+       "at": 2.5,
+       "do": "show",
+       "dur": 0.6,
+       "target": "heat"
+      },
+      {
+       "at": 3,
+       "do": "show",
+       "dur": 0.6,
+       "target": "a4"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "heat"
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 1,
+       "target": "air"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.3,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "fan"
+      },
+      {
+       "at": 0.6,
+       "do": "show",
+       "dur": 0.7,
+       "target": "still"
+      },
+      {
+       "at": 1.2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "fan"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.3,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "wide"
+      },
+      {
+       "at": 0.6,
+       "do": "show",
+       "dur": 0.7,
+       "target": "narrow"
+      },
+      {
+       "at": 1.2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "wide"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "interactive",
+       "dur": 1
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which setup dries faster because it has moving air?",
+    "options": [
+     "fan",
+     "still"
+    ],
+    "answer": "fan",
+    "src": "c6-science-ch08-t03-i05"
+   }
+  },
+  "repairs": [],
+  "attempts": 2,
+  "model": "taxila-fast-bg",
+  "passes": 2,
+  "seconds": 32
+ },
+ "keys": [],
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch08-t03-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "matka",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        250
+       ],
+       "rx": 125,
+       "ry": 170
+      },
+      {
+       "id": "water",
+       "op": "ellipse",
+       "startMs": 900,
+       "endMs": 1800,
+       "ink": "soft",
+       "weight": 1,
+       "c": [
+        400,
+        290
+       ],
+       "rx": 92,
+       "ry": 105,
+       "fill": "soft"
+      },
+      {
+       "id": "matkalabel",
+       "op": "label",
+       "startMs": 1200,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        55
+       ],
+       "text": "matka",
+       "to": [
+        400,
+        80
+       ]
+      },
+      {
+       "id": "waterlabel",
+       "op": "label",
+       "startMs": 1800,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        535,
+        290
+       ],
+       "text": "water",
+       "to": [
+        485,
+        290
+       ]
+      },
+      {
+       "id": "notcold",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 4100,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        465
+       ],
+       "text": "not cold",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "cool",
+       "op": "arrow",
+       "startMs": 4300,
+       "endMs": 5100,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        400,
+        390
+       ],
+       "to": [
+        400,
+        335
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch08-t03-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "surface",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        80
+       ],
+       "rx": 120,
+       "ry": 18
+      },
+      {
+       "id": "evap",
+       "op": "arrow",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        345,
+        75
+       ],
+       "to": [
+        315,
+        25
+       ]
+      },
+      {
+       "id": "evap2",
+       "op": "arrow",
+       "startMs": 1100,
+       "endMs": 1800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        72
+       ],
+       "to": [
+        400,
+        25
+       ]
+      },
+      {
+       "id": "evap3",
+       "op": "arrow",
+       "startMs": 1400,
+       "endMs": 2100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        455,
+        75
+       ],
+       "to": [
+        485,
+        25
+       ]
+      },
+      {
+       "id": "evaplabel",
+       "op": "label",
+       "startMs": 2200,
+       "endMs": 3200,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        570,
+        45
+       ],
+       "text": "evaporation",
+       "to": [
+        480,
+        65
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch08-t03-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "pores",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        520,
+        220
+       ],
+       "r": 8
+      },
+      {
+       "id": "pores2",
+       "op": "circle",
+       "startMs": 300,
+       "endMs": 800,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        520,
+        260
+       ],
+       "r": 8
+      },
+      {
+       "id": "pores3",
+       "op": "circle",
+       "startMs": 600,
+       "endMs": 1100,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        520,
+        300
+       ],
+       "r": 8
+      },
+      {
+       "id": "seep",
+       "op": "arrow",
+       "startMs": 1200,
+       "endMs": 2200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        485,
+        245
+       ],
+       "to": [
+        545,
+        245
+       ]
+      },
+      {
+       "id": "outside",
+       "op": "label",
+       "startMs": 2400,
+       "endMs": 3100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        585,
+        245
+       ],
+       "text": "outside",
+       "to": [
+        550,
+        245
+       ]
+      },
+      {
+       "id": "tiny",
+       "op": "label",
+       "startMs": 3200,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        585,
+        315
+       ],
+       "text": "tiny pores",
+       "to": [
+        525,
+        300
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch08-t03-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "air",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        610,
+        120
+       ],
+       "rx": 130,
+       "ry": 70
+      },
+      {
+       "id": "airlabel",
+       "op": "label",
+       "startMs": 500,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        610,
+        45
+       ],
+       "text": "air",
+       "to": [
+        610,
+        65
+       ]
+      },
+      {
+       "id": "vap1",
+       "op": "arrow",
+       "startMs": 1100,
+       "endMs": 1900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        535,
+        180
+       ],
+       "to": [
+        575,
+        105
+       ]
+      },
+      {
+       "id": "vap2",
+       "op": "arrow",
+       "startMs": 1400,
+       "endMs": 2200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        575,
+        180
+       ],
+       "to": [
+        620,
+        100
+       ]
+      },
+      {
+       "id": "heat",
+       "op": "arrow",
+       "startMs": 2500,
+       "endMs": 3300,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        390,
+        180
+       ],
+       "to": [
+        390,
+        125
+       ]
+      },
+      {
+       "id": "heatlabel",
+       "op": "label",
+       "startMs": 3300,
+       "endMs": 4000,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        425,
+        145
+       ],
+       "text": "heat",
+       "to": [
+        395,
+        145
+       ]
+      },
+      {
+       "id": "potlabel",
+       "op": "label",
+       "startMs": 4100,
+       "endMs": 4700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        250,
+        250
+       ],
+       "text": "pot",
+       "to": [
+        300,
+        250
+       ]
+      },
+      {
+       "id": "inside",
+       "op": "label",
+       "startMs": 4700,
+       "endMs": 5700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        285,
+        335
+       ],
+       "text": "water inside",
+       "to": [
+        350,
+        320
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch08-t03-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "coolarrow",
+       "op": "arrow",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        400,
+        300
+       ],
+       "to": [
+        400,
+        230
+       ]
+      },
+      {
+       "id": "coollabel",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        350
+       ],
+       "text": "cool",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "hot",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2400,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        105,
+        95
+       ],
+       "text": "hot",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "dry",
+       "op": "text",
+       "startMs": 2400,
+       "endMs": 3000,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        95
+       ],
+       "text": "dry",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "moving",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3800,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        680,
+        95
+       ],
+       "text": "moving",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "wind1",
+       "op": "arrow",
+       "startMs": 3900,
+       "endMs": 4600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        650,
+        145
+       ],
+       "to": [
+        540,
+        145
+       ]
+      },
+      {
+       "id": "wind2",
+       "op": "arrow",
+       "startMs": 4200,
+       "endMs": 4900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        650,
+        175
+       ],
+       "to": [
+        540,
+        175
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch08-t03-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "skin",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        260,
+        280
+       ],
+       "rx": 150,
+       "ry": 95
+      },
+      {
+       "id": "sweat",
+       "op": "circle",
+       "startMs": 700,
+       "endMs": 1200,
+       "ink": "soft",
+       "weight": 1,
+       "c": [
+        300,
+        250
+       ],
+       "r": 10,
+       "fill": "soft"
+      },
+      {
+       "id": "sweatlabel",
+       "op": "label",
+       "startMs": 1200,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        315,
+        225
+       ],
+       "text": "sweat",
+       "to": [
+        305,
+        245
+       ]
+      },
+      {
+       "id": "fan",
+       "op": "circle",
+       "startMs": 1800,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        620,
+        250
+       ],
+       "r": 55
+      },
+      {
+       "id": "blade1",
+       "op": "line",
+       "startMs": 2300,
+       "endMs": 2800,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        620,
+        250
+       ],
+       "to": [
+        620,
+        200
+       ]
+      },
+      {
+       "id": "blade2",
+       "op": "line",
+       "startMs": 2500,
+       "endMs": 3000,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        620,
+        250
+       ],
+       "to": [
+        665,
+        275
+       ]
+      },
+      {
+       "id": "blade3",
+       "op": "line",
+       "startMs": 2700,
+       "endMs": 3200,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        620,
+        250
+       ],
+       "to": [
+        575,
+        275
+       ]
+      },
+      {
+       "id": "fanlabel",
+       "op": "label",
+       "startMs": 3200,
+       "endMs": 3800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        620,
+        335
+       ],
+       "text": "fan",
+       "to": [
+        620,
+        305
+       ]
+      },
+      {
+       "id": "speed",
+       "op": "arrow",
+       "startMs": 4000,
+       "endMs": 4800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        540,
+        250
+       ],
+       "to": [
+        400,
+        250
+       ]
+      },
+      {
+       "id": "evaplabel",
+       "op": "text",
+       "startMs": 4900,
+       "endMs": 6000,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        395
+       ],
+       "text": "sweat evaporation",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch08-t03-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "hotwater",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        220,
+        270
+       ],
+       "rx": 105,
+       "ry": 65,
+       "fill": "soft"
+      },
+      {
+       "id": "hotlabel",
+       "op": "label",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        220,
+        365
+       ],
+       "text": "hotter",
+       "to": [
+        220,
+        335
+       ]
+      },
+      {
+       "id": "hotvap",
+       "op": "arrow",
+       "startMs": 1200,
+       "endMs": 1900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        180,
+        220
+       ],
+       "to": [
+        150,
+        145
+       ]
+      },
+      {
+       "id": "wide",
+       "op": "rect",
+       "startMs": 1900,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        425,
+        230
+       ],
+       "w": 230,
+       "h": 80,
+       "round": 12
+      },
+      {
+       "id": "widewater",
+       "op": "ellipse",
+       "startMs": 2500,
+       "endMs": 3200,
+       "ink": "soft",
+       "weight": 1,
+       "c": [
+        540,
+        270
+       ],
+       "rx": 105,
+       "ry": 28,
+       "fill": "soft"
+      },
+      {
+       "id": "larger",
+       "op": "label",
+       "startMs": 3200,
+       "endMs": 4100,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        540,
+        365
+       ],
+       "text": "larger surface",
+       "to": [
+        540,
+        310
+       ]
+      },
+      {
+       "id": "widevap1",
+       "op": "arrow",
+       "startMs": 3900,
+       "endMs": 4600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        475,
+        225
+       ],
+       "to": [
+        450,
+        150
+       ]
+      },
+      {
+       "id": "widevap2",
+       "op": "arrow",
+       "startMs": 4200,
+       "endMs": 4900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        540,
+        225
+       ],
+       "to": [
+        540,
+        140
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch08-t03-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "test",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        70,
+        120
+       ],
+       "w": 270,
+       "h": 250,
+       "round": 12
+      },
+      {
+       "id": "testlabel",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        205,
+        90
+       ],
+       "text": "test",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "factor",
+       "op": "label",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        205,
+        170
+       ],
+       "text": "factor",
+       "to": [
+        205,
+        210
+       ]
+      },
+      {
+       "id": "change",
+       "op": "arrow",
+       "startMs": 2200,
+       "endMs": 2900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        205,
+        250
+       ],
+       "to": [
+        205,
+        210
+       ]
+      },
+      {
+       "id": "same",
+       "op": "rect",
+       "startMs": 3000,
+       "endMs": 3800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        460,
+        120
+       ],
+       "w": 270,
+       "h": 250,
+       "round": 12
+      },
+      {
+       "id": "sameLabel",
+       "op": "text",
+       "startMs": 3800,
+       "endMs": 4500,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        595,
+        90
+       ],
+       "text": "same",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "same1",
+       "op": "label",
+       "startMs": 4500,
+       "endMs": 5200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        595,
+        190
+       ],
+       "text": "water",
+       "to": [
+        595,
+        230
+       ]
+      },
+      {
+       "id": "same2",
+       "op": "label",
+       "startMs": 5200,
+       "endMs": 6100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        595,
+        270
+       ],
+       "text": "everything",
+       "to": [
+        595,
+        300
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "check": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "The game uses numeric goals (evaporate 0.12, 0.25, 0.4) and timers (28, 40, 60, 80). There is no kit item giving these numbers; the wording 'change one factor at a time' and 'compare fairly' aligns with the kit expectations. The probe 'glass' is not a misrepresentation. However, the step 'Evaporate some water. Change one factor at a time.' and later 'Use moving air' and 'Compare a wide spread with a narrow container fairly.' are generic and do not contradict the kit. No issue.",
+    "severity": "high"
+   },
+   {
+    "where": "explainer",
+    "what": "The task prompt asks 'Which setup dries faster because it has moving air?' with options 'fan' and 'still'. The kit item i05 and i02 explicitly state a fan speeds evaporation, so answer 'fan' is correct. However the explainer's scene s3 shows both 'fan' and 'still' and labels 'still' as 'slower'. The task options and answer come directly from a kit scenario (c6-science-ch08-t03-i05) but the explainer text L6 says 'A fan cools sweaty skin by speeding up sweat evaporation, not by making the air colder.' That is correct. No false claim.",
+    "severity": "low"
+   },
+   {
+    "where": "explainer",
+    "what": "The target is c6-science-ch08-t03-m1 which is the misconception 'A matka cools water because clay is cold.' The explainer correctly refutes this. No problem.",
+    "severity": "low"
+   }
+  ],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

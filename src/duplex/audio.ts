@@ -128,10 +128,13 @@ export class ChildAudioTracker {
       if (this.voicingNow || this.f0InRun) this.lastLoudAt = t;
       this.hist.push([t, db, f0]);
       if (f0) { this.f0s.push(f0); if (this.f0s.length > 3000) this.f0s.splice(0, 1000); }
-      // the child's own level: voiced frames while she is quiet (her echo cannot be in them)
+      // the child's own level: voiced frames while she is quiet (her echo cannot be in them), held as PENDING until the
+      // engine commits a turn on them (confirmOwn). p1-duplex 2026-10-06 (AMI real speech): learning from every voiced frame
+      // while she is quiet learned the room (other talkers, a TV) as "the child", and a child pitched below the room's
+      // talkers then read as "not the child" (no hush, no yield on their words)
       if (this.herDb === null && f0) {
-        this.ownDb.push(db); if (this.ownDb.length > 400) this.ownDb.shift();
-        this.ownF0.push(f0); if (this.ownF0.length > 400) this.ownF0.shift();
+        this.pendDb.push(db); if (this.pendDb.length > 400) this.pendDb.shift();
+        this.pendF0.push(f0); if (this.pendF0.length > 400) this.pendF0.shift();
       }
       // onset: 2 loud frames (40 ms) after a quiet spell longer than the hangover; back-dated to the first loud frame
       // ...and periodic: at least one YIN f0 frame in the loud run (fan / traffic / TV-bed bursts carry none; TaxilaFDB noisy
@@ -171,6 +174,16 @@ export class ChildAudioTracker {
 
   /** voiced-frame dB of the child's own speech while she was quiet (last 400 frames ≈ 8 s of voice) */
   private ownDb: number[] = [];
+  private pendDb: number[] = [];
+  private pendF0: number[] = [];
+  /** The engine committed a child turn: the voiced frames since the last one are the child's own (level and pitch). */
+  confirmOwn(): void {
+    this.ownDb.push(...this.pendDb); if (this.ownDb.length > 400) this.ownDb.splice(0, this.ownDb.length - 400);
+    this.ownF0.push(...this.pendF0); if (this.ownF0.length > 400) this.ownF0.splice(0, this.ownF0.length - 400);
+    this.pendDb = []; this.pendF0 = [];
+  }
+  /** Her next line started with no commit on the pending frames: they were not a child turn (the room, a TV). */
+  dropPending(): void { this.pendDb = []; this.pendF0 = []; }
   /** The child's own speech level (median voiced dB while she is quiet); null until 1.5 s of their voice (75 frames). */
   childLevelDb(): number | null {
     if (this.ownDb.length < 75) return null;

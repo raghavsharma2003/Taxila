@@ -117,5 +117,1719 @@
   ],
   "attempts": 3,
   "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c4-maths-ch04-t03"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Round to the nearest place",
+   "accent": "sun",
+   "targets": "c4-maths-ch04-t03-m-chain-rounding",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "row",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Nearest 10, 100 or 1000"
+      },
+      {
+       "id": "estimate",
+       "type": "node",
+       "text": "Estimate",
+       "sub": "nearby value",
+       "glyph": "ruler",
+       "color": "sun"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "free",
+     "els": [
+      {
+       "id": "axis",
+       "type": "axis",
+       "min": 7000,
+       "max": 8000,
+       "step": 500,
+       "unit": "number",
+       "scale": "linear",
+       "y": 420
+      },
+      {
+       "id": "m7000",
+       "type": "mark",
+       "axis": "axis",
+       "value": 7000,
+       "text": "7000",
+       "color": "ion"
+      },
+      {
+       "id": "m7380",
+       "type": "mark",
+       "axis": "axis",
+       "value": 7380,
+       "text": "7380",
+       "color": "sun"
+      },
+      {
+       "id": "m7500",
+       "type": "mark",
+       "axis": "axis",
+       "value": 7500,
+       "text": "7500",
+       "color": "amber"
+      },
+      {
+       "id": "m8000",
+       "type": "mark",
+       "axis": "axis",
+       "value": 8000,
+       "text": "8000",
+       "color": "ion"
+      },
+      {
+       "id": "below",
+       "type": "label",
+       "text": "below halfway",
+       "x": 120,
+       "y": 250,
+       "color": "ion"
+      },
+      {
+       "id": "result",
+       "type": "node",
+       "text": "7000",
+       "sub": "nearest 1000",
+       "glyph": "ruler",
+       "color": "sun"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "split",
+     "els": [
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Round in steps: 1450 → 1500 → 2000",
+       "x": 80,
+       "y": 220
+      },
+      {
+       "id": "n1450",
+       "type": "node",
+       "text": "1450",
+       "sub": "original number",
+       "glyph": "question",
+       "color": "amber"
+      },
+      {
+       "id": "wrong1500",
+       "type": "node",
+       "text": "1500",
+       "sub": "wrong step",
+       "glyph": "question",
+       "color": "volt"
+      },
+      {
+       "id": "right1000",
+       "type": "node",
+       "text": "1000",
+       "sub": "nearest thousand",
+       "glyph": "spark",
+       "color": "mint"
+      },
+      {
+       "id": "wrong1",
+       "type": "arrow",
+       "from": "n1450",
+       "to": "wrong1500",
+       "text": "first round",
+       "bend": 0.1
+      },
+      {
+       "id": "wrong2",
+       "type": "arrow",
+       "from": "wrong1500",
+       "to": "right1000",
+       "text": "second round",
+       "bend": -0.1
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "row",
+     "els": [
+      {
+       "id": "prompt",
+       "type": "title",
+       "text": "Choose the nearest thousand"
+      },
+      {
+       "id": "opt7000",
+       "type": "node",
+       "text": "7000",
+       "sub": "option",
+       "glyph": "ruler",
+       "color": "mint"
+      },
+      {
+       "id": "opt8000",
+       "type": "node",
+       "text": "8000",
+       "sub": "option",
+       "glyph": "ruler",
+       "color": "ion"
+      },
+      {
+       "id": "opt6000",
+       "type": "node",
+       "text": "6000",
+       "sub": "option",
+       "glyph": "ruler",
+       "color": "volt"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Rounding gives an estimate: a nearby number that is easier to use. We can round to the nearest 10, 100 or 1000.",
+    "L2": "First find the two neighbours: the place values just below and just above the number.",
+    "L3": "Then find the halfway mark between those neighbours. Below halfway goes down; halfway and above goes up.",
+    "L4": "For 7380, the thousand neighbours are 7000 and 8000. The halfway mark is 7500.",
+    "L5": "7380 is less than 7500, so it rounds to 7000. We decide in one step from the original number.",
+    "L6": "To round to the nearest thousand, look at the hundreds digit. To round to the nearest hundred, look at the tens digit.",
+    "L7": "MYTH: round in steps, like 1450 to 1500 and then 2000. NOT TRUE: rounding an already-rounded number can give the wrong answer.",
+    "L8": "Now use the same halfway idea. Which thousand is 7380 nearer to?"
+   },
+   "narration": {},
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      },
+      {
+       "at": 0.6,
+       "do": "show",
+       "dur": 0.8,
+       "target": "estimate"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "axis"
+      },
+      {
+       "at": 0.4,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "m7000",
+        "m8000"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": [
+        "m7000",
+        "m8000"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "m7500"
+      },
+      {
+       "at": 0.6,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "m7500"
+      },
+      {
+       "at": 1.3,
+       "do": "show",
+       "dur": 0.6,
+       "target": "below"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "m7380"
+      },
+      {
+       "at": 0.5,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": [
+        "m7000",
+        "m7500"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 0.7,
+       "target": "m7380"
+      },
+      {
+       "at": 0.7,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "result",
+       "to": 1
+      },
+      {
+       "at": 1.2,
+       "do": "show",
+       "dur": 0.6,
+       "target": "result"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "focus",
+       "dur": 0.8,
+       "target": "m7380"
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 0.7,
+       "target": "m7500"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.5,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      },
+      {
+       "at": 0.7,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "n1450",
+        "wrong1500",
+        "right1000"
+       ]
+      },
+      {
+       "at": 1.2,
+       "do": "flow",
+       "dur": 0.8,
+       "target": [
+        "wrong1",
+        "wrong2"
+       ],
+       "to": 1
+      },
+      {
+       "at": 2,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "prompt"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "opt7000",
+        "opt8000",
+        "opt6000"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive",
+       "dur": 0.5
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which option is 7380 rounded to the nearest thousand?",
+    "options": [
+     "opt7000",
+     "opt8000",
+     "opt6000"
+    ],
+    "answer": "opt7000"
+   }
+  },
+  "repairs": [
+   "arrow:ends",
+   "cue:target"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 67
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch04-t03-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9962,
+     "ops": [
+      {
+       "id": "title",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "rounding",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "def",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        105
+       ],
+       "text": "nearby number",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "easy",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        145
+       ],
+       "text": "easier to use",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "n10",
+       "op": "circle",
+       "startMs": 3200,
+       "endMs": 3900,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        180,
+        275
+       ],
+       "r": 58
+      },
+      {
+       "id": "t10",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        180,
+        275
+       ],
+       "text": "10",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "n100",
+       "op": "circle",
+       "startMs": 4400,
+       "endMs": 5100,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        275
+       ],
+       "r": 58
+      },
+      {
+       "id": "t100",
+       "op": "text",
+       "startMs": 5100,
+       "endMs": 5600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        275
+       ],
+       "text": "100",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "n1000",
+       "op": "circle",
+       "startMs": 5600,
+       "endMs": 6300,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        620,
+        275
+       ],
+       "r": 58
+      },
+      {
+       "id": "t1000",
+       "op": "text",
+       "startMs": 6300,
+       "endMs": 6800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        620,
+        275
+       ],
+       "text": "1000",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "a1",
+       "op": "arrow",
+       "startMs": 7000,
+       "endMs": 7500,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        245,
+        275
+       ],
+       "to": [
+        335,
+        275
+       ]
+      },
+      {
+       "id": "a2",
+       "op": "arrow",
+       "startMs": 7500,
+       "endMs": 8000,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        465,
+        275
+       ],
+       "to": [
+        555,
+        275
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch04-t03-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "num",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        75
+       ],
+       "text": "number",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "low",
+       "op": "circle",
+       "startMs": 800,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        220,
+        250
+       ],
+       "r": 60
+      },
+      {
+       "id": "high",
+       "op": "circle",
+       "startMs": 1400,
+       "endMs": 2000,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        580,
+        250
+       ],
+       "r": 60
+      },
+      {
+       "id": "below",
+       "op": "text",
+       "startMs": 2000,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        220,
+        250
+       ],
+       "text": "below",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "above",
+       "op": "text",
+       "startMs": 2600,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        580,
+        250
+       ],
+       "text": "above",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "join",
+       "op": "line",
+       "startMs": 3400,
+       "endMs": 4300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        280,
+        250
+       ],
+       "to": [
+        520,
+        250
+       ]
+      },
+      {
+       "id": "lab1",
+       "op": "label",
+       "startMs": 4300,
+       "endMs": 5100,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        330,
+        220
+       ],
+       "text": "just below",
+       "to": [
+        280,
+        250
+       ]
+      },
+      {
+       "id": "lab2",
+       "op": "label",
+       "startMs": 5100,
+       "endMs": 5900,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        450,
+        220
+       ],
+       "text": "just above",
+       "to": [
+        520,
+        250
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch04-t03-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "left",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        120,
+        100
+       ],
+       "text": "below",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "right",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        680,
+        100
+       ],
+       "text": "above",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "nl",
+       "op": "line",
+       "startMs": 900,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        120,
+        230
+       ],
+       "to": [
+        680,
+        230
+       ]
+      },
+      {
+       "id": "tick1",
+       "op": "line",
+       "startMs": 1600,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 1,
+       "from": [
+        120,
+        215
+       ],
+       "to": [
+        120,
+        245
+       ]
+      },
+      {
+       "id": "tick2",
+       "op": "line",
+       "startMs": 1900,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 1,
+       "from": [
+        680,
+        215
+       ],
+       "to": [
+        680,
+        245
+       ]
+      },
+      {
+       "id": "mid",
+       "op": "line",
+       "startMs": 2500,
+       "endMs": 3000,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        400,
+        205
+       ],
+       "to": [
+        400,
+        255
+       ]
+      },
+      {
+       "id": "half",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        285
+       ],
+       "text": "halfway",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "down",
+       "op": "arrow",
+       "startMs": 4200,
+       "endMs": 4800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        300,
+        350
+       ],
+       "to": [
+        220,
+        350
+       ]
+      },
+      {
+       "id": "up",
+       "op": "arrow",
+       "startMs": 4800,
+       "endMs": 5400,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        500,
+        350
+       ],
+       "to": [
+        580,
+        350
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch04-t03-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "ex",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "7380",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "axis",
+       "op": "line",
+       "startMs": 800,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        120,
+        250
+       ],
+       "to": [
+        680,
+        250
+       ]
+      },
+      {
+       "id": "t7000",
+       "op": "line",
+       "startMs": 1500,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 1,
+       "from": [
+        160,
+        225
+       ],
+       "to": [
+        160,
+        275
+       ]
+      },
+      {
+       "id": "t8000",
+       "op": "line",
+       "startMs": 1900,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 1,
+       "from": [
+        640,
+        225
+       ],
+       "to": [
+        640,
+        275
+       ]
+      },
+      {
+       "id": "l7000",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        160,
+        320
+       ],
+       "text": "7000",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "l8000",
+       "op": "text",
+       "startMs": 2800,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        640,
+        320
+       ],
+       "text": "8000",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "mid7500",
+       "op": "line",
+       "startMs": 3600,
+       "endMs": 4100,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        400,
+        225
+       ],
+       "to": [
+        400,
+        275
+       ]
+      },
+      {
+       "id": "l7500",
+       "op": "text",
+       "startMs": 4100,
+       "endMs": 4700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        190
+       ],
+       "text": "7500",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "point",
+       "op": "circle",
+       "startMs": 5000,
+       "endMs": 5500,
+       "ink": "mark",
+       "weight": 2,
+       "c": [
+        373,
+        250
+       ],
+       "r": 9
+      },
+      {
+       "id": "l7380",
+       "op": "label",
+       "startMs": 5500,
+       "endMs": 6200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        365,
+        385
+       ],
+       "text": "7380",
+       "target": "point"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch04-t03-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "downarrow",
+       "op": "arrow",
+       "startMs": 1800,
+       "endMs": 2500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        145
+       ],
+       "to": [
+        400,
+        225
+       ]
+      },
+      {
+       "id": "result",
+       "op": "numwork",
+       "startMs": 2700,
+       "endMs": 4200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        220,
+        270
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "7380",
+         "→",
+         "7000"
+        ]
+       ]
+      },
+      {
+       "id": "one",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        375
+       ],
+       "text": "one step",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "original",
+       "op": "label",
+       "startMs": 5800,
+       "endMs": 7000,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        180,
+        430
+       ],
+       "text": "original number",
+       "to": [
+        270,
+        300
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch04-t03-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9962,
+     "ops": [
+      {
+       "id": "thou",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        250,
+        70
+       ],
+       "text": "nearest thousand",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "hundreds",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        250,
+        135
+       ],
+       "text": "hundreds digit",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "hsep",
+       "op": "line",
+       "startMs": 1900,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 1,
+       "from": [
+        80,
+        185
+       ],
+       "to": [
+        420,
+        185
+       ]
+      },
+      {
+       "id": "hund",
+       "op": "numwork",
+       "startMs": 2500,
+       "endMs": 3800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        125,
+        220
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "hundre",
+         "→",
+         "thousa"
+        ]
+       ]
+      },
+      {
+       "id": "hundred",
+       "op": "text",
+       "startMs": 4200,
+       "endMs": 5100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        590,
+        70
+       ],
+       "text": "nearest hundred",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "tens",
+       "op": "text",
+       "startMs": 5100,
+       "endMs": 6000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        590,
+        135
+       ],
+       "text": "tens digit",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "tsep",
+       "op": "line",
+       "startMs": 6000,
+       "endMs": 6500,
+       "ink": "chalk",
+       "weight": 1,
+       "from": [
+        460,
+        185
+       ],
+       "to": [
+        740,
+        185
+       ]
+      },
+      {
+       "id": "ten",
+       "op": "numwork",
+       "startMs": 6600,
+       "endMs": 7900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        490,
+        220
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "tens",
+         "→",
+         "hundre"
+        ]
+       ]
+      },
+      {
+       "id": "rule",
+       "op": "arrow",
+       "startMs": 8200,
+       "endMs": 9000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        410
+       ],
+       "to": [
+        400,
+        300
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch04-t03-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9962,
+     "ops": [
+      {
+       "id": "myth",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 3,
+       "at": [
+        400,
+        60
+       ],
+       "text": "MYTH",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "step1",
+       "op": "numwork",
+       "startMs": 900,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        130,
+        125
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "1450",
+         "→",
+         "1500"
+        ]
+       ]
+      },
+      {
+       "id": "step2",
+       "op": "numwork",
+       "startMs": 2200,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        130,
+        200
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "1500",
+         "→",
+         "2000"
+        ]
+       ]
+      },
+      {
+       "id": "cross",
+       "op": "line",
+       "startMs": 3800,
+       "endMs": 4700,
+       "ink": "accent",
+       "weight": 3,
+       "from": [
+        100,
+        105
+       ],
+       "to": [
+        500,
+        280
+       ]
+      },
+      {
+       "id": "not",
+       "op": "text",
+       "startMs": 4800,
+       "endMs": 5800,
+       "ink": "accent",
+       "weight": 3,
+       "at": [
+        600,
+        155
+       ],
+       "text": "NOT TRUE",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "wrong",
+       "op": "text",
+       "startMs": 5800,
+       "endMs": 6800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        600,
+        220
+       ],
+       "text": "wrong answer",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "correct",
+       "op": "numwork",
+       "startMs": 7100,
+       "endMs": 8500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        130,
+        355
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "origin",
+         "→",
+         "answer"
+        ]
+       ]
+      },
+      {
+       "id": "note",
+       "op": "text",
+       "startMs": 8500,
+       "endMs": 9400,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        600,
+        330
+       ],
+       "text": "one step",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch04-t03-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "prompt",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        65
+       ],
+       "text": "Which thousand?",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "axis2",
+       "op": "line",
+       "startMs": 1000,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        120,
+        245
+       ],
+       "to": [
+        680,
+        245
+       ]
+      },
+      {
+       "id": "k7",
+       "op": "line",
+       "startMs": 1700,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 1,
+       "from": [
+        150,
+        220
+       ],
+       "to": [
+        150,
+        270
+       ]
+      },
+      {
+       "id": "k8",
+       "op": "line",
+       "startMs": 2100,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 1,
+       "from": [
+        650,
+        220
+       ],
+       "to": [
+        650,
+        270
+       ]
+      },
+      {
+       "id": "lab7",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        150,
+        315
+       ],
+       "text": "7000",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "lab8",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        650,
+        315
+       ],
+       "text": "8000",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "p7380",
+       "op": "circle",
+       "startMs": 3600,
+       "endMs": 4100,
+       "ink": "mark",
+       "weight": 2,
+       "c": [
+        363,
+        245
+       ],
+       "r": 10
+      },
+      {
+       "id": "near",
+       "op": "arrow",
+       "startMs": 4200,
+       "endMs": 5000,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        363,
+        390
+       ],
+       "to": [
+        150,
+        285
+       ]
+      },
+      {
+       "id": "ans",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 5600,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        150,
+        430
+       ],
+       "text": "7000",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "₹7",
+   "prompt": "pay: 4×Pencils@₹1.50, 2×Eraser@₹0.50"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "₹15",
+   "prompt": "pay: 1×Lunch box@₹8.50, 1×Water bottle@₹6.50"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "₹5.50",
+   "prompt": "change: 1×Cricket bat@₹14.50 pays ₹20"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "₹9.50",
+   "prompt": "change: 3×Kite@₹3.50 pays ₹20"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
  }
 }

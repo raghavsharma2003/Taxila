@@ -1,0 +1,1773 @@
+{
+ "topicId": "c4-evs-ch02-t02",
+ "title": "Money and saving",
+ "chapter": "Exploring Our Neighbourhood",
+ "subject": "evs",
+ "class": 4,
+ "topicType": "T3",
+ "plan": {
+  "game": "town-lab@1",
+  "hint": "savings mode (piggy bank vs bank, monthly saving to a goal)"
+ },
+ "game": {
+  "archetype": "town-lab@1",
+  "spec": {
+   "archetype": "town-lab@1",
+   "skills": [
+    "c4-evs-ch02-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "done": "right",
+    "have": "you have",
+    "need": "you need",
+    "has": "has",
+    "wants": "wants",
+    "trades": "trades",
+    "market": "market",
+    "coins": "coins",
+    "open": "OPEN",
+    "price": "price",
+    "cost": "cost",
+    "profit": "profit",
+    "sold": "sold",
+    "target": "target",
+    "stock": "stock",
+    "lock": "LOCK",
+    "run": "RUN",
+    "perMonth": "per month",
+    "years": "years",
+    "goal": "goal",
+    "saved": "saved",
+    "interest": "interest",
+    "budget": "budget",
+    "left": "left",
+    "families": "families helped",
+    "runDone": "Town closed",
+    "noDeal": "no deal",
+    "reset": "start again",
+    "rupee": "₹"
+   },
+   "title": "Money and Saving",
+   "rounds": [
+    {
+     "mode": "savings",
+     "title": "Choose a safe place",
+     "sub": "Save for something bigger later",
+     "goal": 300,
+     "years": 1,
+     "rate": 5,
+     "targets": "c4-evs-ch02-t02-m1"
+    },
+    {
+     "mode": "savings",
+     "title": "Plan your saving",
+     "sub": "Save some, while spending some",
+     "goal": 1000,
+     "years": 2,
+     "rate": 5,
+     "targets": "c4-evs-ch02-t02-m2"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c4-evs-ch02-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Correct",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "BUSTED",
+    "order": "Tap them in order"
+   },
+   "title": "Money and saving",
+   "accent": "mint",
+   "targets": "c4-evs-ch02-t02-m1",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Money and saving"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Bank money stays in a box with your name"
+      },
+      {
+       "id": "save",
+       "type": "node",
+       "text": "Save",
+       "sub": "keep some aside",
+       "glyph": "coin",
+       "color": "mint"
+      },
+      {
+       "id": "later",
+       "type": "node",
+       "text": "Later",
+       "sub": "future needs",
+       "glyph": "clock",
+       "color": "sun"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "save",
+       "to": "later",
+       "text": "helps later"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "gullak",
+       "type": "node",
+       "text": "Gullak",
+       "sub": "at home",
+       "glyph": "pot",
+       "color": "amber"
+      },
+      {
+       "id": "acct",
+       "type": "node",
+       "text": "Bank account",
+       "sub": "recorded",
+       "glyph": "bank",
+       "color": "ion"
+      },
+      {
+       "id": "post",
+       "type": "node",
+       "text": "Post office",
+       "sub": "savings account",
+       "glyph": "bank",
+       "color": "sci"
+      },
+      {
+       "id": "safe",
+       "type": "label",
+       "text": "safer and recorded",
+       "x": 400,
+       "y": 300,
+       "color": "mint"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "gullak",
+       "to": "safe",
+       "text": "keeps money"
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "acct",
+       "to": "safe",
+       "text": "keeps money"
+      },
+      {
+       "id": "a4",
+       "type": "arrow",
+       "from": "post",
+       "to": "safe",
+       "text": "keeps money"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "deposit",
+       "type": "node",
+       "text": "Saved money",
+       "sub": "in account",
+       "glyph": "coin",
+       "color": "mint"
+      },
+      {
+       "id": "loan",
+       "type": "node",
+       "text": "Loan",
+       "sub": "to a shopkeeper",
+       "glyph": "shop",
+       "color": "amber"
+      },
+      {
+       "id": "interest",
+       "type": "node",
+       "text": "Interest",
+       "sub": "little extra",
+       "glyph": "spark",
+       "color": "sun"
+      },
+      {
+       "id": "get",
+       "type": "node",
+       "text": "Withdraw",
+       "sub": "when needed",
+       "glyph": "hand",
+       "color": "ion"
+      },
+      {
+       "id": "keep",
+       "type": "node",
+       "text": "Account record",
+       "sub": "not exact notes",
+       "glyph": "book",
+       "color": "sci"
+      },
+      {
+       "id": "a5",
+       "type": "arrow",
+       "from": "deposit",
+       "to": "loan"
+      },
+      {
+       "id": "a6",
+       "type": "arrow",
+       "from": "loan",
+       "to": "interest",
+       "text": "pays interest"
+      },
+      {
+       "id": "a7",
+       "type": "arrow",
+       "from": "interest",
+       "to": "deposit",
+       "text": "adds a little"
+      },
+      {
+       "id": "a8",
+       "type": "arrow",
+       "from": "get",
+       "to": "keep",
+       "text": "same amount"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "row",
+     "els": [
+      {
+       "id": "weekly",
+       "type": "node",
+       "text": "₹40",
+       "sub": "each week",
+       "glyph": "coin",
+       "color": "mint"
+      },
+      {
+       "id": "snack",
+       "type": "node",
+       "text": "₹10",
+       "sub": "spent",
+       "glyph": "apple",
+       "color": "amber"
+      },
+      {
+       "id": "saved",
+       "type": "node",
+       "text": "₹30",
+       "sub": "saved weekly",
+       "glyph": "bank",
+       "color": "ion"
+      },
+      {
+       "id": "bag",
+       "type": "node",
+       "text": "₹240",
+       "sub": "school bag",
+       "glyph": "book",
+       "color": "sun"
+      },
+      {
+       "id": "weeks",
+       "type": "label",
+       "text": "8 weeks",
+       "x": 500,
+       "y": 300,
+       "color": "mint"
+      },
+      {
+       "id": "a9",
+       "type": "arrow",
+       "from": "weekly",
+       "to": "snack",
+       "text": "spend"
+      },
+      {
+       "id": "a10",
+       "type": "arrow",
+       "from": "weekly",
+       "to": "saved",
+       "text": "keep aside"
+      },
+      {
+       "id": "a11",
+       "type": "arrow",
+       "from": "saved",
+       "to": "bag",
+       "text": "reach goal"
+      }
+     ]
+    },
+    {
+     "id": "s5",
+     "layout": "row",
+     "els": [
+      {
+       "id": "bankopt",
+       "type": "node",
+       "text": "Bank account",
+       "sub": "earns interest",
+       "glyph": "bank",
+       "color": "ion"
+      },
+      {
+       "id": "postopt",
+       "type": "node",
+       "text": "Post office",
+       "sub": "earns interest",
+       "glyph": "bank",
+       "color": "sci"
+      },
+      {
+       "id": "gullakopt",
+       "type": "node",
+       "text": "Gullak",
+       "sub": "no growth",
+       "glyph": "pot",
+       "color": "amber"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Saving means keeping some money aside for later.",
+    "L2": "We may save for something bigger, emergencies, or the future.",
+    "L3": "We can save in a gullak, a bank account, or a post office savings account.",
+    "L4": "A gullak keeps money at home, but it can be lost or broken and it does not grow.",
+    "L5": "In a bank, money is recorded in our account, not kept as our exact notes.",
+    "L6": "The bank uses money from many savers to give loans and pays savers a little interest.",
+    "L7": "When we withdraw, we get the same amount plus interest, not necessarily the same notes.",
+    "L8": "Anu saves ₹40 minus ₹10, so she saves ₹30 each week.",
+    "L9": "To reach ₹240, she needs 8 weeks because 8 times ₹30 equals ₹240."
+   },
+   "narration": {
+    "L1": {
+     "text": "Saving means keeping some money aside for later.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "We may save for something bigger, emergencies, or the future.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "We can save in a gullak, a bank account, or a post office savings account.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "A gullak keeps money at home, but it can be lost or broken and it does not grow.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "In a bank, money is recorded in our account, not kept as our exact notes.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "The bank uses money from many savers to give loans and pays savers a little interest.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "When we withdraw, we get the same amount plus interest, not necessarily the same notes.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Anu saves ₹40 minus ₹10, so she saves ₹30 each week.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L9": {
+     "text": "To reach ₹240, she needs 8 weeks because 8 times ₹30 equals ₹240.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.3,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "title"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "save",
+        "later",
+        "a1"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.3,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "later"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "gullak",
+        "acct",
+        "post"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "gullak"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.3,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "deposit",
+        "keep"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.3,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "loan",
+        "interest",
+        "a5",
+        "a6",
+        "a7"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 1,
+       "target": [
+        "a5",
+        "a6",
+        "a7"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.3,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "get",
+        "a8"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "a8",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0.3,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "weekly",
+        "snack",
+        "saved",
+        "a9",
+        "a10"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L9",
+     "gap": 0,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "bag",
+        "weeks",
+        "a11"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which place can add a little interest to saved money?",
+    "options": [
+     "bankopt",
+     "postopt",
+     "gullakopt"
+    ],
+    "answer": "bankopt",
+    "src": "c4-evs-ch02-t02-i14"
+   }
+  },
+  "repairs": [
+   "string:a5.text",
+   "cue:target"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 36
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-evs-ch02-t02-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4004,
+     "ops": [
+      {
+       "id": "l1money",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        100
+       ],
+       "text": "money",
+       "size": "l"
+      },
+      {
+       "id": "l1keep",
+       "op": "arrow",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        230,
+        115
+       ],
+       "to": [
+        390,
+        115
+       ]
+      },
+      {
+       "id": "l1aside",
+       "op": "rect",
+       "startMs": 1400,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        75
+       ],
+       "w": 170,
+       "h": 80,
+       "round": 12
+      },
+      {
+       "id": "l1later",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 2900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        485,
+        120
+       ],
+       "text": "later",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "l1save",
+       "op": "label",
+       "startMs": 2900,
+       "endMs": 4004,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        300,
+        210
+       ],
+       "text": "saving",
+       "to": [
+        315,
+        125
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-evs-ch02-t02-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "l2big",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        150,
+        150
+       ],
+       "r": 55
+      },
+      {
+       "id": "l2bigt",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        150,
+        155
+       ],
+       "text": "bigger",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "l2em",
+       "op": "circle",
+       "startMs": 1000,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        350,
+        150
+       ],
+       "r": 55
+      },
+      {
+       "id": "l2emt",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        350,
+        155
+       ],
+       "text": "emergencies",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "l2future",
+       "op": "circle",
+       "startMs": 2200,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        590,
+        150
+       ],
+       "r": 55
+      },
+      {
+       "id": "l2ft",
+       "op": "text",
+       "startMs": 2900,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        590,
+        155
+       ],
+       "text": "future",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "l2links",
+       "op": "arrow",
+       "startMs": 3400,
+       "endMs": 3900,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        205,
+        150
+       ],
+       "to": [
+        295,
+        150
+       ]
+      },
+      {
+       "id": "l2links2",
+       "op": "arrow",
+       "startMs": 3900,
+       "endMs": 4400,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        405,
+        150
+       ],
+       "to": [
+        535,
+        150
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-evs-ch02-t02-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "l3g",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        70,
+        100
+       ],
+       "w": 180,
+       "h": 110,
+       "round": 15
+      },
+      {
+       "id": "l3gt",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        160,
+        160
+       ],
+       "text": "gullak",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "l3b",
+       "op": "rect",
+       "startMs": 1500,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        310,
+        100
+       ],
+       "w": 180,
+       "h": 110,
+       "round": 15
+      },
+      {
+       "id": "l3bt",
+       "op": "text",
+       "startMs": 2400,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        160
+       ],
+       "text": "bank account",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "l3p",
+       "op": "rect",
+       "startMs": 3200,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        550,
+        100
+       ],
+       "w": 180,
+       "h": 110,
+       "round": 15
+      },
+      {
+       "id": "l3pt",
+       "op": "text",
+       "startMs": 4100,
+       "endMs": 4900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        640,
+        160
+       ],
+       "text": "post office",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "l3save",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 5900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        280
+       ],
+       "text": "savings account",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-evs-ch02-t02-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "l4home",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        150,
+        90
+       ],
+       "text": "home",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "l4g",
+       "op": "rect",
+       "startMs": 500,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        80,
+        130
+       ],
+       "w": 140,
+       "h": 100,
+       "round": 18
+      },
+      {
+       "id": "l4money",
+       "op": "text",
+       "startMs": 1300,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        150,
+        180
+       ],
+       "text": "money",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "l4lost",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 2700,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        350,
+        110
+       ],
+       "text": "lost",
+       "size": "m"
+      },
+      {
+       "id": "l4x",
+       "op": "line",
+       "startMs": 2700,
+       "endMs": 3200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        330,
+        95
+       ],
+       "to": [
+        410,
+        140
+       ]
+      },
+      {
+       "id": "l4broken",
+       "op": "text",
+       "startMs": 2800,
+       "endMs": 3500,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        520,
+        110
+       ],
+       "text": "broken",
+       "size": "m"
+      },
+      {
+       "id": "l4x2",
+       "op": "line",
+       "startMs": 3200,
+       "endMs": 3500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        410,
+        95
+       ],
+       "to": [
+        330,
+        140
+       ]
+      },
+      {
+       "id": "l4grow",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 5000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        280
+       ],
+       "text": "does not grow",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-evs-ch02-t02-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "l5bank",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        90
+       ],
+       "w": 220,
+       "h": 150,
+       "round": 12
+      },
+      {
+       "id": "l5bt",
+       "op": "text",
+       "startMs": 1000,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        200,
+        135
+       ],
+       "text": "bank",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "l5account",
+       "op": "rect",
+       "startMs": 1600,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        430,
+        90
+       ],
+       "w": 250,
+       "h": 150,
+       "round": 12
+      },
+      {
+       "id": "l5at",
+       "op": "text",
+       "startMs": 2600,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        555,
+        135
+       ],
+       "text": "account",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "l5record",
+       "op": "arrow",
+       "startMs": 3300,
+       "endMs": 4100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        310,
+        165
+       ],
+       "to": [
+        430,
+        165
+       ]
+      },
+      {
+       "id": "l5notes",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 5400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        330
+       ],
+       "text": "not exact notes",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-evs-ch02-t02-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "l6savers",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        150,
+        125
+       ],
+       "r": 45
+      },
+      {
+       "id": "l6savers2",
+       "op": "circle",
+       "startMs": 500,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        150,
+        235
+       ],
+       "r": 45
+      },
+      {
+       "id": "l6savers3",
+       "op": "circle",
+       "startMs": 1000,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        150,
+        345
+       ],
+       "r": 45
+      },
+      {
+       "id": "l6many",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        150,
+        425
+       ],
+       "text": "many savers",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "l6bank",
+       "op": "rect",
+       "startMs": 2200,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        330,
+        170
+       ],
+       "w": 160,
+       "h": 120,
+       "round": 12
+      },
+      {
+       "id": "l6loan",
+       "op": "arrow",
+       "startMs": 3000,
+       "endMs": 3900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        490,
+        230
+       ],
+       "to": [
+        650,
+        150
+       ]
+      },
+      {
+       "id": "l6loant",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        680,
+        140
+       ],
+       "text": "loans",
+       "size": "m"
+      },
+      {
+       "id": "l6interest",
+       "op": "arrow",
+       "startMs": 4500,
+       "endMs": 5400,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        490,
+        260
+       ],
+       "to": [
+        650,
+        340
+       ]
+      },
+      {
+       "id": "l6it",
+       "op": "text",
+       "startMs": 5400,
+       "endMs": 6100,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        650,
+        385
+       ],
+       "text": "interest",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-evs-ch02-t02-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "l7withdraw",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        150,
+        100
+       ],
+       "text": "withdraw",
+       "size": "l"
+      },
+      {
+       "id": "l7arrow",
+       "op": "arrow",
+       "startMs": 800,
+       "endMs": 1500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        290,
+        110
+       ],
+       "to": [
+        450,
+        110
+       ]
+      },
+      {
+       "id": "l7amount",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        520,
+        100
+       ],
+       "text": "same amount",
+       "size": "m"
+      },
+      {
+       "id": "l7plus",
+       "op": "text",
+       "startMs": 2400,
+       "endMs": 3300,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        220
+       ],
+       "text": "+ interest",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "l7notes",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        330
+       ],
+       "text": "not same notes",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "l7strike",
+       "op": "line",
+       "startMs": 4600,
+       "endMs": 5300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        300,
+        315
+       ],
+       "to": [
+        500,
+        315
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-evs-ch02-t02-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "l8eq",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        160,
+        100
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "₹40",
+         "−",
+         "₹10",
+         "=",
+         "₹30"
+        ]
+       ]
+      },
+      {
+       "id": "l8anu",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        220
+       ],
+       "text": "Anu",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "l8week",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        300
+       ],
+       "text": "each week",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "l8save",
+       "op": "label",
+       "startMs": 3500,
+       "endMs": 4500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        390
+       ],
+       "text": "saves ₹30",
+       "to": [
+        400,
+        155
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L9",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-evs-ch02-t02-wb-L9",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "l9div",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        140,
+        90
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "₹240",
+         "÷",
+         "₹30",
+         "=",
+         "8"
+        ]
+       ]
+      },
+      {
+       "id": "l9weeks",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        420,
+        105
+       ],
+       "text": "weeks",
+       "size": "l"
+      },
+      {
+       "id": "l9mul",
+       "op": "numwork",
+       "startMs": 2800,
+       "endMs": 4500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        140,
+        250
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "8",
+         "×",
+         "₹30",
+         "=",
+         "₹240"
+        ]
+       ]
+      },
+      {
+       "id": "l9check",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        420,
+        265
+       ],
+       "text": "check",
+       "size": "m"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1",
+   "key": "₹25 a month",
+   "prompt": "Save for something bigger later"
+  },
+  {
+   "itemId": "r2",
+   "key": "₹41 a month",
+   "prompt": "Save some, while spending some"
+  }
+ ],
+ "check": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "Round 2 title 'Save some, while spending some' suggests saving while spending, but the kit's misconception m2 is 'Saving means never spending any money'. The round targets that misconception, which is correct. No factual error.",
+    "severity": "low"
+   }
+  ],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ },
+ "firstCheck": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "Round 1: The goal is ₹300, years=1, rate=5. The answer computed by spec is ₹25 a month. But the kit item i02 shows a cricket bat costing ₹300 with ₹50/week over 6 weeks (i.e., 300/50=6 weeks). The round's numbers are new and different, which is allowed. The computed key (₹25/month) is correct for its own numbers (300/12=25). No contradiction with kit. However, the round's title 'Save for something bigger later' and subtitle 'Save for something bigger later' target misconception c4-evs-ch02-t02-m1 ('Money in the bank stays in a box with your name on it'), but the round mode is 'savings' which shows a goal and rate, not addressing that misconception directly. The explainer correctly addresses the misconception. The game round does not contain any false claim or unsafe content.",
+    "severity": "low"
+   },
+   {
+    "where": "explainer",
+    "what": "Scene s2: arrow from 'get' to 'keep' has text 'ಉಳ?'. This appears to be a non-English text (likely Kannada or garbled) in an otherwise English explainer. This is language issue for 9-15 year old learners.",
+    "severity": "high"
+   },
+   {
+    "where": "explainer",
+    "what": "Task prompt 'Which place adds a little interest to saved money?' options include 'acct' (bank account) and 'post' (post office savings account). Per kit, both bank and post office savings accounts earn interest. Answer 'acct' excludes post office, which is factually incomplete and contradicts kit (post office also pays interest).",
+    "severity": "high"
+   },
+   {
+    "where": "explainer",
+    "what": "Scene s1: Arrow from 'save' to 'future' is named 'af', but target 'future' node has glyph 'clock' and color 'ion' – no issue. But there is no arrow from 'save' to 'future' in the layout (the arrow is declared but there is no third arrow from save to future in the list? There are only two arrows: ab and ae. Actually af is present in code. No visual problem in text. No issue."
+   }
+  ],
+  "verdict": "fail",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

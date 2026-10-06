@@ -1,0 +1,2007 @@
+{
+ "topicId": "c7-sst-ch03-t01",
+ "title": "Climates of India",
+ "chapter": "Climates of India",
+ "subject": "sst",
+ "class": 7,
+ "topicType": "T3",
+ "plan": {
+  "game": "land-lab@1",
+  "hint": "rain mode (coast, hills, rain shadow) and flood mode"
+ },
+ "game": {
+  "archetype": "land-lab@1",
+  "spec": {
+   "archetype": "land-lab@1",
+   "skills": [
+    "c7-sst-ch03-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "done": "right",
+    "wind": "wind",
+    "sea": "sea",
+    "rain": "RAIN",
+    "storm": "STORM",
+    "lock": "LOCK",
+    "wet": "wet",
+    "dry": "dry",
+    "trees": "plant trees",
+    "spring": "spring",
+    "trace": "Trace the path",
+    "runDone": "Lab closed",
+    "level": "flood level",
+    "safe": "SAFE",
+    "flooded": "FLOODED",
+    "mm": "mm of rain",
+    "high": "high",
+    "low": "low",
+    "reset": "clear"
+   },
+   "title": "Climates of India",
+   "rounds": [
+    {
+     "mode": "rain",
+     "title": "Sea Wind and Hills",
+     "sub": "moist wind meets a hill",
+     "coast": 0.2,
+     "hills": [
+      {
+       "x": 0.43,
+       "h": 0.82,
+       "w": 0.1
+      }
+     ],
+     "asks": [
+      {
+       "label": "coast village",
+       "glyph": "house",
+       "need": "wet"
+      },
+      {
+       "label": "hill slope",
+       "glyph": "tree",
+       "need": "wet"
+      },
+      {
+       "label": "far side",
+       "glyph": "wheat",
+       "need": "dry"
+      }
+     ],
+     "targets": "c7-sst-ch03-t01-m1"
+    },
+    {
+     "mode": "rain",
+     "title": "Rain Shadow",
+     "sub": "place each spot by the rain",
+     "coast": 0.28,
+     "hills": [
+      {
+       "x": 0.52,
+       "h": 0.92,
+       "w": 0.12
+      },
+      {
+       "x": 0.76,
+       "h": 0.45,
+       "w": 0.08
+      }
+     ],
+     "asks": [
+      {
+       "label": "Konkan farm",
+       "glyph": "wheat",
+       "need": "wet"
+      },
+      {
+       "label": "hill crest",
+       "glyph": "mountain",
+       "need": "wet"
+      },
+      {
+       "label": "inland town",
+       "glyph": "school",
+       "need": "dry"
+      }
+     ]
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 2,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-sst-ch03-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "How the monsoon works",
+   "accent": "sci",
+   "targets": "c7-sst-ch03-t01-m1",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "row",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "How the monsoon works"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Monsoon means only heavy rain"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "land",
+       "type": "node",
+       "text": "Hot land",
+       "sub": "summer",
+       "glyph": "sun",
+       "color": "sun"
+      },
+      {
+       "id": "low",
+       "type": "node",
+       "text": "Low pressure",
+       "sub": "north-west India",
+       "glyph": "wind",
+       "color": "ion"
+      },
+      {
+       "id": "moist",
+       "type": "node",
+       "text": "Moist winds",
+       "sub": "Indian Ocean",
+       "glyph": "wave",
+       "color": "sci"
+      },
+      {
+       "id": "mount",
+       "type": "node",
+       "text": "Mountains",
+       "sub": "Western Ghats",
+       "glyph": "mountain",
+       "color": "mint"
+      },
+      {
+       "id": "rain",
+       "type": "node",
+       "text": "Heavy rain",
+       "sub": "windward side",
+       "glyph": "rain",
+       "color": "sci"
+      },
+      {
+       "id": "ab",
+       "type": "arrow",
+       "from": "land",
+       "to": "low",
+       "text": "heats"
+      },
+      {
+       "id": "bd",
+       "type": "arrow",
+       "from": "low",
+       "to": "moist",
+       "text": "draws winds"
+      },
+      {
+       "id": "ac",
+       "type": "arrow",
+       "from": "moist",
+       "to": "mount",
+       "text": "blows in"
+      },
+      {
+       "id": "cr",
+       "type": "arrow",
+       "from": "mount",
+       "to": "rain",
+       "text": "rises"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "winter",
+       "type": "node",
+       "text": "Winter",
+       "sub": "land cooler",
+       "glyph": "wind",
+       "color": "ion"
+      },
+      {
+       "id": "reverse",
+       "type": "node",
+       "text": "Winds reverse",
+       "sub": "October–December",
+       "glyph": "compass",
+       "color": "amber"
+      },
+      {
+       "id": "tn",
+       "type": "node",
+       "text": "Tamil Nadu rain",
+       "sub": "retreating monsoon",
+       "glyph": "rain",
+       "color": "sci"
+      },
+      {
+       "id": "wa",
+       "type": "arrow",
+       "from": "winter",
+       "to": "reverse",
+       "text": "then"
+      },
+      {
+       "id": "ar",
+       "type": "arrow",
+       "from": "reverse",
+       "to": "tn",
+       "text": "brings rain"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "row",
+     "els": [
+      {
+       "id": "b",
+       "type": "label",
+       "text": "Land heats",
+       "x": 100,
+       "y": 320
+      },
+      {
+       "id": "d",
+       "type": "label",
+       "text": "Low pressure",
+       "x": 300,
+       "y": 320
+      },
+      {
+       "id": "a",
+       "type": "label",
+       "text": "Moist winds",
+       "x": 500,
+       "y": 320
+      },
+      {
+       "id": "c",
+       "type": "label",
+       "text": "Rain on hills",
+       "x": 700,
+       "y": 320
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "India's climate differs because of latitude, altitude, distance from the sea and mountains.",
+    "L2": "A monsoon is not just heavy rain. It is a seasonal reversal of winds.",
+    "L3": "In summer, land heats faster than the sea, so low pressure forms over north-west India.",
+    "L4": "Moist south-west winds from the Indian Ocean blow in and bring most of India's rain from June to September.",
+    "L5": "When these winds rise over the Western Ghats or Khasi hills, they cool and drop heavy rain on the windward side.",
+    "L6": "The monsoon arrives in steps from south to north, so Kerala gets it before Delhi.",
+    "L7": "From October to December, the winds reverse and bring rain to the Tamil Nadu coast.",
+    "L8": "Climate shapes crops, homes, clothes, food and festivals."
+   },
+   "narration": {
+    "L1": {
+     "text": "India's climate differs because of latitude, altitude, distance from the sea and mountains.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "A monsoon is not just heavy rain. It is a seasonal reversal of winds.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "In summer, land heats faster than the sea, so low pressure forms over north-west India.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "Moist south-west winds from the Indian Ocean blow in and bring most of India's rain from June to September.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "When these winds rise over the Western Ghats or Khasi hills, they cool and drop heavy rain on the windward side.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "The monsoon arrives in steps from south to north, so Kerala gets it before Delhi.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "From October to December, the winds reverse and bring rain to the Tamil Nadu coast.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Climate shapes crops, homes, clothes, food and festivals.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "title"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      },
+      {
+       "at": 1,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "land",
+        "low",
+        "ab"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "ab",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "moist",
+        "bd",
+        "ac"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 0.8,
+       "target": [
+        "bd",
+        "ac"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "mount",
+        "rain",
+        "cr"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "cr",
+       "to": 1
+      },
+      {
+       "at": 2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "rain"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "focus",
+       "dur": 1,
+       "target": "moist"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "winter",
+        "reverse",
+        "tn",
+        "wa",
+        "ar"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 0.8,
+       "target": [
+        "wa",
+        "ar"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "b",
+        "d",
+        "a",
+        "c"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "order",
+    "prompt": "Tap the monsoon steps in the correct order.",
+    "items": [
+     "b",
+     "d",
+     "a",
+     "c"
+    ],
+    "src": "c7-sst-ch03-t01-i03"
+   }
+  },
+  "repairs": [],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 37
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch03-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "india",
+       "op": "polygon",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         310,
+         120
+        ],
+        [
+         365,
+         90
+        ],
+        [
+         430,
+         105
+        ],
+        [
+         470,
+         160
+        ],
+        [
+         455,
+         245
+        ],
+        [
+         405,
+         300
+        ],
+        [
+         340,
+         280
+        ],
+        [
+         300,
+         220
+        ]
+       ]
+      },
+      {
+       "id": "climate",
+       "op": "text",
+       "startMs": 300,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        385,
+        55
+       ],
+       "text": "climate",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "lat",
+       "op": "text",
+       "startMs": 1200,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        80,
+        150
+       ],
+       "text": "latitude",
+       "size": "m"
+      },
+      {
+       "id": "alt",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        80,
+        235
+       ],
+       "text": "altitude",
+       "size": "m"
+      },
+      {
+       "id": "sea",
+       "op": "text",
+       "startMs": 2400,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        600,
+        150
+       ],
+       "text": "distance from the sea",
+       "size": "s"
+      },
+      {
+       "id": "mount",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        580,
+        235
+       ],
+       "text": "mountains",
+       "size": "m"
+      },
+      {
+       "id": "a1",
+       "op": "arrow",
+       "startMs": 4000,
+       "endMs": 4400,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        190,
+        155
+       ],
+       "to": [
+        300,
+        165
+       ]
+      },
+      {
+       "id": "a2",
+       "op": "arrow",
+       "startMs": 4400,
+       "endMs": 4800,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        190,
+        240
+       ],
+       "to": [
+        315,
+        225
+       ]
+      },
+      {
+       "id": "a3",
+       "op": "arrow",
+       "startMs": 4800,
+       "endMs": 5200,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        575,
+        155
+       ],
+       "to": [
+        455,
+        175
+       ]
+      },
+      {
+       "id": "a4",
+       "op": "arrow",
+       "startMs": 5200,
+       "endMs": 5600,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        575,
+        240
+       ],
+       "to": [
+        450,
+        220
+       ]
+      },
+      {
+       "id": "diff",
+       "op": "text",
+       "startMs": 5600,
+       "endMs": 6100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        365
+       ],
+       "text": "differs",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch03-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "season",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "seasonal",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "reversal",
+       "op": "text",
+       "startMs": 600,
+       "endMs": 1300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        110
+       ],
+       "text": "reversal",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "wind1",
+       "op": "arrow",
+       "startMs": 1500,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        180,
+        220
+       ],
+       "to": [
+        620,
+        220
+       ]
+      },
+      {
+       "id": "summer",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        120,
+        205
+       ],
+       "text": "summer",
+       "size": "m"
+      },
+      {
+       "id": "wind2",
+       "op": "arrow",
+       "startMs": 2300,
+       "endMs": 3100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        620,
+        300
+       ],
+       "to": [
+        180,
+        300
+       ]
+      },
+      {
+       "id": "other",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 2800,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        650,
+        285
+       ],
+       "text": "reverse",
+       "size": "m"
+      },
+      {
+       "id": "monsoon",
+       "op": "circle",
+       "startMs": 3600,
+       "endMs": 4300,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        390
+       ],
+       "r": 65
+      },
+      {
+       "id": "mlabel",
+       "op": "label",
+       "startMs": 4300,
+       "endMs": 5000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        395
+       ],
+       "text": "monsoon",
+       "target": "monsoon"
+      },
+      {
+       "id": "notrain",
+       "op": "text",
+       "startMs": 5100,
+       "endMs": 6500,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        400,
+        475
+       ],
+       "text": "not just heavy rain",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch03-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "land",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        100,
+        160
+       ],
+       "w": 230,
+       "h": 150,
+       "fill": "accent"
+      },
+      {
+       "id": "sea2",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        470,
+        160
+       ],
+       "w": 230,
+       "h": 150,
+       "fill": "soft"
+      },
+      {
+       "id": "landlabel",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        215,
+        245
+       ],
+       "text": "land",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "sealabel",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        585,
+        245
+       ],
+       "text": "sea",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "heatland",
+       "op": "arrow",
+       "startMs": 1500,
+       "endMs": 2300,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        215,
+        350
+       ],
+       "to": [
+        215,
+        105
+       ]
+      },
+      {
+       "id": "heatsea",
+       "op": "arrow",
+       "startMs": 2300,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 1,
+       "from": [
+        585,
+        350
+       ],
+       "to": [
+        585,
+        180
+       ]
+      },
+      {
+       "id": "faster",
+       "op": "text",
+       "startMs": 2900,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        215,
+        410
+       ],
+       "text": "heats faster",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "low",
+       "op": "text",
+       "startMs": 3700,
+       "endMs": 4500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        100
+       ],
+       "text": "low pressure",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "nw",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 5900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        455
+       ],
+       "text": "north-west India",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "down",
+       "op": "arrow",
+       "startMs": 5900,
+       "endMs": 6500,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        400,
+        130
+       ],
+       "to": [
+        400,
+        170
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch03-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "ocean",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        150,
+        350
+       ],
+       "rx": 110,
+       "ry": 65,
+       "fill": "soft"
+      },
+      {
+       "id": "oceanlabel",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        150,
+        350
+       ],
+       "text": "Indian Ocean",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "swarrow",
+       "op": "arrow",
+       "startMs": 1500,
+       "endMs": 3000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        230,
+        330
+       ],
+       "to": [
+        560,
+        180
+       ]
+      },
+      {
+       "id": "sw",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        370,
+        165
+       ],
+       "text": "south-west winds",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "rain",
+       "op": "line",
+       "startMs": 3900,
+       "endMs": 4500,
+       "ink": "chalk",
+       "weight": 1,
+       "from": [
+        580,
+        180
+       ],
+       "to": [
+        580,
+        350
+       ]
+      },
+      {
+       "id": "drops",
+       "op": "arrow",
+       "startMs": 4200,
+       "endMs": 4900,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        610,
+        190
+       ],
+       "to": [
+        610,
+        350
+       ]
+      },
+      {
+       "id": "june",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 5900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        420
+       ],
+       "text": "June to September",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "most",
+       "op": "text",
+       "startMs": 6100,
+       "endMs": 7200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        465
+       ],
+       "text": "most of India's rain",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "india2",
+       "op": "text",
+       "startMs": 7300,
+       "endMs": 7900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        650,
+        110
+       ],
+       "text": "India",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch03-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9536,
+     "ops": [
+      {
+       "id": "ghats",
+       "op": "polygon",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         230,
+         350
+        ],
+        [
+         270,
+         250
+        ],
+        [
+         300,
+         350
+        ]
+       ]
+      },
+      {
+       "id": "khasi",
+       "op": "polygon",
+       "startMs": 700,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         500,
+         350
+        ],
+        [
+         545,
+         235
+        ],
+        [
+         590,
+         350
+        ]
+       ]
+      },
+      {
+       "id": "ghlabel",
+       "op": "text",
+       "startMs": 1600,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        265,
+        390
+       ],
+       "text": "Western Ghats",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "khlabel",
+       "op": "text",
+       "startMs": 2000,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        545,
+        390
+       ],
+       "text": "Khasi hills",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "moist",
+       "op": "arrow",
+       "startMs": 2700,
+       "endMs": 3600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        100,
+        180
+       ],
+       "to": [
+        250,
+        270
+       ]
+      },
+      {
+       "id": "rise",
+       "op": "arrow",
+       "startMs": 3600,
+       "endMs": 4500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        250,
+        270
+       ],
+       "to": [
+        300,
+        150
+       ]
+      },
+      {
+       "id": "cool",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        335,
+        135
+       ],
+       "text": "cool",
+       "size": "l"
+      },
+      {
+       "id": "rainheavy",
+       "op": "arrow",
+       "startMs": 5100,
+       "endMs": 6000,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        300,
+        155
+       ],
+       "to": [
+        300,
+        330
+       ]
+      },
+      {
+       "id": "heavy",
+       "op": "text",
+       "startMs": 6000,
+       "endMs": 6800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        160,
+        120
+       ],
+       "text": "heavy rain",
+       "size": "m"
+      },
+      {
+       "id": "windward",
+       "op": "text",
+       "startMs": 7000,
+       "endMs": 7900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        165,
+        440
+       ],
+       "text": "windward side",
+       "size": "m"
+      },
+      {
+       "id": "shadow",
+       "op": "text",
+       "startMs": 8000,
+       "endMs": 9000,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        620,
+        440
+       ],
+       "text": "rain shadow",
+       "size": "m"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch03-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "south",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        120,
+        90
+       ],
+       "text": "south",
+       "size": "l"
+      },
+      {
+       "id": "north",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        680,
+        90
+       ],
+       "text": "north",
+       "size": "l"
+      },
+      {
+       "id": "steps",
+       "op": "arrow",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        180,
+        160
+       ],
+       "to": [
+        300,
+        160
+       ]
+      },
+      {
+       "id": "step2",
+       "op": "arrow",
+       "startMs": 1500,
+       "endMs": 2100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        340,
+        210
+       ],
+       "to": [
+        460,
+        210
+       ]
+      },
+      {
+       "id": "step3",
+       "op": "arrow",
+       "startMs": 2100,
+       "endMs": 2700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        500,
+        260
+       ],
+       "to": [
+        620,
+        260
+       ]
+      },
+      {
+       "id": "stepslabel",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        330
+       ],
+       "text": "arrives in steps",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "kerala",
+       "op": "text",
+       "startMs": 4200,
+       "endMs": 4900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        220,
+        420
+       ],
+       "text": "Kerala",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "delhi",
+       "op": "text",
+       "startMs": 4900,
+       "endMs": 5600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        580,
+        420
+       ],
+       "text": "Delhi",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "before",
+       "op": "text",
+       "startMs": 5700,
+       "endMs": 6300,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        220,
+        465
+       ],
+       "text": "before",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch03-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "octdec",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        60
+       ],
+       "text": "October to December",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "reverse7",
+       "op": "arrow",
+       "startMs": 1300,
+       "endMs": 2500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        620,
+        180
+       ],
+       "to": [
+        180,
+        180
+       ]
+      },
+      {
+       "id": "winds7",
+       "op": "text",
+       "startMs": 2600,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        230
+       ],
+       "text": "winds reverse",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "tn",
+       "op": "rect",
+       "startMs": 3700,
+       "endMs": 4400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        280,
+        330
+       ],
+       "w": 240,
+       "h": 65
+      },
+      {
+       "id": "tnlabel",
+       "op": "text",
+       "startMs": 4400,
+       "endMs": 5300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        365
+       ],
+       "text": "Tamil Nadu coast",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "rain7",
+       "op": "arrow",
+       "startMs": 5300,
+       "endMs": 5900,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        400,
+        290
+       ],
+       "to": [
+        400,
+        330
+       ]
+      },
+      {
+       "id": "rainlabel7",
+       "op": "text",
+       "startMs": 6000,
+       "endMs": 6600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        455
+       ],
+       "text": "rain",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch03-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4004,
+     "ops": [
+      {
+       "id": "climate8",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "Climate",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "crops",
+       "op": "circle",
+       "startMs": 500,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        130,
+        170
+       ],
+       "r": 55
+      },
+      {
+       "id": "homes",
+       "op": "rect",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        280,
+        120
+       ],
+       "w": 120,
+       "h": 100
+      },
+      {
+       "id": "cropst",
+       "op": "text",
+       "startMs": 1000,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        130,
+        170
+       ],
+       "text": "crops",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "clothes",
+       "op": "text",
+       "startMs": 1300,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        570,
+        170
+       ],
+       "text": "clothes",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "homest",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        340,
+        175
+       ],
+       "text": "homes",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "food",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        130,
+        340
+       ],
+       "text": "food",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "festivals",
+       "op": "circle",
+       "startMs": 2100,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        570,
+        340
+       ],
+       "r": 60
+      },
+      {
+       "id": "festivalst",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        570,
+        340
+       ],
+       "text": "festivals",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "shape",
+       "op": "arrow",
+       "startMs": 3400,
+       "endMs": 3900,
+       "ink": "accent",
+       "weight": 1,
+       "from": [
+        400,
+        90
+       ],
+       "to": [
+        340,
+        120
+       ]
+      },
+      {
+       "id": "shape2",
+       "op": "arrow",
+       "startMs": 3400,
+       "endMs": 3900,
+       "ink": "accent",
+       "weight": 1,
+       "from": [
+        400,
+        90
+       ],
+       "to": [
+        570,
+        140
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "wet: 0.27–0.41",
+   "prompt": "coast village"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "wet: 0.27–0.41",
+   "prompt": "hill slope"
+  },
+  {
+   "itemId": "r1:2",
+   "key": "dry: 0.44–1.00",
+   "prompt": "far side"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "wet: 0.32–0.49",
+   "prompt": "Konkan farm"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "wet: 0.32–0.49",
+   "prompt": "hill crest"
+  },
+  {
+   "itemId": "r2:2",
+   "key": "dry: 0.53–1.00",
+   "prompt": "inland town"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ },
+ "firstCheck": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "Game mode \"trace the river\" and \"storm in the valley\" do not relate to the stated skill/target (monsoon winds and rain-shadow effects); they are geographic/terrain exercises but not part of the kit's climate topic. Also the river-trace and flood rounds have no connection to the kit's items or misconceptions.",
+    "severity": "high"
+   }
+  ],
+  "verdict": "fail",
+  "model": "DeepSeek-V4-Flash"
+ },
+ "regens": 2
+}

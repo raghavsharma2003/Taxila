@@ -1,0 +1,2163 @@
+{
+ "topicId": "c7-sst-ch11-t01",
+ "title": "From Barter to Money",
+ "chapter": "From Barter to Money",
+ "subject": "sst",
+ "class": 7,
+ "topicType": "T3",
+ "plan": {
+  "game": "town-lab@1",
+  "hint": "barter mode then barter with money"
+ },
+ "game": {
+  "archetype": "town-lab@1",
+  "spec": {
+   "archetype": "town-lab@1",
+   "skills": [
+    "c7-sst-ch11-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "done": "right",
+    "have": "you have",
+    "need": "you need",
+    "has": "has",
+    "wants": "wants",
+    "trades": "trades",
+    "market": "market",
+    "coins": "coins",
+    "open": "OPEN",
+    "price": "price",
+    "cost": "cost",
+    "profit": "profit",
+    "sold": "sold",
+    "target": "target",
+    "stock": "stock",
+    "lock": "LOCK",
+    "run": "RUN",
+    "perMonth": "per month",
+    "years": "years",
+    "goal": "goal",
+    "saved": "saved",
+    "interest": "interest",
+    "budget": "budget",
+    "left": "left",
+    "families": "families helped",
+    "runDone": "Town closed",
+    "noDeal": "no deal",
+    "reset": "start again",
+    "rupee": "₹"
+   },
+   "title": "From Barter to Money",
+   "rounds": [
+    {
+     "mode": "barter",
+     "title": "Circle of swaps",
+     "sub": "find a path to what you need",
+     "start": "cloth",
+     "goal": "rice",
+     "traders": [
+      {
+       "name": "Weaver",
+       "glyph": "person",
+       "has": "cloth",
+       "wants": "rice"
+      },
+      {
+       "name": "Farmer",
+       "glyph": "wheat",
+       "has": "rice",
+       "wants": "shoes"
+      },
+      {
+       "name": "Cobbler",
+       "glyph": "hand",
+       "has": "shoes",
+       "wants": "cloth"
+      }
+     ],
+     "money": false,
+     "targets": "c7-sst-ch11-t01-m2"
+    },
+    {
+     "mode": "barter",
+     "title": "Pay with rupees",
+     "sub": "sell first, then buy what you need",
+     "start": "baskets",
+     "goal": "milk",
+     "traders": [
+      {
+       "name": "Basket maker",
+       "glyph": "person",
+       "has": "baskets",
+       "wants": "books"
+      },
+      {
+       "name": "Bookseller",
+       "glyph": "book",
+       "has": "books",
+       "wants": "milk"
+      },
+      {
+       "name": "Dairy seller",
+       "glyph": "cow",
+       "has": "milk",
+       "wants": "baskets"
+      }
+     ],
+     "money": true,
+     "targets": "c7-sst-ch11-t01-m1"
+    },
+    {
+     "mode": "market",
+     "title": "Price the stall",
+     "sub": "set a price for a busy market",
+     "good": "notebook",
+     "glyph": "book",
+     "cost": 25,
+     "stock": 10,
+     "buyers": [
+      30,
+      40,
+      55,
+      20,
+      35,
+      60,
+      45,
+      25,
+      50,
+      32,
+      70,
+      28
+     ],
+     "target": 90
+    },
+    {
+     "mode": "savings",
+     "title": "Save for a goal",
+     "sub": "choose a monthly saving plan",
+     "goal": 6000,
+     "years": 2,
+     "rate": 5
+    }
+   ]
+  },
+  "repairs": [
+   "market:target-lowered"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-sst-ch11-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Right",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "BUSTED",
+    "order": "Tap them in order"
+   },
+   "title": "From Barter to Money",
+   "accent": "amber",
+   "targets": "c7-sst-ch11-t01-m1",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "From Barter to Money"
+      },
+      {
+       "id": "barter",
+       "type": "node",
+       "text": "Barter",
+       "sub": "direct swap",
+       "glyph": "balance",
+       "color": "amber"
+      },
+      {
+       "id": "want",
+       "type": "label",
+       "text": "Both must want the trade",
+       "x": 120,
+       "y": 350,
+       "color": "amber"
+      },
+      {
+       "id": "myth1",
+       "type": "myth",
+       "text": "Money is valuable because its paper is valuable",
+       "x": 100,
+       "y": 470
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "potter",
+       "type": "node",
+       "text": "Potter",
+       "sub": "has pots",
+       "glyph": "pot",
+       "color": "sci"
+      },
+      {
+       "id": "seller",
+       "type": "node",
+       "text": "Sari seller",
+       "sub": "wants wheat",
+       "glyph": "shop",
+       "color": "mint"
+      },
+      {
+       "id": "farmer",
+       "type": "node",
+       "text": "Farmer",
+       "sub": "has wheat",
+       "glyph": "wheat",
+       "color": "sun"
+      },
+      {
+       "id": "p1",
+       "type": "arrow",
+       "from": "potter",
+       "to": "seller",
+       "text": "no match"
+      },
+      {
+       "id": "p2",
+       "type": "arrow",
+       "from": "potter",
+       "to": "farmer",
+       "text": "swap pots"
+      },
+      {
+       "id": "p3",
+       "type": "arrow",
+       "from": "farmer",
+       "to": "seller",
+       "text": "wheat"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "barter2",
+       "type": "node",
+       "text": "Barter",
+       "sub": "direct swap",
+       "glyph": "balance",
+       "color": "amber"
+      },
+      {
+       "id": "commodity",
+       "type": "node",
+       "text": "Commodity",
+       "sub": "grain, shells",
+       "glyph": "wheat",
+       "color": "sun"
+      },
+      {
+       "id": "coins",
+       "type": "node",
+       "text": "Coins",
+       "sub": "metal",
+       "glyph": "coin",
+       "color": "amber"
+      },
+      {
+       "id": "notes",
+       "type": "node",
+       "text": "Notes",
+       "sub": "rupees",
+       "glyph": "note",
+       "color": "mint"
+      },
+      {
+       "id": "upi",
+       "type": "node",
+       "text": "UPI",
+       "sub": "bank transfer",
+       "glyph": "phone",
+       "color": "ion"
+      },
+      {
+       "id": "e1",
+       "type": "arrow",
+       "from": "barter2",
+       "to": "commodity",
+       "text": "evolves"
+      },
+      {
+       "id": "e2",
+       "type": "arrow",
+       "from": "commodity",
+       "to": "coins",
+       "text": "evolves"
+      },
+      {
+       "id": "e3",
+       "type": "arrow",
+       "from": "coins",
+       "to": "notes",
+       "text": "evolves"
+      },
+      {
+       "id": "e4",
+       "type": "arrow",
+       "from": "notes",
+       "to": "upi",
+       "text": "evolves"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Barter means exchanging goods or services directly, without money.",
+    "L2": "It works only when each person wants what the other person has. It also lacks a common measure of value.",
+    "L3": "A goat cannot be divided into eggs, and some goods can spoil. These problems make barter difficult.",
+    "L4": "For example, a potter wants a sari, but the sari-seller wants wheat, not pots.",
+    "L5": "The potter could trade pots for wheat first, then trade the wheat for the sari. Money makes this simpler.",
+    "L6": "Exchange developed from commodity money to metal coins, paper notes, bank money and UPI payments.",
+    "L7": "Money is a medium of exchange, a measure of value and a store of value.",
+    "L8": "A note has value because people trust it and the law makes it legal tender, not because of its paper.",
+    "L9": "UPI moves money from one bank account to another. Never share your PIN or OTP, and check the receiver."
+   },
+   "narration": {
+    "L1": {
+     "text": "Barter means exchanging goods or services directly, without money.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "It works only when each person wants what the other person has. It also lacks a common measure of value.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "A goat cannot be divided into eggs, and some goods can spoil. These problems make barter difficult.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "For example, a potter wants a sari, but the sari-seller wants wheat, not pots.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "The potter could trade pots for wheat first, then trade the wheat for the sari. Money makes this simpler.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Exchange developed from commodity money to metal coins, paper notes, bank money and UPI payments.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Money is a medium of exchange, a measure of value and a store of value.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "A note has value because people trust it and the law makes it legal tender, not because of its paper.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L9": {
+     "text": "UPI moves money from one bank account to another. Never share your PIN or OTP, and check the receiver.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.3,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "title"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.7,
+       "target": "barter"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.3,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "want"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.3,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth1"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "potter",
+        "seller",
+        "farmer"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.6,
+       "target": "p1"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "p2",
+        "p3"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 0.7,
+       "target": [
+        "p2",
+        "p3"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.3,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "barter2",
+        "commodity",
+        "coins",
+        "notes",
+        "upi"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 1,
+       "target": [
+        "e1",
+        "e2",
+        "e3",
+        "e4"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.3,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "upi"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0.3,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth1"
+      }
+     ]
+    },
+    {
+     "line": "L9",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "focus",
+       "dur": 1,
+       "target": "upi"
+      },
+      {
+       "at": "end",
+       "do": "interactive"
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "order",
+    "prompt": "Tap the forms of exchange in the order they appeared.",
+    "items": [
+     "barter2",
+     "commodity",
+     "coins",
+     "notes",
+     "upi"
+    ],
+    "src": "c7-sst-ch11-t01-i04"
+   }
+  },
+  "repairs": [],
+  "attempts": 2,
+  "model": "taxila-fast-bg",
+  "passes": 2,
+  "seconds": 43
+ },
+ "keys": [
+  {
+   "itemId": "r1",
+   "key": "2 trades",
+   "prompt": "find a path to what you need"
+  },
+  {
+   "itemId": "r2",
+   "key": "1 trades",
+   "prompt": "sell first, then buy what you need"
+  },
+  {
+   "itemId": "r3",
+   "key": "₹45 → profit 100 (target 90)",
+   "prompt": "set a price for a busy market"
+  },
+  {
+   "itemId": "r4",
+   "key": "₹244 a month",
+   "prompt": "choose a monthly saving plan"
+  }
+ ],
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch11-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4430,
+     "ops": [
+      {
+       "id": "barter",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "Barter",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "goods",
+       "op": "rect",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        190
+       ],
+       "w": 150,
+       "h": 100,
+       "round": 8
+      },
+      {
+       "id": "services",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        625,
+        240
+       ],
+       "r": 55
+      },
+      {
+       "id": "goodsLabel",
+       "op": "text",
+       "startMs": 1300,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        175,
+        245
+       ],
+       "text": "goods",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "servicesLabel",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        625,
+        245
+       ],
+       "text": "services",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "swap1",
+       "op": "arrow",
+       "startMs": 2100,
+       "endMs": 2900,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        255,
+        235
+       ],
+       "to": [
+        565,
+        235
+       ]
+      },
+      {
+       "id": "swap2",
+       "op": "arrow",
+       "startMs": 2900,
+       "endMs": 3700,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        565,
+        285
+       ],
+       "to": [
+        255,
+        285
+       ]
+      },
+      {
+       "id": "without",
+       "op": "text",
+       "startMs": 3700,
+       "endMs": 4430,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        400,
+        410
+       ],
+       "text": "without money",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch11-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 9111,
+     "ops": [
+      {
+       "id": "personA",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        150,
+        170
+       ],
+       "r": 35
+      },
+      {
+       "id": "personB",
+       "op": "circle",
+       "startMs": 500,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        650,
+        170
+       ],
+       "r": 35
+      },
+      {
+       "id": "wantA",
+       "op": "text",
+       "startMs": 1000,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        150,
+        270
+       ],
+       "text": "wants B's good",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "wantB",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        650,
+        270
+       ],
+       "text": "wants A's good",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "match1",
+       "op": "arrow",
+       "startMs": 2800,
+       "endMs": 3600,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        195,
+        170
+       ],
+       "to": [
+        605,
+        170
+       ]
+      },
+      {
+       "id": "match2",
+       "op": "arrow",
+       "startMs": 3600,
+       "endMs": 4400,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        605,
+        210
+       ],
+       "to": [
+        195,
+        210
+       ]
+      },
+      {
+       "id": "measure",
+       "op": "text",
+       "startMs": 5200,
+       "endMs": 6500,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        400,
+        400
+       ],
+       "text": "common measure of value",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "cross",
+       "op": "line",
+       "startMs": 7000,
+       "endMs": 7600,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        300,
+        370
+       ],
+       "to": [
+        500,
+        430
+       ]
+      },
+      {
+       "id": "cross2",
+       "op": "line",
+       "startMs": 7600,
+       "endMs": 8200,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        500,
+        370
+       ],
+       "to": [
+        300,
+        430
+       ]
+      },
+      {
+       "id": "only",
+       "op": "text",
+       "startMs": 8200,
+       "endMs": 9111,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        470
+       ],
+       "text": "each person wants",
+       "size": "s",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch11-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "goat",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        170,
+        170
+       ],
+       "r": 55
+      },
+      {
+       "id": "goatLabel",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        170,
+        260
+       ],
+       "text": "goat",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "eggs",
+       "op": "ellipse",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        620,
+        180
+       ],
+       "rx": 70,
+       "ry": 45
+      },
+      {
+       "id": "eggsLabel",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        620,
+        260
+       ],
+       "text": "eggs",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "divide",
+       "op": "line",
+       "startMs": 2200,
+       "endMs": 2700,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        170,
+        115
+       ],
+       "to": [
+        170,
+        225
+       ]
+      },
+      {
+       "id": "cannot",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3600,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        400,
+        170
+       ],
+       "text": "cannot be divided",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "spoil",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 4900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        350
+       ],
+       "text": "goods can spoil",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "difficult",
+       "op": "text",
+       "startMs": 5700,
+       "endMs": 6834,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        440
+       ],
+       "text": "barter difficult",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "underline",
+       "op": "line",
+       "startMs": 6834,
+       "endMs": 7834,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        275,
+        450
+       ],
+       "to": [
+        525,
+        450
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch11-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "potter",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        115,
+        170
+       ],
+       "r": 35
+      },
+      {
+       "id": "potterLabel",
+       "op": "text",
+       "startMs": 500,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        115,
+        240
+       ],
+       "text": "potter",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "pots",
+       "op": "rect",
+       "startMs": 700,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        70,
+        300
+       ],
+       "w": 90,
+       "h": 70,
+       "round": 6
+      },
+      {
+       "id": "sariSeller",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        680,
+        170
+       ],
+       "r": 35
+      },
+      {
+       "id": "sariLabel",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        680,
+        240
+       ],
+       "text": "sari-seller",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "sari",
+       "op": "polygon",
+       "startMs": 1600,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         640,
+         300
+        ],
+        [
+         720,
+         300
+        ],
+        [
+         700,
+         385
+        ],
+        [
+         660,
+         385
+        ]
+       ]
+      },
+      {
+       "id": "wantSari",
+       "op": "arrow",
+       "startMs": 2300,
+       "endMs": 3000,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        160,
+        170
+       ],
+       "to": [
+        640,
+        170
+       ]
+      },
+      {
+       "id": "wantWheat",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3800,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        400,
+        270
+       ],
+       "text": "wants wheat",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "notPots",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 6557,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        420
+       ],
+       "text": "not pots",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch11-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "potsWheat",
+       "op": "arrow",
+       "startMs": 0,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        160,
+        330
+       ],
+       "to": [
+        390,
+        330
+       ]
+      },
+      {
+       "id": "wheat",
+       "op": "text",
+       "startMs": 1200,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        330
+       ],
+       "text": "wheat",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "wheatSari",
+       "op": "arrow",
+       "startMs": 1800,
+       "endMs": 3000,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        440,
+        330
+       ],
+       "to": [
+        640,
+        330
+       ]
+      },
+      {
+       "id": "money",
+       "op": "circle",
+       "startMs": 4700,
+       "endMs": 5300,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        410
+       ],
+       "r": 42
+      },
+      {
+       "id": "moneyLabel",
+       "op": "text",
+       "startMs": 5300,
+       "endMs": 5800,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        415
+       ],
+       "text": "money",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "simple",
+       "op": "text",
+       "startMs": 6500,
+       "endMs": 7485,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        475
+       ],
+       "text": "simpler",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "underline",
+       "op": "line",
+       "startMs": 7485,
+       "endMs": 8685,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        350,
+        485
+       ],
+       "to": [
+        450,
+        485
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch11-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "commodity",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        70,
+        150
+       ],
+       "w": 130,
+       "h": 70,
+       "round": 6
+      },
+      {
+       "id": "commodityText",
+       "op": "text",
+       "startMs": 500,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        135,
+        190
+       ],
+       "text": "commodity money",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "coin",
+       "op": "circle",
+       "startMs": 1200,
+       "endMs": 1700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        300,
+        185
+       ],
+       "r": 38
+      },
+      {
+       "id": "coinText",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        300,
+        270
+       ],
+       "text": "metal coins",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "paper",
+       "op": "rect",
+       "startMs": 2400,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        415,
+        150
+       ],
+       "w": 130,
+       "h": 70
+      },
+      {
+       "id": "paperText",
+       "op": "text",
+       "startMs": 2900,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        480,
+        190
+       ],
+       "text": "paper notes",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "bank",
+       "op": "rect",
+       "startMs": 3600,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        610,
+        150
+       ],
+       "w": 120,
+       "h": 70,
+       "round": 6
+      },
+      {
+       "id": "bankText",
+       "op": "text",
+       "startMs": 4100,
+       "endMs": 4700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        670,
+        190
+       ],
+       "text": "bank money",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "upiarrow",
+       "op": "arrow",
+       "startMs": 4800,
+       "endMs": 5600,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        135,
+        120
+       ],
+       "to": [
+        665,
+        120
+       ]
+      },
+      {
+       "id": "upi",
+       "op": "text",
+       "startMs": 5700,
+       "endMs": 6983,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        380
+       ],
+       "text": "UPI payments",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch11-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "moneyCenter",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        245
+       ],
+       "r": 65
+      },
+      {
+       "id": "moneyText",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        250
+       ],
+       "text": "Money",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "exchange",
+       "op": "rect",
+       "startMs": 1300,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        80,
+        100
+       ],
+       "w": 170,
+       "h": 65,
+       "round": 6
+      },
+      {
+       "id": "exchangeText",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        165,
+        138
+       ],
+       "text": "medium of exchange",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "measure",
+       "op": "rect",
+       "startMs": 2500,
+       "endMs": 3100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        315,
+        100
+       ],
+       "w": 170,
+       "h": 65,
+       "round": 6
+      },
+      {
+       "id": "measureText",
+       "op": "text",
+       "startMs": 3100,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        138
+       ],
+       "text": "measure of value",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "store",
+       "op": "rect",
+       "startMs": 3700,
+       "endMs": 4300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        550,
+        100
+       ],
+       "w": 170,
+       "h": 65,
+       "round": 6
+      },
+      {
+       "id": "storeText",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 5000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        635,
+        138
+       ],
+       "text": "store of value",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "arrow1",
+       "op": "arrow",
+       "startMs": 5000,
+       "endMs": 5600,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        250,
+        165
+       ],
+       "to": [
+        350,
+        220
+       ]
+      },
+      {
+       "id": "arrow2",
+       "op": "arrow",
+       "startMs": 5400,
+       "endMs": 5900,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        400,
+        165
+       ],
+       "to": [
+        400,
+        180
+       ]
+      },
+      {
+       "id": "arrow3",
+       "op": "arrow",
+       "startMs": 5800,
+       "endMs": 6300,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        550,
+        165
+       ],
+       "to": [
+        450,
+        220
+       ]
+      },
+      {
+       "id": "save",
+       "op": "text",
+       "startMs": 6300,
+       "endMs": 6983,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        400
+       ],
+       "text": "save and use later",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch11-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9111,
+     "ops": [
+      {
+       "id": "note",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        270,
+        90
+       ],
+       "w": 260,
+       "h": 150
+      },
+      {
+       "id": "rupee",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        145
+       ],
+       "text": "rupee note",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "paper",
+       "op": "text",
+       "startMs": 1300,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        205
+       ],
+       "text": "paper",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "trust",
+       "op": "circle",
+       "startMs": 2200,
+       "endMs": 2800,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        205,
+        340
+       ],
+       "r": 55
+      },
+      {
+       "id": "trustText",
+       "op": "text",
+       "startMs": 2800,
+       "endMs": 3300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        205,
+        345
+       ],
+       "text": "trust",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "law",
+       "op": "circle",
+       "startMs": 3400,
+       "endMs": 4000,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        595,
+        340
+       ],
+       "r": 55
+      },
+      {
+       "id": "lawText",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 4400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        595,
+        345
+       ],
+       "text": "law",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "trustArrow",
+       "op": "arrow",
+       "startMs": 4500,
+       "endMs": 5400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        260,
+        340
+       ],
+       "to": [
+        530,
+        340
+       ]
+      },
+      {
+       "id": "legal",
+       "op": "text",
+       "startMs": 5700,
+       "endMs": 6700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        445
+       ],
+       "text": "legal tender",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "notPaper",
+       "op": "text",
+       "startMs": 7300,
+       "endMs": 8111,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        485
+       ],
+       "text": "not paper",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L9",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch11-t01-wb-L9",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "accountA",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        80,
+        130
+       ],
+       "w": 190,
+       "h": 100,
+       "round": 8
+      },
+      {
+       "id": "bankA",
+       "op": "text",
+       "startMs": 600,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        175,
+        175
+       ],
+       "text": "bank account",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "accountB",
+       "op": "rect",
+       "startMs": 800,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        530,
+        130
+       ],
+       "w": 190,
+       "h": 100,
+       "round": 8
+      },
+      {
+       "id": "bankB",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        625,
+        175
+       ],
+       "text": "bank account",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "upiArrow",
+       "op": "arrow",
+       "startMs": 2100,
+       "endMs": 3000,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        275,
+        180
+       ],
+       "to": [
+        525,
+        180
+       ]
+      },
+      {
+       "id": "upiText",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        275
+       ],
+       "text": "UPI",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "pin",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 4500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        120,
+        360
+       ],
+       "text": "PIN",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "otp",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        300,
+        360
+       ],
+       "text": "OTP",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "noShare",
+       "op": "line",
+       "startMs": 5000,
+       "endMs": 5600,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        85,
+        335
+       ],
+       "to": [
+        335,
+        385
+       ]
+      },
+      {
+       "id": "receiver",
+       "op": "text",
+       "startMs": 5800,
+       "endMs": 6800,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        590,
+        360
+       ],
+       "text": "check receiver",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "check",
+       "op": "circle",
+       "startMs": 6800,
+       "endMs": 7300,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        700,
+        360
+       ],
+       "r": 28
+      },
+      {
+       "id": "safe",
+       "op": "text",
+       "startMs": 7500,
+       "endMs": 8685,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        455
+       ],
+       "text": "safe payment",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "check": {
+  "issues": [
+   {
+    "where": "explainer",
+    "what": "Scene s1 labels the myth as 'Money is valuable because its paper is valuable', but the misconception from the kit is 'Money has value in itself (the paper or metal is what makes it valuable), rather than because people trust it.' The myth text is a reasonable simplification; no factual contradiction.",
+    "severity": "low"
+   }
+  ],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ },
+ "firstCheck": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "Round 2 is titled 'Use rupees' and set in a barter mode with money=true, but it lists the same three-item trade chain as the worked example (potter wants sari, seller wants wheat, farmer wants pot) and presents it as a barter-like puzzle even though money is available. This misaligns with the kit's item c7-sst-ch11-t01-i02 and worked example, which use this exact chain to illustrate barter problems and how money solves them; here it is rendered as a barter round with money enabled but no mechanism to show the money solution, potentially confusing learners about whether money is used or not. The kit explicitly states that with money, the potter sells pots for rupees and then buys the sari, not a multi-step swap. However, the round's data does not include a sell step, so it effectively repeats the barter scenario without demonstrating money's role. The kit's item i02 expects a circular barter; the worked example shows a money route. This round's design contradicts the kit's teaching intent.",
+    "severity": "high"
+   }
+  ],
+  "verdict": "fail",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

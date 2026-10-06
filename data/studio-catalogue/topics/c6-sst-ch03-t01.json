@@ -1,0 +1,1802 @@
+{
+ "topicId": "c6-sst-ch03-t01",
+ "title": "Landforms and Life",
+ "chapter": "Landforms and Life",
+ "subject": "sst",
+ "class": 6,
+ "topicType": "T3",
+ "plan": {
+  "game": "land-lab@1",
+  "hint": "river mode then flood mode"
+ },
+ "game": {
+  "archetype": "land-lab@1",
+  "spec": {
+   "archetype": "land-lab@1",
+   "skills": [
+    "c6-sst-ch03-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "done": "right",
+    "wind": "wind",
+    "sea": "sea",
+    "rain": "RAIN",
+    "storm": "STORM",
+    "lock": "LOCK",
+    "wet": "wet",
+    "dry": "dry",
+    "trees": "plant trees",
+    "spring": "spring",
+    "trace": "Tap cells from the spring to the plain",
+    "runDone": "Lab closed",
+    "level": "flood level",
+    "safe": "SAFE",
+    "flooded": "FLOODED",
+    "mm": "mm of rain",
+    "high": "high",
+    "low": "low",
+    "reset": "clear"
+   },
+   "title": "Land & Water Lab",
+   "rounds": [
+    {
+     "mode": "river",
+     "title": "Trace to the plain",
+     "sub": "Follow the river from its hill spring",
+     "w": 10,
+     "h": 6,
+     "peaks": [
+      {
+       "x": 4,
+       "y": 0,
+       "h": 8,
+       "r": 2
+      },
+      {
+       "x": 2,
+       "y": 2,
+       "h": 6,
+       "r": 2
+      },
+      {
+       "x": 7,
+       "y": 3,
+       "h": 4.5,
+       "r": 1.8
+      }
+     ],
+     "spring": [
+      4,
+      0
+     ]
+    },
+    {
+     "mode": "flood",
+     "title": "A safe valley site",
+     "sub": "",
+     "profile": [
+      9,
+      7.5,
+      5.5,
+      3.5,
+      1.5,
+      0.7,
+      1.2,
+      2.8,
+      5,
+      7,
+      8.5
+     ],
+     "rain": 160,
+     "label": "school",
+     "glyph": "school",
+     "targets": "c6-sst-ch03-t01-m3"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c6-sst-ch03-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Right",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "BUSTED",
+    "order": "Tap them in order"
+   },
+   "title": "Landforms shape life",
+   "accent": "mint",
+   "targets": "c6-sst-ch03-t01-m1",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Landforms and Life"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Higher places are hotter"
+      },
+      {
+       "id": "high",
+       "type": "glyph",
+       "name": "mountain",
+       "x": 720,
+       "y": 300,
+       "size": 150,
+       "color": "sci"
+      },
+      {
+       "id": "cool",
+       "type": "label",
+       "text": "Higher = colder air",
+       "x": 650,
+       "y": 470,
+       "color": "ion"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "mount",
+       "type": "node",
+       "text": "Mountain",
+       "sub": "high, steep, peak",
+       "glyph": "mountain",
+       "color": "sci"
+      },
+      {
+       "id": "plateau",
+       "type": "node",
+       "text": "Plateau",
+       "sub": "high, flat top",
+       "glyph": "earth",
+       "color": "amber"
+      },
+      {
+       "id": "plain",
+       "type": "node",
+       "text": "Plain",
+       "sub": "low, flat land",
+       "glyph": "wheat",
+       "color": "mint"
+      },
+      {
+       "id": "ar1",
+       "type": "arrow",
+       "from": "mount",
+       "to": "plateau",
+       "text": "landform"
+      },
+      {
+       "id": "ar2",
+       "type": "arrow",
+       "from": "plateau",
+       "to": "plain",
+       "text": "landform"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "column",
+     "els": [
+      {
+       "id": "terrace",
+       "type": "node",
+       "text": "Terrace farms",
+       "sub": "mountain slopes",
+       "glyph": "wheat",
+       "color": "mint"
+      },
+      {
+       "id": "roof",
+       "type": "node",
+       "text": "Sloping roofs",
+       "sub": "mountain places",
+       "glyph": "house",
+       "color": "sci"
+      },
+      {
+       "id": "mine",
+       "type": "node",
+       "text": "Mining",
+       "sub": "plateau minerals",
+       "glyph": "pick",
+       "color": "amber"
+      },
+      {
+       "id": "cotton",
+       "type": "node",
+       "text": "Cotton",
+       "sub": "Deccan black soil",
+       "glyph": "leaf",
+       "color": "mint"
+      },
+      {
+       "id": "road",
+       "type": "node",
+       "text": "Easy roads",
+       "sub": "flat land",
+       "glyph": "road",
+       "color": "ion"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "row",
+     "els": [
+      {
+       "id": "mountain",
+       "type": "node",
+       "text": "Mountain",
+       "sub": "Himalayas",
+       "glyph": "mountain",
+       "color": "sci"
+      },
+      {
+       "id": "plateau2",
+       "type": "node",
+       "text": "Plateau",
+       "sub": "Deccan",
+       "glyph": "earth",
+       "color": "amber"
+      },
+      {
+       "id": "plain2",
+       "type": "node",
+       "text": "Plain",
+       "sub": "Indo-Gangetic",
+       "glyph": "wheat",
+       "color": "mint"
+      },
+      {
+       "id": "check1",
+       "type": "label",
+       "text": "Tap the plateau",
+       "x": 120,
+       "y": 500,
+       "color": "volt"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Land is not shaped the same everywhere. Three main landforms are mountains, plateaus and plains.",
+    "L2": "Here is a myth: places higher up are hotter because they are closer to the Sun.",
+    "L3": "That belief is wrong. Air gets colder as you go higher, so Shimla is cooler than Delhi.",
+    "L4": "Mountains rise steeply and may have peaks, plateaus are raised with fairly flat tops, and plains are low and flat.",
+    "L5": "The Himalayas are young and very high, while the Aravallis are among the oldest and worn down.",
+    "L6": "Plateaus can provide minerals and black soil for cotton, while rivers build fertile plains with silt.",
+    "L7": "Landforms shape life: mountain people use terrace farming and sloping roofs, while plains suit farming, roads and cities.",
+    "L8": "So the landform helps explain how people farm, build and travel. Tap the landform that is high and flat-topped."
+   },
+   "narration": {},
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      },
+      {
+       "at": 0.5,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "high"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      },
+      {
+       "at": 0.6,
+       "do": "show",
+       "dur": 0.8,
+       "target": "cool"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "mount",
+        "plateau",
+        "plain"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 0.8,
+       "target": [
+        "ar1",
+        "ar2"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "mount"
+      },
+      {
+       "at": 0.5,
+       "do": "focus",
+       "dur": 0.8,
+       "target": "mount"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "mine",
+        "cotton"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 1,
+       "target": [
+        "mine",
+        "cotton"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "terrace",
+        "roof",
+        "road"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 1,
+       "target": [
+        "terrace",
+        "roof"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "mountain",
+        "plateau2",
+        "plain2"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which landform is raised high with a broad, fairly flat top?",
+    "options": [
+     "mountain",
+     "plateau2",
+     "plain2"
+    ],
+    "answer": "plateau2",
+    "src": "c6-sst-ch03-t01-i02"
+   }
+  },
+  "repairs": [
+   "string:farm.text"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "passes": 2,
+  "seconds": 65
+ },
+ "keys": [
+  {
+   "itemId": "r1",
+   "key": "4,0 → 5,0 → 6,0 → 7,0 → 8,0 → 9,0 → 9,1 → 9,2 → 9,3 → 9,4 → 9,5",
+   "prompt": "trace the river"
+  },
+  {
+   "itemId": "r2",
+   "key": "above 4.2 m (2.8 m with trees)",
+   "prompt": "school"
+  }
+ ],
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch03-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "mtn",
+       "op": "polygon",
+       "startMs": 300,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         70,
+         380
+        ],
+        [
+         170,
+         150
+        ],
+        [
+         250,
+         380
+        ]
+       ]
+      },
+      {
+       "id": "plat",
+       "op": "polygon",
+       "startMs": 1300,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         310,
+         380
+        ],
+        [
+         350,
+         220
+        ],
+        [
+         470,
+         220
+        ],
+        [
+         510,
+         380
+        ]
+       ]
+      },
+      {
+       "id": "plain",
+       "op": "polygon",
+       "startMs": 2300,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         570,
+         330
+        ],
+        [
+         650,
+         310
+        ],
+        [
+         740,
+         330
+        ],
+        [
+         740,
+         380
+        ],
+        [
+         570,
+         380
+        ]
+       ]
+      },
+      {
+       "id": "lm",
+       "op": "label",
+       "startMs": 3500,
+       "endMs": 4200,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        160,
+        420
+       ],
+       "text": "mountains",
+       "to": [
+        160,
+        330
+       ]
+      },
+      {
+       "id": "lp",
+       "op": "label",
+       "startMs": 4200,
+       "endMs": 4900,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        380,
+        420
+       ],
+       "text": "plateaus",
+       "to": [
+        410,
+        230
+       ]
+      },
+      {
+       "id": "ll",
+       "op": "label",
+       "startMs": 4900,
+       "endMs": 5600,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        640,
+        420
+       ],
+       "text": "plains",
+       "to": [
+        650,
+        330
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch03-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "sun",
+       "op": "circle",
+       "startMs": 200,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        650,
+        100
+       ],
+       "r": 48,
+       "fill": "accent"
+      },
+      {
+       "id": "land",
+       "op": "line",
+       "startMs": 400,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        100,
+        390
+       ],
+       "to": [
+        700,
+        390
+       ]
+      },
+      {
+       "id": "high",
+       "op": "arrow",
+       "startMs": 1200,
+       "endMs": 1900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        280,
+        360
+       ],
+       "to": [
+        280,
+        190
+       ]
+      },
+      {
+       "id": "close",
+       "op": "arrow",
+       "startMs": 2100,
+       "endMs": 2900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        280,
+        190
+       ],
+       "to": [
+        650,
+        140
+       ]
+      },
+      {
+       "id": "myth",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        120,
+        80
+       ],
+       "text": "myth",
+       "size": "l"
+      },
+      {
+       "id": "hot",
+       "op": "label",
+       "startMs": 3800,
+       "endMs": 4500,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        180,
+        180
+       ],
+       "text": "hotter",
+       "to": [
+        280,
+        190
+       ]
+      },
+      {
+       "id": "sunlabel",
+       "op": "label",
+       "startMs": 4600,
+       "endMs": 5200,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        690,
+        100
+       ],
+       "text": "Sun",
+       "to": [
+        650,
+        100
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch03-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "slope",
+       "op": "line",
+       "startMs": 300,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        120,
+        390
+       ],
+       "to": [
+        330,
+        150
+       ]
+      },
+      {
+       "id": "air",
+       "op": "arrow",
+       "startMs": 1300,
+       "endMs": 2100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        330,
+        170
+       ],
+       "to": [
+        330,
+        350
+       ]
+      },
+      {
+       "id": "cold",
+       "op": "label",
+       "startMs": 2200,
+       "endMs": 2900,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        350,
+        250
+       ],
+       "text": "colder",
+       "to": [
+        330,
+        260
+       ]
+      },
+      {
+       "id": "highlabel",
+       "op": "label",
+       "startMs": 3000,
+       "endMs": 3700,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        370,
+        150
+       ],
+       "text": "higher",
+       "to": [
+        330,
+        170
+       ]
+      },
+      {
+       "id": "shimla",
+       "op": "text",
+       "startMs": 4100,
+       "endMs": 4700,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        150,
+        440
+       ],
+       "text": "Shimla",
+       "size": "m"
+      },
+      {
+       "id": "delhi",
+       "op": "text",
+       "startMs": 4100,
+       "endMs": 4700,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        580,
+        440
+       ],
+       "text": "Delhi",
+       "size": "m"
+      },
+      {
+       "id": "compare",
+       "op": "arrow",
+       "startMs": 5000,
+       "endMs": 5900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        230,
+        430
+       ],
+       "to": [
+        570,
+        430
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch03-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9111,
+     "ops": [
+      {
+       "id": "mount",
+       "op": "polygon",
+       "startMs": 300,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         60,
+         380
+        ],
+        [
+         145,
+         120
+        ],
+        [
+         220,
+         380
+        ]
+       ]
+      },
+      {
+       "id": "peak",
+       "op": "label",
+       "startMs": 1300,
+       "endMs": 1900,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        120,
+        90
+       ],
+       "text": "peaks",
+       "to": [
+        145,
+        120
+       ]
+      },
+      {
+       "id": "plateau",
+       "op": "polygon",
+       "startMs": 2100,
+       "endMs": 3100,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         300,
+         380
+        ],
+        [
+         340,
+         190
+        ],
+        [
+         490,
+         190
+        ],
+        [
+         530,
+         380
+        ]
+       ]
+      },
+      {
+       "id": "flat",
+       "op": "line",
+       "startMs": 3200,
+       "endMs": 3700,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        340,
+        190
+       ],
+       "to": [
+        490,
+        190
+       ]
+      },
+      {
+       "id": "plainshape",
+       "op": "polygon",
+       "startMs": 3900,
+       "endMs": 4700,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         590,
+         330
+        ],
+        [
+         670,
+         315
+        ],
+        [
+         750,
+         330
+        ],
+        [
+         750,
+         380
+        ],
+        [
+         590,
+         380
+        ]
+       ]
+      },
+      {
+       "id": "mountlabel",
+       "op": "label",
+       "startMs": 5000,
+       "endMs": 5700,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        90,
+        430
+       ],
+       "text": "mountains",
+       "to": [
+        140,
+        300
+       ]
+      },
+      {
+       "id": "platlabel",
+       "op": "label",
+       "startMs": 5800,
+       "endMs": 6500,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        350,
+        430
+       ],
+       "text": "plateaus",
+       "to": [
+        410,
+        200
+       ]
+      },
+      {
+       "id": "plainlabel",
+       "op": "label",
+       "startMs": 6600,
+       "endMs": 7300,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        630,
+        430
+       ],
+       "text": "plains",
+       "to": [
+        670,
+        330
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch03-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "himalaya",
+       "op": "polygon",
+       "startMs": 300,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         80,
+         390
+        ],
+        [
+         160,
+         90
+        ],
+        [
+         245,
+         390
+        ]
+       ]
+      },
+      {
+       "id": "young",
+       "op": "label",
+       "startMs": 1400,
+       "endMs": 2000,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        110,
+        60
+       ],
+       "text": "young",
+       "to": [
+        160,
+        110
+       ]
+      },
+      {
+       "id": "high",
+       "op": "label",
+       "startMs": 2100,
+       "endMs": 2600,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        170,
+        140
+       ],
+       "text": "high",
+       "to": [
+        160,
+        100
+       ]
+      },
+      {
+       "id": "aravalli",
+       "op": "polygon",
+       "startMs": 2800,
+       "endMs": 3800,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         430,
+         300
+        ],
+        [
+         500,
+         250
+        ],
+        [
+         570,
+         280
+        ],
+        [
+         650,
+         260
+        ],
+        [
+         730,
+         300
+        ]
+       ]
+      },
+      {
+       "id": "old",
+       "op": "label",
+       "startMs": 4000,
+       "endMs": 4600,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        470,
+        180
+       ],
+       "text": "oldest",
+       "to": [
+        550,
+        260
+       ]
+      },
+      {
+       "id": "worn",
+       "op": "label",
+       "startMs": 4700,
+       "endMs": 5500,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        610,
+        350
+       ],
+       "text": "worn down",
+       "to": [
+        650,
+        280
+       ]
+      },
+      {
+       "id": "hlab",
+       "op": "text",
+       "startMs": 5900,
+       "endMs": 6600,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        110,
+        440
+       ],
+       "text": "Himalayas",
+       "size": "m"
+      },
+      {
+       "id": "alab",
+       "op": "text",
+       "startMs": 6600,
+       "endMs": 7300,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        570,
+        410
+       ],
+       "text": "Aravallis",
+       "size": "m"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch03-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "plateau",
+       "op": "polygon",
+       "startMs": 300,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         60,
+         350
+        ],
+        [
+         110,
+         170
+        ],
+        [
+         300,
+         170
+        ],
+        [
+         350,
+         350
+        ]
+       ]
+      },
+      {
+       "id": "minerals",
+       "op": "label",
+       "startMs": 1300,
+       "endMs": 2000,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        140,
+        130
+       ],
+       "text": "minerals",
+       "to": [
+        180,
+        180
+       ]
+      },
+      {
+       "id": "soil",
+       "op": "ellipse",
+       "startMs": 2200,
+       "endMs": 2800,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        205,
+        330
+       ],
+       "rx": 100,
+       "ry": 25
+      },
+      {
+       "id": "black",
+       "op": "label",
+       "startMs": 2900,
+       "endMs": 3600,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        170,
+        390
+       ],
+       "text": "black soil",
+       "to": [
+        205,
+        330
+       ]
+      },
+      {
+       "id": "cotton",
+       "op": "label",
+       "startMs": 3700,
+       "endMs": 4300,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        170,
+        440
+       ],
+       "text": "cotton",
+       "to": [
+        205,
+        330
+       ]
+      },
+      {
+       "id": "river",
+       "op": "line",
+       "startMs": 4500,
+       "endMs": 5200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        470,
+        100
+       ],
+       "to": [
+        530,
+        250
+       ]
+      },
+      {
+       "id": "silt",
+       "op": "arrow",
+       "startMs": 5300,
+       "endMs": 6000,
+       "ink": "soft",
+       "weight": 2,
+       "from": [
+        530,
+        250
+       ],
+       "to": [
+        650,
+        340
+       ]
+      },
+      {
+       "id": "fertile",
+       "op": "label",
+       "startMs": 6100,
+       "endMs": 7000,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        590,
+        400
+       ],
+       "text": "fertile plains",
+       "to": [
+        650,
+        340
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch03-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "mountain",
+       "op": "polygon",
+       "startMs": 300,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         60,
+         390
+        ],
+        [
+         160,
+         130
+        ],
+        [
+         260,
+         390
+        ]
+       ]
+      },
+      {
+       "id": "terrace",
+       "op": "line",
+       "startMs": 1300,
+       "endMs": 1800,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        110,
+        320
+       ],
+       "to": [
+        215,
+        320
+       ]
+      },
+      {
+       "id": "terrace2",
+       "op": "line",
+       "startMs": 1800,
+       "endMs": 2300,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        125,
+        280
+       ],
+       "to": [
+        200,
+        280
+       ]
+      },
+      {
+       "id": "terracefarm",
+       "op": "label",
+       "startMs": 2400,
+       "endMs": 3300,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        80,
+        240
+       ],
+       "text": "terrace farming",
+       "to": [
+        145,
+        280
+       ]
+      },
+      {
+       "id": "roof",
+       "op": "polygon",
+       "startMs": 3400,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         290,
+         360
+        ],
+        [
+         340,
+         300
+        ],
+        [
+         390,
+         360
+        ]
+       ]
+      },
+      {
+       "id": "sloping",
+       "op": "label",
+       "startMs": 4200,
+       "endMs": 5100,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        285,
+        260
+       ],
+       "text": "sloping roofs",
+       "to": [
+        340,
+        310
+       ]
+      },
+      {
+       "id": "roads",
+       "op": "line",
+       "startMs": 5300,
+       "endMs": 5900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        470,
+        390
+       ],
+       "to": [
+        730,
+        390
+       ]
+      },
+      {
+       "id": "city",
+       "op": "rect",
+       "startMs": 6000,
+       "endMs": 6800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        560,
+        280
+       ],
+       "w": 120,
+       "h": 110
+      },
+      {
+       "id": "plainslife",
+       "op": "label",
+       "startMs": 6900,
+       "endMs": 7900,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        500,
+        240
+       ],
+       "text": "farming roads cities",
+       "to": [
+        620,
+        300
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch03-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "mountain",
+       "op": "polygon",
+       "startMs": 300,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         70,
+         390
+        ],
+        [
+         160,
+         110
+        ],
+        [
+         250,
+         390
+        ]
+       ]
+      },
+      {
+       "id": "plain",
+       "op": "polygon",
+       "startMs": 1300,
+       "endMs": 2000,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         570,
+         330
+        ],
+        [
+         650,
+         310
+        ],
+        [
+         740,
+         330
+        ],
+        [
+         740,
+         390
+        ],
+        [
+         570,
+         390
+        ]
+       ]
+      },
+      {
+       "id": "plateau",
+       "op": "polygon",
+       "startMs": 2200,
+       "endMs": 3200,
+       "ink": "good",
+       "weight": 2,
+       "points": [
+        [
+         300,
+         380
+        ],
+        [
+         350,
+         180
+        ],
+        [
+         500,
+         180
+        ],
+        [
+         540,
+         380
+        ]
+       ]
+      },
+      {
+       "id": "high",
+       "op": "label",
+       "startMs": 3400,
+       "endMs": 4000,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        370,
+        130
+       ],
+       "text": "high",
+       "to": [
+        400,
+        180
+       ]
+      },
+      {
+       "id": "flat",
+       "op": "label",
+       "startMs": 4100,
+       "endMs": 4900,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        410,
+        220
+       ],
+       "text": "flat-topped",
+       "to": [
+        420,
+        180
+       ]
+      },
+      {
+       "id": "landform",
+       "op": "label",
+       "startMs": 5100,
+       "endMs": 5900,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        335,
+        430
+       ],
+       "text": "landform",
+       "to": [
+        420,
+        300
+       ]
+      },
+      {
+       "id": "tap",
+       "op": "highlight",
+       "startMs": 6200,
+       "endMs": 7800,
+       "ink": "accent",
+       "weight": 3,
+       "target": "plateau",
+       "style": "pulse"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ },
+ "firstCheck": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "Round 2 'Choose a safe place' gives school height 'above 4.0 m (2.4 m with trees)', but the profile data has a maximum height of 10 and the terrain around the flood level of 180 mm does not produce a meaningful 4.0 m or 2.4 m - these numbers are physically unrealistic for a school safety decision on a 10-unit high profile.",
+    "severity": "high"
+   }
+  ],
+  "verdict": "fail",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

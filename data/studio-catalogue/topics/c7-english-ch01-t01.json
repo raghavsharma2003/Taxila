@@ -1,0 +1,1622 @@
+{
+ "topicId": "c7-english-ch01-t01",
+ "title": "The Day the River Spoke",
+ "chapter": "The Day the River Spoke",
+ "subject": "english",
+ "class": 7,
+ "topicType": "T3",
+ "plan": {
+  "game": "story-rail@1",
+  "hint": "sequence, cause and who modes from the lesson's events and speakers"
+ },
+ "game": {
+  "archetype": "story-rail@1",
+  "spec": {
+   "archetype": "story-rail@1",
+   "skills": [
+    "c7-english-ch01-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "picked": "coupled",
+    "streak": "streak",
+    "next": "What happens next?",
+    "effect": "What does this lead to?",
+    "who": "Who said this?",
+    "runDone": "Line complete",
+    "order": "your train",
+    "right": "Coupled",
+    "wrong": "Not this one",
+    "coach": "Tap a wagon before the train reaches the fork"
+   },
+   "title": "The Day the River Spoke",
+   "rounds": [
+    {
+     "mode": "sequence",
+     "title": "Meenu's steps",
+     "sub": "couple the story events in order",
+     "cards": [
+      {
+       "id": "e1",
+       "text": "Meenu sits by the river",
+       "glyph": "river",
+       "src": "c7-english-ch01-t01-i01"
+      },
+      {
+       "id": "e2",
+       "text": "She watches brothers study",
+       "glyph": "book"
+      },
+      {
+       "id": "e3",
+       "text": "Meenu asks about school",
+       "glyph": "question",
+       "src": "c7-english-ch01-t01-i03"
+      },
+      {
+       "id": "e4",
+       "text": "The river says keep asking",
+       "glyph": "wave",
+       "src": "c7-english-ch01-t01-i11"
+      },
+      {
+       "id": "e5",
+       "text": "She speaks up to learn",
+       "glyph": "person",
+       "src": "c7-english-ch01-t01-i12"
+      }
+     ],
+     "speed": 0.9,
+     "targets": "c7-english-ch01-t01-m-only-stated-feelings"
+    },
+    {
+     "mode": "cause",
+     "title": "Questions lead on",
+     "sub": "match each cause to its effect",
+     "pairs": [
+      {
+       "cause": {
+        "id": "c1",
+        "text": "Meenu wants to learn",
+        "glyph": "book",
+        "src": "c7-english-ch01-t01-i03"
+       },
+       "effect": {
+        "id": "f1",
+        "text": "She asks about school",
+        "glyph": "question"
+       }
+      },
+      {
+       "cause": {
+        "id": "c2",
+        "text": "She keeps asking questions",
+        "glyph": "question",
+        "src": "c7-english-ch01-t01-i11"
+       },
+       "effect": {
+        "id": "f2",
+        "text": "Learning can begin",
+        "glyph": "seed"
+       }
+      },
+      {
+       "cause": {
+        "id": "c3",
+        "text": "She speaks up",
+        "glyph": "person",
+        "src": "c7-english-ch01-t01-i12"
+       },
+       "effect": {
+        "id": "f3",
+        "text": "She finds a way to school",
+        "glyph": "school"
+       }
+      }
+     ],
+     "speed": 0.85,
+     "targets": "c7-english-ch01-t01-m-double-s"
+    },
+    {
+     "mode": "who",
+     "title": "Who said it?",
+     "sub": "send each line to its speaker",
+     "speakers": [
+      {
+       "id": "meenu",
+       "name": "Meenu",
+       "glyph": "person"
+      },
+      {
+       "id": "river",
+       "name": "River",
+       "glyph": "river"
+      },
+      {
+       "id": "headmaster",
+       "name": "Headmaster",
+       "glyph": "school"
+      }
+     ],
+     "lines": [
+      {
+       "id": "w1",
+       "text": "Why can't I go to school too?",
+       "speaker": "meenu",
+       "src": "c7-english-ch01-t01-i03"
+      },
+      {
+       "id": "w2",
+       "text": "Keep asking, small step.",
+       "speaker": "river",
+       "src": "c7-english-ch01-t01-i11"
+      },
+      {
+       "id": "w3",
+       "text": "Why are you sad, Meenu?",
+       "speaker": "river",
+       "src": "c7-english-ch01-t01-i05"
+      },
+      {
+       "id": "w4",
+       "text": "Can I join and learn?",
+       "speaker": "meenu",
+       "src": "c7-english-ch01-t01-i03"
+      }
+     ],
+     "speed": 0.8,
+     "targets": "c7-english-ch01-t01-m-no-inversion"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-english-ch01-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Questions start learning",
+   "accent": "ion",
+   "targets": "c7-english-ch01-t01-m-no-inversion",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Questions start learning"
+      },
+      {
+       "id": "girl",
+       "type": "node",
+       "text": "Meenu",
+       "sub": "wants to learn",
+       "glyph": "person",
+       "color": "ion"
+      },
+      {
+       "id": "home",
+       "type": "node",
+       "text": "Kept at home",
+       "sub": "no school",
+       "glyph": "house",
+       "color": "amber"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Why you are sad?"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "why",
+       "type": "node",
+       "text": "Why",
+       "sub": "question word",
+       "glyph": "question",
+       "color": "ion"
+      },
+      {
+       "id": "does",
+       "type": "node",
+       "text": "does",
+       "sub": "helper verb",
+       "glyph": "gear",
+       "color": "mint"
+      },
+      {
+       "id": "meenu",
+       "type": "node",
+       "text": "Meenu",
+       "sub": "subject",
+       "glyph": "person",
+       "color": "sun"
+      },
+      {
+       "id": "stay",
+       "type": "node",
+       "text": "stay",
+       "sub": "base verb",
+       "glyph": "book",
+       "color": "sci"
+      },
+      {
+       "id": "qmark",
+       "type": "node",
+       "text": "?",
+       "sub": "complete question",
+       "glyph": "spark",
+       "color": "volt"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "why",
+       "to": "does",
+       "text": "first"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "does",
+       "to": "meenu",
+       "text": "then"
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "meenu",
+       "to": "stay",
+       "text": "verb"
+      },
+      {
+       "id": "a4",
+       "type": "arrow",
+       "from": "stay",
+       "to": "qmark",
+       "text": "ask"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Meenu wants to learn, but she is kept at home while her brothers do homework.",
+    "L2": "She feels left out and sad, so she asks the river, “Why can't I go to school too?”",
+    "L3": "Here is a myth: putting Why before a statement makes a correct question.",
+    "L4": "Not true. In a question, Why comes first, then the helper does, then the subject.",
+    "L5": "Because does already carries the -s, the main verb stays in its base form: stay.",
+    "L6": "So we say, “Why does Meenu stay at home?” The question leads her to speak to the headmaster.",
+    "L7": "The message is clear: asking questions and speaking up is how learning starts, and every child has a right to learn.",
+    "L8": "Now choose the word order for a correct Why question."
+   },
+   "narration": {
+    "L1": {
+     "text": "Meenu wants to learn, but she is kept at home while her brothers do homework.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "She feels left out and sad, so she asks the river, “Why can't I go to school too?”",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "Here is a myth: putting Why before a statement makes a correct question.",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "Not true. In a question, Why comes first, then the helper does, then the subject.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "Because does already carries the -s, the main verb stays in its base form: stay.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "So we say, “Why does Meenu stay at home?” The question leads her to speak to the headmaster.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "The message is clear: asking questions and speaking up is how learning starts, and every child has a right to learn.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Now choose the word order for a correct Why question.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.3,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      },
+      {
+       "at": 0.4,
+       "do": "show",
+       "dur": 0.7,
+       "target": "girl"
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.7,
+       "target": "home"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.3,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "girl"
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.3,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "focus",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "why",
+        "does",
+        "meenu"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "stay"
+      },
+      {
+       "at": 0.5,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "a3",
+       "to": 1
+      },
+      {
+       "at": 1.2,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "does"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "qmark"
+      },
+      {
+       "at": 0.5,
+       "do": "flow",
+       "dur": 1.2,
+       "target": [
+        "a1",
+        "a2",
+        "a3",
+        "a4"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.3,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "girl"
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.5,
+       "target": "home"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "interactive",
+       "dur": 0.5
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Tap the word that comes after Why in the correct question.",
+    "options": [
+     "why",
+     "does",
+     "meenu",
+     "stay"
+    ],
+    "answer": "does",
+    "src": "c7-english-ch01-t01-i04"
+   }
+  },
+  "repairs": [
+   "cue:target"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 36
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch01-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "meenu",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        170,
+        180
+       ],
+       "r": 42
+      },
+      {
+       "id": "home",
+       "op": "rect",
+       "startMs": 700,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        260
+       ],
+       "w": 150,
+       "h": 120
+      },
+      {
+       "id": "brothers",
+       "op": "circle",
+       "startMs": 1100,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        500,
+        180
+       ],
+       "r": 42
+      },
+      {
+       "id": "brother2",
+       "op": "circle",
+       "startMs": 1300,
+       "endMs": 2000,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        610,
+        180
+       ],
+       "r": 42
+      },
+      {
+       "id": "homeLabel",
+       "op": "label",
+       "startMs": 1500,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        175,
+        405
+       ],
+       "text": "home",
+       "target": "home"
+      },
+      {
+       "id": "desk",
+       "op": "rect",
+       "startMs": 1900,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        450,
+        260
+       ],
+       "w": 220,
+       "h": 75
+      },
+      {
+       "id": "homeArrow",
+       "op": "arrow",
+       "startMs": 2800,
+       "endMs": 3600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        270,
+        220
+       ],
+       "to": [
+        400,
+        220
+       ]
+      },
+      {
+       "id": "homeText",
+       "op": "text",
+       "startMs": 3600,
+       "endMs": 4400,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        330,
+        210
+       ],
+       "text": "kept at home",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "homework",
+       "op": "label",
+       "startMs": 4400,
+       "endMs": 5200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        560,
+        370
+       ],
+       "text": "homework",
+       "target": "desk"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch01-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "sadFace",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        180,
+        170
+       ],
+       "r": 55
+      },
+      {
+       "id": "sadMark",
+       "op": "stroke",
+       "startMs": 700,
+       "endMs": 1100,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         155,
+         190
+        ],
+        [
+         175,
+         200
+        ],
+        [
+         195,
+         190
+        ]
+       ]
+      },
+      {
+       "id": "leftout",
+       "op": "text",
+       "startMs": 1100,
+       "endMs": 1800,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        180,
+        270
+       ],
+       "text": "left out",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "river",
+       "op": "ellipse",
+       "startMs": 1600,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        530,
+        260
+       ],
+       "rx": 190,
+       "ry": 55
+      },
+      {
+       "id": "riverLabel",
+       "op": "label",
+       "startMs": 2500,
+       "endMs": 3100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        530,
+        350
+       ],
+       "text": "river",
+       "target": "river"
+      },
+      {
+       "id": "questionArrow",
+       "op": "arrow",
+       "startMs": 3200,
+       "endMs": 4300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        250,
+        190
+       ],
+       "to": [
+        410,
+        240
+       ],
+       "bend": -1
+      },
+      {
+       "id": "whyQuestion",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 5000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        155
+       ],
+       "text": "Why",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "school",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 5700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        610,
+        430
+       ],
+       "text": "school",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch01-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "statement",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        90,
+        100
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "Meenu",
+         "stays",
+         "at",
+         "home"
+        ]
+       ]
+      },
+      {
+       "id": "why",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 2100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        90,
+        210
+       ],
+       "text": "Why",
+       "size": "l"
+      },
+      {
+       "id": "arrow1",
+       "op": "arrow",
+       "startMs": 2200,
+       "endMs": 2700,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        150,
+        220
+       ],
+       "to": [
+        220,
+        220
+       ]
+      },
+      {
+       "id": "question",
+       "op": "numwork",
+       "startMs": 2800,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        230,
+        190
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "Why",
+         "Meenu",
+         "stays",
+         "at",
+         "home"
+        ]
+       ]
+      },
+      {
+       "id": "notCorrect",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 5100,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        330
+       ],
+       "text": "not correct",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch01-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "why2",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        80,
+        110
+       ],
+       "text": "Why",
+       "size": "l"
+      },
+      {
+       "id": "does",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        220,
+        110
+       ],
+       "text": "does",
+       "size": "l"
+      },
+      {
+       "id": "meenu2",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        350,
+        110
+       ],
+       "text": "Meenu",
+       "size": "l"
+      },
+      {
+       "id": "arrow2",
+       "op": "arrow",
+       "startMs": 2300,
+       "endMs": 2800,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        145,
+        135
+       ],
+       "to": [
+        205,
+        135
+       ]
+      },
+      {
+       "id": "arrow3",
+       "op": "arrow",
+       "startMs": 2900,
+       "endMs": 3400,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        290,
+        135
+       ],
+       "to": [
+        335,
+        135
+       ]
+      },
+      {
+       "id": "order",
+       "op": "text",
+       "startMs": 3600,
+       "endMs": 4300,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        250
+       ],
+       "text": "correct",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch01-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "doesS",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        100,
+        110
+       ],
+       "text": "does",
+       "size": "l"
+      },
+      {
+       "id": "minusS",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        230,
+        110
+       ],
+       "text": "-s",
+       "size": "l"
+      },
+      {
+       "id": "base",
+       "op": "text",
+       "startMs": 1600,
+       "endMs": 2300,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        100,
+        220
+       ],
+       "text": "stay",
+       "size": "l"
+      },
+      {
+       "id": "stays",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        300,
+        220
+       ],
+       "text": "stays",
+       "size": "l"
+      },
+      {
+       "id": "cross",
+       "op": "stroke",
+       "startMs": 2500,
+       "endMs": 3100,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         295,
+         205
+        ],
+        [
+         390,
+         250
+        ]
+       ]
+      },
+      {
+       "id": "arrowBase",
+       "op": "arrow",
+       "startMs": 3300,
+       "endMs": 4100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        250,
+        150
+       ],
+       "to": [
+        170,
+        205
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch01-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "fullQuestion",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        70,
+        100
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "Why",
+         "does",
+         "Meenu",
+         "stay",
+         "at",
+         "home"
+        ]
+       ]
+      },
+      {
+       "id": "questionMark",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        650,
+        100
+       ],
+       "text": "?",
+       "size": "l"
+      },
+      {
+       "id": "speakArrow",
+       "op": "arrow",
+       "startMs": 2800,
+       "endMs": 3900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        180
+       ],
+       "to": [
+        400,
+        300
+       ]
+      },
+      {
+       "id": "speak",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        340
+       ],
+       "text": "speak",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "headmaster",
+       "op": "circle",
+       "startMs": 4700,
+       "endMs": 5500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        620,
+        320
+       ],
+       "r": 55
+      },
+      {
+       "id": "headLabel",
+       "op": "label",
+       "startMs": 5500,
+       "endMs": 6400,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        620,
+        410
+       ],
+       "text": "headmaster",
+       "target": "headmaster"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch01-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9536,
+     "ops": [
+      {
+       "id": "questionMark2",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        120,
+        110
+       ],
+       "text": "questions",
+       "size": "m"
+      },
+      {
+       "id": "speak2",
+       "op": "text",
+       "startMs": 800,
+       "endMs": 1600,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        120,
+        190
+       ],
+       "text": "speaking up",
+       "size": "m"
+      },
+      {
+       "id": "learnArrow",
+       "op": "arrow",
+       "startMs": 1800,
+       "endMs": 2900,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        270,
+        150
+       ],
+       "to": [
+        430,
+        150
+       ]
+      },
+      {
+       "id": "learning",
+       "op": "text",
+       "startMs": 2900,
+       "endMs": 3700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        500,
+        150
+       ],
+       "text": "learning",
+       "size": "l"
+      },
+      {
+       "id": "child",
+       "op": "circle",
+       "startMs": 3800,
+       "endMs": 4500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        220,
+        350
+       ],
+       "r": 48
+      },
+      {
+       "id": "rightArrow",
+       "op": "arrow",
+       "startMs": 4700,
+       "endMs": 5700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        280,
+        350
+       ],
+       "to": [
+        430,
+        350
+       ]
+      },
+      {
+       "id": "right",
+       "op": "text",
+       "startMs": 5700,
+       "endMs": 6400,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        510,
+        350
+       ],
+       "text": "right",
+       "size": "l"
+      },
+      {
+       "id": "learnLabel",
+       "op": "text",
+       "startMs": 6800,
+       "endMs": 7600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        440
+       ],
+       "text": "every child",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch01-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "whyWord",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        100,
+        130
+       ],
+       "text": "Why",
+       "size": "l"
+      },
+      {
+       "id": "doesWord",
+       "op": "text",
+       "startMs": 800,
+       "endMs": 1500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        250,
+        130
+       ],
+       "text": "does",
+       "size": "l"
+      },
+      {
+       "id": "subjectWord",
+       "op": "text",
+       "startMs": 1600,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        130
+       ],
+       "text": "Meenu",
+       "size": "l"
+      },
+      {
+       "id": "verbWord",
+       "op": "text",
+       "startMs": 2400,
+       "endMs": 3100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        560,
+        130
+       ],
+       "text": "stay",
+       "size": "l"
+      },
+      {
+       "id": "orderArrow",
+       "op": "arrow",
+       "startMs": 3200,
+       "endMs": 4100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        110,
+        220
+       ],
+       "to": [
+        650,
+        220
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "She watches brothers study",
+   "prompt": "sequence: after/for \"Meenu sits by the river\""
+  },
+  {
+   "itemId": "r1:1",
+   "key": "Meenu asks about school",
+   "prompt": "sequence: after/for \"She watches brothers study\"",
+   "src": "c7-english-ch01-t01-i03"
+  },
+  {
+   "itemId": "r1:2",
+   "key": "The river says keep asking",
+   "prompt": "sequence: after/for \"Meenu asks about school\"",
+   "src": "c7-english-ch01-t01-i11"
+  },
+  {
+   "itemId": "r1:3",
+   "key": "She speaks up to learn",
+   "prompt": "sequence: after/for \"The river says keep asking\"",
+   "src": "c7-english-ch01-t01-i12"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "She asks about school",
+   "prompt": "cause: after/for \"Meenu wants to learn\""
+  },
+  {
+   "itemId": "r2:1",
+   "key": "Learning can begin",
+   "prompt": "cause: after/for \"She keeps asking questions\""
+  },
+  {
+   "itemId": "r2:2",
+   "key": "She finds a way to school",
+   "prompt": "cause: after/for \"She speaks up\""
+  },
+  {
+   "itemId": "r3:0",
+   "key": "Meenu",
+   "prompt": "who: after/for \"Why can't I go to school too?\"",
+   "src": "c7-english-ch01-t01-i03"
+  },
+  {
+   "itemId": "r3:1",
+   "key": "River",
+   "prompt": "who: after/for \"Keep asking, small step.\"",
+   "src": "c7-english-ch01-t01-i11"
+  },
+  {
+   "itemId": "r3:2",
+   "key": "River",
+   "prompt": "who: after/for \"Why are you sad, Meenu?\"",
+   "src": "c7-english-ch01-t01-i05"
+  },
+  {
+   "itemId": "r3:3",
+   "key": "Meenu",
+   "prompt": "who: after/for \"Can I join and learn?\"",
+   "src": "c7-english-ch01-t01-i03"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ },
+ "firstCheck": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "In round 3 (Who said it?), the line 'Why are you sad, Meenu?' is attributed to Meenu. In the kit item c7-english-ch01-t01-i05, that line is presented as a mistake to be corrected (the corrected version would be 'Why are you sad, Meenu?'), and it is not a line said by Meenu in the story context; the kit uses it as an example of a grammar error, not as dialogue spoken by Meenu. This misattributes a line to a character in a way that is factually inconsistent with the source material.",
+    "severity": "high"
+   }
+  ],
+  "verdict": "fail",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

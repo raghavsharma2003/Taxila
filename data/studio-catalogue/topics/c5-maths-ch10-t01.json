@@ -1,0 +1,1974 @@
+{
+ "topicId": "c5-maths-ch10-t01",
+ "title": "Turn symmetry",
+ "chapter": "Symmetrical Designs",
+ "subject": "maths",
+ "class": 5,
+ "topicType": "T3",
+ "plan": {
+  "game": "mirror-paint@1",
+  "hint": "turn mode (orders of rotational symmetry 1, 2, 4)"
+ },
+ "game": {
+  "archetype": "mirror-paint@1",
+  "spec": {
+   "archetype": "mirror-paint@1",
+   "skills": [
+    "c5-maths-ch10-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "done": "designs",
+    "check": "CHECK",
+    "rotate": "TURN",
+    "flip": "FLIP",
+    "coach": "Try each turn carefully",
+    "runDone": "Studio closed",
+    "lines": "Mark every line of symmetry",
+    "turn": "How many times does it match?",
+    "twin": "Turn and flip it to fit its twin",
+    "same": "SAME",
+    "order": "order",
+    "fold": "FOLD"
+   },
+   "title": "Turn Symmetry Studio",
+   "rounds": [
+    {
+     "mode": "lines",
+     "title": "Fold the design",
+     "sub": "mark every fold that matches",
+     "size": 6,
+     "cells": [
+      [
+       2,
+       0
+      ],
+      [
+       3,
+       0
+      ],
+      [
+       1,
+       1
+      ],
+      [
+       4,
+       1
+      ],
+      [
+       1,
+       2
+      ],
+      [
+       4,
+       2
+      ],
+      [
+       1,
+       3
+      ],
+      [
+       2,
+       3
+      ],
+      [
+       3,
+       3
+      ],
+      [
+       4,
+       3
+      ],
+      [
+       1,
+       4
+      ],
+      [
+       4,
+       4
+      ],
+      [
+       1,
+       5
+      ],
+      [
+       4,
+       5
+      ]
+     ],
+     "time": 45
+    },
+    {
+     "mode": "turn",
+     "title": "Check the first shape",
+     "sub": "look for a match before a full turn",
+     "size": 6,
+     "cells": [
+      [
+       1,
+       1
+      ],
+      [
+       2,
+       1
+      ],
+      [
+       1,
+       2
+      ],
+      [
+       1,
+       3
+      ],
+      [
+       2,
+       3
+      ],
+      [
+       3,
+       3
+      ]
+     ],
+     "time": 40,
+     "targets": "c5-maths-ch10-t01-m-full-turn-counts"
+    },
+    {
+     "mode": "turn",
+     "title": "Turn the zigzag",
+     "sub": "watch for the smallest matching turn",
+     "size": 6,
+     "cells": [
+      [
+       1,
+       1
+      ],
+      [
+       2,
+       1
+      ],
+      [
+       3,
+       1
+      ],
+      [
+       4,
+       1
+      ],
+      [
+       2,
+       2
+      ],
+      [
+       3,
+       3
+      ],
+      [
+       1,
+       4
+      ],
+      [
+       2,
+       4
+      ],
+      [
+       3,
+       4
+      ],
+      [
+       4,
+       4
+      ]
+     ],
+     "time": 50,
+     "targets": "c5-maths-ch10-t01-m-mirror-only"
+    },
+    {
+     "mode": "turn",
+     "title": "Turn the petal pattern",
+     "sub": "count the matches in one full turn",
+     "size": 6,
+     "cells": [
+      [
+       2,
+       0
+      ],
+      [
+       3,
+       0
+      ],
+      [
+       5,
+       2
+      ],
+      [
+       5,
+       3
+      ],
+      [
+       2,
+       5
+      ],
+      [
+       3,
+       5
+      ],
+      [
+       0,
+       2
+      ],
+      [
+       0,
+       3
+      ]
+     ],
+     "time": 55
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c5-maths-ch10-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Right",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "BUSTED",
+    "order": "Tap them in order"
+   },
+   "title": "Turn symmetry",
+   "accent": "ion",
+   "targets": "c5-maths-ch10-t01-m-quarter-default",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Turn symmetry"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Every match is a quarter turn"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "square",
+       "type": "node",
+       "text": "Square",
+       "sub": "4 matches",
+       "color": "ion"
+      },
+      {
+       "id": "fan",
+       "type": "node",
+       "text": "3-blade fan",
+       "sub": "3 matches",
+       "glyph": "wind",
+       "color": "mint"
+      },
+      {
+       "id": "turn",
+       "type": "label",
+       "text": "One full turn",
+       "x": 420,
+       "y": 300,
+       "color": "amber"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "turn",
+       "to": "square",
+       "text": "count 4"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "turn",
+       "to": "fan",
+       "text": "count 3"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "square2",
+       "type": "node",
+       "text": "Square",
+       "sub": "quarter turn",
+       "color": "ion"
+      },
+      {
+       "id": "fan2",
+       "type": "node",
+       "text": "Fan",
+       "sub": "one-third turn",
+       "glyph": "wind",
+       "color": "mint"
+      },
+      {
+       "id": "rule",
+       "type": "label",
+       "text": "smallest matching turn",
+       "x": 300,
+       "y": 320,
+       "color": "amber"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "split",
+     "els": [
+      {
+       "id": "sletter",
+       "type": "node",
+       "text": "S",
+       "sub": "half turn",
+       "glyph": "letter",
+       "color": "ion"
+      },
+      {
+       "id": "aletter",
+       "type": "node",
+       "text": "A",
+       "sub": "mirror line",
+       "glyph": "letter",
+       "color": "mint"
+      },
+      {
+       "id": "different",
+       "type": "label",
+       "text": "Different ideas",
+       "x": 400,
+       "y": 300,
+       "color": "amber"
+      }
+     ]
+    },
+    {
+     "id": "s5",
+     "layout": "column",
+     "els": [
+      {
+       "id": "prompt",
+       "type": "title",
+       "text": "Three-blade fan"
+      },
+      {
+       "id": "one",
+       "type": "label",
+       "text": "1 match",
+       "x": 220,
+       "y": 320,
+       "color": "amber"
+      },
+      {
+       "id": "three",
+       "type": "label",
+       "text": "3 matches",
+       "x": 480,
+       "y": 320,
+       "color": "mint"
+      },
+      {
+       "id": "four",
+       "type": "label",
+       "text": "4 matches",
+       "x": 740,
+       "y": 320,
+       "color": "ion"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Turn symmetry means a shape looks exactly the same after a turn before one full turn.",
+    "L2": "A full turn does not count, because every shape matches itself then.",
+    "L3": "Count the matches in one full turn. A square matches four times, while a three-blade fan matches three times.",
+    "L4": "The smallest matching turn is one full turn divided by the number of matches.",
+    "L5": "So a square matches after a quarter turn, and a three-blade fan after one-third of a turn.",
+    "L6": "Here is a useful contrast: S has turn symmetry but no mirror line.",
+    "L7": "A has a mirror line but no turn symmetry. These are different ideas.",
+    "L8": "Now check the fan by counting its matches in one full turn."
+   },
+   "narration": {
+    "L1": {
+     "text": "Turn symmetry means a shape looks exactly the same after a turn before one full turn.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "A full turn does not count, because every shape matches itself then.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "Count the matches in one full turn. A square matches four times, while a three-blade fan matches three times.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "The smallest matching turn is one full turn divided by the number of matches.",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "So a square matches after a quarter turn, and a three-blade fan after one-third of a turn.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Here is a useful contrast: S has turn symmetry but no mirror line.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "A has a mirror line but no turn symmetry. These are different ideas.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Now check the fan by counting its matches in one full turn.",
+     "dur": 2.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.3,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.3,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "myth"
+      },
+      {
+       "at": 1,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "square",
+        "fan",
+        "turn"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "a1",
+        "a2"
+       ]
+      },
+      {
+       "at": 1.5,
+       "do": "flow",
+       "dur": 0.6,
+       "target": [
+        "a1",
+        "a2"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.3,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "rule"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "square2",
+        "fan2"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.3,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "square2"
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "fan2"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.3,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "sletter"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.3,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "aletter"
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.7,
+       "target": "different"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s5",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "one",
+        "three",
+        "four"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "How many times does a three-blade fan look the same in one full turn?",
+    "options": [
+     "one",
+     "three",
+     "four"
+    ],
+    "answer": "three",
+    "src": "c5-maths-ch10-t01-i03"
+   }
+  },
+  "repairs": [
+   "glyph",
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 31
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch10-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "turn1",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        190,
+        230
+       ],
+       "r": 105
+      },
+      {
+       "id": "shape1",
+       "op": "polygon",
+       "startMs": 700,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         145,
+         185
+        ],
+        [
+         235,
+         185
+        ],
+        [
+         235,
+         275
+        ],
+        [
+         145,
+         275
+        ]
+       ]
+      },
+      {
+       "id": "arc1",
+       "op": "arrow",
+       "startMs": 1600,
+       "endMs": 2800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        190,
+        125
+       ],
+       "to": [
+        270,
+        230
+       ],
+       "bend": 1
+      },
+      {
+       "id": "arc2",
+       "op": "arrow",
+       "startMs": 2800,
+       "endMs": 4000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        270,
+        230
+       ],
+       "to": [
+        190,
+        335
+       ],
+       "bend": 1
+      },
+      {
+       "id": "turnlabel",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 4500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        190,
+        390
+       ],
+       "text": "turn",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "same",
+       "op": "label",
+       "startMs": 4600,
+       "endMs": 5300,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        470,
+        175
+       ],
+       "text": "same",
+       "to": [
+        235,
+        185
+       ]
+      },
+      {
+       "id": "sym",
+       "op": "text",
+       "startMs": 5300,
+       "endMs": 6200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        470,
+        260
+       ],
+       "text": "turn symmetry",
+       "size": "m"
+      },
+      {
+       "id": "less",
+       "op": "text",
+       "startMs": 6200,
+       "endMs": 7200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        470,
+        325
+       ],
+       "text": "less than full turn",
+       "size": "s"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch10-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "fullcircle",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        210,
+        240
+       ],
+       "r": 115
+      },
+      {
+       "id": "fullarrow",
+       "op": "arrow",
+       "startMs": 900,
+       "endMs": 2300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        210,
+        125
+       ],
+       "to": [
+        210,
+        125
+       ],
+       "bend": 1
+      },
+      {
+       "id": "full",
+       "op": "text",
+       "startMs": 2400,
+       "endMs": 3100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        210,
+        405
+       ],
+       "text": "full turn",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "notcount",
+       "op": "text",
+       "startMs": 3200,
+       "endMs": 4200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        470,
+        215
+       ],
+       "text": "does not count",
+       "size": "m"
+      },
+      {
+       "id": "every",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 5200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        470,
+        285
+       ],
+       "text": "matches itself",
+       "size": "m"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch10-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "countlabel",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        90,
+        70
+       ],
+       "text": "matches",
+       "size": "m"
+      },
+      {
+       "id": "square3",
+       "op": "polygon",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         120,
+         160
+        ],
+        [
+         210,
+         160
+        ],
+        [
+         210,
+         250
+        ],
+        [
+         120,
+         250
+        ]
+       ]
+      },
+      {
+       "id": "sq4",
+       "op": "numwork",
+       "startMs": 1500,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        115,
+        285
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "square",
+         "=",
+         "4",
+         "matche"
+        ]
+       ]
+      },
+      {
+       "id": "fan3",
+       "op": "circle",
+       "startMs": 2800,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        510,
+        205
+       ],
+       "r": 80
+      },
+      {
+       "id": "blade1",
+       "op": "polygon",
+       "startMs": 3400,
+       "endMs": 4000,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         510,
+         205
+        ],
+        [
+         510,
+         125
+        ],
+        [
+         535,
+         195
+        ]
+       ]
+      },
+      {
+       "id": "blade2",
+       "op": "polygon",
+       "startMs": 4000,
+       "endMs": 4600,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         510,
+         205
+        ],
+        [
+         580,
+         245
+        ],
+        [
+         525,
+         225
+        ]
+       ]
+      },
+      {
+       "id": "blade3",
+       "op": "polygon",
+       "startMs": 4600,
+       "endMs": 5200,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         510,
+         205
+        ],
+        [
+         440,
+         245
+        ],
+        [
+         495,
+         225
+        ]
+       ]
+      },
+      {
+       "id": "fan3eq",
+       "op": "numwork",
+       "startMs": 5300,
+       "endMs": 6500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        410,
+        300
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "fan",
+         "=",
+         "3",
+         "matche"
+        ]
+       ]
+      },
+      {
+       "id": "countarrow",
+       "op": "arrow",
+       "startMs": 6600,
+       "endMs": 7100,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        120,
+        130
+       ],
+       "to": [
+        120,
+        105
+       ]
+      },
+      {
+       "id": "countarrow2",
+       "op": "arrow",
+       "startMs": 7100,
+       "endMs": 7600,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        510,
+        110
+       ],
+       "to": [
+        510,
+        90
+       ]
+      },
+      {
+       "id": "count",
+       "op": "text",
+       "startMs": 7600,
+       "endMs": 8500,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        455
+       ],
+       "text": "count matches",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch10-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "rule",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        85
+       ],
+       "text": "smallest matching turn",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "formula",
+       "op": "numwork",
+       "startMs": 1200,
+       "endMs": 2700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        210,
+        175
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "smalle",
+         "=",
+         "full",
+         "÷",
+         "matche"
+        ]
+       ]
+      },
+      {
+       "id": "fullturn",
+       "op": "circle",
+       "startMs": 2800,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        170,
+        365
+       ],
+       "r": 65
+      },
+      {
+       "id": "divline",
+       "op": "line",
+       "startMs": 3500,
+       "endMs": 3900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        140,
+        365
+       ],
+       "to": [
+        200,
+        365
+       ]
+      },
+      {
+       "id": "matchesbox",
+       "op": "rect",
+       "startMs": 4000,
+       "endMs": 4600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        330,
+        320
+       ],
+       "w": 245,
+       "h": 85,
+       "round": 10
+      },
+      {
+       "id": "matchesword",
+       "op": "text",
+       "startMs": 4600,
+       "endMs": 5500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        452,
+        370
+       ],
+       "text": "number of matches",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "dividearrow",
+       "op": "arrow",
+       "startMs": 5500,
+       "endMs": 6100,
+       "ink": "good",
+       "weight": 1,
+       "from": [
+        240,
+        365
+       ],
+       "to": [
+        315,
+        365
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch10-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "sq5",
+       "op": "polygon",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         100,
+         145
+        ],
+        [
+         190,
+         145
+        ],
+        [
+         190,
+         235
+        ],
+        [
+         100,
+         235
+        ]
+       ]
+      },
+      {
+       "id": "sqturn",
+       "op": "numwork",
+       "startMs": 800,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        75,
+        275
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "square",
+         "=",
+         "quarte",
+         "turn"
+        ]
+       ]
+      },
+      {
+       "id": "sqcircle",
+       "op": "circle",
+       "startMs": 2100,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        145,
+        190
+       ],
+       "r": 68
+      },
+      {
+       "id": "sqarrow",
+       "op": "arrow",
+       "startMs": 2700,
+       "endMs": 3500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        145,
+        122
+       ],
+       "to": [
+        213,
+        190
+       ],
+       "bend": 1
+      },
+      {
+       "id": "fan5",
+       "op": "circle",
+       "startMs": 3600,
+       "endMs": 4200,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        550,
+        190
+       ],
+       "r": 75
+      },
+      {
+       "id": "fanblade",
+       "op": "polygon",
+       "startMs": 4200,
+       "endMs": 4700,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         550,
+         190
+        ],
+        [
+         550,
+         115
+        ],
+        [
+         575,
+         180
+        ]
+       ]
+      },
+      {
+       "id": "fanblade2",
+       "op": "polygon",
+       "startMs": 4700,
+       "endMs": 5200,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         550,
+         190
+        ],
+        [
+         615,
+         228
+        ],
+        [
+         560,
+         210
+        ]
+       ]
+      },
+      {
+       "id": "fanblade3",
+       "op": "polygon",
+       "startMs": 5200,
+       "endMs": 5700,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         550,
+         190
+        ],
+        [
+         485,
+         228
+        ],
+        [
+         540,
+         210
+        ]
+       ]
+      },
+      {
+       "id": "fanturn",
+       "op": "numwork",
+       "startMs": 5800,
+       "endMs": 7200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        425,
+        280
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "fan",
+         "=",
+         "one-th",
+         "turn"
+        ]
+       ]
+      },
+      {
+       "id": "contrast",
+       "op": "text",
+       "startMs": 7200,
+       "endMs": 7700,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        440
+       ],
+       "text": "quarter   one-third",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch10-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "sletter",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 3,
+       "at": [
+        210,
+        230
+       ],
+       "text": "S",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "scircle",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        210,
+        230
+       ],
+       "r": 100
+      },
+      {
+       "id": "sarrow",
+       "op": "arrow",
+       "startMs": 1600,
+       "endMs": 2900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        210,
+        130
+       ],
+       "to": [
+        210,
+        330
+       ],
+       "bend": 1
+      },
+      {
+       "id": "turnsym",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3900,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        460,
+        170
+       ],
+       "text": "turn symmetry",
+       "size": "m"
+      },
+      {
+       "id": "mirror",
+       "op": "line",
+       "startMs": 4000,
+       "endMs": 4500,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        460,
+        205
+       ],
+       "to": [
+        650,
+        205
+       ]
+      },
+      {
+       "id": "nomirror",
+       "op": "text",
+       "startMs": 4600,
+       "endMs": 5600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        460,
+        285
+       ],
+       "text": "no mirror line",
+       "size": "m"
+      },
+      {
+       "id": "slabel",
+       "op": "label",
+       "startMs": 5600,
+       "endMs": 6100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        300,
+        230
+       ],
+       "text": "S",
+       "to": [
+        210,
+        230
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch10-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "aletter",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "accent",
+       "weight": 3,
+       "at": [
+        190,
+        245
+       ],
+       "text": "A",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "aline",
+       "op": "line",
+       "startMs": 800,
+       "endMs": 1600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        190,
+        135
+       ],
+       "to": [
+        190,
+        345
+       ]
+      },
+      {
+       "id": "mirrorline",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2600,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        190,
+        385
+       ],
+       "text": "mirror line",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "notturn",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        455,
+        175
+       ],
+       "text": "no turn symmetry",
+       "size": "m"
+      },
+      {
+       "id": "different",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 5000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        455,
+        270
+       ],
+       "text": "different ideas",
+       "size": "m"
+      },
+      {
+       "id": "compare",
+       "op": "arrow",
+       "startMs": 5000,
+       "endMs": 5800,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        335,
+        230
+       ],
+       "to": [
+        420,
+        230
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch10-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "fancheck",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        270,
+        230
+       ],
+       "r": 100
+      },
+      {
+       "id": "f1",
+       "op": "polygon",
+       "startMs": 700,
+       "endMs": 1200,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         270,
+         230
+        ],
+        [
+         270,
+         130
+        ],
+        [
+         300,
+         220
+        ]
+       ]
+      },
+      {
+       "id": "f2",
+       "op": "polygon",
+       "startMs": 1200,
+       "endMs": 1700,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         270,
+         230
+        ],
+        [
+         355,
+         280
+        ],
+        [
+         285,
+         250
+        ]
+       ]
+      },
+      {
+       "id": "f3",
+       "op": "polygon",
+       "startMs": 1700,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         270,
+         230
+        ],
+        [
+         185,
+         280
+        ],
+        [
+         255,
+         250
+        ]
+       ]
+      },
+      {
+       "id": "countfan",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        270,
+        385
+       ],
+       "text": "count matches",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "match1",
+       "op": "circle",
+       "startMs": 3300,
+       "endMs": 3700,
+       "ink": "good",
+       "weight": 1,
+       "c": [
+        270,
+        125
+       ],
+       "r": 14
+      },
+      {
+       "id": "match2",
+       "op": "circle",
+       "startMs": 3700,
+       "endMs": 4100,
+       "ink": "good",
+       "weight": 1,
+       "c": [
+        360,
+        280
+       ],
+       "r": 14
+      },
+      {
+       "id": "match3",
+       "op": "circle",
+       "startMs": 4100,
+       "endMs": 4500,
+       "ink": "good",
+       "weight": 1,
+       "c": [
+        180,
+        280
+       ],
+       "r": 14
+      },
+      {
+       "id": "fananswer",
+       "op": "numwork",
+       "startMs": 4600,
+       "endMs": 5700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        475,
+        190
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "fan",
+         "=",
+         "3",
+         "matche"
+        ]
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1",
+   "key": "v",
+   "prompt": "lines 6×6"
+  },
+  {
+   "itemId": "r2",
+   "key": "1",
+   "prompt": "turn 6×6"
+  },
+  {
+   "itemId": "r3",
+   "key": "2",
+   "prompt": "turn 6×6"
+  },
+  {
+   "itemId": "r4",
+   "key": "4",
+   "prompt": "turn 6×6"
+  }
+ ],
+ "check": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "Round 1 is a 'lines' mode (fold symmetry) but the skill topic is turn symmetry; rounds 2-4 are turn rounds. Round 1 does not match the topic and may confuse learners by mixing symmetry types.",
+    "severity": "high"
+   },
+   {
+    "where": "explainer",
+    "what": "Scene s5 shows a three-blade fan with three labels '1 match', '3 matches', '4 matches' but the correct count is 3; however the label positions may suggest the fan matches 1, 3, or 4 times, which is misleading for the misconception (quarter default) being targeted.",
+    "severity": "low"
+   },
+   {
+    "where": "explainer",
+    "what": "The explainer's task asks 'How many times does a three-blade fan look the same in one full turn?' with options one/three/four and answer 'three', matching kit item i03. No factual error.",
+    "severity": "low"
+   }
+  ],
+  "verdict": "fail",
+  "model": "DeepSeek-V4-Flash"
+ },
+ "firstCheck": {
+  "issues": [
+   {
+    "where": "explainer",
+    "what": "In scene s5 the final task shows '1 match', '2 matches', '4 matches' options. The prompt asks 'How many times does a three-blade fan look the same in one full turn?' which is question i03 from the kit with answer '3'. The options do not include '3', so the correct answer is not among them. This makes the task unsolvable as designed.",
+    "severity": "high"
+   }
+  ],
+  "verdict": "fail",
+  "model": "DeepSeek-V4-Flash"
+ },
+ "regens": 2
+}

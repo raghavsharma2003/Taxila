@@ -1,0 +1,1629 @@
+{
+ "topicId": "c6-maths-ch10-t02",
+ "title": "Integers on the number line and comparison",
+ "chapter": "The Other Side of Zero",
+ "subject": "maths",
+ "class": 6,
+ "topicType": "T4",
+ "plan": {
+  "game": "line-runner@1",
+  "hint": "number line gates: comparing and ordering"
+ },
+ "game": {
+  "archetype": "line-runner@1",
+  "spec": {
+   "archetype": "line-runner@1",
+   "skills": [
+    "c6-maths-ch10-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "coach": "Tap or press space to jump",
+    "round": "Round",
+    "jumpAt": "JUMP AT",
+    "through": "THROUGH",
+    "close": "CLOSE",
+    "offBy": "off by",
+    "runDone": "Run complete",
+    "gates": "gates",
+    "accuracy": "accuracy",
+    "chain": "chain"
+   },
+   "rounds": [
+    {
+     "title": "Find each gate",
+     "sub": "−10 to 10 · every mark labelled",
+     "range": [
+      -10,
+      10
+     ],
+     "step": 1,
+     "labels": "all",
+     "calls": [
+      "-3",
+      "2",
+      "-7",
+      "0"
+     ],
+     "speed": 0.8,
+     "dir": 1
+    },
+    {
+     "title": "Compare near zero",
+     "sub": "Only 0 is labelled · watch the line",
+     "range": [
+      -10,
+      10
+     ],
+     "step": 1,
+     "labels": "zero",
+     "calls": [
+      "-2",
+      "-7",
+      "-5",
+      "-1"
+     ],
+     "speed": 0.95,
+     "dir": 1,
+     "targets": "c6-maths-ch10-t02-m-neg-magnitude"
+    },
+    {
+     "title": "Run back in order",
+     "sub": "Move from right to left · compare gates",
+     "range": [
+      -10,
+      10
+     ],
+     "step": 1,
+     "labels": "zero",
+     "calls": [
+      "6",
+      "-4",
+      "0",
+      "-8"
+     ],
+     "speed": 1,
+     "dir": -1,
+     "targets": "c6-maths-ch10-t02-m-neg-order-line"
+    },
+    {
+     "title": "Across zero",
+     "sub": "Count the steps from one side to the other",
+     "range": [
+      -10,
+      10
+     ],
+     "step": 1,
+     "labels": "ends",
+     "calls": [
+      "-9",
+      "4",
+      "-6",
+      "3"
+     ],
+     "speed": 1.1,
+     "dir": 1,
+     "targets": "c6-maths-ch10-t02-m-zero-smallest"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c6-maths-ch10-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Integers on the number line",
+   "accent": "ion",
+   "targets": "c6-maths-ch10-t02-m-neg-magnitude",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "row",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Integers on the number line"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "−7 is greater because 7 is greater than 2"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "axis",
+       "type": "axis",
+       "min": -8,
+       "max": 4,
+       "step": 1,
+       "unit": "number",
+       "scale": "linear",
+       "y": 400
+      },
+      {
+       "id": "zero",
+       "type": "mark",
+       "axis": "axis",
+       "value": 0,
+       "text": "0",
+       "color": "sun"
+      },
+      {
+       "id": "neg7",
+       "type": "mark",
+       "axis": "axis",
+       "value": -7,
+       "text": "−7",
+       "color": "amber"
+      },
+      {
+       "id": "neg2",
+       "type": "mark",
+       "axis": "axis",
+       "value": -2,
+       "text": "−2",
+       "color": "mint"
+      },
+      {
+       "id": "pos2",
+       "type": "mark",
+       "axis": "axis",
+       "value": 2,
+       "text": "2",
+       "color": "ion"
+      },
+      {
+       "id": "left",
+       "type": "label",
+       "text": "left of 0",
+       "x": 120,
+       "y": 300,
+       "color": "amber"
+      },
+      {
+       "id": "right",
+       "type": "label",
+       "text": "right of 0",
+       "x": 700,
+       "y": 300,
+       "color": "ion"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "column",
+     "els": [
+      {
+       "id": "n6",
+       "type": "node",
+       "text": "−6",
+       "sub": "smallest shown",
+       "glyph": "thermometer",
+       "color": "amber"
+      },
+      {
+       "id": "n4",
+       "type": "node",
+       "text": "−4",
+       "sub": "left of 0",
+       "glyph": "thermometer",
+       "color": "amber"
+      },
+      {
+       "id": "n1",
+       "type": "node",
+       "text": "−1",
+       "sub": "left of 0",
+       "glyph": "thermometer",
+       "color": "amber"
+      },
+      {
+       "id": "n0",
+       "type": "node",
+       "text": "0",
+       "sub": "between",
+       "glyph": "balance",
+       "color": "sun"
+      },
+      {
+       "id": "p2",
+       "type": "node",
+       "text": "2",
+       "sub": "right of 0",
+       "glyph": "sun",
+       "color": "ion"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "n6",
+       "to": "n4",
+       "text": "right"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "n4",
+       "to": "n1",
+       "text": "right"
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "n1",
+       "to": "n0",
+       "text": "right"
+      },
+      {
+       "id": "a4",
+       "type": "arrow",
+       "from": "n0",
+       "to": "p2",
+       "text": "right"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "row",
+     "els": [
+      {
+       "id": "q",
+       "type": "label",
+       "text": "Which is greater?",
+       "x": 100,
+       "y": 250,
+       "color": "ion"
+      },
+      {
+       "id": "opt7",
+       "type": "node",
+       "text": "−7",
+       "sub": "choice",
+       "glyph": "question",
+       "color": "amber"
+      },
+      {
+       "id": "opt2",
+       "type": "node",
+       "text": "−2",
+       "sub": "choice",
+       "glyph": "question",
+       "color": "mint"
+      },
+      {
+       "id": "opt0",
+       "type": "node",
+       "text": "0",
+       "sub": "choice",
+       "glyph": "question",
+       "color": "sun"
+      },
+      {
+       "id": "optp",
+       "type": "node",
+       "text": "2",
+       "sub": "choice",
+       "glyph": "question",
+       "color": "ion"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Integers include negative numbers, zero, and positive numbers.",
+    "L2": "On a number line, negatives go left of zero and positives go right.",
+    "L3": "The spaces are equal, so −3 is three steps left of 0.",
+    "L4": "Further right means greater. Therefore, −2 is greater than −7.",
+    "L5": "For negative numbers, the larger number after the minus sign is the smaller integer.",
+    "L6": "Every positive number is greater than every negative number, and 0 sits between them.",
+    "L7": "To order −6, 2, −1, 0, and −4, read from left to right.",
+    "L8": "The order is −6, −4, −1, 0, 2. Now choose the greater number."
+   },
+   "narration": {
+    "L1": {
+     "text": "Integers include negative numbers, zero, and positive numbers.",
+     "dur": 2,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "On a number line, negatives go left of zero and positives go right.",
+     "dur": 2.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "The spaces are equal, so −3 is three steps left of 0.",
+     "dur": 2.2,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "Further right means greater. Therefore, −2 is greater than −7.",
+     "dur": 2.4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "For negative numbers, the larger number after the minus sign is the smaller integer.",
+     "dur": 2.8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Every positive number is greater than every negative number, and 0 sits between them.",
+     "dur": 2.8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "To order −6, 2, −1, 0, and −4, read from left to right.",
+     "dur": 2.8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "The order is −6, −4, −1, 0, 2. Now choose the greater number.",
+     "dur": 2.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.3,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "axis"
+      },
+      {
+       "at": 0.4,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "zero",
+        "neg7",
+        "neg2",
+        "pos2",
+        "left",
+        "right"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "neg7"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "neg2"
+      },
+      {
+       "at": 0.5,
+       "do": "highlight",
+       "dur": 1,
+       "target": "neg7"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.3,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      },
+      {
+       "at": 0.8,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": [
+        "zero",
+        "pos2"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.3,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "n6",
+        "n4",
+        "n1",
+        "n0",
+        "p2"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 1.2,
+       "target": [
+        "a1",
+        "a2",
+        "a3",
+        "a4"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "q",
+        "opt7",
+        "opt2",
+        "opt0",
+        "optp"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "interactive",
+       "dur": 0.5
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which integer is greater: −7, −2, 0, or 2?",
+    "options": [
+     "opt7",
+     "opt2",
+     "opt0",
+     "optp"
+    ],
+    "answer": "opt2",
+    "src": "c6-maths-ch10-t02-i03"
+   }
+  },
+  "repairs": [],
+  "attempts": 2,
+  "model": "taxila-fast-bg",
+  "seconds": 23
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch10-t02-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4004,
+     "ops": [
+      {
+       "id": "title",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "integers",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "neg",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        180,
+        190
+       ],
+       "text": "negative numbers",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "zero",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        190
+       ],
+       "text": "zero",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "pos",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 3100,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        620,
+        190
+       ],
+       "text": "positive numbers",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "sep1",
+       "op": "line",
+       "startMs": 3100,
+       "endMs": 3500,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        290,
+        155
+       ],
+       "to": [
+        290,
+        225
+       ]
+      },
+      {
+       "id": "sep2",
+       "op": "line",
+       "startMs": 3500,
+       "endMs": 3900,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        510,
+        155
+       ],
+       "to": [
+        510,
+        225
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch10-t02-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "axis",
+       "op": "arrow",
+       "startMs": 0,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        100,
+        300
+       ],
+       "to": [
+        700,
+        300
+       ]
+      },
+      {
+       "id": "left",
+       "op": "arrow",
+       "startMs": 700,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        700,
+        300
+       ],
+       "to": [
+        100,
+        300
+       ]
+      },
+      {
+       "id": "tick0",
+       "op": "line",
+       "startMs": 1500,
+       "endMs": 1900,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        400,
+        270
+       ],
+       "to": [
+        400,
+        330
+       ]
+      },
+      {
+       "id": "labneg",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 2800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        220,
+        370
+       ],
+       "text": "negatives",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "labzero",
+       "op": "text",
+       "startMs": 2800,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        370
+       ],
+       "text": "0",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "labpos",
+       "op": "text",
+       "startMs": 3200,
+       "endMs": 4000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        580,
+        370
+       ],
+       "text": "positives",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "leftlabel",
+       "op": "label",
+       "startMs": 4000,
+       "endMs": 4600,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        135,
+        255
+       ],
+       "text": "left",
+       "to": [
+        180,
+        290
+       ]
+      },
+      {
+       "id": "rightlabel",
+       "op": "label",
+       "startMs": 4600,
+       "endMs": 5300,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        650,
+        255
+       ],
+       "text": "right",
+       "to": [
+        620,
+        290
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch10-t02-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "tneg3",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        280,
+        270
+       ],
+       "to": [
+        280,
+        330
+       ]
+      },
+      {
+       "id": "tneg2",
+       "op": "line",
+       "startMs": 500,
+       "endMs": 950,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        340,
+        270
+       ],
+       "to": [
+        340,
+        330
+       ]
+      },
+      {
+       "id": "tneg1",
+       "op": "line",
+       "startMs": 950,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        370,
+        270
+       ],
+       "to": [
+        370,
+        330
+       ]
+      },
+      {
+       "id": "labminus3",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 1900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        280,
+        365
+       ],
+       "text": "−3",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "lab0b",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        365
+       ],
+       "text": "0",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "step1",
+       "op": "arrow",
+       "startMs": 2500,
+       "endMs": 3000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        245
+       ],
+       "to": [
+        370,
+        245
+       ]
+      },
+      {
+       "id": "step2",
+       "op": "arrow",
+       "startMs": 3000,
+       "endMs": 3500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        370,
+        245
+       ],
+       "to": [
+        340,
+        245
+       ]
+      },
+      {
+       "id": "step3",
+       "op": "arrow",
+       "startMs": 3500,
+       "endMs": 4100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        340,
+        245
+       ],
+       "to": [
+        280,
+        245
+       ]
+      },
+      {
+       "id": "steps",
+       "op": "text",
+       "startMs": 4100,
+       "endMs": 5000,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        325,
+        215
+       ],
+       "text": "three steps",
+       "size": "s",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch10-t02-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "tneg7",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        160,
+        270
+       ],
+       "to": [
+        160,
+        330
+       ]
+      },
+      {
+       "id": "tneg2b",
+       "op": "line",
+       "startMs": 500,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        340,
+        270
+       ],
+       "to": [
+        340,
+        330
+       ]
+      },
+      {
+       "id": "labminus7",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        160,
+        365
+       ],
+       "text": "−7",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "labminus2",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 1900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        340,
+        365
+       ],
+       "text": "−2",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "greater",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 2800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        500,
+        210
+       ],
+       "text": "greater",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "compare",
+       "op": "arrow",
+       "startMs": 2800,
+       "endMs": 3600,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        160,
+        230
+       ],
+       "to": [
+        340,
+        230
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch10-t02-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "deep",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        170,
+        120
+       ],
+       "text": "larger",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "minusmark",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        120
+       ],
+       "text": "minus sign",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "small",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        640,
+        120
+       ],
+       "text": "smaller integer",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "rulearrow",
+       "op": "arrow",
+       "startMs": 2400,
+       "endMs": 3300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        230,
+        145
+       ],
+       "to": [
+        570,
+        145
+       ]
+      },
+      {
+       "id": "note",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        215
+       ],
+       "text": "negative numbers",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch10-t02-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "posgreater",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        170,
+        120
+       ],
+       "text": "positive numbers",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "negless",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        630,
+        120
+       ],
+       "text": "negative numbers",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "between",
+       "op": "arrow",
+       "startMs": 900,
+       "endMs": 1800,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        260,
+        145
+       ],
+       "to": [
+        540,
+        145
+       ]
+      },
+      {
+       "id": "zero2",
+       "op": "circle",
+       "startMs": 1800,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        300
+       ],
+       "r": 28
+      },
+      {
+       "id": "zeroLabel",
+       "op": "text",
+       "startMs": 2400,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        307
+       ],
+       "text": "0",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "negside",
+       "op": "arrow",
+       "startMs": 3000,
+       "endMs": 3700,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        370,
+        300
+       ],
+       "to": [
+        250,
+        300
+       ]
+      },
+      {
+       "id": "posside",
+       "op": "arrow",
+       "startMs": 3700,
+       "endMs": 4400,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        430,
+        300
+       ],
+       "to": [
+        550,
+        300
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch10-t02-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "axis2",
+       "op": "arrow",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        80,
+        300
+       ],
+       "to": [
+        720,
+        300
+       ]
+      },
+      {
+       "id": "axisleft2",
+       "op": "arrow",
+       "startMs": 500,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        720,
+        300
+       ],
+       "to": [
+        80,
+        300
+       ]
+      },
+      {
+       "id": "m6",
+       "op": "line",
+       "startMs": 1200,
+       "endMs": 1600,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        140,
+        270
+       ],
+       "to": [
+        140,
+        330
+       ]
+      },
+      {
+       "id": "m4",
+       "op": "line",
+       "startMs": 1600,
+       "endMs": 2000,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        260,
+        270
+       ],
+       "to": [
+        260,
+        330
+       ]
+      },
+      {
+       "id": "m1",
+       "op": "line",
+       "startMs": 2000,
+       "endMs": 2400,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        350,
+        270
+       ],
+       "to": [
+        350,
+        330
+       ]
+      },
+      {
+       "id": "z7",
+       "op": "line",
+       "startMs": 2400,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        410,
+        270
+       ],
+       "to": [
+        410,
+        330
+       ]
+      },
+      {
+       "id": "p2",
+       "op": "line",
+       "startMs": 2800,
+       "endMs": 3200,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        530,
+        270
+       ],
+       "to": [
+        530,
+        330
+       ]
+      },
+      {
+       "id": "labels7",
+       "op": "numwork",
+       "startMs": 3300,
+       "endMs": 4800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        105,
+        350
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "−6",
+         ",",
+         "2",
+         ",",
+         "−1",
+         ",",
+         "0",
+         ",",
+         "−4"
+        ]
+       ]
+      },
+      {
+       "id": "readarrow",
+       "op": "arrow",
+       "startMs": 4800,
+       "endMs": 5700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        110,
+        240
+       ],
+       "to": [
+        570,
+        240
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 5,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch10-t02-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "ordered",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        95,
+        100
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "−6",
+         ",",
+         "−4",
+         ",",
+         "−1",
+         ",",
+         "0",
+         ",",
+         "2"
+        ]
+       ]
+      },
+      {
+       "id": "greaterword",
+       "op": "text",
+       "startMs": 4900,
+       "endMs": 5800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        220
+       ],
+       "text": "greater number",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [],
+ "check": {
+  "issues": [
+   {
+    "where": "explainer",
+    "what": "The round src is 'c6-maths-ch10-t02-i03' but the answer given (opt2) corresponds to '-2', which is correct. However, the prompt offers options '-7', '-2', '0', '2' and the ticked answer is '-2', whereas the kit item i03 asks 'Predict: which is greater, -7 or -2?' with answer '-2'. That matches, so no issue here. Actually, I re-checked: the explainer's answer matches the kit, so no issue.",
+    "severity": "low"
+   }
+  ],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ },
+ "firstCheck": {
+  "issues": [
+   {
+    "where": "explainer",
+    "what": "The explainer calls the greater number '−2' and uses coordinates that place it to the right of −7, but the label 'n2' is given color 'mint' and placed at x:720 (far right), while 'n7' is 'amber' at x:120. This implies −2 is on the positive side (right of 0), which is factually wrong—−2 is negative and should be left of 0. The labels' positions and colors misrepresent the number line for a negative integer.",
+    "severity": "high"
+   }
+  ],
+  "verdict": "fail",
+  "model": "DeepSeek-V4-Flash"
+ },
+ "regens": 2
+}

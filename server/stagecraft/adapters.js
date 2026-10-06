@@ -95,6 +95,8 @@ export function outcomeToSlot(outcome, candidate) {
  *   lastPolicyRevealTurn?: number, shownThisBeat?: string[], learnerRev?: number, namingClause?: number | null, committed?: Record<string, unknown>, at: number }} x
  * @param {{ catalog: object }} cfg
  */
+/** The rest rule's production constants (policy.js restIsDue / restRetire; measured in sim arm sc_rest, 2026-10-06). */
+export const REST_CFG = Object.freeze({ restShare: 0.5, restGraceMs: 120_000, restRetireTurns: 4, visualFloorMs: 150_000, boardOwnsExplain: true });
 export function revealPoint(x, cfg) {
   const current = { lessonId: x.lessonId, topicId: x.topicId, skillId: x.skillId, beat: x.beat, itemId: x.itemId ?? null, misconceptionId: x.misconception?.id ?? null,
     misconceptionState: x.misconception?.state ?? "unknown", hintRung: x.hintRung ?? 0, representation: null, band: x.band, lang: x.lang, kitHash: x.kitHash,
@@ -102,7 +104,12 @@ export function revealPoint(x, cfg) {
   const kind = x.request ? "request_answered" : x.beatChanged ? "beat_boundary" : "trp";
   const want = wantAt({ pointKind: kind, turnSeq: x.turnSeq, beat: x.beat, beatChanged: x.beatChanged, skillId: x.skillId, topicId: x.topicId, classLevel: x.classLevel,
     misconception: x.misconception ?? null, contrasted: x.contrasted ?? [], request: x.request ?? null, offerAccepted: x.offerAccepted ?? null, board: x.board ?? null,
-    signal: x.signal ?? {}, lastPolicyRevealTurn: x.lastPolicyRevealTurn, safety: x.safety, shownThisBeat: x.shownThisBeat ?? [] }, { catalog: cfg.catalog, swapSpacingTurns: 2, firstRevealTurn: 3 });
+    signal: x.signal ?? {}, lastPolicyRevealTurn: x.lastPolicyRevealTurn, safety: x.safety, shownThisBeat: x.shownThisBeat ?? [],
+    // ship5 p4-content: the rest rule and the 3-minute visual floor (inert when the caller passes none)
+    busyShare: x.busyShare, teachingMs: x.teachingMs, lastVisualAgoMs: x.lastVisualAgoMs, inFlow: x.inFlow },
+  { catalog: cfg.catalog, swapSpacingTurns: 2, firstRevealTurn: 3, ...REST_CFG });
   return { kind, phase: x.phase ?? "committed", turnSeq: x.turnSeq, current, want, safetyOpen: !!x.safety, childHoldsFloor: !!x.childHoldsFloor, at: x.at,
+    rest: { busyShare: x.busyShare, teachingMs: x.teachingMs, lastVisualAgoMs: x.lastVisualAgoMs, inFlow: x.inFlow, board: x.board ?? null },
+    requestKind: x.request?.kind ?? null,
     ...(x.namingClause !== undefined ? { line: { namingClause: x.namingClause } } : {}), committed: x.committed ?? {} };
 }

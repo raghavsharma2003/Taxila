@@ -1,0 +1,1918 @@
+{
+ "topicId": "c7-english-ch09-t01",
+ "title": "North, South, East, West",
+ "chapter": "North, South, East, West",
+ "subject": "english",
+ "class": 7,
+ "topicType": "T2",
+ "plan": {
+  "game": "story-rail@1",
+  "hint": "sequence, cause and who modes from the lesson's events and speakers"
+ },
+ "game": {
+  "archetype": "story-rail@1",
+  "spec": {
+   "archetype": "story-rail@1",
+   "skills": [
+    "c7-english-ch09-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "picked": "coupled",
+    "streak": "streak",
+    "next": "What happens next?",
+    "effect": "What does this lead to?",
+    "who": "Who said this?",
+    "runDone": "Line complete",
+    "order": "your train",
+    "right": "Coupled",
+    "wrong": "Not this one",
+    "coach": "Tap a wagon before the train reaches the fork"
+   },
+   "title": "Travel Letters",
+   "rounds": [
+    {
+     "mode": "sequence",
+     "title": "Letter parts",
+     "sub": "put the letter parts in order",
+     "cards": [
+      {
+       "id": "s1",
+       "text": "Jaipur, 3 June",
+       "glyph": "map",
+       "src": "c7-english-ch09-t01-i12"
+      },
+      {
+       "id": "s2",
+       "text": "Dear Dadi",
+       "glyph": "letter",
+       "src": "c7-english-ch09-t01-i13"
+      },
+      {
+       "id": "s3",
+       "text": "Share news and ask",
+       "glyph": "scroll",
+       "src": "c7-english-ch09-t01-i13"
+      },
+      {
+       "id": "s4",
+       "text": "With love",
+       "src": "c7-english-ch09-t01-i13"
+      },
+      {
+       "id": "s5",
+       "text": "Your name",
+       "glyph": "pen",
+       "src": "c7-english-ch09-t01-i13"
+      }
+     ],
+     "speed": 0.95
+    },
+    {
+     "mode": "cause",
+     "title": "Choose the effect",
+     "sub": "match each travel clue to its result",
+     "pairs": [
+      {
+       "cause": {
+        "id": "c1",
+        "text": "We arrive at the station",
+        "glyph": "train",
+        "src": "c7-english-ch09-t01-i06"
+       },
+       "effect": {
+        "id": "e1",
+        "text": "Use at for the place",
+        "glyph": "map",
+        "src": "c7-english-ch09-t01-i06"
+       }
+      },
+      {
+       "cause": {
+        "id": "c2",
+        "text": "We travel on Monday",
+        "src": "c7-english-ch09-t01-i07"
+       },
+       "effect": {
+        "id": "e2",
+        "text": "Use on for the day",
+        "glyph": "clock",
+        "src": "c7-english-ch09-t01-i07"
+       }
+      },
+      {
+       "cause": {
+        "id": "c3",
+        "text": "We come home in June",
+        "src": "c7-english-ch09-t01-i07"
+       },
+       "effect": {
+        "id": "e3",
+        "text": "Use in for the month",
+        "glyph": "clock",
+        "src": "c7-english-ch09-t01-i07"
+       }
+      }
+     ],
+     "speed": 0.85,
+     "targets": "c7-english-ch09-t01-m-prep-time"
+    },
+    {
+     "mode": "who",
+     "title": "Who wrote this?",
+     "sub": "send each line to its speaker",
+     "speakers": [
+      {
+       "id": "anu",
+       "name": "Anu",
+       "glyph": "letter"
+      },
+      {
+       "id": "tara",
+       "name": "Tara",
+       "glyph": "person"
+      }
+     ],
+     "lines": [
+      {
+       "id": "w1",
+       "text": "Greetings from the East!",
+       "speaker": "anu",
+       "src": "c7-english-ch09-t01-i01"
+      },
+      {
+       "id": "w2",
+       "text": "I miss you!",
+       "speaker": "anu",
+       "src": "c7-english-ch09-t01-i03"
+      },
+      {
+       "id": "w3",
+       "text": "Dear Anu, thank you!",
+       "speaker": "tara",
+       "src": "c7-english-ch09-t01-i11"
+      },
+      {
+       "id": "w4",
+       "text": "With love, Anu",
+       "speaker": "anu",
+       "src": "c7-english-ch09-t01-i04"
+      }
+     ],
+     "speed": 0.8,
+     "targets": "c7-english-ch09-t01-m-formal-closing"
+    }
+   ]
+  },
+  "repairs": [
+   "glyph",
+   "glyph",
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-english-ch09-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "A Friendly Travel Letter",
+   "accent": "mint",
+   "targets": "c7-english-ch09-t01-m-formal-closing",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "A Friendly Travel Letter"
+      },
+      {
+       "id": "trip",
+       "type": "node",
+       "text": "Travel news",
+       "sub": "share experiences",
+       "glyph": "train",
+       "color": "mint"
+      },
+      {
+       "id": "friend",
+       "type": "node",
+       "text": "A friend",
+       "sub": "warm connection",
+       "glyph": "letter",
+       "color": "ion"
+      },
+      {
+       "id": "purpose",
+       "type": "arrow",
+       "from": "trip",
+       "to": "friend",
+       "text": "shares news"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Use Respected and Yours faithfully"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "column",
+     "els": [
+      {
+       "id": "parts",
+       "type": "title",
+       "text": "Letter parts"
+      },
+      {
+       "id": "place",
+       "type": "label",
+       "text": "Place and date",
+       "x": 180,
+       "y": 220,
+       "color": "amber"
+      },
+      {
+       "id": "greet",
+       "type": "label",
+       "text": "Dear Tara",
+       "x": 180,
+       "y": 290,
+       "color": "mint"
+      },
+      {
+       "id": "body",
+       "type": "label",
+       "text": "News and questions",
+       "x": 180,
+       "y": 360,
+       "color": "ion"
+      },
+      {
+       "id": "close",
+       "type": "label",
+       "text": "With love + name",
+       "x": 180,
+       "y": 430,
+       "color": "sun"
+      },
+      {
+       "id": "p1",
+       "type": "arrow",
+       "from": "place",
+       "to": "greet",
+       "text": "then"
+      },
+      {
+       "id": "p2",
+       "type": "arrow",
+       "from": "greet",
+       "to": "body",
+       "text": "then"
+      },
+      {
+       "id": "p3",
+       "type": "arrow",
+       "from": "body",
+       "to": "close",
+       "text": "then"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "prep",
+       "type": "title",
+       "text": "Choose the right word"
+      },
+      {
+       "id": "at",
+       "type": "label",
+       "text": "at the station",
+       "x": 100,
+       "y": 300,
+       "color": "mint"
+      },
+      {
+       "id": "on",
+       "type": "label",
+       "text": "on Monday",
+       "x": 330,
+       "y": 300,
+       "color": "amber"
+      },
+      {
+       "id": "in",
+       "type": "label",
+       "text": "in June",
+       "x": 560,
+       "y": 300,
+       "color": "ion"
+      },
+      {
+       "id": "reply",
+       "type": "label",
+       "text": "Dear Anu, thank you!",
+       "x": 250,
+       "y": 430,
+       "color": "sun"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "column",
+     "els": [
+      {
+       "id": "check",
+       "type": "title",
+       "text": "Put the parts in order"
+      },
+      {
+       "id": "qplace",
+       "type": "label",
+       "text": "Place and date",
+       "x": 180,
+       "y": 210,
+       "color": "amber"
+      },
+      {
+       "id": "qgreet",
+       "type": "label",
+       "text": "Greeting",
+       "x": 180,
+       "y": 290,
+       "color": "mint"
+      },
+      {
+       "id": "qbody",
+       "type": "label",
+       "text": "Body",
+       "x": 180,
+       "y": 370,
+       "color": "ion"
+      },
+      {
+       "id": "qclose",
+       "type": "label",
+       "text": "Closing and name",
+       "x": 180,
+       "y": 450,
+       "color": "sun"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Anu's letter has a clear purpose: she shares travel experiences with her friend.",
+    "L2": "Its tone is friendly. Dear, exclamations, I miss you, and With love are clues.",
+    "L3": "An informal letter starts with the place and date, then the greeting, body, and closing with a name.",
+    "L4": "Here is a myth: every letter must use Respected and Yours faithfully. That is not true for a friend.",
+    "L5": "Use at for one place or time, as in at the station and at 6 a.m.",
+    "L6": "Use on for a day, like on Monday, and in for a month, like in June.",
+    "L7": "A good reply begins by answering the news: Dear Anu, thank you for your lovely letter!",
+    "L8": "Travel news, friendly language, letter parts, and precise prepositions make the message clear."
+   },
+   "narration": {
+    "L1": {
+     "text": "Anu's letter has a clear purpose: she shares travel experiences with her friend.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "Its tone is friendly. Dear, exclamations, I miss you, and With love are clues.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "An informal letter starts with the place and date, then the greeting, body, and closing with a name.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "Here is a myth: every letter must use Respected and Yours faithfully. That is not true for a friend.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "Use at for one place or time, as in at the station and at 6 a.m.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Use on for a day, like on Monday, and in for a month, like in June.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "A good reply begins by answering the news: Dear Anu, thank you for your lovely letter!",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Travel news, friendly language, letter parts, and precise prepositions make the message clear.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "title"
+      },
+      {
+       "at": 0.4,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "trip",
+        "friend",
+        "purpose"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "friend"
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.6,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.5,
+       "target": "parts"
+      },
+      {
+       "at": 0.3,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "place",
+        "greet",
+        "body",
+        "close"
+       ]
+      },
+      {
+       "at": 1.2,
+       "do": "flow",
+       "dur": 1,
+       "target": [
+        "p1",
+        "p2",
+        "p3"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "bust",
+       "dur": 1.4,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "at"
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 1,
+       "target": "at"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "on",
+        "in"
+       ]
+      },
+      {
+       "at": 0.9,
+       "do": "highlight",
+       "dur": 1,
+       "target": [
+        "on",
+        "in"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "reply"
+      },
+      {
+       "at": 0.9,
+       "do": "focus",
+       "dur": 1,
+       "target": "reply"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "check"
+      },
+      {
+       "at": 0.6,
+       "do": "interactive",
+       "dur": 1
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "order",
+    "prompt": "Tap the parts of an informal letter in the correct order.",
+    "items": [
+     "qplace",
+     "qgreet",
+     "qbody",
+     "qclose"
+    ],
+    "src": "c7-english-ch09-t01-i12"
+   }
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg",
+  "passes": 2,
+  "seconds": 46
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "Dear Dadi",
+   "prompt": "sequence: after/for \"Jaipur, 3 June\"",
+   "src": "c7-english-ch09-t01-i13"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "Share news and ask",
+   "prompt": "sequence: after/for \"Dear Dadi\"",
+   "src": "c7-english-ch09-t01-i13"
+  },
+  {
+   "itemId": "r1:2",
+   "key": "With love",
+   "prompt": "sequence: after/for \"Share news and ask\"",
+   "src": "c7-english-ch09-t01-i13"
+  },
+  {
+   "itemId": "r1:3",
+   "key": "Your name",
+   "prompt": "sequence: after/for \"With love\"",
+   "src": "c7-english-ch09-t01-i13"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "Use at for the place",
+   "prompt": "cause: after/for \"We arrive at the station\"",
+   "src": "c7-english-ch09-t01-i06"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "Use on for the day",
+   "prompt": "cause: after/for \"We travel on Monday\"",
+   "src": "c7-english-ch09-t01-i07"
+  },
+  {
+   "itemId": "r2:2",
+   "key": "Use in for the month",
+   "prompt": "cause: after/for \"We come home in June\"",
+   "src": "c7-english-ch09-t01-i07"
+  },
+  {
+   "itemId": "r3:0",
+   "key": "Anu",
+   "prompt": "who: after/for \"Greetings from the East!\"",
+   "src": "c7-english-ch09-t01-i01"
+  },
+  {
+   "itemId": "r3:1",
+   "key": "Anu",
+   "prompt": "who: after/for \"I miss you!\"",
+   "src": "c7-english-ch09-t01-i03"
+  },
+  {
+   "itemId": "r3:2",
+   "key": "Tara",
+   "prompt": "who: after/for \"Dear Anu, thank you!\"",
+   "src": "c7-english-ch09-t01-i11"
+  },
+  {
+   "itemId": "r3:3",
+   "key": "Anu",
+   "prompt": "who: after/for \"With love, Anu\"",
+   "src": "c7-english-ch09-t01-i04"
+  }
+ ],
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch09-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "letter",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        180,
+        80
+       ],
+       "w": 440,
+       "h": 330
+      },
+      {
+       "id": "purpose",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        135
+       ],
+       "text": "purpose",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "travel",
+       "op": "text",
+       "startMs": 1600,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        235
+       ],
+       "text": "travel experiences",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "friend",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3100,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        335
+       ],
+       "text": "friend",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "a1",
+       "op": "arrow",
+       "startMs": 3300,
+       "endMs": 3900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        160
+       ],
+       "to": [
+        400,
+        215
+       ]
+      },
+      {
+       "id": "a2",
+       "op": "arrow",
+       "startMs": 4000,
+       "endMs": 4600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        270
+       ],
+       "to": [
+        400,
+        315
+       ]
+      },
+      {
+       "id": "h1",
+       "op": "highlight",
+       "startMs": 4800,
+       "endMs": 5500,
+       "ink": "accent",
+       "weight": 2,
+       "target": "purpose",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch09-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "tone",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        115
+       ],
+       "text": "friendly",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "dear",
+       "op": "text",
+       "startMs": 800,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        150,
+        210
+       ],
+       "text": "Dear",
+       "size": "m"
+      },
+      {
+       "id": "exclaim",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        330,
+        210
+       ],
+       "text": "exclamations",
+       "size": "m"
+      },
+      {
+       "id": "miss",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        170,
+        300
+       ],
+       "text": "I miss you",
+       "size": "m"
+      },
+      {
+       "id": "love",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        390,
+        300
+       ],
+       "text": "With love",
+       "size": "m"
+      },
+      {
+       "id": "b1",
+       "op": "line",
+       "startMs": 3900,
+       "endMs": 4300,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        145,
+        230
+       ],
+       "to": [
+        250,
+        230
+       ]
+      },
+      {
+       "id": "b2",
+       "op": "line",
+       "startMs": 4400,
+       "endMs": 4800,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        325,
+        230
+       ],
+       "to": [
+        490,
+        230
+       ]
+      },
+      {
+       "id": "b3",
+       "op": "line",
+       "startMs": 4900,
+       "endMs": 5300,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        165,
+        320
+       ],
+       "to": [
+        290,
+        320
+       ]
+      },
+      {
+       "id": "b4",
+       "op": "line",
+       "startMs": 5400,
+       "endMs": 5800,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        385,
+        320
+       ],
+       "to": [
+        510,
+        320
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch09-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "place",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        70
+       ],
+       "w": 560,
+       "h": 70
+      },
+      {
+       "id": "ptext",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        115
+       ],
+       "text": "place and date",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "greet",
+       "op": "rect",
+       "startMs": 1400,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        170
+       ],
+       "w": 560,
+       "h": 60
+      },
+      {
+       "id": "gtext",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        208
+       ],
+       "text": "greeting",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "body",
+       "op": "rect",
+       "startMs": 2500,
+       "endMs": 3100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        260
+       ],
+       "w": 560,
+       "h": 80
+      },
+      {
+       "id": "btext",
+       "op": "text",
+       "startMs": 3100,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        310
+       ],
+       "text": "body",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "close",
+       "op": "rect",
+       "startMs": 3600,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        370
+       ],
+       "w": 560,
+       "h": 60
+      },
+      {
+       "id": "ctext",
+       "op": "text",
+       "startMs": 4100,
+       "endMs": 4900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        408
+       ],
+       "text": "closing with a name",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "arrow1",
+       "op": "arrow",
+       "startMs": 5100,
+       "endMs": 5500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        140
+       ],
+       "to": [
+        400,
+        168
+       ]
+      },
+      {
+       "id": "arrow2",
+       "op": "arrow",
+       "startMs": 5600,
+       "endMs": 6000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        230
+       ],
+       "to": [
+        400,
+        258
+       ]
+      },
+      {
+       "id": "arrow3",
+       "op": "arrow",
+       "startMs": 6100,
+       "endMs": 6500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        340
+       ],
+       "to": [
+        400,
+        368
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch09-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "myth",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        90
+       ],
+       "text": "myth",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "wrong",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        230,
+        180
+       ],
+       "text": "Respected",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "wrong2",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        570,
+        180
+       ],
+       "text": "Yours faithfully",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "cross1",
+       "op": "line",
+       "startMs": 2500,
+       "endMs": 3000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        150,
+        145
+       ],
+       "to": [
+        310,
+        215
+       ]
+      },
+      {
+       "id": "cross2",
+       "op": "line",
+       "startMs": 3000,
+       "endMs": 3500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        310,
+        145
+       ],
+       "to": [
+        150,
+        215
+       ]
+      },
+      {
+       "id": "cross3",
+       "op": "line",
+       "startMs": 3500,
+       "endMs": 4000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        490,
+        145
+       ],
+       "to": [
+        650,
+        215
+       ]
+      },
+      {
+       "id": "cross4",
+       "op": "line",
+       "startMs": 4000,
+       "endMs": 4500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        650,
+        145
+       ],
+       "to": [
+        490,
+        215
+       ]
+      },
+      {
+       "id": "friend",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 5500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        330
+       ],
+       "text": "friend",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "true",
+       "op": "text",
+       "startMs": 5600,
+       "endMs": 6200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        400
+       ],
+       "text": "not true",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch09-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "at",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        90
+       ],
+       "text": "at",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "place",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        250,
+        190
+       ],
+       "text": "at the station",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "time",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        550,
+        190
+       ],
+       "text": "at 6 a.m.",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "c1",
+       "op": "circle",
+       "startMs": 2400,
+       "endMs": 3000,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        250,
+        185
+       ],
+       "r": 105
+      },
+      {
+       "id": "c2",
+       "op": "circle",
+       "startMs": 3000,
+       "endMs": 3600,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        550,
+        185
+       ],
+       "r": 85
+      },
+      {
+       "id": "one",
+       "op": "text",
+       "startMs": 3800,
+       "endMs": 4600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        330
+       ],
+       "text": "one place or time",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "a1",
+       "op": "arrow",
+       "startMs": 4800,
+       "endMs": 5300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        250,
+        225
+       ],
+       "to": [
+        350,
+        300
+       ]
+      },
+      {
+       "id": "a2",
+       "op": "arrow",
+       "startMs": 5300,
+       "endMs": 5800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        550,
+        225
+       ],
+       "to": [
+        450,
+        300
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch09-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "on",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        90
+       ],
+       "text": "on",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "day",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        250,
+        180
+       ],
+       "text": "on Monday",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "in",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        290
+       ],
+       "text": "in",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "month",
+       "op": "text",
+       "startMs": 2400,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        550,
+        380
+       ],
+       "text": "in June",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "c1",
+       "op": "circle",
+       "startMs": 3200,
+       "endMs": 3700,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        250,
+        175
+       ],
+       "r": 85
+      },
+      {
+       "id": "c2",
+       "op": "circle",
+       "startMs": 3800,
+       "endMs": 4300,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        550,
+        375
+       ],
+       "r": 70
+      },
+      {
+       "id": "arr",
+       "op": "arrow",
+       "startMs": 4500,
+       "endMs": 5000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        120
+       ],
+       "to": [
+        280,
+        155
+       ]
+      },
+      {
+       "id": "arr2",
+       "op": "arrow",
+       "startMs": 5100,
+       "endMs": 5600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        330
+       ],
+       "to": [
+        520,
+        350
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch09-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "reply",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        80
+       ],
+       "text": "reply",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "greet",
+       "op": "text",
+       "startMs": 800,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        170
+       ],
+       "text": "Dear Anu",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "thanks",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2400,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        260
+       ],
+       "text": "thank you",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "lovely",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        340
+       ],
+       "text": "lovely letter",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "exclaim",
+       "op": "text",
+       "startMs": 3700,
+       "endMs": 4100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        420
+       ],
+       "text": "!",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "a1",
+       "op": "arrow",
+       "startMs": 4500,
+       "endMs": 5000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        200
+       ],
+       "to": [
+        400,
+        245
+       ]
+      },
+      {
+       "id": "h",
+       "op": "highlight",
+       "startMs": 5200,
+       "endMs": 6000,
+       "ink": "good",
+       "weight": 2,
+       "target": "thanks",
+       "style": "underline"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch09-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "travel",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        150,
+        100
+       ],
+       "text": "Travel news",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "friendly",
+       "op": "text",
+       "startMs": 800,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        100
+       ],
+       "text": "friendly language",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "parts",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        650,
+        100
+       ],
+       "text": "letter parts",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "preps",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        230
+       ],
+       "text": "precise prepositions",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "a1",
+       "op": "arrow",
+       "startMs": 3600,
+       "endMs": 4100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        150,
+        130
+       ],
+       "to": [
+        350,
+        210
+       ]
+      },
+      {
+       "id": "a2",
+       "op": "arrow",
+       "startMs": 4100,
+       "endMs": 4600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        130
+       ],
+       "to": [
+        400,
+        210
+       ]
+      },
+      {
+       "id": "a3",
+       "op": "arrow",
+       "startMs": 4600,
+       "endMs": 5100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        650,
+        130
+       ],
+       "to": [
+        450,
+        210
+       ]
+      },
+      {
+       "id": "clear",
+       "op": "text",
+       "startMs": 5200,
+       "endMs": 5800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        380
+       ],
+       "text": "clear",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "h",
+       "op": "highlight",
+       "startMs": 5800,
+       "endMs": 6132,
+       "ink": "good",
+       "weight": 2,
+       "target": "clear",
+       "style": "circle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

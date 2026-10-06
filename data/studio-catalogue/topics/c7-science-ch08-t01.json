@@ -1,0 +1,1517 @@
+{
+ "topicId": "c7-science-ch08-t01",
+ "title": "Measuring time and the simple pendulum",
+ "chapter": "Measurement of Time and Motion",
+ "subject": "science",
+ "class": 7,
+ "topicType": "T4",
+ "plan": {
+  "game": "motion-lab@1",
+  "hint": "pendulum mode (period targets; mass knob)"
+ },
+ "game": {
+  "archetype": "motion-lab@1",
+  "spec": {
+   "archetype": "motion-lab@1",
+   "skills": [
+    "c7-science-ch08-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "done": "right",
+    "length": "length",
+    "mass": "mass",
+    "release": "SWING",
+    "stop": "STOP",
+    "lock": "LOCK",
+    "period": "one swing",
+    "swings": "swings",
+    "timer": "timer",
+    "run": "RUN",
+    "hold": "HOLD to drive",
+    "target": "target",
+    "yours": "yours",
+    "runDone": "Lab closed",
+    "coach": "Drag the slider, then test it",
+    "speed": "speed",
+    "time": "time",
+    "distance": "distance",
+    "train": "train",
+    "you": "you",
+    "together": "TOGETHER",
+    "early": "too early",
+    "late": "too late"
+   },
+   "title": "Motion Lab",
+   "rounds": [
+    {
+     "mode": "pendulum",
+     "title": "Key and thread",
+     "sub": "match the target period",
+     "period": 1.8,
+     "tol": 0.08,
+     "massKnob": true,
+     "targets": "c7-science-ch08-t01-m1"
+    },
+    {
+     "mode": "race",
+     "title": "Cycle to the park",
+     "sub": "cover 30 m in 6 s",
+     "ask": "speed",
+     "d": 30,
+     "t": 6,
+     "unitD": "m",
+     "unitT": "s",
+     "tolPct": 5
+    },
+    {
+     "mode": "drive",
+     "title": "Drive the graph",
+     "sub": "steady, stop, then faster",
+     "pts": [
+      [
+       0,
+       0
+      ],
+      [
+       4,
+       20
+      ],
+      [
+       6,
+       20
+      ],
+      [
+       10,
+       50
+      ]
+     ],
+     "vmax": 10,
+     "tol": 6
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-science-ch08-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Measuring a pendulum",
+   "accent": "sci",
+   "targets": "c7-science-ch08-t01-m1",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Measuring a pendulum"
+      },
+      {
+       "id": "second",
+       "type": "node",
+       "text": "Second (s)",
+       "sub": "SI unit",
+       "glyph": "clock",
+       "color": "sci"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "A heavier bob swings faster"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "support",
+       "type": "node",
+       "text": "Support",
+       "sub": "fixed point",
+       "glyph": "pillar",
+       "color": "amber"
+      },
+      {
+       "id": "bob",
+       "type": "node",
+       "text": "Bob",
+       "sub": "small heavy",
+       "color": "sci"
+      },
+      {
+       "id": "left",
+       "type": "label",
+       "text": "One end"
+      },
+      {
+       "id": "right",
+       "type": "label",
+       "text": "Other end"
+      },
+      {
+       "id": "swing1",
+       "type": "arrow",
+       "from": "bob",
+       "to": "left",
+       "text": "swings"
+      },
+      {
+       "id": "swing2",
+       "type": "arrow",
+       "from": "left",
+       "to": "right",
+       "text": "and back"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "long",
+       "type": "node",
+       "text": "Long thread",
+       "sub": "slower",
+       "glyph": "ruler",
+       "color": "ion"
+      },
+      {
+       "id": "short",
+       "type": "node",
+       "text": "Short thread",
+       "sub": "faster",
+       "glyph": "ruler",
+       "color": "mint"
+      },
+      {
+       "id": "calc",
+       "type": "bar",
+       "parts": 10,
+       "shaded": 10,
+       "text": "18 s total"
+      },
+      {
+       "id": "period",
+       "type": "node",
+       "text": "1.8 s",
+       "sub": "18 ÷ 10",
+       "glyph": "clock",
+       "color": "sun"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "The SI unit of time is the second, written s.",
+    "L2": "A simple pendulum has a small heavy bob hanging from a thread.",
+    "L3": "One oscillation is one complete swing from one end to the other and back.",
+    "L4": "MYTH: a heavier bob makes a pendulum swing faster. Not true: the bob's mass does not change the time period.",
+    "L5": "A longer thread gives a longer time period, so it swings more slowly. A shorter thread swings faster.",
+    "L6": "To measure accurately, time several oscillations and divide the total time by their number.",
+    "L7": "For example, 10 oscillations take 18 seconds. The time period is 18 divided by 10, or 1.8 seconds.",
+    "L8": "Now check your understanding: choose the correct time period."
+   },
+   "narration": {
+    "L1": {
+     "text": "The SI unit of time is the second, written s.",
+     "dur": 2,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "A simple pendulum has a small heavy bob hanging from a thread.",
+     "dur": 2.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "One oscillation is one complete swing from one end to the other and back.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "MYTH: a heavier bob makes a pendulum swing faster. Not true: the bob's mass does not change the time period.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "A longer thread gives a longer time period, so it swings more slowly. A shorter thread swings faster.",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "To measure accurately, time several oscillations and divide the total time by their number.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "For example, 10 oscillations take 18 seconds. The time period is 18 divided by 10, or 1.8 seconds.",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Now check your understanding: choose the correct time period.",
+     "dur": 2,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.3,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "title"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.7,
+       "target": "second"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.5,
+       "target": "support"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.7,
+       "target": "bob"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "left",
+        "right",
+        "swing1",
+        "swing2"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "swing2",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      },
+      {
+       "at": 1,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.3,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "long",
+        "short"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "long"
+      },
+      {
+       "at": 1.6,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "short"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.3,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "calc"
+      },
+      {
+       "at": 0.8,
+       "do": "count",
+       "dur": 1,
+       "target": "calc",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.3,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "period"
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 1,
+       "target": "period"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "A pendulum makes 10 oscillations in 18 seconds. What is its time period?",
+    "options": [
+     "long",
+     "short",
+     "period"
+    ],
+    "answer": "period",
+    "src": "c7-science-ch08-t01-i02"
+   }
+  },
+  "repairs": [
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 27
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch08-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "time",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        150
+       ],
+       "text": "time",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "unit",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        250
+       ],
+       "text": "second",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "equals",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        320
+       ],
+       "text": "s",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "arrow",
+       "op": "arrow",
+       "startMs": 2500,
+       "endMs": 3200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        190
+       ],
+       "to": [
+        400,
+        235
+       ]
+      },
+      {
+       "id": "label",
+       "op": "label",
+       "startMs": 3200,
+       "endMs": 4000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        470,
+        320
+       ],
+       "text": "SI unit",
+       "to": [
+        420,
+        320
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch08-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "support",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        400,
+        55
+       ],
+       "to": [
+        400,
+        115
+       ]
+      },
+      {
+       "id": "thread",
+       "op": "line",
+       "startMs": 600,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        400,
+        115
+       ],
+       "to": [
+        400,
+        330
+       ]
+      },
+      {
+       "id": "bob",
+       "op": "circle",
+       "startMs": 1500,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        355
+       ],
+       "r": 28,
+       "fill": "accent"
+      },
+      {
+       "id": "threadlabel",
+       "op": "label",
+       "startMs": 2400,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        455,
+        210
+       ],
+       "text": "thread",
+       "to": [
+        400,
+        210
+       ]
+      },
+      {
+       "id": "boblabel",
+       "op": "label",
+       "startMs": 3300,
+       "endMs": 4500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        465,
+        355
+       ],
+       "text": "heavy bob",
+       "to": [
+        425,
+        355
+       ]
+      },
+      {
+       "id": "pendulum",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        455
+       ],
+       "text": "simple pendulum",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch08-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "left",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        300,
+        110
+       ],
+       "to": [
+        400,
+        330
+       ]
+      },
+      {
+       "id": "right",
+       "op": "line",
+       "startMs": 800,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        500,
+        110
+       ],
+       "to": [
+        400,
+        330
+       ]
+      },
+      {
+       "id": "leftbob",
+       "op": "circle",
+       "startMs": 1600,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        300,
+        110
+       ],
+       "r": 24
+      },
+      {
+       "id": "rightbob",
+       "op": "circle",
+       "startMs": 2200,
+       "endMs": 2800,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        500,
+        110
+       ],
+       "r": 24
+      },
+      {
+       "id": "swing1",
+       "op": "arrow",
+       "startMs": 2800,
+       "endMs": 3900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        325,
+        115
+       ],
+       "to": [
+        475,
+        115
+       ],
+       "bend": -1
+      },
+      {
+       "id": "swing2",
+       "op": "arrow",
+       "startMs": 3900,
+       "endMs": 5000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        475,
+        145
+       ],
+       "to": [
+        325,
+        145
+       ],
+       "bend": 1
+      },
+      {
+       "id": "osc",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 6200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        420
+       ],
+       "text": "one oscillation",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch08-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9111,
+     "ops": [
+      {
+       "id": "myth",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 3,
+       "at": [
+        400,
+        70
+       ],
+       "text": "MYTH",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "bob1",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        260,
+        220
+       ],
+       "r": 20,
+       "fill": "soft"
+      },
+      {
+       "id": "bob2",
+       "op": "circle",
+       "startMs": 1500,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        540,
+        220
+       ],
+       "r": 34,
+       "fill": "soft"
+      },
+      {
+       "id": "mass1",
+       "op": "label",
+       "startMs": 2100,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        220,
+        275
+       ],
+       "text": "bob",
+       "to": [
+        260,
+        240
+       ]
+      },
+      {
+       "id": "mass2",
+       "op": "label",
+       "startMs": 2700,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        510,
+        285
+       ],
+       "text": "heavier bob",
+       "to": [
+        540,
+        250
+       ]
+      },
+      {
+       "id": "cross",
+       "op": "line",
+       "startMs": 3500,
+       "endMs": 4300,
+       "ink": "accent",
+       "weight": 3,
+       "from": [
+        190,
+        160
+       ],
+       "to": [
+        610,
+        300
+       ]
+      },
+      {
+       "id": "nottrue",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 5200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        350
+       ],
+       "text": "Not true",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "period",
+       "op": "text",
+       "startMs": 5200,
+       "endMs": 6200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        425
+       ],
+       "text": "time period",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "mass",
+       "op": "text",
+       "startMs": 6200,
+       "endMs": 7600,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        465
+       ],
+       "text": "mass does not change",
+       "size": "s",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch08-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "longthread",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        250,
+        80
+       ],
+       "to": [
+        250,
+        350
+       ]
+      },
+      {
+       "id": "longbob",
+       "op": "circle",
+       "startMs": 800,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        250,
+        380
+       ],
+       "r": 24
+      },
+      {
+       "id": "shortthread",
+       "op": "line",
+       "startMs": 1400,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        550,
+        80
+       ],
+       "to": [
+        550,
+        230
+       ]
+      },
+      {
+       "id": "shortbob",
+       "op": "circle",
+       "startMs": 2100,
+       "endMs": 2700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        550,
+        260
+       ],
+       "r": 24
+      },
+      {
+       "id": "longlabel",
+       "op": "label",
+       "startMs": 2700,
+       "endMs": 3600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        220
+       ],
+       "text": "longer thread",
+       "to": [
+        250,
+        220
+       ]
+      },
+      {
+       "id": "slow",
+       "op": "text",
+       "startMs": 3600,
+       "endMs": 4500,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        250,
+        450
+       ],
+       "text": "more slowly",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "shortlabel",
+       "op": "label",
+       "startMs": 4500,
+       "endMs": 5500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        585,
+        160
+       ],
+       "text": "shorter thread",
+       "to": [
+        550,
+        160
+       ]
+      },
+      {
+       "id": "fast",
+       "op": "text",
+       "startMs": 5500,
+       "endMs": 6300,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        550,
+        450
+       ],
+       "text": "faster",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch08-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "oscillations",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        90
+       ],
+       "text": "oscillations",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "total",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        250,
+        190
+       ],
+       "text": "total time",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "divide",
+       "op": "arrow",
+       "startMs": 1800,
+       "endMs": 2600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        190
+       ],
+       "to": [
+        400,
+        285
+       ]
+      },
+      {
+       "id": "number",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        550,
+        190
+       ],
+       "text": "number",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "equation",
+       "op": "numwork",
+       "startMs": 2600,
+       "endMs": 4300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        190,
+        320
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "time p",
+         "=",
+         "total ",
+         "÷",
+         "number"
+        ]
+       ]
+      },
+      {
+       "id": "accurate",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 5200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        450
+       ],
+       "text": "accurately",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch08-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "example",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        75
+       ],
+       "text": "example",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "given",
+       "op": "numwork",
+       "startMs": 700,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        170,
+        140
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "10",
+         "oscill",
+         "=",
+         "18",
+         "second"
+        ]
+       ]
+      },
+      {
+       "id": "dividework",
+       "op": "numwork",
+       "startMs": 1900,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        220,
+        255
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "18",
+         "÷",
+         "10",
+         "=",
+         "1.8",
+         "second"
+        ]
+       ]
+      },
+      {
+       "id": "periodlabel",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        370
+       ],
+       "text": "time period",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "result",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5900,
+       "ink": "good",
+       "weight": 3,
+       "at": [
+        400,
+        430
+       ],
+       "text": "1.8 seconds",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "check",
+       "op": "text",
+       "startMs": 5900,
+       "endMs": 6900,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        400,
+        475
+       ],
+       "text": "about 2 seconds",
+       "size": "s",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch08-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4430,
+     "ops": [
+      {
+       "id": "check",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        80
+       ],
+       "text": "check",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "understanding",
+       "op": "text",
+       "startMs": 800,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        135
+       ],
+       "text": "understanding",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "pendulum",
+       "op": "line",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        400,
+        180
+       ],
+       "to": [
+        400,
+        350
+       ]
+      },
+      {
+       "id": "bob",
+       "op": "circle",
+       "startMs": 2200,
+       "endMs": 2800,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        380
+       ],
+       "r": 25
+      },
+      {
+       "id": "question",
+       "op": "text",
+       "startMs": 2800,
+       "endMs": 3800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        455
+       ],
+       "text": "time period",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1",
+   "key": "80.5 cm",
+   "prompt": "period 1.8 s"
+  },
+  {
+   "itemId": "r2",
+   "key": "5 m/s",
+   "prompt": "speed?"
+  },
+  {
+   "itemId": "r3",
+   "key": "non-uniform",
+   "prompt": "follow the graph"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ },
+ "firstCheck": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "Round 2 asks for 'speed' given 150 m in 12 s, yielding 12.5 m/s (about 45 km/h). A child cycling to a park at this speed is physically unrealistic for a 9-15 year old; typical cycling speed is about 5-6 m/s.",
+    "severity": "high"
+   }
+  ],
+  "verdict": "fail",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

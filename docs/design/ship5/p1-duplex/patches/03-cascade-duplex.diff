@@ -1,0 +1,273 @@
+diff --git a/src/lesson/cascadeLink.ts b/src/lesson/cascadeLink.ts
+index a51003d..aef7caf 100644
+--- a/src/lesson/cascadeLink.ts
++++ b/src/lesson/cascadeLink.ts
+@@ -26,6 +26,9 @@ import { Emitter } from "./store.ts";
+ import { fetchSpeechStream, PcmStreamPlayer, type SpeechStreamFetch, type StreamPlayback } from "./ttsStream.ts";
+ import { MicVad } from "./vad.ts";
+ import { FragmentMerger, PREDICTIVE_SILENCE_MS, predictiveEnabled, resumeCeilingMs, turnContext, type TurnFinal } from "./turnModel.ts";
++// ship5 p1-duplex: the hands-free duplex engine (src/duplex/cascadeDuplex.ts). Off unless the caller passes `duplex`.
++import type { CascadeDuplex, CascadeDuplexOptions, CascadeDuplexState } from "../duplex/cascadeDuplex.ts";
++import type { DuplexMode } from "../duplex/flags.ts";
+ 
+ export type CascadeTransport = "webrtc" | "recording" | "typed";
+ 
+@@ -63,6 +66,18 @@ export interface CascadeLinkOptions {
+    * that reads unfinished is held briefly and merged with what the child says next (turnModel.ts FragmentMerger).
+    */
+   predictive?: boolean;
++  /**
++   * ship5 p1-duplex: the hands-free duplex engine decides the child's floor (no talk button; a final is not a turn).
++   * A mode or a resolver (src/duplex/flags.ts resolveDuplexMode: device override, server kill switch, build default).
++   * Absent or "off" = today's path byte for byte. Any failure falls back to today's path (onDuplex reports it).
++   */
++  duplex?: DuplexMode | (() => Promise<DuplexMode>);
++  /** ship5 p1-duplex: the duplex state (live / fallback / phase), for the UI's talk policy and the status probes. */
++  onDuplex?: (s: CascadeDuplexState) => void;
++  /** ship5 p1-duplex: wrap the duplex host's emit for the face puppet (src/face-puppet/duplexBridge.ts; FACE-BRIDGE.md). */
++  duplexFace?: { wrapEmit: (emit: (c: import("../duplex/host.ts").HostCommand) => void) => (c: import("../duplex/host.ts").HostCommand) => void; detach: () => void } | null;
++  /** ship5 p1-duplex: extra engine options (tests inject the mic tap and timers). */
++  duplexOptions?: Partial<Omit<CascadeDuplexOptions, "mode" | "face">>;
+ }
+ 
+ /** Per-turn latency marks (epoch ms, client clock) for dev UIs and on-device measurement. */
+@@ -338,6 +353,12 @@ export class CascadeLink implements TeacherLink {
+   /** turn.predictive: holds an unfinished-sounding fragment and merges the next one into it (null when off). */
+   private readonly merger: FragmentMerger | null;
+   private mergeTimer: ReturnType<typeof setTimeout> | null = null;
++  /** ship5 p1-duplex: the engine while it runs (null = today's path). */
++  private duplex: CascadeDuplex | null = null;
++  private duplexMode: Promise<DuplexMode> = Promise.resolve("off");
++  private readonly onDuplex?: (s: CascadeDuplexState) => void;
++  private readonly duplexFace: CascadeLinkOptions["duplexFace"];
++  private readonly duplexOptions: CascadeLinkOptions["duplexOptions"];
+ 
+   constructor(opts: CascadeLinkOptions) {
+     this.lessonId = opts.lessonId;
+@@ -352,6 +373,11 @@ export class CascadeLink implements TeacherLink {
+     this.onTransport = opts.onTransport;
+     this.ctx = opts.audioContext ?? null;
+     this.merger = opts.predictive ?? predictiveEnabled() ? new FragmentMerger() : null;
++    this.onDuplex = opts.onDuplex;
++    this.duplexFace = opts.duplexFace;
++    this.duplexOptions = opts.duplexOptions;
++    const dm = opts.duplex;
++    if (dm) this.duplexMode = (typeof dm === "function" ? dm().catch((): DuplexMode => "on") : Promise.resolve(dm));
+     this.protocol = new TranscriptionProtocol({
+       emit: (e) => this.onChildEvent(e),
+       onSpeechStart: () => this.onServerSpeechStart(),
+@@ -416,6 +442,7 @@ export class CascadeLink implements TeacherLink {
+ 
+   sendChild(text: string, opts: { chipId?: string } = {}): void {
+     void this.ctx?.resume().catch(() => {}); // inside the child's tap: a user activation
++    this.duplex?.screen(opts.chipId ? "choice_pick" : "submit");
+     this.interrupt();
+     this.events.emit({ type: "child_final", text, startedAt: Date.now(), typed: true, chipId: opts.chipId });
+   }
+@@ -425,6 +452,13 @@ export class CascadeLink implements TeacherLink {
+     if (!text) return;
+     this.stopReply("cancelled", false);
+     const id = `cascade-${++this.replySeq}`;
++    // ship5 p1-duplex: the child went on after the engine committed (a revoke): the reply to that commit is never voiced
++    if (this.duplexDeciding && this.duplex?.shouldDropReply()) {
++      this.events.emit({ type: "response_start", responseId: id, at: Date.now() });
++      this.events.emit({ type: "teacher_interrupted", responseId: id });
++      this.events.emit({ type: "response_done", responseId: id, status: "cancelled" });
++      return;
++    }
+     this.turn.replyAt = Date.now();
+     this.events.emit({ type: "response_start", responseId: id, at: Date.now() });
+     // The caption appears at once; speech follows as the first sentence streams in.
+@@ -446,6 +480,11 @@ export class CascadeLink implements TeacherLink {
+         this.turn.firstAudioAt = at;
+         this.recordTiming();
+         this.events.emit({ type: "teacher_audio_start" });
++        // the Director's turn ui (setTurnContext, set before this reply was asked for): the FORM of the answer, never the key
++        if (this.duplex) {
++          this.duplex.setUi(turnContext());
++          this.duplex.replyAudible(text);
++        }
+       },
+       () => {},
+     );
+@@ -454,6 +493,8 @@ export class CascadeLink implements TeacherLink {
+       if (status === "failed") {
+         this.events.emit({ type: "error", message: "the teacher's voice is unavailable; showing text only", fatal: false, code: "tts_failed" });
+       }
++      if (status === "completed") this.duplex?.replyEnded();
++      else this.duplex?.replyStopped();
+       this.stopReply(status === "stopped" ? "cancelled" : status, false);
+     });
+   }
+@@ -470,7 +511,9 @@ export class CascadeLink implements TeacherLink {
+     this.pushToTalk = on;
+     this.talking = false;
+     if (this.transportKind === "webrtc") {
+-      this.sendSession(on ? null : this.audioInput.turn_detection);
++      // ship5 p1-duplex: hands-free again while the engine decides → its 1,500 ms backstop, not the token's VAD
++      if (!on && this.duplexVadMs !== null) this.sendDuplexVad();
++      else this.sendSession(on ? null : this.audioInput.turn_detection);
+       this.setMicEnabled(!on);
+     }
+   }
+@@ -520,6 +563,8 @@ export class CascadeLink implements TeacherLink {
+     const held = this.merger?.drain();
+     if (held) this.deliverChild(held);
+     this.closed = true;
++    this.duplex?.close();
++    this.duplex = null;
+     this.clearMergeTimer();
+     this.clearPttTail();
+     this.clearBargeTimers();
+@@ -571,7 +616,7 @@ export class CascadeLink implements TeacherLink {
+ 
+   private onChildEvent(e: LinkEvent): void {
+     // turn.predictive (W2-E L1): a final that reads unfinished waits for the child to go on, and merges with the next.
+-    if (this.merger && !this.current?.paused) {
++    if (this.merger && !this.current?.paused && !this.duplexDeciding) {
+       if (e.type === "child_speech_start" && this.merger.onSpeechStart()) {
+         // the child went on: the held fragment waits for the next final, but never indefinitely (no final may ever come)
+         this.clearMergeTimer();
+@@ -608,8 +653,8 @@ export class CascadeLink implements TeacherLink {
+   private deliverChild(e: LinkEvent): void {
+     if (e.type === "child_speech_end") {
+       this.turn = { speechEndAt: e.at };
+-      // The transcript decides a paused reply; if it never comes, she carries on.
+-      if (this.current?.paused) this.armPauseTimer(FINAL_WAIT_MS);
++      // The transcript decides a paused reply; if it never comes, she carries on (the engine decides it under duplex).
++      if (this.current?.paused && !this.duplexDeciding) this.armPauseTimer(FINAL_WAIT_MS);
+     }
+     if (e.type === "child_final" || e.type === "child_silent") this.turn.finalAt = Date.now();
+     if ((e.type === "child_final" && !e.typed) || e.type === "child_silent") {
+@@ -646,6 +691,7 @@ export class CascadeLink implements TeacherLink {
+ 
+   /** Server VAD speech_started (hands-free): pause her, keep the reply, let the transcript decide. */
+   private onServerSpeechStart(): void {
++    if (this.duplexDeciding) return; // ship5 p1-duplex: the engine ducks / hushes / yields on the mic frames itself
+     const cur = this.current;
+     if (this.duckTimer) clearTimeout(this.duckTimer);
+     this.duckTimer = null;
+@@ -659,7 +705,7 @@ export class CascadeLink implements TeacherLink {
+   private onLocalVad(edge: "onset" | "sustain" | "offset"): void {
+     if (edge === "onset" && this.recorder) this.recorder.heard = true;
+     const cur = this.current;
+-    if (!cur?.playing || this.pushToTalk || edge === "offset") return;
++    if (!cur?.playing || this.pushToTalk || edge === "offset" || this.duplexDeciding) return;
+     if (edge === "onset" && this.localDuck) {
+       this.bargeStats.localDucks++;
+       this.player?.duck(DUCK_LEVEL);
+@@ -831,7 +877,7 @@ export class CascadeLink implements TeacherLink {
+       try {
+         const e = JSON.parse(String(m.data));
+         if (e?.type === "error") this.onServerError(e);
+-        else this.protocol.handle(e);
++        else if (!this.duplex?.onSttEvent(e)) this.protocol.handle(e);
+       } catch (err) {
+         console.warn("cascade: bad event", err);
+       }
+@@ -853,6 +899,87 @@ export class CascadeLink implements TeacherLink {
+     this.callUp = true;
+     if (this.pushToTalk) this.sendSession(null);
+     else if (this.merger) this.sendSession(this.audioInput.turn_detection);
++    // ship5 p1-duplex: a reconnect keeps the engine; the first call brings it up (off by default)
++    if (this.duplex?.deciding) this.sendDuplexVad();
++    else if (!this.duplex) void this.startDuplex();
++  }
++
++  // ───────────── ship5 p1-duplex: the hands-free duplex engine ─────────────
++
++  private async startDuplex(): Promise<void> {
++    let mode: DuplexMode;
++    try {
++      mode = await this.duplexMode;
++    } catch {
++      mode = "off";
++    }
++    if (mode === "off" || this.closed || this.duplex || this.transportKind !== "webrtc") return;
++    try {
++      const { CascadeDuplex } = await import("../duplex/cascadeDuplex.ts");
++      if (this.closed || this.duplex) return;
++      const d = new CascadeDuplex(this.duplexSurface(), { ...this.duplexOptions, mode, face: this.duplexFace ?? null });
++      this.duplex = d;
++      if (!(await d.start())) return; // it already restored today's path and reported the fallback
++      // hands-free for the whole lesson: the engine owns the floor (a pause sheet may still switch the mic off)
++      if (mode === "on" && this.pushToTalk && d.deciding) this.setPushToTalk(false);
++    } catch (err) {
++      console.warn("cascade: the duplex engine could not start; staying on today's path", err);
++      this.onDuplex?.({ mode, live: false, fallback: "engine_error", phase: "idle", stats: null });
++    }
++  }
++
++  /** The engine is deciding the floor now (today's barge-in and turn logic stand aside). */
++  private get duplexDeciding(): boolean {
++    return !!this.duplex?.deciding;
++  }
++
++  private duplexVadMs: number | null = null;
++  private sendDuplexVad(): void {
++    const td = obj(this.audioInput.turn_detection);
++    if (this.pushToTalk || td.type !== "server_vad") return;
++    this.sendSession(this.duplexVadMs === null ? this.audioInput.turn_detection : { ...td, silence_duration_ms: this.duplexVadMs });
++  }
++
++  private duplexSurface(): import("../duplex/cascadeDuplex.ts").CascadeSurface {
++    return {
++      lessonId: this.lessonId,
++      audio: () => (this.mic && this.ctx && !this.closed ? { ctx: this.ctx, stream: this.mic, herOutput: this.player?.output ?? null } : null),
++      herSounding: () => !!this.current?.playing && !this.current.paused,
++      duck: (level) => this.player?.duck(level),
++      pause: () => {
++        const cur = this.current;
++        if (!cur || cur.paused) return false;
++        this.pauseReply("server");
++        return true;
++      },
++      resume: () => this.resumeReply(),
++      stop: () => {
++        this.clearBargeTimers();
++        this.stopReply("cancelled", true);
++      },
++      emitChild: (e) => {
++        if (e.type === "child_final") {
++          const { duplex, ...rest } = e;
++          this.turn.finalAt = Date.now();
++          this.events.emit({ ...rest, typed: false, duplex });
++        } else {
++          this.events.emit(e);
++        }
++      },
++      sttCommit: () => this.send({ type: "input_audio_buffer.commit" }),
++      setServerVad: (ms) => {
++        this.duplexVadMs = ms;
++        this.sendDuplexVad();
++      },
++      onState: (s) => {
++        // a fallback is today's path at once: the engine never left the call, so only the turn logic switches back
++        if (s.fallback && this.duplex && !this.duplex.deciding) {
++          this.player?.duck(1);
++          if (this.current?.paused) this.resumeReply(); // a reply the engine had paused carries on
++        }
++        this.onDuplex?.(s);
++      },
++    };
+   }
+ 
+   private clearMergeTimer(): void {
+@@ -863,6 +990,8 @@ export class CascadeLink implements TeacherLink {
+   private onServerError(e: Json): void {
+     const err = obj(e.error);
+     const code = str(err.code);
++    // ship5 p1-duplex: a quota / capacity refusal on the call: the engine steps aside for today's path (no child-facing error)
++    if (this.duplex?.onServerError(code, str(err.message))) return;
+     if (code === "input_audio_buffer_commit_empty") {
+       this.onChildEvent({ type: "child_silent" }); // a push-to-talk press with no audio
+       return;
+@@ -895,6 +1024,8 @@ export class CascadeLink implements TeacherLink {
+   }
+ 
+   private useRecording(): void {
++    // ship5 p1-duplex: no call, no engine: push-to-talk recording is today's fallback
++    this.duplex?.degrade("stt_unavailable");
+     this.transportKind = "recording";
+     this.pushToTalk = false;
+     this.setPushToTalk(true);

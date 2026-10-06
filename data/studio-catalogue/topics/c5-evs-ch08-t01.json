@@ -1,0 +1,1867 @@
+{
+ "topicId": "c5-evs-ch08-t01",
+ "title": "From fibre to fabric",
+ "chapter": "Clothes — How Things are Made",
+ "subject": "evs",
+ "class": 5,
+ "topicType": "T3",
+ "plan": {
+  "game": "story-rail@1",
+  "hint": "sequence mode: fibre to fabric"
+ },
+ "game": {
+  "archetype": "story-rail@1",
+  "spec": {
+   "archetype": "story-rail@1",
+   "skills": [
+    "c5-evs-ch08-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "picked": "coupled",
+    "streak": "streak",
+    "next": "What comes next?",
+    "effect": "What does this lead to?",
+    "who": "Who said this?",
+    "runDone": "Line complete",
+    "order": "your train",
+    "right": "Coupled",
+    "wrong": "Not this one",
+    "coach": "Tap the next wagon before the fork"
+   },
+   "title": "From fibre to fabric",
+   "rounds": [
+    {
+     "mode": "sequence",
+     "title": "Cotton to cloth",
+     "sub": "put the steps in order",
+     "cards": [
+      {
+       "id": "c1",
+       "text": "Pick fluffy cotton",
+       "glyph": "flower",
+       "src": "c5-evs-ch08-t01-i02"
+      },
+      {
+       "id": "c2",
+       "text": "Remove the seeds",
+       "glyph": "seed",
+       "src": "c5-evs-ch08-t01-i02"
+      },
+      {
+       "id": "c3",
+       "text": "Spin into strong thread",
+       "glyph": "wheel",
+       "src": "c5-evs-ch08-t01-i06"
+      },
+      {
+       "id": "c4",
+       "text": "Weave on a loom",
+       "glyph": "gear",
+       "src": "c5-evs-ch08-t01-i02"
+      }
+     ],
+     "speed": 1.1
+    },
+    {
+     "mode": "sequence",
+     "title": "Make a cotton shirt",
+     "sub": "follow the cloth journey",
+     "cards": [
+      {
+       "id": "s1",
+       "text": "Cotton grows in bolls",
+       "glyph": "wheat",
+       "src": "c5-evs-ch08-t01-i13"
+      },
+      {
+       "id": "s2",
+       "text": "Fibres are cleaned",
+       "glyph": "cloud",
+       "src": "c5-evs-ch08-t01-i13"
+      },
+      {
+       "id": "s3",
+       "text": "Fibres are twisted",
+       "glyph": "wheel",
+       "src": "c5-evs-ch08-t01-i13"
+      },
+      {
+       "id": "s4",
+       "text": "Threads cross on a loom",
+       "glyph": "gear",
+       "src": "c5-evs-ch08-t01-i13"
+      },
+      {
+       "id": "s5",
+       "text": "Cloth is sold as a shirt",
+       "glyph": "shop",
+       "src": "c5-evs-ch08-t01-i13"
+      }
+     ],
+     "speed": 0.95,
+     "targets": "c5-evs-ch08-t01-m3"
+    },
+    {
+     "mode": "sequence",
+     "title": "Fibre or animal source",
+     "sub": "trace each fibre to its source",
+     "cards": [
+      {
+       "id": "f1",
+       "text": "Cotton from a plant",
+       "glyph": "flower",
+       "src": "c5-evs-ch08-t01-i01"
+      },
+      {
+       "id": "f2",
+       "text": "Jute from a plant stem",
+       "glyph": "leaf",
+       "src": "c5-evs-ch08-t01-i01"
+      },
+      {
+       "id": "f3",
+       "text": "Silk from a cocoon",
+       "glyph": "insect",
+       "src": "c5-evs-ch08-t01-i12"
+      },
+      {
+       "id": "f4",
+       "text": "Wool from animal hair",
+       "src": "c5-evs-ch08-t01-i01"
+      }
+     ],
+     "speed": 0.8
+    }
+   ]
+  },
+  "repairs": [
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c5-evs-ch08-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Right",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "BUSTED",
+    "order": "Tap in order"
+   },
+   "title": "From fibre to fabric",
+   "accent": "mint",
+   "targets": "c5-evs-ch08-t01-m3",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "From fibre to fabric"
+      },
+      {
+       "id": "cot",
+       "type": "node",
+       "text": "Cotton fibre",
+       "sub": "plant",
+       "glyph": "flower",
+       "color": "mint"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Thread is one straight fibre"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "short",
+       "type": "node",
+       "text": "Short fibres",
+       "sub": "weak",
+       "glyph": "leaf",
+       "color": "amber"
+      },
+      {
+       "id": "yarn",
+       "type": "node",
+       "text": "Strong yarn",
+       "sub": "twisted",
+       "glyph": "wheel",
+       "color": "mint"
+      },
+      {
+       "id": "spin",
+       "type": "arrow",
+       "from": "short",
+       "to": "yarn",
+       "text": "spinning"
+      },
+      {
+       "id": "charkha",
+       "type": "glyph",
+       "name": "wheel",
+       "size": 120,
+       "color": "amber"
+      },
+      {
+       "id": "loom",
+       "type": "glyph",
+       "name": "ruler",
+       "size": 120,
+       "color": "sci"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "pick",
+       "type": "node",
+       "text": "Pick cotton",
+       "sub": "field",
+       "glyph": "flower",
+       "color": "mint"
+      },
+      {
+       "id": "seeds",
+       "type": "node",
+       "text": "Remove seeds",
+       "sub": "ginning",
+       "glyph": "seed",
+       "color": "amber"
+      },
+      {
+       "id": "thread",
+       "type": "node",
+       "text": "Spin thread",
+       "sub": "twist fibres",
+       "glyph": "wheel",
+       "color": "sci"
+      },
+      {
+       "id": "cloth",
+       "type": "node",
+       "text": "Weave cloth",
+       "sub": "loom",
+       "glyph": "ruler",
+       "color": "mint"
+      },
+      {
+       "id": "p1",
+       "type": "arrow",
+       "from": "pick",
+       "to": "seeds",
+       "text": "then"
+      },
+      {
+       "id": "p2",
+       "type": "arrow",
+       "from": "seeds",
+       "to": "thread",
+       "text": "then"
+      },
+      {
+       "id": "p3",
+       "type": "arrow",
+       "from": "thread",
+       "to": "cloth",
+       "text": "then"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Cotton comes from the fluffy fibres around the seeds of a cotton plant.",
+    "L2": "A common myth says that one long fibre is pulled straight out to make thread.",
+    "L3": "That is not true. Spinning twists many short fibres together into a longer, stronger yarn.",
+    "L4": "The twisting can happen on a charkha or in a mill.",
+    "L5": "Weaving crosses two sets of threads over and under each other on a loom to make cloth.",
+    "L6": "Knitting is different: it makes cloth by looping a single long yarn, as in a sweater.",
+    "L7": "For cotton cloth, pick the cotton, remove the seeds, spin the fibres into thread, and then weave."
+   },
+   "narration": {
+    "L1": {
+     "text": "Cotton comes from the fluffy fibres around the seeds of a cotton plant.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "A common myth says that one long fibre is pulled straight out to make thread.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "That is not true. Spinning twists many short fibres together into a longer, stronger yarn.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "The twisting can happen on a charkha or in a mill.",
+     "dur": 2.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "Weaving crosses two sets of threads over and under each other on a loom to make cloth.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Knitting is different: it makes cloth by looping a single long yarn, as in a sweater.",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "For cotton cloth, pick the cotton, remove the seeds, spin the fibres into thread, and then weave.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "title"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": "cot"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "short",
+        "yarn",
+        "spin"
+       ]
+      },
+      {
+       "at": 1.2,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "spin",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "charkha"
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 1,
+       "target": "charkha"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "loom"
+      },
+      {
+       "at": 0.7,
+       "do": "highlight",
+       "dur": 1,
+       "target": "loom"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "focus",
+       "dur": 0.8,
+       "target": "loom"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "pick",
+        "seeds",
+        "thread",
+        "cloth",
+        "p1",
+        "p2",
+        "p3"
+       ]
+      },
+      {
+       "at": 1.2,
+       "do": "flow",
+       "dur": 1,
+       "target": [
+        "p1",
+        "p2",
+        "p3"
+       ],
+       "to": 1
+      },
+      {
+       "at": "end",
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "order",
+    "prompt": "Put the cotton-cloth steps in the correct order.",
+    "items": [
+     "pick",
+     "seeds",
+     "thread",
+     "cloth"
+    ],
+    "src": "c5-evs-ch08-t01-i02"
+   }
+  },
+  "repairs": [
+   "cue:target"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "passes": 2,
+  "seconds": 27
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "Remove the seeds",
+   "prompt": "sequence: after/for \"Pick fluffy cotton\"",
+   "src": "c5-evs-ch08-t01-i02"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "Spin into strong thread",
+   "prompt": "sequence: after/for \"Remove the seeds\"",
+   "src": "c5-evs-ch08-t01-i06"
+  },
+  {
+   "itemId": "r1:2",
+   "key": "Weave on a loom",
+   "prompt": "sequence: after/for \"Spin into strong thread\"",
+   "src": "c5-evs-ch08-t01-i02"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "Fibres are cleaned",
+   "prompt": "sequence: after/for \"Cotton grows in bolls\"",
+   "src": "c5-evs-ch08-t01-i13"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "Fibres are twisted",
+   "prompt": "sequence: after/for \"Fibres are cleaned\"",
+   "src": "c5-evs-ch08-t01-i13"
+  },
+  {
+   "itemId": "r2:2",
+   "key": "Threads cross on a loom",
+   "prompt": "sequence: after/for \"Fibres are twisted\"",
+   "src": "c5-evs-ch08-t01-i13"
+  },
+  {
+   "itemId": "r2:3",
+   "key": "Cloth is sold as a shirt",
+   "prompt": "sequence: after/for \"Threads cross on a loom\"",
+   "src": "c5-evs-ch08-t01-i13"
+  },
+  {
+   "itemId": "r3:0",
+   "key": "Jute from a plant stem",
+   "prompt": "sequence: after/for \"Cotton from a plant\"",
+   "src": "c5-evs-ch08-t01-i01"
+  },
+  {
+   "itemId": "r3:1",
+   "key": "Silk from a cocoon",
+   "prompt": "sequence: after/for \"Jute from a plant stem\"",
+   "src": "c5-evs-ch08-t01-i12"
+  },
+  {
+   "itemId": "r3:2",
+   "key": "Wool from animal hair",
+   "prompt": "sequence: after/for \"Silk from a cocoon\"",
+   "src": "c5-evs-ch08-t01-i01"
+  }
+ ],
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch08-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "plant",
+       "op": "stroke",
+       "startMs": 0,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         400,
+         410
+        ],
+        [
+         400,
+         270
+        ],
+        [
+         350,
+         220
+        ],
+        [
+         400,
+         270
+        ],
+        [
+         450,
+         220
+        ],
+        [
+         400,
+         270
+        ],
+        [
+         330,
+         300
+        ],
+        [
+         400,
+         270
+        ],
+        [
+         470,
+         300
+        ]
+       ]
+      },
+      {
+       "id": "boll",
+       "op": "circle",
+       "startMs": 1000,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        190
+       ],
+       "r": 48,
+       "fill": "soft"
+      },
+      {
+       "id": "seed1",
+       "op": "circle",
+       "startMs": 1500,
+       "endMs": 1900,
+       "ink": "mark",
+       "weight": 1,
+       "c": [
+        380,
+        190
+       ],
+       "r": 7
+      },
+      {
+       "id": "seed2",
+       "op": "circle",
+       "startMs": 1600,
+       "endMs": 2000,
+       "ink": "mark",
+       "weight": 1,
+       "c": [
+        420,
+        190
+       ],
+       "r": 7
+      },
+      {
+       "id": "fluff",
+       "op": "ellipse",
+       "startMs": 1800,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        165
+       ],
+       "rx": 75,
+       "ry": 35,
+       "fill": "soft"
+      },
+      {
+       "id": "labcot",
+       "op": "label",
+       "startMs": 2600,
+       "endMs": 3300,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        365,
+        455
+       ],
+       "text": "cotton",
+       "to": [
+        400,
+        330
+       ]
+      },
+      {
+       "id": "labfib",
+       "op": "label",
+       "startMs": 3300,
+       "endMs": 4000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        520,
+        145
+       ],
+       "text": "fibres",
+       "to": [
+        455,
+        165
+       ]
+      },
+      {
+       "id": "labseed",
+       "op": "label",
+       "startMs": 4000,
+       "endMs": 4600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        500,
+        205
+       ],
+       "text": "seeds",
+       "to": [
+        427,
+        190
+       ]
+      },
+      {
+       "id": "around",
+       "op": "arrow",
+       "startMs": 4600,
+       "endMs": 5300,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        505,
+        150
+       ],
+       "to": [
+        475,
+        165
+       ],
+       "bend": 1
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch08-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "myth",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        115,
+        75
+       ],
+       "text": "myth",
+       "size": "l"
+      },
+      {
+       "id": "longf",
+       "op": "stroke",
+       "startMs": 600,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         170,
+         260
+        ],
+        [
+         280,
+         260
+        ],
+        [
+         390,
+         260
+        ],
+        [
+         500,
+         260
+        ],
+        [
+         630,
+         260
+        ]
+       ]
+      },
+      {
+       "id": "pull",
+       "op": "arrow",
+       "startMs": 1800,
+       "endMs": 2500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        650,
+        260
+       ],
+       "to": [
+        690,
+        260
+       ]
+      },
+      {
+       "id": "one",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        260,
+        220
+       ],
+       "text": "one",
+       "size": "m"
+      },
+      {
+       "id": "long",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        390,
+        300
+       ],
+       "text": "long",
+       "size": "m"
+      },
+      {
+       "id": "fibre",
+       "op": "label",
+       "startMs": 3500,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        520,
+        220
+       ],
+       "text": "fibre",
+       "to": [
+        550,
+        260
+       ]
+      },
+      {
+       "id": "mythmark",
+       "op": "highlight",
+       "startMs": 4700,
+       "endMs": 5600,
+       "ink": "accent",
+       "weight": 2,
+       "target": "longf",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch08-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "short1",
+       "op": "stroke",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         130,
+         310
+        ],
+        [
+         180,
+         300
+        ]
+       ]
+      },
+      {
+       "id": "short2",
+       "op": "stroke",
+       "startMs": 300,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         130,
+         340
+        ],
+        [
+         180,
+         330
+        ]
+       ]
+      },
+      {
+       "id": "short3",
+       "op": "stroke",
+       "startMs": 600,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         130,
+         370
+        ],
+        [
+         180,
+         360
+        ]
+       ]
+      },
+      {
+       "id": "twist",
+       "op": "arrow",
+       "startMs": 1100,
+       "endMs": 2200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        210,
+        335
+       ],
+       "to": [
+        390,
+        335
+       ],
+       "bend": 1
+      },
+      {
+       "id": "yarn",
+       "op": "stroke",
+       "startMs": 2100,
+       "endMs": 3300,
+       "ink": "accent",
+       "weight": 3,
+       "points": [
+        [
+         410,
+         335
+        ],
+        [
+         450,
+         315
+        ],
+        [
+         490,
+         355
+        ],
+        [
+         530,
+         315
+        ],
+        [
+         570,
+         355
+        ],
+        [
+         610,
+         335
+        ]
+       ]
+      },
+      {
+       "id": "spinning",
+       "op": "label",
+       "startMs": 3300,
+       "endMs": 4000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        250,
+        410
+       ],
+       "text": "spinning",
+       "to": [
+        320,
+        340
+       ]
+      },
+      {
+       "id": "many",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 4500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        145,
+        270
+       ],
+       "text": "many",
+       "size": "m"
+      },
+      {
+       "id": "stronger",
+       "op": "label",
+       "startMs": 4500,
+       "endMs": 5300,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        500,
+        285
+       ],
+       "text": "stronger",
+       "to": [
+        520,
+        335
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch08-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "charkha",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        220,
+        280
+       ],
+       "r": 75
+      },
+      {
+       "id": "spindle",
+       "op": "line",
+       "startMs": 500,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        220,
+        205
+       ],
+       "to": [
+        220,
+        355
+       ]
+      },
+      {
+       "id": "wheel",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1300,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        220,
+        280
+       ],
+       "r": 35
+      },
+      {
+       "id": "chlabel",
+       "op": "label",
+       "startMs": 1300,
+       "endMs": 2000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        160,
+        405
+       ],
+       "text": "charkha",
+       "to": [
+        220,
+        355
+       ]
+      },
+      {
+       "id": "mill",
+       "op": "rect",
+       "startMs": 1800,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        480,
+        215
+       ],
+       "w": 150,
+       "h": 130,
+       "round": 8
+      },
+      {
+       "id": "stack",
+       "op": "line",
+       "startMs": 2300,
+       "endMs": 2700,
+       "ink": "accent",
+       "weight": 1,
+       "from": [
+        510,
+        250
+       ],
+       "to": [
+        600,
+        250
+       ]
+      },
+      {
+       "id": "stack2",
+       "op": "line",
+       "startMs": 2500,
+       "endMs": 2900,
+       "ink": "accent",
+       "weight": 1,
+       "from": [
+        510,
+        285
+       ],
+       "to": [
+        600,
+        285
+       ]
+      },
+      {
+       "id": "milllabel",
+       "op": "label",
+       "startMs": 2900,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        525,
+        390
+       ],
+       "text": "mill",
+       "to": [
+        555,
+        345
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch08-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "loom",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        110
+       ],
+       "w": 560,
+       "h": 300,
+       "round": 8
+      },
+      {
+       "id": "warp1",
+       "op": "line",
+       "startMs": 700,
+       "endMs": 1200,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        210,
+        130
+       ],
+       "to": [
+        210,
+        390
+       ]
+      },
+      {
+       "id": "warp2",
+       "op": "line",
+       "startMs": 900,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        270,
+        130
+       ],
+       "to": [
+        270,
+        390
+       ]
+      },
+      {
+       "id": "warp3",
+       "op": "line",
+       "startMs": 1100,
+       "endMs": 1600,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        330,
+        130
+       ],
+       "to": [
+        330,
+        390
+       ]
+      },
+      {
+       "id": "weft1",
+       "op": "line",
+       "startMs": 1500,
+       "endMs": 2100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        150,
+        190
+       ],
+       "to": [
+        650,
+        190
+       ]
+      },
+      {
+       "id": "weft2",
+       "op": "line",
+       "startMs": 1900,
+       "endMs": 2500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        150,
+        270
+       ],
+       "to": [
+        650,
+        270
+       ]
+      },
+      {
+       "id": "weft3",
+       "op": "line",
+       "startMs": 2300,
+       "endMs": 2900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        150,
+        350
+       ],
+       "to": [
+        650,
+        350
+       ]
+      },
+      {
+       "id": "cross",
+       "op": "arrow",
+       "startMs": 3000,
+       "endMs": 4100,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        430,
+        150
+       ],
+       "to": [
+        430,
+        360
+       ],
+       "bend": 1
+      },
+      {
+       "id": "weaving",
+       "op": "label",
+       "startMs": 4100,
+       "endMs": 4800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        285,
+        455
+       ],
+       "text": "weaving",
+       "to": [
+        400,
+        410
+       ]
+      },
+      {
+       "id": "threads",
+       "op": "label",
+       "startMs": 4800,
+       "endMs": 5500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        570,
+        145
+       ],
+       "text": "threads",
+       "to": [
+        600,
+        190
+       ]
+      },
+      {
+       "id": "cloth",
+       "op": "label",
+       "startMs": 5500,
+       "endMs": 6100,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        360,
+        85
+       ],
+       "text": "cloth",
+       "to": [
+        400,
+        110
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch08-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "yarnline",
+       "op": "stroke",
+       "startMs": 0,
+       "endMs": 1300,
+       "ink": "accent",
+       "weight": 3,
+       "points": [
+        [
+         150,
+         180
+        ],
+        [
+         220,
+         180
+        ],
+        [
+         220,
+         240
+        ],
+        [
+         150,
+         240
+        ],
+        [
+         150,
+         300
+        ],
+        [
+         220,
+         300
+        ],
+        [
+         220,
+         360
+        ],
+        [
+         150,
+         360
+        ]
+       ]
+      },
+      {
+       "id": "loop1",
+       "op": "ellipse",
+       "startMs": 1000,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        300,
+        220
+       ],
+       "rx": 55,
+       "ry": 35
+      },
+      {
+       "id": "loop2",
+       "op": "ellipse",
+       "startMs": 1300,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        220
+       ],
+       "rx": 55,
+       "ry": 35
+      },
+      {
+       "id": "loop3",
+       "op": "ellipse",
+       "startMs": 1600,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        500,
+        220
+       ],
+       "rx": 55,
+       "ry": 35
+      },
+      {
+       "id": "loop4",
+       "op": "ellipse",
+       "startMs": 1900,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        350,
+        310
+       ],
+       "rx": 55,
+       "ry": 35
+      },
+      {
+       "id": "loop5",
+       "op": "ellipse",
+       "startMs": 2200,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        450,
+        310
+       ],
+       "rx": 55,
+       "ry": 35
+      },
+      {
+       "id": "knitting",
+       "op": "label",
+       "startMs": 3000,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        150,
+        430
+       ],
+       "text": "knitting",
+       "to": [
+        300,
+        220
+       ]
+      },
+      {
+       "id": "single",
+       "op": "text",
+       "startMs": 3700,
+       "endMs": 4200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        500,
+        430
+       ],
+       "text": "single",
+       "size": "m"
+      },
+      {
+       "id": "yarnlabel",
+       "op": "label",
+       "startMs": 4200,
+       "endMs": 4700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        145,
+        135
+       ],
+       "text": "yarn",
+       "to": [
+        180,
+        180
+       ]
+      },
+      {
+       "id": "sweater",
+       "op": "label",
+       "startMs": 4700,
+       "endMs": 5500,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        610,
+        270
+       ],
+       "text": "sweater",
+       "to": [
+        500,
+        310
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch08-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "pick",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        100,
+        170
+       ],
+       "r": 38,
+       "fill": "soft"
+      },
+      {
+       "id": "picklabel",
+       "op": "text",
+       "startMs": 500,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        70,
+        235
+       ],
+       "text": "pick",
+       "size": "m"
+      },
+      {
+       "id": "remove",
+       "op": "arrow",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        145,
+        170
+       ],
+       "to": [
+        240,
+        170
+       ]
+      },
+      {
+       "id": "seeds",
+       "op": "circle",
+       "startMs": 1400,
+       "endMs": 1700,
+       "ink": "mark",
+       "weight": 1,
+       "c": [
+        275,
+        155
+       ],
+       "r": 9
+      },
+      {
+       "id": "seeds2",
+       "op": "circle",
+       "startMs": 1500,
+       "endMs": 1800,
+       "ink": "mark",
+       "weight": 1,
+       "c": [
+        300,
+        185
+       ],
+       "r": 9
+      },
+      {
+       "id": "spin",
+       "op": "arrow",
+       "startMs": 1800,
+       "endMs": 2400,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        330,
+        170
+       ],
+       "to": [
+        430,
+        170
+       ]
+      },
+      {
+       "id": "thread",
+       "op": "stroke",
+       "startMs": 2300,
+       "endMs": 3200,
+       "ink": "accent",
+       "weight": 3,
+       "points": [
+        [
+         450,
+         170
+        ],
+        [
+         480,
+         145
+        ],
+        [
+         510,
+         195
+        ],
+        [
+         540,
+         145
+        ],
+        [
+         570,
+         195
+        ]
+       ]
+      },
+      {
+       "id": "weave",
+       "op": "arrow",
+       "startMs": 3200,
+       "endMs": 3800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        590,
+        170
+       ],
+       "to": [
+        690,
+        170
+       ]
+      },
+      {
+       "id": "clothend",
+       "op": "rect",
+       "startMs": 3800,
+       "endMs": 4500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        675,
+        130
+       ],
+       "w": 75,
+       "h": 85,
+       "round": 6
+      },
+      {
+       "id": "cottonlabel",
+       "op": "label",
+       "startMs": 4500,
+       "endMs": 5100,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        65,
+        95
+       ],
+       "text": "cotton",
+       "to": [
+        100,
+        132
+       ]
+      },
+      {
+       "id": "spinlabel",
+       "op": "label",
+       "startMs": 5100,
+       "endMs": 5600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        370,
+        120
+       ],
+       "text": "spin",
+       "to": [
+        470,
+        170
+       ]
+      },
+      {
+       "id": "weavelabel",
+       "op": "label",
+       "startMs": 5600,
+       "endMs": 6200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        610,
+        120
+       ],
+       "text": "weave",
+       "to": [
+        675,
+        170
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

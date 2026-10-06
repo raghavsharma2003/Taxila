@@ -1,0 +1,1723 @@
+{
+ "topicId": "c5-maths-ch13-t01",
+ "title": "Multiples and common multiples",
+ "chapter": "Animal Jumps",
+ "subject": "maths",
+ "class": 5,
+ "topicType": "T3",
+ "plan": {
+  "game": "sieve-storm@1",
+  "hint": "rules multiple and common (multiples and common multiples)"
+ },
+ "game": {
+  "archetype": "sieve-storm@1",
+  "spec": {
+   "archetype": "sieve-storm@1",
+   "skills": [
+    "c5-maths-ch13-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "slashed": "right calls",
+    "combo": "combo",
+    "coach": "Swipe the numbers that fit the rule",
+    "runDone": "Storm over",
+    "prime": "prime",
+    "composite": "composite",
+    "even": "even",
+    "odd": "odd",
+    "multipleOf": "multiples of",
+    "commonOf": "common multiples of",
+    "factorOf": "factors of",
+    "cfactorOf": "common factors of",
+    "divisibleBy": "divisible by",
+    "coprimeWith": "co-prime with",
+    "square": "square numbers",
+    "palindrome": "palindromes",
+    "slipped": "slipped",
+    "wrongCut": "not this one",
+    "and": "and"
+   },
+   "title": "Sieve Storm",
+   "rounds": [
+    {
+     "rule": "multiple",
+     "a": 3,
+     "title": "Skip-count rain",
+     "sub": "Slash numbers in the jumper's list",
+     "lo": 3,
+     "hi": 60,
+     "count": 14,
+     "hitRate": 0.5,
+     "seed": 17,
+     "speed": 0.8
+    },
+    {
+     "rule": "common",
+     "a": 4,
+     "b": 6,
+     "title": "Jumpers meet",
+     "sub": "Slash numbers in both jump lists",
+     "lo": 4,
+     "hi": 72,
+     "count": 16,
+     "hitRate": 0.35,
+     "seed": 29,
+     "speed": 1
+    },
+    {
+     "rule": "common",
+     "a": 6,
+     "b": 8,
+     "title": "Shared landings",
+     "sub": "Find numbers where both jumpers land",
+     "lo": 6,
+     "hi": 96,
+     "count": 18,
+     "hitRate": 0.3,
+     "seed": 43,
+     "speed": 1.2,
+     "targets": "c5-maths-ch13-t01-m-product-only"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c5-maths-ch13-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Animal Jumps: Common Multiples",
+   "accent": "mint",
+   "targets": "c5-maths-ch13-t01-m-product-only",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Animal Jumps"
+      },
+      {
+       "id": "idea",
+       "type": "label",
+       "text": "Multiples meet"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "First meet = 6 × 8 = 48"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "frog",
+       "type": "node",
+       "text": "Frog: 6",
+       "sub": "jumps",
+       "color": "mint"
+      },
+      {
+       "id": "f6",
+       "type": "bars",
+       "values": [
+        6,
+        12,
+        18,
+        24,
+        30
+       ],
+       "labels": [
+        "6",
+        "12",
+        "18",
+        "24",
+        "30"
+       ],
+       "unit": "landings"
+      },
+      {
+       "id": "grass",
+       "type": "node",
+       "text": "Grasshopper: 8",
+       "sub": "jumps",
+       "glyph": "insect",
+       "color": "amber"
+      },
+      {
+       "id": "f8",
+       "type": "bars",
+       "values": [
+        8,
+        16,
+        24,
+        32,
+        40
+       ],
+       "labels": [
+        "8",
+        "16",
+        "24",
+        "32",
+        "40"
+       ],
+       "unit": "landings"
+      },
+      {
+       "id": "meet",
+       "type": "node",
+       "text": "24",
+       "sub": "first together",
+       "glyph": "spark",
+       "color": "sun"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "column",
+     "els": [
+      {
+       "id": "factorTitle",
+       "type": "title",
+       "text": "Factors and multiples"
+      },
+      {
+       "id": "factors",
+       "type": "node",
+       "text": "Factors of 8",
+       "sub": "divide 8",
+       "glyph": "ruler",
+       "color": "ion"
+      },
+      {
+       "id": "factorList",
+       "type": "label",
+       "text": "1, 2, 4, 8",
+       "color": "ion"
+      },
+      {
+       "id": "multipleTitle",
+       "type": "node",
+       "text": "Multiples of 8",
+       "sub": "8 goes into",
+       "color": "mint"
+      },
+      {
+       "id": "multipleList",
+       "type": "label",
+       "text": "8, 16, 24, 32, ...",
+       "color": "mint"
+      },
+      {
+       "id": "n18",
+       "type": "node",
+       "text": "18",
+       "sub": "choice",
+       "glyph": "question",
+       "color": "ion"
+      },
+      {
+       "id": "n24",
+       "type": "node",
+       "text": "24",
+       "sub": "choice",
+       "glyph": "question",
+       "color": "sun"
+      },
+      {
+       "id": "n48",
+       "type": "node",
+       "text": "48",
+       "sub": "choice",
+       "glyph": "question",
+       "color": "ion"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "When animals skip-count, each landing is a multiple of their jump size.",
+    "L2": "A multiple list continues forever because we can always add another jump.",
+    "L3": "A frog jumps 6 at a time, and a grasshopper jumps 8 at a time.",
+    "L4": "Their landing lists are 6, 12, 18, 24 and 8, 16, 24.",
+    "L5": "The first number in both lists is 24, so they first meet at 24.",
+    "L6": "It is not 6 times 8, which is 48; listing shows the earlier common multiple.",
+    "L7": "Factors divide a number, while multiples are numbers the number goes into.",
+    "L8": "Now choose the first place where the frog and grasshopper land together."
+   },
+   "narration": {
+    "L1": {
+     "text": "When animals skip-count, each landing is a multiple of their jump size.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L2": {
+     "text": "A multiple list continues forever because we can always add another jump.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L3": {
+     "text": "A frog jumps 6 at a time, and a grasshopper jumps 8 at a time.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L4": {
+     "text": "Their landing lists are 6, 12, 18, 24 and 8, 16, 24.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L5": {
+     "text": "The first number in both lists is 24, so they first meet at 24.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L6": {
+     "text": "It is not 6 times 8, which is 48; listing shows the earlier common multiple.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Factors divide a number, while multiples are numbers the number goes into.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Now choose the first place where the frog and grasshopper land together.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "title"
+      },
+      {
+       "at": 0.7,
+       "do": "show",
+       "dur": 0.7,
+       "target": "idea"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "myth"
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 1,
+       "target": "idea"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "frog",
+        "grass"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "f6",
+        "f8"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 1.2,
+       "do": "show",
+       "dur": 0.8,
+       "target": "meet"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1.2,
+       "target": "meet"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 2,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "meet"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "factorTitle",
+        "factors",
+        "factorList"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "multipleTitle",
+        "multipleList"
+       ]
+      },
+      {
+       "at": 2,
+       "do": "highlight",
+       "dur": 1,
+       "target": [
+        "factorList",
+        "multipleList"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "n18",
+        "n24",
+        "n48"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Where do the frog and grasshopper first land together?",
+    "options": [
+     "n18",
+     "n24",
+     "n48"
+    ],
+    "answer": "n24"
+   }
+  },
+  "repairs": [
+   "glyph",
+   "glyph",
+   "arrow:dangling",
+   "arrow:dangling",
+   "arrow:dangling",
+   "arrow:dangling",
+   "cue:target",
+   "cue:target",
+   "cue:target",
+   "cue:target",
+   "cue:target"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 53
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch13-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "jump",
+       "op": "arrow",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        120,
+        300
+       ],
+       "to": [
+        240,
+        300
+       ]
+      },
+      {
+       "id": "land1",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        240,
+        300
+       ],
+       "r": 12
+      },
+      {
+       "id": "land2",
+       "op": "circle",
+       "startMs": 1300,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        360,
+        300
+       ],
+       "r": 12
+      },
+      {
+       "id": "land3",
+       "op": "circle",
+       "startMs": 1700,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        480,
+        300
+       ],
+       "r": 12
+      },
+      {
+       "id": "jumpLabel",
+       "op": "label",
+       "startMs": 2200,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        170,
+        270
+       ],
+       "text": "jump size",
+       "to": [
+        180,
+        300
+       ]
+      },
+      {
+       "id": "multipleLabel",
+       "op": "label",
+       "startMs": 3200,
+       "endMs": 4000,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        420,
+        350
+       ],
+       "text": "multiple",
+       "to": [
+        480,
+        300
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch13-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "more1",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 400,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        600,
+        300
+       ],
+       "r": 12
+      },
+      {
+       "id": "more2",
+       "op": "circle",
+       "startMs": 400,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        720,
+        300
+       ],
+       "r": 12
+      },
+      {
+       "id": "forever",
+       "op": "arrow",
+       "startMs": 1000,
+       "endMs": 1800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        650,
+        300
+       ],
+       "to": [
+        750,
+        300
+       ]
+      },
+      {
+       "id": "addJump",
+       "op": "numwork",
+       "startMs": 2200,
+       "endMs": 3600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        230,
+        390
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "multip",
+         "+",
+         "jump",
+         "=",
+         "next"
+        ]
+       ]
+      },
+      {
+       "id": "endless",
+       "op": "label",
+       "startMs": 3800,
+       "endMs": 4700,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        580,
+        240
+       ],
+       "text": "forever",
+       "to": [
+        700,
+        300
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch13-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "frog",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        120,
+        90
+       ],
+       "text": "frog",
+       "size": "l"
+      },
+      {
+       "id": "frogJump",
+       "op": "numwork",
+       "startMs": 800,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        150
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "jump",
+         "=",
+         "6"
+        ]
+       ]
+      },
+      {
+       "id": "grass",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        470,
+        90
+       ],
+       "text": "grasshopper",
+       "size": "m"
+      },
+      {
+       "id": "grassJump",
+       "op": "numwork",
+       "startMs": 2700,
+       "endMs": 3600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        470,
+        150
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "jump",
+         "=",
+         "8"
+        ]
+       ]
+      },
+      {
+       "id": "frogPath",
+       "op": "arrow",
+       "startMs": 3900,
+       "endMs": 4700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        120,
+        270
+       ],
+       "to": [
+        320,
+        270
+       ]
+      },
+      {
+       "id": "grassPath",
+       "op": "arrow",
+       "startMs": 4700,
+       "endMs": 5500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        470,
+        350
+       ],
+       "to": [
+        670,
+        350
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch13-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "sixList",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        180
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "6",
+         ",",
+         "12",
+         ",",
+         "18",
+         ",",
+         "24"
+        ]
+       ]
+      },
+      {
+       "id": "eightList",
+       "op": "numwork",
+       "startMs": 1900,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        270
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "8",
+         ",",
+         "16",
+         ",",
+         "24"
+        ]
+       ]
+      },
+      {
+       "id": "common24",
+       "op": "highlight",
+       "startMs": 3700,
+       "endMs": 4500,
+       "ink": "accent",
+       "weight": 2,
+       "target": "sixList",
+       "style": "circle"
+      },
+      {
+       "id": "commonLabel",
+       "op": "label",
+       "startMs": 4500,
+       "endMs": 5200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        330,
+        230
+       ],
+       "text": "24",
+       "target": "sixList"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch13-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "both",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        410,
+        90
+       ],
+       "text": "both lists",
+       "size": "m"
+      },
+      {
+       "id": "listA",
+       "op": "numwork",
+       "startMs": 900,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        160
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "6",
+         ",",
+         "12",
+         ",",
+         "18",
+         ",",
+         "24"
+        ]
+       ]
+      },
+      {
+       "id": "listB",
+       "op": "numwork",
+       "startMs": 2300,
+       "endMs": 3600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        250
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "8",
+         ",",
+         "16",
+         ",",
+         "24"
+        ]
+       ]
+      },
+      {
+       "id": "meet",
+       "op": "highlight",
+       "startMs": 3800,
+       "endMs": 4700,
+       "ink": "good",
+       "weight": 2,
+       "target": "listA",
+       "style": "circle"
+      },
+      {
+       "id": "meetLabel",
+       "op": "label",
+       "startMs": 4800,
+       "endMs": 5700,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        590,
+        205
+       ],
+       "text": "first meet",
+       "to": [
+        580,
+        185
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch13-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "wrong",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1800,
+       "ink": "soft",
+       "weight": 2,
+       "at": [
+        100,
+        150
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "6",
+         "×",
+         "8",
+         "=",
+         "48"
+        ]
+       ]
+      },
+      {
+       "id": "wrongMark",
+       "op": "stroke",
+       "startMs": 1900,
+       "endMs": 2400,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         90,
+         130
+        ],
+        [
+         310,
+         230
+        ]
+       ]
+      },
+      {
+       "id": "sixAgain",
+       "op": "numwork",
+       "startMs": 2700,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        300
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "6",
+         ",",
+         "12",
+         ",",
+         "18",
+         ",",
+         "24"
+        ]
+       ]
+      },
+      {
+       "id": "eightAgain",
+       "op": "numwork",
+       "startMs": 4100,
+       "endMs": 5300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        380
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "8",
+         ",",
+         "16",
+         ",",
+         "24"
+        ]
+       ]
+      },
+      {
+       "id": "earlier",
+       "op": "label",
+       "startMs": 5400,
+       "endMs": 6100,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        500,
+        280
+       ],
+       "text": "24",
+       "to": [
+        440,
+        315
+       ]
+      },
+      {
+       "id": "earlierLabel",
+       "op": "text",
+       "startMs": 6100,
+       "endMs": 6800,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        500,
+        330
+       ],
+       "text": "earlier common multiple",
+       "size": "s"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch13-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "factorTitle",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        180,
+        80
+       ],
+       "text": "factors",
+       "size": "l"
+      },
+      {
+       "id": "multipleTitle",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        570,
+        80
+       ],
+       "text": "multiples",
+       "size": "l"
+      },
+      {
+       "id": "factorWork",
+       "op": "numwork",
+       "startMs": 1700,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        80,
+        170
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "1",
+         "×",
+         "8",
+         "=",
+         "8"
+        ],
+        [
+         "2",
+         "×",
+         "4",
+         "=",
+         "8"
+        ]
+       ]
+      },
+      {
+       "id": "multipleWork",
+       "op": "numwork",
+       "startMs": 3000,
+       "endMs": 4200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        460,
+        170
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "8",
+         ",",
+         "16",
+         ",",
+         "24"
+        ]
+       ]
+      },
+      {
+       "id": "divideArrow",
+       "op": "arrow",
+       "startMs": 4300,
+       "endMs": 5000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        300,
+        230
+       ],
+       "to": [
+        450,
+        230
+       ]
+      },
+      {
+       "id": "goesInto",
+       "op": "label",
+       "startMs": 5000,
+       "endMs": 5600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        330,
+        210
+       ],
+       "text": "goes into",
+       "to": [
+        420,
+        230
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-maths-ch13-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "frogLand",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        120,
+        90
+       ],
+       "text": "frog",
+       "size": "l"
+      },
+      {
+       "id": "frogList",
+       "op": "numwork",
+       "startMs": 800,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        80,
+        160
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "6",
+         ",",
+         "12",
+         ",",
+         "18",
+         ",",
+         "24"
+        ]
+       ]
+      },
+      {
+       "id": "grassLand",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 3000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        120,
+        270
+       ],
+       "text": "grasshopper",
+       "size": "m"
+      },
+      {
+       "id": "grassList",
+       "op": "numwork",
+       "startMs": 3100,
+       "endMs": 4300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        80,
+        330
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "8",
+         ",",
+         "16",
+         ",",
+         "24"
+        ]
+       ]
+      },
+      {
+       "id": "choose",
+       "op": "highlight",
+       "startMs": 4400,
+       "endMs": 5200,
+       "ink": "good",
+       "weight": 2,
+       "target": "frogList",
+       "style": "circle"
+      },
+      {
+       "id": "together",
+       "op": "label",
+       "startMs": 5200,
+       "endMs": 5700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        460,
+        255
+       ],
+       "text": "24",
+       "to": [
+        440,
+        205
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 60 multiple 3?"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 36 multiple 3?"
+  },
+  {
+   "itemId": "r1:2",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 9 multiple 3?"
+  },
+  {
+   "itemId": "r1:3",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 7 multiple 3?"
+  },
+  {
+   "itemId": "r1:4",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 18 multiple 3?"
+  },
+  {
+   "itemId": "r1:5",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 6 multiple 3?"
+  },
+  {
+   "itemId": "r1:6",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 15 multiple 3?"
+  },
+  {
+   "itemId": "r1:7",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 25 multiple 3?"
+  },
+  {
+   "itemId": "r1:8",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 30 multiple 3?"
+  },
+  {
+   "itemId": "r1:9",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 42 multiple 3?"
+  },
+  {
+   "itemId": "r1:10",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 26 multiple 3?"
+  },
+  {
+   "itemId": "r1:11",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 53 multiple 3?"
+  },
+  {
+   "itemId": "r1:12",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 14 multiple 3?"
+  },
+  {
+   "itemId": "r1:13",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 48 multiple 3?"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 24 common 4 6?"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 56 common 4 6?"
+  },
+  {
+   "itemId": "r2:2",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 53 common 4 6?"
+  },
+  {
+   "itemId": "r2:3",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 47 common 4 6?"
+  },
+  {
+   "itemId": "r2:4",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 72 common 4 6?"
+  },
+  {
+   "itemId": "r2:5",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 60 common 4 6?"
+  },
+  {
+   "itemId": "r2:6",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 24 common 4 6?"
+  },
+  {
+   "itemId": "r2:7",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 12 common 4 6?"
+  },
+  {
+   "itemId": "r2:8",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 7 common 4 6?"
+  },
+  {
+   "itemId": "r2:9",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 48 common 4 6?"
+  },
+  {
+   "itemId": "r2:10",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 29 common 4 6?"
+  },
+  {
+   "itemId": "r2:11",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 40 common 4 6?"
+  },
+  {
+   "itemId": "r2:12",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 36 common 4 6?"
+  },
+  {
+   "itemId": "r2:13",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 54 common 4 6?"
+  },
+  {
+   "itemId": "r2:14",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 25 common 4 6?"
+  },
+  {
+   "itemId": "r2:15",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 61 common 4 6?"
+  },
+  {
+   "itemId": "r3:0",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 8 common 6 8?"
+  },
+  {
+   "itemId": "r3:1",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 79 common 6 8?"
+  },
+  {
+   "itemId": "r3:2",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 73 common 6 8?"
+  },
+  {
+   "itemId": "r3:3",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 64 common 6 8?"
+  },
+  {
+   "itemId": "r3:4",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 96 common 6 8?"
+  },
+  {
+   "itemId": "r3:5",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 24 common 6 8?"
+  },
+  {
+   "itemId": "r3:6",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 39 common 6 8?"
+  },
+  {
+   "itemId": "r3:7",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 33 common 6 8?"
+  },
+  {
+   "itemId": "r3:8",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 56 common 6 8?"
+  },
+  {
+   "itemId": "r3:9",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 62 common 6 8?"
+  },
+  {
+   "itemId": "r3:10",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 24 common 6 8?"
+  },
+  {
+   "itemId": "r3:11",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 72 common 6 8?"
+  },
+  {
+   "itemId": "r3:12",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 24 common 6 8?"
+  },
+  {
+   "itemId": "r3:13",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 24 common 6 8?"
+  },
+  {
+   "itemId": "r3:14",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 52 common 6 8?"
+  },
+  {
+   "itemId": "r3:15",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 72 common 6 8?"
+  },
+  {
+   "itemId": "r3:16",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 48 common 6 8?"
+  },
+  {
+   "itemId": "r3:17",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 58 common 6 8?"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ },
+ "firstCheck": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "Round 1 'multiple' specifies lo=1, hi=60. The key for r1:8 checks whether 1 is a multiple of 3. But 1 is less than 3, so the round should not include numbers lower than the jump size, as the kit always starts the list at the jump size (multiples of 3 start at 3). It is factually wrong to treat 1 as a potential multiple of 3.",
+    "severity": "high"
+   }
+  ],
+  "verdict": "fail",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

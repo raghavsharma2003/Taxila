@@ -1,0 +1,1814 @@
+{
+ "topicId": "c5-evs-ch10-t01",
+ "title": "Sharing the Earth with all life",
+ "chapter": "Earth — Our Shared Home",
+ "subject": "evs",
+ "class": 5,
+ "topicType": "T3",
+ "plan": {
+  "game": "food-web@1",
+  "hint": "Balance the Forest: habitats and who eats whom; remove a species and watch"
+ },
+ "game": {
+  "archetype": "food-web@1",
+  "spec": {
+   "archetype": "food-web@1",
+   "skills": [
+    "c5-evs-ch10-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "step": "Step",
+    "predict": "First, predict",
+    "up": "Goes up",
+    "down": "Goes down",
+    "same": "About the same",
+    "remove": "Remove",
+    "add": "Bring in",
+    "relocate": "Relocate",
+    "day": "DAY",
+    "alive": "all alive",
+    "lost": "lost",
+    "drought": "DROUGHT",
+    "arrows": "Drag from the food to the one that eats it",
+    "done": "Forest steady",
+    "watch": "watch"
+   },
+   "species": [
+    "grass",
+    "insects",
+    "deer",
+    "frog",
+    "snake",
+    "tiger"
+   ],
+   "steps": [
+    {
+     "kind": "arrows"
+    },
+    {
+     "kind": "predict-remove",
+     "remove": "snake",
+     "watch": "insects",
+     "days": 60
+    },
+    {
+     "kind": "predict-remove",
+     "remove": "tiger",
+     "watch": "deer",
+     "days": 90
+    },
+    {
+     "kind": "keep-alive",
+     "days": 80,
+     "droughtFrom": 25,
+     "droughtDays": 12
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c5-evs-ch10-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Right",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "BUSTED",
+    "order": "Tap them in order"
+   },
+   "title": "Earth is our shared home",
+   "accent": "mint",
+   "targets": "c5-evs-ch10-t01-m1",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "row",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Earth is our shared home"
+      },
+      {
+       "id": "air",
+       "type": "glyph",
+       "name": "wind",
+       "size": 120,
+       "color": "ion"
+      },
+      {
+       "id": "water",
+       "type": "glyph",
+       "name": "river",
+       "size": 120,
+       "color": "sci"
+      },
+      {
+       "id": "forest",
+       "type": "glyph",
+       "name": "tree",
+       "size": 120,
+       "color": "mint"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Pollution stays in one place"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "town",
+       "type": "node",
+       "text": "One place",
+       "glyph": "factory",
+       "color": "amber"
+      },
+      {
+       "id": "wind",
+       "type": "node",
+       "text": "Moving air",
+       "glyph": "wind",
+       "color": "ion"
+      },
+      {
+       "id": "far",
+       "type": "node",
+       "text": "Far places",
+       "glyph": "house",
+       "color": "mint"
+      },
+      {
+       "id": "river",
+       "type": "node",
+       "text": "Flowing river",
+       "glyph": "river",
+       "color": "sci"
+      },
+      {
+       "id": "down",
+       "type": "node",
+       "text": "Downstream",
+       "glyph": "fish",
+       "color": "sci"
+      },
+      {
+       "id": "smoke",
+       "type": "arrow",
+       "from": "town",
+       "to": "wind",
+       "text": "drifts"
+      },
+      {
+       "id": "airflow",
+       "type": "arrow",
+       "from": "wind",
+       "to": "far",
+       "text": "spreads"
+      },
+      {
+       "id": "waterflow",
+       "type": "arrow",
+       "from": "town",
+       "to": "river",
+       "text": "enters"
+      },
+      {
+       "id": "riverflow",
+       "type": "arrow",
+       "from": "river",
+       "to": "down",
+       "text": "carries"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "split",
+     "els": [
+      {
+       "id": "border",
+       "type": "label",
+       "text": "Map border",
+       "x": 480,
+       "y": 310,
+       "color": "amber"
+      },
+      {
+       "id": "brahma",
+       "type": "node",
+       "text": "Brahmaputra",
+       "sub": "several countries",
+       "glyph": "river",
+       "color": "sci"
+      },
+      {
+       "id": "falcon",
+       "type": "node",
+       "text": "Amur falcon",
+       "sub": "many countries",
+       "glyph": "bird",
+       "color": "mint"
+      },
+      {
+       "id": "cross1",
+       "type": "arrow",
+       "from": "brahma",
+       "to": "border",
+       "text": "crosses"
+      },
+      {
+       "id": "cross2",
+       "type": "arrow",
+       "from": "falcon",
+       "to": "border",
+       "text": "flies"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "row",
+     "els": [
+      {
+       "id": "share",
+       "type": "node",
+       "text": "Work together",
+       "glyph": "group",
+       "color": "mint"
+      },
+      {
+       "id": "rivers",
+       "type": "node",
+       "text": "Share rivers",
+       "glyph": "jug",
+       "color": "sci"
+      },
+      {
+       "id": "birds",
+       "type": "node",
+       "text": "Protect birds",
+       "glyph": "bird",
+       "color": "mint"
+      },
+      {
+       "id": "clean",
+       "type": "node",
+       "text": "Cut pollution",
+       "glyph": "recycle",
+       "color": "ion"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "share",
+       "to": "rivers",
+       "text": "fairly"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "share",
+       "to": "birds",
+       "text": "along routes"
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "share",
+       "to": "clean",
+       "text": "together"
+      }
+     ]
+    },
+    {
+     "id": "s5",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "prompt",
+       "type": "title",
+       "text": "What carries pollution far away?"
+      },
+      {
+       "id": "windOpt",
+       "type": "node",
+       "text": "Wind",
+       "glyph": "wind",
+       "color": "ion"
+      },
+      {
+       "id": "riverOpt",
+       "type": "node",
+       "text": "River",
+       "glyph": "river",
+       "color": "sci"
+      },
+      {
+       "id": "wallOpt",
+       "type": "node",
+       "text": "Map wall",
+       "glyph": "shield",
+       "color": "amber"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Earth's air, water, soil, forests and oceans are shared by all living things.",
+    "L2": "A common myth says pollution in one place cannot affect other places. That is not true.",
+    "L3": "Smoke moves with air, so pollution can drift from one city or country to another.",
+    "L4": "Rivers carry dirty water downstream, harming people, animals and fields far away.",
+    "L5": "Borders on a map do not stop rivers or birds. The Brahmaputra and Amur falcons cross countries.",
+    "L6": "Countries and communities must work together to share rivers, protect birds and cut pollution.",
+    "L7": "Caring for shared resources helps everyone today and in the future. What can carry pollution far away?"
+   },
+   "narration": {
+    "L1": {
+     "text": "Earth's air, water, soil, forests and oceans are shared by all living things.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "A common myth says pollution in one place cannot affect other places. That is not true.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "Smoke moves with air, so pollution can drift from one city or country to another.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "Rivers carry dirty water downstream, harming people, animals and fields far away.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "Borders on a map do not stop rivers or birds. The Brahmaputra and Amur falcons cross countries.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Countries and communities must work together to share rivers, protect birds and cut pollution.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Caring for shared resources helps everyone today and in the future. What can carry pollution far away?",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      },
+      {
+       "at": 0.4,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "air",
+        "water",
+        "forest"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "myth"
+      },
+      {
+       "at": 1,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "town",
+        "wind",
+        "far",
+        "smoke",
+        "airflow"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 1,
+       "target": [
+        "smoke",
+        "airflow"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "river",
+        "down",
+        "waterflow",
+        "riverflow"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 1,
+       "target": [
+        "waterflow",
+        "riverflow"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "brahma",
+        "falcon",
+        "border",
+        "cross1",
+        "cross2"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 1,
+       "target": [
+        "cross1",
+        "cross2"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "share",
+        "rivers",
+        "birds",
+        "clean"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 1,
+       "target": [
+        "a1",
+        "a2",
+        "a3"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0,
+     "scene": "s5",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "prompt",
+        "windOpt",
+        "riverOpt",
+        "wallOpt"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Tap the things that can carry pollution far away.",
+    "options": [
+     "windOpt",
+     "riverOpt",
+     "wallOpt"
+    ],
+    "answer": "windOpt",
+    "src": "c5-evs-ch10-t01-i14"
+   }
+  },
+  "repairs": [],
+  "attempts": 2,
+  "model": "taxila-fast-bg",
+  "passes": 2,
+  "seconds": 33
+ },
+ "keys": [],
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch10-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "earth",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        250
+       ],
+       "r": 105,
+       "fill": "soft"
+      },
+      {
+       "id": "air",
+       "op": "ellipse",
+       "startMs": 800,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        400,
+        250
+       ],
+       "rx": 170,
+       "ry": 125
+      },
+      {
+       "id": "water",
+       "op": "ellipse",
+       "startMs": 1600,
+       "endMs": 2300,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        350,
+        285
+       ],
+       "rx": 55,
+       "ry": 28,
+       "fill": "accent"
+      },
+      {
+       "id": "soil",
+       "op": "polygon",
+       "startMs": 2200,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 1,
+       "points": [
+        [
+         285,
+         350
+        ],
+        [
+         515,
+         350
+        ],
+        [
+         490,
+         385
+        ],
+        [
+         310,
+         385
+        ]
+       ],
+       "fill": "soft"
+      },
+      {
+       "id": "forest",
+       "op": "polygon",
+       "startMs": 2800,
+       "endMs": 3500,
+       "ink": "good",
+       "weight": 1,
+       "points": [
+        [
+         260,
+         150
+        ],
+        [
+         290,
+         105
+        ],
+        [
+         320,
+         150
+        ]
+       ],
+       "fill": "good"
+      },
+      {
+       "id": "ocean",
+       "op": "ellipse",
+       "startMs": 3300,
+       "endMs": 4000,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        470,
+        245
+       ],
+       "rx": 65,
+       "ry": 35,
+       "fill": "accent"
+      },
+      {
+       "id": "la",
+       "op": "label",
+       "startMs": 3900,
+       "endMs": 4400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        385,
+        105
+       ],
+       "text": "air",
+       "to": [
+        400,
+        125
+       ]
+      },
+      {
+       "id": "lw",
+       "op": "label",
+       "startMs": 4300,
+       "endMs": 4800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        275,
+        300
+       ],
+       "text": "water",
+       "to": [
+        320,
+        285
+       ]
+      },
+      {
+       "id": "ls",
+       "op": "label",
+       "startMs": 4500,
+       "endMs": 5000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        525,
+        380
+       ],
+       "text": "soil",
+       "to": [
+        485,
+        365
+       ]
+      },
+      {
+       "id": "lf",
+       "op": "label",
+       "startMs": 4800,
+       "endMs": 5400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        235,
+        95
+       ],
+       "text": "forests",
+       "to": [
+        285,
+        130
+       ]
+      },
+      {
+       "id": "lo",
+       "op": "label",
+       "startMs": 5000,
+       "endMs": 5600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        540,
+        245
+       ],
+       "text": "oceans",
+       "to": [
+        510,
+        245
+       ]
+      },
+      {
+       "id": "shared",
+       "op": "text",
+       "startMs": 5400,
+       "endMs": 6100,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        445
+       ],
+       "text": "shared",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch10-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "myth",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "common myth",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "place1",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        180,
+        260
+       ],
+       "r": 55
+      },
+      {
+       "id": "place2",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        620,
+        260
+       ],
+       "r": 55
+      },
+      {
+       "id": "poll",
+       "op": "circle",
+       "startMs": 1500,
+       "endMs": 2100,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        180,
+        260
+       ],
+       "r": 18,
+       "fill": "accent"
+      },
+      {
+       "id": "no1",
+       "op": "line",
+       "startMs": 2100,
+       "endMs": 2700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        140,
+        220
+       ],
+       "to": [
+        220,
+        300
+       ]
+      },
+      {
+       "id": "no2",
+       "op": "line",
+       "startMs": 2300,
+       "endMs": 2900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        220,
+        220
+       ],
+       "to": [
+        140,
+        300
+       ]
+      },
+      {
+       "id": "mytharrow",
+       "op": "arrow",
+       "startMs": 2900,
+       "endMs": 3900,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        235,
+        260
+       ],
+       "to": [
+        565,
+        260
+       ]
+      },
+      {
+       "id": "nottrue",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 5000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        380
+       ],
+       "text": "not true",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "truearrow",
+       "op": "arrow",
+       "startMs": 5000,
+       "endMs": 6500,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        235,
+        260
+       ],
+       "to": [
+        565,
+        260
+       ],
+       "bend": 1
+      },
+      {
+       "id": "far",
+       "op": "label",
+       "startMs": 6400,
+       "endMs": 7200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        620,
+        180
+       ],
+       "text": "other places",
+       "to": [
+        620,
+        205
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch10-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "city1",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        90,
+        330
+       ],
+       "w": 120,
+       "h": 80,
+       "fill": "soft"
+      },
+      {
+       "id": "city2",
+       "op": "rect",
+       "startMs": 500,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        590,
+        330
+       ],
+       "w": 120,
+       "h": 80,
+       "fill": "soft"
+      },
+      {
+       "id": "smoke",
+       "op": "ellipse",
+       "startMs": 1100,
+       "endMs": 1800,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        150,
+        280
+       ],
+       "rx": 55,
+       "ry": 30,
+       "fill": "accent"
+      },
+      {
+       "id": "wind",
+       "op": "arrow",
+       "startMs": 1800,
+       "endMs": 3300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        210,
+        270
+       ],
+       "to": [
+        580,
+        210
+       ],
+       "bend": -1
+      },
+      {
+       "id": "smoke2",
+       "op": "ellipse",
+       "startMs": 3200,
+       "endMs": 4000,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        650,
+        270
+       ],
+       "rx": 55,
+       "ry": 30,
+       "fill": "accent"
+      },
+      {
+       "id": "lsmoke",
+       "op": "label",
+       "startMs": 4000,
+       "endMs": 4600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        105,
+        225
+       ],
+       "text": "smoke",
+       "to": [
+        135,
+        255
+       ]
+      },
+      {
+       "id": "lair",
+       "op": "label",
+       "startMs": 4500,
+       "endMs": 5000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        390,
+        155
+       ],
+       "text": "air",
+       "to": [
+        410,
+        205
+       ]
+      },
+      {
+       "id": "drift",
+       "op": "text",
+       "startMs": 5100,
+       "endMs": 5800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        455
+       ],
+       "text": "drift",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "cities",
+       "op": "text",
+       "startMs": 5800,
+       "endMs": 6700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        95
+       ],
+       "text": "city country",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch10-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "river",
+       "op": "stroke",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         100,
+         150
+        ],
+        [
+         180,
+         190
+        ],
+        [
+         260,
+         170
+        ],
+        [
+         350,
+         235
+        ],
+        [
+         440,
+         220
+        ],
+        [
+         540,
+         300
+        ],
+        [
+         690,
+         275
+        ]
+       ]
+      },
+      {
+       "id": "up",
+       "op": "label",
+       "startMs": 800,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        105,
+        125
+       ],
+       "text": "upstream",
+       "to": [
+        145,
+        165
+       ]
+      },
+      {
+       "id": "down",
+       "op": "label",
+       "startMs": 1000,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        620,
+        315
+       ],
+       "text": "downstream",
+       "to": [
+        600,
+        285
+       ]
+      },
+      {
+       "id": "dirty",
+       "op": "circle",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        270,
+        190
+       ],
+       "r": 25,
+       "fill": "accent"
+      },
+      {
+       "id": "flow",
+       "op": "arrow",
+       "startMs": 2200,
+       "endMs": 3400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        300,
+        205
+       ],
+       "to": [
+        620,
+        280
+       ],
+       "bend": 1
+      },
+      {
+       "id": "people",
+       "op": "circle",
+       "startMs": 3300,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        610,
+        390
+       ],
+       "r": 22
+      },
+      {
+       "id": "animals",
+       "op": "circle",
+       "startMs": 3500,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        670,
+        390
+       ],
+       "r": 22
+      },
+      {
+       "id": "fields",
+       "op": "rect",
+       "startMs": 3800,
+       "endMs": 4400,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        465,
+        370
+       ],
+       "w": 90,
+       "h": 45,
+       "fill": "good"
+      },
+      {
+       "id": "harm",
+       "op": "text",
+       "startMs": 4400,
+       "endMs": 5500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        90
+       ],
+       "text": "harming far away",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch10-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "map",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        80,
+        100
+       ],
+       "w": 640,
+       "h": 300
+      },
+      {
+       "id": "border",
+       "op": "line",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        400,
+        100
+       ],
+       "to": [
+        400,
+        400
+       ],
+       "dashed": true
+      },
+      {
+       "id": "bflow",
+       "op": "arrow",
+       "startMs": 1400,
+       "endMs": 2700,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        150,
+        180
+       ],
+       "to": [
+        650,
+        320
+       ],
+       "bend": -1
+      },
+      {
+       "id": "brah",
+       "op": "label",
+       "startMs": 2700,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        150,
+        155
+       ],
+       "text": "Brahmaputra",
+       "to": [
+        210,
+        185
+       ]
+      },
+      {
+       "id": "bird",
+       "op": "ellipse",
+       "startMs": 3400,
+       "endMs": 4100,
+       "ink": "good",
+       "weight": 1,
+       "c": [
+        270,
+        220
+       ],
+       "rx": 32,
+       "ry": 15,
+       "fill": "good"
+      },
+      {
+       "id": "birdpath",
+       "op": "arrow",
+       "startMs": 4000,
+       "endMs": 5200,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        285,
+        220
+       ],
+       "to": [
+        590,
+        180
+       ],
+       "bend": -1
+      },
+      {
+       "id": "amur",
+       "op": "label",
+       "startMs": 5000,
+       "endMs": 6000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        570,
+        145
+       ],
+       "text": "Amur falcons",
+       "to": [
+        585,
+        180
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch10-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "group1",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        180,
+        210
+       ],
+       "r": 55
+      },
+      {
+       "id": "group2",
+       "op": "circle",
+       "startMs": 300,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        400,
+        210
+       ],
+       "r": 55
+      },
+      {
+       "id": "group3",
+       "op": "circle",
+       "startMs": 600,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        620,
+        210
+       ],
+       "r": 55
+      },
+      {
+       "id": "join1",
+       "op": "arrow",
+       "startMs": 1200,
+       "endMs": 1900,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        235,
+        210
+       ],
+       "to": [
+        345,
+        210
+       ]
+      },
+      {
+       "id": "join2",
+       "op": "arrow",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        455,
+        210
+       ],
+       "to": [
+        565,
+        210
+       ]
+      },
+      {
+       "id": "rivers",
+       "op": "label",
+       "startMs": 2200,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        330,
+        310
+       ],
+       "text": "share rivers",
+       "to": [
+        400,
+        265
+       ]
+      },
+      {
+       "id": "birds",
+       "op": "label",
+       "startMs": 2900,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        330,
+        350
+       ],
+       "text": "protect birds",
+       "to": [
+        400,
+        265
+       ]
+      },
+      {
+       "id": "cut",
+       "op": "label",
+       "startMs": 3600,
+       "endMs": 4400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        330,
+        390
+       ],
+       "text": "cut pollution",
+       "to": [
+        400,
+        265
+       ]
+      },
+      {
+       "id": "together",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        90
+       ],
+       "text": "work together",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "community",
+       "op": "label",
+       "startMs": 5600,
+       "endMs": 6400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        140,
+        290
+       ],
+       "text": "communities",
+       "to": [
+        180,
+        265
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch10-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "today",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "good",
+       "weight": 1,
+       "c": [
+        250,
+        210
+       ],
+       "r": 65,
+       "fill": "good"
+      },
+      {
+       "id": "future",
+       "op": "circle",
+       "startMs": 600,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        550,
+        210
+       ],
+       "r": 65,
+       "fill": "soft"
+      },
+      {
+       "id": "carearrow",
+       "op": "arrow",
+       "startMs": 1400,
+       "endMs": 2400,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        320,
+        210
+       ],
+       "to": [
+        480,
+        210
+       ]
+      },
+      {
+       "id": "care",
+       "op": "text",
+       "startMs": 2400,
+       "endMs": 3600,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        105
+       ],
+       "text": "caring shared resources",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "everyone",
+       "op": "label",
+       "startMs": 3500,
+       "endMs": 4300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        210,
+        315
+       ],
+       "text": "everyone",
+       "to": [
+        250,
+        275
+       ]
+      },
+      {
+       "id": "pollution",
+       "op": "circle",
+       "startMs": 4200,
+       "endMs": 4800,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        120,
+        390
+       ],
+       "r": 25,
+       "fill": "accent"
+      },
+      {
+       "id": "fararrow",
+       "op": "arrow",
+       "startMs": 4700,
+       "endMs": 5900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        150,
+        390
+       ],
+       "to": [
+        650,
+        390
+       ]
+      },
+      {
+       "id": "airwater",
+       "op": "text",
+       "startMs": 5900,
+       "endMs": 6600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        335
+       ],
+       "text": "air water",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

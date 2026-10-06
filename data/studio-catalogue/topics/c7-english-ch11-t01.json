@@ -1,0 +1,1630 @@
+{
+ "topicId": "c7-english-ch11-t01",
+ "title": "Travel",
+ "chapter": "Travel",
+ "subject": "english",
+ "class": 7,
+ "topicType": "T3",
+ "plan": {
+  "game": "story-rail@1",
+  "hint": "sequence, cause and who modes from the lesson's events and speakers"
+ },
+ "game": {
+  "archetype": "story-rail@1",
+  "spec": {
+   "archetype": "story-rail@1",
+   "skills": [
+    "c7-english-ch11-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "picked": "coupled",
+    "streak": "streak",
+    "next": "What happens next?",
+    "effect": "What does this lead to?",
+    "who": "Who said this?",
+    "runDone": "Line complete",
+    "order": "your train",
+    "right": "Coupled",
+    "wrong": "Not this one",
+    "coach": "Tap a wagon before the train reaches the fork"
+   },
+   "title": "Travel",
+   "rounds": [
+    {
+     "mode": "sequence",
+     "title": "Follow the feeling",
+     "sub": "couple the poem events in order",
+     "cards": [
+      {
+       "id": "e1",
+       "text": "Night is dark and quiet",
+       "glyph": "moon",
+       "src": "c7-english-ch11-t01-i08"
+      },
+      {
+       "id": "e2",
+       "text": "A far train whistle sounds",
+       "glyph": "train",
+       "src": "c7-english-ch11-t01-i01"
+      },
+      {
+       "id": "e3",
+       "text": "The call stirs a wish",
+       "glyph": "spark",
+       "src": "c7-english-ch11-t01-i02"
+      },
+      {
+       "id": "e4",
+       "text": "Home feels warm and kind",
+       "glyph": "house",
+       "src": "c7-english-ch11-t01-i03"
+      },
+      {
+       "id": "e5",
+       "text": "The speaker longs to travel",
+       "glyph": "map",
+       "src": "c7-english-ch11-t01-i10"
+      }
+     ],
+     "speed": 0.9,
+     "targets": "c7-english-ch11-t01-m-poem-about-trains"
+    },
+    {
+     "mode": "cause",
+     "title": "Because and though",
+     "sub": "match each cause to its effect",
+     "pairs": [
+      {
+       "cause": {
+        "id": "c1",
+        "text": "The night is dark and quiet",
+        "glyph": "moon",
+        "src": "c7-english-ch11-t01-i08"
+       },
+       "effect": {
+        "id": "f1",
+        "text": "The far whistle stands out",
+        "glyph": "music",
+        "src": "c7-english-ch11-t01-i08"
+       }
+      },
+      {
+       "cause": {
+        "id": "c2",
+        "text": "Friends are kind and home warm",
+        "glyph": "house",
+        "src": "c7-english-ch11-t01-i03"
+       },
+       "effect": {
+        "id": "f2",
+        "text": "She still wants to travel",
+        "glyph": "map",
+        "src": "c7-english-ch11-t01-i03"
+       }
+      },
+      {
+       "cause": {
+        "id": "c3",
+        "text": "She wants to visit Ladakh",
+        "glyph": "mountain",
+        "src": "c7-english-ch11-t01-i04"
+       },
+       "effect": {
+        "id": "f3",
+        "text": "She says I wish I could go",
+        "glyph": "person",
+        "src": "c7-english-ch11-t01-i04"
+       }
+      }
+     ],
+     "speed": 0.85,
+     "targets": "c7-english-ch11-t01-m-though-means-because"
+    },
+    {
+     "mode": "who",
+     "title": "Who says the line?",
+     "sub": "send each line to its speaker",
+     "speakers": [
+      {
+       "id": "speaker",
+       "name": "Speaker",
+       "glyph": "person"
+      },
+      {
+       "id": "friend",
+       "name": "Friend",
+       "glyph": "group"
+      }
+     ],
+     "lines": [
+      {
+       "id": "w1",
+       "text": "I hear the far train call",
+       "speaker": "speaker",
+       "src": "c7-english-ch11-t01-i01"
+      },
+      {
+       "id": "w2",
+       "text": "Our home is warm tonight",
+       "speaker": "friend",
+       "src": "c7-english-ch11-t01-i03"
+      },
+      {
+       "id": "w3",
+       "text": "I long to follow each spark",
+       "speaker": "speaker",
+       "src": "c7-english-ch11-t01-i02"
+      },
+      {
+       "id": "w4",
+       "text": "I wish I could travel",
+       "speaker": "speaker",
+       "src": "c7-english-ch11-t01-i12"
+      }
+     ],
+     "speed": 0.8
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-english-ch11-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Travel: A Longing to Go",
+   "accent": "ion",
+   "targets": "c7-english-ch11-t01-m-poem-about-trains",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Travel: A Longing to Go"
+      },
+      {
+       "id": "train",
+       "type": "glyph",
+       "name": "train",
+       "x": 250,
+       "y": 350,
+       "size": 150,
+       "color": "ion"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "A train poem is only about trains"
+      },
+      {
+       "id": "night",
+       "type": "label",
+       "text": "Night and distance",
+       "x": 560,
+       "y": 360,
+       "color": "sci"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "home",
+       "type": "node",
+       "text": "Warm home",
+       "sub": "friends",
+       "glyph": "house",
+       "x": 180,
+       "y": 350,
+       "color": "mint"
+      },
+      {
+       "id": "whistle",
+       "type": "node",
+       "text": "Far whistle",
+       "sub": "at night",
+       "glyph": "music",
+       "x": 500,
+       "y": 230,
+       "color": "ion"
+      },
+      {
+       "id": "travel",
+       "type": "node",
+       "text": "Long to travel",
+       "sub": "new places",
+       "glyph": "map",
+       "x": 780,
+       "y": 350,
+       "color": "amber"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "whistle",
+       "to": "travel",
+       "text": "calls"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "home",
+       "to": "travel",
+       "text": "though"
+      },
+      {
+       "id": "mood",
+       "type": "label",
+       "text": "Longing",
+       "x": 470,
+       "y": 500,
+       "color": "amber"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "wish",
+       "type": "title",
+       "text": "Make a wish"
+      },
+      {
+       "id": "can",
+       "type": "label",
+       "text": "can",
+       "x": 150,
+       "y": 360,
+       "color": "volt"
+      },
+      {
+       "id": "could",
+       "type": "label",
+       "text": "could",
+       "x": 370,
+       "y": 360,
+       "color": "mint"
+      },
+      {
+       "id": "am",
+       "type": "label",
+       "text": "am",
+       "x": 590,
+       "y": 360,
+       "color": "amber"
+      },
+      {
+       "id": "were",
+       "type": "label",
+       "text": "were",
+       "x": 790,
+       "y": 360,
+       "color": "ion"
+      },
+      {
+       "id": "wishline",
+       "type": "label",
+       "text": "I wish I ___ travel",
+       "x": 300,
+       "y": 500,
+       "color": "sci"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "The speaker hears a far train call each night. Its whistle travels through the dark.",
+    "L2": "Here is a myth: a poem that mentions a train must be about trains. That is not true.",
+    "L3": "The whistle creates a quiet, lonely mood and calls the speaker towards travel.",
+    "L4": "The speaker loves her home and friends, but she still longs to see new places.",
+    "L5": "So the poem is not mainly about trains. It is about the speaker's longing to travel.",
+    "L6": "For a wish about something that is not true now, step can back to could.",
+    "L7": "Say, I wish I could travel to a place I long to visit.",
+    "L8": "Although home is warm, the speaker wants to see the world. Both feelings can be true."
+   },
+   "narration": {
+    "L1": {
+     "text": "The speaker hears a far train call each night. Its whistle travels through the dark.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "Here is a myth: a poem that mentions a train must be about trains. That is not true.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "The whistle creates a quiet, lonely mood and calls the speaker towards travel.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "The speaker loves her home and friends, but she still longs to see new places.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "So the poem is not mainly about trains. It is about the speaker's longing to travel.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "For a wish about something that is not true now, step can back to could.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Say, I wish I could travel to a place I long to visit.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Although home is warm, the speaker wants to see the world. Both feelings can be true.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "title"
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 1,
+       "target": "train"
+      },
+      {
+       "at": 2,
+       "do": "show",
+       "dur": 1,
+       "target": "night"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "myth"
+      },
+      {
+       "at": 3,
+       "do": "bust",
+       "dur": 2,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.5,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "whistle"
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 1,
+       "target": "a1"
+      },
+      {
+       "at": 2,
+       "do": "flow",
+       "dur": 1,
+       "target": "a1",
+       "to": 1
+      },
+      {
+       "at": 4,
+       "do": "show",
+       "dur": 1,
+       "target": "mood"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.5,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "home"
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 1,
+       "target": "travel"
+      },
+      {
+       "at": 2,
+       "do": "show",
+       "dur": 1,
+       "target": "a2"
+      },
+      {
+       "at": 4,
+       "do": "highlight",
+       "dur": 1,
+       "target": "home"
+      },
+      {
+       "at": 5,
+       "do": "highlight",
+       "dur": 1,
+       "target": "travel"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.5,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "focus",
+       "dur": 2,
+       "target": "travel"
+      },
+      {
+       "at": 3,
+       "do": "highlight",
+       "dur": 2,
+       "target": "mood"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.5,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "wish"
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 1,
+       "target": "can"
+      },
+      {
+       "at": 3,
+       "do": "highlight",
+       "dur": 2,
+       "target": "could"
+      },
+      {
+       "at": 5,
+       "do": "hide",
+       "dur": 1,
+       "target": "can"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.5,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "wishline"
+      },
+      {
+       "at": 2,
+       "do": "highlight",
+       "dur": 2,
+       "target": "could"
+      },
+      {
+       "at": 5,
+       "do": "interactive",
+       "dur": 1
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "a2"
+      },
+      {
+       "at": 2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "home"
+      },
+      {
+       "at": 4,
+       "do": "highlight",
+       "dur": 1,
+       "target": "travel"
+      },
+      {
+       "at": 6,
+       "do": "camera",
+       "dur": 1,
+       "zoom": 1
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which word completes the wish sentence?",
+    "options": [
+     "can",
+     "could",
+     "am",
+     "were"
+    ],
+    "answer": "could",
+    "src": "c7-english-ch11-t01-i04"
+   }
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg",
+  "seconds": 63
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch11-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "train",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        80,
+        180
+       ],
+       "w": 170,
+       "h": 70
+      },
+      {
+       "id": "whistle",
+       "op": "line",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        250,
+        205
+       ],
+       "to": [
+        390,
+        205
+       ]
+      },
+      {
+       "id": "sound1",
+       "op": "arrow",
+       "startMs": 1300,
+       "endMs": 2700,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        390,
+        205
+       ],
+       "to": [
+        650,
+        205
+       ],
+       "bend": -1
+      },
+      {
+       "id": "night",
+       "op": "circle",
+       "startMs": 2200,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        650,
+        100
+       ],
+       "r": 35,
+       "fill": "soft"
+      },
+      {
+       "id": "far",
+       "op": "label",
+       "startMs": 3000,
+       "endMs": 3500,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        500,
+        170
+       ],
+       "text": "far",
+       "to": [
+        520,
+        205
+       ]
+      },
+      {
+       "id": "nightlabel",
+       "op": "label",
+       "startMs": 3500,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        610,
+        155
+       ],
+       "text": "night",
+       "to": [
+        650,
+        135
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch11-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "myth",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        75
+       ],
+       "text": "myth",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "poem",
+       "op": "rect",
+       "startMs": 800,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        115,
+        150
+       ],
+       "w": 190,
+       "h": 230
+      },
+      {
+       "id": "poemlabel",
+       "op": "label",
+       "startMs": 1700,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        210,
+        410
+       ],
+       "text": "poem",
+       "to": [
+        210,
+        380
+       ]
+      },
+      {
+       "id": "trainword",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 2800,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        500,
+        205
+       ],
+       "text": "train",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "not",
+       "op": "line",
+       "startMs": 3000,
+       "endMs": 3700,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        440,
+        170
+       ],
+       "to": [
+        560,
+        240
+       ]
+      },
+      {
+       "id": "true",
+       "op": "text",
+       "startMs": 3700,
+       "endMs": 4500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        500,
+        300
+       ],
+       "text": "not true",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch11-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "whistle3",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        170,
+        220
+       ],
+       "rx": 105,
+       "ry": 45
+      },
+      {
+       "id": "quiet",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        400,
+        120
+       ],
+       "text": "quiet",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "lonely",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        400,
+        220
+       ],
+       "text": "lonely",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "travel",
+       "op": "arrow",
+       "startMs": 2400,
+       "endMs": 3900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        300,
+        340
+       ],
+       "to": [
+        650,
+        340
+       ]
+      },
+      {
+       "id": "travelword",
+       "op": "label",
+       "startMs": 3900,
+       "endMs": 4500,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        470,
+        315
+       ],
+       "text": "travel",
+       "to": [
+        500,
+        340
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch11-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "home",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        180
+       ],
+       "w": 180,
+       "h": 150
+      },
+      {
+       "id": "friends",
+       "op": "circle",
+       "startMs": 800,
+       "endMs": 1400,
+       "ink": "good",
+       "weight": 1,
+       "c": [
+        180,
+        390
+       ],
+       "r": 32
+      },
+      {
+       "id": "love",
+       "op": "label",
+       "startMs": 1400,
+       "endMs": 2000,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        140,
+        145
+       ],
+       "text": "loves",
+       "to": [
+        180,
+        180
+       ]
+      },
+      {
+       "id": "longs",
+       "op": "arrow",
+       "startMs": 2100,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        320,
+        250
+       ],
+       "to": [
+        650,
+        160
+       ]
+      },
+      {
+       "id": "newplaces",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4400,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        650,
+        230
+       ],
+       "text": "new places",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "but",
+       "op": "text",
+       "startMs": 4400,
+       "endMs": 5000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        270
+       ],
+       "text": "but",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch11-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "trains",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        220,
+        145
+       ],
+       "text": "trains",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "cross",
+       "op": "line",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        160,
+        110
+       ],
+       "to": [
+        280,
+        175
+       ]
+      },
+      {
+       "id": "mainly",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 2300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        145
+       ],
+       "text": "not mainly",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "speaker",
+       "op": "circle",
+       "startMs": 2300,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        310
+       ],
+       "r": 48
+      },
+      {
+       "id": "longing",
+       "op": "arrow",
+       "startMs": 3000,
+       "endMs": 4400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        455,
+        310
+       ],
+       "to": [
+        680,
+        220
+       ]
+      },
+      {
+       "id": "travel5",
+       "op": "label",
+       "startMs": 4400,
+       "endMs": 5000,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        600,
+        190
+       ],
+       "text": "travel",
+       "to": [
+        650,
+        235
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch11-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "wish",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        140,
+        100
+       ],
+       "text": "wish",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "now",
+       "op": "text",
+       "startMs": 800,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        250,
+        210
+       ],
+       "text": "now",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "nottrue",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        250,
+        280
+       ],
+       "text": "not true",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "can",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        470,
+        210
+       ],
+       "text": "can",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "back",
+       "op": "arrow",
+       "startMs": 3000,
+       "endMs": 3700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        520,
+        250
+       ],
+       "to": [
+        610,
+        250
+       ]
+      },
+      {
+       "id": "could",
+       "op": "text",
+       "startMs": 3700,
+       "endMs": 4500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        670,
+        210
+       ],
+       "text": "could",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch11-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "wishphrase",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1400,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        90,
+        120
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "I",
+         "wish",
+         "I",
+         "could"
+        ]
+       ]
+      },
+      {
+       "id": "travel7",
+       "op": "arrow",
+       "startMs": 1200,
+       "endMs": 2600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        300,
+        240
+       ],
+       "to": [
+        650,
+        170
+       ]
+      },
+      {
+       "id": "place",
+       "op": "text",
+       "startMs": 2600,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        650,
+        240
+       ],
+       "text": "place",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "long",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 4300,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        350
+       ],
+       "text": "long to visit",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-english-ch11-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "home8",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        80,
+        180
+       ],
+       "w": 180,
+       "h": 140
+      },
+      {
+       "id": "warm",
+       "op": "circle",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "good",
+       "weight": 1,
+       "c": [
+        170,
+        150
+       ],
+       "r": 30,
+       "fill": "soft"
+      },
+      {
+       "id": "although",
+       "op": "text",
+       "startMs": 1300,
+       "endMs": 2100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        100
+       ],
+       "text": "although",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "world",
+       "op": "circle",
+       "startMs": 2100,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        650,
+        220
+       ],
+       "r": 75
+      },
+      {
+       "id": "see",
+       "op": "arrow",
+       "startMs": 3000,
+       "endMs": 4200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        300,
+        250
+       ],
+       "to": [
+        570,
+        220
+       ]
+      },
+      {
+       "id": "both",
+       "op": "text",
+       "startMs": 4200,
+       "endMs": 5200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        390
+       ],
+       "text": "Both feelings",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "true",
+       "op": "text",
+       "startMs": 5200,
+       "endMs": 5800,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        440
+       ],
+       "text": "true",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "A far train whistle sounds",
+   "prompt": "sequence: after/for \"Night is dark and quiet\"",
+   "src": "c7-english-ch11-t01-i01"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "The call stirs a wish",
+   "prompt": "sequence: after/for \"A far train whistle sounds\"",
+   "src": "c7-english-ch11-t01-i02"
+  },
+  {
+   "itemId": "r1:2",
+   "key": "Home feels warm and kind",
+   "prompt": "sequence: after/for \"The call stirs a wish\"",
+   "src": "c7-english-ch11-t01-i03"
+  },
+  {
+   "itemId": "r1:3",
+   "key": "The speaker longs to travel",
+   "prompt": "sequence: after/for \"Home feels warm and kind\"",
+   "src": "c7-english-ch11-t01-i10"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "The far whistle stands out",
+   "prompt": "cause: after/for \"The night is dark and quiet\"",
+   "src": "c7-english-ch11-t01-i08"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "She still wants to travel",
+   "prompt": "cause: after/for \"Friends are kind and home warm\"",
+   "src": "c7-english-ch11-t01-i03"
+  },
+  {
+   "itemId": "r2:2",
+   "key": "She says I wish I could go",
+   "prompt": "cause: after/for \"She wants to visit Ladakh\"",
+   "src": "c7-english-ch11-t01-i04"
+  },
+  {
+   "itemId": "r3:0",
+   "key": "Speaker",
+   "prompt": "who: after/for \"I hear the far train call\"",
+   "src": "c7-english-ch11-t01-i01"
+  },
+  {
+   "itemId": "r3:1",
+   "key": "Friend",
+   "prompt": "who: after/for \"Our home is warm tonight\"",
+   "src": "c7-english-ch11-t01-i03"
+  },
+  {
+   "itemId": "r3:2",
+   "key": "Speaker",
+   "prompt": "who: after/for \"I long to follow each spark\"",
+   "src": "c7-english-ch11-t01-i02"
+  },
+  {
+   "itemId": "r3:3",
+   "key": "Speaker",
+   "prompt": "who: after/for \"I wish I could travel\"",
+   "src": "c7-english-ch11-t01-i12"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ },
+ "firstCheck": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "Round 1, card 'Home feels warm and kind' (e4) is placed as an event in the sequence, but in the poem both longing and appreciation for home coexist; sequencing it after 'The call stirs a wish' and before 'The speaker longs to travel' may imply chronology not present in the kit.",
+    "severity": "low"
+   },
+   {
+    "where": "explainer",
+    "what": "Scene s1 includes a 'myth' element that states 'A train poem is only about trains', which targets a misconception (c7-english-ch11-t01-m-poem-about-trains) but the explainer text L5 says 'So the poem is not mainly about trains.' This is correct. However, scene s3 presents the task with options 'can', 'could', 'were' and answer 'could', which matches the kit item i04, but the arrow from 'could' to 'were' and the text 'I wish I were there' could cause confusion: the kit teaches 'I wish I could' for travel wishes and 'I wish I were' for location, but the task's prompt 'about travelling now' is ambiguous: 'could' is about ability to travel, 'were' about being there. The kit item i04 asks for 'I wish I ___ (can) travel to Ladakh', answer 'could'. The task's answer 'could' is correct, but the inclusion of 'were' as a distractor and the arrow implying a progression may mislead learners into thinking both 'could' and 'were' express the same wish for travel, which is not supported by the kit.",
+    "severity": "high"
+   }
+  ],
+  "verdict": "fail",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

@@ -1,0 +1,1748 @@
+{
+ "topicId": "c5-evs-ch01-t01",
+ "title": "Water in different forms and places",
+ "chapter": "Water — The Essence of Life",
+ "subject": "evs",
+ "class": 5,
+ "topicType": "T3",
+ "plan": {
+  "game": "phase-shift@1",
+  "hint": "Phase Shift: states of water, evaporation and condensation, factors"
+ },
+ "game": {
+  "archetype": "phase-shift@1",
+  "spec": {
+   "archetype": "phase-shift@1",
+   "skills": [
+    "c5-evs-ch01-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "step": "Step",
+    "heat": "HEAT",
+    "cool": "COOL",
+    "fan": "FAN",
+    "lid": "COLD LID",
+    "temp": "TEMP",
+    "ice": "ice",
+    "water": "water",
+    "vapour": "vapour",
+    "plateau": "Watch the temperature",
+    "boiling": "bubbles show boiling",
+    "invisible": "vapour · invisible",
+    "predict": "First, predict",
+    "done": "Done",
+    "noBoil": "keep it under"
+   },
+   "start": 25,
+   "steps": [
+    {
+     "kind": "goal",
+     "goal": "evaporate",
+     "arg": 0.15,
+     "tMax": 60,
+     "text": "Dry some water from the cloth. Use warmth and moving air.",
+     "targets": "c5-evs-ch01-t01-m3"
+    },
+    {
+     "kind": "probe",
+     "probe": "glass",
+     "targets": "c5-evs-ch01-t01-m4"
+    },
+    {
+     "kind": "goal",
+     "goal": "condense",
+     "arg": 0.1,
+     "tMax": 60,
+     "text": "Cool the vapour and collect water drops."
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c5-evs-ch01-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Water: forms and places",
+   "accent": "sci",
+   "targets": "c5-evs-ch01-t01-m3",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Water: forms and places"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "A dried puddle is destroyed"
+      },
+      {
+       "id": "drop",
+       "type": "node",
+       "text": "Water",
+       "sub": "three forms",
+       "glyph": "drop",
+       "color": "sci"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "liquid",
+       "type": "node",
+       "text": "Liquid",
+       "sub": "rivers and seas",
+       "glyph": "drop",
+       "color": "ion"
+      },
+      {
+       "id": "solid",
+       "type": "node",
+       "text": "Solid",
+       "sub": "ice and glaciers",
+       "glyph": "mountain",
+       "color": "mint"
+      },
+      {
+       "id": "gas",
+       "type": "node",
+       "text": "Gas",
+       "sub": "vapour in air",
+       "glyph": "wind",
+       "color": "amber"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "liquid",
+       "to": "gas",
+       "text": "evaporates"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "gas",
+       "to": "liquid",
+       "text": "condenses"
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "liquid",
+       "to": "solid",
+       "text": "freezes"
+      },
+      {
+       "id": "a4",
+       "type": "arrow",
+       "from": "solid",
+       "to": "liquid",
+       "text": "melts"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "column",
+     "els": [
+      {
+       "id": "share",
+       "type": "bars",
+       "values": [
+        97,
+        2,
+        0.9
+       ],
+       "labels": [
+        "sea",
+        "ice",
+        "usable"
+       ],
+       "unit": "parts"
+      },
+      {
+       "id": "sea",
+       "type": "node",
+       "text": "Sea water",
+       "sub": "salty",
+       "glyph": "wave",
+       "color": "ion"
+      },
+      {
+       "id": "fresh",
+       "type": "node",
+       "text": "Fresh water",
+       "sub": "little to use",
+       "glyph": "jug",
+       "color": "mint"
+      },
+      {
+       "id": "care",
+       "type": "label",
+       "text": "Save and keep it clean",
+       "x": 120,
+       "y": 500,
+       "color": "sun"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Water is found in three forms: liquid, solid ice, and invisible water vapour.",
+    "L2": "Liquid water is in seas, rivers, lakes and under the ground. Solid water is ice, snow and glaciers.",
+    "L3": "Water vapour is a gas in the air, and we cannot see it.",
+    "L4": "Water changes form, but it is never destroyed. A puddle dries when its water evaporates into the air.",
+    "L5": "Later, vapour can cool and condense into drops. Water can also freeze into ice and melt again.",
+    "L6": "About 97 out of every 100 parts of Earth's water is salty sea water, so most water cannot be drunk.",
+    "L7": "Most fresh water is frozen or underground. Less than one part in 100 is in rivers, lakes and reachable ground water.",
+    "L8": "Because usable fresh water is shared by everyone, we must not waste or dirty it."
+   },
+   "narration": {},
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": "drop"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "liquid"
+      },
+      {
+       "at": 0.3,
+       "do": "show",
+       "dur": 0.7,
+       "target": "solid"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "gas"
+      },
+      {
+       "at": 0.5,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "gas"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "myth"
+      },
+      {
+       "at": 0.8,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "a1",
+       "to": 1
+      },
+      {
+       "at": 0.4,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "a2",
+       "to": 1
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "a3",
+       "to": 1
+      },
+      {
+       "at": 1.2,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "a4",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "share"
+      },
+      {
+       "at": 0.7,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "sea"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "fresh"
+      },
+      {
+       "at": 0.5,
+       "do": "highlight",
+       "dur": 0.9,
+       "target": "fresh"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "care"
+      },
+      {
+       "at": 1,
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Where is most of Earth's water found?",
+    "options": [
+     "sea",
+     "fresh",
+     "care"
+    ],
+    "answer": "sea",
+    "src": "c5-evs-ch01-t01-i02"
+   }
+  },
+  "repairs": [],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 64
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch01-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "liq",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        150,
+        220
+       ],
+       "r": 70
+      },
+      {
+       "id": "ice",
+       "op": "polygon",
+       "startMs": 700,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         350,
+         280
+        ],
+        [
+         400,
+         150
+        ],
+        [
+         450,
+         280
+        ]
+       ]
+      },
+      {
+       "id": "vap",
+       "op": "ellipse",
+       "startMs": 1300,
+       "endMs": 2100,
+       "ink": "soft",
+       "weight": 2,
+       "c": [
+        640,
+        210
+       ],
+       "rx": 90,
+       "ry": 60
+      },
+      {
+       "id": "t1",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        150,
+        330
+       ],
+       "text": "liquid",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "t2",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        330
+       ],
+       "text": "solid ice",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "t3",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 4000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        640,
+        300
+       ],
+       "text": "water vapour",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch01-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "sea",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        130,
+        150
+       ],
+       "rx": 90,
+       "ry": 45
+      },
+      {
+       "id": "river",
+       "op": "stroke",
+       "startMs": 400,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         250,
+         110
+        ],
+        [
+         280,
+         150
+        ],
+        [
+         260,
+         200
+        ],
+        [
+         300,
+         250
+        ]
+       ]
+      },
+      {
+       "id": "lake",
+       "op": "ellipse",
+       "startMs": 800,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        390,
+        180
+       ],
+       "rx": 70,
+       "ry": 40
+      },
+      {
+       "id": "ground",
+       "op": "line",
+       "startMs": 1200,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        480,
+        240
+       ],
+       "to": [
+        740,
+        240
+       ]
+      },
+      {
+       "id": "und",
+       "op": "arrow",
+       "startMs": 1500,
+       "endMs": 2100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        600,
+        230
+       ],
+       "to": [
+        600,
+        350
+       ]
+      },
+      {
+       "id": "snow",
+       "op": "polygon",
+       "startMs": 2300,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         100,
+         400
+        ],
+        [
+         150,
+         320
+        ],
+        [
+         200,
+         400
+        ]
+       ]
+      },
+      {
+       "id": "glacier",
+       "op": "polygon",
+       "startMs": 2700,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         300,
+         400
+        ],
+        [
+         370,
+         300
+        ],
+        [
+         440,
+         400
+        ]
+       ]
+      },
+      {
+       "id": "ice2",
+       "op": "rect",
+       "startMs": 3200,
+       "endMs": 3800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        530,
+        330
+       ],
+       "w": 130,
+       "h": 70
+      },
+      {
+       "id": "lsea",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 4400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        130,
+        230
+       ],
+       "text": "seas",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "lriver",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 4700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        280,
+        280
+       ],
+       "text": "rivers",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "llake",
+       "op": "text",
+       "startMs": 4600,
+       "endMs": 5000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        390,
+        250
+       ],
+       "text": "lakes",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "lund",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 5700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        600,
+        390
+       ],
+       "text": "under the ground",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "lsnow",
+       "op": "text",
+       "startMs": 5700,
+       "endMs": 6100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        150,
+        440
+       ],
+       "text": "snow",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "lgl",
+       "op": "text",
+       "startMs": 6100,
+       "endMs": 6600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        370,
+        440
+       ],
+       "text": "glaciers",
+       "size": "s",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch01-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "air",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "soft",
+       "weight": 2,
+       "c": [
+        400,
+        210
+       ],
+       "rx": 230,
+       "ry": 120
+      },
+      {
+       "id": "vapdot1",
+       "op": "circle",
+       "startMs": 700,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        300,
+        170
+       ],
+       "r": 18
+      },
+      {
+       "id": "vapdot2",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        420,
+        130
+       ],
+       "r": 14
+      },
+      {
+       "id": "vapdot3",
+       "op": "circle",
+       "startMs": 1100,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        520,
+        220
+       ],
+       "r": 20
+      },
+      {
+       "id": "gaslabel",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        370
+       ],
+       "text": "gas in the air",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "invis",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3700,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        420
+       ],
+       "text": "cannot see it",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch01-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "puddle",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        170,
+        350
+       ],
+       "rx": 120,
+       "ry": 35
+      },
+      {
+       "id": "air2",
+       "op": "ellipse",
+       "startMs": 500,
+       "endMs": 1200,
+       "ink": "soft",
+       "weight": 2,
+       "c": [
+        570,
+        150
+       ],
+       "rx": 150,
+       "ry": 90
+      },
+      {
+       "id": "evap1",
+       "op": "arrow",
+       "startMs": 1300,
+       "endMs": 2300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        150,
+        320
+       ],
+       "to": [
+        430,
+        190
+       ]
+      },
+      {
+       "id": "evap2",
+       "op": "arrow",
+       "startMs": 1600,
+       "endMs": 2600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        220,
+        320
+       ],
+       "to": [
+        500,
+        170
+       ]
+      },
+      {
+       "id": "drop1",
+       "op": "circle",
+       "startMs": 2200,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        500,
+        140
+       ],
+       "r": 16
+      },
+      {
+       "id": "drop2",
+       "op": "circle",
+       "startMs": 2400,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        580,
+        190
+       ],
+       "r": 13
+      },
+      {
+       "id": "plabel",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        170,
+        410
+       ],
+       "text": "puddle",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "elabel",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4200,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        430,
+        250
+       ],
+       "text": "evaporates",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "never",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 5800,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        470
+       ],
+       "text": "never destroyed",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch01-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "cool",
+       "op": "arrow",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        500,
+        150
+       ],
+       "to": [
+        500,
+        300
+       ]
+      },
+      {
+       "id": "cond",
+       "op": "arrow",
+       "startMs": 700,
+       "endMs": 1500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        500,
+        300
+       ],
+       "to": [
+        360,
+        360
+       ]
+      },
+      {
+       "id": "drops",
+       "op": "ellipse",
+       "startMs": 1300,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        340,
+        370
+       ],
+       "rx": 70,
+       "ry": 30
+      },
+      {
+       "id": "freeze",
+       "op": "arrow",
+       "startMs": 2100,
+       "endMs": 2900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        250,
+        370
+       ],
+       "to": [
+        150,
+        370
+       ]
+      },
+      {
+       "id": "ice3",
+       "op": "polygon",
+       "startMs": 2800,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         90,
+         430
+        ],
+        [
+         150,
+         330
+        ],
+        [
+         210,
+         430
+        ]
+       ]
+      },
+      {
+       "id": "melt",
+       "op": "arrow",
+       "startMs": 3600,
+       "endMs": 4400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        220,
+        400
+       ],
+       "to": [
+        320,
+        400
+       ]
+      },
+      {
+       "id": "cooltxt",
+       "op": "text",
+       "startMs": 4600,
+       "endMs": 5000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        570,
+        120
+       ],
+       "text": "cool",
+       "size": "s"
+      },
+      {
+       "id": "ctxt",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 5500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        350,
+        430
+       ],
+       "text": "condense",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "ftxt",
+       "op": "text",
+       "startMs": 5500,
+       "endMs": 5900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        150,
+        465
+       ],
+       "text": "freeze",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "mtxt",
+       "op": "text",
+       "startMs": 5900,
+       "endMs": 6300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        320,
+        465
+       ],
+       "text": "melt",
+       "size": "s",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch01-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9111,
+     "ops": [
+      {
+       "id": "earthwater",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        260,
+        250
+       ],
+       "r": 150
+      },
+      {
+       "id": "saltsector",
+       "op": "sector",
+       "startMs": 800,
+       "endMs": 1800,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        260,
+        250
+       ],
+       "r": 145,
+       "fill": "accent",
+       "fromDeg": 0,
+       "toDeg": 349
+      },
+      {
+       "id": "freshsector",
+       "op": "sector",
+       "startMs": 1400,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        260,
+        250
+       ],
+       "r": 145,
+       "fill": "soft",
+       "fromDeg": 349,
+       "toDeg": 360
+      },
+      {
+       "id": "ratio",
+       "op": "numwork",
+       "startMs": 2200,
+       "endMs": 3200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        480,
+        150
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "97",
+         "out of",
+         "100"
+        ]
+       ]
+      },
+      {
+       "id": "salty",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        260,
+        450
+       ],
+       "text": "salty sea water",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "drink",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        610,
+        320
+       ],
+       "text": "cannot be drunk",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "callout",
+       "op": "arrow",
+       "startMs": 5600,
+       "endMs": 6400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        405,
+        250
+       ],
+       "to": [
+        520,
+        250
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch01-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 9536,
+     "ops": [
+      {
+       "id": "fresh",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        180,
+        230
+       ],
+       "r": 140
+      },
+      {
+       "id": "frozen",
+       "op": "sector",
+       "startMs": 700,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        180,
+        230
+       ],
+       "r": 135,
+       "fill": "soft",
+       "fromDeg": 0,
+       "toDeg": 210
+      },
+      {
+       "id": "underground",
+       "op": "rect",
+       "startMs": 1200,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        370
+       ],
+       "w": 160,
+       "h": 60
+      },
+      {
+       "id": "rivers",
+       "op": "line",
+       "startMs": 1800,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        370,
+        300
+       ],
+       "to": [
+        680,
+        300
+       ]
+      },
+      {
+       "id": "lakes2",
+       "op": "ellipse",
+       "startMs": 2100,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        520,
+        250
+       ],
+       "rx": 80,
+       "ry": 35
+      },
+      {
+       "id": "less",
+       "op": "numwork",
+       "startMs": 2800,
+       "endMs": 4100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        390,
+        100
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "less t",
+         "1",
+         "in",
+         "100"
+        ]
+       ]
+      },
+      {
+       "id": "frozenlabel",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 4800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        420
+       ],
+       "text": "frozen",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "undlabel",
+       "op": "text",
+       "startMs": 4800,
+       "endMs": 5400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        460
+       ],
+       "text": "underground",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "rlabel",
+       "op": "text",
+       "startMs": 5400,
+       "endMs": 6000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        650,
+        330
+       ],
+       "text": "rivers, lakes",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "reach",
+       "op": "text",
+       "startMs": 6000,
+       "endMs": 6900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        520,
+        390
+       ],
+       "text": "reachable ground water",
+       "size": "s",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch01-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "shared",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        270,
+        230
+       ],
+       "r": 130
+      },
+      {
+       "id": "person1",
+       "op": "circle",
+       "startMs": 700,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        190,
+        130
+       ],
+       "r": 22
+      },
+      {
+       "id": "person2",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        350,
+        130
+       ],
+       "r": 22
+      },
+      {
+       "id": "person3",
+       "op": "circle",
+       "startMs": 1100,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        270,
+        330
+       ],
+       "r": 22
+      },
+      {
+       "id": "share1",
+       "op": "arrow",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        210,
+        150
+       ],
+       "to": [
+        250,
+        210
+       ]
+      },
+      {
+       "id": "share2",
+       "op": "arrow",
+       "startMs": 1700,
+       "endMs": 2400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        330,
+        150
+       ],
+       "to": [
+        290,
+        210
+       ]
+      },
+      {
+       "id": "waste",
+       "op": "line",
+       "startMs": 2600,
+       "endMs": 3300,
+       "ink": "accent",
+       "weight": 3,
+       "from": [
+        500,
+        170
+       ],
+       "to": [
+        650,
+        320
+       ]
+      },
+      {
+       "id": "dirty",
+       "op": "stroke",
+       "startMs": 3200,
+       "endMs": 3900,
+       "ink": "accent",
+       "weight": 3,
+       "points": [
+        [
+         500,
+         320
+        ],
+        [
+         540,
+         280
+        ],
+        [
+         580,
+         320
+        ],
+        [
+         620,
+         280
+        ],
+        [
+         660,
+         320
+        ]
+       ]
+      },
+      {
+       "id": "everyone",
+       "op": "text",
+       "startMs": 4100,
+       "endMs": 4900,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        270,
+        410
+       ],
+       "text": "shared by everyone",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "notwaste",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 5700,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        580,
+        390
+       ],
+       "text": "do not waste",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "notdirty",
+       "op": "text",
+       "startMs": 5700,
+       "endMs": 6400,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        580,
+        440
+       ],
+       "text": "do not dirty",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

@@ -1,0 +1,2082 @@
+{
+ "topicId": "c6-sst-ch02-t01",
+ "title": "Oceans and Continents",
+ "chapter": "Oceans and Continents",
+ "subject": "sst",
+ "class": 6,
+ "topicType": "T2",
+ "plan": {
+  "game": "map-route@1",
+  "hint": "region mode: fly to continents and oceans; a globe round for the equator"
+ },
+ "game": {
+  "archetype": "map-route@1",
+  "spec": {
+   "archetype": "map-route@1",
+   "skills": [
+    "c6-sst-ch02-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "thread": "Drag the thread along the road from A to B",
+    "round": "Round",
+    "done": "rounds",
+    "go": "FLY",
+    "undo": "UNDO",
+    "coach": "Plan your route, then FLY",
+    "runDone": "Map room closed",
+    "fwd": "forward",
+    "left": "left",
+    "right": "right",
+    "km": "km",
+    "scale": "1 square =",
+    "measure": "Measure the map distance",
+    "lat": "latitude",
+    "lon": "longitude",
+    "drop": "Tap where the pin goes",
+    "fly": "Fly to",
+    "set": "SET",
+    "N": "N",
+    "S": "S",
+    "E": "E",
+    "W": "W",
+    "blocked": "BLOCKED",
+    "arrived": "ARRIVED"
+   },
+   "title": "Oceans and Continents",
+   "rounds": [
+    {
+     "mode": "route",
+     "title": "Ship route",
+     "sub": "guide the drone around the obstacles",
+     "w": 8,
+     "h": 5,
+     "blocks": [
+      [
+       2,
+       1
+      ],
+      [
+       2,
+       2
+      ],
+      [
+       2,
+       3
+      ],
+      [
+       5,
+       1
+      ],
+      [
+       5,
+       2
+      ],
+      [
+       5,
+       3
+      ]
+     ],
+     "places": [
+      {
+       "at": [
+        7,
+        0
+       ],
+       "label": "Mombasa",
+       "glyph": "ship"
+      },
+      {
+       "at": [
+        0,
+        4
+       ],
+       "label": "Kochi",
+       "glyph": "boat"
+      }
+     ],
+     "start": [
+      0,
+      4
+     ],
+     "goal": 0,
+     "steer": "compass",
+     "maxSteps": 20
+    },
+    {
+     "mode": "thread",
+     "title": "Winding sea road",
+     "sub": "lay the thread, then straighten it",
+     "w": 8,
+     "h": 5,
+     "curve": [
+      [
+       0.5,
+       4
+      ],
+      [
+       1,
+       3.2
+      ],
+      [
+       2,
+       3.8
+      ],
+      [
+       3,
+       2.4
+      ],
+      [
+       4,
+       2.9
+      ],
+      [
+       5,
+       1.5
+      ],
+      [
+       6,
+       2.1
+      ],
+      [
+       7,
+       0.8
+      ]
+     ],
+     "kmPerSquare": 10,
+     "tolPct": 10
+    },
+    {
+     "mode": "scale",
+     "title": "Measure the map",
+     "sub": "use the scale between the two places",
+     "w": 8,
+     "h": 5,
+     "places": [
+      {
+       "at": [
+        1,
+        3
+       ],
+       "label": "Kochi",
+       "glyph": "boat"
+      },
+      {
+       "at": [
+        6,
+        1
+       ],
+       "label": "Mombasa",
+       "glyph": "ship"
+      }
+     ],
+     "from": 0,
+     "to": 1,
+     "kmPerSquare": 10,
+     "tol": 3
+    },
+    {
+     "mode": "globe",
+     "title": "Pin the globe",
+     "sub": "place the pin on the line around Earth",
+     "pins": [
+      {
+       "lat": 0,
+       "lon": 20
+      }
+     ],
+     "tol": 6,
+     "targets": "c6-sst-ch02-t01-m1"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c6-sst-ch02-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Oceans and Continents",
+   "accent": "sci",
+   "targets": "c6-sst-ch02-t01-m2",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Oceans and Continents"
+      },
+      {
+       "id": "water",
+       "type": "bar",
+       "parts": 24,
+       "shaded": 24,
+       "x": 80,
+       "y": 300,
+       "w": 720,
+       "text": "Water 71%"
+      },
+      {
+       "id": "land",
+       "type": "label",
+       "text": "Land 29%",
+       "x": 80,
+       "y": 370,
+       "color": "amber"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Earth has more land than water",
+       "x": 80,
+       "y": 460
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "asia",
+       "type": "node",
+       "text": "Asia",
+       "sub": "largest continent",
+       "glyph": "earth",
+       "color": "sci"
+      },
+      {
+       "id": "africa",
+       "type": "node",
+       "text": "Africa",
+       "glyph": "earth",
+       "color": "amber"
+      },
+      {
+       "id": "na",
+       "type": "node",
+       "text": "North America",
+       "glyph": "earth",
+       "color": "mint"
+      },
+      {
+       "id": "sa",
+       "type": "node",
+       "text": "South America",
+       "glyph": "earth",
+       "color": "mint"
+      },
+      {
+       "id": "ant",
+       "type": "node",
+       "text": "Antarctica",
+       "color": "ion"
+      },
+      {
+       "id": "europe",
+       "type": "node",
+       "text": "Europe",
+       "glyph": "earth",
+       "color": "sun"
+      },
+      {
+       "id": "australia",
+       "type": "node",
+       "text": "Australia",
+       "sub": "smallest continent",
+       "glyph": "earth",
+       "color": "volt"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "india",
+       "type": "node",
+       "text": "India",
+       "sub": "country in Asia",
+       "glyph": "person",
+       "color": "amber"
+      },
+      {
+       "id": "indian",
+       "type": "node",
+       "text": "Indian Ocean",
+       "sub": "south of India",
+       "glyph": "wave",
+       "color": "sci"
+      },
+      {
+       "id": "arabian",
+       "type": "node",
+       "text": "Arabian Sea",
+       "sub": "west of India",
+       "glyph": "wave",
+       "color": "ion"
+      },
+      {
+       "id": "bengal",
+       "type": "node",
+       "text": "Bay of Bengal",
+       "sub": "east of India",
+       "glyph": "wave",
+       "color": "mint"
+      },
+      {
+       "id": "link1",
+       "type": "arrow",
+       "from": "india",
+       "to": "indian",
+       "text": "south"
+      },
+      {
+       "id": "link2",
+       "type": "arrow",
+       "from": "india",
+       "to": "arabian",
+       "text": "west"
+      },
+      {
+       "id": "link3",
+       "type": "arrow",
+       "from": "india",
+       "to": "bengal",
+       "text": "east"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "row",
+     "els": [
+      {
+       "id": "pacific",
+       "type": "node",
+       "text": "Pacific",
+       "sub": "largest, deepest",
+       "glyph": "wave",
+       "color": "sci"
+      },
+      {
+       "id": "atlantic",
+       "type": "node",
+       "text": "Atlantic",
+       "glyph": "wave",
+       "color": "ion"
+      },
+      {
+       "id": "indian2",
+       "type": "node",
+       "text": "Indian",
+       "glyph": "wave",
+       "color": "mint"
+      },
+      {
+       "id": "southern",
+       "type": "node",
+       "text": "Southern",
+       "glyph": "wave",
+       "color": "amber"
+      },
+      {
+       "id": "arctic",
+       "type": "node",
+       "text": "Arctic",
+       "sub": "smallest",
+       "glyph": "wave",
+       "color": "volt"
+      },
+      {
+       "id": "food",
+       "type": "label",
+       "text": "Food and salt",
+       "x": 100,
+       "y": 470,
+       "color": "sun"
+      },
+      {
+       "id": "rain",
+       "type": "label",
+       "text": "Weather and rain",
+       "x": 390,
+       "y": 470,
+       "color": "sci"
+      },
+      {
+       "id": "trade",
+       "type": "label",
+       "text": "Trade routes",
+       "x": 680,
+       "y": 470,
+       "color": "mint"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Earth is called the blue planet because about 71 percent of its surface is water, while about 29 percent is land.",
+    "L2": "So the belief that Earth has more land than water is not correct.",
+    "L3": "There are seven continents: Asia, Africa, North America, South America, Antarctica, Europe and Australia.",
+    "L4": "Asia is the largest continent, and Australia is the smallest.",
+    "L5": "India is a country in Asia. The Indian Ocean is south of India, the Arabian Sea is west, and the Bay of Bengal is east.",
+    "L6": "There are five oceans, and they are all connected rather than closed off from one another.",
+    "L7": "From largest to smallest, the oceans are Pacific, Atlantic, Indian, Southern and Arctic.",
+    "L8": "Oceans give food and salt, affect weather and rainfall, and carry trade across sea routes."
+   },
+   "narration": {
+    "L1": {
+     "text": "Earth is called the blue planet because about 71 percent of its surface is water, while about 29 percent is land.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "So the belief that Earth has more land than water is not correct.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "There are seven continents: Asia, Africa, North America, South America, Antarctica, Europe and Australia.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "Asia is the largest continent, and Australia is the smallest.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "India is a country in Asia. The Indian Ocean is south of India, the Arabian Sea is west, and the Bay of Bengal is east.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "There are five oceans, and they are all connected rather than closed off from one another.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "From largest to smallest, the oceans are Pacific, Atlantic, Indian, Southern and Arctic.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Oceans give food and salt, affect weather and rainfall, and carry trade across sea routes.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "title"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "water",
+        "land"
+       ]
+      },
+      {
+       "at": 1.2,
+       "do": "shade",
+       "dur": 1,
+       "target": "water",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "myth"
+      },
+      {
+       "at": 1,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "asia",
+        "africa",
+        "na",
+        "sa"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "ant",
+        "europe",
+        "australia"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "asia"
+      },
+      {
+       "at": 1.2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "australia"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "india"
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "indian",
+        "arabian",
+        "bengal"
+       ]
+      },
+      {
+       "at": 1.6,
+       "do": "flow",
+       "dur": 0.7,
+       "target": [
+        "link1",
+        "link2",
+        "link3"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "pacific",
+        "atlantic",
+        "indian2"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "southern",
+        "arctic"
+       ]
+      },
+      {
+       "at": 1.8,
+       "do": "flow",
+       "dur": 1,
+       "target": [
+        "pacific",
+        "atlantic",
+        "indian2",
+        "southern",
+        "arctic"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "focus",
+       "dur": 0.5,
+       "target": "pacific"
+      },
+      {
+       "at": 0.6,
+       "do": "focus",
+       "dur": 0.5,
+       "target": "atlantic"
+      },
+      {
+       "at": 1.2,
+       "do": "focus",
+       "dur": 0.5,
+       "target": "indian2"
+      },
+      {
+       "at": 1.8,
+       "do": "focus",
+       "dur": 0.5,
+       "target": "southern"
+      },
+      {
+       "at": 2.4,
+       "do": "focus",
+       "dur": 0.5,
+       "target": "arctic"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "food",
+        "rain",
+        "trade"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "interactive",
+       "dur": 0.5
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "order",
+    "prompt": "Arrange these oceans from largest to smallest.",
+    "items": [
+     "pacific",
+     "atlantic",
+     "indian2",
+     "southern",
+     "arctic"
+    ],
+    "src": "c6-sst-ch02-t01-i02"
+   }
+  },
+  "repairs": [
+   "clamp:parts",
+   "clamp:shaded",
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 51
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch02-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9536,
+     "ops": [
+      {
+       "id": "earth",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        240
+       ],
+       "r": 145,
+       "fill": "soft"
+      },
+      {
+       "id": "water",
+       "op": "sector",
+       "startMs": 1200,
+       "endMs": 2500,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        240
+       ],
+       "r": 145,
+       "fill": "accent",
+       "fromDeg": 0,
+       "toDeg": 256
+      },
+      {
+       "id": "land",
+       "op": "sector",
+       "startMs": 2500,
+       "endMs": 3300,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        400,
+        240
+       ],
+       "r": 145,
+       "fill": "good",
+       "fromDeg": 256,
+       "toDeg": 360
+      },
+      {
+       "id": "waterlabel",
+       "op": "label",
+       "startMs": 3400,
+       "endMs": 4200,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        590,
+        180
+       ],
+       "text": "water",
+       "to": [
+        500,
+        190
+       ]
+      },
+      {
+       "id": "landlabel",
+       "op": "label",
+       "startMs": 4200,
+       "endMs": 5000,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        570,
+        320
+       ],
+       "text": "land",
+       "to": [
+        490,
+        300
+       ]
+      },
+      {
+       "id": "blue",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 6100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "blue planet",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "ratio",
+       "op": "numwork",
+       "startMs": 6200,
+       "endMs": 7600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        390
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "71",
+         "water"
+        ],
+        [
+         "29",
+         "land"
+        ]
+       ]
+      },
+      {
+       "id": "surface",
+       "op": "text",
+       "startMs": 7700,
+       "endMs": 8300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        455
+       ],
+       "text": "surface",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch02-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "watermore",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        250,
+        220
+       ],
+       "r": 105,
+       "fill": "accent"
+      },
+      {
+       "id": "landless",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1700,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        550,
+        220
+       ],
+       "r": 70,
+       "fill": "good"
+      },
+      {
+       "id": "waterword",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        250,
+        220
+       ],
+       "text": "water",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "landword",
+       "op": "text",
+       "startMs": 2400,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        550,
+        220
+       ],
+       "text": "land",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "not",
+       "op": "text",
+       "startMs": 3200,
+       "endMs": 4100,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        400,
+        350
+       ],
+       "text": "not correct",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "cross",
+       "op": "stroke",
+       "startMs": 4100,
+       "endMs": 4700,
+       "ink": "mark",
+       "weight": 2,
+       "points": [
+        [
+         360,
+         330
+        ],
+        [
+         440,
+         390
+        ]
+       ]
+      },
+      {
+       "id": "cross2",
+       "op": "stroke",
+       "startMs": 4700,
+       "endMs": 5300,
+       "ink": "mark",
+       "weight": 2,
+       "points": [
+        [
+         440,
+         330
+        ],
+        [
+         360,
+         390
+        ]
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch02-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "title",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "seven continents",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "asia",
+       "op": "text",
+       "startMs": 1000,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        150,
+        140
+       ],
+       "text": "Asia",
+       "size": "m"
+      },
+      {
+       "id": "africa",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        150,
+        220
+       ],
+       "text": "Africa",
+       "size": "m"
+      },
+      {
+       "id": "north",
+       "op": "text",
+       "startMs": 2000,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        150,
+        300
+       ],
+       "text": "North America",
+       "size": "m"
+      },
+      {
+       "id": "south",
+       "op": "text",
+       "startMs": 2600,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        140
+       ],
+       "text": "South America",
+       "size": "m"
+      },
+      {
+       "id": "antarctica",
+       "op": "text",
+       "startMs": 3200,
+       "endMs": 3800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        220
+       ],
+       "text": "Antarctica",
+       "size": "m"
+      },
+      {
+       "id": "europe",
+       "op": "text",
+       "startMs": 3800,
+       "endMs": 4300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        650,
+        140
+       ],
+       "text": "Europe",
+       "size": "m"
+      },
+      {
+       "id": "australia",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 4900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        650,
+        220
+       ],
+       "text": "Australia",
+       "size": "m"
+      },
+      {
+       "id": "count",
+       "op": "numwork",
+       "startMs": 5000,
+       "endMs": 5900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        300,
+        350
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "7",
+         "contin"
+        ]
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch02-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "asia",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        260,
+        220
+       ],
+       "rx": 150,
+       "ry": 90,
+       "fill": "accent"
+      },
+      {
+       "id": "australia",
+       "op": "ellipse",
+       "startMs": 1000,
+       "endMs": 1800,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        590,
+        300
+       ],
+       "rx": 75,
+       "ry": 45,
+       "fill": "good"
+      },
+      {
+       "id": "asialabel",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        260,
+        220
+       ],
+       "text": "Asia",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "auslabel",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        590,
+        300
+       ],
+       "text": "Australia",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "largest",
+       "op": "label",
+       "startMs": 3300,
+       "endMs": 3900,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        220,
+        105
+       ],
+       "text": "largest",
+       "to": [
+        260,
+        150
+       ]
+      },
+      {
+       "id": "smallest",
+       "op": "label",
+       "startMs": 3900,
+       "endMs": 4500,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        620,
+        390
+       ],
+       "text": "smallest",
+       "to": [
+        590,
+        345
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch02-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 11238,
+     "ops": [
+      {
+       "id": "india",
+       "op": "polygon",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "good",
+       "weight": 2,
+       "points": [
+        [
+         370,
+         190
+        ],
+        [
+         420,
+         205
+        ],
+        [
+         410,
+         290
+        ],
+        [
+         380,
+         350
+        ],
+        [
+         350,
+         290
+        ]
+       ],
+       "fill": "good"
+      },
+      {
+       "id": "country",
+       "op": "text",
+       "startMs": 1000,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        395,
+        255
+       ],
+       "text": "India",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "asia",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2300,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        395,
+        100
+       ],
+       "text": "Asia",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "south",
+       "op": "arrow",
+       "startMs": 2400,
+       "endMs": 3200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        380,
+        350
+       ],
+       "to": [
+        380,
+        430
+       ]
+      },
+      {
+       "id": "indian",
+       "op": "text",
+       "startMs": 3200,
+       "endMs": 4000,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        380,
+        465
+       ],
+       "text": "Indian Ocean",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "west",
+       "op": "arrow",
+       "startMs": 4100,
+       "endMs": 4900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        350,
+        270
+       ],
+       "to": [
+        180,
+        270
+       ]
+      },
+      {
+       "id": "arabian",
+       "op": "text",
+       "startMs": 4900,
+       "endMs": 5800,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        105,
+        270
+       ],
+       "text": "Arabian Sea",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "east",
+       "op": "arrow",
+       "startMs": 5900,
+       "endMs": 6700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        420,
+        250
+       ],
+       "to": [
+        620,
+        250
+       ]
+      },
+      {
+       "id": "bay",
+       "op": "text",
+       "startMs": 6700,
+       "endMs": 7600,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        680,
+        250
+       ],
+       "text": "Bay of Bengal",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "southlabel",
+       "op": "label",
+       "startMs": 7700,
+       "endMs": 8200,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        470,
+        410
+       ],
+       "text": "south",
+       "to": [
+        400,
+        405
+       ]
+      },
+      {
+       "id": "westlabel",
+       "op": "label",
+       "startMs": 8200,
+       "endMs": 8700,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        220,
+        230
+       ],
+       "text": "west",
+       "to": [
+        260,
+        270
+       ]
+      },
+      {
+       "id": "eastlabel",
+       "op": "label",
+       "startMs": 8700,
+       "endMs": 9200,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        570,
+        210
+       ],
+       "text": "east",
+       "to": [
+        520,
+        250
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch02-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "pacific",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        220,
+        220
+       ],
+       "rx": 135,
+       "ry": 75,
+       "fill": "accent"
+      },
+      {
+       "id": "atlantic",
+       "op": "ellipse",
+       "startMs": 900,
+       "endMs": 1700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        430,
+        180
+       ],
+       "rx": 85,
+       "ry": 55,
+       "fill": "accent"
+      },
+      {
+       "id": "indian",
+       "op": "ellipse",
+       "startMs": 1700,
+       "endMs": 2500,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        570,
+        250
+       ],
+       "rx": 80,
+       "ry": 55,
+       "fill": "accent"
+      },
+      {
+       "id": "southern",
+       "op": "ellipse",
+       "startMs": 2500,
+       "endMs": 3300,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        380
+       ],
+       "rx": 150,
+       "ry": 40,
+       "fill": "accent"
+      },
+      {
+       "id": "arctic",
+       "op": "ellipse",
+       "startMs": 3300,
+       "endMs": 4000,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        75
+       ],
+       "rx": 100,
+       "ry": 28,
+       "fill": "accent"
+      },
+      {
+       "id": "labels",
+       "op": "text",
+       "startMs": 4100,
+       "endMs": 4600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        220,
+        220
+       ],
+       "text": "Pacific",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "atl",
+       "op": "text",
+       "startMs": 4600,
+       "endMs": 5100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        430,
+        180
+       ],
+       "text": "Atlantic",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "ind",
+       "op": "text",
+       "startMs": 5100,
+       "endMs": 5600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        570,
+        250
+       ],
+       "text": "Indian",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "sou",
+       "op": "text",
+       "startMs": 5600,
+       "endMs": 6100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        380
+       ],
+       "text": "Southern",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "arc",
+       "op": "text",
+       "startMs": 6100,
+       "endMs": 6600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        75
+       ],
+       "text": "Arctic",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "connect",
+       "op": "arrow",
+       "startMs": 6600,
+       "endMs": 7100,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        300,
+        220
+       ],
+       "to": [
+        350,
+        190
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch02-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "title",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        50
+       ],
+       "text": "largest to smallest",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "one",
+       "op": "text",
+       "startMs": 1000,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        90,
+        145
+       ],
+       "text": "1 Pacific",
+       "size": "m"
+      },
+      {
+       "id": "two",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        90,
+        205
+       ],
+       "text": "2 Atlantic",
+       "size": "m"
+      },
+      {
+       "id": "three",
+       "op": "text",
+       "startMs": 2000,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        90,
+        265
+       ],
+       "text": "3 Indian",
+       "size": "m"
+      },
+      {
+       "id": "four",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        90,
+        325
+       ],
+       "text": "4 Southern",
+       "size": "m"
+      },
+      {
+       "id": "five",
+       "op": "text",
+       "startMs": 3100,
+       "endMs": 3600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        90,
+        385
+       ],
+       "text": "5 Arctic",
+       "size": "m"
+      },
+      {
+       "id": "order",
+       "op": "arrow",
+       "startMs": 3800,
+       "endMs": 4600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        300,
+        145
+       ],
+       "to": [
+        300,
+        385
+       ]
+      },
+      {
+       "id": "largest",
+       "op": "label",
+       "startMs": 4600,
+       "endMs": 5100,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        350,
+        135
+       ],
+       "text": "largest",
+       "to": [
+        300,
+        145
+       ]
+      },
+      {
+       "id": "smallest",
+       "op": "label",
+       "startMs": 5100,
+       "endMs": 5600,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        350,
+        395
+       ],
+       "text": "smallest",
+       "to": [
+        300,
+        385
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch02-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "ocean",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        220
+       ],
+       "rx": 260,
+       "ry": 120,
+       "fill": "accent"
+      },
+      {
+       "id": "food",
+       "op": "text",
+       "startMs": 1100,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        220,
+        180
+       ],
+       "text": "food",
+       "size": "m"
+      },
+      {
+       "id": "salt",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        220,
+        260
+       ],
+       "text": "salt",
+       "size": "m"
+      },
+      {
+       "id": "weather",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        150
+       ],
+       "text": "weather",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "rainfall",
+       "op": "text",
+       "startMs": 2400,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        300
+       ],
+       "text": "rainfall",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "route",
+       "op": "arrow",
+       "startMs": 3000,
+       "endMs": 3900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        520,
+        220
+       ],
+       "to": [
+        700,
+        220
+       ]
+      },
+      {
+       "id": "trade",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4400,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        610,
+        180
+       ],
+       "text": "trade",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "searoutes",
+       "op": "text",
+       "startMs": 4400,
+       "endMs": 5100,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        600,
+        275
+       ],
+       "text": "sea routes",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "effect",
+       "op": "arrow",
+       "startMs": 5200,
+       "endMs": 5900,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        400,
+        355
+       ],
+       "to": [
+        400,
+        325
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "11 steps",
+   "prompt": "to Mombasa"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "97.4 km",
+   "prompt": "road length at 10 km/square"
+  },
+  {
+   "itemId": "r3:0",
+   "key": "53.9 km",
+   "prompt": "Kochi→Mombasa at 10 km/square"
+  },
+  {
+   "itemId": "r4:0",
+   "key": "0,20",
+   "prompt": "pin"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

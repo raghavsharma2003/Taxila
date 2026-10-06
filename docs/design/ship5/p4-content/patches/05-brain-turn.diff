@@ -1,0 +1,66 @@
+--- a/server/brain/turn.js
++++ b/server/brain/turn.js
+@@ -33,6 +33,7 @@
+ import { seamSafe as guardSeam } from "../seam-safe.js";
+ import { duplexRegistry } from "../duplex/registry.js";
+ import { studioSeam, isStudioRow } from "../studio/seam.js";
++import { stagecraftPointFor } from "../stagecraft/kernel-point.js";   // STAGECRAFT P4 (ship5 p4-content): null unless the lesson runs a host
+ import { relationalSeam } from "../relational/seam.js";
+ import { expressiveSeam } from "../voice/expressive/seam.js";
+ import { fallbackReply, floorContentOf, safeguardLine, scrubbed, textReply } from "./say.js";
+@@ -321,7 +322,20 @@
+   let carried = carriedFrom(state);
+   // Seam (W2-H, server/studio/seam.js): what Studio has on screen / in flight for this lesson, as values (in memory, no
+   // network). null = nothing, and the plan context is exactly the pre-seam one.
+-  const studioView = seamSafe("studio.statusFacts", () => studioSeam.statusFacts(lesson.id, { beat: prev.beat?.type ?? null, moduleOnly: moduleOnly || laneResume }), null);
++  // STAGECRAFT P4 (ship5 p4-content): the RevealPoint for this turn, from the kernel's own view and the turn state (never the
++  // portfolio: the lossless rule). Safety here is the PREDICATE on her words (the classifier has not run yet) or a safeguard
++  // still open: a quarantined pool reveals nothing. null without a host; never throws into the turn.
++  const stagecraftPoint = seamSafe("stagecraft.revealPoint", () => stagecraftPointFor({ lesson, prev, state, kit, child, childText, moduleOnly: moduleOnly || laneResume,
++    safety: !!prev.safeguard || (!!childText && scanSafety(childText).distress),
++    misconception: state.lastReteach?.misId ? { id: state.lastReteach.misId, state: "active" } : null }), null);
++  const studioView = seamSafe("studio.statusFacts", () => studioSeam.statusFacts(lesson.id, { beat: prev.beat?.type ?? null, moduleOnly: moduleOnly || laneResume, stagecraftPoint }), null);
++  // ship5 p4-content board sync: on an explanation beat a whiteboard is likely this turn, so its speculative board starts
++  // NOW (before the classifier and the plan), from the kit's own text for the item on the table; the kernel-time call
++  // below is a no-op for the same turn, and requestIntent re-gates whatever landed against her real line.
++  if (!late && textLane && !moduleOnly && !laneResume && ["explain", "worked_example", "recap"].includes(prev.beat?.type) && typeof studioSeam.prepareWhiteboard === "function") {
++    seamSafe("studio.prepareWhiteboard", () => studioSeam.prepareWhiteboard(whiteboardIntentOf({ lessonId: lesson.id, turn: (state.turn ?? 0) + 1, beat: prev.beat, next: state, kit,
++      item: activeItem ?? null, line: { text: "" } })), false);
++  }
+   // A resume turn plans as a module-only turn with no events: the Director holds (the last move and UI stand).
+   const planCtx = { kit, child, lesson, activeItem, moduleOnly: moduleOnly || laneResume, moduleEvents, chipId: body.chipId, answer: help ? "" : answer, leaked, live: liveP, carried,
+     childText, typed, asrConfidence: body.asrConfidence, bargeIn: !!body.teacherInterrupted, ...(studioView ? { studio: studioView } : {}) };
+@@ -424,6 +438,12 @@
+   };
+   authorityCheck();
+   mark("kernel");
++  // ship5 p4-content board sync: an accepted whiteboard ask starts its speculative board NOW, on the move's kit content (what
++  // her line is written from), so it can be in when her line is; requestIntent below re-gates it against her real line.
++  if (!late && textLane && kernel.arb.accepted.some((p) => p.kind === "ask_whiteboard") && typeof studioSeam.prepareWhiteboard === "function") {
++    seamSafe("studio.prepareWhiteboard", () => studioSeam.prepareWhiteboard(whiteboardIntentOf({ lessonId: lesson.id, turn: next.turn, beat: kernel.beat ?? { id: "visual", type: "explain" }, next, kit,
++      item: next.lastMove?.itemId ? findItem(next, kit, next.lastMove.itemId) : null, line: { text: "" } })), false);
++  }
+   // W1-C settle: start the blind grade of this turn's held why / teach-back NOW (or adopt the pregrade), while the reply
+   // is written and the turn commits, not after; the post-commit launchGrades below is then a no-op for the same event
+   // ids (later.js gradeLater is idempotent per event id).
+@@ -453,7 +473,19 @@
+   let studioSlot = late ? null
+     : seamSafe("studio.slotFor", () => (typeof studioSeam.slotFor === "function" ? studioSeam.slotFor(lesson.id, turnStudioOf(kernel.arb),
+       { beat: kernel.beat?.type ?? null, tray: r.ui?.tray ?? null, safety: r.move.kind === "safeguard" || !!incident,
+-        asking: !!r.move.itemId && ASKING_MOVES.has(r.move.kind) }) : null), null);
++        asking: !!r.move.itemId && ASKING_MOVES.has(r.move.kind),
++        // ship5 p4-content: the Director's tray holds only its template explain rung (W2-B): a Stagecraft piece may take it
++        rungTray: r.ui?.tray === "module" && next.module?.engine === RUNG_ENGINE }) : null), null);
++  // ship5 p4-content: a Stagecraft piece took the tray from the Director's template rung (the same rule as the live board
++  // below: the rung is the floor, a real piece replaces it): its mount / param commands go, a rung already on screen is
++  // unmounted, and its facts row leaves the move's content, so her line names only what the child sees.
++  if (!late && studioSlot?.artifact?.kind === "stagecraft" && next.module?.engine === RUNG_ENGINE) {
++    const id = next.module.id;
++    const mountedNow = r.moduleCommands.some((c) => c.op === "mount" && c.moduleId === id);
++    r = { ...r, moduleCommands: [...r.moduleCommands.filter((c) => c.moduleId !== id || c.op === "unmount"), ...(mountedNow ? [] : [{ op: "unmount", moduleId: id }])] };
++    next.module = null;
++    if (Array.isArray(next.lastContent)) next.lastContent = next.lastContent.filter((l) => !(typeof l === "string" && l.startsWith(FACTS_ROW_PREFIX)));
++  }
+   // Seam (W2-H fixer): the Studio facts row for THIS turn's reply comes from the slot the turn actually shows (after the
+   // kernel and slotFor), never from the pre-arbitration view: a refused or held reveal, or a piece hidden by the
+   // Director's tray, puts nothing on the row (AT-7: her line names only on-screen values). The row replaces last turn's,

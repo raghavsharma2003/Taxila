@@ -1,0 +1,1802 @@
+{
+ "topicId": "c6-sst-ch07-t01",
+ "title": "India’s Cultural Roots",
+ "chapter": "India’s Cultural Roots",
+ "subject": "sst",
+ "class": 6,
+ "topicType": "T3",
+ "plan": {
+  "game": "era-drop@1",
+  "hint": "place / century / order modes with BCE and CE dates from the kit"
+ },
+ "game": {
+  "archetype": "era-drop@1",
+  "spec": {
+   "archetype": "era-drop@1",
+   "skills": [
+    "c6-sst-ch07-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "landed": "landed",
+    "precision": "precision",
+    "coach": "Drag the dock along the timeline",
+    "first": "Which came first?",
+    "runDone": "Timeline complete",
+    "offBy": "off by",
+    "years": "years",
+    "exact": "SPOT ON",
+    "century": "century",
+    "bce": "BCE",
+    "ce": "CE",
+    "earlier": "EARLIER"
+   },
+   "title": "India’s cultural roots",
+   "axis": {
+    "min": -2000,
+    "max": 2100
+   },
+   "rounds": [
+    {
+     "mode": "place",
+     "title": "Drop the traditions",
+     "sub": "Older BCE dates are farther back",
+     "ticks": 0,
+     "speed": 0.8,
+     "tol": 35,
+     "items": [
+      {
+       "text": "Rig Veda composed",
+       "value": -1500,
+       "src": "c6-sst-ch07-t01-i09"
+      },
+      {
+       "text": "Buddha and Mahavira teach",
+       "value": -500,
+       "src": "c6-sst-ch07-t01-i09"
+      },
+      {
+       "text": "Today",
+       "value": 2026,
+       "src": "c6-sst-ch07-t01-i09"
+      }
+     ],
+     "targets": "c6-sst-ch07-t01-m1"
+    },
+    {
+     "mode": "century",
+     "title": "Find the century",
+     "sub": "Place each event in its time",
+     "ticks": 0,
+     "speed": 1,
+     "tol": 80,
+     "items": [
+      {
+       "text": "Buddha at Bodh Gaya",
+       "value": -500,
+       "src": "c6-sst-ch07-t01-i03"
+      },
+      {
+       "text": "First teaching at Sarnath",
+       "value": -499,
+       "src": "c6-sst-ch07-t01-i03"
+      },
+      {
+       "text": "Today’s learning",
+       "value": 2026,
+       "src": "c6-sst-ch07-t01-i09"
+      }
+     ]
+    },
+    {
+     "mode": "order",
+     "title": "Which came first?",
+     "sub": "Earlier means farther back",
+     "ticks": 0,
+     "speed": 1.1,
+     "tol": 35,
+     "items": [
+      {
+       "text": "Rig Veda composed",
+       "value": -1500,
+       "src": "c6-sst-ch07-t01-i09"
+      },
+      {
+       "text": "Buddha teaches Middle Path",
+       "value": -500,
+       "src": "c6-sst-ch07-t01-i04"
+      },
+      {
+       "text": "Mahavira teaches ahimsa",
+       "value": -499,
+       "src": "c6-sst-ch07-t01-i05"
+      },
+      {
+       "text": "Today",
+       "value": 2026,
+       "src": "c6-sst-ch07-t01-i09"
+      }
+     ],
+     "targets": "c6-sst-ch07-t01-m2"
+    }
+   ]
+  },
+  "repairs": [
+   "ticks:dense",
+   "ticks:dense"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c6-sst-ch07-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Right",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "BUSTED",
+    "order": "Tap them in order"
+   },
+   "title": "India’s Cultural Roots",
+   "accent": "amber",
+   "targets": "c6-sst-ch07-t01-m1",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "row",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "India’s Cultural Roots"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "The Vedas began as written books"
+      },
+      {
+       "id": "oral",
+       "type": "label",
+       "text": "Oral tradition"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "split",
+     "els": [
+      {
+       "id": "veda",
+       "type": "node",
+       "text": "Vedas",
+       "sub": "Rig oldest",
+       "glyph": "scroll",
+       "color": "amber"
+      },
+      {
+       "id": "up",
+       "type": "node",
+       "text": "Upanishads",
+       "sub": "Who am I?",
+       "glyph": "question",
+       "color": "ion"
+      },
+      {
+       "id": "buddha",
+       "type": "node",
+       "text": "Buddha",
+       "sub": "Middle Path",
+       "glyph": "person",
+       "color": "sci"
+      },
+      {
+       "id": "mahavira",
+       "type": "node",
+       "text": "Mahavira",
+       "sub": "Ahimsa",
+       "glyph": "shield",
+       "color": "mint"
+      },
+      {
+       "id": "shared",
+       "type": "node",
+       "text": "Shared values",
+       "sub": "Non-harm",
+       "glyph": "group",
+       "color": "sun"
+      },
+      {
+       "id": "v1",
+       "type": "arrow",
+       "from": "veda",
+       "to": "up",
+       "text": "questions"
+      },
+      {
+       "id": "v2",
+       "type": "arrow",
+       "from": "buddha",
+       "to": "shared",
+       "text": "values"
+      },
+      {
+       "id": "v3",
+       "type": "arrow",
+       "from": "mahavira",
+       "to": "shared",
+       "text": "values"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "rig",
+       "type": "label",
+       "text": "Rig Veda",
+       "x": 100,
+       "y": 300,
+       "color": "amber"
+      },
+      {
+       "id": "sama",
+       "type": "label",
+       "text": "Sama Veda",
+       "x": 300,
+       "y": 300,
+       "color": "amber"
+      },
+      {
+       "id": "yajur",
+       "type": "label",
+       "text": "Yajur Veda",
+       "x": 500,
+       "y": 300,
+       "color": "amber"
+      },
+      {
+       "id": "atharva",
+       "type": "label",
+       "text": "Atharva Veda",
+       "x": 700,
+       "y": 300,
+       "color": "amber"
+      },
+      {
+       "id": "oldest",
+       "type": "label",
+       "text": "oldest",
+       "x": 100,
+       "y": 380,
+       "color": "sun"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "India’s cultural roots include old texts, questions, and different schools of thought.",
+    "L2": "The Vedas are among India’s oldest texts, but they were not written down at the beginning.",
+    "L3": "Rishis, including some women seers, composed them. People memorised and recited them with great precision for centuries.",
+    "L4": "There are four Vedas: Rig, Sama, Yajur and Atharva. The Rig Veda is the oldest.",
+    "L5": "The Upanishads asked deep questions about the self and ultimate reality. Questions and debate helped ideas grow.",
+    "L6": "The Buddha taught the Middle Path between luxury and harsh self-denial. Mahavira, Jainism’s 24th tirthankara, taught ahimsa.",
+    "L7": "Both traditions value non-harm and good conduct, while folk and tribal traditions also show respect for nature.",
+    "L8": "These connected ideas form part of India’s cultural roots. Now check what you remember."
+   },
+   "narration": {
+    "L1": {
+     "text": "India’s cultural roots include old texts, questions, and different schools of thought.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "The Vedas are among India’s oldest texts, but they were not written down at the beginning.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "Rishis, including some women seers, composed them. People memorised and recited them with great precision for centuries.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "There are four Vedas: Rig, Sama, Yajur and Atharva. The Rig Veda is the oldest.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "The Upanishads asked deep questions about the self and ultimate reality. Questions and debate helped ideas grow.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "The Buddha taught the Middle Path between luxury and harsh self-denial. Mahavira, Jainism’s 24th tirthankara, taught ahimsa.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Both traditions value non-harm and good conduct, while folk and tribal traditions also show respect for nature.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "These connected ideas form part of India’s cultural roots. Now check what you remember.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.3,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.3,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      },
+      {
+       "at": 1,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.3,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "oral"
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 1,
+       "target": "oral"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.3,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.5,
+       "target": "rig"
+      },
+      {
+       "at": 0.2,
+       "do": "show",
+       "dur": 0.5,
+       "target": "sama"
+      },
+      {
+       "at": 0.4,
+       "do": "show",
+       "dur": 0.5,
+       "target": "yajur"
+      },
+      {
+       "at": 0.6,
+       "do": "show",
+       "dur": 0.5,
+       "target": "atharva"
+      },
+      {
+       "at": 1.2,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "oldest"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "up"
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.7,
+       "target": "v1"
+      },
+      {
+       "at": 1.2,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "v1",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "buddha"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.7,
+       "target": "mahavira"
+      },
+      {
+       "at": 1.2,
+       "do": "show",
+       "dur": 0.7,
+       "target": "shared"
+      },
+      {
+       "at": 1.5,
+       "do": "show",
+       "dur": 0.6,
+       "target": "v2"
+      },
+      {
+       "at": 1.7,
+       "do": "show",
+       "dur": 0.6,
+       "target": "v3"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "shared"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "camera",
+       "dur": 1,
+       "zoom": 1
+      },
+      {
+       "at": 1,
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which Veda is the oldest?",
+    "options": [
+     "rig",
+     "sama",
+     "yajur",
+     "atharva"
+    ],
+    "answer": "rig",
+    "src": "c6-sst-ch07-t01-i01"
+   }
+  },
+  "repairs": [],
+  "attempts": 2,
+  "model": "taxila-fast-bg",
+  "seconds": 31
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch07-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "roots",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "cultural roots",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "texts",
+       "op": "rect",
+       "startMs": 900,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        170
+       ],
+       "w": 170,
+       "h": 100
+      },
+      {
+       "id": "textsLabel",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        175,
+        225
+       ],
+       "text": "old texts",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "questions",
+       "op": "circle",
+       "startMs": 2200,
+       "endMs": 2900,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        220
+       ],
+       "r": 58
+      },
+      {
+       "id": "questionsLabel",
+       "op": "text",
+       "startMs": 2900,
+       "endMs": 3400,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        225
+       ],
+       "text": "questions",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "schools",
+       "op": "polygon",
+       "startMs": 3400,
+       "endMs": 4200,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         590,
+         170
+        ],
+        [
+         710,
+         170
+        ],
+        [
+         750,
+         260
+        ],
+        [
+         550,
+         260
+        ]
+       ]
+      },
+      {
+       "id": "schoolsLabel",
+       "op": "text",
+       "startMs": 4200,
+       "endMs": 4800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        650,
+        225
+       ],
+       "text": "schools of thought",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "join1",
+       "op": "line",
+       "startMs": 4800,
+       "endMs": 5100,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        260,
+        220
+       ],
+       "to": [
+        340,
+        220
+       ]
+      },
+      {
+       "id": "join2",
+       "op": "line",
+       "startMs": 5100,
+       "endMs": 5400,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        460,
+        220
+       ],
+       "to": [
+        550,
+        220
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch07-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "vedaTitle",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "Vedas",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "vedaScroll",
+       "op": "rect",
+       "startMs": 800,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        170,
+        130
+       ],
+       "w": 460,
+       "h": 170
+      },
+      {
+       "id": "oldest",
+       "op": "label",
+       "startMs": 1900,
+       "endMs": 2600,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        210,
+        350
+       ],
+       "text": "oldest texts",
+       "to": [
+        210,
+        300
+       ]
+      },
+      {
+       "id": "oralArrow",
+       "op": "arrow",
+       "startMs": 2700,
+       "endMs": 3500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        300
+       ],
+       "to": [
+        400,
+        390
+       ]
+      },
+      {
+       "id": "notWritten",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        435
+       ],
+       "text": "not written first",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "memory",
+       "op": "circle",
+       "startMs": 4500,
+       "endMs": 5200,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        650,
+        215
+       ],
+       "r": 48
+      },
+      {
+       "id": "memoryLabel",
+       "op": "text",
+       "startMs": 5200,
+       "endMs": 5700,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        650,
+        220
+       ],
+       "text": "memory",
+       "size": "s",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch07-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "rishi",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        180,
+        180
+       ],
+       "r": 62
+      },
+      {
+       "id": "rishiLabel",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        185
+       ],
+       "text": "rishis",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "women",
+       "op": "text",
+       "startMs": 1200,
+       "endMs": 1900,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        180,
+        290
+       ],
+       "text": "women seers",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "compose",
+       "op": "arrow",
+       "startMs": 1900,
+       "endMs": 2700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        250,
+        180
+       ],
+       "to": [
+        370,
+        180
+       ]
+      },
+      {
+       "id": "vedaWord",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        430,
+        180
+       ],
+       "text": "Vedas",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "recite",
+       "op": "arrow",
+       "startMs": 3500,
+       "endMs": 4300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        430,
+        250
+       ],
+       "to": [
+        430,
+        350
+       ]
+      },
+      {
+       "id": "oral",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 4800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        430,
+        395
+       ],
+       "text": "recited",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "precision",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 5600,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        620,
+        350
+       ],
+       "text": "precision",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "centuries",
+       "op": "text",
+       "startMs": 5900,
+       "endMs": 6500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        430,
+        455
+       ],
+       "text": "centuries",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch07-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "four",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "four Vedas",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "vedaList",
+       "op": "numwork",
+       "startMs": 900,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        120,
+        130
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "Rig",
+         "Sama",
+         "Yajur",
+         "Atharv"
+        ]
+       ]
+      },
+      {
+       "id": "rigBox",
+       "op": "rect",
+       "startMs": 2500,
+       "endMs": 3300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        90,
+        270
+       ],
+       "w": 210,
+       "h": 100
+      },
+      {
+       "id": "rigLabel",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 3800,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        195,
+        320
+       ],
+       "text": "Rig Veda",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "oldestArrow",
+       "op": "arrow",
+       "startMs": 3900,
+       "endMs": 4700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        300,
+        320
+       ],
+       "to": [
+        480,
+        320
+       ]
+      },
+      {
+       "id": "oldestLabel",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        610,
+        320
+       ],
+       "text": "oldest",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch07-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "upTitle",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "Upanishads",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "self",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        250,
+        220
+       ],
+       "r": 75
+      },
+      {
+       "id": "selfLabel",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        250,
+        220
+       ],
+       "text": "self",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "reality",
+       "op": "circle",
+       "startMs": 2200,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        550,
+        220
+       ],
+       "r": 75
+      },
+      {
+       "id": "realityLabel",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        550,
+        220
+       ],
+       "text": "ultimate reality",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "debate",
+       "op": "arrow",
+       "startMs": 3800,
+       "endMs": 4500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        325,
+        220
+       ],
+       "to": [
+        475,
+        220
+       ]
+      },
+      {
+       "id": "questionsLabel",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        350
+       ],
+       "text": "questions",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "ideas",
+       "op": "arrow",
+       "startMs": 5300,
+       "endMs": 6000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        370
+       ],
+       "to": [
+        400,
+        440
+       ]
+      },
+      {
+       "id": "grow",
+       "op": "text",
+       "startMs": 6000,
+       "endMs": 6800,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        465
+       ],
+       "text": "ideas grow",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch07-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "buddha",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        230,
+        220
+       ],
+       "r": 115
+      },
+      {
+       "id": "buddhaLabel",
+       "op": "text",
+       "startMs": 800,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        230,
+        160
+       ],
+       "text": "Buddha",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "luxury",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        230,
+        255
+       ],
+       "text": "luxury",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "harsh",
+       "op": "text",
+       "startMs": 2000,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        230,
+        310
+       ],
+       "text": "harsh self-denial",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "middle",
+       "op": "text",
+       "startMs": 2900,
+       "endMs": 3600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        230,
+        385
+       ],
+       "text": "Middle Path",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "mahavira",
+       "op": "circle",
+       "startMs": 3700,
+       "endMs": 4500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        570,
+        220
+       ],
+       "r": 115
+      },
+      {
+       "id": "mahaviraLabel",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        570,
+        160
+       ],
+       "text": "Mahavira",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "tirth",
+       "op": "text",
+       "startMs": 5200,
+       "endMs": 5900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        570,
+        270
+       ],
+       "text": "24th tirthankara",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "ahimsa",
+       "op": "text",
+       "startMs": 6000,
+       "endMs": 6500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        570,
+        350
+       ],
+       "text": "ahimsa",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch07-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "both",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        220
+       ],
+       "rx": 250,
+       "ry": 120
+      },
+      {
+       "id": "nonharm",
+       "op": "text",
+       "startMs": 1000,
+       "endMs": 1700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        200
+       ],
+       "text": "non-harm",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "conduct",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        260
+       ],
+       "text": "good conduct",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "nature",
+       "op": "polygon",
+       "startMs": 2800,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         150,
+         390
+        ],
+        [
+         210,
+         330
+        ],
+        [
+         270,
+         390
+        ],
+        [
+         340,
+         330
+        ],
+        [
+         400,
+         390
+        ],
+        [
+         470,
+         330
+        ],
+        [
+         540,
+         390
+        ],
+        [
+         610,
+         330
+        ],
+        [
+         670,
+         390
+        ]
+       ]
+      },
+      {
+       "id": "natureLabel",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 4800,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        430
+       ],
+       "text": "respect for nature",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "folk",
+       "op": "label",
+       "startMs": 5000,
+       "endMs": 5500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        95,
+        350
+       ],
+       "text": "folk",
+       "to": [
+        150,
+        370
+       ]
+      },
+      {
+       "id": "tribal",
+       "op": "label",
+       "startMs": 5500,
+       "endMs": 6000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        680,
+        350
+       ],
+       "text": "tribal",
+       "to": [
+        650,
+        370
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch07-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "rootTitle",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "cultural roots",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "venn",
+       "op": "ellipse",
+       "startMs": 900,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        300,
+        230
+       ],
+       "rx": 150,
+       "ry": 110
+      },
+      {
+       "id": "venn2",
+       "op": "ellipse",
+       "startMs": 1300,
+       "endMs": 2000,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        500,
+        230
+       ],
+       "rx": 150,
+       "ry": 110
+      },
+      {
+       "id": "texts",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        210,
+        200
+       ],
+       "text": "texts",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "ideas",
+       "op": "text",
+       "startMs": 2600,
+       "endMs": 3100,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        230
+       ],
+       "text": "ideas",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "values",
+       "op": "text",
+       "startMs": 3100,
+       "endMs": 3600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        590,
+        200
+       ],
+       "text": "values",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "check",
+       "op": "rect",
+       "startMs": 4200,
+       "endMs": 5000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        270,
+        380
+       ],
+       "w": 260,
+       "h": 65
+      },
+      {
+       "id": "checkLabel",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 5800,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        420
+       ],
+       "text": "check memory",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "1500 BCE",
+   "prompt": "Rig Veda composed",
+   "src": "c6-sst-ch07-t01-i09"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "500 BCE",
+   "prompt": "Buddha and Mahavira teach",
+   "src": "c6-sst-ch07-t01-i09"
+  },
+  {
+   "itemId": "r1:2",
+   "key": "2026 CE",
+   "prompt": "Today",
+   "src": "c6-sst-ch07-t01-i09"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "5th century BCE",
+   "prompt": "Buddha at Bodh Gaya",
+   "src": "c6-sst-ch07-t01-i03"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "5th century BCE",
+   "prompt": "First teaching at Sarnath",
+   "src": "c6-sst-ch07-t01-i03"
+  },
+  {
+   "itemId": "r2:2",
+   "key": "21st century CE",
+   "prompt": "Today’s learning",
+   "src": "c6-sst-ch07-t01-i09"
+  },
+  {
+   "itemId": "r3:0",
+   "key": "Rig Veda composed",
+   "prompt": "earlier: Rig Veda composed (1500 BCE) vs Buddha teaches Middle Path (500 BCE)"
+  },
+  {
+   "itemId": "r3:1",
+   "key": "Mahavira teaches ahimsa",
+   "prompt": "earlier: Mahavira teaches ahimsa (499 BCE) vs Today (2026 CE)"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

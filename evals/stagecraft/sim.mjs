@@ -10,7 +10,7 @@
 // (ledger, beat, request, board outcome), the device (mount time, mount failure), Foundry (429 storms, failures).
 // It scores every reveal against TRUTH (the script), independently of the conductor's own freshness check.
 import { config, initPortfolio, step } from "../../server/stagecraft/conductor.js";
-import { wantAt } from "../../server/stagecraft/policy.js";
+import { wantAt, restRetire } from "../../server/stagecraft/policy.js";
 import { familyKey, fromBoard, fromBuildIntent, fromPlan, fromRequest, fromSignal } from "../../server/stagecraft/sources.js";
 import { buildDist, sampleBuild } from "../../server/stagecraft/score.js";
 import { BEAT_NEED, COST_USD, SPEC_USABLE } from "../../server/stagecraft/config.js";
@@ -22,6 +22,8 @@ const MOUNT_MS = { engine_default: 150, generated_spec: 150, library: 900, live_
 export function armConfig(arm, env) {
   const base = { catalog: env.catalog, cdf: env.cdf ?? null, instant: simInstant(env) };
   if (arm === "sc_on") return config({ ...base });
+  // ship5 p4-content: sc_on + the rest rule (busy share) + the 3-minute visual floor (policy.js restIsDue / restRetire)
+  if (arm === "sc_rest") return config({ ...base, personalNeeds: ["contrast_misconception", "re_represent"] });
   if (arm === "sc_off") return config({ ...base, sources: [] });
   if (arm === "sc_on_k1") return config({ ...base, tiers: { spec: { perFamily: 1 } } });
   if (arm === "w2") return config({ ...base, sources: ["plan_lookahead"], rungs: ["engine_default", "library", "live_codegen", "board"], liveEvenWithEngine: true });
@@ -65,6 +67,12 @@ export function simulate(L, arm, env) {
   //   replyStorm  reply-lane 429s are actually fed to the conductor (the original sim dropped them), every 5 s in-window
   const ST = env.stress ?? {};
   const beatOnly = arm === "w2";
+  const rest = arm === "sc_rest" || !!env.rest;
+  const REST = { restShare: env.restShare ?? 0.5, restGraceMs: 120_000, restRetireTurns: env.restRetireTurns ?? 4, visualFloorMs: 150_000, boardOwnsExplain: arm === "sc_rest" };
+  // sc_rest models the live whiteboard on explanation beats (production: the kernel asks Studio for a board on every
+  // explanation line when nothing interactive is up): a board is a visual while she speaks the line (busy for that span)
+  const BOARD_BEATS_SIM = new Set(["explain", "worked_example", "recap"]);
+  const flowSpans = [];
   let S = initPortfolio(L.id, 0);
   const H = new Heap();
   const rows = [];
@@ -72,7 +80,7 @@ export function simulate(L, arm, env) {
   const wants = [];               // the lossless stream: (turn, point kind, family, archetype, premise)
   const aborted = new Set();
   // the kernel's view (what production's kernel knows; never the portfolio)
-  const K = { shownBeat: [], revealedAt: new Map(), ledger: new Map(), contrasted: [], request: null, offered: null, onStage: null, wrong: 0, right: 0, lastReveal: -99, safety: false, lastFrame: {}, pieces: [] };
+  const K = { shownBeat: [], revealedAt: new Map(), ledger: new Map(), contrasted: [], request: null, offered: null, onStage: null, wrong: 0, right: 0, lastReveal: -99, safety: false, lastFrame: {}, pieces: [], streak: 0, answeredNow: false };
   for (const m of L.knownMis ?? []) K.ledger.set(m, "active");
   const truth = { key: null, safetyWindows: [], childSpeech: [] };
   const misFor = (topicId) => { for (const [m, st] of K.ledger) if (m.startsWith(topicId)) return { id: m, state: st }; return null; };
@@ -262,6 +270,8 @@ export function simulate(L, arm, env) {
       if (K.offered && turn.offerYes) K.offerAccepted = K.offered;
       K.offered = null;
       if (K.onStage && turn.answer) { if (turn.answer === "wrong") K.wrong++; else K.right++; }
+      K.streak = turn.answer === "right" ? K.streak + 1 : turn.answer === "wrong" ? 0 : K.streak;
+      K.answeredNow = !!(K.onStage && turn.answer);
       const key = keyAt(turn);
       truth.key = key;
       inp({ t: "state", key, at: S.meta.now });
@@ -281,6 +291,15 @@ export function simulate(L, arm, env) {
     H.push(pointAt, () => {
       // retire: 8 turns on stage, or 2 turns after it was completed (seam.js, unchanged)
       if (K.onStage && (turn.k - K.onStage.revealedTurn >= 8 || (K.right >= 3 && turn.k - K.onStage.revealedTurn >= 2 + 3))) { endPiece(S.meta.now); K.onStage = null; inp({ t: "retired", at: S.meta.now }); }
+      // ship5 p4-content rest rule: the stage's busy share so far and the time since anything was on it (truth's own stage)
+      const nowT = S.meta.now;
+      const busyMs = K.pieces.reduce((a, p) => a + Math.max(0, Math.min(p.end ?? nowT, nowT) - p.start), 0) + (curPiece ? Math.max(0, nowT - curPiece.start) : 0);
+      const lastEnd = K.pieces.length ? Math.max(...K.pieces.map((p) => p.end ?? 0)) : 0;
+      const restIn = rest ? { busyShare: nowT > 0 ? busyMs / nowT : 0, teachingMs: nowT, lastVisualAgoMs: curPiece ? 0 : nowT - lastEnd, inFlow: K.streak >= 2 || K.lastFrame?.stepState === "stuck_productive" } : {};
+      if (rest && restIn.inFlow) flowSpans.push([turn.childStart, turn.herEnd]);
+      if (rest && restRetire({ ...restIn, safety: K.safety, turnSeq: turn.k, board: { onStage: K.onStage, answeredThisTurn: K.answeredNow } }, REST)) {
+        X.restRetires = (X.restRetires ?? 0) + 1; endPiece(nowT); K.onStage = null; inp({ t: "retired", at: nowT });
+      }
       const kind = turn.request && K.request ? "request_answered" : turn.beatChanged ? "beat_boundary" : "trp";
       if (turn.beatChanged) K.shownBeat = [];
       const mis0 = misFor(turn.topicId);
@@ -288,8 +307,9 @@ export function simulate(L, arm, env) {
       const want = wantAt({ pointKind: kind, turnSeq: turn.k, beat: turn.beat, beatChanged: turn.beatChanged, skillId: turn.skillId, topicId: turn.topicId, classLevel: L.classLevel,
         misconception: mis, contrasted: K.contrasted, request: K.request, offerAccepted: K.offerAccepted ?? null,
         board: { onStage: K.onStage, wrongCount: K.wrong, complete: K.right >= 3, steer: turn.steer }, signal: K.lastFrame, lastPolicyRevealTurn: K.lastReveal, safety: K.safety, shownThisBeat: K.shownBeat,
-        beatOnly, prefetched }, { catalog: env.catalog, swapSpacingTurns: 2, firstRevealTurn: 3 });
+        beatOnly, prefetched, ...restIn }, { catalog: env.catalog, swapSpacingTurns: 2, firstRevealTurn: 3, ...(rest ? REST : {}) });
       K.offerAccepted = null;
+      if (rest && REST.boardOwnsExplain && !want && !K.onStage && !curPiece && !K.safety && BOARD_BEATS_SIM.has(turn.beat)) { K.pieces.push({ start: turn.herStart, end: turn.herEnd, family: "board" }); X.boards = (X.boards ?? 0) + 1; }
       const point = { kind, phase: onset >= 400 ? "her_turn" : "committed", turnSeq: turn.k, current: truth.key, want, safetyOpen: K.safety, childHoldsFloor: false, at: S.meta.now,
         line: { namingClause: turn.namingClause }, committed: { committed_misconception_value: "v" }, turn };
       if (want) wants.push(`${turn.k}|${kind}|${want.family}|${want.archetype}|${want.need}|${truth.key.topicId}|${truth.key.misconceptionId}`);
@@ -308,7 +328,18 @@ export function simulate(L, arm, env) {
   endPiece(L.lessonMs);
   const active = K.pieces.reduce((a, p) => a + Math.max(0, Math.min(p.end ?? L.lessonMs, L.lessonMs) - p.start), 0);
   env.onRows?.(rows);
-  const res = foldLesson(rows, { lessonMs: L.lessonMs, extras: { ...X, stageActiveShare: active / L.lessonMs, lessonMs: L.lessonMs } });
+  // ship5 p4-content: the 3-minute visual floor. Every 180 s window (step 30 s, after the first 60 s of arrival) must
+  // overlap a piece on stage, unless the child is in flow for at least half of it (VALUES-100 V3.3 "unless in flow").
+  const pieces = K.pieces.map((p) => [p.start, Math.min(p.end ?? L.lessonMs, L.lessonMs)]);
+  let winN = 0, winCovered = 0, winFlowExempt = 0;
+  for (let a = 60_000; a + 180_000 <= L.lessonMs; a += 30_000) {
+    const b = a + 180_000;
+    const covered = pieces.some(([s0, e0]) => e0 > a && s0 < b);
+    const flowMs = flowSpans.reduce((acc, [s0, e0]) => acc + Math.max(0, Math.min(e0, b) - Math.max(s0, a)), 0);
+    if (!covered && flowMs >= 90_000) { winFlowExempt++; continue; }
+    winN++; if (covered) winCovered++;
+  }
+  const res = foldLesson(rows, { lessonMs: L.lessonMs, extras: { ...X, stageActiveShare: active / L.lessonMs, lessonMs: L.lessonMs, visualWindows: winN, visualWindowsCovered: winCovered, visualWindowsFlowExempt: winFlowExempt } });
   res.wants = wants;
   res.rows = rows.length;
   return res;

@@ -1,0 +1,2161 @@
+{
+ "topicId": "c6-sst-ch06-t01",
+ "title": "The Beginnings of Indian Civilisation",
+ "chapter": "The Beginnings of Indian Civilisation",
+ "subject": "sst",
+ "class": 6,
+ "topicType": "T3",
+ "plan": {
+  "game": "era-drop@1",
+  "hint": "place / century / order modes with BCE and CE dates from the kit"
+ },
+ "game": {
+  "archetype": "era-drop@1",
+  "spec": {
+   "archetype": "era-drop@1",
+   "skills": [
+    "c6-sst-ch06-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "landed": "landed",
+    "precision": "precision",
+    "coach": "Drag the dock along the timeline",
+    "first": "Which came first?",
+    "runDone": "Timeline complete",
+    "offBy": "off by",
+    "years": "years",
+    "exact": "SPOT ON",
+    "century": "century",
+    "bce": "BCE",
+    "ce": "CE",
+    "earlier": "EARLIER"
+   },
+   "title": "The Harappan civilisation",
+   "axis": {
+    "min": -2700,
+    "max": -1704
+   },
+   "rounds": [
+    {
+     "mode": "place",
+     "title": "Drop the dates",
+     "sub": "BCE years count down toward 1 CE",
+     "ticks": 100,
+     "speed": 0.8,
+     "tol": 25,
+     "items": [
+      {
+       "text": "Cities begin to flourish",
+       "value": -2600,
+       "src": "c6-sst-ch06-t01-i12"
+      },
+      {
+       "text": "Harappan cities continue",
+       "value": -2400,
+       "src": "c6-sst-ch06-t01-i12"
+      },
+      {
+       "text": "Cities decline gradually",
+       "value": -1900,
+       "src": "c6-sst-ch06-t01-i06"
+      }
+     ]
+    },
+    {
+     "mode": "century",
+     "title": "Find the century",
+     "sub": "Place each event in its century",
+     "ticks": 100,
+     "speed": 0.9,
+     "tol": 40,
+     "items": [
+      {
+       "text": "Cities flourish",
+       "value": -2500,
+       "src": "c6-sst-ch06-t01-i12"
+      },
+      {
+       "text": "Cities begin to decline",
+       "value": -1900,
+       "src": "c6-sst-ch06-t01-i06"
+      },
+      {
+       "text": "Lothal trades by water",
+       "value": -2300,
+       "src": "c6-sst-ch06-t01-i04"
+      }
+     ]
+    },
+    {
+     "mode": "order",
+     "title": "Which came first?",
+     "sub": "Earlier BCE dates have larger numbers",
+     "ticks": 100,
+     "speed": 1,
+     "tol": 9,
+     "items": [
+      {
+       "text": "Cities flourish",
+       "value": -2500,
+       "src": "c6-sst-ch06-t01-i12"
+      },
+      {
+       "text": "Cities decline gradually",
+       "value": -1900,
+       "src": "c6-sst-ch06-t01-i06"
+      },
+      {
+       "text": "Lothal trades by water",
+       "value": -2300,
+       "src": "c6-sst-ch06-t01-i04"
+      },
+      {
+       "text": "People move to villages",
+       "value": -1800,
+       "src": "c6-sst-ch06-t01-i06"
+      }
+     ],
+     "targets": "c6-sst-ch06-t01-m2"
+    }
+   ]
+  },
+  "repairs": [
+   "axis:widened"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c6-sst-ch06-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Harappan Civilisation",
+   "accent": "amber",
+   "targets": "c6-sst-ch06-t01-m3",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "row",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Harappan Civilisation"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Just one or two simple cities"
+      },
+      {
+       "id": "map",
+       "type": "glyph",
+       "name": "map",
+       "x": 500,
+       "y": 360,
+       "size": 150,
+       "color": "amber"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "split",
+     "els": [
+      {
+       "id": "valley",
+       "type": "node",
+       "text": "River valleys",
+       "glyph": "river",
+       "color": "sci"
+      },
+      {
+       "id": "harappa",
+       "type": "node",
+       "text": "Harappa",
+       "sub": "Pakistan",
+       "glyph": "house",
+       "color": "amber"
+      },
+      {
+       "id": "mohenjo",
+       "type": "node",
+       "text": "Mohenjo-daro",
+       "sub": "Pakistan",
+       "glyph": "house",
+       "color": "amber"
+      },
+      {
+       "id": "dholavira",
+       "type": "node",
+       "text": "Dholavira",
+       "sub": "India",
+       "glyph": "house",
+       "color": "mint"
+      },
+      {
+       "id": "lothal",
+       "type": "node",
+       "text": "Lothal",
+       "sub": "India",
+       "glyph": "house",
+       "color": "mint"
+      },
+      {
+       "id": "v1",
+       "type": "arrow",
+       "from": "valley",
+       "to": "harappa",
+       "text": "grew"
+      },
+      {
+       "id": "v2",
+       "type": "arrow",
+       "from": "valley",
+       "to": "dholavira",
+       "text": "grew"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "grid",
+       "type": "node",
+       "text": "Grid streets",
+       "sub": "planned layout",
+       "glyph": "road",
+       "color": "amber"
+      },
+      {
+       "id": "drains",
+       "type": "node",
+       "text": "Covered drains",
+       "glyph": "recycle",
+       "color": "sci"
+      },
+      {
+       "id": "bricks",
+       "type": "node",
+       "text": "Standard bricks",
+       "sub": "about 1:2:4",
+       "glyph": "pillar",
+       "color": "sun"
+      },
+      {
+       "id": "bath",
+       "type": "node",
+       "text": "Great Bath",
+       "sub": "Mohenjo-daro",
+       "glyph": "jug",
+       "color": "ion"
+      },
+      {
+       "id": "reservoir",
+       "type": "node",
+       "text": "Reservoirs",
+       "sub": "Dholavira",
+       "glyph": "drop",
+       "color": "mint"
+      },
+      {
+       "id": "p1",
+       "type": "arrow",
+       "from": "grid",
+       "to": "drains",
+       "text": "planned"
+      },
+      {
+       "id": "p2",
+       "type": "arrow",
+       "from": "drains",
+       "to": "bricks",
+       "text": "shared rules"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "row",
+     "els": [
+      {
+       "id": "seal",
+       "type": "node",
+       "text": "Seals",
+       "sub": "marks and goods",
+       "glyph": "shield",
+       "color": "amber"
+      },
+      {
+       "id": "beads",
+       "type": "node",
+       "text": "Beads",
+       "sub": "skilled crafts",
+       "glyph": "spark",
+       "color": "mint"
+      },
+      {
+       "id": "weights",
+       "type": "node",
+       "text": "Weights",
+       "sub": "standard sizes",
+       "glyph": "balance",
+       "color": "sci"
+      },
+      {
+       "id": "dock",
+       "type": "node",
+       "text": "Dockyard",
+       "sub": "Lothal",
+       "glyph": "boat",
+       "color": "ion"
+      },
+      {
+       "id": "meso",
+       "type": "node",
+       "text": "Mesopotamia",
+       "sub": "distant trade",
+       "glyph": "globe",
+       "color": "sun"
+      },
+      {
+       "id": "t1",
+       "type": "arrow",
+       "from": "seal",
+       "to": "dock",
+       "text": "goods"
+      },
+      {
+       "id": "t2",
+       "type": "arrow",
+       "from": "dock",
+       "to": "meso",
+       "text": "trade"
+      }
+     ]
+    },
+    {
+     "id": "s5",
+     "layout": "split",
+     "els": [
+      {
+       "id": "script",
+       "type": "node",
+       "text": "Harappan script",
+       "sub": "not yet read",
+       "glyph": "scroll",
+       "color": "volt"
+      },
+      {
+       "id": "evidence",
+       "type": "node",
+       "text": "Remains",
+       "sub": "sites and objects",
+       "glyph": "pick",
+       "color": "amber"
+      },
+      {
+       "id": "decline",
+       "type": "node",
+       "text": "Gradual decline",
+       "glyph": "clock",
+       "color": "sci"
+      },
+      {
+       "id": "villages",
+       "type": "node",
+       "text": "Smaller villages",
+       "sub": "people moved",
+       "glyph": "house",
+       "color": "mint"
+      },
+      {
+       "id": "d1",
+       "type": "arrow",
+       "from": "evidence",
+       "to": "script",
+       "text": "learn"
+      },
+      {
+       "id": "d2",
+       "type": "arrow",
+       "from": "decline",
+       "to": "villages",
+       "text": "over time"
+      }
+     ]
+    },
+    {
+     "id": "s6",
+     "layout": "row",
+     "els": [
+      {
+       "id": "prompt",
+       "type": "title",
+       "text": "Which feature shows planning?"
+      },
+      {
+       "id": "optgrid",
+       "type": "label",
+       "text": "Grid layout",
+       "x": 180,
+       "y": 380,
+       "color": "amber"
+      },
+      {
+       "id": "optcircle",
+       "type": "label",
+       "text": "Circular layout",
+       "x": 500,
+       "y": 380,
+       "color": "sci"
+      },
+      {
+       "id": "optrandom",
+       "type": "label",
+       "text": "Random layout",
+       "x": 780,
+       "y": 380,
+       "color": "volt"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "The Harappan, or Sindhu-Sarasvati, civilisation grew in the Indus and Ghaggar-Hakra river valleys.",
+    "L2": "It was not just one or two simple cities. Many important sites show a wide and skilled civilisation.",
+    "L3": "Its cities flourished from about 2600 BCE to 1900 BCE, with planned streets, covered drains and standard baked bricks.",
+    "L4": "Mohenjo-daro had the Great Bath, and Dholavira had water reservoirs. These features needed planning and organisation.",
+    "L5": "People made seals, carnelian beads, pottery, toys and standard weights. Lothal had a dockyard, and goods reached Mesopotamia.",
+    "L6": "Seals can suggest trade, but the Harappan script has not yet been read. Historians learn from remains without guessing the signs.",
+    "L7": "The cities declined gradually, possibly because of climate change, changing rivers or falling trade. People moved to smaller villages.",
+    "L8": "Now check your understanding: which street pattern shows Harappan town planning?"
+   },
+   "narration": {
+    "L1": {
+     "text": "The Harappan, or Sindhu-Sarasvati, civilisation grew in the Indus and Ghaggar-Hakra river valleys.",
+     "dur": 4.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L2": {
+     "text": "It was not just one or two simple cities. Many important sites show a wide and skilled civilisation.",
+     "dur": 4.2,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L3": {
+     "text": "Its cities flourished from about 2600 BCE to 1900 BCE, with planned streets, covered drains and standard baked bricks.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L4": {
+     "text": "Mohenjo-daro had the Great Bath, and Dholavira had water reservoirs. These features needed planning and organisation.",
+     "dur": 4.7,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L5": {
+     "text": "People made seals, carnelian beads, pottery, toys and standard weights. Lothal had a dockyard, and goods reached Mesopotamia.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Seals can suggest trade, but the Harappan script has not yet been read. Historians learn from remains without guessing the signs.",
+     "dur": 4.8,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L7": {
+     "text": "The cities declined gradually, possibly because of climate change, changing rivers or falling trade. People moved to smaller villages.",
+     "dur": 4.7,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Now check your understanding: which street pattern shows Harappan town planning?",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "valley"
+      },
+      {
+       "at": 0.6,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "harappa",
+        "mohenjo"
+       ]
+      },
+      {
+       "at": 1.2,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "dholavira",
+        "lothal"
+       ]
+      },
+      {
+       "at": 1.8,
+       "do": "flow",
+       "dur": 0.7,
+       "target": [
+        "v1",
+        "v2"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "myth"
+      },
+      {
+       "at": 1,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "grid",
+        "drains",
+        "bricks"
+       ]
+      },
+      {
+       "at": 1.2,
+       "do": "flow",
+       "dur": 0.7,
+       "target": [
+        "p1",
+        "p2"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "bath",
+        "reservoir"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 1,
+       "target": [
+        "bath",
+        "reservoir"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "seal",
+        "beads",
+        "weights"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "dock",
+        "meso"
+       ]
+      },
+      {
+       "at": 1.8,
+       "do": "flow",
+       "dur": 0.8,
+       "target": [
+        "t1",
+        "t2"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s5",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "script",
+        "evidence"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 1,
+       "target": "script"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s5",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "decline",
+        "villages"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "d2",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s6",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "prompt",
+        "optgrid",
+        "optcircle",
+        "optrandom"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which street pattern shows Harappan town planning?",
+    "options": [
+     "optgrid",
+     "optcircle",
+     "optrandom"
+    ],
+    "answer": "optgrid"
+   }
+  },
+  "repairs": [
+   "string:valley.sub",
+   "string:drains.sub",
+   "string:decline.sub",
+   "src"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 40
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch06-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "title",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        45
+       ],
+       "text": "Harappan civilisation",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "indus",
+       "op": "ellipse",
+       "startMs": 700,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        245,
+        255
+       ],
+       "rx": 145,
+       "ry": 170
+      },
+      {
+       "id": "ghaggar",
+       "op": "ellipse",
+       "startMs": 1100,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        555,
+        255
+       ],
+       "rx": 145,
+       "ry": 170
+      },
+      {
+       "id": "i1",
+       "op": "text",
+       "startMs": 1600,
+       "endMs": 2100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        245,
+        455
+       ],
+       "text": "Indus",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "g1",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        555,
+        455
+       ],
+       "text": "Ghaggar-Hakra",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "harappa",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3100,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        150
+       ],
+       "text": "Harappan",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "hline",
+       "op": "line",
+       "startMs": 3200,
+       "endMs": 3700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        175
+       ],
+       "to": [
+        320,
+        220
+       ]
+      },
+      {
+       "id": "hline2",
+       "op": "line",
+       "startMs": 3700,
+       "endMs": 4200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        175
+       ],
+       "to": [
+        480,
+        220
+       ]
+      },
+      {
+       "id": "valleys",
+       "op": "text",
+       "startMs": 4400,
+       "endMs": 5100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        95
+       ],
+       "text": "river valleys",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch06-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "sites",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "important sites",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "s1",
+       "op": "circle",
+       "startMs": 700,
+       "endMs": 1200,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        150,
+        180
+       ],
+       "r": 45
+      },
+      {
+       "id": "s2",
+       "op": "circle",
+       "startMs": 1100,
+       "endMs": 1600,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        325,
+        180
+       ],
+       "r": 45
+      },
+      {
+       "id": "s3",
+       "op": "circle",
+       "startMs": 1500,
+       "endMs": 2000,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        500,
+        180
+       ],
+       "r": 45
+      },
+      {
+       "id": "s4",
+       "op": "circle",
+       "startMs": 1900,
+       "endMs": 2400,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        650,
+        180
+       ],
+       "r": 45
+      },
+      {
+       "id": "harappa",
+       "op": "text",
+       "startMs": 2400,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        150,
+        180
+       ],
+       "text": "Harappa",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "mohenjo",
+       "op": "text",
+       "startMs": 2900,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        325,
+        180
+       ],
+       "text": "Mohenjo-daro",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "dholavira",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        500,
+        180
+       ],
+       "text": "Dholavira",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "lothal",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 4400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        650,
+        180
+       ],
+       "text": "Lothal",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "wide",
+       "op": "arrow",
+       "startMs": 4600,
+       "endMs": 5600,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        180,
+        300
+       ],
+       "to": [
+        620,
+        300
+       ]
+      },
+      {
+       "id": "skilled",
+       "op": "text",
+       "startMs": 5700,
+       "endMs": 6500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        350
+       ],
+       "text": "wide and skilled",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch06-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "dates",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        245,
+        55
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "2600 B",
+         "→",
+         "1900 B"
+        ]
+       ]
+      },
+      {
+       "id": "street1",
+       "op": "line",
+       "startMs": 1000,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        120,
+        200
+       ],
+       "to": [
+        680,
+        200
+       ]
+      },
+      {
+       "id": "street2",
+       "op": "line",
+       "startMs": 1400,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        120,
+        300
+       ],
+       "to": [
+        680,
+        300
+       ]
+      },
+      {
+       "id": "street3",
+       "op": "line",
+       "startMs": 1800,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        230,
+        130
+       ],
+       "to": [
+        230,
+        370
+       ]
+      },
+      {
+       "id": "street4",
+       "op": "line",
+       "startMs": 2200,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        430,
+        130
+       ],
+       "to": [
+        430,
+        370
+       ]
+      },
+      {
+       "id": "street5",
+       "op": "line",
+       "startMs": 2600,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        600,
+        130
+       ],
+       "to": [
+        600,
+        370
+       ]
+      },
+      {
+       "id": "drain1",
+       "op": "line",
+       "startMs": 3500,
+       "endMs": 4400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        120,
+        390
+       ],
+       "to": [
+        680,
+        390
+       ]
+      },
+      {
+       "id": "drain2",
+       "op": "line",
+       "startMs": 4000,
+       "endMs": 4700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        700,
+        150
+       ],
+       "to": [
+        700,
+        390
+       ]
+      },
+      {
+       "id": "drains",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        440
+       ],
+       "text": "covered drains",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "bricks",
+       "op": "rect",
+       "startMs": 5600,
+       "endMs": 6200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        55,
+        130
+       ],
+       "w": 45,
+       "h": 25
+      },
+      {
+       "id": "bricklabel",
+       "op": "text",
+       "startMs": 6200,
+       "endMs": 7000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        75,
+        105
+       ],
+       "text": "baked bricks",
+       "size": "s",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch06-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "great",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        130
+       ],
+       "w": 270,
+       "h": 210
+      },
+      {
+       "id": "bath",
+       "op": "rect",
+       "startMs": 700,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        145,
+        175
+       ],
+       "w": 160,
+       "h": 105
+      },
+      {
+       "id": "greatlabel",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        225,
+        380
+       ],
+       "text": "Great Bath",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "reservoir",
+       "op": "rect",
+       "startMs": 1800,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        450,
+        130
+       ],
+       "w": 260,
+       "h": 210
+      },
+      {
+       "id": "water",
+       "op": "rect",
+       "startMs": 2600,
+       "endMs": 3400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        480,
+        190
+       ],
+       "w": 200,
+       "h": 100,
+       "fill": "soft"
+      },
+      {
+       "id": "reslabel",
+       "op": "text",
+       "startMs": 3400,
+       "endMs": 4400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        580,
+        380
+       ],
+       "text": "water reservoirs",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "plan",
+       "op": "arrow",
+       "startMs": 4500,
+       "endMs": 5200,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        365,
+        235
+       ],
+       "to": [
+        435,
+        235
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch06-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "seal",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        60,
+        90
+       ],
+       "w": 120,
+       "h": 100
+      },
+      {
+       "id": "sealmark",
+       "op": "polygon",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         85,
+         155
+        ],
+        [
+         110,
+         120
+        ],
+        [
+         140,
+         155
+        ],
+        [
+         115,
+         170
+        ]
+       ]
+      },
+      {
+       "id": "beads",
+       "op": "circle",
+       "startMs": 1100,
+       "endMs": 1700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        260,
+        140
+       ],
+       "r": 35
+      },
+      {
+       "id": "pottery",
+       "op": "ellipse",
+       "startMs": 1500,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        380,
+        145
+       ],
+       "rx": 45,
+       "ry": 30
+      },
+      {
+       "id": "toys",
+       "op": "polygon",
+       "startMs": 1900,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         475,
+         170
+        ],
+        [
+         500,
+         110
+        ],
+        [
+         525,
+         170
+        ]
+       ]
+      },
+      {
+       "id": "weights",
+       "op": "rect",
+       "startMs": 2300,
+       "endMs": 2900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        570,
+        115
+       ],
+       "w": 65,
+       "h": 65
+      },
+      {
+       "id": "dock",
+       "op": "rect",
+       "startMs": 3900,
+       "endMs": 4700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        110,
+        330
+       ],
+       "w": 210,
+       "h": 80
+      },
+      {
+       "id": "docklabel",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5600,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        215,
+        450
+       ],
+       "text": "Lothal dockyard",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "trade",
+       "op": "arrow",
+       "startMs": 5400,
+       "endMs": 6500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        335,
+        370
+       ],
+       "to": [
+        650,
+        370
+       ]
+      },
+      {
+       "id": "mesopotamia",
+       "op": "text",
+       "startMs": 6500,
+       "endMs": 7400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        650,
+        330
+       ],
+       "text": "Mesopotamia",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch06-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9536,
+     "ops": [
+      {
+       "id": "seal",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        75,
+        120
+       ],
+       "w": 180,
+       "h": 145
+      },
+      {
+       "id": "animal",
+       "op": "polygon",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         110,
+         220
+        ],
+        [
+         145,
+         155
+        ],
+        [
+         190,
+         220
+        ],
+        [
+         160,
+         235
+        ]
+       ]
+      },
+      {
+       "id": "signs",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        165,
+        145
+       ],
+       "text": "signs",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "trade",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 2600,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        165,
+        315
+       ],
+       "text": "trade",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "question",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        110
+       ],
+       "text": "not yet been read",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "cross1",
+       "op": "line",
+       "startMs": 3800,
+       "endMs": 4400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        330,
+        155
+       ],
+       "to": [
+        470,
+        235
+       ]
+      },
+      {
+       "id": "cross2",
+       "op": "line",
+       "startMs": 4100,
+       "endMs": 4700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        470,
+        155
+       ],
+       "to": [
+        330,
+        235
+       ]
+      },
+      {
+       "id": "observe",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 5800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        300
+       ],
+       "text": "remains",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "learn",
+       "op": "arrow",
+       "startMs": 5900,
+       "endMs": 6700,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        400,
+        345
+       ],
+       "to": [
+        400,
+        410
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch06-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "city",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        80,
+        115
+       ],
+       "w": 250,
+       "h": 210
+      },
+      {
+       "id": "crack",
+       "op": "line",
+       "startMs": 800,
+       "endMs": 1500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        200,
+        105
+       ],
+       "to": [
+        170,
+        335
+       ]
+      },
+      {
+       "id": "climate",
+       "op": "text",
+       "startMs": 1600,
+       "endMs": 2500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        205,
+        375
+       ],
+       "text": "climate change",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "river",
+       "op": "line",
+       "startMs": 2100,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        400,
+        105
+       ],
+       "to": [
+        400,
+        335
+       ]
+      },
+      {
+       "id": "riverchange",
+       "op": "arrow",
+       "startMs": 2900,
+       "endMs": 3700,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        400,
+        335
+       ],
+       "to": [
+        500,
+        250
+       ],
+       "bend": 1
+      },
+      {
+       "id": "rlabel",
+       "op": "text",
+       "startMs": 3700,
+       "endMs": 4600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        470,
+        125
+       ],
+       "text": "changing rivers",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "tradefall",
+       "op": "arrow",
+       "startMs": 4500,
+       "endMs": 5300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        610,
+        130
+       ],
+       "to": [
+        610,
+        290
+       ]
+      },
+      {
+       "id": "falllabel",
+       "op": "text",
+       "startMs": 5300,
+       "endMs": 6100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        610,
+        340
+       ],
+       "text": "falling trade",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "village",
+       "op": "polygon",
+       "startMs": 6300,
+       "endMs": 7000,
+       "ink": "good",
+       "weight": 2,
+       "points": [
+        [
+         400,
+         430
+        ],
+        [
+         450,
+         380
+        ],
+        [
+         500,
+         430
+        ]
+       ]
+      },
+      {
+       "id": "move",
+       "op": "arrow",
+       "startMs": 6500,
+       "endMs": 7400,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        330,
+        300
+       ],
+       "to": [
+        445,
+        410
+       ]
+      },
+      {
+       "id": "villages",
+       "op": "text",
+       "startMs": 7400,
+       "endMs": 8300,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        600,
+        430
+       ],
+       "text": "smaller villages",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-sst-ch06-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "check",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "check your understanding",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "road1",
+       "op": "line",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        100,
+        150
+       ],
+       "to": [
+        700,
+        150
+       ]
+      },
+      {
+       "id": "road2",
+       "op": "line",
+       "startMs": 1300,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        100,
+        350
+       ],
+       "to": [
+        700,
+        350
+       ]
+      },
+      {
+       "id": "road3",
+       "op": "line",
+       "startMs": 1700,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        220,
+        100
+       ],
+       "to": [
+        220,
+        400
+       ]
+      },
+      {
+       "id": "road4",
+       "op": "line",
+       "startMs": 2100,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        580,
+        100
+       ],
+       "to": [
+        580,
+        400
+       ]
+      },
+      {
+       "id": "grid",
+       "op": "highlight",
+       "startMs": 2800,
+       "endMs": 3500,
+       "ink": "good",
+       "weight": 2,
+       "target": "road1",
+       "style": "circle"
+      },
+      {
+       "id": "pattern",
+       "op": "text",
+       "startMs": 3700,
+       "endMs": 4500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        455
+       ],
+       "text": "street pattern",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "2600 BCE",
+   "prompt": "Cities begin to flourish",
+   "src": "c6-sst-ch06-t01-i12"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "2400 BCE",
+   "prompt": "Harappan cities continue",
+   "src": "c6-sst-ch06-t01-i12"
+  },
+  {
+   "itemId": "r1:2",
+   "key": "1900 BCE",
+   "prompt": "Cities decline gradually",
+   "src": "c6-sst-ch06-t01-i06"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "25th century BCE",
+   "prompt": "Cities flourish",
+   "src": "c6-sst-ch06-t01-i12"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "19th century BCE",
+   "prompt": "Cities begin to decline",
+   "src": "c6-sst-ch06-t01-i06"
+  },
+  {
+   "itemId": "r2:2",
+   "key": "23rd century BCE",
+   "prompt": "Lothal trades by water",
+   "src": "c6-sst-ch06-t01-i04"
+  },
+  {
+   "itemId": "r3:0",
+   "key": "Cities flourish",
+   "prompt": "earlier: Cities flourish (2500 BCE) vs Cities decline gradually (1900 BCE)"
+  },
+  {
+   "itemId": "r3:1",
+   "key": "Lothal trades by water",
+   "prompt": "earlier: Lothal trades by water (2300 BCE) vs People move to villages (1800 BCE)"
+  }
+ ],
+ "check": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "Round 3 item 'Cities decline gradually' is dated 1900 BCE, which matches kit item i06 correctly, but round 3 includes 'People move to villages' dated 1800 BCE. That item is not directly from any kit item; the kit says cities declined gradually and people moved to smaller villages, but does not give a specific date of 1800 BCE for the move. However, 1800 BCE is physically realistic and does not contradict the kit's narrative of gradual decline after 1900 BCE. No issue.",
+    "severity": "low"
+   }
+  ],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

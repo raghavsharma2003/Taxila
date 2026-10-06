@@ -365,4 +365,16 @@ test("the seam object is what the hot-file patches import", () => {
   assert.equal(typeof voicesigSeam.startRows, "function");
   assert.equal(typeof voicesigSeam.endSave, "function");
   assert.equal(typeof voicesigSeam.withdraw, "function");
+  assert.equal(typeof voicesigSeam.sweep, "function"); // patch 11 (worker) + scripts/voicesig/sweep.mjs
+});
+
+test("consent sweep: one statement keyed on the pace purpose, returns the count, never throws", async () => {
+  const seen = [];
+  const n = await voicesigSeam.sweep(async (sql, params) => { seen.push({ sql, params }); return [{ child_id: "a" }, { child_id: "b" }]; });
+  assert.equal(n, 2);
+  assert.equal(seen.length, 1);
+  assert.deepEqual(seen[0].params, ["voice_pace_memory"]);
+  assert.match(seen[0].sql, /^delete from voicesig\.subject/);
+  assert.match(seen[0].sql, /order by c\.created_at desc limit 1/); // the LATEST consent row decides, as hasConsent reads it
+  assert.equal(await voicesigSeam.sweep(async () => { throw new Error("relation voicesig.subject does not exist"); }), -1);
 });

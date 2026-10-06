@@ -19,10 +19,14 @@ const nom = (o) => ({ childRequested: false, ...o, target: { skillId: o.target.s
 // Closed lexicons in both scripts and romanised Hinglish (RS-5 note classes). Order matters: "dusre tarike se dikhao" is a
 // re-representation, not a picture; "game dikhao" is a game. Shapes, never sentences.
 const REQ = [
+  // ship5 p4-content: an ask for the BOARD ("board pe dikhao", "draw karo", "diagram bana ke") is answered by the live
+  // whiteboard drawn on her line (the Director's visual request → Studio's whiteboard), never by a Stagecraft piece; it
+  // comes first so "samajh nahi aaya, board pe dikhao" is a board ask, not a re-representation
+  ["board_request", /whiteboard|white\s*board|\bboard\s*(pe|par|per|on)\b|बोर्ड|\bdraw\b|drawing|bana\s*ke|बना\s*के|likh\s*ke|लिख\s*के|diagram|डायग्राम/iu],
   ["explain_differently", /(dusre|doosre|alag|aur\s*kisi)\s*(tarike|tareeke|tarah)|दूसरे\s*तरीके|अलग\s*तरीके|another\s*way|different\s*way|samajh\s*(nahi|nahin|na)\s*(aaya|aya)|समझ\s*नहीं\s*आया|phir\s*se\s*samjha/iu],
   ["game_request", /\bgame\b|गेम|\bkhel(na|ne|o|enge)?\b|खेल(ना|ने|ो|ेंगे)?|\bplay\b/iu],
   ["animation_request", /animation|एनिमेशन|\bvideo\b|वीडियो|\bmovie\b|chalta\s*hua|चलता\s*हुआ/iu],
-  ["visual_request", /diagram|डायग्राम|picture|\bphoto\b|chitra|चित्र|tasveer|तस्वीर|\bdraw\b|bana\s*ke|बना\s*के|dikhao|dikhaiye|dikha\s*do|दिखाओ|दिखाइए|दिखा\s*दो|show\s*me/iu],
+  ["visual_request", /picture|\bphoto\b|chitra|चित्र|tasveer|तस्वीर|dikhao|dikhaiye|dikha\s*do|दिखाओ|दिखाइए|दिखा\s*दो|show\s*me/iu],
 ];
 /** Detects an explicit stage request in (echo-subtracted) child words. Returns the RS-5 note class, or null. */
 export function requestFromText(text) {

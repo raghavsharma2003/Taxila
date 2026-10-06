@@ -1,0 +1,1774 @@
+{
+ "topicId": "c6-maths-ch08-t01",
+ "title": "Circles with a compass",
+ "chapter": "Playing with Constructions",
+ "subject": "maths",
+ "class": 6,
+ "topicType": "T3",
+ "plan": {
+  "game": "geo-forge@1",
+  "hint": "equidistant challenges (circle points, perpendicular bisector)"
+ },
+ "game": {
+  "archetype": "geo-forge@1",
+  "spec": {
+   "archetype": "geo-forge@1",
+   "skills": [
+    "c6-maths-ch08-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "built": "built",
+    "check": "CHECK",
+    "undo": "UNDO",
+    "coach": "Keep the compass opening fixed",
+    "runDone": "Blueprints done",
+    "perimeter": "perimeter",
+    "area": "area",
+    "units": "units",
+    "sq": "sq units",
+    "polygon": "sides",
+    "sticks": "Pick three sticks",
+    "rigid": "Brace it: it must not wobble",
+    "parallel": "Through the dot, parallel to the line",
+    "perpendicular": "Through the dot, at right angles",
+    "equidistant": "Place a pin the same distance from each dot",
+    "angle": "Make an angle of",
+    "right": "right-angled triangle",
+    "isosceles": "isosceles triangle",
+    "scalene": "scalene triangle",
+    "obtuse": "obtuse-angled triangle",
+    "acute": "acute-angled triangle",
+    "square": "square",
+    "rectangle": "rectangle",
+    "parallelogram": "parallelogram",
+    "rhombus": "rhombus",
+    "trapezium": "trapezium",
+    "kite": "kite",
+    "any": "shape",
+    "triangle": "triangle",
+    "make": "Make a",
+    "withArea": "with area",
+    "withPerim": "with perimeter",
+    "noTriangle": "Pick three that CANNOT close",
+    "wobbles": "WOBBLES",
+    "holds": "HOLDS",
+    "closes": "CLOSES",
+    "gap": "GAP",
+    "time": "time"
+   },
+   "title": "Circle Pin Paths",
+   "rounds": [
+    {
+     "title": "Same distance",
+     "sub": "find a centre for two points",
+     "time": 45,
+     "challenges": [
+      {
+       "kind": "equidistant",
+       "points": [
+        [
+         2,
+         2
+        ],
+        [
+         8,
+         2
+        ]
+       ]
+      },
+      {
+       "kind": "equidistant",
+       "points": [
+        [
+         3,
+         1
+        ],
+        [
+         9,
+         1
+        ]
+       ]
+      }
+     ]
+    },
+    {
+     "title": "Three circle points",
+     "sub": "find the centre",
+     "time": 60,
+     "challenges": [
+      {
+       "kind": "equidistant",
+       "points": [
+        [
+         2,
+         2
+        ],
+        [
+         8,
+         2
+        ],
+        [
+         2,
+         6
+        ]
+       ]
+      }
+     ],
+     "targets": "c6-maths-ch08-t01-m-radius-changes"
+    },
+    {
+     "title": "Compass guide",
+     "sub": "make the matching bisector",
+     "time": 60,
+     "challenges": [
+      {
+       "kind": "perpendicular",
+       "line": [
+        [
+         2,
+         2
+        ],
+        [
+         8,
+         2
+        ]
+       ],
+       "through": [
+        5,
+        4
+       ]
+      }
+     ],
+     "targets": "c6-maths-ch08-t01-m-diameter-radius"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 2,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c6-maths-ch08-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Circles with a compass",
+   "accent": "ion",
+   "targets": "c6-maths-ch08-t01-m-radius-changes",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Circles with a compass"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Radius changes by direction"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "centre",
+       "type": "node",
+       "text": "Centre O",
+       "sub": "fixed point",
+       "glyph": "spark",
+       "color": "ion"
+      },
+      {
+       "id": "top",
+       "type": "node",
+       "text": "Top point",
+       "sub": "on circle",
+       "color": "mint"
+      },
+      {
+       "id": "side",
+       "type": "node",
+       "text": "Side point",
+       "sub": "on circle",
+       "color": "mint"
+      },
+      {
+       "id": "r1",
+       "type": "arrow",
+       "from": "centre",
+       "to": "top",
+       "text": "radius"
+      },
+      {
+       "id": "r2",
+       "type": "arrow",
+       "from": "centre",
+       "to": "side",
+       "text": "radius"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "compass",
+       "type": "node",
+       "text": "Compass",
+       "sub": "fixed opening",
+       "glyph": "compass",
+       "color": "amber"
+      },
+      {
+       "id": "ruler",
+       "type": "node",
+       "text": "Ruler",
+       "sub": "measure 5 cm",
+       "glyph": "ruler",
+       "color": "sci"
+      },
+      {
+       "id": "circle",
+       "type": "node",
+       "text": "Circle",
+       "sub": "pencil turns",
+       "glyph": "spark",
+       "color": "mint"
+      },
+      {
+       "id": "c1",
+       "type": "arrow",
+       "from": "ruler",
+       "to": "compass",
+       "text": "set opening"
+      },
+      {
+       "id": "c2",
+       "type": "arrow",
+       "from": "compass",
+       "to": "circle",
+       "text": "turn around"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "row",
+     "els": [
+      {
+       "id": "diam",
+       "type": "node",
+       "text": "Diameter",
+       "sub": "through centre",
+       "glyph": "balance",
+       "color": "volt"
+      },
+      {
+       "id": "chord",
+       "type": "node",
+       "text": "Chord",
+       "sub": "misses centre",
+       "glyph": "road",
+       "color": "sun"
+      },
+      {
+       "id": "shorter",
+       "type": "arrow",
+       "from": "chord",
+       "to": "diam",
+       "text": "shorter"
+      }
+     ]
+    },
+    {
+     "id": "s5",
+     "layout": "column",
+     "els": [
+      {
+       "id": "checktitle",
+       "type": "title",
+       "text": "Quick check"
+      },
+      {
+       "id": "opt8",
+       "type": "node",
+       "text": "8 cm",
+       "glyph": "ruler",
+       "color": "sun"
+      },
+      {
+       "id": "opt10",
+       "type": "node",
+       "text": "10 cm",
+       "glyph": "ruler",
+       "color": "mint"
+      },
+      {
+       "id": "opt15",
+       "type": "node",
+       "text": "15 cm",
+       "glyph": "ruler",
+       "color": "volt"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "A circle is made of all the points that are the same distance from one fixed point, the centre.",
+    "L2": "Some people think the radius changes in different directions. That is not true.",
+    "L3": "The distance from the centre to the circle is the radius, and it is the same every way.",
+    "L4": "For a diameter of 10 centimetres, the radius is half: 10 divided by 2 equals 5 centimetres.",
+    "L5": "Open the compass to 5 centimetres with a ruler. The point stays on the centre while the pencil turns.",
+    "L6": "Keep the compass opening fixed as you draw. Changing the opening would not make the intended circle.",
+    "L7": "A diameter passes through the centre and is twice the radius. A line across the circle that misses the centre is a shorter chord.",
+    "L8": "An arc is part of a circle. Now use the radius to choose the diameter."
+   },
+   "narration": {
+    "L1": {
+     "text": "A circle is made of all the points that are the same distance from one fixed point, the centre.",
+     "dur": 7,
+     "lead": 0.2,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L2": {
+     "text": "Some people think the radius changes in different directions. That is not true.",
+     "dur": 6,
+     "lead": 0.2,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L3": {
+     "text": "The distance from the centre to the circle is the radius, and it is the same every way.",
+     "dur": 7,
+     "lead": 0.2,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L4": {
+     "text": "For a diameter of 10 centimetres, the radius is half: 10 divided by 2 equals 5 centimetres.",
+     "dur": 8,
+     "lead": 0.2,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L5": {
+     "text": "Open the compass to 5 centimetres with a ruler. The point stays on the centre while the pencil turns.",
+     "dur": 8,
+     "lead": 0.2,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Keep the compass opening fixed as you draw. Changing the opening would not make the intended circle.",
+     "dur": 7,
+     "lead": 0.2,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L7": {
+     "text": "A diameter passes through the centre and is twice the radius. A line across the circle that misses the centre is a shorter chord.",
+     "dur": 9,
+     "lead": 0.2,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L8": {
+     "text": "An arc is part of a circle. Now use the radius to choose the diameter.",
+     "dur": 6,
+     "lead": 0.2,
+     "tail": 0.4,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      },
+      {
+       "at": 1,
+       "do": "focus",
+       "dur": 1,
+       "target": "title"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "myth"
+      },
+      {
+       "at": 1.2,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "centre"
+      },
+      {
+       "at": 0.7,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "top",
+        "side",
+        "r1",
+        "r2"
+       ]
+      },
+      {
+       "at": 1.8,
+       "do": "highlight",
+       "dur": 1,
+       "target": [
+        "r1",
+        "r2"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "ruler"
+      },
+      {
+       "at": 0.8,
+       "do": "count",
+       "dur": 1,
+       "target": "ruler",
+       "to": 1
+      },
+      {
+       "at": 2,
+       "do": "show",
+       "dur": 0.7,
+       "target": "compass"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "c1"
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "c1",
+       "to": 1
+      },
+      {
+       "at": 1.8,
+       "do": "show",
+       "dur": 0.7,
+       "target": "circle"
+      },
+      {
+       "at": 2.6,
+       "do": "flow",
+       "dur": 1.2,
+       "target": "c2",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "compass"
+      },
+      {
+       "at": 1.4,
+       "do": "highlight",
+       "dur": 1.2,
+       "target": "circle"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "diam",
+        "chord"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.8,
+       "target": "shorter"
+      },
+      {
+       "at": 2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "diam"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s5",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "checktitle"
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "opt8",
+        "opt10",
+        "opt15"
+       ]
+      },
+      {
+       "at": 1.8,
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "A circle has radius 5 cm. What is its diameter?",
+    "options": [
+     "opt8",
+     "opt10",
+     "opt15"
+    ],
+    "answer": "opt10",
+    "src": "c6-maths-ch08-t01-i01"
+   }
+  },
+  "repairs": [
+   "glyph",
+   "glyph",
+   "arrow:ends"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 62
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch08-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "circle1",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        260
+       ],
+       "r": 150
+      },
+      {
+       "id": "centre1",
+       "op": "circle",
+       "startMs": 1200,
+       "endMs": 1800,
+       "ink": "accent",
+       "c": [
+        400,
+        260
+       ],
+       "r": 6,
+       "fill": "accent"
+      },
+      {
+       "id": "centreLabel1",
+       "op": "label",
+       "startMs": 1800,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        420,
+        250
+       ],
+       "text": "centre",
+       "to": [
+        400,
+        260
+       ]
+      },
+      {
+       "id": "points1",
+       "op": "circle",
+       "startMs": 2800,
+       "endMs": 3400,
+       "ink": "accent",
+       "c": [
+        400,
+        110
+       ],
+       "r": 6,
+       "fill": "accent"
+      },
+      {
+       "id": "radius1",
+       "op": "line",
+       "startMs": 3400,
+       "endMs": 4400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        260
+       ],
+       "to": [
+        400,
+        110
+       ]
+      },
+      {
+       "id": "radiusLabel1",
+       "op": "label",
+       "startMs": 4400,
+       "endMs": 5600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        430,
+        180
+       ],
+       "text": "same distance",
+       "to": [
+        400,
+        185
+       ]
+      },
+      {
+       "id": "pointLabel1",
+       "op": "label",
+       "startMs": 5600,
+       "endMs": 6600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        425,
+        105
+       ],
+       "text": "points",
+       "to": [
+        400,
+        110
+       ]
+      },
+      {
+       "id": "highlight1",
+       "op": "highlight",
+       "startMs": 6600,
+       "endMs": 7800,
+       "ink": "accent",
+       "weight": 2,
+       "target": "radius1",
+       "style": "pulse"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch08-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "wrongRadius2",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        260
+       ],
+       "to": [
+        555,
+        180
+       ]
+      },
+      {
+       "id": "wrongLabel2",
+       "op": "label",
+       "startMs": 1000,
+       "endMs": 1900,
+       "ink": "chalk",
+       "at": [
+        560,
+        175
+       ],
+       "text": "changes",
+       "to": [
+        555,
+        180
+       ]
+      },
+      {
+       "id": "eraseWrong2",
+       "op": "erase",
+       "startMs": 2100,
+       "endMs": 2800,
+       "ink": "soft",
+       "target": "wrongRadius2"
+      },
+      {
+       "id": "sameRadius2",
+       "op": "line",
+       "startMs": 3000,
+       "endMs": 3900,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        400,
+        260
+       ],
+       "to": [
+        400,
+        110
+       ]
+      },
+      {
+       "id": "sameRadiusLabel2",
+       "op": "label",
+       "startMs": 3900,
+       "endMs": 4700,
+       "ink": "good",
+       "at": [
+        430,
+        180
+       ],
+       "text": "same",
+       "to": [
+        400,
+        185
+       ]
+      },
+      {
+       "id": "highlightSame2",
+       "op": "highlight",
+       "startMs": 4800,
+       "endMs": 5900,
+       "ink": "good",
+       "weight": 2,
+       "target": "sameRadius2",
+       "style": "pulse"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch08-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "radius3",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 1200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        260
+       ],
+       "to": [
+        550,
+        260
+       ]
+      },
+      {
+       "id": "radiusLabel3",
+       "op": "label",
+       "startMs": 1200,
+       "endMs": 2200,
+       "ink": "chalk",
+       "at": [
+        460,
+        240
+       ],
+       "text": "radius",
+       "to": [
+        475,
+        260
+       ]
+      },
+      {
+       "id": "circleMark3",
+       "op": "circle",
+       "startMs": 2200,
+       "endMs": 2700,
+       "ink": "accent",
+       "c": [
+        550,
+        260
+       ],
+       "r": 6,
+       "fill": "accent"
+      },
+      {
+       "id": "direction3",
+       "op": "line",
+       "startMs": 2800,
+       "endMs": 3800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        260
+       ],
+       "to": [
+        400,
+        110
+       ]
+      },
+      {
+       "id": "directionLabel3",
+       "op": "label",
+       "startMs": 3800,
+       "endMs": 5000,
+       "ink": "chalk",
+       "at": [
+        415,
+        180
+       ],
+       "text": "same every way",
+       "to": [
+        400,
+        185
+       ]
+      },
+      {
+       "id": "highlightRadius3",
+       "op": "highlight",
+       "startMs": 5200,
+       "endMs": 6500,
+       "ink": "accent",
+       "weight": 2,
+       "target": "radius3",
+       "style": "underline"
+      },
+      {
+       "id": "highlightDirection3",
+       "op": "highlight",
+       "startMs": 6500,
+       "endMs": 7800,
+       "ink": "accent",
+       "weight": 2,
+       "target": "direction3",
+       "style": "underline"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch08-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "eq4",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1300,
+       "ink": "chalk",
+       "at": [
+        100,
+        70
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "diamet",
+         "=",
+         "10",
+         "cm"
+        ]
+       ]
+      },
+      {
+       "id": "eq5",
+       "op": "numwork",
+       "startMs": 1300,
+       "endMs": 2800,
+       "ink": "chalk",
+       "at": [
+        100,
+        150
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "radius",
+         "=",
+         "10",
+         "÷",
+         "2"
+        ]
+       ]
+      },
+      {
+       "id": "circle4",
+       "op": "circle",
+       "startMs": 1800,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        570,
+        260
+       ],
+       "r": 150
+      },
+      {
+       "id": "result4",
+       "op": "numwork",
+       "startMs": 2800,
+       "endMs": 4500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        100,
+        230
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "10",
+         "÷",
+         "2",
+         "=",
+         "5",
+         "cm"
+        ]
+       ]
+      },
+      {
+       "id": "diameter4",
+       "op": "line",
+       "startMs": 3500,
+       "endMs": 4700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        420,
+        260
+       ],
+       "to": [
+        720,
+        260
+       ]
+      },
+      {
+       "id": "diameterLabel4",
+       "op": "label",
+       "startMs": 4700,
+       "endMs": 5700,
+       "ink": "chalk",
+       "at": [
+        525,
+        285
+       ],
+       "text": "diameter",
+       "to": [
+        570,
+        260
+       ]
+      },
+      {
+       "id": "radius4",
+       "op": "line",
+       "startMs": 5700,
+       "endMs": 6600,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        570,
+        260
+       ],
+       "to": [
+        720,
+        260
+       ]
+      },
+      {
+       "id": "radiusLabel4",
+       "op": "label",
+       "startMs": 6600,
+       "endMs": 7500,
+       "ink": "accent",
+       "at": [
+        625,
+        240
+       ],
+       "text": "radius",
+       "to": [
+        645,
+        260
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch08-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "ruler5",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        90,
+        100
+       ],
+       "to": [
+        390,
+        100
+       ]
+      },
+      {
+       "id": "tick5a",
+       "op": "line",
+       "startMs": 900,
+       "endMs": 1200,
+       "ink": "chalk",
+       "from": [
+        240,
+        90
+       ],
+       "to": [
+        240,
+        110
+       ]
+      },
+      {
+       "id": "fiveLabel5",
+       "op": "text",
+       "startMs": 1200,
+       "endMs": 2100,
+       "ink": "chalk",
+       "at": [
+        240,
+        135
+       ],
+       "text": "5 centimetres",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "compassArm5",
+       "op": "line",
+       "startMs": 2200,
+       "endMs": 3200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        270
+       ],
+       "to": [
+        400,
+        120
+       ]
+      },
+      {
+       "id": "compassPoint5",
+       "op": "circle",
+       "startMs": 3200,
+       "endMs": 3700,
+       "ink": "accent",
+       "c": [
+        400,
+        270
+       ],
+       "r": 8,
+       "fill": "accent"
+      },
+      {
+       "id": "pencil5",
+       "op": "line",
+       "startMs": 3700,
+       "endMs": 4300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        120
+       ],
+       "to": [
+        400,
+        100
+       ]
+      },
+      {
+       "id": "centreLabel5",
+       "op": "label",
+       "startMs": 4300,
+       "endMs": 5200,
+       "ink": "chalk",
+       "at": [
+        420,
+        290
+       ],
+       "text": "centre",
+       "to": [
+        400,
+        270
+       ]
+      },
+      {
+       "id": "turnArrow5",
+       "op": "arrow",
+       "startMs": 5400,
+       "endMs": 6700,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        475,
+        130
+       ],
+       "to": [
+        570,
+        220
+       ],
+       "bend": 1
+      },
+      {
+       "id": "circle5",
+       "op": "circle",
+       "startMs": 6500,
+       "endMs": 8200,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        270
+       ],
+       "r": 150
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch08-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "opening6",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        270
+       ],
+       "to": [
+        400,
+        120
+       ]
+      },
+      {
+       "id": "fixedLabel6",
+       "op": "label",
+       "startMs": 900,
+       "endMs": 1700,
+       "ink": "good",
+       "at": [
+        430,
+        190
+       ],
+       "text": "fixed",
+       "to": [
+        400,
+        195
+       ]
+      },
+      {
+       "id": "circle6",
+       "op": "circle",
+       "startMs": 1700,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        270
+       ],
+       "r": 150
+      },
+      {
+       "id": "wrongOpening6",
+       "op": "line",
+       "startMs": 3600,
+       "endMs": 4500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        270
+       ],
+       "to": [
+        520,
+        170
+       ]
+      },
+      {
+       "id": "changeLabel6",
+       "op": "label",
+       "startMs": 4500,
+       "endMs": 5400,
+       "ink": "chalk",
+       "at": [
+        530,
+        165
+       ],
+       "text": "changing",
+       "to": [
+        520,
+        170
+       ]
+      },
+      {
+       "id": "eraseChange6",
+       "op": "erase",
+       "startMs": 5500,
+       "endMs": 6300,
+       "ink": "soft",
+       "target": "wrongOpening6"
+      },
+      {
+       "id": "highlightFixed6",
+       "op": "highlight",
+       "startMs": 6400,
+       "endMs": 7500,
+       "ink": "good",
+       "weight": 2,
+       "target": "opening6",
+       "style": "pulse"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch08-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 10813,
+     "ops": [
+      {
+       "id": "circle7",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        260
+       ],
+       "r": 160
+      },
+      {
+       "id": "centre7",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1300,
+       "ink": "accent",
+       "c": [
+        400,
+        260
+       ],
+       "r": 6,
+       "fill": "accent"
+      },
+      {
+       "id": "diameter7",
+       "op": "line",
+       "startMs": 1700,
+       "endMs": 3000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        240,
+        260
+       ],
+       "to": [
+        560,
+        260
+       ]
+      },
+      {
+       "id": "diameterLabel7",
+       "op": "label",
+       "startMs": 3000,
+       "endMs": 4000,
+       "ink": "chalk",
+       "at": [
+        400,
+        290
+       ],
+       "text": "diameter",
+       "to": [
+        400,
+        260
+       ]
+      },
+      {
+       "id": "radius7",
+       "op": "line",
+       "startMs": 4000,
+       "endMs": 5000,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        400,
+        260
+       ],
+       "to": [
+        560,
+        260
+       ]
+      },
+      {
+       "id": "radiusLabel7",
+       "op": "label",
+       "startMs": 5000,
+       "endMs": 6000,
+       "ink": "accent",
+       "at": [
+        470,
+        235
+       ],
+       "text": "radius",
+       "to": [
+        480,
+        260
+       ]
+      },
+      {
+       "id": "chord7",
+       "op": "line",
+       "startMs": 6100,
+       "endMs": 7300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        285,
+        170
+       ],
+       "to": [
+        515,
+        190
+       ]
+      },
+      {
+       "id": "chordLabel7",
+       "op": "label",
+       "startMs": 7300,
+       "endMs": 8500,
+       "ink": "chalk",
+       "at": [
+        405,
+        155
+       ],
+       "text": "shorter chord",
+       "to": [
+        405,
+        180
+       ]
+      },
+      {
+       "id": "highlightDiameter7",
+       "op": "highlight",
+       "startMs": 8600,
+       "endMs": 9700,
+       "ink": "accent",
+       "weight": 2,
+       "target": "diameter7",
+       "style": "underline"
+      },
+      {
+       "id": "highlightChord7",
+       "op": "highlight",
+       "startMs": 9700,
+       "endMs": 10600,
+       "ink": "accent",
+       "weight": 2,
+       "target": "chord7",
+       "style": "underline"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch08-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "circle8",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        250
+       ],
+       "r": 170
+      },
+      {
+       "id": "arc8",
+       "op": "sector",
+       "startMs": 1600,
+       "endMs": 2800,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        250
+       ],
+       "r": 170,
+       "fill": "accent",
+       "fromDeg": 210,
+       "toDeg": 330
+      },
+      {
+       "id": "arcLabel8",
+       "op": "label",
+       "startMs": 2800,
+       "endMs": 3700,
+       "ink": "chalk",
+       "at": [
+        390,
+        445
+       ],
+       "text": "arc",
+       "to": [
+        400,
+        405
+       ]
+      },
+      {
+       "id": "radius8",
+       "op": "line",
+       "startMs": 3700,
+       "endMs": 4700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        250
+       ],
+       "to": [
+        570,
+        250
+       ]
+      },
+      {
+       "id": "radiusLabel8",
+       "op": "label",
+       "startMs": 4700,
+       "endMs": 5500,
+       "ink": "chalk",
+       "at": [
+        470,
+        230
+       ],
+       "text": "radius",
+       "to": [
+        500,
+        250
+       ]
+      },
+      {
+       "id": "diameter8",
+       "op": "line",
+       "startMs": 5500,
+       "endMs": 6500,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        230,
+        250
+       ],
+       "to": [
+        570,
+        250
+       ]
+      },
+      {
+       "id": "diameterLabel8",
+       "op": "label",
+       "startMs": 6500,
+       "endMs": 6900,
+       "ink": "good",
+       "at": [
+        400,
+        280
+       ],
+       "text": "diameter",
+       "to": [
+        400,
+        250
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "{\"kind\":\"equidistant\",\"points\":[[2,2],[8,2]]}",
+   "prompt": "equidistant"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "{\"kind\":\"equidistant\",\"points\":[[3,1],[9,1]]}",
+   "prompt": "equidistant"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "{\"kind\":\"equidistant\",\"points\":[[2,2],[8,2],[2,6]]}",
+   "prompt": "equidistant"
+  },
+  {
+   "itemId": "r3:0",
+   "key": "{\"kind\":\"perpendicular\",\"line\":[[2,2],[8,2]],\"through\":[5,4]}",
+   "prompt": "perpendicular"
+  }
+ ],
+ "check": {
+  "issues": [
+   {
+    "where": "explainer",
+    "what": "Text says 'For a diameter of 10 centimetres, the radius is half: 10 divided by 2 equals 5 centimetres.' and the task asks for diameter of radius 5 cm (answer 10 cm), which is correct. No factual errors.",
+    "severity": "low"
+   }
+  ],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

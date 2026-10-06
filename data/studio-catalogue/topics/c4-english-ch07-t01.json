@@ -1,0 +1,2034 @@
+{
+ "topicId": "c4-english-ch07-t01",
+ "title": "Fit Body, Fit Mind, Fit Nation",
+ "chapter": "Fit Body, Fit Mind, Fit Nation",
+ "subject": "english",
+ "class": 4,
+ "topicType": "T1",
+ "plan": {
+  "game": "beat-line@1",
+  "hint": "beat and rhyme rounds (Hindi: matra round on a doha/chaupai line)"
+ },
+ "game": {
+  "archetype": "beat-line@1",
+  "spec": {
+   "archetype": "beat-line@1",
+   "skills": [
+    "c4-english-ch07-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "onBeat": "on beat",
+    "combo": "combo",
+    "tap": "Tap on the beat",
+    "catch": "Catch the rhyme",
+    "mark": "Short or long?",
+    "short": "। short",
+    "long": "ऽ long",
+    "practice": "PRACTICE LINE",
+    "runDone": "Poem played",
+    "perfect": "ON BEAT",
+    "early": "early",
+    "late": "late",
+    "meter": "मात्रा"
+   },
+   "title": "Fit Body, Fit Mind",
+   "bpm": 78,
+   "lines": [
+    {
+     "text": "Up at six, I stretch and run",
+     "beats": [
+      0,
+      2,
+      5
+     ],
+     "own": true
+    },
+    {
+     "text": "I jump and skip beneath the sun",
+     "beats": [
+      0,
+      2,
+      6
+     ],
+     "own": true
+    },
+    {
+     "text": "I eat fresh fruit and lots of greens",
+     "beats": [
+      0,
+      3,
+      6
+     ],
+     "own": true
+    },
+    {
+     "text": "That's why I'm always full of beans",
+     "beats": [
+      0,
+      3,
+      6
+     ],
+     "own": true
+    },
+    {
+     "text": "तन फिट, मन शांत, देश मजबूत",
+     "beats": [
+      0,
+      3
+     ],
+     "own": true
+    },
+    {
+     "text": "कसरत, फल, साग, ऊर्जा संग",
+     "beats": [
+      0,
+      2
+     ],
+     "own": true
+    }
+   ],
+   "rounds": [
+    {
+     "mode": "beat",
+     "title": "Feel the fitness beat",
+     "sub": "Tap the strong beats",
+     "lines": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "mode": "rhyme",
+     "title": "Catch the rhyme",
+     "sub": "Listen to the word ending",
+     "items": [
+      {
+       "cue": "I stretch and run beneath the ___",
+       "options": [
+        "sun",
+        "six",
+        "skip"
+       ],
+       "answer": "sun",
+       "src": "c4-english-ch07-t01-i01"
+      },
+      {
+       "cue": "I eat fresh fruit and lots of ___",
+       "options": [
+        "greens",
+        "beans",
+        "games"
+       ],
+       "answer": "greens",
+       "src": "c4-english-ch07-t01-i04"
+      },
+      {
+       "cue": "That's why I'm always full of ___",
+       "options": [
+        "beans",
+        "beads",
+        "beats"
+       ],
+       "answer": "beans",
+       "src": "c4-english-ch07-t01-i03"
+      }
+     ],
+     "targets": "c4-english-ch07-t01-m-idiom-literal"
+    },
+    {
+     "mode": "matra",
+     "title": "Mark the matra",
+     "sub": "Short or long as it fills",
+     "lines": [
+      4,
+      5
+     ]
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c4-english-ch07-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Fit Body, Fit Mind",
+   "accent": "mint",
+   "targets": "c4-english-ch07-t01-m-idiom-literal",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "row",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Fit Body, Fit Mind"
+      },
+      {
+       "id": "sun",
+       "type": "glyph",
+       "name": "sun",
+       "x": 180,
+       "y": 300,
+       "size": 120,
+       "color": "sun"
+      },
+      {
+       "id": "run",
+       "type": "label",
+       "text": "stretch, run, jump, skip",
+       "x": 360,
+       "y": 300,
+       "color": "mint"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Full of beans means eating many beans",
+       "x": 350,
+       "y": 430
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "exercise",
+       "type": "node",
+       "text": "Exercise",
+       "sub": "stretch and run",
+       "glyph": "person",
+       "color": "mint"
+      },
+      {
+       "id": "food",
+       "type": "node",
+       "text": "Fresh food",
+       "sub": "fruit and greens",
+       "glyph": "apple",
+       "color": "sun"
+      },
+      {
+       "id": "energy",
+       "type": "node",
+       "text": "Energy",
+       "sub": "full of beans",
+       "glyph": "lightning",
+       "color": "amber"
+      },
+      {
+       "id": "calm",
+       "type": "node",
+       "text": "Calm mind",
+       "sub": "fit and ready",
+       "glyph": "mirror",
+       "color": "ion"
+      },
+      {
+       "id": "e1",
+       "type": "arrow",
+       "from": "exercise",
+       "to": "energy",
+       "text": "builds"
+      },
+      {
+       "id": "e2",
+       "type": "arrow",
+       "from": "food",
+       "to": "energy",
+       "text": "supports"
+      },
+      {
+       "id": "e3",
+       "type": "arrow",
+       "from": "energy",
+       "to": "calm",
+       "text": "helps"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "habit",
+       "type": "title",
+       "text": "Morning habits"
+      },
+      {
+       "id": "six",
+       "type": "node",
+       "text": "at six",
+       "sub": "get up",
+       "glyph": "clock",
+       "color": "ion"
+      },
+      {
+       "id": "actions",
+       "type": "label",
+       "text": "I stretch and run.",
+       "x": 330,
+       "y": 300,
+       "color": "mint"
+      },
+      {
+       "id": "time",
+       "type": "label",
+       "text": "in the morning",
+       "x": 330,
+       "y": 390,
+       "color": "amber"
+      },
+      {
+       "id": "nation",
+       "type": "node",
+       "text": "Strong nation",
+       "sub": "help others",
+       "glyph": "group",
+       "color": "volt"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "split",
+     "els": [
+      {
+       "id": "checktitle",
+       "type": "title",
+       "text": "What does it mean?"
+      },
+      {
+       "id": "energyOpt",
+       "type": "label",
+       "text": "Full of energy",
+       "x": 180,
+       "y": 320,
+       "color": "mint"
+      },
+      {
+       "id": "hungryOpt",
+       "type": "label",
+       "text": "Hungry for beans",
+       "x": 560,
+       "y": 320,
+       "color": "amber"
+      },
+      {
+       "id": "question",
+       "type": "glyph",
+       "name": "question",
+       "x": 470,
+       "y": 470,
+       "size": 100,
+       "color": "ion"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "The poem shows a child who exercises and eats fresh fruit and greens.",
+    "L2": "The child gets up at six and says, “I’m always full of beans!”",
+    "L3": "That saying does not mean the child ate many beans.",
+    "L4": "“Full of beans” means full of energy. Exercise and healthy food help the child feel energetic.",
+    "L5": "The action words include stretch, run, jump and skip.",
+    "L6": "For daily habits, use the simple present: “I drink milk every morning.”",
+    "L7": "Use “at” for a clock time and “in the morning” or “in the evening” for part of a day.",
+    "L8": "A fit body and a calm mind help people work hard and help others, making a strong and kind nation."
+   },
+   "narration": {
+    "L1": {
+     "text": "The poem shows a child who exercises and eats fresh fruit and greens.",
+     "dur": 3.2,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L2": {
+     "text": "The child gets up at six and says, “I’m always full of beans!”",
+     "dur": 3.4,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L3": {
+     "text": "That saying does not mean the child ate many beans.",
+     "dur": 2.8,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L4": {
+     "text": "“Full of beans” means full of energy. Exercise and healthy food help the child feel energetic.",
+     "dur": 4.2,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L5": {
+     "text": "The action words include stretch, run, jump and skip.",
+     "dur": 2.8,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L6": {
+     "text": "For daily habits, use the simple present: “I drink milk every morning.”",
+     "dur": 3.6,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Use “at” for a clock time and “in the morning” or “in the evening” for part of a day.",
+     "dur": 4.2,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L8": {
+     "text": "A fit body and a calm mind help people work hard and help others, making a strong and kind nation.",
+     "dur": 4.4,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "title"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "sun",
+        "run"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "sun"
+      },
+      {
+       "at": 0.6,
+       "do": "show",
+       "dur": 0.7,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "focus",
+       "dur": 0.8,
+       "target": "myth"
+      },
+      {
+       "at": 1,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "exercise",
+        "food",
+        "energy"
+       ]
+      },
+      {
+       "at": 0.7,
+       "do": "flow",
+       "dur": 0.8,
+       "target": [
+        "e1",
+        "e2"
+       ],
+       "to": 1
+      },
+      {
+       "at": 1.5,
+       "do": "show",
+       "dur": 0.6,
+       "target": "calm"
+      },
+      {
+       "at": 2,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "e3",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "run"
+      },
+      {
+       "at": 1,
+       "do": "camera",
+       "dur": 1,
+       "zoom": 1.05
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "habit",
+        "actions"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 1,
+       "target": "actions"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "six",
+        "time"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 1,
+       "target": [
+        "six",
+        "time"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "nation"
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 1,
+       "target": "nation"
+      },
+      {
+       "at": "end",
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "What does “full of beans” mean in the poem?",
+    "options": [
+     "energyOpt",
+     "hungryOpt"
+    ],
+    "answer": "energyOpt",
+    "src": "c4-english-ch07-t01-i03"
+   }
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg",
+  "seconds": 32
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-english-ch07-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "child",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        150,
+        150
+       ],
+       "r": 42
+      },
+      {
+       "id": "body",
+       "op": "stroke",
+       "startMs": 500,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         150,
+         192
+        ],
+        [
+         150,
+         310
+        ],
+        [
+         110,
+         390
+        ],
+        [
+         150,
+         310
+        ],
+        [
+         190,
+         390
+        ],
+        [
+         150,
+         310
+        ]
+       ]
+      },
+      {
+       "id": "exercise",
+       "op": "label",
+       "startMs": 1100,
+       "endMs": 1800,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        245,
+        145
+       ],
+       "text": "exercises",
+       "to": [
+        185,
+        210
+       ]
+      },
+      {
+       "id": "apple",
+       "op": "circle",
+       "startMs": 1600,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        510,
+        150
+       ],
+       "r": 34,
+       "fill": "accent"
+      },
+      {
+       "id": "fruit",
+       "op": "label",
+       "startMs": 2100,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        510,
+        205
+       ],
+       "text": "fresh fruit",
+       "to": [
+        510,
+        180
+       ]
+      },
+      {
+       "id": "greens",
+       "op": "ellipse",
+       "startMs": 2500,
+       "endMs": 3200,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        650,
+        155
+       ],
+       "rx": 48,
+       "ry": 28,
+       "fill": "good"
+      },
+      {
+       "id": "greenslabel",
+       "op": "label",
+       "startMs": 3100,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        650,
+        210
+       ],
+       "text": "greens",
+       "to": [
+        650,
+        180
+       ]
+      },
+      {
+       "id": "link",
+       "op": "arrow",
+       "startMs": 3700,
+       "endMs": 4600,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        220,
+        300
+       ],
+       "to": [
+        450,
+        175
+       ]
+      },
+      {
+       "id": "poem",
+       "op": "text",
+       "startMs": 4600,
+       "endMs": 5200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        440
+       ],
+       "text": "poem",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-english-ch07-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "clock",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        570,
+        105
+       ],
+       "r": 55
+      },
+      {
+       "id": "six",
+       "op": "text",
+       "startMs": 600,
+       "endMs": 1100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        570,
+        115
+       ],
+       "text": "6",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "hand1",
+       "op": "line",
+       "startMs": 1000,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 1,
+       "from": [
+        570,
+        105
+       ],
+       "to": [
+        570,
+        65
+       ]
+      },
+      {
+       "id": "hand2",
+       "op": "line",
+       "startMs": 1300,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 1,
+       "from": [
+        570,
+        105
+       ],
+       "to": [
+        600,
+        125
+       ]
+      },
+      {
+       "id": "wake",
+       "op": "label",
+       "startMs": 1700,
+       "endMs": 2400,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        450,
+        210
+       ],
+       "text": "gets up",
+       "to": [
+        570,
+        160
+       ]
+      },
+      {
+       "id": "beans",
+       "op": "ellipse",
+       "startMs": 2500,
+       "endMs": 3300,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        290,
+        350
+       ],
+       "rx": 85,
+       "ry": 42,
+       "fill": "good"
+      },
+      {
+       "id": "beanword",
+       "op": "text",
+       "startMs": 3200,
+       "endMs": 3800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        290,
+        355
+       ],
+       "text": "beans",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "quote",
+       "op": "text",
+       "startMs": 3800,
+       "endMs": 4700,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        470,
+        350
+       ],
+       "text": "full of beans",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "say",
+       "op": "arrow",
+       "startMs": 4700,
+       "endMs": 5400,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        350,
+        330
+       ],
+       "to": [
+        420,
+        330
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-english-ch07-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "cross",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        180,
+        145
+       ],
+       "to": [
+        300,
+        255
+       ]
+      },
+      {
+       "id": "cross2",
+       "op": "line",
+       "startMs": 500,
+       "endMs": 1100,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        300,
+        145
+       ],
+       "to": [
+        180,
+        255
+       ]
+      },
+      {
+       "id": "not",
+       "op": "text",
+       "startMs": 1100,
+       "endMs": 1800,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        240,
+        290
+       ],
+       "text": "not beans",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "meaning",
+       "op": "arrow",
+       "startMs": 1800,
+       "endMs": 2500,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        350,
+        220
+       ],
+       "to": [
+        500,
+        220
+       ]
+      },
+      {
+       "id": "sense",
+       "op": "label",
+       "startMs": 2500,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        540,
+        220
+       ],
+       "text": "saying",
+       "to": [
+        500,
+        220
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-english-ch07-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "energy",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        240,
+        125
+       ],
+       "text": "energy",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "spark1",
+       "op": "stroke",
+       "startMs": 800,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         180,
+         90
+        ],
+        [
+         195,
+         70
+        ],
+        [
+         205,
+         95
+        ],
+        [
+         225,
+         70
+        ],
+        [
+         235,
+         95
+        ]
+       ]
+      },
+      {
+       "id": "spark2",
+       "op": "stroke",
+       "startMs": 1200,
+       "endMs": 1800,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         265,
+         90
+        ],
+        [
+         280,
+         70
+        ],
+        [
+         290,
+         95
+        ],
+        [
+         310,
+         70
+        ],
+        [
+         320,
+         95
+        ]
+       ]
+      },
+      {
+       "id": "healthy",
+       "op": "label",
+       "startMs": 1800,
+       "endMs": 2700,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        570,
+        130
+       ],
+       "text": "healthy food",
+       "to": [
+        500,
+        180
+       ]
+      },
+      {
+       "id": "exercise2",
+       "op": "label",
+       "startMs": 2500,
+       "endMs": 3400,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        570,
+        245
+       ],
+       "text": "exercise",
+       "to": [
+        500,
+        300
+       ]
+      },
+      {
+       "id": "foodarrow",
+       "op": "arrow",
+       "startMs": 3400,
+       "endMs": 4100,
+       "ink": "good",
+       "weight": 1,
+       "from": [
+        500,
+        170
+       ],
+       "to": [
+        350,
+        125
+       ]
+      },
+      {
+       "id": "exarrow",
+       "op": "arrow",
+       "startMs": 4000,
+       "endMs": 4700,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        500,
+        285
+       ],
+       "to": [
+        350,
+        155
+       ]
+      },
+      {
+       "id": "feel",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        240,
+        330
+       ],
+       "text": "feel energetic",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "energyhi",
+       "op": "highlight",
+       "startMs": 5700,
+       "endMs": 6800,
+       "ink": "good",
+       "weight": 2,
+       "target": "energy",
+       "style": "underline"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-english-ch07-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4430,
+     "ops": [
+      {
+       "id": "title",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        70
+       ],
+       "text": "action words",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "stretch",
+       "op": "label",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        150,
+        170
+       ],
+       "text": "stretch",
+       "to": [
+        150,
+        220
+       ]
+      },
+      {
+       "id": "stretchline",
+       "op": "stroke",
+       "startMs": 1100,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         125,
+         220
+        ],
+        [
+         150,
+         190
+        ],
+        [
+         180,
+         220
+        ]
+       ]
+      },
+      {
+       "id": "run",
+       "op": "label",
+       "startMs": 1400,
+       "endMs": 1900,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        350,
+        170
+       ],
+       "text": "run",
+       "to": [
+        350,
+        220
+       ]
+      },
+      {
+       "id": "runline",
+       "op": "stroke",
+       "startMs": 1700,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         325,
+         230
+        ],
+        [
+         350,
+         200
+        ],
+        [
+         380,
+         225
+        ]
+       ]
+      },
+      {
+       "id": "jump",
+       "op": "label",
+       "startMs": 2100,
+       "endMs": 2600,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        550,
+        170
+       ],
+       "text": "jump",
+       "to": [
+        550,
+        220
+       ]
+      },
+      {
+       "id": "jumpline",
+       "op": "arrow",
+       "startMs": 2400,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        550,
+        270
+       ],
+       "to": [
+        550,
+        210
+       ]
+      },
+      {
+       "id": "skip",
+       "op": "label",
+       "startMs": 2900,
+       "endMs": 3500,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        350,
+        355
+       ],
+       "text": "skip",
+       "to": [
+        350,
+        400
+       ]
+      },
+      {
+       "id": "skipline",
+       "op": "stroke",
+       "startMs": 3400,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         320,
+         410
+        ],
+        [
+         350,
+         380
+        ],
+        [
+         385,
+         410
+        ]
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-english-ch07-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "habit",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        75
+       ],
+       "text": "daily habits",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "simple",
+       "op": "label",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        180,
+        160
+       ],
+       "text": "simple present",
+       "to": [
+        180,
+        205
+       ]
+      },
+      {
+       "id": "eq",
+       "op": "numwork",
+       "startMs": 1400,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        120,
+        250
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "I",
+         "drink",
+         "milk"
+        ]
+       ]
+      },
+      {
+       "id": "morning",
+       "op": "label",
+       "startMs": 1900,
+       "endMs": 2700,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        570,
+        160
+       ],
+       "text": "every morning",
+       "to": [
+        570,
+        220
+       ]
+      },
+      {
+       "id": "cup",
+       "op": "rect",
+       "startMs": 2700,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        520,
+        270
+       ],
+       "w": 80,
+       "h": 85,
+       "round": 10
+      },
+      {
+       "id": "milk",
+       "op": "label",
+       "startMs": 3400,
+       "endMs": 4000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        560,
+        390
+       ],
+       "text": "milk",
+       "to": [
+        560,
+        350
+       ]
+      },
+      {
+       "id": "habitline",
+       "op": "arrow",
+       "startMs": 4000,
+       "endMs": 4800,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        300,
+        250
+       ],
+       "to": [
+        490,
+        310
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-english-ch07-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "clock2",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        180,
+        150
+       ],
+       "r": 58
+      },
+      {
+       "id": "at",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        180,
+        260
+       ],
+       "text": "at",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "time",
+       "op": "label",
+       "startMs": 1100,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        280,
+        150
+       ],
+       "text": "clock time",
+       "to": [
+        235,
+        150
+       ]
+      },
+      {
+       "id": "morning2",
+       "op": "ellipse",
+       "startMs": 1900,
+       "endMs": 2700,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        500,
+        135
+       ],
+       "rx": 105,
+       "ry": 42,
+       "fill": "accent"
+      },
+      {
+       "id": "morningtext",
+       "op": "text",
+       "startMs": 2600,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        500,
+        140
+       ],
+       "text": "in the morning",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "evening2",
+       "op": "ellipse",
+       "startMs": 3500,
+       "endMs": 4300,
+       "ink": "soft",
+       "weight": 1,
+       "c": [
+        500,
+        300
+       ],
+       "rx": 105,
+       "ry": 42,
+       "fill": "soft"
+      },
+      {
+       "id": "eveningtext",
+       "op": "text",
+       "startMs": 4200,
+       "endMs": 5200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        500,
+        305
+       ],
+       "text": "in the evening",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "atline",
+       "op": "arrow",
+       "startMs": 5200,
+       "endMs": 5900,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        240,
+        210
+       ],
+       "to": [
+        180,
+        215
+       ]
+      },
+      {
+       "id": "partline",
+       "op": "arrow",
+       "startMs": 5900,
+       "endMs": 6700,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        390,
+        210
+       ],
+       "to": [
+        330,
+        280
+       ]
+      },
+      {
+       "id": "partline2",
+       "op": "arrow",
+       "startMs": 6700,
+       "endMs": 7500,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        610,
+        210
+       ],
+       "to": [
+        610,
+        280
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-english-ch07-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9111,
+     "ops": [
+      {
+       "id": "fit",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        170,
+        110
+       ],
+       "text": "fit body",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "body",
+       "op": "circle",
+       "startMs": 600,
+       "endMs": 1200,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        170,
+        220
+       ],
+       "r": 55
+      },
+      {
+       "id": "calm",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        110
+       ],
+       "text": "calm mind",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "mind",
+       "op": "circle",
+       "startMs": 1500,
+       "endMs": 2100,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        220
+       ],
+       "r": 55
+      },
+      {
+       "id": "work",
+       "op": "label",
+       "startMs": 2100,
+       "endMs": 2900,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        170,
+        355
+       ],
+       "text": "work hard",
+       "to": [
+        170,
+        280
+       ]
+      },
+      {
+       "id": "help",
+       "op": "label",
+       "startMs": 2700,
+       "endMs": 3500,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        400,
+        355
+       ],
+       "text": "help others",
+       "to": [
+        400,
+        280
+       ]
+      },
+      {
+       "id": "bodyarrow",
+       "op": "arrow",
+       "startMs": 3500,
+       "endMs": 4200,
+       "ink": "good",
+       "weight": 1,
+       "from": [
+        170,
+        280
+       ],
+       "to": [
+        170,
+        325
+       ]
+      },
+      {
+       "id": "mindarrow",
+       "op": "arrow",
+       "startMs": 4000,
+       "endMs": 4700,
+       "ink": "accent",
+       "weight": 1,
+       "from": [
+        400,
+        280
+       ],
+       "to": [
+        400,
+        325
+       ]
+      },
+      {
+       "id": "nation",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5600,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        570,
+        235
+       ],
+       "text": "strong nation",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "kind",
+       "op": "text",
+       "startMs": 5500,
+       "endMs": 6400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        570,
+        355
+       ],
+       "text": "kind nation",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "nationlink",
+       "op": "arrow",
+       "startMs": 6400,
+       "endMs": 7200,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        450,
+        300
+       ],
+       "to": [
+        520,
+        250
+       ]
+      },
+      {
+       "id": "nationlink2",
+       "op": "arrow",
+       "startMs": 7200,
+       "endMs": 8000,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        450,
+        330
+       ],
+       "to": [
+        520,
+        345
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "b0:*",
+   "key": "Up · six, · and",
+   "prompt": "stressed words in: Up at six, I stretch and run"
+  },
+  {
+   "itemId": "b1:*",
+   "key": "I · and · sun",
+   "prompt": "stressed words in: I jump and skip beneath the sun"
+  },
+  {
+   "itemId": "b2:*",
+   "key": "I · fruit · of",
+   "prompt": "stressed words in: I eat fresh fruit and lots of greens"
+  },
+  {
+   "itemId": "b3:*",
+   "key": "That's · always · beans",
+   "prompt": "stressed words in: That's why I'm always full of beans"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "sun",
+   "prompt": "I stretch and run beneath the ___ [sun / six / skip]",
+   "src": "c4-english-ch07-t01-i01"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "greens",
+   "prompt": "I eat fresh fruit and lots of ___ [greens / beans / games]",
+   "src": "c4-english-ch07-t01-i04"
+  },
+  {
+   "itemId": "r2:2",
+   "key": "beans",
+   "prompt": "That's why I'm always full of ___ [beans / beads / beats]",
+   "src": "c4-english-ch07-t01-i03"
+  },
+  {
+   "itemId": "m4:*",
+   "key": "11111121211121",
+   "prompt": "मात्रा: तन फिट, मन शांत, देश मजबूत"
+  },
+  {
+   "itemId": "m5:*",
+   "key": "111111212221",
+   "prompt": "मात्रा: कसरत, फल, साग, ऊर्जा संग"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

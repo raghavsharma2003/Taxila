@@ -1,0 +1,30 @@
+diff --git a/src/child/lesson/useDesk.ts b/src/child/lesson/useDesk.ts
+index d0978c7..d308a3b 100644
+--- a/src/child/lesson/useDesk.ts
++++ b/src/child/lesson/useDesk.ts
+@@ -358,8 +358,11 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
+   const effectiveGeometry = geometry === "work" && !trayKind ? "face" : geometry;
+ 
+   // ───────── talking ─────────
++  // ship5 p1-duplex: while the duplex engine decides the floor the mic is open for the whole lesson (no talk button);
++  // when it steps aside (quota, fault, kill switch) the screen's own talk policy applies again.
++  const openMic = ctx.openMic || !!bs?.duplexLive;
+   const pttOn = bs?.cascade ? bs.pushToTalk : state.pushToTalk;
+-  const tapToTalk = spoken && (state.phase === "live" ? pttOn || !ctx.openMic : !ctx.openMic);
++  const tapToTalk = spoken && (state.phase === "live" ? pttOn || !openMic : !openMic);
+   const paused = sheet !== null;
+   const ptt = useTapToTalk({
+     enabled: state.phase === "live" && tapToTalk && !paused,
+@@ -372,9 +375,9 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
+     end: () => runtime.talkEnd(),
+   });
+   useEffect(() => {
+-    bridge?.setPushToTalk(!ctx.openMic || paused);
+-    if (state.phase === "live" && spoken) runtime.setPushToTalk(!ctx.openMic || paused);
+-  }, [state.phase, spoken, ctx.openMic, paused, runtime, bridge]);
++    bridge?.setPushToTalk(!openMic || paused);
++    if (state.phase === "live" && spoken) runtime.setPushToTalk(!openMic || paused);
++  }, [state.phase, spoken, openMic, paused, runtime, bridge]);
+ 
+   // YOUR TURN timers (escalate only; they never set a state): Young help after tapOptionsS, the second breath.
+   const changeKey = `${floor}|${chips.map((c) => c.id).join(",")}|${bs?.replays ?? 0}`;

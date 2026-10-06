@@ -1,0 +1,1910 @@
+{
+ "topicId": "c7-sst-ch12-t01",
+ "title": "Understanding Markets",
+ "chapter": "Understanding Markets",
+ "subject": "sst",
+ "class": 7,
+ "topicType": "T3",
+ "plan": {
+  "game": "town-lab@1",
+  "hint": "market mode (pricing live as customers decide)"
+ },
+ "game": {
+  "archetype": "town-lab@1",
+  "spec": {
+   "archetype": "town-lab@1",
+   "skills": [
+    "c7-sst-ch12-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "done": "right",
+    "have": "you have",
+    "need": "you need",
+    "has": "has",
+    "wants": "wants",
+    "trades": "trades",
+    "market": "market",
+    "coins": "coins",
+    "open": "OPEN",
+    "price": "price",
+    "cost": "cost",
+    "profit": "profit",
+    "sold": "sold",
+    "target": "target",
+    "stock": "stock",
+    "lock": "LOCK",
+    "run": "RUN",
+    "perMonth": "per month",
+    "years": "years",
+    "goal": "goal",
+    "saved": "saved",
+    "interest": "interest",
+    "budget": "budget",
+    "left": "left",
+    "families": "families helped",
+    "runDone": "Town closed",
+    "noDeal": "no deal",
+    "reset": "start again",
+    "rupee": "₹"
+   },
+   "title": "Understanding Markets",
+   "rounds": [
+    {
+     "mode": "barter",
+     "title": "Chain the trades",
+     "sub": "move goods to reach your goal",
+     "start": "tomatoes",
+     "goal": "diyas",
+     "traders": [
+      {
+       "name": "Farmer",
+       "glyph": "wheat",
+       "has": "tomatoes",
+       "wants": "wheat"
+      },
+      {
+       "name": "Wholesaler",
+       "glyph": "ship",
+       "has": "wheat",
+       "wants": "tomatoes"
+      },
+      {
+       "name": "Seller",
+       "glyph": "shop",
+       "has": "diyas",
+       "wants": "wheat"
+      }
+     ],
+     "money": false
+    },
+    {
+     "mode": "market",
+     "title": "Price the stall",
+     "sub": "customers choose what they pay",
+     "good": "mangoes",
+     "glyph": "apple",
+     "cost": 30,
+     "stock": 8,
+     "buyers": [
+      40,
+      55,
+      70,
+      80,
+      65,
+      90,
+      45,
+      100,
+      75,
+      50
+     ],
+     "target": 160,
+     "targets": "c7-sst-ch12-t01-m1"
+    },
+    {
+     "mode": "savings",
+     "title": "Plan a town goal",
+     "sub": "choose a monthly saving plan",
+     "goal": 6000,
+     "years": 2,
+     "rate": 5
+    },
+    {
+     "mode": "council",
+     "title": "Choose ward projects",
+     "sub": "help families within the budget",
+     "budget": 50,
+     "projects": [
+      {
+       "name": "handpumps",
+       "glyph": "tap",
+       "cost": 12,
+       "helps": 180
+      },
+      {
+       "name": "school roof",
+       "glyph": "school",
+       "cost": 25,
+       "helps": 220
+      },
+      {
+       "name": "streetlights",
+       "glyph": "bulb",
+       "cost": 15,
+       "helps": 150
+      },
+      {
+       "name": "drain",
+       "glyph": "road",
+       "cost": 20,
+       "helps": 200
+      },
+      {
+       "name": "park",
+       "glyph": "tree",
+       "cost": 18,
+       "helps": 90
+      }
+     ]
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-sst-ch12-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "How markets work",
+   "accent": "amber",
+   "targets": "c7-sst-ch12-t01-m1",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "How markets work"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Shopkeepers set prices alone"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "farmer",
+       "type": "node",
+       "text": "Producer",
+       "sub": "farmer",
+       "glyph": "wheat",
+       "color": "mint"
+      },
+      {
+       "id": "whole",
+       "type": "node",
+       "text": "Wholesaler",
+       "sub": "bulk at mandi",
+       "glyph": "bank",
+       "color": "amber"
+      },
+      {
+       "id": "retail",
+       "type": "node",
+       "text": "Retailer",
+       "sub": "sabziwala",
+       "glyph": "shop",
+       "color": "sun"
+      },
+      {
+       "id": "buyer",
+       "type": "node",
+       "text": "Consumer",
+       "sub": "buyer",
+       "glyph": "person",
+       "color": "ion"
+      },
+      {
+       "id": "f1",
+       "type": "arrow",
+       "from": "farmer",
+       "to": "whole",
+       "text": "sells"
+      },
+      {
+       "id": "f2",
+       "type": "arrow",
+       "from": "whole",
+       "to": "retail",
+       "text": "sells"
+      },
+      {
+       "id": "f3",
+       "type": "arrow",
+       "from": "retail",
+       "to": "buyer",
+       "text": "sells"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "supply",
+       "type": "node",
+       "text": "Supply",
+       "sub": "available goods",
+       "glyph": "wheat",
+       "color": "mint"
+      },
+      {
+       "id": "demand",
+       "type": "node",
+       "text": "Demand",
+       "sub": "wanted goods",
+       "glyph": "hand",
+       "color": "ion"
+      },
+      {
+       "id": "rise",
+       "type": "node",
+       "text": "Prices rise",
+       "color": "amber"
+      },
+      {
+       "id": "fall",
+       "type": "node",
+       "text": "Prices fall",
+       "color": "sci"
+      },
+      {
+       "id": "p1",
+       "type": "arrow",
+       "from": "supply",
+       "to": "rise",
+       "text": "falls"
+      },
+      {
+       "id": "p2",
+       "type": "arrow",
+       "from": "demand",
+       "to": "rise",
+       "text": "rises"
+      },
+      {
+       "id": "p3",
+       "type": "arrow",
+       "from": "supply",
+       "to": "fall",
+       "text": "rises"
+      },
+      {
+       "id": "p4",
+       "type": "arrow",
+       "from": "demand",
+       "to": "fall",
+       "text": "falls"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "A market is any arrangement where buyers and sellers meet to exchange goods or services for money.",
+    "L2": "It can be a haat, a neighbourhood shop, a mandi, a mall, or an online marketplace.",
+    "L3": "Goods often travel from a producer to a wholesaler, then a retailer, and finally the consumer.",
+    "L4": "Transport, storage, rent and profit add costs at each step, so the final price can be higher.",
+    "L5": "Prices depend on supply and demand, not on the shopkeeper alone.",
+    "L6": "If supply falls or demand rises, prices tend to rise. If supply is plentiful or demand falls, prices tend to fall.",
+    "L7": "For example, floods can reduce tomato supply while demand stays steady, causing prices to jump.",
+    "L8": "An informed consumer checks the MRP, asks for a bill, and looks for quality marks."
+   },
+   "narration": {
+    "L1": {
+     "text": "A market is any arrangement where buyers and sellers meet to exchange goods or services for money.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "It can be a haat, a neighbourhood shop, a mandi, a mall, or an online marketplace.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "Goods often travel from a producer to a wholesaler, then a retailer, and finally the consumer.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "Transport, storage, rent and profit add costs at each step, so the final price can be higher.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "Prices depend on supply and demand, not on the shopkeeper alone.",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "If supply falls or demand rises, prices tend to rise. If supply is plentiful or demand falls, prices tend to fall.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "For example, floods can reduce tomato supply while demand stays steady, causing prices to jump.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "An informed consumer checks the MRP, asks for a bill, and looks for quality marks.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.3,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "title"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.3,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      },
+      {
+       "at": 2,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "farmer",
+        "whole",
+        "retail",
+        "buyer"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "f1",
+        "f2",
+        "f3"
+       ]
+      },
+      {
+       "at": 2,
+       "do": "flow",
+       "dur": 1,
+       "target": [
+        "f1",
+        "f2",
+        "f3"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1.5,
+       "target": [
+        "whole",
+        "retail"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.3,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "supply",
+        "demand"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "focus",
+       "dur": 1,
+       "target": "rise"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.3,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "rise",
+        "fall"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 1,
+       "target": [
+        "p1",
+        "p2",
+        "p3",
+        "p4"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.3,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "supply"
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 1,
+       "target": "rise"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "camera",
+       "dur": 2,
+       "zoom": 1.05
+      },
+      {
+       "at": "end",
+       "do": "interactive"
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "After floods damage tomato fields and demand stays steady, what happens to prices?",
+    "options": [
+     "rise",
+     "fall",
+     "supply",
+     "demand"
+    ],
+    "answer": "rise",
+    "src": "c7-sst-ch12-t01-i06"
+   }
+  },
+  "repairs": [
+   "glyph",
+   "string:rise.sub",
+   "glyph",
+   "string:fall.sub"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 40
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch12-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "market",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        250,
+        140
+       ],
+       "w": 300,
+       "h": 180,
+       "round": 12
+      },
+      {
+       "id": "buyers",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        150,
+        230
+       ],
+       "r": 42
+      },
+      {
+       "id": "sellers",
+       "op": "circle",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        650,
+        230
+       ],
+       "r": 42
+      },
+      {
+       "id": "goods",
+       "op": "arrow",
+       "startMs": 2300,
+       "endMs": 3000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        205,
+        230
+       ],
+       "to": [
+        245,
+        230
+       ]
+      },
+      {
+       "id": "money",
+       "op": "arrow",
+       "startMs": 3000,
+       "endMs": 3700,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        595,
+        270
+       ],
+       "to": [
+        555,
+        270
+       ]
+      },
+      {
+       "id": "tbuyers",
+       "op": "text",
+       "startMs": 3800,
+       "endMs": 4300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        150,
+        305
+       ],
+       "text": "buyers",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "tsellers",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 4800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        650,
+        305
+       ],
+       "text": "sellers",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "tgoods",
+       "op": "text",
+       "startMs": 4800,
+       "endMs": 5300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        205
+       ],
+       "text": "goods",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "tmoney",
+       "op": "text",
+       "startMs": 5300,
+       "endMs": 5800,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        285
+       ],
+       "text": "money",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "tmarket",
+       "op": "text",
+       "startMs": 6000,
+       "endMs": 6800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        105
+       ],
+       "text": "market",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch12-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "haat",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        45,
+        120
+       ],
+       "w": 130,
+       "h": 100,
+       "round": 8
+      },
+      {
+       "id": "shop",
+       "op": "rect",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        205,
+        120
+       ],
+       "w": 130,
+       "h": 100,
+       "round": 8
+      },
+      {
+       "id": "mandi",
+       "op": "rect",
+       "startMs": 1400,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        365,
+        120
+       ],
+       "w": 130,
+       "h": 100,
+       "round": 8
+      },
+      {
+       "id": "mall",
+       "op": "rect",
+       "startMs": 2100,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        525,
+        120
+       ],
+       "w": 100,
+       "h": 100,
+       "round": 8
+      },
+      {
+       "id": "online",
+       "op": "rect",
+       "startMs": 2800,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        650,
+        120
+       ],
+       "w": 105,
+       "h": 100,
+       "round": 8
+      },
+      {
+       "id": "lh",
+       "op": "text",
+       "startMs": 3600,
+       "endMs": 4000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        110,
+        175
+       ],
+       "text": "haat",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "ln",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 4500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        270,
+        175
+       ],
+       "text": "neighbourhood shop",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "lm",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 4900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        430,
+        175
+       ],
+       "text": "mandi",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "lmall",
+       "op": "text",
+       "startMs": 4900,
+       "endMs": 5300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        575,
+        175
+       ],
+       "text": "mall",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "lon",
+       "op": "text",
+       "startMs": 5300,
+       "endMs": 5900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        702,
+        175
+       ],
+       "text": "online marketplace",
+       "size": "s",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch12-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "producer",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        35,
+        170
+       ],
+       "w": 145,
+       "h": 90,
+       "round": 8
+      },
+      {
+       "id": "wholesaler",
+       "op": "rect",
+       "startMs": 800,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        225,
+        170
+       ],
+       "w": 145,
+       "h": 90,
+       "round": 8
+      },
+      {
+       "id": "retailer",
+       "op": "rect",
+       "startMs": 1600,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        415,
+        170
+       ],
+       "w": 145,
+       "h": 90,
+       "round": 8
+      },
+      {
+       "id": "consumer",
+       "op": "rect",
+       "startMs": 2400,
+       "endMs": 3100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        605,
+        170
+       ],
+       "w": 145,
+       "h": 90,
+       "round": 8
+      },
+      {
+       "id": "p",
+       "op": "text",
+       "startMs": 3200,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        107,
+        215
+       ],
+       "text": "producer",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "w",
+       "op": "text",
+       "startMs": 3700,
+       "endMs": 4200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        297,
+        215
+       ],
+       "text": "wholesaler",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "r",
+       "op": "text",
+       "startMs": 4200,
+       "endMs": 4700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        487,
+        215
+       ],
+       "text": "retailer",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "c",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        677,
+        215
+       ],
+       "text": "consumer",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "a1",
+       "op": "arrow",
+       "startMs": 5300,
+       "endMs": 5700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        180,
+        215
+       ],
+       "to": [
+        225,
+        215
+       ]
+      },
+      {
+       "id": "a2",
+       "op": "arrow",
+       "startMs": 5700,
+       "endMs": 6100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        370,
+        215
+       ],
+       "to": [
+        415,
+        215
+       ]
+      },
+      {
+       "id": "a3",
+       "op": "arrow",
+       "startMs": 6100,
+       "endMs": 6500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        560,
+        215
+       ],
+       "to": [
+        605,
+        215
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch12-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "transport",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        120,
+        330
+       ],
+       "text": "Transport",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "storage",
+       "op": "text",
+       "startMs": 600,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        280,
+        330
+       ],
+       "text": "storage",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "rent",
+       "op": "text",
+       "startMs": 1200,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        425,
+        330
+       ],
+       "text": "rent",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "profit",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        565,
+        330
+       ],
+       "text": "profit",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "costs",
+       "op": "numwork",
+       "startMs": 2500,
+       "endMs": 3600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        150,
+        390
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "costs",
+         "+",
+         "costs",
+         "+",
+         "costs",
+         "+",
+         "costs"
+        ]
+       ]
+      },
+      {
+       "id": "price",
+       "op": "arrow",
+       "startMs": 3900,
+       "endMs": 4700,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        400,
+        370
+       ],
+       "to": [
+        400,
+        285
+       ]
+      },
+      {
+       "id": "final",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 5900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        440
+       ],
+       "text": "final price higher",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch12-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "supply",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        180,
+        180
+       ],
+       "text": "supply",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "demand",
+       "op": "text",
+       "startMs": 600,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        620,
+        180
+       ],
+       "text": "demand",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "cross",
+       "op": "line",
+       "startMs": 1400,
+       "endMs": 2100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        250,
+        180
+       ],
+       "to": [
+        550,
+        180
+       ]
+      },
+      {
+       "id": "price",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 2900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        280
+       ],
+       "text": "prices",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "both",
+       "op": "arrow",
+       "startMs": 3000,
+       "endMs": 3700,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        400,
+        210
+       ],
+       "to": [
+        400,
+        260
+       ]
+      },
+      {
+       "id": "alone",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4700,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        370
+       ],
+       "text": "not shopkeeper alone",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch12-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 9536,
+     "ops": [
+      {
+       "id": "supply",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        170,
+        120
+       ],
+       "text": "supply",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "demand",
+       "op": "text",
+       "startMs": 500,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        630,
+        120
+       ],
+       "text": "demand",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "low",
+       "op": "text",
+       "startMs": 1300,
+       "endMs": 1900,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        170,
+        220
+       ],
+       "text": "supply falls",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "high",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        630,
+        220
+       ],
+       "text": "demand rises",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "rise",
+       "op": "arrow",
+       "startMs": 2700,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        400,
+        270
+       ],
+       "to": [
+        400,
+        190
+       ]
+      },
+      {
+       "id": "pr",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        170
+       ],
+       "text": "prices rise",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "plenty",
+       "op": "text",
+       "startMs": 4600,
+       "endMs": 5300,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        170,
+        350
+       ],
+       "text": "supply plentiful",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "fall",
+       "op": "text",
+       "startMs": 5300,
+       "endMs": 5900,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        630,
+        350
+       ],
+       "text": "demand falls",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "down",
+       "op": "arrow",
+       "startMs": 6100,
+       "endMs": 6800,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        400,
+        420
+       ],
+       "to": [
+        400,
+        350
+       ]
+      },
+      {
+       "id": "pf",
+       "op": "text",
+       "startMs": 7000,
+       "endMs": 7600,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        445
+       ],
+       "text": "prices fall",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch12-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "flood",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        100
+       ],
+       "text": "floods",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "tomato",
+       "op": "circle",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        220
+       ],
+       "r": 55
+      },
+      {
+       "id": "tomatot",
+       "op": "text",
+       "startMs": 1300,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        220
+       ],
+       "text": "tomato",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "less",
+       "op": "arrow",
+       "startMs": 1900,
+       "endMs": 2600,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        330,
+        220
+       ],
+       "to": [
+        250,
+        220
+       ]
+      },
+      {
+       "id": "supply",
+       "op": "text",
+       "startMs": 2600,
+       "endMs": 3100,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        170,
+        220
+       ],
+       "text": "supply",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "steady",
+       "op": "text",
+       "startMs": 3100,
+       "endMs": 3800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        620,
+        220
+       ],
+       "text": "demand steady",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "jump",
+       "op": "arrow",
+       "startMs": 4000,
+       "endMs": 5000,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        400,
+        310
+       ],
+       "to": [
+        400,
+        160
+       ]
+      },
+      {
+       "id": "prices",
+       "op": "text",
+       "startMs": 5100,
+       "endMs": 5900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        350
+       ],
+       "text": "prices jump",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch12-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "consumer",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        120
+       ],
+       "r": 48
+      },
+      {
+       "id": "informed",
+       "op": "text",
+       "startMs": 600,
+       "endMs": 1300,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "informed consumer",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "mrp",
+       "op": "rect",
+       "startMs": 1400,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        90,
+        250
+       ],
+       "w": 150,
+       "h": 75,
+       "round": 8
+      },
+      {
+       "id": "bill",
+       "op": "rect",
+       "startMs": 1900,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        325,
+        250
+       ],
+       "w": 150,
+       "h": 75,
+       "round": 8
+      },
+      {
+       "id": "quality",
+       "op": "rect",
+       "startMs": 2400,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        560,
+        250
+       ],
+       "w": 150,
+       "h": 75,
+       "round": 8
+      },
+      {
+       "id": "lm",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        165,
+        288
+       ],
+       "text": "MRP",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "lb",
+       "op": "text",
+       "startMs": 3400,
+       "endMs": 3800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        288
+       ],
+       "text": "bill",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "lq",
+       "op": "text",
+       "startMs": 3800,
+       "endMs": 4400,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        635,
+        288
+       ],
+       "text": "quality marks",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "a1",
+       "op": "arrow",
+       "startMs": 4500,
+       "endMs": 5000,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        370,
+        165
+       ],
+       "to": [
+        165,
+        250
+       ]
+      },
+      {
+       "id": "a2",
+       "op": "arrow",
+       "startMs": 5000,
+       "endMs": 5500,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        400,
+        165
+       ],
+       "to": [
+        400,
+        250
+       ]
+      },
+      {
+       "id": "a3",
+       "op": "arrow",
+       "startMs": 5500,
+       "endMs": 6000,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        430,
+        165
+       ],
+       "to": [
+        635,
+        250
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1",
+   "key": "2 trades",
+   "prompt": "move goods to reach your goal"
+  },
+  {
+   "itemId": "r2",
+   "key": "₹65 → profit 210 (target 160)",
+   "prompt": "customers choose what they pay"
+  },
+  {
+   "itemId": "r3",
+   "key": "₹244 a month",
+   "prompt": "choose a monthly saving plan"
+  },
+  {
+   "itemId": "r4",
+   "key": "530 families: handpumps, streetlights, drain",
+   "prompt": "help families within the budget"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

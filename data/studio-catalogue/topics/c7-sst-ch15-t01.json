@@ -1,0 +1,2124 @@
+{
+ "topicId": "c7-sst-ch15-t01",
+ "title": "Empires and Kingdoms: 6th to 10th Centuries",
+ "chapter": "Empires and Kingdoms: 6th to 10th Centuries",
+ "subject": "sst",
+ "class": 7,
+ "topicType": "T3",
+ "plan": {
+  "game": "era-drop@1",
+  "hint": "place / century / order modes with BCE and CE dates from the kit"
+ },
+ "game": {
+  "archetype": "era-drop@1",
+  "spec": {
+   "archetype": "era-drop@1",
+   "skills": [
+    "c7-sst-ch15-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "landed": "landed",
+    "precision": "precision",
+    "coach": "Drag the dock along the timeline",
+    "first": "Which came first?",
+    "runDone": "Timeline complete",
+    "offBy": "off by",
+    "years": "years",
+    "exact": "SPOT ON",
+    "century": "century",
+    "bce": "BCE",
+    "ce": "CE",
+    "earlier": "EARLIER"
+   },
+   "title": "Kingdoms across the centuries",
+   "axis": {
+    "min": 600,
+    "max": 1020
+   },
+   "rounds": [
+    {
+     "mode": "place",
+     "title": "Drop the dates",
+     "sub": "Place each event on the CE timeline",
+     "ticks": 50,
+     "speed": 0.8,
+     "tol": 8,
+     "items": [
+      {
+       "text": "Harsha's reign begins",
+       "value": 606,
+       "src": "c7-sst-ch15-t01-i01"
+      },
+      {
+       "text": "Aihole inscription",
+       "value": 634,
+       "src": "c7-sst-ch15-t01-i04"
+      },
+      {
+       "text": "Harsha's reign ends",
+       "value": 647,
+       "src": "c7-sst-ch15-t01-i01"
+      },
+      {
+       "text": "Kailasa at Ellora",
+       "value": 750,
+       "src": "c7-sst-ch15-t01-i02"
+      }
+     ]
+    },
+    {
+     "mode": "century",
+     "title": "Name the century",
+     "sub": "Match each event to its century",
+     "ticks": 0,
+     "speed": 1,
+     "tol": 4,
+     "items": [
+      {
+       "text": "Harsha's reign",
+       "value": 606,
+       "src": "c7-sst-ch15-t01-i02"
+      },
+      {
+       "text": "Aihole inscription",
+       "value": 634,
+       "src": "c7-sst-ch15-t01-i04"
+      },
+      {
+       "text": "Kailasa at Ellora",
+       "value": 750,
+       "src": "c7-sst-ch15-t01-i02"
+      },
+      {
+       "text": "Thanjavur temple",
+       "value": 1010,
+       "src": "c7-sst-ch15-t01-i02"
+      }
+     ],
+     "targets": "c7-sst-ch15-t01-m3"
+    },
+    {
+     "mode": "order",
+     "title": "Which came first?",
+     "sub": "Put the events in time order",
+     "ticks": 0,
+     "speed": 1.2,
+     "tol": 4,
+     "items": [
+      {
+       "text": "Harsha begins rule",
+       "value": 606,
+       "src": "c7-sst-ch15-t01-i01"
+      },
+      {
+       "text": "Aihole inscription",
+       "value": 634,
+       "src": "c7-sst-ch15-t01-i04"
+      },
+      {
+       "text": "Harsha rule ends",
+       "value": 647,
+       "src": "c7-sst-ch15-t01-i01"
+      },
+      {
+       "text": "Kailasa at Ellora",
+       "value": 750,
+       "src": "c7-sst-ch15-t01-i02"
+      }
+     ],
+     "targets": "c7-sst-ch15-t01-m1"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-sst-ch15-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Many Kingdoms, One Period",
+   "accent": "amber",
+   "targets": "c7-sst-ch15-t01-m1",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Many Kingdoms, One Period"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Only one big kingdom mattered at a time"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "harsha",
+       "type": "node",
+       "text": "Harsha",
+       "sub": "Kanauj, north",
+       "glyph": "crown",
+       "color": "amber"
+      },
+      {
+       "id": "chal",
+       "type": "node",
+       "text": "Chalukyas",
+       "sub": "Badami, Deccan",
+       "glyph": "temple",
+       "color": "sci"
+      },
+      {
+       "id": "pall",
+       "type": "node",
+       "text": "Pallavas",
+       "sub": "Kanchipuram, south",
+       "glyph": "pillar",
+       "color": "mint"
+      },
+      {
+       "id": "rash",
+       "type": "node",
+       "text": "Rashtrakutas",
+       "sub": "Deccan",
+       "glyph": "wheel",
+       "color": "volt"
+      },
+      {
+       "id": "palas",
+       "type": "node",
+       "text": "Palas",
+       "sub": "eastern India",
+       "glyph": "book",
+       "color": "ion"
+      },
+      {
+       "id": "coexist",
+       "type": "label",
+       "text": "Same time",
+       "x": 420,
+       "y": 110,
+       "color": "sun"
+      },
+      {
+       "id": "rival",
+       "type": "arrow",
+       "from": "harsha",
+       "to": "chal",
+       "text": "rivalry",
+       "bend": 0.2
+      },
+      {
+       "id": "rival2",
+       "type": "arrow",
+       "from": "pall",
+       "to": "chal",
+       "text": "fought",
+       "bend": -0.2
+      },
+      {
+       "id": "kanauj",
+       "type": "arrow",
+       "from": "palas",
+       "to": "harsha",
+       "text": "Kanauj",
+       "bend": 0.1
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "column",
+     "els": [
+      {
+       "id": "temples",
+       "type": "node",
+       "text": "Temple building",
+       "glyph": "temple",
+       "color": "sci"
+      },
+      {
+       "id": "learning",
+       "type": "node",
+       "text": "Learning",
+       "glyph": "book",
+       "color": "ion"
+      },
+      {
+       "id": "sources",
+       "type": "node",
+       "text": "Sources",
+       "glyph": "scroll",
+       "color": "amber"
+      },
+      {
+       "id": "pul",
+       "type": "node",
+       "text": "Pulakeshin II",
+       "sub": "stopped Harsha",
+       "glyph": "shield",
+       "color": "volt"
+      },
+      {
+       "id": "narmada",
+       "type": "label",
+       "text": "Narmada",
+       "x": 580,
+       "y": 290,
+       "color": "mint"
+      },
+      {
+       "id": "aihole",
+       "type": "label",
+       "text": "Aihole inscription",
+       "x": 580,
+       "y": 350,
+       "color": "amber"
+      },
+      {
+       "id": "xuanzang",
+       "type": "label",
+       "text": "Xuanzang",
+       "x": 580,
+       "y": 410,
+       "color": "ion"
+      },
+      {
+       "id": "optOne",
+       "type": "label",
+       "text": "One kingdom at a time",
+       "x": 90,
+       "y": 500,
+       "color": "sun"
+      },
+      {
+       "id": "optMany",
+       "type": "label",
+       "text": "Many kingdoms together",
+       "x": 330,
+       "y": 500,
+       "color": "mint"
+      },
+      {
+       "id": "optTemples",
+       "type": "label",
+       "text": "Only temples mattered",
+       "x": 610,
+       "y": 500,
+       "color": "sci"
+      },
+      {
+       "id": "optNoSources",
+       "type": "label",
+       "text": "Sources never help",
+       "x": 800,
+       "y": 500,
+       "color": "volt"
+      },
+      {
+       "id": "pArrow",
+       "type": "arrow",
+       "from": "pul",
+       "to": "narmada",
+       "text": "near",
+       "bend": 0
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "From the 6th to 10th centuries, many powerful kingdoms existed at the same time.",
+    "L2": "A common belief says one big kingdom mattered at a time. The evidence shows otherwise.",
+    "L3": "Harsha ruled from Kanauj, the Chalukyas from Badami, and the Pallavas from Kanchipuram. The Palas and Rashtrakutas also shaped this period.",
+    "L4": "These kingdoms competed. Pulakeshin II stopped Harsha near the Narmada, as recorded in the Aihole inscription.",
+    "L5": "They built remarkable monuments: Pallava rathas and the Shore Temple, Chalukya temples, and the Rashtrakuta Kailasa temple at Ellora.",
+    "L6": "Learning flourished too. Nalanda drew students, and the Palas founded Vikramashila.",
+    "L7": "Sources have viewpoints. The Aihole inscription and Xuanzang's account came from different sides but agree on the main point.",
+    "L8": "So remember the pattern: kingdoms coexisted, competed, and contributed to temples, learning, and literature."
+   },
+   "narration": {
+    "L1": {
+     "text": "From the 6th to 10th centuries, many powerful kingdoms existed at the same time.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L2": {
+     "text": "A common belief says one big kingdom mattered at a time. The evidence shows otherwise.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L3": {
+     "text": "Harsha ruled from Kanauj, the Chalukyas from Badami, and the Pallavas from Kanchipuram. The Palas and Rashtrakutas also shaped this period.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L4": {
+     "text": "These kingdoms competed. Pulakeshin II stopped Harsha near the Narmada, as recorded in the Aihole inscription.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L5": {
+     "text": "They built remarkable monuments: Pallava rathas and the Shore Temple, Chalukya temples, and the Rashtrakuta Kailasa temple at Ellora.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Learning flourished too. Nalanda drew students, and the Palas founded Vikramashila.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Sources have viewpoints. The Aihole inscription and Xuanzang's account came from different sides but agree on the main point.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L8": {
+     "text": "So remember the pattern: kingdoms coexisted, competed, and contributed to temples, learning, and literature.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "title"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "myth"
+      },
+      {
+       "at": 2,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "harsha",
+        "chal",
+        "pall"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "rash",
+        "palas",
+        "coexist"
+       ]
+      },
+      {
+       "at": 2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "coexist"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "rival",
+        "rival2",
+        "kanauj"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 0.7,
+       "target": [
+        "rival",
+        "rival2"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "temples"
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 1,
+       "target": "temples"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "learning"
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 1,
+       "target": "learning"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "sources",
+        "pul",
+        "narmada",
+        "aihole",
+        "xuanzang"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "camera",
+       "dur": 2,
+       "zoom": 1.05
+      },
+      {
+       "at": "end",
+       "do": "interactive"
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which pattern best describes India from the 6th to 10th centuries?",
+    "options": [
+     "optOne",
+     "optMany",
+     "optTemples",
+     "optNoSources"
+    ],
+    "answer": "optMany",
+    "src": "c7-sst-ch15-t01-i14"
+   }
+  },
+  "repairs": [
+   "string:temples.sub",
+   "string:learning.sub",
+   "string:sources.sub",
+   "cue:target"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 58
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch15-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "title",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "6th–10th centuries",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "axis",
+       "op": "line",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        100,
+        150
+       ],
+       "to": [
+        700,
+        150
+       ]
+      },
+      {
+       "id": "six",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        100,
+        185
+       ],
+       "text": "6th",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "ten",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        700,
+        185
+       ],
+       "text": "10th",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "k1",
+       "op": "rect",
+       "startMs": 2200,
+       "endMs": 3000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        150,
+        255
+       ],
+       "w": 135,
+       "h": 80,
+       "round": 12
+      },
+      {
+       "id": "k2",
+       "op": "rect",
+       "startMs": 2800,
+       "endMs": 3600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        310,
+        225
+       ],
+       "w": 135,
+       "h": 80,
+       "round": 12
+      },
+      {
+       "id": "k3",
+       "op": "rect",
+       "startMs": 3400,
+       "endMs": 4200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        470,
+        275
+       ],
+       "w": 135,
+       "h": 80,
+       "round": 12
+      },
+      {
+       "id": "k4",
+       "op": "rect",
+       "startMs": 4000,
+       "endMs": 4800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        230,
+        370
+       ],
+       "w": 135,
+       "h": 80,
+       "round": 12
+      },
+      {
+       "id": "same",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 5600,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        470
+       ],
+       "text": "same time",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch15-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "belief",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "soft",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "one big kingdom",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "beliefline",
+       "op": "line",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "soft",
+       "weight": 2,
+       "from": [
+        150,
+        125
+       ],
+       "to": [
+        650,
+        125
+       ]
+      },
+      {
+       "id": "cross",
+       "op": "line",
+       "startMs": 1500,
+       "endMs": 2100,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        300,
+        95
+       ],
+       "to": [
+        500,
+        155
+       ]
+      },
+      {
+       "id": "cross2",
+       "op": "line",
+       "startMs": 1600,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        500,
+        95
+       ],
+       "to": [
+        300,
+        155
+       ]
+      },
+      {
+       "id": "evidence",
+       "op": "text",
+       "startMs": 2800,
+       "endMs": 3500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        245
+       ],
+       "text": "evidence",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "e1",
+       "op": "rect",
+       "startMs": 3600,
+       "endMs": 4200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        170,
+        320
+       ],
+       "w": 115,
+       "h": 65,
+       "round": 10
+      },
+      {
+       "id": "e2",
+       "op": "rect",
+       "startMs": 3900,
+       "endMs": 4500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        340,
+        320
+       ],
+       "w": 115,
+       "h": 65,
+       "round": 10
+      },
+      {
+       "id": "e3",
+       "op": "rect",
+       "startMs": 4200,
+       "endMs": 4800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        510,
+        320
+       ],
+       "w": 115,
+       "h": 65,
+       "round": 10
+      },
+      {
+       "id": "many",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 5700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        450
+       ],
+       "text": "many kingdoms",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch15-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9536,
+     "ops": [
+      {
+       "id": "harsha",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        75
+       ],
+       "text": "Harsha",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "kanauj",
+       "op": "text",
+       "startMs": 500,
+       "endMs": 1100,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        120,
+        125
+       ],
+       "text": "Kanauj",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "chal",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        75
+       ],
+       "text": "Chalukyas",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "badami",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 2000,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        125
+       ],
+       "text": "Badami",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "pall",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        680,
+        75
+       ],
+       "text": "Pallavas",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "kanchi",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 3000,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        680,
+        125
+       ],
+       "text": "Kanchipuram",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "pala",
+       "op": "rect",
+       "startMs": 3300,
+       "endMs": 4000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        180,
+        260
+       ],
+       "w": 150,
+       "h": 70,
+       "round": 10
+      },
+      {
+       "id": "palat",
+       "op": "text",
+       "startMs": 3800,
+       "endMs": 4300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        255,
+        300
+       ],
+       "text": "Palas",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "rash",
+       "op": "rect",
+       "startMs": 4300,
+       "endMs": 5000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        470,
+        260
+       ],
+       "w": 180,
+       "h": 70,
+       "round": 10
+      },
+      {
+       "id": "rasht",
+       "op": "text",
+       "startMs": 4800,
+       "endMs": 5500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        560,
+        300
+       ],
+       "text": "Rashtrakutas",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "shape",
+       "op": "arrow",
+       "startMs": 6000,
+       "endMs": 6700,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        255,
+        350
+       ],
+       "to": [
+        400,
+        410
+       ]
+      },
+      {
+       "id": "shape2",
+       "op": "arrow",
+       "startMs": 6500,
+       "endMs": 7200,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        560,
+        350
+       ],
+       "to": [
+        400,
+        410
+       ]
+      },
+      {
+       "id": "period",
+       "op": "text",
+       "startMs": 7600,
+       "endMs": 8400,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        460
+       ],
+       "text": "shaped this period",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch15-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "pul",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        150,
+        70
+       ],
+       "text": "Pulakeshin II",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "har",
+       "op": "text",
+       "startMs": 500,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        650,
+        70
+       ],
+       "text": "Harsha",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "narmada",
+       "op": "line",
+       "startMs": 1100,
+       "endMs": 1800,
+       "ink": "accent",
+       "weight": 3,
+       "from": [
+        400,
+        130
+       ],
+       "to": [
+        400,
+        420
+       ]
+      },
+      {
+       "id": "ntext",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        455
+       ],
+       "text": "Narmada",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "pattack",
+       "op": "arrow",
+       "startMs": 2400,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        230,
+        170
+       ],
+       "to": [
+        370,
+        260
+       ]
+      },
+      {
+       "id": "hstop",
+       "op": "arrow",
+       "startMs": 2800,
+       "endMs": 3600,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        570,
+        170
+       ],
+       "to": [
+        430,
+        260
+       ]
+      },
+      {
+       "id": "stop",
+       "op": "line",
+       "startMs": 3600,
+       "endMs": 4100,
+       "ink": "good",
+       "weight": 3,
+       "from": [
+        350,
+        245
+       ],
+       "to": [
+        450,
+        275
+       ]
+      },
+      {
+       "id": "aihole",
+       "op": "rect",
+       "startMs": 4400,
+       "endMs": 5100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        290,
+        315
+       ],
+       "w": 220,
+       "h": 65,
+       "round": 10
+      },
+      {
+       "id": "ins",
+       "op": "text",
+       "startMs": 4900,
+       "endMs": 5700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        348
+       ],
+       "text": "Aihole inscription",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch15-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "ratha",
+       "op": "polygon",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         80,
+         310
+        ],
+        [
+         130,
+         220
+        ],
+        [
+         180,
+         310
+        ]
+       ]
+      },
+      {
+       "id": "rathat",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        130,
+        355
+       ],
+       "text": "Pallava rathas",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "shore",
+       "op": "polygon",
+       "startMs": 1200,
+       "endMs": 2100,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         250,
+         310
+        ],
+        [
+         300,
+         220
+        ],
+        [
+         350,
+         310
+        ]
+       ]
+      },
+      {
+       "id": "shoret",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        300,
+        355
+       ],
+       "text": "Shore Temple",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "chaltem",
+       "op": "rect",
+       "startMs": 2600,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        420,
+        230
+       ],
+       "w": 115,
+       "h": 80,
+       "round": 8
+      },
+      {
+       "id": "chalt",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        477,
+        355
+       ],
+       "text": "Chalukya temples",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "kail",
+       "op": "polygon",
+       "startMs": 4000,
+       "endMs": 5100,
+       "ink": "accent",
+       "weight": 3,
+       "points": [
+        [
+         620,
+         310
+        ],
+        [
+         675,
+         205
+        ],
+        [
+         730,
+         310
+        ]
+       ]
+      },
+      {
+       "id": "kailt",
+       "op": "text",
+       "startMs": 4900,
+       "endMs": 5700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        675,
+        355
+       ],
+       "text": "Kailasa temple",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "ellora",
+       "op": "text",
+       "startMs": 5700,
+       "endMs": 6300,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        675,
+        400
+       ],
+       "text": "Ellora",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "rock",
+       "op": "arrow",
+       "startMs": 6500,
+       "endMs": 7200,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        675,
+        175
+       ],
+       "to": [
+        675,
+        105
+       ]
+      },
+      {
+       "id": "single",
+       "op": "text",
+       "startMs": 7000,
+       "endMs": 7700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        675,
+        75
+       ],
+       "text": "single rock",
+       "size": "s",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch15-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "learn",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        65
+       ],
+       "text": "Learning flourished",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "nal",
+       "op": "rect",
+       "startMs": 1000,
+       "endMs": 1900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        130,
+        180
+       ],
+       "w": 220,
+       "h": 100,
+       "round": 12
+      },
+      {
+       "id": "nalt",
+       "op": "text",
+       "startMs": 1600,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        240,
+        225
+       ],
+       "text": "Nalanda",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "students",
+       "op": "arrow",
+       "startMs": 2300,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        240,
+        330
+       ],
+       "to": [
+        240,
+        290
+       ]
+      },
+      {
+       "id": "draw",
+       "op": "circle",
+       "startMs": 2600,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        560,
+        230
+       ],
+       "r": 70
+      },
+      {
+       "id": "vik",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        560,
+        230
+       ],
+       "text": "Vikramashila",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "palas",
+       "op": "text",
+       "startMs": 4100,
+       "endMs": 4800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        560,
+        350
+       ],
+       "text": "Palas founded",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch15-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "sources",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        60
+       ],
+       "text": "Sources have viewpoints",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "ai",
+       "op": "rect",
+       "startMs": 1100,
+       "endMs": 2000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        100,
+        160
+       ],
+       "w": 230,
+       "h": 100,
+       "round": 10
+      },
+      {
+       "id": "ait",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        215,
+        205
+       ],
+       "text": "Aihole inscription",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "xu",
+       "op": "rect",
+       "startMs": 2300,
+       "endMs": 3200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        470,
+        160
+       ],
+       "w": 230,
+       "h": 100,
+       "round": 10
+      },
+      {
+       "id": "xut",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        585,
+        205
+       ],
+       "text": "Xuanzang account",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "side1",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4500,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        215,
+        315
+       ],
+       "text": "one side",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "side2",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4600,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        585,
+        315
+       ],
+       "text": "different side",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "agree1",
+       "op": "arrow",
+       "startMs": 4800,
+       "endMs": 5600,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        330,
+        210
+       ],
+       "to": [
+        470,
+        210
+       ]
+      },
+      {
+       "id": "agree2",
+       "op": "arrow",
+       "startMs": 5200,
+       "endMs": 6000,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        470,
+        245
+       ],
+       "to": [
+        330,
+        245
+       ]
+      },
+      {
+       "id": "main",
+       "op": "text",
+       "startMs": 6400,
+       "endMs": 7300,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        410
+       ],
+       "text": "agree: main point",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch15-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "coexist",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        170,
+        150
+       ],
+       "r": 60
+      },
+      {
+       "id": "compete",
+       "op": "circle",
+       "startMs": 500,
+       "endMs": 1200,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        150
+       ],
+       "r": 60
+      },
+      {
+       "id": "contrib",
+       "op": "circle",
+       "startMs": 1000,
+       "endMs": 1700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        630,
+        150
+       ],
+       "r": 60
+      },
+      {
+       "id": "ct1",
+       "op": "text",
+       "startMs": 1200,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        170,
+        150
+       ],
+       "text": "coexisted",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "ct2",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        150
+       ],
+       "text": "competed",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "ct3",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        630,
+        150
+       ],
+       "text": "contributed",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "arrow1",
+       "op": "arrow",
+       "startMs": 2600,
+       "endMs": 3300,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        170,
+        230
+       ],
+       "to": [
+        170,
+        320
+       ]
+      },
+      {
+       "id": "arrow2",
+       "op": "arrow",
+       "startMs": 2900,
+       "endMs": 3600,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        400,
+        230
+       ],
+       "to": [
+        400,
+        320
+       ]
+      },
+      {
+       "id": "arrow3",
+       "op": "arrow",
+       "startMs": 3200,
+       "endMs": 3900,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        630,
+        230
+       ],
+       "to": [
+        630,
+        320
+       ]
+      },
+      {
+       "id": "temples",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        170,
+        370
+       ],
+       "text": "temples",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "learning",
+       "op": "text",
+       "startMs": 3800,
+       "endMs": 4400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        370
+       ],
+       "text": "learning",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "literature",
+       "op": "text",
+       "startMs": 4100,
+       "endMs": 4800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        630,
+        370
+       ],
+       "text": "literature",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "pattern",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 5900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        460
+       ],
+       "text": "the pattern",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "606 CE",
+   "prompt": "Harsha's reign begins",
+   "src": "c7-sst-ch15-t01-i01"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "634 CE",
+   "prompt": "Aihole inscription",
+   "src": "c7-sst-ch15-t01-i04"
+  },
+  {
+   "itemId": "r1:2",
+   "key": "647 CE",
+   "prompt": "Harsha's reign ends",
+   "src": "c7-sst-ch15-t01-i01"
+  },
+  {
+   "itemId": "r1:3",
+   "key": "750 CE",
+   "prompt": "Kailasa at Ellora",
+   "src": "c7-sst-ch15-t01-i02"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "7th century CE",
+   "prompt": "Harsha's reign",
+   "src": "c7-sst-ch15-t01-i02"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "7th century CE",
+   "prompt": "Aihole inscription",
+   "src": "c7-sst-ch15-t01-i04"
+  },
+  {
+   "itemId": "r2:2",
+   "key": "8th century CE",
+   "prompt": "Kailasa at Ellora",
+   "src": "c7-sst-ch15-t01-i02"
+  },
+  {
+   "itemId": "r2:3",
+   "key": "11th century CE",
+   "prompt": "Thanjavur temple",
+   "src": "c7-sst-ch15-t01-i02"
+  },
+  {
+   "itemId": "r3:0",
+   "key": "Harsha begins rule",
+   "prompt": "earlier: Harsha begins rule (606 CE) vs Aihole inscription (634 CE)"
+  },
+  {
+   "itemId": "r3:1",
+   "key": "Harsha rule ends",
+   "prompt": "earlier: Harsha rule ends (647 CE) vs Kailasa at Ellora (750 CE)"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ },
+ "firstCheck": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "Round 2 (century) item 'Kailasa at Ellora' has value 700 CE but is keyed to '7th century CE'. The kit says the Kailasa temple was built in the 700s CE (i.e. 8th century). The year 700 CE is actually the end of the 7th century / start of the 8th, but the kit's item c7-sst-ch15-t01-i02 explicitly says 'Kailasa temple – 8th century CE'. Using 700 and calling it 7th century is factually wrong.",
+    "severity": "high"
+   }
+  ],
+  "verdict": "fail",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

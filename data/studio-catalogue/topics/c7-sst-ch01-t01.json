@@ -1,0 +1,3011 @@
+{
+ "topicId": "c7-sst-ch01-t01",
+ "title": "Geographical Diversity of India",
+ "chapter": "Geographical Diversity of India",
+ "subject": "sst",
+ "class": 7,
+ "topicType": "T3",
+ "plan": {
+  "game": "land-lab@1",
+  "hint": "rain mode (coast, hills, rain shadow) and flood mode"
+ },
+ "game": {
+  "archetype": "land-lab@1",
+  "spec": {
+   "archetype": "land-lab@1",
+   "skills": [
+    "c7-sst-ch01-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "done": "right",
+    "wind": "wind",
+    "sea": "sea",
+    "rain": "RAIN",
+    "storm": "STORM",
+    "lock": "LOCK",
+    "wet": "wet",
+    "dry": "dry",
+    "trees": "plant trees",
+    "spring": "spring",
+    "trace": "Tap cells from the spring to the sea",
+    "runDone": "Lab closed",
+    "level": "flood level",
+    "safe": "SAFE",
+    "flooded": "FLOODED",
+    "mm": "mm of rain",
+    "high": "high",
+    "low": "low",
+    "reset": "clear"
+   },
+   "title": "Land and Water Lab",
+   "rounds": [
+    {
+     "mode": "rain",
+     "title": "Sea wind and hills",
+     "sub": "Place each spot on the wet or dry side",
+     "coast": 0.2,
+     "hills": [
+      {
+       "x": 0.45,
+       "h": 0.8,
+       "w": 0.1
+      },
+      {
+       "x": 0.7,
+       "h": 0.5,
+       "w": 0.08
+      }
+     ],
+     "asks": [
+      {
+       "label": "tea garden",
+       "glyph": "leaf",
+       "need": "wet"
+      },
+      {
+       "label": "dry farm",
+       "glyph": "wheat",
+       "need": "dry"
+      }
+     ]
+    },
+    {
+     "mode": "river",
+     "title": "Trace the river",
+     "sub": "Follow lower land, not map direction",
+     "w": 9,
+     "h": 6,
+     "peaks": [
+      {
+       "x": 2,
+       "y": 1,
+       "h": 3.2,
+       "r": 2
+      },
+      {
+       "x": 7,
+       "y": 2,
+       "h": 2.5,
+       "r": 1.7
+      }
+     ],
+     "spring": [
+      4,
+      0
+     ],
+     "targets": "c7-sst-ch01-t01-m1"
+    },
+    {
+     "mode": "flood",
+     "title": "Choose a safe place",
+     "sub": "Place the building above the flood",
+     "profile": [
+      9,
+      7,
+      5,
+      3.5,
+      2.5,
+      1.5,
+      0.5,
+      0,
+      0.8,
+      2,
+      3.2,
+      5,
+      7.5,
+      9
+     ],
+     "rain": 200,
+     "label": "school",
+     "glyph": "school"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 2,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-sst-ch01-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "India’s Geographical Diversity",
+   "accent": "mint",
+   "targets": "c7-sst-ch01-t01-m2",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "row",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "India’s Geographical Diversity"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "The Thar Desert is empty"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "himalaya",
+       "type": "node",
+       "text": "Himalayas",
+       "glyph": "mountain",
+       "color": "ion"
+      },
+      {
+       "id": "plains",
+       "type": "node",
+       "text": "Northern Plains",
+       "glyph": "wheat",
+       "color": "mint"
+      },
+      {
+       "id": "thar",
+       "type": "node",
+       "text": "Thar Desert",
+       "glyph": "sun",
+       "color": "amber"
+      },
+      {
+       "id": "plateau",
+       "type": "node",
+       "text": "Deccan Plateau",
+       "sub": "old, hard rock",
+       "glyph": "globe",
+       "color": "sci"
+      },
+      {
+       "id": "coasts",
+       "type": "node",
+       "text": "Coastal Plains",
+       "glyph": "wave",
+       "color": "ion"
+      },
+      {
+       "id": "islands",
+       "type": "node",
+       "text": "Islands",
+       "sub": "two island groups",
+       "glyph": "boat",
+       "color": "volt"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "river",
+       "type": "node",
+       "text": "Rivers",
+       "sub": "flow all year",
+       "glyph": "river",
+       "color": "sci"
+      },
+      {
+       "id": "farm",
+       "type": "node",
+       "text": "Farming",
+       "sub": "fertile alluvium",
+       "glyph": "wheat",
+       "color": "mint"
+      },
+      {
+       "id": "r2",
+       "type": "arrow",
+       "from": "river",
+       "to": "farm",
+       "text": "supports"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "split",
+     "els": [
+      {
+       "id": "kerala",
+       "type": "node",
+       "text": "Kerala coast",
+       "sub": "fish and coconuts",
+       "glyph": "fish",
+       "color": "mint"
+      },
+      {
+       "id": "ladakh",
+       "type": "node",
+       "text": "Ladakh",
+       "sub": "yaks and barley",
+       "glyph": "cow",
+       "color": "ion"
+      },
+      {
+       "id": "adapt",
+       "type": "arrow",
+       "from": "kerala",
+       "to": "ladakh",
+       "text": "different land"
+      },
+      {
+       "id": "life",
+       "type": "label",
+       "text": "Land and climate shape life"
+      }
+     ]
+    },
+    {
+     "id": "s5",
+     "layout": "row",
+     "els": [
+      {
+       "id": "checktitle",
+       "type": "title",
+       "text": "Your turn"
+      },
+      {
+       "id": "c1",
+       "type": "label",
+       "text": "Himalayas"
+      },
+      {
+       "id": "c2",
+       "type": "label",
+       "text": "Northern Plains"
+      },
+      {
+       "id": "c3",
+       "type": "label",
+       "text": "Thar Desert"
+      },
+      {
+       "id": "c4",
+       "type": "label",
+       "text": "Deccan Plateau"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "India has great geographical diversity. Its major regions include mountains, plains, desert, plateau, coastal plains and islands.",
+    "L2": "The Thar is dry and sandy, but it is not empty. People, animals and plants live there and adapt to little water.",
+    "L3": "The Himalayas are young, very high fold mountains. Snow- and glacier-fed rivers such as the Ganga and Yamuna begin there and flow all year.",
+    "L4": "The Northern Plains are flat and fertile because rivers spread alluvial soil. These conditions support farming and a large population.",
+    "L5": "The Peninsular Plateau is old and made of hard rock. Most of its big rivers flow east to the Bay of Bengal.",
+    "L6": "Land and climate shape ways of life. They influence crops, houses, clothes, food and travel.",
+    "L7": "Kerala is warm, wet and near the sea, so people often fish and grow coconuts. High, cold and dry Ladakh suits yaks, goats and barley.",
+    "L8": "India’s physical regions are different, and people adapt to the land where they live."
+   },
+   "narration": {
+    "L1": {
+     "text": "India has great geographical diversity. Its major regions include mountains, plains, desert, plateau, coastal plains and islands.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "The Thar is dry and sandy, but it is not empty. People, animals and plants live there and adapt to little water.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "The Himalayas are young, very high fold mountains. Snow- and glacier-fed rivers such as the Ganga and Yamuna begin there and flow all year.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "The Northern Plains are flat and fertile because rivers spread alluvial soil. These conditions support farming and a large population.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "The Peninsular Plateau is old and made of hard rock. Most of its big rivers flow east to the Bay of Bengal.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Land and climate shape ways of life. They influence crops, houses, clothes, food and travel.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Kerala is warm, wet and near the sea, so people often fish and grow coconuts. High, cold and dry Ladakh suits yaks, goats and barley.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "India’s physical regions are different, and people adapt to the land where they live.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "title"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "myth"
+      },
+      {
+       "at": 1,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "river"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "farm"
+      },
+      {
+       "at": 0.5,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "r2",
+       "to": 1
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 1,
+       "target": "farm"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "plateau"
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 1,
+       "target": "plateau"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "life"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "kerala",
+        "ladakh"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 1,
+       "target": [
+        "kerala",
+        "ladakh"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s5",
+     "cues": [
+      {
+       "at": 0,
+       "do": "camera",
+       "dur": 2,
+       "zoom": 1.05
+      },
+      {
+       "at": "end",
+       "do": "interactive"
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which region has flat, fertile alluvial soil that supports farming?",
+    "options": [
+     "c1",
+     "c2",
+     "c3",
+     "c4"
+    ],
+    "answer": "c2",
+    "src": "c7-sst-ch01-t01-i03"
+   }
+  },
+  "repairs": [
+   "string:six.text",
+   "string:himalaya.sub",
+   "string:plains.sub",
+   "string:thar.sub",
+   "string:coasts.sub",
+   "string:snow.text",
+   "arrow:dangling",
+   "cue:target",
+   "cue:target",
+   "cue:target"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 54
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch01-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "title",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        45
+       ],
+       "text": "India",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "map",
+       "op": "polygon",
+       "startMs": 700,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         320,
+         105
+        ],
+        [
+         390,
+         95
+        ],
+        [
+         455,
+         125
+        ],
+        [
+         500,
+         180
+        ],
+        [
+         490,
+         250
+        ],
+        [
+         530,
+         315
+        ],
+        [
+         475,
+         385
+        ],
+        [
+         400,
+         425
+        ],
+        [
+         330,
+         390
+        ],
+        [
+         285,
+         325
+        ],
+        [
+         275,
+         245
+        ],
+        [
+         295,
+         175
+        ]
+       ]
+      },
+      {
+       "id": "mtn",
+       "op": "polygon",
+       "startMs": 1900,
+       "endMs": 2800,
+       "ink": "mark",
+       "weight": 2,
+       "points": [
+        [
+         300,
+         155
+        ],
+        [
+         335,
+         120
+        ],
+        [
+         370,
+         155
+        ],
+        [
+         410,
+         115
+        ],
+        [
+         450,
+         155
+        ],
+        [
+         490,
+         145
+        ],
+        [
+         490,
+         185
+        ],
+        [
+         300,
+         185
+        ]
+       ]
+      },
+      {
+       "id": "l1",
+       "op": "label",
+       "startMs": 2500,
+       "endMs": 3100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        225,
+        130
+       ],
+       "text": "mountains",
+       "to": [
+        330,
+        150
+       ]
+      },
+      {
+       "id": "plain",
+       "op": "rect",
+       "startMs": 2900,
+       "endMs": 3600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        310,
+        190
+       ],
+       "w": 175,
+       "h": 45,
+       "fill": "soft"
+      },
+      {
+       "id": "l2",
+       "op": "label",
+       "startMs": 3100,
+       "endMs": 3600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        505,
+        215
+       ],
+       "text": "plains",
+       "to": [
+        480,
+        215
+       ]
+      },
+      {
+       "id": "desert",
+       "op": "ellipse",
+       "startMs": 3700,
+       "endMs": 4300,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        305,
+        260
+       ],
+       "rx": 55,
+       "ry": 35,
+       "fill": "accent"
+      },
+      {
+       "id": "l3",
+       "op": "label",
+       "startMs": 4300,
+       "endMs": 4800,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        205,
+        275
+       ],
+       "text": "desert",
+       "to": [
+        285,
+        260
+       ]
+      },
+      {
+       "id": "plateau",
+       "op": "polygon",
+       "startMs": 4400,
+       "endMs": 5100,
+       "ink": "chalk",
+       "weight": 1,
+       "points": [
+        [
+         335,
+         255
+        ],
+        [
+         455,
+         255
+        ],
+        [
+         480,
+         345
+        ],
+        [
+         405,
+         385
+        ],
+        [
+         340,
+         335
+        ]
+       ],
+       "fill": "soft"
+      },
+      {
+       "id": "l4",
+       "op": "label",
+       "startMs": 5100,
+       "endMs": 5600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        500,
+        330
+       ],
+       "text": "plateau",
+       "to": [
+        450,
+        325
+       ]
+      },
+      {
+       "id": "coast",
+       "op": "stroke",
+       "startMs": 5200,
+       "endMs": 5900,
+       "ink": "mark",
+       "weight": 2,
+       "points": [
+        [
+         505,
+         190
+        ],
+        [
+         525,
+         230
+        ],
+        [
+         515,
+         275
+        ],
+        [
+         535,
+         320
+        ],
+        [
+         505,
+         370
+        ]
+       ]
+      },
+      {
+       "id": "l5",
+       "op": "label",
+       "startMs": 5900,
+       "endMs": 6500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        570,
+        260
+       ],
+       "text": "coastal plains",
+       "to": [
+        520,
+        270
+       ]
+      },
+      {
+       "id": "islands",
+       "op": "circle",
+       "startMs": 6000,
+       "endMs": 6300,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        560,
+        350
+       ],
+       "r": 9
+      },
+      {
+       "id": "l6",
+       "op": "label",
+       "startMs": 6500,
+       "endMs": 7000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        590,
+        370
+       ],
+       "text": "islands",
+       "to": [
+        560,
+        350
+       ]
+      },
+      {
+       "id": "h",
+       "op": "highlight",
+       "startMs": 7000,
+       "endMs": 7800,
+       "ink": "mark",
+       "weight": 1,
+       "target": "map",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch01-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9962,
+     "ops": [
+      {
+       "id": "dune1",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        270,
+        285
+       ],
+       "rx": 180,
+       "ry": 80,
+       "fill": "soft"
+      },
+      {
+       "id": "sun",
+       "op": "circle",
+       "startMs": 500,
+       "endMs": 1100,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        670,
+        90
+       ],
+       "r": 38,
+       "fill": "accent"
+      },
+      {
+       "id": "dune2",
+       "op": "ellipse",
+       "startMs": 1000,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        540,
+        300
+       ],
+       "rx": 180,
+       "ry": 75,
+       "fill": "soft"
+      },
+      {
+       "id": "title",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        45
+       ],
+       "text": "Thar",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "plant",
+       "op": "stroke",
+       "startMs": 2500,
+       "endMs": 3500,
+       "ink": "mark",
+       "weight": 2,
+       "points": [
+        [
+         210,
+         320
+        ],
+        [
+         210,
+         250
+        ],
+        [
+         190,
+         225
+        ],
+        [
+         210,
+         270
+        ],
+        [
+         235,
+         235
+        ],
+        [
+         210,
+         285
+        ]
+       ]
+      },
+      {
+       "id": "camel",
+       "op": "stroke",
+       "startMs": 3600,
+       "endMs": 4700,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         470,
+         305
+        ],
+        [
+         490,
+         270
+        ],
+        [
+         530,
+         270
+        ],
+        [
+         550,
+         305
+        ],
+        [
+         570,
+         305
+        ],
+        [
+         550,
+         285
+        ],
+        [
+         520,
+         285
+        ],
+        [
+         505,
+         305
+        ],
+        [
+         490,
+         305
+        ]
+       ]
+      },
+      {
+       "id": "person",
+       "op": "circle",
+       "startMs": 4800,
+       "endMs": 5100,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        370,
+        275
+       ],
+       "r": 10
+      },
+      {
+       "id": "personbody",
+       "op": "stroke",
+       "startMs": 5100,
+       "endMs": 5800,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         370,
+         285
+        ],
+        [
+         370,
+         330
+        ],
+        [
+         350,
+         360
+        ],
+        [
+         390,
+         360
+        ],
+        [
+         370,
+         330
+        ]
+       ]
+      },
+      {
+       "id": "water",
+       "op": "ellipse",
+       "startMs": 5900,
+       "endMs": 6500,
+       "ink": "mark",
+       "weight": 2,
+       "c": [
+        650,
+        350
+       ],
+       "rx": 65,
+       "ry": 18
+      },
+      {
+       "id": "l1",
+       "op": "label",
+       "startMs": 6500,
+       "endMs": 6900,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        115
+       ],
+       "text": "dry",
+       "to": [
+        400,
+        180
+       ]
+      },
+      {
+       "id": "l2",
+       "op": "label",
+       "startMs": 6900,
+       "endMs": 7300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        430
+       ],
+       "text": "sandy",
+       "to": [
+        400,
+        350
+       ]
+      },
+      {
+       "id": "l3",
+       "op": "label",
+       "startMs": 7300,
+       "endMs": 7700,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        180,
+        205
+       ],
+       "text": "plants",
+       "to": [
+        210,
+        250
+       ]
+      },
+      {
+       "id": "l4",
+       "op": "label",
+       "startMs": 7700,
+       "endMs": 8200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        500,
+        235
+       ],
+       "text": "animals",
+       "to": [
+        520,
+        270
+       ]
+      },
+      {
+       "id": "l5",
+       "op": "label",
+       "startMs": 8200,
+       "endMs": 8600,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        610,
+        390
+       ],
+       "text": "water",
+       "to": [
+        650,
+        350
+       ]
+      },
+      {
+       "id": "h",
+       "op": "highlight",
+       "startMs": 8600,
+       "endMs": 9400,
+       "ink": "good",
+       "weight": 1,
+       "target": "personbody",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch01-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 10813,
+     "ops": [
+      {
+       "id": "mtn",
+       "op": "polygon",
+       "startMs": 0,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         90,
+         250
+        ],
+        [
+         150,
+         110
+        ],
+        [
+         205,
+         210
+        ],
+        [
+         270,
+         80
+        ],
+        [
+         330,
+         205
+        ],
+        [
+         390,
+         120
+        ],
+        [
+         460,
+         250
+        ]
+       ]
+      },
+      {
+       "id": "snow",
+       "op": "stroke",
+       "startMs": 1500,
+       "endMs": 2600,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         150,
+         110
+        ],
+        [
+         170,
+         135
+        ],
+        [
+         190,
+         115
+        ],
+        [
+         205,
+         210
+        ],
+        [
+         270,
+         80
+        ],
+        [
+         295,
+         125
+        ],
+        [
+         315,
+         105
+        ],
+        [
+         330,
+         205
+        ],
+        [
+         390,
+         120
+        ],
+        [
+         415,
+         155
+        ]
+       ]
+      },
+      {
+       "id": "title",
+       "op": "text",
+       "startMs": 2600,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        260,
+        45
+       ],
+       "text": "Himalayas",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "river1",
+       "op": "stroke",
+       "startMs": 3500,
+       "endMs": 4700,
+       "ink": "mark",
+       "weight": 2,
+       "points": [
+        [
+         205,
+         210
+        ],
+        [
+         235,
+         270
+        ],
+        [
+         300,
+         320
+        ],
+        [
+         380,
+         380
+        ],
+        [
+         500,
+         430
+        ]
+       ]
+      },
+      {
+       "id": "river2",
+       "op": "stroke",
+       "startMs": 4600,
+       "endMs": 5700,
+       "ink": "mark",
+       "weight": 2,
+       "points": [
+        [
+         330,
+         205
+        ],
+        [
+         350,
+         270
+        ],
+        [
+         400,
+         315
+        ],
+        [
+         455,
+         360
+        ],
+        [
+         560,
+         425
+        ]
+       ]
+      },
+      {
+       "id": "arrow1",
+       "op": "arrow",
+       "startMs": 5700,
+       "endMs": 6500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        240,
+        235
+       ],
+       "to": [
+        490,
+        420
+       ]
+      },
+      {
+       "id": "arrow2",
+       "op": "arrow",
+       "startMs": 6400,
+       "endMs": 7100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        350,
+        230
+       ],
+       "to": [
+        550,
+        415
+       ]
+      },
+      {
+       "id": "ganga",
+       "op": "label",
+       "startMs": 7100,
+       "endMs": 7600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        500,
+        380
+       ],
+       "text": "Ganga",
+       "to": [
+        455,
+        360
+       ]
+      },
+      {
+       "id": "yamuna",
+       "op": "label",
+       "startMs": 7600,
+       "endMs": 8100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        575,
+        390
+       ],
+       "text": "Yamuna",
+       "to": [
+        560,
+        425
+       ]
+      },
+      {
+       "id": "young",
+       "op": "label",
+       "startMs": 8100,
+       "endMs": 8500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        90,
+        310
+       ],
+       "text": "young",
+       "to": [
+        170,
+        180
+       ]
+      },
+      {
+       "id": "high",
+       "op": "label",
+       "startMs": 8500,
+       "endMs": 9000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        90,
+        350
+       ],
+       "text": "very high",
+       "to": [
+        200,
+        150
+       ]
+      },
+      {
+       "id": "flow",
+       "op": "label",
+       "startMs": 9000,
+       "endMs": 9500,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        520,
+        465
+       ],
+       "text": "all year",
+       "to": [
+        500,
+        430
+       ]
+      },
+      {
+       "id": "h",
+       "op": "highlight",
+       "startMs": 9500,
+       "endMs": 10400,
+       "ink": "accent",
+       "weight": 1,
+       "target": "snow",
+       "style": "underline"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch01-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9111,
+     "ops": [
+      {
+       "id": "plain",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        150
+       ],
+       "w": 600,
+       "h": 170,
+       "fill": "soft"
+      },
+      {
+       "id": "river1",
+       "op": "stroke",
+       "startMs": 1200,
+       "endMs": 2300,
+       "ink": "mark",
+       "weight": 2,
+       "points": [
+        [
+         100,
+         120
+        ],
+        [
+         220,
+         150
+        ],
+        [
+         350,
+         135
+        ],
+        [
+         500,
+         160
+        ],
+        [
+         700,
+         125
+        ]
+       ]
+      },
+      {
+       "id": "river2",
+       "op": "stroke",
+       "startMs": 2200,
+       "endMs": 3300,
+       "ink": "mark",
+       "weight": 2,
+       "points": [
+        [
+         100,
+         210
+        ],
+        [
+         230,
+         240
+        ],
+        [
+         370,
+         220
+        ],
+        [
+         520,
+         250
+        ],
+        [
+         700,
+         215
+        ]
+       ]
+      },
+      {
+       "id": "soil",
+       "op": "polygon",
+       "startMs": 3300,
+       "endMs": 4200,
+       "ink": "accent",
+       "weight": 1,
+       "points": [
+        [
+         130,
+         280
+        ],
+        [
+         250,
+         270
+        ],
+        [
+         380,
+         290
+        ],
+        [
+         510,
+         275
+        ],
+        [
+         670,
+         295
+        ],
+        [
+         670,
+         320
+        ],
+        [
+         130,
+         320
+        ]
+       ],
+       "fill": "accent"
+      },
+      {
+       "id": "farm",
+       "op": "stroke",
+       "startMs": 4300,
+       "endMs": 5400,
+       "ink": "good",
+       "weight": 2,
+       "points": [
+        [
+         200,
+         380
+        ],
+        [
+         230,
+         350
+        ],
+        [
+         260,
+         380
+        ],
+        [
+         290,
+         350
+        ],
+        [
+         320,
+         380
+        ],
+        [
+         350,
+         350
+        ],
+        [
+         380,
+         380
+        ]
+       ]
+      },
+      {
+       "id": "people",
+       "op": "circle",
+       "startMs": 5500,
+       "endMs": 5800,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        570,
+        375
+       ],
+       "r": 18
+      },
+      {
+       "id": "body",
+       "op": "stroke",
+       "startMs": 5800,
+       "endMs": 6500,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         570,
+         395
+        ],
+        [
+         570,
+         445
+        ],
+        [
+         540,
+         470
+        ],
+        [
+         600,
+         470
+        ],
+        [
+         570,
+         445
+        ]
+       ]
+      },
+      {
+       "id": "l1",
+       "op": "label",
+       "startMs": 6500,
+       "endMs": 6900,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        350,
+        105
+       ],
+       "text": "rivers",
+       "to": [
+        350,
+        145
+       ]
+      },
+      {
+       "id": "l2",
+       "op": "label",
+       "startMs": 6900,
+       "endMs": 7500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        370,
+        345
+       ],
+       "text": "alluvial soil",
+       "to": [
+        380,
+        290
+       ]
+      },
+      {
+       "id": "l3",
+       "op": "label",
+       "startMs": 7500,
+       "endMs": 8000,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        240,
+        410
+       ],
+       "text": "farming",
+       "to": [
+        290,
+        370
+       ]
+      },
+      {
+       "id": "l4",
+       "op": "label",
+       "startMs": 8000,
+       "endMs": 8600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        550,
+        490
+       ],
+       "text": "population",
+       "to": [
+        570,
+        430
+       ]
+      },
+      {
+       "id": "h",
+       "op": "highlight",
+       "startMs": 8600,
+       "endMs": 9000,
+       "ink": "good",
+       "weight": 1,
+       "target": "plain",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch01-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9962,
+     "ops": [
+      {
+       "id": "plateau",
+       "op": "polygon",
+       "startMs": 0,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         120,
+         170
+        ],
+        [
+         220,
+         120
+        ],
+        [
+         570,
+         145
+        ],
+        [
+         680,
+         220
+        ],
+        [
+         620,
+         360
+        ],
+        [
+         480,
+         410
+        ],
+        [
+         260,
+         370
+        ],
+        [
+         150,
+         290
+        ]
+       ],
+       "fill": "soft"
+      },
+      {
+       "id": "edge",
+       "op": "stroke",
+       "startMs": 1500,
+       "endMs": 2400,
+       "ink": "mark",
+       "weight": 2,
+       "points": [
+        [
+         120,
+         170
+        ],
+        [
+         220,
+         120
+        ],
+        [
+         570,
+         145
+        ],
+        [
+         680,
+         220
+        ]
+       ]
+      },
+      {
+       "id": "rock",
+       "op": "stroke",
+       "startMs": 2400,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         220,
+         260
+        ],
+        [
+         250,
+         230
+        ],
+        [
+         280,
+         270
+        ],
+        [
+         310,
+         235
+        ],
+        [
+         340,
+         275
+        ],
+        [
+         370,
+         240
+        ]
+       ]
+      },
+      {
+       "id": "river1",
+       "op": "stroke",
+       "startMs": 3500,
+       "endMs": 4700,
+       "ink": "mark",
+       "weight": 2,
+       "points": [
+        [
+         300,
+         150
+        ],
+        [
+         330,
+         210
+        ],
+        [
+         370,
+         270
+        ],
+        [
+         430,
+         330
+        ],
+        [
+         520,
+         400
+        ]
+       ]
+      },
+      {
+       "id": "river2",
+       "op": "stroke",
+       "startMs": 4600,
+       "endMs": 5800,
+       "ink": "mark",
+       "weight": 2,
+       "points": [
+        [
+         470,
+         155
+        ],
+        [
+         490,
+         220
+        ],
+        [
+         530,
+         280
+        ],
+        [
+         590,
+         345
+        ],
+        [
+         650,
+         395
+        ]
+       ]
+      },
+      {
+       "id": "bay",
+       "op": "ellipse",
+       "startMs": 5900,
+       "endMs": 6500,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        600,
+        450
+       ],
+       "rx": 110,
+       "ry": 28
+      },
+      {
+       "id": "arrow1",
+       "op": "arrow",
+       "startMs": 6500,
+       "endMs": 7100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        430,
+        325
+       ],
+       "to": [
+        520,
+        405
+       ]
+      },
+      {
+       "id": "arrow2",
+       "op": "arrow",
+       "startMs": 7000,
+       "endMs": 7500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        580,
+        340
+       ],
+       "to": [
+        640,
+        400
+       ]
+      },
+      {
+       "id": "l1",
+       "op": "label",
+       "startMs": 7500,
+       "endMs": 7900,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        320,
+        90
+       ],
+       "text": "old",
+       "to": [
+        300,
+        180
+       ]
+      },
+      {
+       "id": "l2",
+       "op": "label",
+       "startMs": 7900,
+       "endMs": 8500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        380,
+        220
+       ],
+       "text": "hard rock",
+       "to": [
+        310,
+        250
+       ]
+      },
+      {
+       "id": "l3",
+       "op": "label",
+       "startMs": 8500,
+       "endMs": 9200,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        560,
+        470
+       ],
+       "text": "Bay of Bengal",
+       "to": [
+        600,
+        450
+       ]
+      },
+      {
+       "id": "h",
+       "op": "highlight",
+       "startMs": 9200,
+       "endMs": 9700,
+       "ink": "good",
+       "weight": 1,
+       "target": "river1",
+       "style": "underline"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch01-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "land",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        100
+       ],
+       "w": 260,
+       "h": 170,
+       "fill": "soft"
+      },
+      {
+       "id": "climate",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1800,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        610,
+        180
+       ],
+       "r": 85,
+       "fill": "soft"
+      },
+      {
+       "id": "arrow1",
+       "op": "arrow",
+       "startMs": 1900,
+       "endMs": 2700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        350,
+        185
+       ],
+       "to": [
+        515,
+        185
+       ]
+      },
+      {
+       "id": "crops",
+       "op": "stroke",
+       "startMs": 2800,
+       "endMs": 3500,
+       "ink": "good",
+       "weight": 2,
+       "points": [
+        [
+         140,
+         350
+        ],
+        [
+         140,
+         300
+        ],
+        [
+         125,
+         280
+        ],
+        [
+         140,
+         315
+        ],
+        [
+         160,
+         285
+        ],
+        [
+         140,
+         325
+        ]
+       ]
+      },
+      {
+       "id": "house",
+       "op": "polygon",
+       "startMs": 3500,
+       "endMs": 4400,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         270,
+         350
+        ],
+        [
+         330,
+         300
+        ],
+        [
+         390,
+         350
+        ],
+        [
+         390,
+         420
+        ],
+        [
+         270,
+         420
+        ]
+       ]
+      },
+      {
+       "id": "clothes",
+       "op": "stroke",
+       "startMs": 4400,
+       "endMs": 5200,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         500,
+         320
+        ],
+        [
+         540,
+         290
+        ],
+        [
+         580,
+         320
+        ],
+        [
+         560,
+         400
+        ],
+        [
+         520,
+         400
+        ],
+        [
+         500,
+         320
+        ]
+       ]
+      },
+      {
+       "id": "food",
+       "op": "circle",
+       "startMs": 5000,
+       "endMs": 5500,
+       "ink": "accent",
+       "weight": 1,
+       "c": [
+        665,
+        345
+       ],
+       "r": 35
+      },
+      {
+       "id": "travel",
+       "op": "arrow",
+       "startMs": 5500,
+       "endMs": 6200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        580,
+        450
+       ],
+       "to": [
+        700,
+        450
+       ]
+      },
+      {
+       "id": "l1",
+       "op": "label",
+       "startMs": 6000,
+       "endMs": 6300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        170,
+        80
+       ],
+       "text": "land",
+       "to": [
+        220,
+        100
+       ]
+      },
+      {
+       "id": "l2",
+       "op": "label",
+       "startMs": 6300,
+       "endMs": 6600,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        580,
+        80
+       ],
+       "text": "climate",
+       "to": [
+        610,
+        95
+       ]
+      },
+      {
+       "id": "h",
+       "op": "highlight",
+       "startMs": 6600,
+       "endMs": 6900,
+       "ink": "good",
+       "weight": 1,
+       "target": "arrow1",
+       "style": "pulse"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch01-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 11238,
+     "ops": [
+      {
+       "id": "kerala",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        70,
+        100
+       ],
+       "w": 300,
+       "h": 300,
+       "fill": "soft"
+      },
+      {
+       "id": "sea",
+       "op": "ellipse",
+       "startMs": 1000,
+       "endMs": 1900,
+       "ink": "mark",
+       "weight": 1,
+       "c": [
+        145,
+        260
+       ],
+       "rx": 75,
+       "ry": 120,
+       "fill": "accent"
+      },
+      {
+       "id": "rain",
+       "op": "stroke",
+       "startMs": 1900,
+       "endMs": 2700,
+       "ink": "mark",
+       "weight": 2,
+       "points": [
+        [
+         210,
+         100
+        ],
+        [
+         200,
+         135
+        ],
+        [
+         215,
+         170
+        ],
+        [
+         205,
+         205
+        ],
+        [
+         220,
+         240
+        ]
+       ]
+      },
+      {
+       "id": "palm",
+       "op": "stroke",
+       "startMs": 2700,
+       "endMs": 3900,
+       "ink": "good",
+       "weight": 2,
+       "points": [
+        [
+         290,
+         350
+        ],
+        [
+         290,
+         220
+        ],
+        [
+         270,
+         180
+        ],
+        [
+         290,
+         220
+        ],
+        [
+         320,
+         180
+        ],
+        [
+         290,
+         230
+        ],
+        [
+         250,
+         200
+        ]
+       ]
+      },
+      {
+       "id": "fish",
+       "op": "stroke",
+       "startMs": 3900,
+       "endMs": 4500,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         110,
+         275
+        ],
+        [
+         145,
+         260
+        ],
+        [
+         110,
+         245
+        ],
+        [
+         125,
+         260
+        ]
+       ]
+      },
+      {
+       "id": "ladakh",
+       "op": "polygon",
+       "startMs": 4500,
+       "endMs": 5700,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         440,
+         360
+        ],
+        [
+         500,
+         120
+        ],
+        [
+         560,
+         250
+        ],
+        [
+         630,
+         100
+        ],
+        [
+         730,
+         360
+        ]
+       ],
+       "fill": "soft"
+      },
+      {
+       "id": "snow",
+       "op": "stroke",
+       "startMs": 5600,
+       "endMs": 6500,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         500,
+         120
+        ],
+        [
+         515,
+         170
+        ],
+        [
+         530,
+         145
+        ],
+        [
+         560,
+         250
+        ],
+        [
+         630,
+         100
+        ],
+        [
+         650,
+         150
+        ],
+        [
+         670,
+         130
+        ]
+       ]
+      },
+      {
+       "id": "yak",
+       "op": "stroke",
+       "startMs": 6500,
+       "endMs": 7500,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         535,
+         350
+        ],
+        [
+         560,
+         320
+        ],
+        [
+         610,
+         320
+        ],
+        [
+         640,
+         350
+        ],
+        [
+         660,
+         350
+        ],
+        [
+         640,
+         335
+        ],
+        [
+         610,
+         335
+        ],
+        [
+         590,
+         350
+        ]
+       ]
+      },
+      {
+       "id": "goat",
+       "op": "stroke",
+       "startMs": 7400,
+       "endMs": 8000,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         450,
+         380
+        ],
+        [
+         470,
+         350
+        ],
+        [
+         500,
+         380
+        ],
+        [
+         520,
+         350
+        ]
+       ]
+      },
+      {
+       "id": "barley",
+       "op": "stroke",
+       "startMs": 7900,
+       "endMs": 8600,
+       "ink": "good",
+       "weight": 2,
+       "points": [
+        [
+         680,
+         390
+        ],
+        [
+         680,
+         320
+        ],
+        [
+         665,
+         300
+        ],
+        [
+         680,
+         335
+        ],
+        [
+         700,
+         310
+        ],
+        [
+         680,
+         350
+        ]
+       ]
+      },
+      {
+       "id": "l1",
+       "op": "label",
+       "startMs": 8600,
+       "endMs": 9000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        150,
+        75
+       ],
+       "text": "Kerala",
+       "to": [
+        200,
+        100
+       ]
+      },
+      {
+       "id": "l2",
+       "op": "label",
+       "startMs": 9000,
+       "endMs": 9400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        570,
+        75
+       ],
+       "text": "Ladakh",
+       "to": [
+        590,
+        130
+       ]
+      },
+      {
+       "id": "l3",
+       "op": "label",
+       "startMs": 9400,
+       "endMs": 10000,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        85,
+        430
+       ],
+       "text": "warm wet sea",
+       "to": [
+        145,
+        350
+       ]
+      },
+      {
+       "id": "l4",
+       "op": "label",
+       "startMs": 10000,
+       "endMs": 10600,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        540,
+        430
+       ],
+       "text": "cold dry high",
+       "to": [
+        570,
+        350
+       ]
+      },
+      {
+       "id": "h",
+       "op": "highlight",
+       "startMs": 10600,
+       "endMs": 11100,
+       "ink": "good",
+       "weight": 1,
+       "target": "palm",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch01-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "regions",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        260,
+        240
+       ],
+       "rx": 180,
+       "ry": 150,
+       "fill": "soft"
+      },
+      {
+       "id": "mountain",
+       "op": "polygon",
+       "startMs": 1100,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         130,
+         250
+        ],
+        [
+         180,
+         120
+        ],
+        [
+         230,
+         235
+        ],
+        [
+         280,
+         150
+        ],
+        [
+         330,
+         250
+        ]
+       ]
+      },
+      {
+       "id": "plain",
+       "op": "rect",
+       "startMs": 1900,
+       "endMs": 2500,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        150,
+        270
+       ],
+       "w": 210,
+       "h": 55,
+       "fill": "accent"
+      },
+      {
+       "id": "desert",
+       "op": "ellipse",
+       "startMs": 2500,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 1,
+       "c": [
+        125,
+        350
+       ],
+       "rx": 55,
+       "ry": 30
+      },
+      {
+       "id": "people",
+       "op": "circle",
+       "startMs": 3000,
+       "endMs": 3400,
+       "ink": "good",
+       "weight": 1,
+       "c": [
+        540,
+        260
+       ],
+       "r": 25
+      },
+      {
+       "id": "body",
+       "op": "stroke",
+       "startMs": 3400,
+       "endMs": 4200,
+       "ink": "good",
+       "weight": 2,
+       "points": [
+        [
+         540,
+         285
+        ],
+        [
+         540,
+         370
+        ],
+        [
+         500,
+         430
+        ],
+        [
+         580,
+         430
+        ],
+        [
+         540,
+         370
+        ]
+       ]
+      },
+      {
+       "id": "arrow",
+       "op": "arrow",
+       "startMs": 4200,
+       "endMs": 5000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        360,
+        240
+       ],
+       "to": [
+        500,
+        260
+       ]
+      },
+      {
+       "id": "label1",
+       "op": "label",
+       "startMs": 5000,
+       "endMs": 5600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        105,
+        90
+       ],
+       "text": "physical regions",
+       "to": [
+        220,
+        130
+       ]
+      },
+      {
+       "id": "label2",
+       "op": "label",
+       "startMs": 5600,
+       "endMs": 6000,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        590,
+        210
+       ],
+       "text": "people",
+       "to": [
+        540,
+        260
+       ]
+      },
+      {
+       "id": "label3",
+       "op": "label",
+       "startMs": 6000,
+       "endMs": 6400,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        490,
+        465
+       ],
+       "text": "adapt",
+       "to": [
+        540,
+        400
+       ]
+      },
+      {
+       "id": "h",
+       "op": "highlight",
+       "startMs": 6400,
+       "endMs": 6500,
+       "ink": "good",
+       "weight": 1,
+       "target": "arrow",
+       "style": "pulse"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "wet: 0.29–0.68",
+   "prompt": "tea garden"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "dry: 0.46–1.00",
+   "prompt": "dry farm"
+  },
+  {
+   "itemId": "r2",
+   "key": "4,0 → 5,0 → 5,1 → 5,2 → 5,3 → 5,4 → 5,5",
+   "prompt": "trace the river"
+  },
+  {
+   "itemId": "r3",
+   "key": "above 4.4 m (2.6 m with trees)",
+   "prompt": "school"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

@@ -1,0 +1,2124 @@
+{
+ "topicId": "c7-sst-ch10-t01",
+ "title": "The Constitution of India — An Introduction",
+ "chapter": "The Constitution of India — An Introduction",
+ "subject": "sst",
+ "class": 7,
+ "topicType": "T3",
+ "plan": {
+  "game": "era-drop@1",
+  "hint": "place / century / order modes with BCE and CE dates from the kit"
+ },
+ "game": {
+  "archetype": "era-drop@1",
+  "spec": {
+   "archetype": "era-drop@1",
+   "skills": [
+    "c7-sst-ch10-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "landed": "landed",
+    "precision": "precision",
+    "coach": "Drag the dock along the timeline",
+    "first": "Which came first?",
+    "runDone": "Timeline complete",
+    "offBy": "off by",
+    "years": "years",
+    "exact": "SPOT ON",
+    "century": "century",
+    "bce": "BCE",
+    "ce": "CE",
+    "earlier": "EARLIER"
+   },
+   "title": "India's Constitution timeline",
+   "axis": {
+    "min": 1900,
+    "max": 2000
+   },
+   "rounds": [
+    {
+     "mode": "place",
+     "title": "Build the timeline",
+     "sub": "Place each event on its year",
+     "ticks": 50,
+     "speed": 0.8,
+     "tol": 5,
+     "items": [
+      {
+       "text": "Assembly first meets",
+       "value": 1946,
+       "src": "c7-sst-ch10-t01-i04"
+      },
+      {
+       "text": "Constitution adopted",
+       "value": 1949,
+       "src": "c7-sst-ch10-t01-i02"
+      }
+     ]
+    },
+    {
+     "mode": "century",
+     "title": "Find the century",
+     "sub": "Drop each event in its century",
+     "ticks": 10,
+     "speed": 1,
+     "tol": 10,
+     "items": [
+      {
+       "text": "Assembly first meets",
+       "value": 1946,
+       "src": "c7-sst-ch10-t01-i04"
+      },
+      {
+       "text": "Constitution adopted",
+       "value": 1949,
+       "src": "c7-sst-ch10-t01-i02"
+      }
+     ]
+    }
+   ]
+  },
+  "repairs": [
+   "string:item.text",
+   "string:item.text",
+   "string:item.text",
+   "order:ties"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-sst-ch10-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Right",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "BUSTED",
+    "order": "Tap them in order"
+   },
+   "title": "India's Constitution and its Preamble",
+   "accent": "amber",
+   "targets": "c7-sst-ch10-t01-m3",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "India's Constitution"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "MYTH: Secular means no religion"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "constitution",
+       "type": "node",
+       "text": "Constitution",
+       "sub": "basic rulebook",
+       "glyph": "book",
+       "color": "amber"
+      },
+      {
+       "id": "government",
+       "type": "node",
+       "text": "Government",
+       "sub": "set up",
+       "glyph": "school",
+       "color": "ion"
+      },
+      {
+       "id": "powers",
+       "type": "node",
+       "text": "Powers",
+       "sub": "limited",
+       "glyph": "balance",
+       "color": "sci"
+      },
+      {
+       "id": "rights",
+       "type": "node",
+       "text": "Rights",
+       "sub": "protected",
+       "glyph": "shield",
+       "color": "mint"
+      },
+      {
+       "id": "duties",
+       "type": "node",
+       "text": "Duties",
+       "sub": "citizens",
+       "glyph": "hand",
+       "color": "sun"
+      },
+      {
+       "id": "laws",
+       "type": "node",
+       "text": "Other laws",
+       "sub": "must follow",
+       "glyph": "scroll",
+       "color": "volt"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "constitution",
+       "to": "government",
+       "text": "sets up"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "constitution",
+       "to": "powers",
+       "text": "limits"
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "constitution",
+       "to": "rights",
+       "text": "lists"
+      },
+      {
+       "id": "a4",
+       "type": "arrow",
+       "from": "constitution",
+       "to": "duties",
+       "text": "lists"
+      },
+      {
+       "id": "a5",
+       "type": "arrow",
+       "from": "laws",
+       "to": "constitution",
+       "text": "follows"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "meet",
+       "type": "node",
+       "text": "9 Dec 1946",
+       "sub": "Assembly meets",
+       "glyph": "group",
+       "color": "ion"
+      },
+      {
+       "id": "adopt",
+       "type": "node",
+       "text": "26 Nov 1949",
+       "sub": "adopted",
+       "glyph": "scroll",
+       "color": "amber"
+      },
+      {
+       "id": "force",
+       "type": "node",
+       "text": "26 Jan 1950",
+       "sub": "in force",
+       "glyph": "ballot",
+       "color": "mint"
+      },
+      {
+       "id": "assembly",
+       "type": "label",
+       "text": "Constituent Assembly",
+       "color": "sci"
+      },
+      {
+       "id": "president",
+       "type": "label",
+       "text": "Rajendra Prasad",
+       "color": "sun"
+      },
+      {
+       "id": "drafting",
+       "type": "label",
+       "text": "Ambedkar: Drafting Committee",
+       "color": "volt"
+      },
+      {
+       "id": "t1",
+       "type": "arrow",
+       "from": "meet",
+       "to": "adopt",
+       "text": "debate"
+      },
+      {
+       "id": "t2",
+       "type": "arrow",
+       "from": "adopt",
+       "to": "force",
+       "text": "begins"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "people",
+       "type": "node",
+       "text": "We, the people",
+       "sub": "power from people",
+       "glyph": "group",
+       "color": "amber"
+      },
+      {
+       "id": "justice",
+       "type": "node",
+       "text": "Justice",
+       "sub": "Preamble ideal",
+       "glyph": "balance",
+       "color": "mint"
+      },
+      {
+       "id": "liberty",
+       "type": "node",
+       "text": "Liberty",
+       "sub": "Preamble ideal",
+       "glyph": "wind",
+       "color": "ion"
+      },
+      {
+       "id": "equality",
+       "type": "node",
+       "text": "Equality",
+       "sub": "Preamble ideal",
+       "glyph": "balance",
+       "color": "sun"
+      },
+      {
+       "id": "fraternity",
+       "type": "node",
+       "text": "Fraternity",
+       "sub": "Preamble ideal",
+       "glyph": "group",
+       "color": "volt"
+      },
+      {
+       "id": "republic",
+       "type": "node",
+       "text": "Republic",
+       "sub": "elected head",
+       "glyph": "ballot",
+       "color": "sci"
+      },
+      {
+       "id": "secular",
+       "type": "node",
+       "text": "Secular",
+       "sub": "equal religions",
+       "glyph": "globe",
+       "color": "mint"
+      },
+      {
+       "id": "p1",
+       "type": "arrow",
+       "from": "people",
+       "to": "justice",
+       "text": "aims for"
+      },
+      {
+       "id": "p2",
+       "type": "arrow",
+       "from": "people",
+       "to": "liberty",
+       "text": "aims for"
+      },
+      {
+       "id": "p3",
+       "type": "arrow",
+       "from": "people",
+       "to": "equality",
+       "text": "aims for"
+      },
+      {
+       "id": "p4",
+       "type": "arrow",
+       "from": "people",
+       "to": "fraternity",
+       "text": "aims for"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "A constitution is a country's basic rulebook. It tells us how government works and protects citizens.",
+    "L2": "It sets up government, limits its powers, and lists rights and duties. All other laws must follow it.",
+    "L3": "The Constituent Assembly first met on 9 December 1946. Dr Rajendra Prasad led it, and Dr Ambedkar chaired the Drafting Committee.",
+    "L4": "After almost three years of debate, the Constitution was adopted on 26 November 1949. It came into force on 26 January 1950.",
+    "L5": "The Preamble begins, \"We, the people of India.\" This shows that power comes from the people.",
+    "L6": "It aims to secure justice, liberty, equality and fraternity for all. It also describes India as sovereign, socialist, secular, democratic and republican.",
+    "L7": "A republic has an elected head of state, not one who inherits the position. India's President is elected by elected representatives.",
+    "L8": "Secular does not mean no religion. It means the state has no official religion and treats all religions equally.",
+    "L9": "The Constitution is a shared rulebook, and its ideals guide how the country should work.",
+    "L10": "Now tap the Preamble word that means India has an elected head of state."
+   },
+   "narration": {
+    "L1": {
+     "text": "A constitution is a country's basic rulebook. It tells us how government works and protects citizens.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L2": {
+     "text": "It sets up government, limits its powers, and lists rights and duties. All other laws must follow it.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L3": {
+     "text": "The Constituent Assembly first met on 9 December 1946. Dr Rajendra Prasad led it, and Dr Ambedkar chaired the Drafting Committee.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L4": {
+     "text": "After almost three years of debate, the Constitution was adopted on 26 November 1949. It came into force on 26 January 1950.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L5": {
+     "text": "The Preamble begins, \"We, the people of India.\" This shows that power comes from the people.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L6": {
+     "text": "It aims to secure justice, liberty, equality and fraternity for all. It also describes India as sovereign, socialist, secular, democratic and republican.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L7": {
+     "text": "A republic has an elected head of state, not one who inherits the position. India's President is elected by elected representatives.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Secular does not mean no religion. It means the state has no official religion and treats all religions equally.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L9": {
+     "text": "The Constitution is a shared rulebook, and its ideals guide how the country should work.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L10": {
+     "text": "Now tap the Preamble word that means India has an elected head of state.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "constitution"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.7,
+       "target": "government"
+      },
+      {
+       "at": 1.1,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "a1",
+       "to": 1
+      },
+      {
+       "at": 1.8,
+       "do": "show",
+       "dur": 0.7,
+       "target": "rights"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "powers",
+        "duties",
+        "laws"
+       ]
+      },
+      {
+       "at": 0.7,
+       "do": "flow",
+       "dur": 0.8,
+       "target": [
+        "a2",
+        "a3",
+        "a4",
+        "a5"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "meet",
+        "assembly"
+       ]
+      },
+      {
+       "at": 0.7,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "president",
+        "drafting"
+       ]
+      },
+      {
+       "at": 1.4,
+       "do": "highlight",
+       "dur": 1,
+       "target": "meet"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "adopt",
+        "force"
+       ]
+      },
+      {
+       "at": 0.7,
+       "do": "flow",
+       "dur": 0.8,
+       "target": [
+        "t1",
+        "t2"
+       ],
+       "to": 1
+      },
+      {
+       "at": 1.5,
+       "do": "highlight",
+       "dur": 1,
+       "target": "force"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "people"
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 0.8,
+       "target": [
+        "p1",
+        "p2",
+        "p3",
+        "p4"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "justice",
+        "liberty",
+        "equality",
+        "fraternity"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "republic",
+        "secular"
+       ]
+      },
+      {
+       "at": 1.6,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "justice"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1.2,
+       "target": "republic"
+      },
+      {
+       "at": 1.2,
+       "do": "show",
+       "dur": 0.5,
+       "target": "republic"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "myth"
+      },
+      {
+       "at": 0.6,
+       "do": "bust",
+       "dur": 1.2,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L9",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "camera",
+       "dur": 2,
+       "zoom": 1.05
+      },
+      {
+       "at": 1,
+       "do": "focus",
+       "dur": 1,
+       "target": "people"
+      }
+     ]
+    },
+    {
+     "line": "L10",
+     "gap": 0,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "interactive",
+       "dur": 0.5
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which Preamble word means India has an elected head of state?",
+    "options": [
+     "republic",
+     "secular",
+     "justice",
+     "liberty"
+    ],
+    "answer": "republic",
+    "src": "c7-sst-ch10-t01-i06"
+   }
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg",
+  "passes": 2,
+  "seconds": 53
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "1946 CE",
+   "prompt": "Assembly first meets",
+   "src": "c7-sst-ch10-t01-i04"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "1949 CE",
+   "prompt": "Constitution adopted",
+   "src": "c7-sst-ch10-t01-i02"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "20th century CE",
+   "prompt": "Assembly first meets",
+   "src": "c7-sst-ch10-t01-i04"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "20th century CE",
+   "prompt": "Constitution adopted",
+   "src": "c7-sst-ch10-t01-i02"
+  }
+ ],
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch10-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "title",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "constitution",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "book",
+       "op": "rect",
+       "startMs": 900,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        250,
+        130
+       ],
+       "w": 300,
+       "h": 210
+      },
+      {
+       "id": "rule",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        180
+       ],
+       "text": "basic rulebook",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "gov",
+       "op": "rect",
+       "startMs": 2800,
+       "endMs": 3500,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        90,
+        385
+       ],
+       "w": 180,
+       "h": 65
+      },
+      {
+       "id": "gt",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4100,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        180,
+        425
+       ],
+       "text": "government",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "protect",
+       "op": "rect",
+       "startMs": 4100,
+       "endMs": 4800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        530,
+        385
+       ],
+       "w": 180,
+       "h": 65
+      },
+      {
+       "id": "pt",
+       "op": "text",
+       "startMs": 4800,
+       "endMs": 5600,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        620,
+        425
+       ],
+       "text": "protects citizens",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "a1",
+       "op": "arrow",
+       "startMs": 5600,
+       "endMs": 6200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        250,
+        300
+       ],
+       "to": [
+        180,
+        385
+       ]
+      },
+      {
+       "id": "a2",
+       "op": "arrow",
+       "startMs": 6200,
+       "endMs": 6800,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        550,
+        300
+       ],
+       "to": [
+        620,
+        385
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch10-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "sets",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        60
+       ],
+       "text": "sets up government",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "limit",
+       "op": "text",
+       "startMs": 1100,
+       "endMs": 2100,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        400,
+        145
+       ],
+       "text": "limits its powers",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "rights",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 3300,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        230
+       ],
+       "text": "rights and duties",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "law",
+       "op": "rect",
+       "startMs": 3700,
+       "endMs": 4400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        245,
+        330
+       ],
+       "w": 310,
+       "h": 75
+      },
+      {
+       "id": "lawt",
+       "op": "text",
+       "startMs": 4400,
+       "endMs": 5200,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        375
+       ],
+       "text": "all other laws",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "follow",
+       "op": "arrow",
+       "startMs": 5200,
+       "endMs": 5900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        230
+       ],
+       "to": [
+        400,
+        330
+       ]
+      },
+      {
+       "id": "must",
+       "op": "text",
+       "startMs": 6100,
+       "endMs": 7000,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        460
+       ],
+       "text": "must follow it",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch10-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9536,
+     "ops": [
+      {
+       "id": "assembly",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "Constituent Assembly",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "date",
+       "op": "numwork",
+       "startMs": 1300,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        300,
+        110
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "9",
+         "Decemb",
+         "1946"
+        ]
+       ]
+      },
+      {
+       "id": "prasad",
+       "op": "circle",
+       "startMs": 2600,
+       "endMs": 3400,
+       "ink": "mark",
+       "weight": 2,
+       "c": [
+        220,
+        310
+       ],
+       "r": 65
+      },
+      {
+       "id": "pname",
+       "op": "text",
+       "startMs": 3400,
+       "endMs": 4400,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        220,
+        405
+       ],
+       "text": "Dr Rajendra Prasad",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "ambedkar",
+       "op": "circle",
+       "startMs": 4600,
+       "endMs": 5400,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        580,
+        310
+       ],
+       "r": 65
+      },
+      {
+       "id": "aname",
+       "op": "text",
+       "startMs": 5400,
+       "endMs": 6300,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        580,
+        405
+       ],
+       "text": "Dr Ambedkar",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "lead",
+       "op": "label",
+       "startMs": 6500,
+       "endMs": 7100,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        220,
+        220
+       ],
+       "text": "led it",
+       "to": [
+        220,
+        245
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch10-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9962,
+     "ops": [
+      {
+       "id": "debate",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        55
+       ],
+       "text": "almost three years",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "adopt",
+       "op": "text",
+       "startMs": 1200,
+       "endMs": 2100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        250,
+        150
+       ],
+       "text": "adopted",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "d1",
+       "op": "numwork",
+       "startMs": 2200,
+       "endMs": 3400,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        120,
+        210
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "26",
+         "Novemb",
+         "1949"
+        ]
+       ]
+      },
+      {
+       "id": "force",
+       "op": "text",
+       "startMs": 3800,
+       "endMs": 4800,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        560,
+        150
+       ],
+       "text": "came into force",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "d2",
+       "op": "numwork",
+       "startMs": 4900,
+       "endMs": 6100,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        500,
+        210
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "26",
+         "Januar",
+         "1950"
+        ]
+       ]
+      },
+      {
+       "id": "arrow1",
+       "op": "arrow",
+       "startMs": 6500,
+       "endMs": 7200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        300,
+        170
+       ],
+       "to": [
+        480,
+        170
+       ]
+      },
+      {
+       "id": "adopted",
+       "op": "label",
+       "startMs": 7300,
+       "endMs": 8200,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        240,
+        350
+       ],
+       "text": "26 November 1949",
+       "to": [
+        240,
+        270
+       ]
+      },
+      {
+       "id": "republic",
+       "op": "label",
+       "startMs": 8200,
+       "endMs": 9200,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        560,
+        350
+       ],
+       "text": "26 January 1950",
+       "to": [
+        560,
+        270
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch10-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "pre",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "Preamble",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "quote",
+       "op": "rect",
+       "startMs": 1100,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        155
+       ],
+       "w": 620,
+       "h": 115
+      },
+      {
+       "id": "words",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 3300,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        220
+       ],
+       "text": "We, the people of India",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "power",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 4700,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        400,
+        350
+       ],
+       "text": "power",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "people",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 5800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        425
+       ],
+       "text": "people",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "arrow",
+       "op": "arrow",
+       "startMs": 5900,
+       "endMs": 6700,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        400,
+        350
+       ],
+       "to": [
+        400,
+        425
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch10-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9962,
+     "ops": [
+      {
+       "id": "aim",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        45
+       ],
+       "text": "aims to secure",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "justice",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        145,
+        130
+       ],
+       "text": "justice",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "liberty",
+       "op": "text",
+       "startMs": 1600,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        350,
+        130
+       ],
+       "text": "liberty",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "equality",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        575,
+        130
+       ],
+       "text": "equality",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "fraternity",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        210
+       ],
+       "text": "fraternity",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "sovereign",
+       "op": "text",
+       "startMs": 4200,
+       "endMs": 4800,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        125,
+        330
+       ],
+       "text": "sovereign",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "socialist",
+       "op": "text",
+       "startMs": 4900,
+       "endMs": 5500,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        290,
+        330
+       ],
+       "text": "socialist",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "secular",
+       "op": "text",
+       "startMs": 5600,
+       "endMs": 6200,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        440,
+        330
+       ],
+       "text": "secular",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "democratic",
+       "op": "text",
+       "startMs": 6300,
+       "endMs": 7000,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        590,
+        330
+       ],
+       "text": "democratic",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "republic",
+       "op": "text",
+       "startMs": 7300,
+       "endMs": 8000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        420
+       ],
+       "text": "republic",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch10-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9536,
+     "ops": [
+      {
+       "id": "republic",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "republic",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "inherit",
+       "op": "text",
+       "startMs": 1100,
+       "endMs": 1800,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        180,
+        155
+       ],
+       "text": "inherits",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "king",
+       "op": "circle",
+       "startMs": 1800,
+       "endMs": 2500,
+       "ink": "mark",
+       "weight": 2,
+       "c": [
+        180,
+        270
+       ],
+       "r": 55
+      },
+      {
+       "id": "elected",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3400,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        620,
+        155
+       ],
+       "text": "elected",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "president",
+       "op": "circle",
+       "startMs": 3400,
+       "endMs": 4100,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        620,
+        270
+       ],
+       "r": 55
+      },
+      {
+       "id": "kt",
+       "op": "text",
+       "startMs": 4200,
+       "endMs": 5000,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        180,
+        365
+       ],
+       "text": "head of state",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "pt",
+       "op": "text",
+       "startMs": 4200,
+       "endMs": 5000,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        620,
+        365
+       ],
+       "text": "President",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "rep",
+       "op": "text",
+       "startMs": 6000,
+       "endMs": 7200,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        450
+       ],
+       "text": "elected representatives",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "arrow",
+       "op": "arrow",
+       "startMs": 7200,
+       "endMs": 8100,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        620,
+        330
+       ],
+       "to": [
+        400,
+        440
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch10-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "secular",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "secular",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "not",
+       "op": "text",
+       "startMs": 1100,
+       "endMs": 2100,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        400,
+        125
+       ],
+       "text": "not no religion",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "state",
+       "op": "rect",
+       "startMs": 2400,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        250,
+        220
+       ],
+       "w": 300,
+       "h": 100
+      },
+      {
+       "id": "st",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        280
+       ],
+       "text": "state",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "official",
+       "op": "text",
+       "startMs": 4200,
+       "endMs": 5200,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        370
+       ],
+       "text": "no official religion",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "equal",
+       "op": "text",
+       "startMs": 5700,
+       "endMs": 6900,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        445
+       ],
+       "text": "all religions equally",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "arrow",
+       "op": "arrow",
+       "startMs": 6900,
+       "endMs": 7500,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        400,
+        320
+       ],
+       "to": [
+        400,
+        365
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L9",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch10-t01-wb-L9",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "shared",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "shared rulebook",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "book",
+       "op": "rect",
+       "startMs": 1200,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        260,
+        130
+       ],
+       "w": 280,
+       "h": 170
+      },
+      {
+       "id": "ideals",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 3000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        205
+       ],
+       "text": "ideals",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "guide",
+       "op": "arrow",
+       "startMs": 3300,
+       "endMs": 4200,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        400,
+        300
+       ],
+       "to": [
+        400,
+        390
+       ]
+      },
+      {
+       "id": "country",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5400,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        400,
+        440
+       ],
+       "text": "country",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L10",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch10-t01-wb-L10",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "prompt",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "Preamble word",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "words",
+       "op": "text",
+       "startMs": 1200,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        170,
+        170
+       ],
+       "text": "sovereign",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "words2",
+       "op": "text",
+       "startMs": 2000,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        170
+       ],
+       "text": "secular",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "target",
+       "op": "text",
+       "startMs": 2800,
+       "endMs": 3500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        630,
+        170
+       ],
+       "text": "republic",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "meaning",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 5000,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        300
+       ],
+       "text": "elected head of state",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "circle",
+       "op": "highlight",
+       "startMs": 5100,
+       "endMs": 6200,
+       "ink": "accent",
+       "weight": 2,
+       "target": "target",
+       "style": "circle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "check": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "Round 1 includes item 'Assembly first meets' sourced from c7-sst-ch10-t01-i04, but i04 is a word-timeline item, not a date-item; the game uses the date 1946 which is correct, but the source reference is misleading.",
+    "severity": "low"
+   },
+   {
+    "where": "game",
+    "what": "Round 2 includes the same items in century mode; the source mismatches remain but are low severity as the dates are correct.",
+    "severity": "low"
+   }
+  ],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

@@ -1,0 +1,1454 @@
+{
+ "topicId": "c6-maths-ch02-t03",
+ "title": "Measuring and drawing angles",
+ "chapter": "Lines and Angles",
+ "subject": "maths",
+ "class": 6,
+ "topicType": "T4",
+ "plan": {
+  "game": "angle-cannon@1",
+  "hint": "turret angles: turns, types, measuring"
+ },
+ "game": {
+  "archetype": "angle-cannon@1",
+  "spec": {
+   "archetype": "angle-cannon@1",
+   "skills": [
+    "c6-maths-ch02-t03"
+   ],
+   "lang": "en",
+   "strings": {
+    "coach": "Drag to turn the turret · release to fire",
+    "wave": "Wave",
+    "threat": "THREAT AT",
+    "copy": "COPY THIS TURN",
+    "only": "HIT ONLY",
+    "hit": "DIRECT HIT",
+    "close": "CLOSE",
+    "offBy": "off by",
+    "runDone": "Sector clear",
+    "accuracy": "accuracy",
+    "hits": "hits",
+    "acute": "ACUTE",
+    "right": "RIGHT",
+    "obtuse": "OBTUSE",
+    "reflex": "REFLEX"
+   },
+   "waves": [
+    {
+     "title": "Turn basics",
+     "sub": "Set the turret to match each turn",
+     "mode": "call",
+     "items": [
+      45,
+      90,
+      180,
+      270
+     ],
+     "range": 360,
+     "scaffold": "tens",
+     "speed": 0.7
+    },
+    {
+     "title": "Read the scale",
+     "sub": "Line up the centre and baseline first",
+     "mode": "copy",
+     "items": [
+      40,
+      50,
+      70,
+      120
+     ],
+     "range": 180,
+     "scaffold": "protractor",
+     "speed": 0.85,
+     "targets": "c6-maths-ch02-t03-m-wrong-scale"
+    },
+    {
+     "title": "Wide or narrow",
+     "sub": "Choose only angles wider than a right angle",
+     "mode": "classify",
+     "items": [
+      100,
+      120,
+      135,
+      150,
+      170
+     ],
+     "kind": "obtuse",
+     "range": 180,
+     "scaffold": "none",
+     "speed": 1
+    },
+    {
+     "title": "Past straight",
+     "sub": "Aim through the larger turn",
+     "mode": "call",
+     "items": [
+      200,
+      240,
+      270,
+      315
+     ],
+     "range": 360,
+     "scaffold": "none",
+     "speed": 1.1
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c6-maths-ch02-t03"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Measuring and drawing angles",
+   "accent": "ion",
+   "targets": "c6-maths-ch02-t03-m-wrong-scale",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "row",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Measuring angles"
+      },
+      {
+       "id": "turn",
+       "type": "node",
+       "text": "Quarter turn",
+       "sub": "90°",
+       "color": "ion"
+      },
+      {
+       "id": "half",
+       "type": "node",
+       "text": "Half turn",
+       "sub": "180°",
+       "color": "sci"
+      },
+      {
+       "id": "full",
+       "type": "node",
+       "text": "Full turn",
+       "sub": "360°",
+       "color": "mint"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Always read the larger scale"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "split",
+     "els": [
+      {
+       "id": "vertex",
+       "type": "node",
+       "text": "Vertex Q",
+       "sub": "centre mark",
+       "glyph": "spark",
+       "color": "ion"
+      },
+      {
+       "id": "base",
+       "type": "label",
+       "text": "baseline along QR",
+       "x": 120,
+       "y": 430,
+       "color": "mint"
+      },
+      {
+       "id": "arm",
+       "type": "arrow",
+       "from": "vertex",
+       "to": "base",
+       "text": "arm QR"
+      },
+      {
+       "id": "angle40",
+       "type": "angle",
+       "deg": 40,
+       "rot": 0,
+       "x": 430,
+       "y": 360,
+       "r": 120
+      },
+      {
+       "id": "scale40",
+       "type": "label",
+       "text": "40°",
+       "x": 570,
+       "y": 270,
+       "color": "mint"
+      },
+      {
+       "id": "scale140",
+       "type": "label",
+       "text": "140°",
+       "x": 650,
+       "y": 310,
+       "color": "amber"
+      },
+      {
+       "id": "wrong",
+       "type": "label",
+       "text": "wrong scale",
+       "x": 650,
+       "y": 380,
+       "color": "amber"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "column",
+     "els": [
+      {
+       "id": "draw",
+       "type": "title",
+       "text": "Draw 70°"
+      },
+      {
+       "id": "step1",
+       "type": "label",
+       "text": "1. Draw arm AB",
+       "x": 120,
+       "y": 300,
+       "color": "ion"
+      },
+      {
+       "id": "step2",
+       "type": "label",
+       "text": "2. Centre on A",
+       "x": 120,
+       "y": 360,
+       "color": "sci"
+      },
+      {
+       "id": "step3",
+       "type": "label",
+       "text": "3. Mark 70° and join",
+       "x": 120,
+       "y": 420,
+       "color": "mint"
+      },
+      {
+       "id": "same",
+       "type": "node",
+       "text": "Same angle",
+       "sub": "same reading",
+       "glyph": "balance",
+       "color": "mint"
+      },
+      {
+       "id": "small",
+       "type": "node",
+       "text": "Small tool",
+       "sub": "reading",
+       "glyph": "ruler",
+       "color": "ion"
+      },
+      {
+       "id": "large",
+       "type": "node",
+       "text": "Large tool",
+       "sub": "reading",
+       "glyph": "ruler",
+       "color": "sci"
+      },
+      {
+       "id": "opt40",
+       "type": "label",
+       "text": "40°",
+       "x": 420,
+       "y": 500,
+       "color": "mint"
+      },
+      {
+       "id": "opt140",
+       "type": "label",
+       "text": "140°",
+       "x": 620,
+       "y": 500,
+       "color": "amber"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "A quarter turn is 90 degrees, a half turn is 180 degrees, and a full turn is 360 degrees.",
+    "L2": "To measure an angle, put the protractor's centre exactly on the vertex. Keep its baseline along one arm.",
+    "L3": "Start with the scale that reads zero on that arm, then read where the other arm crosses.",
+    "L4": "Myth: always read the larger number. Not true; the two scales run in opposite directions.",
+    "L5": "This angle looks narrow, so its reading must be less than 90 degrees. Choose 40 degrees, not 140 degrees.",
+    "L6": "The size of the protractor does not change the angle reading. The same opening gives the same result.",
+    "L7": "To draw 70 degrees, draw one arm, centre the protractor on its endpoint, mark 70 on the correct scale, and join.",
+    "L8": "Now use the narrow-angle check to choose the correct reading."
+   },
+   "narration": {
+    "L1": {
+     "text": "A quarter turn is 90 degrees, a half turn is 180 degrees, and a full turn is 360 degrees.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L2": {
+     "text": "To measure an angle, put the protractor's centre exactly on the vertex. Keep its baseline along one arm.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L3": {
+     "text": "Start with the scale that reads zero on that arm, then read where the other arm crosses.",
+     "dur": 5.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L4": {
+     "text": "Myth: always read the larger number. Not true; the two scales run in opposite directions.",
+     "dur": 5.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L5": {
+     "text": "This angle looks narrow, so its reading must be less than 90 degrees. Choose 40 degrees, not 140 degrees.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L6": {
+     "text": "The size of the protractor does not change the angle reading. The same opening gives the same result.",
+     "dur": 5.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L7": {
+     "text": "To draw 70 degrees, draw one arm, centre the protractor on its endpoint, mark 70 on the correct scale, and join.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Now use the narrow-angle check to choose the correct reading.",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "title"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "turn",
+        "half",
+        "full"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "vertex"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "base",
+        "arm"
+       ]
+      },
+      {
+       "at": 1.2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "vertex"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "scale40",
+        "scale140"
+       ]
+      },
+      {
+       "at": 0.6,
+       "do": "highlight",
+       "dur": 1,
+       "target": "scale40"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "myth"
+      },
+      {
+       "at": 0.8,
+       "do": "bust",
+       "dur": 1.2,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "angle40"
+      },
+      {
+       "at": 1.1,
+       "do": "highlight",
+       "dur": 1,
+       "target": "scale40"
+      },
+      {
+       "at": 1.2,
+       "do": "hide",
+       "dur": 0.5,
+       "target": "wrong"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "same"
+      },
+      {
+       "at": 0.6,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "small",
+        "large"
+       ]
+      },
+      {
+       "at": 1.2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "same"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "step1"
+      },
+      {
+       "at": 0.7,
+       "do": "show",
+       "dur": 0.6,
+       "target": "step2"
+      },
+      {
+       "at": 1.4,
+       "do": "show",
+       "dur": 0.7,
+       "target": "step3"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": [
+        "opt40",
+        "opt140"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "interactive"
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which reading matches the narrow angle?",
+    "options": [
+     "opt40",
+     "opt140"
+    ],
+    "answer": "opt40",
+    "src": "c6-maths-ch02-t03-i03"
+   }
+  },
+  "repairs": [
+   "glyph",
+   "glyph",
+   "glyph",
+   "string:narrow.text",
+   "cue:target"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 50
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 2,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch02-t03-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "turnf",
+       "op": "circle",
+       "startMs": 3600,
+       "endMs": 5400,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        650,
+        250
+       ],
+       "r": 85
+      },
+      {
+       "id": "q1",
+       "op": "text",
+       "startMs": 5400,
+       "endMs": 5900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        150,
+        380
+       ],
+       "text": "quarter turn",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "q2",
+       "op": "text",
+       "startMs": 5900,
+       "endMs": 6300,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        150,
+        420
+       ],
+       "text": "90 degrees",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "h1",
+       "op": "text",
+       "startMs": 6300,
+       "endMs": 6700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        380
+       ],
+       "text": "half turn",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "h2",
+       "op": "text",
+       "startMs": 6700,
+       "endMs": 7100,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        420
+       ],
+       "text": "180 degrees",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "f1",
+       "op": "text",
+       "startMs": 7100,
+       "endMs": 7500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        650,
+        380
+       ],
+       "text": "full turn",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "f2",
+       "op": "text",
+       "startMs": 7500,
+       "endMs": 8000,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        650,
+        420
+       ],
+       "text": "360 degrees",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch02-t03-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "base",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        180,
+        330
+       ],
+       "to": [
+        620,
+        330
+       ]
+      },
+      {
+       "id": "arm",
+       "op": "line",
+       "startMs": 900,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        180,
+        330
+       ],
+       "to": [
+        430,
+        120
+       ]
+      },
+      {
+       "id": "centre",
+       "op": "circle",
+       "startMs": 3000,
+       "endMs": 3400,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        180,
+        330
+       ],
+       "r": 7,
+       "fill": "accent"
+      },
+      {
+       "id": "vertex",
+       "op": "label",
+       "startMs": 3400,
+       "endMs": 4000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        155,
+        365
+       ],
+       "text": "vertex",
+       "to": [
+        180,
+        330
+       ]
+      },
+      {
+       "id": "centrelabel",
+       "op": "label",
+       "startMs": 4000,
+       "endMs": 4700,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        240,
+        350
+       ],
+       "text": "centre",
+       "to": [
+        180,
+        330
+       ]
+      },
+      {
+       "id": "baseline",
+       "op": "label",
+       "startMs": 4700,
+       "endMs": 5500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        390,
+        355
+       ],
+       "text": "baseline",
+       "to": [
+        390,
+        330
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch02-t03-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "zero",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        210,
+        300
+       ],
+       "text": "0",
+       "size": "m"
+      },
+      {
+       "id": "scale1",
+       "op": "line",
+       "startMs": 500,
+       "endMs": 1300,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        210,
+        280
+       ],
+       "to": [
+        600,
+        280
+       ]
+      },
+      {
+       "id": "scale2",
+       "op": "line",
+       "startMs": 1300,
+       "endMs": 2100,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        600,
+        280
+       ],
+       "to": [
+        210,
+        280
+       ],
+       "dashed": true
+      },
+      {
+       "id": "cross",
+       "op": "circle",
+       "startMs": 2100,
+       "endMs": 2600,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        430,
+        160
+       ],
+       "r": 9
+      },
+      {
+       "id": "readarrow",
+       "op": "arrow",
+       "startMs": 2600,
+       "endMs": 3500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        430,
+        250
+       ],
+       "to": [
+        430,
+        175
+       ]
+      },
+      {
+       "id": "read",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        470,
+        155
+       ],
+       "text": "read",
+       "size": "m"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch02-t03-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "myth",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        120,
+        90
+       ],
+       "text": "Myth",
+       "size": "l"
+      },
+      {
+       "id": "large",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        120,
+        150
+       ],
+       "text": "larger number",
+       "size": "m"
+      },
+      {
+       "id": "crossout",
+       "op": "line",
+       "startMs": 1400,
+       "endMs": 1900,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        110,
+        135
+       ],
+       "to": [
+        300,
+        165
+       ]
+      },
+      {
+       "id": "scalea",
+       "op": "arrow",
+       "startMs": 1900,
+       "endMs": 2800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        180,
+        260
+       ],
+       "to": [
+        560,
+        260
+       ]
+      },
+      {
+       "id": "scaleb",
+       "op": "arrow",
+       "startMs": 2800,
+       "endMs": 3700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        560,
+        310
+       ],
+       "to": [
+        180,
+        310
+       ]
+      },
+      {
+       "id": "opposite",
+       "op": "text",
+       "startMs": 3700,
+       "endMs": 4600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        370,
+        370
+       ],
+       "text": "opposite directions",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch02-t03-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "narrow",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        180,
+        330
+       ],
+       "to": [
+        520,
+        330
+       ]
+      },
+      {
+       "id": "narrowarm",
+       "op": "line",
+       "startMs": 800,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        180,
+        330
+       ],
+       "to": [
+        440,
+        180
+       ]
+      },
+      {
+       "id": "forty",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        300,
+        240
+       ],
+       "text": "40 degrees",
+       "size": "l"
+      },
+      {
+       "id": "oneforty",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        520,
+        180
+       ],
+       "text": "140 degrees",
+       "size": "l"
+      },
+      {
+       "id": "correct",
+       "op": "highlight",
+       "startMs": 3300,
+       "endMs": 4300,
+       "ink": "good",
+       "weight": 2,
+       "target": "forty",
+       "style": "circle"
+      },
+      {
+       "id": "wrong",
+       "op": "highlight",
+       "startMs": 4300,
+       "endMs": 5000,
+       "ink": "accent",
+       "weight": 2,
+       "target": "oneforty",
+       "style": "underline"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 2,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch02-t03-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "smallarm",
+       "op": "line",
+       "startMs": 1900,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        210,
+        280
+       ],
+       "to": [
+        275,
+        225
+       ]
+      },
+      {
+       "id": "largearm",
+       "op": "line",
+       "startMs": 2700,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        570,
+        280
+       ],
+       "to": [
+        680,
+        203
+       ]
+      },
+      {
+       "id": "same",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4400,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        400
+       ],
+       "text": "same opening",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "equal",
+       "op": "text",
+       "startMs": 4400,
+       "endMs": 5100,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        445
+       ],
+       "text": "same result",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch02-t03-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9536,
+     "ops": [
+      {
+       "id": "arm1",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        120,
+        350
+       ],
+       "to": [
+        600,
+        350
+       ]
+      },
+      {
+       "id": "endpoint",
+       "op": "circle",
+       "startMs": 1000,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        600,
+        350
+       ],
+       "r": 8,
+       "fill": "accent"
+      },
+      {
+       "id": "centremark",
+       "op": "label",
+       "startMs": 2600,
+       "endMs": 3300,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        650,
+        375
+       ],
+       "text": "centre",
+       "to": [
+        600,
+        350
+       ]
+      },
+      {
+       "id": "mark70",
+       "op": "circle",
+       "startMs": 3300,
+       "endMs": 4000,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        559,
+        237
+       ],
+       "r": 8,
+       "fill": "accent"
+      },
+      {
+       "id": "seventy",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 4700,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        535,
+        215
+       ],
+       "text": "70 degrees",
+       "size": "m"
+      },
+      {
+       "id": "join",
+       "op": "line",
+       "startMs": 4700,
+       "endMs": 5700,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        600,
+        350
+       ],
+       "to": [
+        559,
+        237
+       ]
+      },
+      {
+       "id": "result",
+       "op": "label",
+       "startMs": 5700,
+       "endMs": 6500,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        450,
+        180
+       ],
+       "text": "70 degrees",
+       "to": [
+        559,
+        237
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch02-t03-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "checklabel",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        220
+       ],
+       "text": "narrow angle",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "under",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2700,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        180,
+        265
+       ],
+       "text": "less than 90 degrees",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "choice",
+       "op": "arrow",
+       "startMs": 2700,
+       "endMs": 3600,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        300,
+        300
+       ],
+       "to": [
+        450,
+        300
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

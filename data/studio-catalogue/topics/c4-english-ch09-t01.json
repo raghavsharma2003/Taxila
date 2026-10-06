@@ -1,0 +1,1713 @@
+{
+ "topicId": "c4-english-ch09-t01",
+ "title": "Hekko",
+ "chapter": "Hekko",
+ "subject": "english",
+ "class": 4,
+ "topicType": "T3",
+ "plan": {
+  "game": "story-rail@1",
+  "hint": "sequence, cause and who modes from the lesson's events and speakers"
+ },
+ "game": {
+  "archetype": "story-rail@1",
+  "spec": {
+   "archetype": "story-rail@1",
+   "skills": [
+    "c4-english-ch09-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "picked": "coupled",
+    "streak": "streak",
+    "next": "What happens next?",
+    "effect": "What does this lead to?",
+    "who": "Who said this?",
+    "runDone": "Line complete",
+    "order": "your train",
+    "right": "Coupled",
+    "wrong": "Not this one",
+    "coach": "Tap a wagon before the train reaches the fork"
+   },
+   "title": "Hekko",
+   "rounds": [
+    {
+     "mode": "sequence",
+     "title": "Play Hekko",
+     "sub": "couple the events in order",
+     "cards": [
+      {
+       "id": "e1",
+       "text": "Grandma tells an old tale",
+       "glyph": "person",
+       "src": "c4-english-ch09-t01-i01"
+      },
+      {
+       "id": "e2",
+       "text": "People and tigers argue",
+       "glyph": "group",
+       "src": "c4-english-ch09-t01-i02"
+      },
+      {
+       "id": "e3",
+       "text": "Aami hold hands in a circle",
+       "glyph": "person",
+       "src": "c4-english-ch09-t01-i03"
+      },
+      {
+       "id": "e4",
+       "text": "Aakho try to push them out",
+       "glyph": "person",
+       "src": "c4-english-ch09-t01-i05"
+      },
+      {
+       "id": "e5",
+       "text": "A caught tiger says Joko",
+       "glyph": "person",
+       "src": "c4-english-ch09-t01-i06"
+      }
+     ],
+     "speed": 0.9
+    },
+    {
+     "mode": "cause",
+     "title": "Because",
+     "sub": "match causes to their effects",
+     "pairs": [
+      {
+       "cause": {
+        "id": "c1",
+        "text": "Aami hold hands firmly",
+        "glyph": "hand",
+        "src": "c4-english-ch09-t01-i04"
+       },
+       "effect": {
+        "id": "f1",
+        "text": "They are hard to push out",
+        "glyph": "shield",
+        "src": "c4-english-ch09-t01-i04"
+       }
+      },
+      {
+       "cause": {
+        "id": "c2",
+        "text": "Friends let go of Temsu",
+        "glyph": "hand",
+        "src": "c4-english-ch09-t01-i11"
+       },
+       "effect": {
+        "id": "f2",
+        "text": "Tigers could push him out",
+        "glyph": "person",
+        "src": "c4-english-ch09-t01-i11"
+       }
+      },
+      {
+       "cause": {
+        "id": "c3",
+        "text": "A tiger is caught",
+        "glyph": "person",
+        "src": "c4-english-ch09-t01-i06"
+       },
+       "effect": {
+        "id": "f3",
+        "text": "The tiger says Joko",
+        "glyph": "person",
+        "src": "c4-english-ch09-t01-i06"
+       }
+      }
+     ],
+     "speed": 0.85,
+     "targets": "c4-english-ch09-t01-m-must-to"
+    },
+    {
+     "mode": "who",
+     "title": "Who said it?",
+     "sub": "send each line to its speaker",
+     "speakers": [
+      {
+       "id": "grandma",
+       "name": "Grandma Imna",
+       "glyph": "person"
+      },
+      {
+       "id": "tiger",
+       "name": "Aakho tiger",
+       "glyph": "person"
+      },
+      {
+       "id": "aami",
+       "name": "An Aami player",
+       "glyph": "person"
+      }
+     ],
+     "lines": [
+      {
+       "id": "w2",
+       "text": "Joko!",
+       "speaker": "tiger",
+       "src": "c4-english-ch09-t01-i06"
+      },
+      {
+       "id": "w3",
+       "text": "We hold hands in the circle.",
+       "speaker": "aami",
+       "src": "c4-english-ch09-t01-i03"
+      }
+     ],
+     "speed": 0.85
+    }
+   ]
+  },
+  "repairs": [
+   "string:card.text"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c4-english-ch09-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Right",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "BUSTED",
+    "order": "Tap them in order"
+   },
+   "title": "Hekko: Hold together",
+   "accent": "mint",
+   "targets": "c4-english-ch09-t01-m-must-to",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Hekko"
+      },
+      {
+       "id": "tale",
+       "type": "node",
+       "text": "Old tale",
+       "sub": "people and tigers",
+       "glyph": "scroll",
+       "color": "amber"
+      },
+      {
+       "id": "strong",
+       "type": "label",
+       "text": "Who was stronger?",
+       "x": 560,
+       "y": 330,
+       "color": "sun"
+      },
+      {
+       "id": "grandma",
+       "type": "node",
+       "text": "Grandma Imna",
+       "sub": "tells the tale",
+       "glyph": "person",
+       "color": "mint"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "aami",
+       "type": "node",
+       "text": "Aami",
+       "sub": "hold hands",
+       "glyph": "group",
+       "color": "mint"
+      },
+      {
+       "id": "circle",
+       "type": "node",
+       "text": "Circle",
+       "sub": "inside",
+       "color": "ion"
+      },
+      {
+       "id": "aakho",
+       "type": "node",
+       "text": "Aakho",
+       "sub": "push out",
+       "color": "amber"
+      },
+      {
+       "id": "joko",
+       "type": "quote",
+       "text": "Joko = I give up",
+       "hi": [],
+       "hi2": []
+      },
+      {
+       "id": "hold",
+       "type": "arrow",
+       "from": "aami",
+       "to": "circle",
+       "text": "together"
+      },
+      {
+       "id": "push",
+       "type": "arrow",
+       "from": "aakho",
+       "to": "aami",
+       "text": "try to push"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "After must, use to."
+      },
+      {
+       "id": "wrong",
+       "type": "label",
+       "text": "must to hold",
+       "x": 220,
+       "y": 330,
+       "color": "amber"
+      },
+      {
+       "id": "rightRule",
+       "type": "label",
+       "text": "must hold",
+       "x": 610,
+       "y": 330,
+       "color": "mint"
+      },
+      {
+       "id": "rule",
+       "type": "node",
+       "text": "Game rule",
+       "sub": "plain action",
+       "glyph": "book",
+       "color": "ion"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Grandma Imna tells an old tale about people and tigers arguing about who was stronger.",
+    "L2": "The tale becomes Hekko, a game with two sides: Aami and Aakho.",
+    "L3": "The Aami stand inside a big circle and hold hands tightly.",
+    "L4": "The Aakho try to push the Aami out. Holding together makes the Aami hard to push.",
+    "L5": "When a tiger is caught, the tiger says, Joko, which means I give up.",
+    "L6": "Here is a useful rule: The Aami must hold hands inside the circle.",
+    "L7": "A common mistake is to say, The Aami must to hold hands.",
+    "L8": "After must, use the plain action word: hold, not to hold.",
+    "L9": "Now you can describe another traditional game in a few clear sentences."
+   },
+   "narration": {
+    "L1": {
+     "text": "Grandma Imna tells an old tale about people and tigers arguing about who was stronger.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "The tale becomes Hekko, a game with two sides: Aami and Aakho.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "The Aami stand inside a big circle and hold hands tightly.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "The Aakho try to push the Aami out. Holding together makes the Aami hard to push.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "When a tiger is caught, the tiger says, Joko, which means I give up.",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Here is a useful rule: The Aami must hold hands inside the circle.",
+     "dur": 3.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "A common mistake is to say, The Aami must to hold hands.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "After must, use the plain action word: hold, not to hold.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L9": {
+     "text": "Now you can describe another traditional game in a few clear sentences.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.3,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "grandma"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.6,
+       "target": "tale"
+      },
+      {
+       "at": 1.2,
+       "do": "show",
+       "dur": 0.6,
+       "target": "strong"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.5,
+       "target": "aami"
+      },
+      {
+       "at": 0.4,
+       "do": "show",
+       "dur": 0.5,
+       "target": "aakho"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.5,
+       "target": "circle"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.7,
+       "target": "hold"
+      },
+      {
+       "at": 1.1,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "hold",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "push"
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 1,
+       "target": "aami"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "joko"
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 1,
+       "target": "joko"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.3,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "rule"
+      },
+      {
+       "at": 0.7,
+       "do": "show",
+       "dur": 0.6,
+       "target": "rightRule"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.3,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "myth"
+      },
+      {
+       "at": 0.7,
+       "do": "show",
+       "dur": 0.6,
+       "target": "wrong"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0.3,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      },
+      {
+       "at": 1.1,
+       "do": "highlight",
+       "dur": 1,
+       "target": "rightRule"
+      }
+     ]
+    },
+    {
+     "line": "L9",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "camera",
+       "dur": 2,
+       "zoom": 1.05
+      },
+      {
+       "at": "end",
+       "do": "interactive"
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which sentence is the correct game rule?",
+    "options": [
+     "wrong",
+     "rightRule"
+    ],
+    "answer": "rightRule",
+    "src": "c4-english-ch09-t01-i08"
+   }
+  },
+  "repairs": [
+   "glyph",
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 33
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-english-ch09-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "grandma",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        70
+       ],
+       "text": "Grandma Imna",
+       "size": "m"
+      },
+      {
+       "id": "tale",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        125
+       ],
+       "text": "old tale",
+       "size": "m"
+      },
+      {
+       "id": "people",
+       "op": "circle",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        260,
+        285
+       ],
+       "r": 55
+      },
+      {
+       "id": "tigers",
+       "op": "circle",
+       "startMs": 2200,
+       "endMs": 2900,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        540,
+        285
+       ],
+       "r": 55
+      },
+      {
+       "id": "peopleLabel",
+       "op": "label",
+       "startMs": 2900,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        225,
+        380
+       ],
+       "text": "people",
+       "target": "people"
+      },
+      {
+       "id": "tigersLabel",
+       "op": "label",
+       "startMs": 3500,
+       "endMs": 4100,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        505,
+        380
+       ],
+       "text": "tigers",
+       "target": "tigers"
+      },
+      {
+       "id": "argue",
+       "op": "arrow",
+       "startMs": 4100,
+       "endMs": 5000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        325,
+        285
+       ],
+       "to": [
+        475,
+        285
+       ],
+       "bend": -1
+      },
+      {
+       "id": "stronger",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 5700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        185
+       ],
+       "text": "stronger",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "question",
+       "op": "text",
+       "startMs": 5700,
+       "endMs": 6600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        430
+       ],
+       "text": "who was stronger",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-english-ch09-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "hekko",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        75
+       ],
+       "text": "Hekko",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "sideA",
+       "op": "rect",
+       "startMs": 900,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        180
+       ],
+       "w": 240,
+       "h": 180,
+       "round": 20
+      },
+      {
+       "id": "sideB",
+       "op": "rect",
+       "startMs": 1700,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        460,
+        180
+       ],
+       "w": 240,
+       "h": 180,
+       "round": 20
+      },
+      {
+       "id": "aami",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        220,
+        270
+       ],
+       "text": "Aami",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "aakho",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 4100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        580,
+        270
+       ],
+       "text": "Aakho",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "two",
+       "op": "text",
+       "startMs": 4100,
+       "endMs": 5000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        425
+       ],
+       "text": "two sides",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-english-ch09-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "bigCircle",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 3,
+       "c": [
+        400,
+        270
+       ],
+       "r": 155
+      },
+      {
+       "id": "aami1",
+       "op": "circle",
+       "startMs": 1100,
+       "endMs": 1700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        285,
+        270
+       ],
+       "r": 28
+      },
+      {
+       "id": "aami2",
+       "op": "circle",
+       "startMs": 1500,
+       "endMs": 2100,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        340,
+        185
+       ],
+       "r": 28
+      },
+      {
+       "id": "aami3",
+       "op": "circle",
+       "startMs": 1900,
+       "endMs": 2500,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        460,
+        185
+       ],
+       "r": 28
+      },
+      {
+       "id": "aami4",
+       "op": "circle",
+       "startMs": 2300,
+       "endMs": 2900,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        515,
+        270
+       ],
+       "r": 28
+      },
+      {
+       "id": "hand1",
+       "op": "line",
+       "startMs": 2900,
+       "endMs": 3300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        306,
+        250
+       ],
+       "to": [
+        320,
+        215
+       ]
+      },
+      {
+       "id": "hand2",
+       "op": "line",
+       "startMs": 3300,
+       "endMs": 3700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        368,
+        185
+       ],
+       "to": [
+        432,
+        185
+       ]
+      },
+      {
+       "id": "hand3",
+       "op": "line",
+       "startMs": 3700,
+       "endMs": 4100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        494,
+        215
+       ],
+       "to": [
+        508,
+        250
+       ]
+      },
+      {
+       "id": "inside",
+       "op": "label",
+       "startMs": 4100,
+       "endMs": 4800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        335
+       ],
+       "text": "Aami",
+       "target": "bigCircle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-english-ch09-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "aakhoPush1",
+       "op": "arrow",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        90,
+        240
+       ],
+       "to": [
+        250,
+        260
+       ]
+      },
+      {
+       "id": "aakhoPush2",
+       "op": "arrow",
+       "startMs": 600,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        710,
+        240
+       ],
+       "to": [
+        550,
+        260
+       ]
+      },
+      {
+       "id": "out",
+       "op": "text",
+       "startMs": 1600,
+       "endMs": 2500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        95
+       ],
+       "text": "push Aami out",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "together",
+       "op": "text",
+       "startMs": 2800,
+       "endMs": 3800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        410
+       ],
+       "text": "hold hands tightly",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "hard",
+       "op": "text",
+       "startMs": 4200,
+       "endMs": 5100,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        455
+       ],
+       "text": "hard to push",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-english-ch09-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "caught",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        170
+       ],
+       "r": 65
+      },
+      {
+       "id": "caughtLabel",
+       "op": "text",
+       "startMs": 800,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        170
+       ],
+       "text": "caught",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "tiger",
+       "op": "text",
+       "startMs": 1600,
+       "endMs": 2400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        285
+       ],
+       "text": "tiger",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "speech",
+       "op": "ellipse",
+       "startMs": 2500,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        390
+       ],
+       "rx": 115,
+       "ry": 45
+      },
+      {
+       "id": "joko",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 4100,
+       "ink": "accent",
+       "weight": 3,
+       "at": [
+        400,
+        390
+       ],
+       "text": "Joko",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "giveup",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 5400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        465
+       ],
+       "text": "I give up",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-english-ch09-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "rule",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "useful rule",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "ruleCircle",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 3,
+       "c": [
+        400,
+        265
+       ],
+       "r": 145
+      },
+      {
+       "id": "ruleAami",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        245
+       ],
+       "text": "The Aami",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "must",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        320
+       ],
+       "text": "must",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "hold",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        395
+       ],
+       "text": "hold hands",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "insideLabel",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        460
+       ],
+       "text": "inside the circle",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-english-ch09-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "mistake",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        75
+       ],
+       "text": "common mistake",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "badRule",
+       "op": "numwork",
+       "startMs": 1000,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        150,
+        180
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "The",
+         "Aami",
+         "must",
+         "to",
+         "hold",
+         "hands"
+        ]
+       ]
+      },
+      {
+       "id": "badUnderline",
+       "op": "highlight",
+       "startMs": 2400,
+       "endMs": 3300,
+       "ink": "accent",
+       "weight": 2,
+       "target": "badRule",
+       "style": "underline"
+      },
+      {
+       "id": "wrong",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        390
+       ],
+       "text": "must to hold",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "cross",
+       "op": "line",
+       "startMs": 4600,
+       "endMs": 5200,
+       "ink": "accent",
+       "weight": 3,
+       "from": [
+        300,
+        365
+       ],
+       "to": [
+        500,
+        425
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-english-ch09-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "mustPlain",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        75
+       ],
+       "text": "must + hold",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "plain",
+       "op": "text",
+       "startMs": 1200,
+       "endMs": 2000,
+       "ink": "good",
+       "weight": 3,
+       "at": [
+        260,
+        210
+       ],
+       "text": "hold",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "notTo",
+       "op": "text",
+       "startMs": 1600,
+       "endMs": 2400,
+       "ink": "accent",
+       "weight": 3,
+       "at": [
+        540,
+        210
+       ],
+       "text": "to hold",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "strike",
+       "op": "line",
+       "startMs": 2400,
+       "endMs": 3100,
+       "ink": "accent",
+       "weight": 3,
+       "from": [
+        475,
+        170
+       ],
+       "to": [
+        605,
+        250
+       ]
+      },
+      {
+       "id": "ruleSentence",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 4400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        370
+       ],
+       "text": "The Aami must hold",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "underlineHold",
+       "op": "highlight",
+       "startMs": 4400,
+       "endMs": 5100,
+       "ink": "good",
+       "weight": 2,
+       "target": "plain",
+       "style": "underline"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L9",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-english-ch09-t01-wb-L9",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "another",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "another traditional game",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "gameCircle",
+       "op": "circle",
+       "startMs": 1100,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        180,
+        250
+       ],
+       "r": 95
+      },
+      {
+       "id": "gamePeople",
+       "op": "circle",
+       "startMs": 1900,
+       "endMs": 2500,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        180,
+        250
+       ],
+       "r": 30
+      },
+      {
+       "id": "gameArrow",
+       "op": "arrow",
+       "startMs": 2500,
+       "endMs": 3400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        300,
+        250
+       ],
+       "to": [
+        500,
+        250
+       ]
+      },
+      {
+       "id": "sentences",
+       "op": "text",
+       "startMs": 3400,
+       "endMs": 4700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        610,
+        190
+       ],
+       "text": "few clear sentences",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "describe",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        420
+       ],
+       "text": "describe",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "People and tigers argue",
+   "prompt": "sequence: after/for \"Grandma tells an old tale\"",
+   "src": "c4-english-ch09-t01-i02"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "Aami hold hands in a circle",
+   "prompt": "sequence: after/for \"People and tigers argue\"",
+   "src": "c4-english-ch09-t01-i03"
+  },
+  {
+   "itemId": "r1:2",
+   "key": "Aakho try to push them out",
+   "prompt": "sequence: after/for \"Aami hold hands in a circle\"",
+   "src": "c4-english-ch09-t01-i05"
+  },
+  {
+   "itemId": "r1:3",
+   "key": "A caught tiger says Joko",
+   "prompt": "sequence: after/for \"Aakho try to push them out\"",
+   "src": "c4-english-ch09-t01-i06"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "They are hard to push out",
+   "prompt": "cause: after/for \"Aami hold hands firmly\"",
+   "src": "c4-english-ch09-t01-i04"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "Tigers could push him out",
+   "prompt": "cause: after/for \"Friends let go of Temsu\"",
+   "src": "c4-english-ch09-t01-i11"
+  },
+  {
+   "itemId": "r2:2",
+   "key": "The tiger says Joko",
+   "prompt": "cause: after/for \"A tiger is caught\"",
+   "src": "c4-english-ch09-t01-i06"
+  },
+  {
+   "itemId": "r3:0",
+   "key": "Aakho tiger",
+   "prompt": "who: after/for \"Joko!\"",
+   "src": "c4-english-ch09-t01-i06"
+  },
+  {
+   "itemId": "r3:1",
+   "key": "An Aami player",
+   "prompt": "who: after/for \"We hold hands in the circle.\"",
+   "src": "c4-english-ch09-t01-i03"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

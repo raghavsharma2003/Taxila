@@ -1,0 +1,1494 @@
+{
+ "topicId": "c7-maths-ch04-t02",
+ "title": "Evaluating and simplifying expressions",
+ "chapter": "Expressions using Letter-Numbers",
+ "subject": "maths",
+ "class": 7,
+ "topicType": "T4",
+ "plan": {
+  "game": "rule-machine@1",
+  "hint": "build mode with letter rules (x → 3x + 2), evaluate at inputs; inverse round"
+ },
+ "game": {
+  "archetype": "rule-machine@1",
+  "spec": {
+   "archetype": "rule-machine@1",
+   "skills": [
+    "c7-maths-ch04-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "built": "machines",
+    "run": "RUN",
+    "want": "order",
+    "got": "made",
+    "coach": "Tap tiles to build the rule, then RUN",
+    "runDone": "Factory closed",
+    "step": "step",
+    "predict": "step",
+    "inverse": "run it backwards",
+    "target": "target",
+    "steps": "steps",
+    "pick": "Pick a start",
+    "works": "WORKS",
+    "fix": "not for every input"
+   },
+   "title": "Rule Machine",
+   "rounds": [
+    {
+     "mode": "build",
+     "title": "Fill the orders",
+     "sub": "build one rule for every input",
+     "rule": [
+      "×3",
+      "+2"
+     ],
+     "inputs": [
+      1,
+      3,
+      5,
+      8
+     ],
+     "tiles": [
+      "×3",
+      "+2",
+      "+3",
+      "×2"
+     ],
+     "targets": "c7-maths-ch04-t02-m-concatenate"
+    },
+    {
+     "mode": "seq",
+     "title": "Matchstick squares",
+     "sub": "make a rule for the sticks",
+     "pattern": "sticks-squares",
+     "rule": [
+      "×3",
+      "+1"
+     ],
+     "tiles": [
+      "×3",
+      "+1",
+      "×4",
+      "-1"
+     ],
+     "ask": 5
+    },
+    {
+     "mode": "inverse",
+     "title": "Think of a number",
+     "sub": "run the machine backwards",
+     "rule": [
+      "×3",
+      "+2"
+     ],
+     "secret": 20,
+     "tiles": [
+      "-2",
+      "÷3",
+      "+2",
+      "×3"
+     ],
+     "targets": "c7-maths-ch04-t02-m-lone-letter"
+    },
+    {
+     "mode": "brackets",
+     "title": "Bracket it",
+     "sub": "place brackets to reach the target",
+     "tokens": [
+      "3",
+      "+",
+      "4",
+      "×",
+      "5"
+     ],
+     "target": 35
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-maths-ch04-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Evaluate and simplify expressions",
+   "accent": "ion",
+   "targets": "c7-maths-ch04-t02-m-concatenate",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Expressions: two moves"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "2x means 23 when x is 3"
+      },
+      {
+       "id": "wrong",
+       "type": "label",
+       "text": "digits side by side",
+       "x": 560,
+       "y": 360,
+       "color": "amber"
+      },
+      {
+       "id": "correct",
+       "type": "label",
+       "text": "2 × 3 = 6",
+       "x": 560,
+       "y": 440,
+       "color": "mint"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "expr",
+       "type": "node",
+       "text": "6x+4+2x−1",
+       "sub": "original",
+       "glyph": "letter",
+       "color": "ion"
+      },
+      {
+       "id": "like",
+       "type": "node",
+       "text": "6x+2x",
+       "sub": "like terms",
+       "glyph": "group",
+       "color": "mint"
+      },
+      {
+       "id": "num",
+       "type": "node",
+       "text": "4−1",
+       "sub": "numbers",
+       "glyph": "coin",
+       "color": "amber"
+      },
+      {
+       "id": "simple",
+       "type": "node",
+       "text": "8x+3",
+       "sub": "simplified",
+       "glyph": "spark",
+       "color": "ion"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "expr",
+       "to": "like",
+       "text": "group"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "expr",
+       "to": "num",
+       "text": "group"
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "like",
+       "to": "simple",
+       "text": "combine"
+      },
+      {
+       "id": "a4",
+       "type": "arrow",
+       "from": "num",
+       "to": "simple",
+       "text": "combine"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "sub",
+       "type": "node",
+       "text": "x = 5",
+       "sub": "substitute",
+       "glyph": "ruler",
+       "color": "amber"
+      },
+      {
+       "id": "times",
+       "type": "node",
+       "text": "8 × 5",
+       "sub": "multiply",
+       "glyph": "star",
+       "color": "ion"
+      },
+      {
+       "id": "plus",
+       "type": "node",
+       "text": "40 + 3",
+       "sub": "add",
+       "color": "mint"
+      },
+      {
+       "id": "value",
+       "type": "node",
+       "text": "43",
+       "sub": "value",
+       "color": "sun"
+      },
+      {
+       "id": "b1",
+       "type": "arrow",
+       "from": "sub",
+       "to": "times",
+       "text": "put in"
+      },
+      {
+       "id": "b2",
+       "type": "arrow",
+       "from": "times",
+       "to": "plus",
+       "text": "then"
+      },
+      {
+       "id": "b3",
+       "type": "arrow",
+       "from": "plus",
+       "to": "value",
+       "text": "equals"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "row",
+     "els": [
+      {
+       "id": "prompt",
+       "type": "title",
+       "text": "Try one"
+      },
+      {
+       "id": "opt14",
+       "type": "node",
+       "text": "14",
+       "sub": "choice",
+       "color": "mint"
+      },
+      {
+       "id": "opt18",
+       "type": "node",
+       "text": "18",
+       "sub": "choice",
+       "glyph": "question",
+       "color": "amber"
+      },
+      {
+       "id": "opt32",
+       "type": "node",
+       "text": "32",
+       "sub": "choice",
+       "glyph": "question",
+       "color": "amber"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "An expression can be evaluated by substituting a number for its letter.",
+    "L2": "It can also be simplified by combining like terms. First, let us stop a common mistake.",
+    "L3": "The myth says that 2x with x equal to 3 is 23. That is not true: 2x means 2 times x, so the value is 6.",
+    "L4": "In 6x plus 4 plus 2x minus 1, group the like terms and the number terms.",
+    "L5": "The x terms make 8x, and the numbers make 3. So the simplified expression is 8x plus 3.",
+    "L6": "Now substitute x equal to 5. Calculate 8 times 5 plus 3, which gives 43.",
+    "L7": "Simplifying does not change the value. Check the original expression, and it also gives 43.",
+    "L8": "Your turn: if x equals 4, choose the value of 3x plus 2."
+   },
+   "narration": {
+    "L1": {
+     "text": "An expression can be evaluated by substituting a number for its letter.",
+     "dur": 5.5,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L2": {
+     "text": "It can also be simplified by combining like terms. First, let us stop a common mistake.",
+     "dur": 6.5,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L3": {
+     "text": "The myth says that 2x with x equal to 3 is 23. That is not true: 2x means 2 times x, so the value is 6.",
+     "dur": 9,
+     "lead": 0,
+     "tail": 0.5,
+     "pauses": []
+    },
+    "L4": {
+     "text": "In 6x plus 4 plus 2x minus 1, group the like terms and the number terms.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L5": {
+     "text": "The x terms make 8x, and the numbers make 3. So the simplified expression is 8x plus 3.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Now substitute x equal to 5. Calculate 8 times 5 plus 3, which gives 43.",
+     "dur": 6.5,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Simplifying does not change the value. Check the original expression, and it also gives 43.",
+     "dur": 6.5,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Your turn: if x equals 4, choose the value of 3x plus 2.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.4,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "title"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "myth"
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "bust",
+       "dur": 1.2,
+       "target": "myth"
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "wrong",
+        "correct"
+       ]
+      },
+      {
+       "at": 2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "correct"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "expr"
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "like",
+        "num"
+       ]
+      },
+      {
+       "at": 2,
+       "do": "flow",
+       "dur": 0.7,
+       "target": [
+        "a1",
+        "a2"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "flow",
+       "dur": 0.8,
+       "target": [
+        "a3",
+        "a4"
+       ],
+       "to": 1
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.7,
+       "target": "simple"
+      },
+      {
+       "at": 2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "simple"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "sub"
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "b1",
+       "to": 1
+      },
+      {
+       "at": 2,
+       "do": "show",
+       "dur": 0.6,
+       "target": "times"
+      },
+      {
+       "at": 3,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "b2",
+       "to": 1
+      },
+      {
+       "at": 4,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "plus",
+        "value"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "value"
+      },
+      {
+       "at": 1.5,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "b3",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "prompt"
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "opt14",
+        "opt18",
+        "opt32"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive"
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "If x = 4, which value is 3x + 2?",
+    "options": [
+     "opt14",
+     "opt18",
+     "opt32"
+    ],
+    "answer": "opt14",
+    "src": "c7-maths-ch04-t02-i01"
+   }
+  },
+  "repairs": [
+   "glyph",
+   "glyph",
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 57
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch04-t02-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "expr",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        180,
+        140
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "x",
+         "+",
+         "4"
+        ]
+       ]
+      },
+      {
+       "id": "sub",
+       "op": "arrow",
+       "startMs": 1400,
+       "endMs": 2300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        180
+       ],
+       "to": [
+        400,
+        280
+       ]
+      },
+      {
+       "id": "value",
+       "op": "numwork",
+       "startMs": 2400,
+       "endMs": 3400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        180,
+        300
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "x",
+         "=",
+         "5"
+        ]
+       ]
+      },
+      {
+       "id": "result",
+       "op": "numwork",
+       "startMs": 3600,
+       "endMs": 5200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        460,
+        300
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "5",
+         "+",
+         "4",
+         "=",
+         "9"
+        ]
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch04-t02-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "like",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        130
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "3a",
+         "+",
+         "5a",
+         "=",
+         "8a"
+        ]
+       ]
+      },
+      {
+       "id": "unlike",
+       "op": "numwork",
+       "startMs": 2100,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        260
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "3a",
+         "+",
+         "2b"
+        ]
+       ]
+      },
+      {
+       "id": "mark",
+       "op": "highlight",
+       "startMs": 3600,
+       "endMs": 4700,
+       "ink": "accent",
+       "weight": 2,
+       "target": "unlike",
+       "style": "underline"
+      },
+      {
+       "id": "hidden",
+       "op": "numwork",
+       "startMs": 5000,
+       "endMs": 6200,
+       "ink": "soft",
+       "weight": 2,
+       "at": [
+        120,
+        390
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "k",
+         "=",
+         "1k"
+        ]
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch04-t02-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 11664,
+     "ops": [
+      {
+       "id": "myth",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        120,
+        100
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "2x",
+         "=",
+         "23"
+        ]
+       ]
+      },
+      {
+       "id": "cross",
+       "op": "line",
+       "startMs": 1900,
+       "endMs": 2600,
+       "ink": "mark",
+       "weight": 3,
+       "from": [
+        120,
+        170
+       ],
+       "to": [
+        360,
+        90
+       ]
+      },
+      {
+       "id": "meaning",
+       "op": "numwork",
+       "startMs": 3000,
+       "endMs": 4700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        230
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "2x",
+         "=",
+         "2",
+         "×",
+         "x"
+        ]
+       ]
+      },
+      {
+       "id": "given",
+       "op": "numwork",
+       "startMs": 5000,
+       "endMs": 6100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        330
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "x",
+         "=",
+         "3"
+        ]
+       ]
+      },
+      {
+       "id": "answer",
+       "op": "numwork",
+       "startMs": 6500,
+       "endMs": 8300,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        120,
+        410
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "2",
+         "×",
+         "3",
+         "=",
+         "6"
+        ]
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch04-t02-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "original",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        100
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "6x",
+         "+",
+         "4",
+         "+",
+         "2x",
+         "−",
+         "1"
+        ]
+       ]
+      },
+      {
+       "id": "groupx",
+       "op": "numwork",
+       "startMs": 2500,
+       "endMs": 3900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        90,
+        220
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "(",
+         "6x",
+         "+",
+         "2x",
+         ")"
+        ]
+       ]
+      },
+      {
+       "id": "groupn",
+       "op": "numwork",
+       "startMs": 4000,
+       "endMs": 5100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        430,
+        220
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "(",
+         "4",
+         "−",
+         "1",
+         ")"
+        ]
+       ]
+      },
+      {
+       "id": "arrowx",
+       "op": "arrow",
+       "startMs": 5200,
+       "endMs": 5900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        250,
+        180
+       ],
+       "to": [
+        250,
+        220
+       ]
+      },
+      {
+       "id": "arrown",
+       "op": "arrow",
+       "startMs": 5900,
+       "endMs": 6600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        510,
+        180
+       ],
+       "to": [
+        510,
+        220
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch04-t02-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "combine",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        120,
+        300
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "6x",
+         "+",
+         "2x",
+         "=",
+         "8x"
+        ]
+       ]
+      },
+      {
+       "id": "numbers",
+       "op": "numwork",
+       "startMs": 2000,
+       "endMs": 3500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        430,
+        300
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "4",
+         "−",
+         "1",
+         "=",
+         "3"
+        ]
+       ]
+      },
+      {
+       "id": "simplified",
+       "op": "numwork",
+       "startMs": 4300,
+       "endMs": 5700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        180,
+        410
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "8x",
+         "+",
+         "3"
+        ]
+       ]
+      },
+      {
+       "id": "focus",
+       "op": "highlight",
+       "startMs": 6000,
+       "endMs": 7500,
+       "ink": "good",
+       "weight": 2,
+       "target": "simplified",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch04-t02-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "given5",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        90
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "x",
+         "=",
+         "5"
+        ]
+       ]
+      },
+      {
+       "id": "substitute",
+       "op": "numwork",
+       "startMs": 1300,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        190
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "8",
+         "×",
+         "5",
+         "+",
+         "3"
+        ]
+       ]
+      },
+      {
+       "id": "multiply",
+       "op": "numwork",
+       "startMs": 3000,
+       "endMs": 4100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        100,
+        300
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "40",
+         "+",
+         "3"
+        ]
+       ]
+      },
+      {
+       "id": "answer43",
+       "op": "numwork",
+       "startMs": 4500,
+       "endMs": 5600,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        100,
+        400
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "=",
+         "43"
+        ]
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch04-t02-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "checktitle",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        500,
+        90
+       ],
+       "text": "check",
+       "size": "m"
+      },
+      {
+       "id": "originalcheck",
+       "op": "numwork",
+       "startMs": 1200,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        380,
+        170
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "30",
+         "+",
+         "4",
+         "+",
+         "10",
+         "−",
+         "1"
+        ]
+       ]
+      },
+      {
+       "id": "checkstep",
+       "op": "numwork",
+       "startMs": 3300,
+       "endMs": 5100,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        380,
+        280
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "30",
+         "+",
+         "4",
+         "+",
+         "10",
+         "−",
+         "1",
+         "=",
+         "43"
+        ]
+       ]
+      },
+      {
+       "id": "same",
+       "op": "highlight",
+       "startMs": 5400,
+       "endMs": 6700,
+       "ink": "accent",
+       "weight": 2,
+       "target": "checkstep",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-maths-ch04-t02-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "question",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        80
+       ],
+       "text": "x = 4",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "expression",
+       "op": "numwork",
+       "startMs": 1200,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        180,
+        190
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "3x",
+         "+",
+         "2"
+        ]
+       ]
+      },
+      {
+       "id": "substitution",
+       "op": "numwork",
+       "startMs": 2600,
+       "endMs": 4000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        180,
+        300
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "3",
+         "×",
+         "4",
+         "+",
+         "2"
+        ]
+       ]
+      },
+      {
+       "id": "choice",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        430
+       ],
+       "text": "?",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1",
+   "key": "×3 then +2",
+   "prompt": "inputs 1,3,5,8 → 5,11,17,26"
+  },
+  {
+   "itemId": "r2",
+   "key": "×3 then +1",
+   "prompt": "sticks-squares: 4,7,10"
+  },
+  {
+   "itemId": "r3",
+   "key": "20",
+   "prompt": "×3 then +2 gave 62"
+  },
+  {
+   "itemId": "r4",
+   "key": "35",
+   "prompt": "3 + 4 × 5 = 35?"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

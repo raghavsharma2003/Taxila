@@ -1,0 +1,2037 @@
+{
+ "topicId": "c6-science-ch07-t02",
+ "title": "Clinical and laboratory thermometers",
+ "chapter": "Temperature and its Measurement",
+ "subject": "science",
+ "class": 6,
+ "topicType": "T4",
+ "plan": {
+  "game": "instrument@1",
+  "hint": "thermo mode: clinical (35-42 °C, 0.1 steps) and laboratory thermometers"
+ },
+ "game": {
+  "archetype": "instrument@1",
+  "spec": {
+   "archetype": "instrument@1",
+   "skills": [
+    "c6-science-ch07-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "measured": "measured",
+    "precision": "precision",
+    "hold": "Hold steady",
+    "release": "Release",
+    "cut": "Tap to cut",
+    "set": "Set",
+    "am": "a.m.",
+    "pm": "p.m.",
+    "tapAt": "Tap when it reads",
+    "runDone": "Bench clear",
+    "offBy": "off by",
+    "exact": "EXACT",
+    "after": "after",
+    "minutes": "min",
+    "balanced": "BALANCED",
+    "heavy": "parcel heavier",
+    "light": "weights heavier"
+   },
+   "title": "Temperature Bench",
+   "rounds": [
+    {
+     "mode": "thermo",
+     "title": "Check body temperature",
+     "sub": "Use a clinical thermometer safely",
+     "items": [
+      {
+       "target": 374,
+       "show": "C"
+      },
+      {
+       "target": 386,
+       "show": "C"
+      }
+     ],
+     "scaleMax": 420,
+     "minor": 4.2,
+     "tol": 1,
+     "speed": 1,
+     "targets": "c6-science-ch07-t02-m1"
+    },
+    {
+     "mode": "thermo",
+     "title": "Read the lab scale",
+     "sub": "Keep the bulb in the water",
+     "items": [
+      {
+       "target": 260,
+       "show": "C"
+      },
+      {
+       "target": 330,
+       "show": "C"
+      }
+     ],
+     "scaleMax": 1100,
+     "minor": 10,
+     "tol": 10,
+     "speed": 0.9
+    }
+   ]
+  },
+  "repairs": [
+   "enum:show",
+   "enum:show",
+   "minor:too-dense",
+   "enum:show",
+   "enum:show"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c6-science-ch07-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Which thermometer should we use?",
+   "accent": "sci",
+   "targets": "c6-science-ch07-t02-m1",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Which thermometer should we use?"
+      },
+      {
+       "id": "body",
+       "type": "node",
+       "text": "Body",
+       "sub": "about 37 °C",
+       "glyph": "person",
+       "color": "sci"
+      },
+      {
+       "id": "clinical",
+       "type": "node",
+       "text": "Clinical",
+       "sub": "35–42 °C",
+       "glyph": "thermometer",
+       "color": "mint"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Clinical thermometers measure boiling water"
+      },
+      {
+       "id": "link",
+       "type": "arrow",
+       "from": "body",
+       "to": "clinical",
+       "text": "measures"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "lab",
+       "type": "node",
+       "text": "Laboratory",
+       "sub": "−10–110 °C",
+       "glyph": "beaker",
+       "color": "ion"
+      },
+      {
+       "id": "water",
+       "type": "node",
+       "text": "Water",
+       "sub": "other things",
+       "glyph": "drop",
+       "color": "sci"
+      },
+      {
+       "id": "upright",
+       "type": "label",
+       "text": "Keep upright",
+       "x": 120,
+       "y": 470,
+       "color": "mint"
+      },
+      {
+       "id": "bulb",
+       "type": "label",
+       "text": "Bulb in liquid",
+       "x": 350,
+       "y": 470,
+       "color": "mint"
+      },
+      {
+       "id": "sides",
+       "type": "label",
+       "text": "No touching sides",
+       "x": 590,
+       "y": 470,
+       "color": "mint"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "lab",
+       "to": "water",
+       "text": "measures"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "column",
+     "els": [
+      {
+       "id": "steps",
+       "type": "title",
+       "text": "Read the lab thermometer"
+      },
+      {
+       "id": "step1",
+       "type": "node",
+       "text": "Upright",
+       "sub": "step 1",
+       "glyph": "ruler",
+       "color": "mint"
+      },
+      {
+       "id": "step2",
+       "type": "node",
+       "text": "Bulb in water",
+       "sub": "step 2",
+       "glyph": "drop",
+       "color": "sci"
+      },
+      {
+       "id": "step3",
+       "type": "node",
+       "text": "Eye level",
+       "sub": "step 3",
+       "glyph": "eye",
+       "color": "amber"
+      },
+      {
+       "id": "step4",
+       "type": "node",
+       "text": "Read scale",
+       "sub": "step 4",
+       "glyph": "thermometer",
+       "color": "ion"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "step1",
+       "to": "step2"
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "step2",
+       "to": "step3"
+      },
+      {
+       "id": "a4",
+       "type": "arrow",
+       "from": "step3",
+       "to": "step4"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "A thermometer measures temperature. The right thermometer depends on what we are measuring.",
+    "L2": "Here is a myth: a clinical thermometer can measure boiling water. That is not true.",
+    "L3": "A clinical thermometer measures body temperature. Its range is about 35 °C to 42 °C, because body temperature stays in this range and varies a little.",
+    "L4": "A laboratory thermometer has a wider range, usually −10 °C to 110 °C. It can measure other things, such as water.",
+    "L5": "To read a scale, find one small division and count. Ten divisions from 20 °C to 30 °C make each division 1 °C.",
+    "L6": "Keep a lab thermometer upright, with its bulb in the liquid and away from the bottom and sides.",
+    "L7": "Read it while it is still in the liquid, with your eye level with the top of the column. Then record the value with its unit.",
+    "L8": "Digital thermometers are safer than mercury ones. Now arrange the reading steps in order."
+   },
+   "narration": {
+    "L1": {
+     "text": "A thermometer measures temperature. The right thermometer depends on what we are measuring.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L2": {
+     "text": "Here is a myth: a clinical thermometer can measure boiling water. That is not true.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L3": {
+     "text": "A clinical thermometer measures body temperature. Its range is about 35 °C to 42 °C, because body temperature stays in this range and varies a little.",
+     "dur": 7,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L4": {
+     "text": "A laboratory thermometer has a wider range, usually −10 °C to 110 °C. It can measure other things, such as water.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L5": {
+     "text": "To read a scale, find one small division and count. Ten divisions from 20 °C to 30 °C make each division 1 °C.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Keep a lab thermometer upright, with its bulb in the liquid and away from the bottom and sides.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Read it while it is still in the liquid, with your eye level with the top of the column. Then record the value with its unit.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Digital thermometers are safer than mercury ones. Now arrange the reading steps in order.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "body",
+        "clinical"
+       ]
+      },
+      {
+       "at": 1.2,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "link",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      },
+      {
+       "at": 1,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1.2,
+       "target": "clinical"
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 1,
+       "target": "body"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "lab",
+        "water"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "a1",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.5,
+       "target": "lab"
+      },
+      {
+       "at": 0.5,
+       "do": "highlight",
+       "dur": 1,
+       "target": "lab"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "upright",
+        "bulb",
+        "sides"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "bulb"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "step1",
+        "step2"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "step3",
+        "step4"
+       ]
+      },
+      {
+       "at": 1.8,
+       "do": "flow",
+       "dur": 1,
+       "target": [
+        "a2",
+        "a3",
+        "a4"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "step4"
+      },
+      {
+       "at": "end",
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "order",
+    "prompt": "Tap the lab thermometer reading steps in the correct order.",
+    "items": [
+     "step1",
+     "step2",
+     "step3",
+     "step4"
+    ],
+    "src": "c6-science-ch07-t02-i09"
+   }
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg",
+  "seconds": 48
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch07-t02-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "t1",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        100
+       ],
+       "w": 80,
+       "h": 300,
+       "round": 12
+      },
+      {
+       "id": "t2",
+       "op": "line",
+       "startMs": 800,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        140,
+        150
+       ],
+       "to": [
+        140,
+        350
+       ]
+      },
+      {
+       "id": "t3",
+       "op": "circle",
+       "startMs": 1200,
+       "endMs": 1700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        140,
+        350
+       ],
+       "r": 18,
+       "fill": "accent"
+      },
+      {
+       "id": "l1",
+       "op": "label",
+       "startMs": 1700,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        95,
+        430
+       ],
+       "text": "clinical",
+       "to": [
+        140,
+        100
+       ]
+      },
+      {
+       "id": "t4",
+       "op": "rect",
+       "startMs": 2400,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        520,
+        100
+       ],
+       "w": 80,
+       "h": 300,
+       "round": 12
+      },
+      {
+       "id": "t5",
+       "op": "line",
+       "startMs": 3200,
+       "endMs": 3900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        560,
+        130
+       ],
+       "to": [
+        560,
+        365
+       ]
+      },
+      {
+       "id": "t6",
+       "op": "circle",
+       "startMs": 3700,
+       "endMs": 4200,
+       "ink": "mark",
+       "weight": 2,
+       "c": [
+        560,
+        365
+       ],
+       "r": 18,
+       "fill": "mark"
+      },
+      {
+       "id": "l2",
+       "op": "label",
+       "startMs": 4200,
+       "endMs": 5100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        510,
+        430
+       ],
+       "text": "laboratory",
+       "to": [
+        560,
+        100
+       ]
+      },
+      {
+       "id": "l3",
+       "op": "text",
+       "startMs": 5100,
+       "endMs": 6132,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        60
+       ],
+       "text": "temperature",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch07-t02-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "b1",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "myth",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "b2",
+       "op": "rect",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        150,
+        110
+       ],
+       "w": 90,
+       "h": 290,
+       "round": 12
+      },
+      {
+       "id": "b3",
+       "op": "circle",
+       "startMs": 1200,
+       "endMs": 1700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        195,
+        365
+       ],
+       "r": 20,
+       "fill": "accent"
+      },
+      {
+       "id": "b4",
+       "op": "label",
+       "startMs": 1700,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        130,
+        440
+       ],
+       "text": "clinical",
+       "to": [
+        195,
+        110
+       ]
+      },
+      {
+       "id": "b5",
+       "op": "ellipse",
+       "startMs": 2300,
+       "endMs": 3100,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        610,
+        350
+       ],
+       "rx": 120,
+       "ry": 45
+      },
+      {
+       "id": "b6",
+       "op": "label",
+       "startMs": 3000,
+       "endMs": 4000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        550,
+        420
+       ],
+       "text": "boiling water",
+       "to": [
+        610,
+        350
+       ]
+      },
+      {
+       "id": "b7",
+       "op": "line",
+       "startMs": 3900,
+       "endMs": 4700,
+       "ink": "accent",
+       "weight": 3,
+       "from": [
+        300,
+        180
+       ],
+       "to": [
+        500,
+        330
+       ]
+      },
+      {
+       "id": "b8",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        240
+       ],
+       "text": "not true",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "b9",
+       "op": "highlight",
+       "startMs": 5700,
+       "endMs": 6983,
+       "ink": "accent",
+       "weight": 2,
+       "target": "b8",
+       "style": "underline"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch07-t02-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 11664,
+     "ops": [
+      {
+       "id": "c1",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        55
+       ],
+       "text": "clinical thermometer",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "c2",
+       "op": "rect",
+       "startMs": 1100,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        350,
+        100
+       ],
+       "w": 70,
+       "h": 290,
+       "round": 12
+      },
+      {
+       "id": "c3",
+       "op": "line",
+       "startMs": 1800,
+       "endMs": 2500,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        385,
+        140
+       ],
+       "to": [
+        385,
+        350
+       ]
+      },
+      {
+       "id": "c4",
+       "op": "circle",
+       "startMs": 2300,
+       "endMs": 2800,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        385,
+        350
+       ],
+       "r": 18,
+       "fill": "accent"
+      },
+      {
+       "id": "c5",
+       "op": "numwork",
+       "startMs": 2800,
+       "endMs": 4000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        150
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "35",
+         "°C",
+         "to",
+         "42",
+         "°C"
+        ]
+       ]
+      },
+      {
+       "id": "c6",
+       "op": "line",
+       "startMs": 3900,
+       "endMs": 4700,
+       "ink": "chalk",
+       "weight": 1,
+       "from": [
+        180,
+        230
+       ],
+       "to": [
+        620,
+        230
+       ]
+      },
+      {
+       "id": "c7",
+       "op": "label",
+       "startMs": 4600,
+       "endMs": 5400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        210
+       ],
+       "text": "35 °C",
+       "to": [
+        180,
+        230
+       ]
+      },
+      {
+       "id": "c8",
+       "op": "label",
+       "startMs": 5300,
+       "endMs": 6100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        600,
+        210
+       ],
+       "text": "42 °C",
+       "to": [
+        600,
+        230
+       ]
+      },
+      {
+       "id": "c9",
+       "op": "text",
+       "startMs": 6100,
+       "endMs": 7200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        310
+       ],
+       "text": "body temperature",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "c10",
+       "op": "text",
+       "startMs": 7200,
+       "endMs": 8500,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        400,
+        450
+       ],
+       "text": "varies a little",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "c11",
+       "op": "arrow",
+       "startMs": 8500,
+       "endMs": 9500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        390,
+        345
+       ],
+       "to": [
+        390,
+        270
+       ]
+      },
+      {
+       "id": "c12",
+       "op": "highlight",
+       "startMs": 9500,
+       "endMs": 11664,
+       "ink": "good",
+       "weight": 2,
+       "target": "c5",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch07-t02-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9536,
+     "ops": [
+      {
+       "id": "lbt",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        55
+       ],
+       "text": "laboratory thermometer",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "lb1",
+       "op": "rect",
+       "startMs": 1100,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        365,
+        100
+       ],
+       "w": 70,
+       "h": 300,
+       "round": 12
+      },
+      {
+       "id": "lb2",
+       "op": "line",
+       "startMs": 1800,
+       "endMs": 2600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        125
+       ],
+       "to": [
+        400,
+        365
+       ]
+      },
+      {
+       "id": "lb3",
+       "op": "circle",
+       "startMs": 2400,
+       "endMs": 2900,
+       "ink": "mark",
+       "weight": 2,
+       "c": [
+        400,
+        365
+       ],
+       "r": 19,
+       "fill": "mark"
+      },
+      {
+       "id": "lb4",
+       "op": "numwork",
+       "startMs": 2900,
+       "endMs": 4200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        150,
+        145
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "−10",
+         "°C",
+         "to",
+         "110",
+         "°C"
+        ]
+       ]
+      },
+      {
+       "id": "lb5",
+       "op": "ellipse",
+       "startMs": 4200,
+       "endMs": 5000,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        620,
+        360
+       ],
+       "rx": 100,
+       "ry": 40
+      },
+      {
+       "id": "lb6",
+       "op": "label",
+       "startMs": 5000,
+       "endMs": 5900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        570,
+        425
+       ],
+       "text": "water",
+       "to": [
+        620,
+        360
+       ]
+      },
+      {
+       "id": "lb7",
+       "op": "arrow",
+       "startMs": 5900,
+       "endMs": 6800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        470,
+        330
+       ],
+       "to": [
+        570,
+        360
+       ]
+      },
+      {
+       "id": "lb8",
+       "op": "highlight",
+       "startMs": 6800,
+       "endMs": 8000,
+       "ink": "good",
+       "weight": 2,
+       "target": "lb4",
+       "style": "underline"
+      },
+      {
+       "id": "lb9",
+       "op": "text",
+       "startMs": 8000,
+       "endMs": 9536,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        465
+       ],
+       "text": "wider range",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch07-t02-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 10387,
+     "ops": [
+      {
+       "id": "s1",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        55
+       ],
+       "text": "small division",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "s2",
+       "op": "line",
+       "startMs": 900,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        150,
+        220
+       ],
+       "to": [
+        650,
+        220
+       ]
+      },
+      {
+       "id": "s3",
+       "op": "line",
+       "startMs": 1600,
+       "endMs": 2100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        150,
+        190
+       ],
+       "to": [
+        150,
+        250
+       ]
+      },
+      {
+       "id": "s4",
+       "op": "line",
+       "startMs": 2000,
+       "endMs": 2400,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        250,
+        200
+       ],
+       "to": [
+        250,
+        240
+       ]
+      },
+      {
+       "id": "s5",
+       "op": "line",
+       "startMs": 2300,
+       "endMs": 2700,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        350,
+        200
+       ],
+       "to": [
+        350,
+        240
+       ]
+      },
+      {
+       "id": "s6",
+       "op": "line",
+       "startMs": 2600,
+       "endMs": 3000,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        450,
+        200
+       ],
+       "to": [
+        450,
+        240
+       ]
+      },
+      {
+       "id": "s7",
+       "op": "line",
+       "startMs": 2900,
+       "endMs": 3300,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        550,
+        200
+       ],
+       "to": [
+        550,
+        240
+       ]
+      },
+      {
+       "id": "s8",
+       "op": "line",
+       "startMs": 3200,
+       "endMs": 3700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        650,
+        190
+       ],
+       "to": [
+        650,
+        250
+       ]
+      },
+      {
+       "id": "s9",
+       "op": "label",
+       "startMs": 3700,
+       "endMs": 4400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        135,
+        175
+       ],
+       "text": "20 °C",
+       "to": [
+        150,
+        190
+       ]
+      },
+      {
+       "id": "s10",
+       "op": "label",
+       "startMs": 4300,
+       "endMs": 5000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        620,
+        175
+       ],
+       "text": "30 °C",
+       "to": [
+        650,
+        190
+       ]
+      },
+      {
+       "id": "s11",
+       "op": "numwork",
+       "startMs": 5000,
+       "endMs": 6500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        250,
+        300
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "10",
+         "÷",
+         "10",
+         "=",
+         "1",
+         "°C"
+        ]
+       ]
+      },
+      {
+       "id": "s12",
+       "op": "text",
+       "startMs": 6500,
+       "endMs": 7600,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        425
+       ],
+       "text": "1 °C",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "s13",
+       "op": "highlight",
+       "startMs": 7600,
+       "endMs": 10387,
+       "ink": "good",
+       "weight": 2,
+       "target": "s12",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch07-t02-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "g1",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        390
+       ],
+       "rx": 190,
+       "ry": 45
+      },
+      {
+       "id": "g2",
+       "op": "line",
+       "startMs": 700,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        400,
+        110
+       ],
+       "to": [
+        400,
+        350
+       ]
+      },
+      {
+       "id": "g3",
+       "op": "circle",
+       "startMs": 1600,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        350
+       ],
+       "r": 20,
+       "fill": "accent"
+      },
+      {
+       "id": "g4",
+       "op": "line",
+       "startMs": 2200,
+       "endMs": 2900,
+       "ink": "soft",
+       "weight": 2,
+       "from": [
+        260,
+        390
+       ],
+       "to": [
+        540,
+        390
+       ]
+      },
+      {
+       "id": "g5",
+       "op": "arrow",
+       "startMs": 2900,
+       "endMs": 3800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        300,
+        80
+       ],
+       "to": [
+        400,
+        110
+       ]
+      },
+      {
+       "id": "g6",
+       "op": "label",
+       "startMs": 3800,
+       "endMs": 4700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        245,
+        70
+       ],
+       "text": "upright",
+       "to": [
+        300,
+        80
+       ]
+      },
+      {
+       "id": "g7",
+       "op": "label",
+       "startMs": 4700,
+       "endMs": 5500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        470,
+        350
+       ],
+       "text": "bulb",
+       "to": [
+        400,
+        350
+       ]
+      },
+      {
+       "id": "g8",
+       "op": "label",
+       "startMs": 5500,
+       "endMs": 6400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        500,
+        430
+       ],
+       "text": "liquid",
+       "to": [
+        500,
+        390
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch07-t02-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 11664,
+     "ops": [
+      {
+       "id": "r1",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        400,
+        90
+       ],
+       "to": [
+        400,
+        350
+       ]
+      },
+      {
+       "id": "r2",
+       "op": "circle",
+       "startMs": 800,
+       "endMs": 1300,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        350
+       ],
+       "r": 20,
+       "fill": "accent"
+      },
+      {
+       "id": "r3",
+       "op": "ellipse",
+       "startMs": 1200,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        390
+       ],
+       "rx": 180,
+       "ry": 45
+      },
+      {
+       "id": "r4",
+       "op": "line",
+       "startMs": 1800,
+       "endMs": 2400,
+       "ink": "soft",
+       "weight": 2,
+       "from": [
+        250,
+        390
+       ],
+       "to": [
+        550,
+        390
+       ]
+      },
+      {
+       "id": "r5",
+       "op": "arrow",
+       "startMs": 2400,
+       "endMs": 3300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        170,
+        250
+       ],
+       "to": [
+        370,
+        250
+       ]
+      },
+      {
+       "id": "r6",
+       "op": "label",
+       "startMs": 3300,
+       "endMs": 4200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        120,
+        240
+       ],
+       "text": "eye level",
+       "to": [
+        170,
+        250
+       ]
+      },
+      {
+       "id": "r7",
+       "op": "arrow",
+       "startMs": 4200,
+       "endMs": 5000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        470,
+        250
+       ],
+       "to": [
+        400,
+        250
+       ]
+      },
+      {
+       "id": "r8",
+       "op": "label",
+       "startMs": 5000,
+       "endMs": 6200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        470,
+        220
+       ],
+       "text": "top of column",
+       "to": [
+        400,
+        250
+       ]
+      },
+      {
+       "id": "r9",
+       "op": "numwork",
+       "startMs": 6200,
+       "endMs": 7900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        190,
+        120
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "20",
+         "°C",
+         "+",
+         "6",
+         "°C",
+         "=",
+         "26",
+         "°C"
+        ]
+       ]
+      },
+      {
+       "id": "r10",
+       "op": "text",
+       "startMs": 7900,
+       "endMs": 9200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        450
+       ],
+       "text": "record 26 °C",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "r11",
+       "op": "highlight",
+       "startMs": 9200,
+       "endMs": 10400,
+       "ink": "good",
+       "weight": 2,
+       "target": "r10",
+       "style": "underline"
+      },
+      {
+       "id": "r12",
+       "op": "highlight",
+       "startMs": 10400,
+       "endMs": 11664,
+       "ink": "accent",
+       "weight": 2,
+       "target": "r6",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch07-t02-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "d1",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        55
+       ],
+       "text": "digital thermometer",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "d2",
+       "op": "rect",
+       "startMs": 900,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        170,
+        130
+       ],
+       "w": 150,
+       "h": 210,
+       "round": 18
+      },
+      {
+       "id": "d3",
+       "op": "text",
+       "startMs": 1600,
+       "endMs": 2400,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        245,
+        220
+       ],
+       "text": "26 °C",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "d4",
+       "op": "rect",
+       "startMs": 2300,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        480,
+        130
+       ],
+       "w": 150,
+       "h": 210,
+       "round": 18
+      },
+      {
+       "id": "d5",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        555,
+        220
+       ],
+       "text": "mercury",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "d6",
+       "op": "line",
+       "startMs": 3800,
+       "endMs": 4500,
+       "ink": "accent",
+       "weight": 3,
+       "from": [
+        330,
+        235
+       ],
+       "to": [
+        470,
+        235
+       ]
+      },
+      {
+       "id": "d7",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5300,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        410
+       ],
+       "text": "safer",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "d8",
+       "op": "numwork",
+       "startMs": 5300,
+       "endMs": 6557,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        170,
+        455
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "1",
+         "hold",
+         "2",
+         "dip",
+         "3",
+         "wait",
+         "4",
+         "read"
+        ]
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "374 tenths C",
+   "prompt": "thermo: 37.4 °C"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "386 tenths C",
+   "prompt": "thermo: 38.6 °C"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "260 tenths C",
+   "prompt": "thermo: 26 °C"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "330 tenths C",
+   "prompt": "thermo: 33 °C"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ },
+ "firstCheck": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "round 2 targets ('26', '33') appear to be in °C but the computed keys show the correct answers as tenths of °C (26 → 26 tenths = 2.6 °C, 33 → 33 tenths = 3.3 °C). The game items claim the targets are 26 and 33 °C, which would be extremely hot water; the lab thermometer range in the kit goes up to 110 °C, but 26 °C and 33 °C are plausible values for warm water, so the game's intended display unit is likely tenths, not whole degrees. This mismatch between the displayed raw number and the intended temperature makes the round misleading for a child.",
+    "severity": "high"
+   }
+  ],
+  "verdict": "fail",
+  "model": "DeepSeek-V4-Flash"
+ },
+ "regens": 2
+}

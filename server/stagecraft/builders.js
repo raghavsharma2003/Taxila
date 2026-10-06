@@ -12,21 +12,14 @@
 //                          ready only after an OCR no-text presence check and Content Safety (both injected; absent = fail)
 //   liveCodegen            router.decide must say "live" → planBuild → buildRace → revealable({ gate })
 //   library                the promoted library variant (server/studio/library.js lookup), keyed by structure
-import fs from "node:fs";
+import { z } from "zod";
 import { ENGINE_SPECS, validateSpec, specJsonSchema } from "../../shared/studio-spec.ts";
+import { ENGINE_SPECS_EXT, validateAny } from "../../shared/studio-spec-ext/index.ts";
+import { authoredSpec, kitTopicAny, unknownKitIds, titleOf, stringsOfSpec } from "./catalogue.js";
+import { keyTerms } from "../forge/explainer/terms.js";
 
-const KITS_DIR = new URL("../../data/kits/", import.meta.url);
-let kitIndex = null;
-/** topicId → kit topic (data/kits/c4-c7 maths/science/evs), read once. */
-export function kitTopic(topicId) {
-  if (!kitIndex) {
-    kitIndex = {};
-    for (const f of fs.readdirSync(KITS_DIR)) if (/^c[4-7]-(maths|science|evs)\.json$/.test(f)) {
-      for (const t of JSON.parse(fs.readFileSync(new URL(f, KITS_DIR), "utf8")).topics ?? []) kitIndex[t.topicId] = t;
-    }
-  }
-  return kitIndex[topicId] ?? null;
-}
+/** topicId → kit topic (data/kits/c4-c7, every subject since ship5 p4-content: the catalogue covers all six), read once. */
+export function kitTopic(topicId) { return kitTopicAny(topicId); }
 /** The closed-vocabulary kit slice a spec prompt may carry (ids, item prompts and answers; never a child's words). */
 export function kitSlice(topicId, misconceptionId = null) {
   const t = kitTopic(topicId);
@@ -38,9 +31,11 @@ export function kitSlice(topicId, misconceptionId = null) {
 
 /** The generated-spec prompt: system rules first, the archetype's notes and the request LAST (position is mechanism). */
 export function specPrompt(c, key) {
-  const a = c.archetype, d = ENGINE_SPECS[a];
-  const schema = JSON.stringify(specJsonSchema(a));
-  const ex = JSON.stringify(d.defaultSpec).slice(0, 5000);
+  const a = c.archetype, d = ENGINE_SPECS[a] ?? ENGINE_SPECS_EXT[a];
+  const schema = JSON.stringify(ENGINE_SPECS[a] ? specJsonSchema(a) : schemaOfExt(a));
+  // ship5 p4-content: the example is THIS topic's checked authored spec when the catalogue has one (the shape is right and
+  // the content is on-topic), else the archetype's reviewed default (a different lesson)
+  const ex = JSON.stringify(authoredSpec(key.topicId, a) ?? d.defaultSpec).slice(0, 5000);
   const slice = JSON.stringify(kitSlice(key.topicId, c.premise?.misconceptionId ?? null)).slice(0, 3500);
   const aim = c.need === "contrast_misconception" ? `aimed at the misconception ${c.premise?.misconceptionId ?? "listed"}`
     : c.need === "re_represent" ? "a different representation of the same idea" : c.need === "practice" ? "practice after an untimed success" : `need ${c.need}`;
@@ -58,7 +53,47 @@ export function imagePrompt(c, key) {
 }
 
 const ok = (o = {}) => ({ truth: true, stageContract: true, onTopic: true, contentSafe: true, ...o });
-const facts = (c, extra = {}) => ({ kind: c.kind, archetype: c.archetype, onScreen: { title: ENGINE_SPECS[c.archetype]?.title ?? c.archetype, ...extra } });
+const facts = (c, extra = {}) => ({ kind: c.kind, archetype: c.archetype, onScreen: { title: titleOf(c.archetype), ...extra } });
+const clip = (t, n) => { const x = String(t ?? "").replace(/[<>{}\n]/g, " ").replace(/\s+/g, " ").trim(); return x.length > n ? `${x.slice(0, n - 1).trimEnd()}…` : x; };
+/**
+ * What a spec puts on screen, as VALUES for her facts row (ship5 p4-content): the piece's own title, the labels its first
+ * scenes show, its rounds, and the question it asks — never an answer key (keys are the host's; the catalogue's blind
+ * check and the authoring rule keep answers out of prompts). Her line may name only these (AT-7).
+ */
+export function factsOfSpec(archetype, spec) {
+  const on = {};
+  if (!spec || typeof spec !== "object") return on;
+  if (typeof spec.title === "string") on.title = clip(spec.title, 40);
+  if (Array.isArray(spec.scenes)) {
+    const labels = [];
+    for (const sc of spec.scenes) for (const e of sc?.els ?? []) if (["title", "label", "node", "quote"].includes(e?.type) && typeof e.text === "string" && e.type !== "myth") labels.push(clip(e.text, 24));
+    const uniq = [...new Set(labels)].filter((l) => l && l !== on.title).slice(0, 4);
+    if (uniq.length) on.shows = uniq.join(" · ");
+    on.scenes = spec.scenes.length;
+  }
+  if (Array.isArray(spec.rounds)) {
+    on.rounds = spec.rounds.length;
+    const first = spec.rounds.find((r) => typeof r?.title === "string");
+    if (first) on.first = clip([first.title, first.sub].filter((x) => typeof x === "string").join(": "), 60);
+  }
+  if (spec.task && typeof spec.task.prompt === "string") on.asks = clip(spec.task.prompt, 90);
+  return on;
+}
+const schemaOfExt = (a) => { try { return z.toJSONSchema(ENGINE_SPECS_EXT[a].schema, { unrepresentable: "any" }); } catch { return {}; } };
+const langOf = (key, d) => (key?.lang === "hi" ? "hi" : key?.lang === "en" ? "en" : d.defaultSpec.lang);
+
+/**
+ * The code-built board twin (L7): the same idea as the candidate, drawn by the Studio v2 board renderer (title + up to
+ * four short lines, no figure), from the topic's KIT only: the piece's own title and the kit's key terms. Its values are
+ * the candidate's facts (title), so her line stays true when a mount fails and the twin shows instead.
+ */
+export function boardTwinFor(c, topicId) {
+  const title = String(titleOf(c.archetype) ?? c.need ?? "board").slice(0, 40);
+  const kit = topicId ? kitTopicAny(topicId) : null;
+  let lines = [];
+  try { lines = kit ? keyTerms(kit, 4).map((t) => String(t).slice(0, 64)) : []; } catch { lines = []; }
+  return { scriptRef: `board:${c.family}`, values: { title, need: c.need ?? "explain" }, board: { title, lines, figure: { kind: "none" } } };
+}
 
 /**
  * @param {{
@@ -70,17 +105,26 @@ const facts = (c, extra = {}) => ({ kind: c.kind, archetype: c.archetype, onScre
  */
 export function createBuilders(deps = {}) {
   const instant = {
+    // ship5 p4-content: the instant rung serves THIS topic's checked authored spec (data/studio-catalogue, re-validated by
+    // catalogue.js) when there is one; else, for a base RS-4 archetype whose reviewed outcomes list the topic, the reviewed
+    // default. An extension archetype has no topic-free default: without an authored spec it is not on-topic (never shown).
     engineDefault(c, key) {
-      const d = ENGINE_SPECS[c.archetype];
+      const base = ENGINE_SPECS[c.archetype], ext = ENGINE_SPECS_EXT[c.archetype];
+      const d = base ?? ext;
       if (!d) return { payload: null, checks: ok({ truth: false }), facts: facts(c) };
-      const v = validateSpec(c.archetype, { ...structuredClone(d.defaultSpec), lang: key?.lang === "hi" ? "hi" : key?.lang === "en" ? "en" : d.defaultSpec.lang });
-      const onTopic = !!key?.topicId && d.outcomes.topics.includes(key.topicId);
-      return { payload: { rung: "engine_default", archetype: c.archetype, spec: v.spec, lateBind: [] }, checks: ok({ spec: { ok: true, repairs: v.repairs.length, fellBack: v.fellBack }, onTopic }), facts: facts(c) };
+      const authored = key?.topicId ? authoredSpec(key.topicId, c.archetype) : null;
+      if (authored) {
+        const v = validateAny(c.archetype, structuredClone(authored));
+        const idsOk = !unknownKitIds(kitTopicAny(key.topicId), v.spec).length;
+        return { payload: { rung: "engine_default", archetype: c.archetype, spec: v.spec, lateBind: [], source: "catalogue" },
+          checks: ok({ spec: { ok: !v.fellBack, repairs: v.repairs.length, fellBack: v.fellBack }, onTopic: !v.fellBack, truth: idsOk }), facts: facts(c, factsOfSpec(c.archetype, v.spec)) };
+      }
+      if (!base) return { payload: null, checks: ok({ onTopic: false }), facts: facts(c) };
+      const v = validateSpec(c.archetype, { ...structuredClone(base.defaultSpec), lang: langOf(key, base) });
+      const onTopic = !!key?.topicId && base.outcomes.topics.includes(key.topicId);
+      return { payload: { rung: "engine_default", archetype: c.archetype, spec: v.spec, lateBind: [], source: "reviewed_default" }, checks: ok({ spec: { ok: true, repairs: v.repairs.length, fellBack: v.fellBack }, onTopic }), facts: facts(c) };
     },
-    boardTwin(c) {
-      const title = ENGINE_SPECS[c.archetype]?.title ?? (c.need ?? "board");
-      return { scriptRef: `board:${c.family}`, values: { title, need: c.need ?? "explain" }, board: { title, lines: [], figure: { kind: "none" } } };
-    },
+    boardTwin(c) { return boardTwinFor(c, c.premise?.topicId ?? null); },
     rebind(c, committed) {
       const slots = c.payload?.lateBind ?? [];
       if (!slots.length) return { ok: true };
@@ -95,11 +139,21 @@ export function createBuilders(deps = {}) {
     if (!deps.chat) throw Object.assign(new Error("no chat dependency"), { code: "unwired" });
     const res = await deps.chat(dep, specPrompt(c, key), { json: true, maxTokens: 6000, effort: "low", schemaName: "spec", signal, quotaLane: "background", timeoutMs: 20_000, retries: 0 });   // signal: patch P8 (azure.js does not forward it yet)
     const usd = deps.usdOf && deps.normUsage ? deps.usdOf(dep, deps.normUsage(res.usage)) : 0;
-    const v = validateSpec(c.archetype, res.json);
+    const v = validateAny(c.archetype, res.json);
     if (v.fellBack) return { ok: false, usd, why: "fell_back" };
+    // the code-checked kit-id validator: a cited id that is not this topic's kit makes the spec unusable (never trusted)
+    if (unknownKitIds(kitTopicAny(key.topicId), v.spec).length) return { ok: false, usd, why: "unknown_kit_id" };
+    // Q8 on every child-visible string the model WROTE: strings already in this topic's checked authored spec (or the
+    // reviewed default) were checked when that spec was; the new ones go through Content Safety (+ the brain classifier
+    // for Hindi / Hinglish) — fail closed (ship5 p4-content: this keeps Content Safety to the strings that need it)
     let contentSafe = true;
-    if (deps.q8) { try { contentSafe = !!(await deps.q8(v.spec.strings ?? {}))?.ok; } catch { contentSafe = false; } }
-    return { ok: true, usd, payload: { rung: "generated_spec", archetype: c.archetype, spec: v.spec, lateBind: [] }, checks: ok({ spec: { ok: true, repairs: v.repairs.length, fellBack: false }, contentSafe, onTopic: ENGINE_SPECS[c.archetype].outcomes.topics.includes(key.topicId) }), facts: facts(c) };
+    if (deps.q8) {
+      const known = new Set(Object.values(stringsOfSpec(authoredSpec(key.topicId, c.archetype) ?? (ENGINE_SPECS[c.archetype] ?? ENGINE_SPECS_EXT[c.archetype])?.defaultSpec ?? {})));
+      const fresh = Object.fromEntries(Object.entries(stringsOfSpec(v.spec)).filter(([, t]) => !known.has(t)).slice(0, 60));
+      if (Object.keys(fresh).length) { try { contentSafe = !!(await deps.q8(fresh, key.lang))?.ok; } catch { contentSafe = false; } }
+    }
+    const onTopic = !!ENGINE_SPECS[c.archetype]?.outcomes.topics.includes(key.topicId) || !!authoredSpec(key.topicId, c.archetype);
+    return { ok: true, usd, payload: { rung: "generated_spec", archetype: c.archetype, spec: v.spec, lateBind: [] }, checks: ok({ spec: { ok: true, repairs: v.repairs.length, fellBack: false }, contentSafe, onTopic }), facts: facts(c, factsOfSpec(c.archetype, v.spec)) };
   }
 
   async function image(c, dep, signal, key) {
@@ -132,6 +186,8 @@ export function createBuilders(deps = {}) {
 
   return { instant, generatedSpec, image, liveCodegen, library };
 }
+
+export { stringsOfSpec } from "./catalogue.js";
 
 function setPath(obj, path, value) {
   const parts = String(path).split(".");

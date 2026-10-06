@@ -1,0 +1,1734 @@
+{
+ "topicId": "c5-evs-ch01-t02",
+ "title": "Water for living things",
+ "chapter": "Water — The Essence of Life",
+ "subject": "evs",
+ "class": 5,
+ "topicType": "T3",
+ "plan": {
+  "game": "story-rail@1",
+  "hint": "cause mode: water for living things (plants, animals, people)"
+ },
+ "game": {
+  "archetype": "story-rail@1",
+  "spec": {
+   "archetype": "story-rail@1",
+   "skills": [
+    "c5-evs-ch01-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "picked": "coupled",
+    "streak": "streak",
+    "next": "What happens next?",
+    "effect": "What does this lead to?",
+    "who": "Who said this?",
+    "runDone": "Line complete",
+    "order": "your train",
+    "right": "Coupled",
+    "wrong": "Not this one",
+    "coach": "Tap a wagon before the train reaches the fork"
+   },
+   "title": "Water for living things",
+   "rounds": [
+    {
+     "mode": "sequence",
+     "title": "Water's journey",
+     "sub": "couple the path from soil to air",
+     "cards": [
+      {
+       "id": "s1",
+       "text": "Water is in the soil",
+       "src": "c5-evs-ch01-t02-i11"
+      },
+      {
+       "id": "s2",
+       "text": "Roots take in water",
+       "src": "c5-evs-ch01-t02-i01"
+      },
+      {
+       "id": "s3",
+       "text": "Water travels up stem",
+       "src": "c5-evs-ch01-t02-i14"
+      },
+      {
+       "id": "s4",
+       "text": "Water reaches leaves",
+       "src": "c5-evs-ch01-t02-i11"
+      },
+      {
+       "id": "s5",
+       "text": "Vapour enters the air",
+       "src": "c5-evs-ch01-t02-i04"
+      }
+     ],
+     "speed": 0.9
+    },
+    {
+     "mode": "cause",
+     "title": "Water at work",
+     "sub": "match each cause to its effect",
+     "pairs": [
+      {
+       "cause": {
+        "id": "c1",
+        "text": "Water is poured into soil",
+        "src": "c5-evs-ch01-t02-i05"
+       },
+       "effect": {
+        "id": "e1",
+        "text": "Roots take up the water",
+        "src": "c5-evs-ch01-t02-i05"
+       }
+      },
+      {
+       "cause": {
+        "id": "c2",
+        "text": "A plant gets no water",
+        "src": "c5-evs-ch01-t02-i06"
+       },
+       "effect": {
+        "id": "e2",
+        "text": "The plant wilts",
+        "src": "c5-evs-ch01-t02-i06"
+       }
+      },
+      {
+       "cause": {
+        "id": "c3",
+        "text": "Leaves give out vapour",
+        "src": "c5-evs-ch01-t02-i04"
+       },
+       "effect": {
+        "id": "e3",
+        "text": "Drops form inside a bag",
+        "src": "c5-evs-ch01-t02-i04"
+       }
+      },
+      {
+       "cause": {
+        "id": "c4",
+        "text": "A child plays cricket in heat",
+        "src": "c5-evs-ch01-t02-i09"
+       },
+       "effect": {
+        "id": "e4",
+        "text": "The body loses water as sweat",
+        "src": "c5-evs-ch01-t02-i09"
+       }
+      }
+     ],
+     "speed": 0.8,
+     "targets": "c5-evs-ch01-t02-m1"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c5-evs-ch01-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Water for living things",
+   "accent": "mint",
+   "targets": "c5-evs-ch01-t02-m2",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Water for living things"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Plants get food from soil"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "soil",
+       "type": "node",
+       "text": "Soil",
+       "glyph": "earth",
+       "color": "amber"
+      },
+      {
+       "id": "roots",
+       "type": "node",
+       "text": "Roots",
+       "sub": "take in water",
+       "glyph": "tree",
+       "color": "mint"
+      },
+      {
+       "id": "stem",
+       "type": "node",
+       "text": "Stem",
+       "sub": "water travels up",
+       "glyph": "tree",
+       "color": "ion"
+      },
+      {
+       "id": "leaves",
+       "type": "node",
+       "text": "Leaves",
+       "sub": "make food",
+       "glyph": "leaf",
+       "color": "sun"
+      },
+      {
+       "id": "air",
+       "type": "node",
+       "text": "Air",
+       "glyph": "wind",
+       "color": "ion"
+      },
+      {
+       "id": "water",
+       "type": "arrow",
+       "from": "soil",
+       "to": "roots",
+       "text": "water",
+       "bend": 0
+      },
+      {
+       "id": "up",
+       "type": "arrow",
+       "from": "roots",
+       "to": "stem",
+       "text": "travels up",
+       "bend": 0
+      },
+      {
+       "id": "top",
+       "type": "arrow",
+       "from": "stem",
+       "to": "leaves",
+       "text": "reaches",
+       "bend": 0
+      },
+      {
+       "id": "food",
+       "type": "arrow",
+       "from": "air",
+       "to": "leaves",
+       "text": "with sunlight",
+       "bend": 0
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "qtitle",
+       "type": "title",
+       "text": "Check the idea"
+      },
+      {
+       "id": "foodsoil",
+       "type": "node",
+       "text": "Food from soil",
+       "glyph": "earth",
+       "color": "amber"
+      },
+      {
+       "id": "leafmake",
+       "type": "node",
+       "text": "Leaves make food",
+       "glyph": "leaf",
+       "color": "mint"
+      },
+      {
+       "id": "waterloss",
+       "type": "node",
+       "text": "Water vapour",
+       "glyph": "cloud",
+       "color": "ion"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Plants need water to live, just as animals and people do.",
+    "L2": "A plant mostly takes in water through its roots from the soil.",
+    "L3": "The water travels up from the roots through the stem to the leaves.",
+    "L4": "In the leaves, the plant uses water, air and sunlight to make its own food.",
+    "L5": "Soil gives water and some minerals, but it does not give the plant ready-made food.",
+    "L6": "Leaves also give out water vapour through tiny openings, so a plant can wilt without enough water.",
+    "L7": "Now choose the statement that explains where a plant makes its food."
+   },
+   "narration": {
+    "L1": {
+     "text": "Plants need water to live, just as animals and people do.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "A plant mostly takes in water through its roots from the soil.",
+     "dur": 9,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "The water travels up from the roots through the stem to the leaves.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "In the leaves, the plant uses water, air and sunlight to make its own food.",
+     "dur": 10,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "Soil gives water and some minerals, but it does not give the plant ready-made food.",
+     "dur": 10,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Leaves also give out water vapour through tiny openings, so a plant can wilt without enough water.",
+     "dur": 10,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Now choose the statement that explains where a plant makes its food.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "title"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "soil",
+        "roots"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.8,
+       "target": "water"
+      },
+      {
+       "at": 1.4,
+       "do": "flow",
+       "dur": 1,
+       "target": "water",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "stem",
+        "up"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 1,
+       "target": "up",
+       "to": 1
+      },
+      {
+       "at": 1.8,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "leaves",
+        "top"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "leaves"
+      },
+      {
+       "at": 0.6,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "air",
+        "food"
+       ]
+      },
+      {
+       "at": 1.5,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "food",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      },
+      {
+       "at": 1,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "air"
+      },
+      {
+       "at": 0.6,
+       "do": "highlight",
+       "dur": 1,
+       "target": "leaves"
+      },
+      {
+       "at": 1.8,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "food",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "qtitle",
+        "foodsoil",
+        "leafmake"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which statement is true about a plant's food?",
+    "options": [
+     "foodsoil",
+     "leafmake"
+    ],
+    "answer": "leafmake",
+    "src": "c5-evs-ch01-t02-i07"
+   }
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast-bg",
+  "seconds": 66
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "Roots take in water",
+   "prompt": "sequence: after/for \"Water is in the soil\"",
+   "src": "c5-evs-ch01-t02-i01"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "Water travels up stem",
+   "prompt": "sequence: after/for \"Roots take in water\"",
+   "src": "c5-evs-ch01-t02-i14"
+  },
+  {
+   "itemId": "r1:2",
+   "key": "Water reaches leaves",
+   "prompt": "sequence: after/for \"Water travels up stem\"",
+   "src": "c5-evs-ch01-t02-i11"
+  },
+  {
+   "itemId": "r1:3",
+   "key": "Vapour enters the air",
+   "prompt": "sequence: after/for \"Water reaches leaves\"",
+   "src": "c5-evs-ch01-t02-i04"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "Roots take up the water",
+   "prompt": "cause: after/for \"Water is poured into soil\"",
+   "src": "c5-evs-ch01-t02-i05"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "The plant wilts",
+   "prompt": "cause: after/for \"A plant gets no water\"",
+   "src": "c5-evs-ch01-t02-i06"
+  },
+  {
+   "itemId": "r2:2",
+   "key": "Drops form inside a bag",
+   "prompt": "cause: after/for \"Leaves give out vapour\"",
+   "src": "c5-evs-ch01-t02-i04"
+  },
+  {
+   "itemId": "r2:3",
+   "key": "The body loses water as sweat",
+   "prompt": "cause: after/for \"A child plays cricket in heat\"",
+   "src": "c5-evs-ch01-t02-i09"
+  }
+ ],
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch01-t02-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "plant",
+       "op": "polygon",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         350,
+         390
+        ],
+        [
+         350,
+         220
+        ],
+        [
+         320,
+         180
+        ],
+        [
+         350,
+         205
+        ],
+        [
+         380,
+         180
+        ],
+        [
+         370,
+         220
+        ],
+        [
+         370,
+         390
+        ]
+       ]
+      },
+      {
+       "id": "roots",
+       "op": "stroke",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         360,
+         390
+        ],
+        [
+         330,
+         420
+        ],
+        [
+         300,
+         440
+        ]
+       ]
+      },
+      {
+       "id": "roots2",
+       "op": "stroke",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         360,
+         390
+        ],
+        [
+         390,
+         420
+        ],
+        [
+         420,
+         440
+        ]
+       ]
+      },
+      {
+       "id": "water",
+       "op": "label",
+       "startMs": 1500,
+       "endMs": 2100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        250,
+        455
+       ],
+       "text": "water",
+       "to": [
+        320,
+        425
+       ]
+      },
+      {
+       "id": "animals",
+       "op": "circle",
+       "startMs": 2200,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        580,
+        285
+       ],
+       "r": 48
+      },
+      {
+       "id": "people",
+       "op": "circle",
+       "startMs": 2900,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        650,
+        390
+       ],
+       "r": 38
+      },
+      {
+       "id": "need1",
+       "op": "arrow",
+       "startMs": 3500,
+       "endMs": 4000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        300,
+        285
+       ],
+       "to": [
+        330,
+        285
+       ]
+      },
+      {
+       "id": "need2",
+       "op": "arrow",
+       "startMs": 4000,
+       "endMs": 4500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        530,
+        285
+       ],
+       "to": [
+        490,
+        285
+       ]
+      },
+      {
+       "id": "need3",
+       "op": "arrow",
+       "startMs": 4300,
+       "endMs": 4800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        610,
+        370
+       ],
+       "to": [
+        560,
+        330
+       ]
+      },
+      {
+       "id": "lbl1",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        360,
+        120
+       ],
+       "text": "water",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch01-t02-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "soil",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        360,
+        445
+       ],
+       "rx": 260,
+       "ry": 30
+      },
+      {
+       "id": "soilLabel",
+       "op": "text",
+       "startMs": 500,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        610,
+        455
+       ],
+       "text": "soil",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "rootin",
+       "op": "arrow",
+       "startMs": 1100,
+       "endMs": 2100,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        280,
+        450
+       ],
+       "to": [
+        335,
+        390
+       ]
+      },
+      {
+       "id": "rootin2",
+       "op": "arrow",
+       "startMs": 1500,
+       "endMs": 2500,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        420,
+        450
+       ],
+       "to": [
+        380,
+        390
+       ]
+      },
+      {
+       "id": "rootsLabel",
+       "op": "label",
+       "startMs": 2500,
+       "endMs": 3100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        220,
+        365
+       ],
+       "text": "roots",
+       "to": [
+        325,
+        405
+       ]
+      },
+      {
+       "id": "waterLabel",
+       "op": "label",
+       "startMs": 3100,
+       "endMs": 3700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        210,
+        420
+       ],
+       "text": "water",
+       "to": [
+        285,
+        435
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch01-t02-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "stemPath",
+       "op": "arrow",
+       "startMs": 0,
+       "endMs": 1800,
+       "ink": "accent",
+       "weight": 3,
+       "from": [
+        360,
+        405
+       ],
+       "to": [
+        360,
+        180
+       ]
+      },
+      {
+       "id": "stemLabel",
+       "op": "label",
+       "startMs": 1800,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        410,
+        300
+       ],
+       "text": "stem",
+       "to": [
+        370,
+        300
+       ]
+      },
+      {
+       "id": "leaf1",
+       "op": "ellipse",
+       "startMs": 2400,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        300,
+        160
+       ],
+       "rx": 65,
+       "ry": 28
+      },
+      {
+       "id": "leaf2",
+       "op": "ellipse",
+       "startMs": 2700,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        420,
+        160
+       ],
+       "rx": 65,
+       "ry": 28
+      },
+      {
+       "id": "leafLabel",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 3800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        360,
+        100
+       ],
+       "text": "leaves",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "waterUp",
+       "op": "arrow",
+       "startMs": 3800,
+       "endMs": 4800,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        360,
+        380
+       ],
+       "to": [
+        360,
+        220
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch01-t02-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "leafBox",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        230
+       ],
+       "rx": 150,
+       "ry": 75
+      },
+      {
+       "id": "waterIn",
+       "op": "arrow",
+       "startMs": 900,
+       "endMs": 1600,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        170,
+        230
+       ],
+       "to": [
+        245,
+        230
+       ]
+      },
+      {
+       "id": "waterText",
+       "op": "text",
+       "startMs": 1200,
+       "endMs": 1700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        90,
+        225
+       ],
+       "text": "water",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "airIn",
+       "op": "arrow",
+       "startMs": 1700,
+       "endMs": 2400,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        100
+       ],
+       "to": [
+        400,
+        155
+       ]
+      },
+      {
+       "id": "airText",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        75
+       ],
+       "text": "air",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "sun",
+       "op": "circle",
+       "startMs": 2400,
+       "endMs": 3100,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        650,
+        125
+       ],
+       "r": 38,
+       "fill": "accent"
+      },
+      {
+       "id": "sunRay",
+       "op": "arrow",
+       "startMs": 3100,
+       "endMs": 3900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        610,
+        145
+       ],
+       "to": [
+        530,
+        190
+       ]
+      },
+      {
+       "id": "sunText",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 3900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        650,
+        190
+       ],
+       "text": "sunlight",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "food",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        350
+       ],
+       "text": "food",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "foodArrow",
+       "op": "arrow",
+       "startMs": 5200,
+       "endMs": 5900,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        400,
+        305
+       ],
+       "to": [
+        400,
+        270
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch01-t02-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "soilBox",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        80,
+        125
+       ],
+       "w": 260,
+       "h": 230,
+       "round": 12
+      },
+      {
+       "id": "soilTitle",
+       "op": "text",
+       "startMs": 600,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        210,
+        165
+       ],
+       "text": "soil",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "soilWater",
+       "op": "text",
+       "startMs": 1100,
+       "endMs": 1600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        210,
+        230
+       ],
+       "text": "water",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "minerals",
+       "op": "text",
+       "startMs": 1600,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        210,
+        285
+       ],
+       "text": "minerals",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "plantBox",
+       "op": "rect",
+       "startMs": 2200,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        460,
+        125
+       ],
+       "w": 260,
+       "h": 230,
+       "round": 12
+      },
+      {
+       "id": "foodText",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3600,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        590,
+        220
+       ],
+       "text": "food",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "notText",
+       "op": "text",
+       "startMs": 3600,
+       "endMs": 4300,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        590,
+        285
+       ],
+       "text": "not soil",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "cross",
+       "op": "line",
+       "startMs": 4300,
+       "endMs": 5000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        510,
+        190
+       ],
+       "to": [
+        670,
+        320
+       ]
+      },
+      {
+       "id": "cross2",
+       "op": "line",
+       "startMs": 4600,
+       "endMs": 5300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        670,
+        190
+       ],
+       "to": [
+        510,
+        320
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch01-t02-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "leaf",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        350,
+        220
+       ],
+       "rx": 170,
+       "ry": 85
+      },
+      {
+       "id": "opening1",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1300,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        280,
+        245
+       ],
+       "r": 7
+      },
+      {
+       "id": "opening2",
+       "op": "circle",
+       "startMs": 1100,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        350,
+        265
+       ],
+       "r": 7
+      },
+      {
+       "id": "opening3",
+       "op": "circle",
+       "startMs": 1300,
+       "endMs": 1700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        420,
+        245
+       ],
+       "r": 7
+      },
+      {
+       "id": "vapour1",
+       "op": "arrow",
+       "startMs": 1800,
+       "endMs": 2600,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        280,
+        235
+       ],
+       "to": [
+        250,
+        130
+       ]
+      },
+      {
+       "id": "vapour2",
+       "op": "arrow",
+       "startMs": 2200,
+       "endMs": 3000,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        350,
+        255
+       ],
+       "to": [
+        350,
+        120
+       ]
+      },
+      {
+       "id": "vapour3",
+       "op": "arrow",
+       "startMs": 2500,
+       "endMs": 3300,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        420,
+        235
+       ],
+       "to": [
+        455,
+        130
+       ]
+      },
+      {
+       "id": "vapour",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 4000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        350,
+        80
+       ],
+       "text": "water vapour",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "dry",
+       "op": "ellipse",
+       "startMs": 4200,
+       "endMs": 4800,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        350,
+        410
+       ],
+       "rx": 130,
+       "ry": 30
+      },
+      {
+       "id": "dryText",
+       "op": "text",
+       "startMs": 4800,
+       "endMs": 5400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        350,
+        415
+       ],
+       "text": "dry soil",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "wilt",
+       "op": "stroke",
+       "startMs": 5600,
+       "endMs": 6400,
+       "ink": "mark",
+       "weight": 2,
+       "points": [
+        [
+         300,
+         340
+        ],
+        [
+         330,
+         370
+        ],
+        [
+         360,
+         340
+        ],
+        [
+         390,
+         370
+        ],
+        [
+         420,
+         340
+        ]
+       ]
+      },
+      {
+       "id": "wiltText",
+       "op": "text",
+       "startMs": 6400,
+       "endMs": 7100,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        350,
+        470
+       ],
+       "text": "wilt",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c5-evs-ch01-t02-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5706,
+     "ops": [
+      {
+       "id": "leafChoice",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        180
+       ],
+       "rx": 170,
+       "ry": 70
+      },
+      {
+       "id": "foodMark",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        180
+       ],
+       "text": "food",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "rootsChoice",
+       "op": "stroke",
+       "startMs": 1600,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         400,
+         250
+        ],
+        [
+         360,
+         330
+        ],
+        [
+         320,
+         400
+        ],
+        [
+         280,
+         430
+        ]
+       ]
+      },
+      {
+       "id": "stemChoice",
+       "op": "line",
+       "startMs": 1900,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        400,
+        250
+       ],
+       "to": [
+        400,
+        390
+       ]
+      },
+      {
+       "id": "soilChoice",
+       "op": "ellipse",
+       "startMs": 2500,
+       "endMs": 3100,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        430
+       ],
+       "rx": 220,
+       "ry": 28
+      },
+      {
+       "id": "where",
+       "op": "text",
+       "startMs": 3100,
+       "endMs": 3700,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        400,
+        80
+       ],
+       "text": "where?",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "answerArrow",
+       "op": "arrow",
+       "startMs": 3900,
+       "endMs": 4700,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        400,
+        130
+       ],
+       "to": [
+        400,
+        180
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "check": {
+  "issues": [
+   {
+    "where": "explainer",
+    "what": "The table of contents shows 7 misconceptions (m1 through m7) but the kit only has 4 (c5-evs-ch01-t02-m1 to m4). That is not an error; it's just extra structure. However, the explainer targets 'c5-evs-ch01-t02-m2' which is in the kit. No problem.",
+    "severity": "low"
+   }
+  ],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ },
+ "firstCheck": {
+  "issues": [
+   {
+    "where": "explainer",
+    "what": "The explainer targets misconception c5-evs-ch01-t02-m2 ('Plants get food from soil') but the tap task asks which statement is true about a plant's food but shows only 'Water from soil' and 'Food from soil' as options. The correct answer is 'Water from soil' but that choice is labelled 'Water from soil' which is not a true statement about a plant's food—it is true about water, not food. This contradicts the kit's clear teaching that plants make their own food in leaves and do not get food from soil. The task's prompt and options are mismatched and could reinforce the misconception.",
+    "severity": "high"
+   }
+  ],
+  "verdict": "fail",
+  "model": "DeepSeek-V4-Flash"
+ }
+}
