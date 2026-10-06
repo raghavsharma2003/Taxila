@@ -8,7 +8,12 @@ import { readUtterance } from "../learner/affect.js";
 import { scanSafety, wantsToStop, scrubPii, readability } from "./safety.js";
 import { whyKey, norm as normAnswer, posesItem, revealsAnswer } from "./items.js";
 import { INTEREST_IDS } from "../../shared/interests.js";
+import { partsOf } from "../content/parts.js";
+import { plainNumberKey, numberPhrases, selfCorrected, unitsAfterNumbers, tailAgrees, signConflict, bareOfDecisive } from "../grading/spoken-number.js";
 import { requestOf, FLOW_REQUESTS } from "./requests.js";
+import { readIntent } from "../conversation/lexicon.js";
+import { requestFromReading } from "../conversation/policy.js";
+import { p5Flag } from "../conversation/flags.js";
 
 // ───────────── the signals block (W2-E BR2; TEACHER-BRAIN TB4, §14.2-14.3; owner of this block: W2-E) ─────────────
 // Per-turn perception rides on the SAME classify call (no new model call on the turn): the dialogue act (with the IDK
@@ -101,12 +106,18 @@ export function targetFor(s, kit, item) {
   if (s.pendingWhy === item.id) return { mode: "why", item, ideas, misconceptions: mis };
   // "Show me choices" tiles offered for THIS item (state.js offerChoices): a tap on one is graded in code.
   const offered = s.offered?.itemId === item.id && Array.isArray(s.offered.options) ? s.offered.options : undefined;
-  return { mode: "item", item, key: item.answer, also: item.acceptable || [], ideas, misconceptions: mis, options: item.options, open: OPEN_KINDS.has(item.kind) || multiPartKey(item.answer),
+  // multi-part only when the item's authored parts say so (server/content/parts.js), never from the key's punctuation
+  const pl = partsOf(item.id);
+  const parts = Array.isArray(pl?.parts) && pl.parts.length >= 2 ? pl.parts : null;
+  return { mode: "item", item, key: item.answer, also: item.acceptable || [], ideas, misconceptions: mis, options: item.options, open: OPEN_KINDS.has(item.kind) || !!parts,
+    ...(parts ? { parts } : {}), ...(pl?.acceptable ? { alsoLabel: pl.acceptable } : {}),
     ...(offered ? { offered } : {}) };
 }
 
 /** Exact-match form: canonical fractions, punctuation and trailing filler stripped. */
-const norm = (s) => normAnswer(s).replace(/[.\-]+/g, " ").replace(/\s+/g, " ").trim();
+// A minus before a digit and a point between digits are part of the number (V1.1, evals/grading-truth: "-6" matched the
+// key "6" 424 times and "37 4" matched "37.4" 23 times in the deterministic path); any other dot or dash is punctuation.
+const norm = (s) => normAnswer(String(s ?? "").replace(/[−–]/g, "-")).replace(/(?<!\d)\.|\.(?!\d)/g, " ").replace(/(?<=[\p{L}\p{N}])-|-(?!\d)/gu, " ").replace(/\s+/g, " ").trim();
 
 /** Map an option ("key" | "mN" | "other_wrong" …) to an outcome. */
 function fromMatch(match, target) {
@@ -136,7 +147,9 @@ function schemaFor(target) {
   if (target.mode === "none") return obj({ ...(tags.length ? { belief: { type: "string", enum: ["none", ...tags] } } : {}), ...flags });
   const options = ["key", ...tags, ...(target.open ? ["partial"] : []), "other_wrong", "dont_know", "no_attempt"];
   const reason = target.mode === "item" && target.ideas.length ? { reason: { type: "string", enum: ["none", "right", ...tags] } } : {};
-  return obj({ match: { type: "string", enum: options }, ...reason, confidence: { type: "number" }, ...flags });
+  // the model says WHICH key parts the reply contains; code turns that into key / partial (a model never grades)
+  const partsField = target.parts ? { parts_present: { type: "array", items: { type: "string", enum: target.parts.map((_, i) => `p${i + 1}`) } } } : {};
+  return obj({ match: { type: "string", enum: options }, ...reason, ...partsField, confidence: { type: "number" }, ...flags });
 }
 
 function systemPrompt(target, classLevel) {
@@ -158,17 +171,20 @@ function systemPrompt(target, classLevel) {
       target.mode === "why"
         ? "- key: the reply gives a REASON that matches ANY of the KEY IDEAS, in any words or language (a child's simple version counts). A bare answer, a fraction's name or a repeat of the question is not a reason: other_wrong."
         : target.open
-          ? "- key: the reply gives ALL of the KEY (any wording, language or equivalent form), even with extra words. If they give two answers, label the final one."
+          ? (target.parts ? "- key: the reply gives EVERY one of the KEY PARTS (any wording, language or equivalent form), even with extra words. If they give two answers, label the final one."
+            : "- key: the reply gives the KEY (any wording, language or equivalent form), even with extra words. If they give two answers, label the final one.")
           : "- key: the reply gives the KEY (any wording, language or equivalent form), even with extra words. If they give two answers, label the final one.",
       "- mN: the reply's answer or reason is what misconception mN predicts.",
-      target.open ? "- partial: part of the key is there but not all of it (one part of a key with several parts)." : "",
+      target.open ? (target.parts ? "- partial: some of the KEY PARTS are there but not all of them." : "- partial: part of the key idea is there but not all of it.") : "",
       "- other_wrong: any other attempted answer.",
       "- dont_know: says they don't know or are unsure, with no answer.",
       "- no_attempt: not an answer to this question (greeting, chit-chat, a question back, unrelated talk).",
       target.mode === "item" && target.ideas.length
         ? "reason: if the reply ALSO gives a reason or explanation — 'right' if it matches a KEY IDEA, 'mN' if it is what misconception mN predicts; otherwise 'none'."
         : "",
+      target.parts ? "parts_present: the KEY PARTS (p1, p2, ...) the reply actually contains, in any words or language." : "",
       "confidence: 0-1, how sure you are of the label.",
+      "- a reply that names the key only to say it is NOT the answer ('X nahi', 'not X', 'X nahi hai') is other_wrong; a reply that gives two different answers without choosing one is no_attempt.",
     ].filter(Boolean).join("\n"));
   }
   if (signalsOn()) base.push(SIGNALS_NOTE);
@@ -185,7 +201,8 @@ function userPrompt(target, childText, heard) {
       "The teacher then asked how they knew / why it is right.", "KEY IDEAS:", ...target.ideas.map((e) => `- ${e}`));
   } else if (target.mode === "item") {
     lines.push(`QUESTION: ${target.item.prompt_en} | ${target.item.prompt_hi}`,
-      `KEY: ${target.key}${target.also.length ? `; also counts as key: ${target.also.join("; ")}` : ""}`);
+      `KEY: ${target.key}${target.also.length ? `; also counts as key: ${target.also.filter((a) => !target.alsoLabel || target.alsoLabel[a] === "complete" || !target.alsoLabel[a]).join("; ")}` : ""}`);
+    if (target.parts) lines.push(`KEY PARTS (a complete answer has every one): ${target.parts.map((p, i) => `p${i + 1}: ${p}`).join(" | ")}`);
     if (target.options?.length) lines.push("OPTIONS AS POSED:", ...target.options.map((o) => `"${o.text}" → ${optionTag(o, target)}`));
     if (target.ideas.length) lines.push("KEY IDEAS (for a reason, if one is given):", ...target.ideas.map((e) => `- ${e}`));
   }
@@ -228,6 +245,10 @@ export function parseClassification(json, target) {
   }
   if (confidence < CONFIDENCE_MIN) return { outcome: "no_evidence", confidence, modelFlags };
   const mapped = fromMatch(json?.match, target);
+  if (target.parts && (mapped.outcome === "correct" || mapped.outcome === "partial") && Array.isArray(json?.parts_present)) {
+    const got = new Set(json.parts_present.filter((p) => /^p\d+$/.test(p) && Number(p.slice(1)) <= target.parts.length));
+    mapped.outcome = got.size >= target.parts.length ? "correct" : got.size > 0 ? "partial" : mapped.outcome === "correct" ? "partial" : "partial";
+  }
   if (mapped.outcome === "correct" && json?.reason && json.reason !== "none") {
     const m = target.misconceptions.find((x) => x.tag === json.reason);
     Object.assign(mapped, m ? { reason: "misconception", reasonMisconceptionId: m.id } : json.reason === "right" ? { reason: "right" } : {});
@@ -404,6 +425,10 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
     const o = target.options[Number(chipId.slice(4))];
     if (o) { const m = fromMatch(optionTag(o, target), target); return done(m.outcome, "chip", m); }
   }
+  // p5-interaction: a ways-in chip (state.js waysChips) is a request, never an answer and never read by a model
+  if (chipId && /^req:(visual|story|game)$/.test(chipId) && p5Flag("STEER")) {
+    return done("no_evidence", "chip", { request: chipId === "req:story" ? { type: "story", whole: true } : { type: "visual", kind: chipId === "req:game" ? "game" : "diagram", whole: true } });
+  }
   if (chipId && target.offered && /^pick:\d+$/.test(chipId)) {
     const picked = target.offered[Number(chipId.slice(5))];
     if (typeof picked === "string") {
@@ -419,7 +444,13 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
   // The child's own request in words (director/requests.js; OWNER TEST 2026-10-04 items 3-5): never evidence. A steering
   // request that is the whole turn is decided here (no model call); a stop or goodbye still goes to the model for its
   // distress read (the floor's backup is never skipped), and classify() then applies the request over the model's flags.
-  let request = !chipId && !moduleAnswer ? requestOf(text) : null;
+  // p5-interaction (CONVERSATION-V2 §4.1 code first): the readings requests.js does not make ("nahi samjha", "matlab?",
+  // "phir se bolo", "mummy bula rahi thi, haan", "skip", "boring", "mujhse nahi hoga", "ruko soch raha hoon", "tum robot
+  // ho?", "aapko kaunsa cricketer pasand hai?", "ghost story sunao"). Whole-turn and request-shaped only (lexicon.js). An
+  // out-of-bounds ask outranks a request word inside it ("ghost story sunao" is never a story request).
+  const reading = !chipId && !moduleAnswer && p5Flag("STEER") ? readIntent(text) : null;
+  let request = reading?.type === "oob" || reading?.type === "adult" ? requestFromReading(reading) : !chipId && !moduleAnswer ? requestOf(text) : null;
+  if (!request && reading) request = requestFromReading(reading);
   // Day-0 gates review (2026-10-05): a request word that is the ITEM's own answer content is an answer, never a request.
   // 244 of 44,103 kit answers / acceptables / options read as a whole request ("Good night, Mummy!" → goodbye ended the
   // lesson on the right answer; "stop", "kahani", "khelna", "dheere", "hindi", "for example a samosa" were never graded).
@@ -453,9 +484,52 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
   }
   if (target.mode === "item" && !other) {
     const t = norm(text);
-    if ([target.key, ...(target.also || [])].some((k) => k && norm(k) === t)) return done("correct", "exact");
+    // review v1: norm() drops apostrophes, so "soldiers'" equalled "soldier's" on an apostrophe-placement item and was
+    // credited as the key. An exact match must also put every apostrophe in the same place; otherwise the model reads it.
+    const aposSig = (s) => (String(s ?? "").toLowerCase().replace(/[’`]/g, "'").match(/[\p{L}\p{N}]*'[\p{L}\p{N}]*/gu) ?? []).join(" ");
+    const sameApos = (k) => aposSig(k) === aposSig(text);
+    if (target.key && norm(target.key) === t && sameApos(target.key)) return done("correct", "exact");
+    // an acceptable entry counts as the key only when it is a complete answer; one the parts data marks partial is
+    // partial, one it marks wrong is not credited (V1.1: 947 of 1,631 rater-agreed acceptable entries were partial)
+    const hit = (target.also || []).find((k) => k && norm(k) === t && sameApos(k));
+    if (hit) {
+      const lab = target.alsoLabel?.[hit];
+      if (lab === "partial") return done("partial", "exact");
+      if (lab !== "wrong") return done("correct", "exact");
+    }
     const opt = target.options?.find((o) => norm(o.text) === t);
     if (opt) { const m = fromMatch(optionTag(opt, target), target); return done(m.outcome, "exact", m); }
+  }
+  // V1.1: a key that IS a number is graded by value in code (evals/grading-truth: the model credited "-180" for 180°,
+  // "15 ya 150" for 15 and failed "14/8" for 1 3/4). One readable number equal to the key → correct; one readable number
+  // that differs → the model still names a misconception, but may not call it the key (numericMismatch, applied in
+  // classify); two different numbers → no single answer, so no evidence (a re-ask: "which one?").
+  const kv = target.mode === "item" && !other ? plainNumberKey(target.key) : null;
+  // a denial ("not 5", "5 nahi") or a correction is read by the model, never by the value alone
+  const denies = /(?:^|[^\p{L}])(?:not|nahi|nahin|nhi|no|nope|galat|wrong|isn'?t)(?![\p{L}])/iu.test(text);
+  // a self-correction ("47/21... nahi nahi, 47/20") is the child's final answer: the number after the last correction
+  // review v1: the right number in the WRONG unit ("5 dm" for "5 cm", "24 sq m" for "24 m") is never the key by value;
+  // it goes to the model, which sees both. No unit said ("5") keeps today's behaviour.
+  // review v1: a key led by a number whose words decide what it is ("8 a.m."): a sign the key does not have is never the key,
+  // and a bare leading number is at most partial (applied to the model's label in classifyModel)
+  if (target.mode === "item" && !other && kv == null && signConflict(target.key, text)) return { result: null, flags, text, numericMismatch: true };
+  const bareDecisive = target.mode === "item" && !other && kv == null ? bareOfDecisive(target.key, text, target.item?.prompt_en ?? "") : null;
+  if (bareDecisive) return { result: null, flags, text, bareDecisive };
+  const keyUnit = kv != null ? unitsAfterNumbers(target.key)[0] ?? null : null;
+  if (keyUnit) { const said = unitsAfterNumbers(text); if (said.length && !said.includes(keyUnit)) return { result: null, flags, text, unitMismatch: { key: keyUnit, said } }; }
+  // review v1: a different counted thing ("3 faces" for "3 edges") is never the key by value; the model reads it
+  const sameThing = kv != null && tailAgrees(target.key, text);
+  const fixed = kv != null ? selfCorrected(text) : null;
+  if (fixed != null) return Math.abs(fixed - kv) >= 1e-9 ? { result: null, flags, text, numericMismatch: true } : sameThing ? done("correct", "number_selfcorrect") : { result: null, flags, text, nounMismatch: true };
+  if (kv != null && !denies && /[\p{N}\p{L}]/u.test(text)) {
+    const ph = numberPhrases(text);
+    if (ph && ph.length) {
+      const vals = ph.filter((v, i) => ph.findIndex((u) => Math.abs(u - v) < 1e-9) === i);
+      if (vals.length === 1 && Math.abs(vals[0] - kv) < 1e-9) return sameThing ? done("correct", "number") : { result: null, flags, text, nounMismatch: true };
+      if (vals.length >= 2 && !/(?:^|[^\p{L}])(?:sorry|matlab|i mean)(?![\p{L}])/iu.test(text)) return done("no_evidence", "number_hedge");
+      if (vals.length >= 2) { const last = ph.at(-1); return Math.abs(last - kv) >= 1e-9 ? { result: null, flags, text, numericMismatch: true } : sameThing ? done("correct", "number_selfcorrect") : { result: null, flags, text, nounMismatch: true }; }
+      return { result: null, flags, text, numericMismatch: true };
+    }
   }
   // A bare "pata nahi" / "just tell me" (no number, a few words) needs no model to read.
   if ((target.mode === "item" || target.mode === "why") && !/\d/.test(text)
@@ -472,7 +546,7 @@ export function answerEchoes(target, text, type) {
   const t = norm(text);
   const answers = [target?.key, ...(target?.also || []), ...((target?.options || []).map((o) => o?.text))]
     .filter((a) => typeof a === "string" || typeof a === "number").map(String);
-  return answers.some((a) => norm(a) === t || requestOf(a)?.type === type);
+  return answers.some((a) => norm(a) === t || requestOf(a)?.type === type || (p5Flag("STEER") && requestFromReading(readIntent(a))?.type === type));
 }
 
 /**
@@ -522,14 +596,17 @@ export async function classify(args) {
   // A stop / goodbye in words: the model reads it for distress only (the floor's backup); the request decides the stop,
   // and the words are never graded (a "bas" labelled other_wrong was a wrong answer on the record).
   if (request) {
-    const r = await classifyModel(args, target, text, flags, trace, done);
+    const r = await classifyModel(args, target, text, flags, trace, done, fast);
     return { ...r, outcome: "no_evidence", confidence: 1, flags: { ...r.flags, wantsToStop: true }, request };
   }
-  return classifyModel(args, target, text, flags, trace, done);
+  return classifyModel(args, target, text, flags, trace, done, fast);
 }
 
 /** The model call of classify() (with its content-filter fail-closed path and its fallback deployment). */
-async function classifyModel(args, target, text, flags, trace, done) {
+// review v1: `fast` is classifyFast's result. V1-02 as written read it as a free variable that W2-E's split of classify()
+// into classifyModel() left undefined, so EVERY model call threw "fast is not defined" and the child's answer earned
+// no evidence (and the model's wants_to_stop flag was lost) on the integrated tree.
+async function classifyModel(args, target, text, flags, trace, done, fast = {}) {
   const { heard, classLevel } = args;
 
   const messages = [
@@ -541,6 +618,12 @@ async function classifyModel(args, target, text, flags, trace, done) {
     effort: target.mode === "none" ? "none" : "low", maxTokens: target.mode === "none" ? 120 : 900, timeoutMs: 7000, trace, quotaLane: "hot" };
   const labelled = (json, viaFallback = false) => {
     const { modelFlags, ...label } = parseClassification(json, target);
+    // a number that is not the key's value is never the key, whatever the model read (V1.1)
+    if (fast.numericMismatch && label.outcome === "correct") { label.outcome = "incorrect"; label.overridden = "numeric_mismatch"; }
+    // review v1: the right number in a different unit ("5 dm" for "5 cm") is never the full key either
+    if (fast.unitMismatch && label.outcome === "correct") { label.outcome = "incorrect"; label.overridden = "unit_mismatch"; }
+    // review v1: "21" for "21 June" names the number but not what it is: partial, never the full key
+    if (fast.bareDecisive && label.outcome === "correct") { label.outcome = "partial"; label.overridden = "bare_number_of_decisive_key"; }
     for (const k of Object.keys(modelFlags)) flags[k] = flags[k] || modelFlags[k];
     const signals = signalsOn() ? parseSignals(json) : null;
     if (signals) Object.assign(flags, signalFlags(signals));

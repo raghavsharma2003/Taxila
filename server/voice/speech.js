@@ -8,6 +8,10 @@ import { EndpointConfigError, laneKey } from "../endpoints.js";
 import { q, one } from "../db.js";
 import { speakable } from "./spoken.js";
 import { dhdStream } from "./azureTts.js";
+import { dhdStreamWs } from "./azureTtsWs.js";
+/** V4: Diya's viseme events for the face (websocket synthesis). TAXILA_DHD_VISEMES=0 → REST as before (the face then
+ *  lip-syncs from the audio tap alone). */
+export const dhdVisemesOn = (env = process.env) => env.TAXILA_DHD_VISEMES !== "0";
 import { plainSsml } from "./expressive/compile/dhd.js";
 import { count } from "./expressive/telemetry.js";
 
@@ -188,6 +192,13 @@ export async function speechStream(text, { voice, instructions, signal, timeoutM
  * A chunk of speech fetched eagerly into memory, so sentence n+1 is generating while sentence n plays.
  * `next()` yields buffered pieces in order and waits for more until the source ends.
  */
+/** V4: a marks object over already-known marks (a cache hit): the same onMarks contract as dhdStreamWs's. */
+export function staticMarks({ visemes = [], words = [] } = {}) {
+  return { visemes, words, onMarks(fn) { if (visemes.length || words.length) fn({ visemes: [...visemes], words: [...words] }); return () => {}; } };
+}
+/** The marks a part's job carries (visemes + words), or null. */
+export const marksOf = (job) => (job?.marks && job.marks.visemes?.length ? { visemes: job.marks.visemes, words: job.marks.words ?? [] } : null);
+
 export class Prefetch {
   constructor(start) {
     this.parts = [];
@@ -361,14 +372,29 @@ function speakDhd(written, style, signal, render, lane) {
       if (lane?.fellBack || lessonStuck(lane?.lessonId, voice)) return await oai(self, "reply already on mini-tts");
       if (key) {
         const pcm = await cacheGet(key, render?.store);
-        if (pcm) { self.cached = true; if (lane) lane.engine = "dhd"; return [pcm]; }
+        if (pcm) {
+          self.cached = true;
+          if (lane) lane.engine = "dhd";
+          // V4: the cached part's viseme marks (written next to its PCM); absent → the face uses the audio tap
+          const m = dhdVisemesOn() ? await cacheGet(`${key}:marks`, render?.store).catch(() => null) : null;
+          if (m) { try { self.marks = staticMarks(JSON.parse(Buffer.from(m).toString("utf8"))); } catch { /* a bad marks entry only costs the visemes */ } }
+          return [pcm];
+        }
       }
       if (signal?.aborted) throw new AzureError(`dhd_stream ${voice} aborted`, 0, "aborted");
       // the breaker decides at the START of a reply; once a part of this reply spoke DragonHD, the rest of it tries
       // DragonHD too (one voice per reply outranks the breaker; a part's own failure still moves the reply over)
       if (lane?.engine !== "dhd" && admitDhd(voice) === "skip") return await oai(self, "breaker open");
       try {
-        ({ chunks } = await dhdStream(ssml, { signal }));
+        // V4: the websocket carries Diya's visemes. Part 0 of a reply asks for visemes only (first sound must not wait:
+        // words + visemes cost a median +378 ms of first audio, evals/face-puppet/out/ttfb-warm.json); later parts, prefetched
+        // while part 0 plays, also ask for word boundaries (the face's Hindi retroflex curls). A websocket failure
+        // retries on REST (same voice, no visemes) before the breaker counts it.
+        const partNo = lane ? (lane.parts = (lane.parts ?? 0) + 1) - 1 : 0;
+        if (dhdVisemesOn()) {
+          try { const r = await dhdStreamWs(ssml, { signal, words: partNo > 0 }); chunks = r.chunks; self.marks = r.marks; }
+          catch (e) { if (signal?.aborted || e?.code === "aborted") throw e; console.warn(`[voice] dhd ws failed (${e?.code || e?.status || "error"}), REST: ${String(e?.message || e).slice(0, 100)}`); ({ chunks } = await dhdStream(ssml, { signal })); }
+        } else ({ chunks } = await dhdStream(ssml, { signal }));
         dhdSucceeded(voice);
         if (lane) lane.engine = "dhd";
       } catch (e) {
@@ -384,7 +410,11 @@ function speakDhd(written, style, signal, render, lane) {
     return (async function* () {
       const all = [];
       for await (const c of chunks) { all.push(Buffer.from(c)); yield c; }
-      if (!signal?.aborted) cachePut(key, Buffer.concat(all), render?.store);
+      if (!signal?.aborted) {
+        cachePut(key, Buffer.concat(all), render?.store);
+        const mk = marksOf(self);
+        if (mk) cachePut(`${key}:marks`, Buffer.from(JSON.stringify(mk), "utf8"), render?.store);
+      }
     })();
   });
 }

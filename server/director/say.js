@@ -191,7 +191,10 @@ export const stripStage = (text) => String(text ?? "")
 // ── G-ASK parity (audit flows G4: the card said "13 ka square kitna hai?" while she asked "10 ka square kitna hoga?"; two
 // questions in one turn) ──
 const normQ = (t) => String(t ?? "").toLowerCase().replace(/…/g, " ").replace(/[^\p{L}\p{N}/]+/gu, " ").trim();
-const sentencesOf = (t) => (String(t ?? "").replace(/\s+/g, " ").match(/[^.!?।？]+[.!?।？]*/g) ?? []).map((x) => x.trim()).filter(Boolean);
+// p5-interaction (owner-2 s1 t5: "2/5 ko 0. 4 samajhiye"): a decimal point is never a sentence end (U+2024 stands in while
+// the text is split, then is put back)
+const sentencesOf = (t) => (String(t ?? "").replace(/\s+/g, " ").replace(/(\d)\.(\d)/g, "$1\u2024$2").match(/[^.!?।？]+[.!?।？]*/g) ?? [])
+  .map((x) => x.replaceAll("\u2024", ".").trim()).filter(Boolean);
 const isQuestion = (x) => /[?？]/.test(x);
 
 /**
@@ -257,7 +260,7 @@ export function lastQuestionOnly(reply) {
 }
 
 // ── wrap language only on a wrap move (personalisation 13: "Aaj ke liye bas itna." in a probe turn, mid-lesson) ──
-const WRAP_WORDS = /\b(?:aaj\s+ke\s+liye\s+(?:bas\s+)?(?:itna|itni|yahin|ye(?:h)?\s+hi)|aaj\s+(?:ka\s+)?(?:lesson|class|session)\s+(?:khatam|khatm|poora|pura|yahin)|that'?s\s+(?:all|it)\s+for\s+today|see\s+you\s+(?:next\s+time|tomorrow|soon|later)|(?:phir|kal|jaldi)\s+milte\s+hain|good\s*bye|bye[\s-]*bye|alvida|we(?:'re|\s+are)\s+done\s+for\s+today|let'?s\s+stop\s+(?:here|for\s+today)|(?:we'?ll|we\s+will|let'?s)\s+stop\s+(?:here|now)|yahin\s+(?:rok|ruk|stop|khatam|band)\s*(?:te|dete|kar\s*te|karte|lete|jaate)?\s*(?:hain|hai)|lesson\s+(?:yahin\s+)?(?:khatam|khatm)\s+(?:karte|kar\s+dete)\s+hain|yahin\s+(?:rok|rokte|roke|stop|khatam|khatm|band)\b(?:\s+(?:dete|karte|kar\s+dete|kar\s+lete)\s+hain)?)\b|आज\s+के\s+लिए\s+(?:बस\s+)?इतना|फिर\s+मिलते\s+हैं/iu;
+const WRAP_WORDS = /\b(?:aaj\s+ke\s+liye\s+(?:bas\s+)?(?:itna|itni|yahin|ye(?:h)?\s+hi)|aaj\s+(?:ka\s+)?(?:lesson|class|session)\s+(?:khatam|khatm|poora|pura|yahin)|that'?s\s+(?:all|it)\s+for\s+today|see\s+you\s+(?:next\s+time|tomorrow|soon|later)|(?:phir|kal|jaldi)\s+milte\s+hain|good\s*bye|bye[\s-]*bye|alvida|we(?:'re|\s+are)\s+done\s+for\s+today|let'?s\s+stop\s+(?:here|for\s+today)|(?:we'?ll|we\s+will|let'?s)\s+stop\s+(?:here|now)|yahin\s+(?:rok|ruk|stop|khatam|band)\s*(?:te|dete|kar\s*te|karte|lete|jaate)?\s*(?:hain|hai)|lesson\s+(?:yahin\s+)?(?:khatam|khatm)\s+(?:karte|kar\s+dete)\s+hain|yahin\s+(?:rok|rokte|roke|stop|khatam|khatm|band)\b(?:\s+(?:dete|karte|kar\s+dete|kar\s+lete)\s+hain)?|(?:lesson|class|padhai)\s+(?:yahin\s+)?(?:rok|band|stop)\s+(?:dete|karte|kar\s+dete)\s+(?:hain|hai)|apna\s+(?:khayal|khyal|dhyan)\s+rakh(?:iye|na|o))\b|आज\s+के\s+लिए\s+(?:बस\s+)?इतना|फिर\s+मिलते\s+हैं/iu;
 /** Does a line close the lesson (a goodbye, "that's all for today")? Only a wrap move may say that. */
 export const wrapsUp = (text) => WRAP_WORDS.test(String(text ?? ""));
 /** The line without its closing sentences. */

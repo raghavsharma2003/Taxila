@@ -119,7 +119,15 @@ export type VoiceFeaturesFactory = false | (() => VoiceFeaturesLike | Promise<Vo
 const defaultVoiceFeatures: VoiceFeaturesFactory = async () => {
   if (typeof AudioWorkletNode === "undefined") throw new Error("no AudioWorklet");
   const { VoiceFeatures } = await import("../voice/features.ts");
-  return new VoiceFeatures();
+  // ship5 p3-voicesig: one shared mic tap feeds the utterance numbers AND the voicesig head (kv on each spoken turn).
+  // The wrapper falls back to VoiceFeatures' own tap on any failure, a server kill (GET /api/voicesig/config) or
+  // ?voicesig=0; a failed wrapper import falls back here.
+  try {
+    const { VoicesigLessonFeatures } = await import("../voicesig/lessonFeatures.ts");
+    return new VoicesigLessonFeatures({ inner: new VoiceFeatures(), loadDetector: () => import("../voicesig/ort.ts").then((m) => m.loadFillerDetector()) });
+  } catch {
+    return new VoiceFeatures();
+  }
 };
 
 export interface RuntimeDeps {
@@ -195,6 +203,8 @@ interface ChildInput {
   chipId?: string;
   typed?: boolean;
   voiceFeatures?: VoiceUtterance;
+  /** ship5 p1-duplex: the duplex engine's turn summary (hashes and codes, never words): TurnRequest.duplex. */
+  duplex?: TurnRequest["duplex"];
 }
 
 /**
@@ -597,7 +607,7 @@ export class LessonRuntime {
         else this.removeCaption(id);
         // "" with confidence 0 = the child spoke and ASR failed: still worth a Director call (repair move).
         if ((e.text || e.asrConfidence === 0) && this.state.phase === "live") {
-          this.queueTurn({ childText: e.text, startedAt: e.startedAt, asrConfidence: e.asrConfidence, chipId: e.chipId, typed: e.typed, ...(voice ? { voiceFeatures: voice } : {}) });
+          this.queueTurn({ childText: e.text, startedAt: e.startedAt, asrConfidence: e.asrConfidence, chipId: e.chipId, typed: e.typed, ...(voice ? { voiceFeatures: voice } : {}), ...(e.duplex ? { duplex: e.duplex } : {}) });
         }
         return;
       }
@@ -729,6 +739,7 @@ export class LessonRuntime {
       if (input.chipId) req.chipId = input.chipId;
       if (input.typed) req.typed = true;
       if (input.voiceFeatures) req.voiceFeatures = input.voiceFeatures;
+      if (input.duplex) req.duplex = input.duplex;
     }
     // A milestone call (no input) carries no teacher turn: those ride with the next child turn, whole.
     if (batch.events.length) req.moduleEvents = batch.events;

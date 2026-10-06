@@ -166,6 +166,10 @@ function committedOf(v) {
   const p = v.chosen ?? v.choice;
   if (p != null && Array.isArray(v.fractions)) return /^\d+$/.test(String(p)) && v.fractions[Number(p)] != null ? String(v.fractions[Number(p)]) : String(p);
   for (const k of ["value", "written", "built", "claimed", "made", "given", "product"]) if (v[k] != null && typeof v[k] !== "object") return String(v[k]);
+  // patterns@1 pat.term commits the terms typed into the blanks as an array (src/modules/frame/engines/patterns.logic.ts
+  // growCorrect): the item's key is the LAST blank's term. Before this the harness could read no patterns@1 commit at all
+  // ("not verified: patterns@1", owner-1 on prod 2026-10-05) although the frame graded every one of them.
+  if (Array.isArray(v.given) && v.given.length && v.given.every((x) => x != null && typeof x !== "object")) return String(v.given.at(-1));
   return null;
 }
 const sameValue = (a, b) => { const x = numOf(a), y = numOf(b); return x != null && y != null ? Math.abs(x - y) < 1e-9 : norm(a) === norm(b); };

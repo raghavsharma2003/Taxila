@@ -8,6 +8,7 @@ import { q, one, guardStmt, GUARD_FAILED } from "../db.js";
 import { need, bad, forbidden, notFound, unauthorized, HttpError } from "../http.js";
 import { sessionTokenHash } from "../auth.js";
 import { turnVoice } from "../voice/features.js";
+import { voicesigSeam } from "../voicesig/lesson.js";
 import { getTopic } from "../content/index.js";
 import { gamingDiscount, nextAffect } from "../learner/affect.js";
 import { skillStateStmt, evidenceStmt, misconceptionFlagStmt, misconceptionResolveStmt } from "../learner/model.js";
@@ -33,6 +34,7 @@ import { awaitSettled } from "../comprehension/session.js";
 import { seamSafe as guardSeam } from "../seam-safe.js";
 import { duplexRegistry } from "../duplex/registry.js";
 import { studioSeam, isStudioRow } from "../studio/seam.js";
+import { stagecraftPointFor } from "../stagecraft/kernel-point.js";   // STAGECRAFT P4 (ship5 p4-content): null unless the lesson runs a host
 import { relationalSeam } from "../relational/seam.js";
 import { expressiveSeam } from "../voice/expressive/seam.js";
 import { fallbackReply, floorContentOf, safeguardLine, scrubbed, textReply } from "./say.js";
@@ -49,6 +51,9 @@ import { brainTraceStmt, columnReady, comprehensionReasons, inputsHashOf, reteac
 import { FACTS_ROW_PREFIX } from "../director/modules.js";
 import { engagementOf, frustrationLoop, initialAffect } from "../learner/affect.js";
 import { turnSignals } from "../persona/signals.js";
+import { understand } from "../conversation/understand.js";
+import { applyNote, withAnswerMods } from "../conversation/policy.js";
+import { conv2Mode, p5Flag } from "../conversation/flags.js";
 import { childTurnRow, clientInstructions, debugFor, floorIncidentStmt, incidentStmt, kitFor, laneOf, runTurnTx, stageTurns, turnInsertStmt, turnLane, withAsk, withSeamUi, withStudioSlot } from "./rows.js";
 
 /**
@@ -296,6 +301,9 @@ export async function lessonTurn(req, body) {
   // `correct`; a bound catalog engine carries the engine's verdict (director/modules.js moduleAnswerOf).
   const moduleAnswer = moduleAnswerOf(state, moduleEvents);
   const machineAnswer = typeof moduleAnswer?.correct === "boolean" && target.mode === "item";
+  // V1-01r: an answer the server could not re-check (moduleAnswerOf → { unverifiable }) is never graded by the frame's
+  // claim and never dropped silently: the Director asks the child for it in words (state.js moduleReaction)
+  const moduleUnverified = !!moduleAnswer?.unverifiable && p5Flag("RECHECK");
   const clsArgs = { target, childText, heard, lang: state.ctx?.lang, asrConfidence: body.asrConfidence, typed, chipId: body.chipId, moduleAnswer, classLevel: child.class_level, trace };
   const classified = !(moduleOnly && !machineAnswer) && !laneResume;
   const answer = normAnswer(childText);
@@ -321,10 +329,24 @@ export async function lessonTurn(req, body) {
   let carried = carriedFrom(state);
   // Seam (W2-H, server/studio/seam.js): what Studio has on screen / in flight for this lesson, as values (in memory, no
   // network). null = nothing, and the plan context is exactly the pre-seam one.
-  const studioView = seamSafe("studio.statusFacts", () => studioSeam.statusFacts(lesson.id, { beat: prev.beat?.type ?? null, moduleOnly: moduleOnly || laneResume }), null);
+  // STAGECRAFT P4 (ship5 p4-content): the RevealPoint for this turn, from the kernel's own view and the turn state (never the
+  // portfolio: the lossless rule). Safety here is the PREDICATE on her words (the classifier has not run yet) or a safeguard
+  // still open: a quarantined pool reveals nothing. null without a host; never throws into the turn.
+  const stagecraftPoint = seamSafe("stagecraft.revealPoint", () => stagecraftPointFor({ lesson, prev, state, kit, child, childText, moduleOnly: moduleOnly || laneResume,
+    safety: !!prev.safeguard || (!!childText && scanSafety(childText).distress),
+    misconception: state.lastReteach?.misId ? { id: state.lastReteach.misId, state: "active" } : null }), null);
+  const studioView = seamSafe("studio.statusFacts", () => studioSeam.statusFacts(lesson.id, { beat: prev.beat?.type ?? null, moduleOnly: moduleOnly || laneResume, stagecraftPoint }), null);
+  // ship5 p4-content board sync: on an explanation beat a whiteboard is likely this turn, so its speculative board starts
+  // NOW (before the classifier and the plan), from the kit's own text for the item on the table; the kernel-time call
+  // below is a no-op for the same turn, and requestIntent re-gates whatever landed against her real line.
+  if (!late && textLane && !moduleOnly && !laneResume && ["explain", "worked_example", "recap"].includes(prev.beat?.type) && typeof studioSeam.prepareWhiteboard === "function") {
+    seamSafe("studio.prepareWhiteboard", () => studioSeam.prepareWhiteboard(whiteboardIntentOf({ lessonId: lesson.id, turn: (state.turn ?? 0) + 1, beat: prev.beat, next: state, kit,
+      item: activeItem ?? null, line: { text: "" } })), false);
+  }
   // A resume turn plans as a module-only turn with no events: the Director holds (the last move and UI stand).
   const planCtx = { kit, child, lesson, activeItem, moduleOnly: moduleOnly || laneResume, moduleEvents, chipId: body.chipId, answer: help ? "" : answer, leaked, live: liveP, carried,
-    childText, typed, asrConfidence: body.asrConfidence, bargeIn: !!body.teacherInterrupted, ...(studioView ? { studio: studioView } : {}) };
+    childText, typed, asrConfidence: body.asrConfidence, bargeIn: !!body.teacherInterrupted, ...(studioView ? { studio: studioView } : {}),
+    ...(moduleUnverified ? { moduleUnverified: true } : {}) };
   // A module-only turn or a help request stored no child row, so the whole recent transcript is history.
   const historyOf = (next) => (moduleOnly || help || laneResume ? next.recent : next.recent.slice(0, -1));
 
@@ -342,9 +364,29 @@ export async function lessonTurn(req, body) {
   const specs = textLane && !late && fast && !fast.result
     ? speculate(state, target, fast.flags, { ...planCtx, now }, { said, historyOf }, fast.lowAsr ? { outcomes: ["no_evidence"], source: "asr" } : {})
     : [];
+  // CONVERSATION-V2 UNDERSTAND (server/conversation/understand.js): when the bytes decided nothing, a model reads what the
+  // child MEANS, in parallel with classify(). It is waited on only when classify() says the turn is not an answer, at most
+  // NOTE_WAIT_MS from its start; a 429, an error or a timeout is no note (today's path). Off / shadow: TAXILA_CONV2.
+  const c2 = conv2Mode();
+  const noteT0 = performance.now();
+  const noteP = c2 !== "off" && !late && fast && !fast.result && !fast.lowAsr && !fast.request && childText && !help
+    ? understand({ cls: child.class_level, topicTitle: state.ctx?.topicTitle, phase: state.phase, teacherLast: heard ?? "",
+      ask: target.mode === "item" && activeItem ? promptFor(activeItem, state.ctx?.lang) : null, key: target.mode === "item" ? target.key ?? null : null,
+      earlier: earlierExchanges(state.recent, 2), said: childText, trace }) : null;
+  noteP?.catch(() => {});
   let cls;
   try { cls = classified ? await classify(clsArgs) : null; } finally { clsDone(); }
   mark("classified");
+  let noteReason = null;
+  if (noteP && cls) {
+    const nonAnswer = cls.outcome === "no_evidence" && !cls.request && !cls.help && !cls.flags?.distress;
+    const note = await settleWithin(noteP, nonAnswer ? Math.max(0, NOTE_WAIT_MS - (performance.now() - noteT0)) : 0);
+    if (note) cls = applyNote(cls, note, { mode: c2 });
+    noteReason = note ? `conv2.${c2 === "shadow" ? "shadow" : "note"}.${note.intent}` : "conv2.no_note";
+    mark("noted");
+  }
+  // p5-interaction: an answer's own words beside the grade (a hedge, "is it right?", "I'm right") ride on the move as notes
+  if (cls && childText && p5Flag("STEER")) cls = withAnswerMods(cls, childText);
   // safety-robust (2026-10-05; INTEGRATION.md §2.1, PLAN X-1 / W2.5-2): the duplex floor's sticky partial-safety state
   // (TurnRequest.duplex.safetyPending: the predicate ran on EVERY partial, and a hit stays even when the final transcript
   // was revised clean) is OR-ed into this turn's distress flag before planTurn; it never subtracts. A client can only use
@@ -359,11 +401,22 @@ export async function lessonTurn(req, body) {
   if (cls?.flags?.distress && cls.source !== "predicate") {
     seamSafe("duplex.modelNote", () => duplexRegistry.sliceFor(lesson.id)?.modelNote(cls.flags.distressKind, Date.now()) ?? null, null);
   }
+  // ship5 p3-voicesig (server/voicesig/lesson.js): the knowledge state this spoken turn's on-device timing numbers
+  // (TurnRequest.voiceFeatures.kv) read against the child's own baseline, the transcript and the grader verdict. Pure,
+  // well under a millisecond, never awaited on the network. A disclosure turn (predicate, classifier, duplex floor) gets
+  // nothing; a state reaches the consumers only through the precision gate (measured on children >= 0.80), and until then
+  // it is shadow: trace codes only, and the plan below is exactly the pre-voicesig plan.
+  const vsTurn = seamSafe("voicesig.turn", () => voicesigSeam.turn({ kv: body.voiceFeatures?.kv, typed: !!body.typed || moduleOnly || !!help || laneResume,
+    bargeIn: !!body.teacherInterrupted, safety: !!cls?.flags?.distress || !!pendingSafety || !!fast?.flags?.distress, childText, cls, item: activeItem,
+    context: body.voiceFeatures?.context, vsb: state.vsb, classLevel: child.class_level, env: process.env }), null);
   if (settling) { await settling; carried = carriedFrom(state); planCtx.carried = carried; mark("settled"); }
   // This utterance's voice tie-breakers (features.js signalsFrom: capped booleans) reach the plan only if they are
   // already in when the classification is: the turn never waits on them (CE8: zero evidence weight, tie-break and
   // pacing only). A speculative reply was planned without them, so a non-empty signal set can only miss it.
   if (voiceNow?.reliable && Object.keys(voiceNow.signals ?? {}).length) planCtx.voice = { signals: voiceNow.signals, z: voiceNow.z };
+  // A LIVE voicesig state hands the same tie-breaker vocabulary (followUpProbe → the why probe and the comprehension probe
+  // gap, gentlerHint → the gentler rung and the re-teach order, slowerPace → the pace knob); a shadow state hands nothing.
+  if (vsTurn && Object.keys(vsTurn.hints ?? {}).length) planCtx.voice = { signals: { ...(planCtx.voice?.signals ?? {}), ...vsTurn.hints }, z: planCtx.voice?.z ?? {} };
 
   // Evidence → learner model → Director step → compile, all staged as statements for the turn's one transaction.
   let plan = await planTurn(state, cls, { ...planCtx, now });
@@ -424,6 +477,12 @@ export async function lessonTurn(req, body) {
   };
   authorityCheck();
   mark("kernel");
+  // ship5 p4-content board sync: an accepted whiteboard ask starts its speculative board NOW, on the move's kit content (what
+  // her line is written from), so it can be in when her line is; requestIntent below re-gates it against her real line.
+  if (!late && textLane && kernel.arb.accepted.some((p) => p.kind === "ask_whiteboard") && typeof studioSeam.prepareWhiteboard === "function") {
+    seamSafe("studio.prepareWhiteboard", () => studioSeam.prepareWhiteboard(whiteboardIntentOf({ lessonId: lesson.id, turn: next.turn, beat: kernel.beat ?? { id: "visual", type: "explain" }, next, kit,
+      item: next.lastMove?.itemId ? findItem(next, kit, next.lastMove.itemId) : null, line: { text: "" } })), false);
+  }
   // W1-C settle: start the blind grade of this turn's held why / teach-back NOW (or adopt the pregrade), while the reply
   // is written and the turn commits, not after; the post-commit launchGrades below is then a no-op for the same event
   // ids (later.js gradeLater is idempotent per event id).
@@ -453,7 +512,19 @@ export async function lessonTurn(req, body) {
   let studioSlot = late ? null
     : seamSafe("studio.slotFor", () => (typeof studioSeam.slotFor === "function" ? studioSeam.slotFor(lesson.id, turnStudioOf(kernel.arb),
       { beat: kernel.beat?.type ?? null, tray: r.ui?.tray ?? null, safety: r.move.kind === "safeguard" || !!incident,
-        asking: !!r.move.itemId && ASKING_MOVES.has(r.move.kind) }) : null), null);
+        asking: !!r.move.itemId && ASKING_MOVES.has(r.move.kind),
+        // ship5 p4-content: the Director's tray holds only its template explain rung (W2-B): a Stagecraft piece may take it
+        rungTray: r.ui?.tray === "module" && next.module?.engine === RUNG_ENGINE }) : null), null);
+  // ship5 p4-content: a Stagecraft piece took the tray from the Director's template rung (the same rule as the live board
+  // below: the rung is the floor, a real piece replaces it): its mount / param commands go, a rung already on screen is
+  // unmounted, and its facts row leaves the move's content, so her line names only what the child sees.
+  if (!late && studioSlot?.artifact?.kind === "stagecraft" && next.module?.engine === RUNG_ENGINE) {
+    const id = next.module.id;
+    const mountedNow = r.moduleCommands.some((c) => c.op === "mount" && c.moduleId === id);
+    r = { ...r, moduleCommands: [...r.moduleCommands.filter((c) => c.moduleId !== id || c.op === "unmount"), ...(mountedNow ? [] : [{ op: "unmount", moduleId: id }])] };
+    next.module = null;
+    if (Array.isArray(next.lastContent)) next.lastContent = next.lastContent.filter((l) => !(typeof l === "string" && l.startsWith(FACTS_ROW_PREFIX)));
+  }
   // Seam (W2-H fixer): the Studio facts row for THIS turn's reply comes from the slot the turn actually shows (after the
   // kernel and slotFor), never from the pre-arbitration view: a refused or held reveal, or a piece hidden by the
   // Director's tray, puts nothing on the row (AT-7: her line names only on-screen values). The row replaces last turn's,
@@ -650,6 +721,11 @@ export async function lessonTurn(req, body) {
       // Pace knobs from the vibe persona (wait before a nudge, end-of-speech silence): session config, never the prompt.
       ...(next.vibe && vibeAccepted ? { pace: { waitNudgeSec: next.vibe.waitNudgeSec, endpointSilenceMs: next.vibe.endpointSilenceMs } } : {}),
     };
+  // voicesig, after every re-plan (relational floor, content filter): the session baseline learns from this turn, never
+  // from a safety turn (a disclosure's timing is never part of the child's usual pace), and the codes go to the trace only.
+  const vsSafety = r.move.kind === "safeguard" || !!incident;
+  if (vsTurn && !late) next.vsb = vsSafety ? state.vsb : vsTurn.vsb;
+  const vsReasons = vsTurn && !vsSafety && !late ? vsTurn.reasons ?? [] : [];
   // The dedupe record lands in the same transaction as the turn: a resend of this turnSeq replays outCore.
   if (turnSeq != null) {
     next.acks = [...(prev.acks ?? []).filter((a) => a.turnSeq !== turnSeq), { turnSeq, ...(edited ? { edited: true } : {}) }].slice(-ACKS_MAX);
@@ -688,8 +764,12 @@ export async function lessonTurn(req, body) {
           ...(help ? ["turn.help"] : []), ...(laneResume ? [revoice ? "turn.lane_resume_revoice" : "turn.lane_resume"] : []), ...(kernel.replanned ? ["turn.replanned"] : []), ...(kernel.wb.declined ? [kernel.wb.declined] : []),
           ...(speculation ? [speculation.hit ? "turn.speculation_hit" : "turn.speculation_miss"] : []), ...(wbAcked ? ["studio.whiteboard_slot"] : []),
           ...(rungReplaced ? ["studio.rung_replaced"] : []), ...studioReasons, ...releaseReasons,
-          ...comprehensionReasons({ cls, classified, help: !!help, uiVerdict: uiV, guard }),
+          ...comprehensionReasons({ cls, classified, help: !!help, uiVerdict: uiV, guard }), ...vsReasons,
           ...(guard?.caught?.includes("unavailable") ? ["turn.fallback_reply"] : []),
+          // p5-interaction: what the turn was read as (intent / request ids only, never the child's words), the card cap,
+          // an unverifiable module answer
+          ...(noteReason ? [noteReason] : []), ...(cls?.request?.type ? [`request.${cls.request.type}`] : []),
+          ...(next.capped?.turn === next.turn ? [`p5.capped.${next.capped.how}`] : []), ...(moduleUnverified ? ["module.unverifiable"] : []),
           ...[...seamErrors].map((c) => `component_error.${c}`)],
         serverMs: performance.now() - t0, kernelUs: kernel.us, legalMode: child.legal_mode ?? "M1",
         withIds: traceIdsOk, itemId: target?.mode === "item" ? activeItem?.id ?? null : null, misconceptionId: cls?.misconceptionId ?? cls?.voiced ?? null })] : []),
@@ -744,6 +824,7 @@ export async function lessonTurn(req, body) {
       item: item ? { id: item.id, kind: item.kind, prompt_en: item.prompt_en, prompt_hi: item.prompt_hi, answer: item.answer, acceptable: item.acceptable, ...(item.options ? { options: item.options.map((o) => o.text) } : {}) } : null,
       kitVerified: kit.verified, ms, timings: trace,
       ...(voice ? { voice: { reliable: voice.reliable, signals: voice.signals, z: voice.z } } : {}),
+      ...(vsTurn?.trace && !vsSafety ? { vs: { ...vsTurn.trace, read: vsTurn.read, hints: vsTurn.hints, reasons: vsReasons } } : {}),
     };
   }
   return out;
@@ -837,7 +918,7 @@ export async function planTurn(base, cls, c) {
   else if (state.rel) delete state.rel;
   // 2. the Director step on beliefs that include this answer (voice: capped tie-breakers only, CE8)
   const stepIn = { kit, cls: cls ?? undefined, chipId: c.chipId, answer: c.answer, now, comp: state.comp, voice: c.voice?.signals, voiceZ: c.voice?.z,
-    text: c.childText, bargeIn: c.bargeIn, typed: !!c.typed };
+    text: c.childText, bargeIn: c.bargeIn, typed: !!c.typed, ...(c.moduleUnverified ? { unverified: true } : {}) };
   const stepped = moduleOnly
     ? step(state, { ...stepIn, event: "module", moduleEvents: c.moduleEvents })
     : step(state, { ...stepIn, event: "turn" });
@@ -1049,4 +1130,19 @@ export async function missReason(specs, key) {
     const i = a.findIndex((line, j) => line !== b[j]);
     return `${parts} [spec: ${String(a[i] ?? "").slice(0, 120)} || real: ${String(b[i] ?? "").slice(0, 120)}]`;
   }));
+}
+
+/** CONVERSATION-V2 §4.4: the longest a non-answer turn waits on the UNDERSTAND note from its start (gpt-6-sol p90 2174 ms). */
+export const NOTE_WAIT_MS = Number(process.env.TAXILA_NOTE_WAIT_MS ?? 2200);
+/** The promise's value if it settles within `ms` (0: only if already settled), else null. Never throws. */
+export function settleWithin(p, ms) {
+  return Promise.race([p.catch(() => null), new Promise((res) => setTimeout(() => res(null), Math.max(0, ms)))]);
+}
+/** The last `n` child → teacher exchanges of the recent transcript (masked), for the note's context. */
+export function earlierExchanges(recent = [], n = 2) {
+  const out = [];
+  for (let i = recent.length - 1; i >= 1 && out.length < n; i--) {
+    if (recent[i].who === "teacher" && recent[i - 1].who === "child") { out.unshift({ child: scrubbed(recent[i - 1].text), teacher: scrubbed(recent[i].text) }); i--; }
+  }
+  return out;
 }

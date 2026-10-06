@@ -11649,6 +11649,629 @@
    "title": "Asha (Diya) and Arjun speak at baseRate 0 (the engine's own rate, as in the voted renders); the expressive layer stays on because it carries the safety delivery (helplines digit by digit). Reverse if: the owner's ear check of the live voice at 0% says a different pace, or a blind round prefers another rate.",
    "at": "2026-10-05",
    "source": "inbox/voice-pace-owner.json"
+  },
+  {
+   "id": "p1dx-handsfree-live-on-cascade",
+   "kind": "decision",
+   "at": "2026-10-06",
+   "title": "The duplex v2 engine is the live hands-free lesson mode on the cascade lane (ship5 p1-duplex, patches 01-06): CascadeLink starts CascadeDuplex (src/duplex/cascadeDuplex.ts -> DuplexLive -> EngineHost) when the transcription call is up; frames come from the ONE lesson mic tap (src/voicesig/lessonTap.ts acquireFrontEnd, never a second worklet); a transcription final is NOT a turn (the engine commits it, TurnRequest.duplex carries the hash, sticky partial-safety state and engine summary, never words); the server VAD becomes a 1,500 ms backstop; no talk button while it decides (useDesk openMic = ctx.openMic || duplexLive). Ships ON; kill switches TAXILA_DUPLEX=0 (GET /api/duplex/config, runtime), VITE_DUPLEX=0, ?duplex=0; automatic fallback to today's path (token VAD, finals are turns, the screen's talk policy) on an STT quota/capacity error, no AudioWorklet, a tap silent for 3 s, or any engine fault, with no child-facing error. Safety floor unchanged: server scanSafety + model distress read on every committed turn; safetyPending only ORs a safeguard in. Reverse if: on-device stats from the first week show the duplex lesson's spoken-turn completion or child-repeat rate worse than today's path at equal n (>= 200 lessons), or a safety battery on real transcripts loses a case the cascade path catches.",
+   "source": "inbox/p1-duplex.json"
+  },
+  {
+   "id": "p1dx-acoustic-yield-waits-for-sustain",
+   "kind": "decision",
+   "at": "2026-10-06",
+   "title": "An acoustic-only YIELD while a burst over her is still voicing and shorter than OVERLAP.sustainedMs (600) waits (stays hushed/undecided) unless she asked yes/no (OVERLAP.waitForSustain). Found on REAL adult speech (AMI dev meeting IS1008b): 'yeah' / 'mm-hmm' over her often start mid-clause with a raised onset (z -0.5+0.6+1.2 -> p 0.79 at 150 ms): 6 of 8 continuer yields. Dev pairs: continuers kept 13/21 -> 19/21; TaxilaFDB TRAIN F7/F8/F9 unchanged on every metric (n 120/72/48 per lane). The hush (gain 0.05 at ~120 ms) covers the wait. Reverse if: real-child sessions (ET-1/ET-2) show barge-in yields later than 700 ms p50 with children re-saying their turn, while continuers stay >= 90% kept with the rule off.",
+   "source": "inbox/p1-duplex.json"
+  },
+  {
+   "id": "p1dx-child-pitch-from-committed-turns",
+   "kind": "decision",
+   "at": "2026-10-06",
+   "title": "The child's own level and pitch (speaker attribution: a burst >= 5 st below the child is not the child) are learned only from voiced frames the engine COMMITTED as a child turn (audio.ts confirmOwn / dropPending), not from every voiced frame while she is quiet. Learning from everything learned the room (other talkers, a TV) as 'the child' (AMI real speech), and a child pitched below the room's talkers then read as not-the-child (no hush, no yield on their words). Consequence: attribution only works after the child has spoken ~1.5 s of committed turns in the lesson (TaxilaFDB single-exchange streams without a mid-lesson prior: TRAIN TV false yields 22-23/24). Reverse if: a target-speaker model (PLAN X3) replaces pitch attribution.",
+   "source": "inbox/p1-duplex.json"
+  },
+  {
+   "id": "p1dx-tone-is-not-voice",
+   "kind": "decision",
+   "at": "2026-10-06",
+   "title": "A burst whose opening median YIN f0 is >= 540 Hz is a steady tone, not a voice (OVERLAP.toneF0Hz): a pressure-cooker whistle (~3 kHz) aliases to YIN 485-618 Hz (median 573) on 1,980/1,980 synthetic frames; children's speech f0 on TaxilaFDB TRAIN p99 513 Hz (1.4% of frames >= 500). Designed from the cooker generator's physics + TRAIN child f0, then scored once on TEST, which uses the same generator: the TEST cooker numbers are NOT independent of the rule. Reverse if: real-child audio (ET-1/ET-2) shows >= 1% of a child's barge-in bursts with an opening median f0 >= 540 Hz.",
+   "source": "inbox/p1-duplex.json"
+  },
+  {
+   "id": "p1dx-echo-coupling-learns-always",
+   "kind": "decision",
+   "at": "2026-10-06",
+   "title": "DuplexLive's echo-coupling estimate (30th percentile of mic - her output over frames where she is audible) learns from every such frame, not only frames where the child is not voicing: gating it on 'not voicing' never learned a strong echo path (her echo above the -30 dB prior read as child voicing), the AMI headset-bleed case (-10..-22 dB). AMI dev echo self-yields 9/104 -> 4/104. Reverse if: phone recordings (ET-1) show the estimate drifting upward while a child talks over her for long stretches.",
+   "source": "inbox/p1-duplex.json"
+  },
+  {
+   "id": "p1dx-attribution-carry",
+   "kind": "decision",
+   "at": "2026-10-06",
+   "title": "A burst too short to read its own pitch (< 3 f0 frames) inherits the last speaker attribution made within 2 s (OVERLAP.attributionCarryMs): a TV voice breaks into short bursts and its late words ('संभावना') landed on an unattributed one and yielded her as a turn. TaxilaFDB TRAIN her_tv false yields (mid-lesson prior world) D4 7/24 -> 4/24, FAST 7/24 -> 3/24, MAI 6/24 -> 2/24 together with waitForSustain. Reverse if: the child's own barge-in right after a TV burst is held (attributed to the TV) in real sessions.",
+   "source": "inbox/p1-duplex.json"
+  },
+  {
+   "id": "p1dx-english-listening-tokens",
+   "kind": "decision",
+   "at": "2026-10-06",
+   "title": "English-medium children's listening tokens are continuers over her too (yeah, yep, right, sure, alright, uh-huh -> uh huh, mm-hmm -> mm hmm, oh): up to 3 listening tokens are a continuer, never a turn. Decided before the AMI real-speech run (pre-registered), not tuned on it. Reverse if: real children use 'right?' / 'yeah but' as a turn opener that this suppresses (a lone listening token only).",
+   "source": "inbox/p1-duplex.json"
+  },
+  {
+   "id": "m-p1dx-fdb-test-2026-10-06",
+   "kind": "measurement",
+   "at": "2026-10-06",
+   "title": "TaxilaFDB TEST, SIMULATED (TTS child-like voices, mixed echo/noise, reactive STT model; re-rendered 2026-10-06, 1,120 renders, 0 failed checks, 2,240 streams), 960 streams x 3 lanes, world herAct=1, childLevel=0 (no mid-lesson prior), HEAD 8006902 engine vs p1-duplex final, same streams: barge-in her-audio-stop (hush 0.05 or yield) p50 1,190/747/676 ms -> 140/140/140 (D4/FAST/MAI_HOME), stops <= 200 ms 3/0/11 -> 105/104/105 of 108; full yield decision p50 1,190/747/676 -> 716/700/716; continuers kept talking (strict) 47/72, 48/72, 16/72 -> 68/72, 70/72, 69/72; false yields her_sibling 23/24, 24/24, 23/24 -> 24/24 all lanes (NOT fixed); her_cooker 3/24, 0/24, 16/24 -> 7/24, 6/24, 8/24 (worse on D4/FAST, better on MAI); thinking-pause cut-offs 0/732, 0/732, 5/732 both; decision gap p50 1,150/360/330 ms both (n 474/482/477); missed replies 54, 46, 51 /528 both; safety detected 84, 82, 76 -> 84, 84, 82 /84 and non-safety speech after distress 0, 2, 6 -> 0, 0, 2 /84; echo self-trigger 0/80; hold violations 0/48; verdicts on a repaired value 0/40. With the mid-lesson prior (childLevel=1) final: identical except continuers D4 70/72. Results evals/p1-duplex/results/fdb-r2-test-{base8006902,final,final-midlesson}.json.",
+   "source": "inbox/p1-duplex.json"
+  },
+  {
+   "id": "m-p1dx-ami-real-adult-2026-10-06",
+   "kind": "measurement",
+   "at": "2026-10-06",
+   "title": "REAL RECORDED ADULT SPEECH (AMI Meeting Corpus CC BY 4.0, headset channels incl. Indian-L1 adults, English; real frames / pauses / overlaps / continuers / interruptions, manual word times; STT stream SIMULATED (SttSim, D4 = gpt-live-transcribe timing; FAST = India estimate) and 'her' = another participant replayed open loop), driven through the live bridge DuplexLive. HELD-OUT meetings ES2004b, ES2005b, IS1004b (never used for any change), D4 / FAST: continuers kept talking 204/269 (75.8%, 95% CI 70-81) / 206/269 (76.6%); barge-ins where the speaker really took the floor: her audio stopped 78/152 / 85/152 (stop p50 200 / 300 ms among stopped; full yield 68/152 p50 630 ms / 74/152 p50 560 ms); other adults in the room (third/fourth speaker bleed) false yields 16/209 (7.7%) / 13/209 (6.2%); her own bleed self-yields 71/485 (14.6%) / 72/485; turn-end decision gap (other speakers masked) p50 1,870 / 1,910 ms, p90 6.2 s, 271/251 of 1,071 ends undecided within 8 s, <= 350 ms on 7 / 39 (human next-speaker p50 140 ms); thinking-pause (>= 500 ms, speaker went on) cut-offs 17/111 (15.3%, CI 9.8-23.2) / 28/111 (25.2%) vs silence-640 99/111 and silence-900 79/111 on the same pauses. DEV meeting IS1008b (used to find the waitForSustain / coupling / pitch-learning issues): continuers 30/35, barge stop 15/19 (p50 150), room 1/30, echo 5/245, gap p50 1,600 / 960, pause cut-offs 9/76 / 30/76. Results evals/p1-duplex/results/ami-r2-{heldout,dev}-{D4,FAST}.json.",
+   "source": "inbox/p1-duplex.json"
+  },
+  {
+   "id": "m-p1dx-browser-e2e-2026-10-06",
+   "kind": "measurement",
+   "at": "2026-10-06",
+   "title": "Browser end-to-end on a local server with the p1-duplex patches (Chromium, fake mic looping a TTS child 'मुझे लगता है बारह', SCRIPTED transcription events from the fake mic's energy, Neon TEST branch): 18/18 checks: no talk button; 5 spoken turns committed by the engine in 75 s with no click (mic -> shared AudioWorklet tap -> engine -> POST /api/lesson/turn with duplex), decided ~1.15-1.19 s after the voice ended (scripted words arrive ~0.9 s after speech, D4-like); the 1,500 ms backstop VAD sent; no Devanagari in the summary; ?duplex=0 restores the talk button and turns without duplex. The real-STT arm could not reach Azure from the sandbox (WebRTC needs UDP): the graceful path (talk button back, lesson continues) was checked instead. tests/prod/p1-duplex-acceptance.mjs.",
+   "source": "inbox/p1-duplex.json"
+  },
+  {
+   "id": "rj-p1dx-yield-on-early-raised-onset",
+   "kind": "rejection",
+   "at": "2026-10-06",
+   "title": "Tried: the stage-A overlap classifier deciding YIELD from acoustics alone at 150 ms while the burst still voices (onset mid-clause + raised onset pitch -> p 0.79). Broke on real adult speech (AMI IS1008b): 6 of 8 continuers that stopped her were 'yeah' / 'mm-hmm' with exactly that onset; TTS continuers in TaxilaFDB rarely carry it, so the simulator never showed it. Replaced by p1dx-acoustic-yield-waits-for-sustain.",
+   "source": "inbox/p1-duplex.json"
+  },
+  {
+   "id": "rj-p1dx-own-pitch-from-any-quiet-voice",
+   "kind": "rejection",
+   "at": "2026-10-06",
+   "title": "Tried: ChildAudioTracker learning the child's own level/pitch from every voiced frame while she is quiet. Broke (AMI real speech): the room's other talkers became 'the child', and attribution then marked the real speaker's barge-ins as not-the-child (no hush, no lexical yield). A TV running between turns would do the same in a home. Replaced by p1dx-child-pitch-from-committed-turns.",
+   "source": "inbox/p1-duplex.json"
+  },
+  {
+   "id": "rj-p1dx-coupling-gated-on-not-voicing",
+   "kind": "rejection",
+   "at": "2026-10-06",
+   "title": "Tried: the live echo-coupling estimate learning only from frames where the child is not voicing. Broke: an echo path stronger than the -30 dB prior (AMI headset bleed -10..-22 dB; a speakerphone with weak AEC) reads as child voicing from the first frame, so the estimate never learns and her own voice keeps opening overlaps. Replaced by p1dx-echo-coupling-learns-always.",
+   "source": "inbox/p1-duplex.json"
+  },
+  {
+   "id": "rj-p1dx-level-below-child-rule-r2",
+   "kind": "rejection",
+   "at": "2026-10-06",
+   "title": "Re-tried (round 2, TaxilaFDB TRAIN F7/F8/F9, 3 lanes): treating a burst 6 or 8 dB below the child's own level as background (OVERLAP.backgroundBelowChildDb). Broke: barge-in stops <= 200 ms fell 111 -> 85 (6 dB) / 93 (8 dB) of 120 and TV/side-talk false yields did not move (0.54-0.56). Stays off; TV is quieter than the child on average (-9.8 dB median) but its opening frames are not.",
+   "source": "inbox/p1-duplex.json"
+  },
+  {
+   "id": "rj-p1dx-childlevel-prior-as-final-world",
+   "kind": "rejection",
+   "at": "2026-10-06",
+   "title": "Tried (round 1 of this stream, 2026-10-05): scoring the final TaxilaFDB TEST with world childLevel=1 (the child's level/pitch from OTHER streams of the same voice and room) as the headline. Broke the honesty rule: the live bridge (DuplexLive) sets no such prior; it learns online from committed turns only. Headline numbers are now childLevel=0 (first exchange of a lesson), with childLevel=1 reported as the mid-lesson case.",
+   "source": "inbox/p1-duplex.json"
+  },
+  {
+   "id": "m-p1dx-side-talk-yields-2026-10-06",
+   "kind": "measurement",
+   "at": "2026-10-06",
+   "title": "TaxilaFDB TRAIN her_side_talk (the CHILD's own voice at 0 dB telling a parent 'मम्मी पानी दो' / 'दीदी एक second, मम्मी बुला रही हैं' over her): she yields 24/24 on every lane, before and after this stream's changes. Acoustically it is the child; two of the three scripts address her ('दीदी एक second'). Reported apart from TV/sibling: a teacher pausing when the child turns to a parent is defensible; telling side talk from a turn needs addressee semantics, not acoustics.",
+   "source": "inbox/p1-duplex.json"
+  },
+  {
+   "id": "p2f-arjun-keeps-tutorface",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "Arjun keeps TutorFace (his 3D head / plate); no male puppet ships. The style-C rig is one painted woman's layer stack (bun, locks, bindi, kurta; no glasses layer) judged over 8 polish rounds; a male variant from the same rig is new art to the 4.0 bar, not a reskin, so it cannot be made to the same quality inside this stream. No lesson ever swaps faces (src/face-puppet/PuppetFace.tsx PUPPET_TUTORS = {asha}). Consequence stated plainly: classes 5-9 default to Arjun (shared/tutors.js defaultTutorFor), so most of the class 4-7 target sees the puppet only if they pick Asha. Reverse if: a male style-C variant scores >= 4.0 on the judge panel, or the owner makes Asha the default for classes 5-7.",
+   "source": "inbox/p2-face.json"
+  },
+  {
+   "id": "p2f-safety-turn-neutral",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "Policy R6 (src/face-puppet/policy.ts, driver.ts): a safety turn (the Director's calm_steady display, or the duplex calm_steady pose / safety_attend) is NEUTRAL: every expression released, no preset at all (concern included), every affect dropped, mouthSmile and cheekSquint capped to 0 (the rig's soft-neutral corners), frowns removed, no nods, no laugh; eased over ~150 ms. Without the duplex engine the calm ends at her next onset after a normal child turn with no fresh calm_steady cue. Replaces v4's concern preset at 0.35, which read 'warm' (a smile) 8/8 to blind models (Review v4 concern-read). Reverse if: a child or blind panel reads the neutral safety face as cold or hostile (>= 30%), or a re-acted caring-concern preset reads caring to both judge families at product intensity.",
+   "source": "inbox/p2-face.json"
+  },
+  {
+   "id": "p2f-safety-latch",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "The safety state is page-level (src/face-puppet/latch.ts, eager): a stage built while the page is in a safety turn starts neutral; the latch clears when a stage's policy leaves safety. Found on the product path: the safeguarding TroubleScreen mounts a SECOND puppet after the calm_steady cue, and that stage (not neutral) acted her normal reply over the helplines. Acceptance now passes with 2 faces in safety, 0 presets. Reverse never (a lost safety cue has no upside).",
+   "source": "inbox/p2-face.json"
+  },
+  {
+   "id": "p2f-one-running-stage",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "At most one RUNNING puppet stage per page (src/face-puppet/stage.ts foreground stack): the newest started stage runs, the others hold their last frame and the most recent resumes when the foreground one is disposed. Found: TroubleScreen over the lesson tile = two WebGL loops. Reverse if a screen legitimately shows two live faces at once (then key the rule on visibility).",
+   "source": "inbox/p2-face.json"
+  },
+  {
+   "id": "p2f-scheduler-merge-by-part",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "Viseme batches merge by (reply, part) within 40 ms onto the FIRST batch's timeline; word-boundary-only batches are merged (held as orphans until the part's visemes arrive), never dropped; at render the LATEST begun part wins (a part's 200 ms tail no longer hides the next part's opening). src/face-puppet/track.ts. Before (v4): keyed on |playAt diff| < 5 ms, so one part's 9 batches split into 4-6 tracks whose tails hid the next batch's first visemes, and every words-only batch was dropped (no word-timed retroflex curls at all on the product path). Reverse if a real re-anchor without a preceding cut is observed (then key by an anchor id).",
+   "source": "inbox/p2-face.json"
+  },
+  {
+   "id": "p2f-anchor-once",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "Patch 02 (src/lesson/ttsStream.ts): the player converts its anchor's AudioContext time to performance time ONCE per anchor (src/face-puppet/ttsBridge.ts anchorPerfTime: getOutputTimestamp when valid, else currentTime + outputLatency), and every batch's playAt is the anchor's plus its sample offset. Before: converted per batch, so batches of one part came out 0.1-8 ms apart on desktop (and would step 20-40 ms on Android's audio callback). Reverse if a phone recording shows drift across a long part (then re-anchor periodically with a cut).",
+   "source": "inbox/p2-face.json"
+  },
+  {
+   "id": "p2f-chunked-loader",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "The rig loads in slices (src/face-puppet/loader.ts): layers decoded off-thread as premultiplied ImageBitmaps, the judged constructor builds the rig, the 24 warm-up frames run <= 8 ms per task, then one judged warm(1) restores state exactly (clock, lastT, physics, lip solver, life) and pays the single gl.finish(). Pixels match the judged load within 3/255 (1-3 px of 129,600 over 2/255 per frame, 5 scenes). Fallback: Puppet2DRig.load + warm(). Reverse if a phone shows a texture difference or slower first draw than the judged path.",
+   "source": "inbox/p2-face.json"
+  },
+  {
+   "id": "p2f-start-tier-governor",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "The stage starts at the frame rate the device can hold, measured by its own warm-up (median of the last 12 warm frames): over the 60 fps JS budget (8 ms) start at 30 fps, over 2.5x start at 20 fps; the governor then steps on 60-frame windows 1.5 s apart (was 90 frames, 2 s), never up. Before: on the 4x-throttled profile the first step came at ~15 s and 30 fps at ~30 s, while a 20-30 ms rig frame at 60 fps starved the page (freezes up to 1.3 s in her first sentences). Reverse if the phone gate shows a capable phone capped at 30 fps by an inflated warm estimate.",
+   "source": "inbox/p2-face.json"
+  },
+  {
+   "id": "p2f-runtime-kill-switch",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "Runtime kill switches, both ON: TAXILA_FACE_PUPPET2D=0 (GET /api/face/config, server/face-puppet/config.js; PuppetFace awaits it in parallel with the stage chunk, a kill lands on TutorFace before reveal, fail-OPEN on 404 / error / 1.5 s timeout; a device forced on with ?puppet=1 is not overridden) and TAXILA_DHD_VISEMES=0 (REST as before, the face lip-syncs from the audio tap). Build-time VITE_FACE_PUPPET2D and per-device ?puppet stay. Reverse if fail-open ever lets a broken face through an incident (then fail closed).",
+   "source": "inbox/p2-face.json"
+  },
+  {
+   "id": "p2f-ws-pool-12",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "Patch 01's Speech websocket pool: 12 sockets per region per replica (TAXILA_DHD_WS_POOL), was 3. At 3 (one speaking child: LOOKAHEAD 2 + the playing part) a second child on the same replica opened an unpooled socket for every part, paying the TLS + upgrade handshake (1.1-1.8 s through the eval proxy) on parts REST keep-alive pays nothing for. Reasoned from the code, not load-tested. Reverse if Azure's concurrent-connection limit per resource is hit (then lower and add a queue).",
+   "source": "inbox/p2-face.json"
+  },
+  {
+   "id": "p2f-reveal-rule-exact",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "The reveal rule is stated exactly and recorded per reveal (src/face-puppet/stage.ts event reveal.why): the first of her silence, a near-closed live mouth while she speaks, or 800 ms of frames. The v4 write-up's 'reveal only during her silence' was never true. Measured: 38/38 product-path runs revealed on 'silence'; 37/38 before her first sound (the exception: a 6x-throttled run whose audio began 2.5 s after page start; the poster, the same face still, showed until the reveal).",
+   "source": "inbox/p2-face.json"
+  },
+  {
+   "id": "p2f-lipsync-product-2026-10-05",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "Lip-sync on the PRODUCT path (real lesson page, patched server route + Azure websocket synthesis, real ttsStream player, real stage; Chromium headless SwiftShader; NOT a phone, no speaker): drawn mouth minus the judged timing (wav2vec2-base CTC forced alignment of the same scheduled audio, both scored against its envelope, the E3 estimator) median -5 ms, IQR -20..+15, 89% within +-50 ms, n = 46 replies at the production rate 0% (r0+r1+r2 runs); on the 4x/6x throttled profile median 0 ms, IQR -10..+15, 92% within 50 ms, n = 37. Per-reply correlation is weak (median r ~0.5), so single replies are low-confidence. v4's harness figure (-35 ms, re-implemented player) is superseded. Before/after the merge + anchor fixes at -35% rate: median +5 / IQR -5..+30 / 88% (n = 24) vs 0 / -15..+5 / 96% (n = 24). Viseme coverage: median 100% of speaking frames drawn from her visemes (min 97.3%). evals/p2-face/out/lipsync-product-score-*.json.",
+   "source": "inbox/p2-face.json"
+  },
+  {
+   "id": "p2f-playat-spread-2026-10-05",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "playAt spread between batches of one part on the product path: v4 code 0.1-8 ms (one part: 4457-4524 ms incl. a re-anchor; tolerance 5 ms split it into 4-6 tracks); after the anchor-once fix 0.00 ms in every acceptance run (tests/prod/p2-face-acceptance.mjs, n = 47 and 42 batches).",
+   "source": "inbox/p2-face.json"
+  },
+  {
+   "id": "p2f-first-draw-2026-10-05",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "First draw / reveal on the product path (ms after the stage is built, SwiftShader, shared 4-core container at load 1.6-5.6): final code 1x first draw median 749 ms (n = 3; 470-857), reveal 802 ms, 3/3 revealed before her first sound; judged single-task loader 462 / 628 ms (n = 6) but with a 333-367 ms main-thread stall right after the first frame; 4x profile final 1147 ms (n = 3), no post-first-frame stall (the judged loader had 900-1050 ms there, n = 3, and a 974 ms long task per CPU profile; chunked: longest slice 145-201 ms). The review's '1.7 s first-line stall' was not reproduced on the product path (37 of 38 runs had the live face up before her voice, the 38th was a 6x-throttled debug run with the poster up); its cause on the throttled profile was the single-task load + warm and the 60 fps start.",
+   "source": "inbox/p2-face.json"
+  },
+  {
+   "id": "p2f-freezes-control-2026-10-05",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "Main-thread freezes > 180 ms while her voice plays (rAF gaps), puppet vs the ?puppet=0 control on the same lesson: 1x final 0.45 per 10 s of her voice, max 191 ms (67 s voiced, n = 3 runs) vs control 0.49 / max 278 ms (61 s, n = 3); 4x final 0.87 / max 458 ms (57 s, n = 3) vs control 0.52 / max 260 ms (38 s, n = 2) and vs the v4-style start 0.97-1.37 / max 856-1294 ms. So at 1x the puppet adds no measurable freezes; on the 4x profile it still adds some. Load varied (1.6-5.6 on 4 cores, other agents); SwiftShader, not a phone.",
+   "source": "inbox/p2-face.json"
+  },
+  {
+   "id": "p2f-fps-throttled-2026-10-05",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "Frame rate on a THROTTLED DESKTOP PROFILE (Chromium, 360x780 CSS px at DPR 2, touch, CDP CPU throttle; NOT a phone: CDP throttles the main thread only, SwiftShader rasterises on the host unthrottled, no Mali GPU modelled): 1x 60 fps while speaking (n = 6+3, work p95 median 4.7 ms); 4x starts at 30 fps from its warm estimate (12-16 ms per rig frame), steps DPR 2 -> 1.5 -> 1, holds 30 fps (n = 3); 6x starts 30, reaches 20 fps (n = 1). No fallback fired.",
+   "source": "inbox/p2-face.json"
+  },
+  {
+   "id": "p2f-bundle-2026-10-05",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "Bundle (vite production build, gzip -9): the lazy stage chunk 100.4 KB raw / 37.4 KB gz (stage + driver + judged runtime + chunked loader), loaded only when a puppet mounts; eager cost +6.2 KB raw / +2.6 KB gz vs the same tree with Teacher/V3Root/TutorPicker at 8006902; pack 132,250 B (geometry + 28 WebP layers) + the poster 35.0 KB (medium) / 42.2 KB (close). evals/p2-face/out/bundle.json.",
+   "source": "inbox/p2-face.json"
+  },
+  {
+   "id": "p2f-acceptance-local-2026-10-05",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "tests/prod/p2-face-acceptance.mjs against the patched local server on the Neon TEST branch: 35/35 with TAXILA_TUTOR_OFFER=wide (incl. the safety arm: a typed distress line, helplines shown, 2 faces in the neutral safety calm, 0 presets) and 31/31 + a WARN on the default offer (the safety arm needs Asha for a class-5 child). Lesson arm: puppet live and labelled 'Asha, AI teacher', revealed before her first sound, 42-47 viseme batches, 97.8-99.2% of speaking frames drawn from visemes, Arjun TutorFace, kill switch and pack failure both land on TutorFace with no page error.",
+   "source": "inbox/p2-face.json"
+  },
+  {
+   "id": "rj-p2f-envelope-closure-metric",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "Tried: scoring bilabial closures on the product path as t(min drawn lip gap) - t(min 10 ms audio envelope) inside +-120 ms of each Azure id-21 event. Broke: Diya's DragonHD speech does not dip the 10 ms envelope at p/b/m reliably (envelopes held -19..-27 dB through closures), so the 'audio minimum' was rarely the closure; the metric read +75..+125 ms with 15-40% within 60 ms, which says nothing about the mouth. Instead: the paired forced-alignment score (evals/p2-face/score-product.mjs).",
+   "source": "inbox/p2-face.json"
+  },
+  {
+   "id": "rj-p2f-safety-smile-0012",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "Tried: the safety-neutral mouth at mouthSmile 0.012 (the rig's effective smile ~0.28 against rest 0.45). Broke (by eye, one look, evals/p2-face/out/look/): the corners still read as a light smile on the safeguarding reply. Instead: 0 (soft-neutral corners). Not judged by a model or a child panel.",
+   "source": "inbox/p2-face.json"
+  },
+  {
+   "id": "rj-p2f-young-voice-safety-arm",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "Tried: driving the safety arm on a class-3 (young, voice) lesson with Chromium's --use-file-for-fake-audio-capture and an Azure TTS distress line as the child's mic. Broke: the lesson's STT opens a websocket from the BROWSER straight to Azure with an stt-token, which the sandbox network does not carry; no transcript, no turn. Instead: the arm uses a class-5 child with Asha (TAXILA_TUTOR_OFFER=wide, local) and the typed dock.",
+   "source": "inbox/p2-face.json"
+  },
+  {
+   "id": "rj-p2f-judged-load-single-task",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "Kept from v4 and measured on the product path: Puppet2DRig.load + warm() as one main-thread task. Broke: 974 ms long task on the 4x profile (CPU profile: texture uploads from <img> ~1/3, 24 warm frames + gl.finish ~2/3), 0.2-0.45 s at 1x, and the stage's second frame came 0.9-1.4 s after its first. Replaced by p2f-chunked-loader.",
+   "source": "inbox/p2-face.json"
+  },
+  {
+   "id": "rj-p2f-pkill-pattern",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "Operational: `pkill -f \"node server/serve.mjs\"` (and pgrep -f on a script name inside a waiting shell) matches the agent's own shell command line and kills it (exit 144) or waits on itself forever. In a tree shared by several agents, stop only processes by the PIDs you recorded when you started them.",
+   "source": "inbox/p2-face.json"
+  },
+  {
+   "id": "p3vs-ship-shadow-gated",
+   "kind": "decision",
+   "at": "2026-10-06",
+   "title": "Voice-signal knowledge states ship ON (TAXILA_VOICESIG unset = shadow; off = kill switch; client also honours GET /api/voicesig/config and ?voicesig=0) with the old path as the automatic fallback. A state ACTS on a lesson only through server/voicesig/gate.js: precision measured on CHILDREN >= 0.80 with >= 100 firings, ladder row >= L1 (a reviewed raise), mode on, and a fitted per-head calibration. Simulated and adult numbers can never open it (test). Today all 8 states are shadow: computed every spoken turn, logged as brain_trace vs.* / vs_gate.* codes, and the Director / comprehension / pace consumers receive exactly the pre-voicesig plan. Reverse if: the consented child pilot measures a state at precision >= 0.80 (outcome-defined truth, state-precision.mjs --rows pilot --population children) — then raise that state's ladder row in a reviewed diff.",
+   "source": "inbox/p3-voicesig.json"
+  },
+  {
+   "id": "p3vs-one-mic-tap",
+   "kind": "decision",
+   "at": "2026-10-06",
+   "title": "ONE mic tap per lesson tab: src/voicesig/lessonTap.ts acquireFrontEnd (reference-counted, one taxila-tap2 AudioWorklet, one YIN per 20 ms hop) feeds src/voice's utterance tracker (VoiceFeatures.attachFrames, patch 09), the voicesig head, and duplex (src/duplex/liveTap.ts). Frames equal VoiceFeatures' own FrameAnalyzer's (test G-VS-DXEQ). Any attach failure, a server kill or a missing attachFrames leaves the lesson on VoiceFeatures' own worklet with no kv. Reverse if: a second consumer needs a different sample rate or hop.",
+   "source": "inbox/p3-voicesig.json"
+  },
+  {
+   "id": "p3vs-pace-consent-sweep",
+   "kind": "decision",
+   "at": "2026-10-06",
+   "title": "Per-child baselines persist only under the parent's 'Remember your child's usual answering pace' (consent purpose voice_pace_memory, off by default; numbers only, HMAC subject key VOICESIG_SUBJECT_KEY, migration 021). Withdrawal deletes in the same request; a consent sweep (server/voicesig/lesson.js sweep, run by the worker ticker leader every 6 h, patch 11, or scripts/voicesig/sweep.mjs) deletes any subject whose latest consent row is not a grant. Without the subject key the lesson runs on a session-only baseline. The consent copy names no region (the production database region is in flux: INDIA-MOVE). Reverse if: counsel requires naming the region — then name it from the deployed DATABASE_URL, never from a doc.",
+   "source": "inbox/p3-voicesig.json"
+  },
+  {
+   "id": "p3vs-state-precision-sim-2026-10-05",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "SIMULATED per-state precision / recall (evals/voicesig/state-precision.mjs --children 200 --seeds 5 --effect 1 --added; 126,000 turns, 1,000 simulated children; truth = simulator latent state; effect sizes assumed [E]): fragileCorrect P 0.855 [0.845,0.864] R 0.291 (fired 5,542); heldBelief P 0.591 R 0.139 (4,760); effortfulGuess P 0.486 R 0.336 (7,026); rapidGuess P 0.737 R 0.430 (3,583); searching P 1.0 R 0.847 (14,830; artefact: transcript-decided in the simulator); fluentRecall and absent never fire under the placeholder calibration; workingAloud has no truth source. Not a child measurement; opens no gate.",
+   "source": "inbox/p3-voicesig.json"
+  },
+  {
+   "id": "p3vs-added-value-sim-2026-10-05",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "SIMULATED added value of voice on delayed-check prediction (same script, child-clustered bootstrap B=300, 200 simulated children per seed, n 4,146-4,418 turns): effect 1: dAUROC +0.073 [0.052,0.096], +0.112 [0.087,0.134], +0.071 [0.053,0.091] (text 0.53-0.58 → text+voice 0.64-0.65); true null (effect 0): +0.009 [-0.005,0.021], +0.018 [-0.002,0.035], +0.020 [0.003,0.036] — one null seed's CI excludes 0, so a small optimistic bias of ~0.02 must be subtracted from any pilot result. Shows the pipeline carries signal IF the assumed effect exists; says nothing about children.",
+   "source": "inbox/p3-voicesig.json"
+  },
+  {
+   "id": "p3vs-filler-detector-adult",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Filled-pause detector (models/voicesig/filler-gru.onnx, 45 KB, AMI headset speech, 32 held-out ADULT speakers, event level thr 0.44): precision 0.753, recall 0.601, n 1,241 events; narrowband (bt / speakerphone) precision 0.31 recall 0.15, so its lead is ignored on those routes. onnxruntime-web 1.30.0 node wasm 1 thread: one 30 s turn p50 5.15 ms (n=7, 2026-10-06, shared box, not gated). Adult speech: not a child number.",
+   "source": "inbox/p3-voicesig.json"
+  },
+  {
+   "id": "p3vs-acceptance-local-2026-10-06",
+   "kind": "measurement",
+   "at": "2026-10-06",
+   "title": "tests/prod/p3-voicesig-acceptance.mjs against the patched server (all 11 patches on HEAD 8006902 hot files, scratch copy) on the Neon TEST branch, mode shadow: 46/46 checks (n=1 run): config/status arms, 6/6 spoken turns with kv accepted and read (states: none x5, searching x1), vs.* trace codes on 6/6, session baseline 10 rows after 6 turns, same move with and without kv, pace rows stored under consent (5) and deleted on withdrawal, safety turn: safeguard move + 1098 + 14416, no voicesig read, no vs code, baseline unchanged. Not yet run against taxila.dev (patches not deployed).",
+   "source": "inbox/p3-voicesig.json"
+  },
+  {
+   "id": "p3vs-rj-region-in-consent-copy",
+   "kind": "rejection",
+   "at": "2026-10-06",
+   "title": "Tried: the pace consent copy said 'kept on our server in Singapore' (from the 2026-10-04 Neon placement research). Broke: decisions 2026-10-04 moved production to Azure PG (Central/South India) while measurements still show a Neon us-east-1 prod path — the sentence could be false on the day it ships, a lie in a consent text. Instead: the copy names no region ('on Taxila's own database'); the migration comment points at INDIA-MOVE.",
+   "source": "inbox/p3-voicesig.json"
+  },
+  {
+   "id": "p3vs-rj-register-after-lane",
+   "kind": "rejection",
+   "at": "2026-10-06",
+   "title": "Tried: patch 06 appended ...voicesig after ...lane in server/index.js register(). Broke: tests/w2d-voice-lanes.test.mjs asserts the source contains '...lane }' (one owner for POST /api/lesson/lane), so the patched tree failed it (found applying all patches to a scratch copy, 2026-10-06). Instead: ...voicesig goes before ...lane (06 and 06b).",
+   "source": "inbox/p3-voicesig.json"
+  },
+  {
+   "id": "p4c-catalogue-instant-rung",
+   "kind": "decision",
+   "at": "2026-10-06",
+   "title": "The authored studio catalogue (data/studio-catalogue/topics) is Stagecraft's instant rung. Its specs are re-validated at load against the current registry and kit: validateAny with no fallback, the code-checked kit-id validator, check verdict pass, and the SEVERE/PII predicates. Extension archetypes are admissible ONLY through the catalogue. Reverse if catalogue pieces show a measured wrong-content or stale rate above that of freshly generated specs.",
+   "source": "inbox/p4-content.json"
+  },
+  {
+   "id": "p4c-personal-needs-only-generate",
+   "kind": "decision",
+   "at": "2026-10-06",
+   "title": "When an instant piece is ready, generated specs are built only for the personal needs contrast_misconception and re_represent; otherwise the preferred rung is engine_default. In sim spend fell to $0.078/h with checked-piece readiness 1.00. Reverse if a real-lesson A/B shows generated pieces for other needs raise outcomes.",
+   "source": "inbox/p4-content.json"
+  },
+  {
+   "id": "p4c-rest-rule",
+   "kind": "decision",
+   "at": "2026-10-06",
+   "title": "Rest rule: once stage busy-share reaches 0.5 after a 120 s grace, no new plan-led reveal, and an on-screen piece retires after 4 turns. Exempt: a child request, a board_state reteach, or a contrast. A visual floor of 150 s re-shows unless the child is in flow (last 2 outcomes correct). Stage share is 0.55 in sim (bar 55%). It uses outcomes and stage time only, never speech-derived emotion (MS restriction 12). Reverse if measured lessons show the floor or the rest rule firing against a child's own pace.",
+   "source": "inbox/p4-content.json"
+  },
+  {
+   "id": "p4c-board-owns-explain",
+   "kind": "decision",
+   "at": "2026-10-06",
+   "title": "On explain, worked_example and recap beats, plan-led Stagecraft pieces defer to the live whiteboard (boardOwnsExplain). The child's own requests still reveal. 'board pe dikhao' is a board_request: Stagecraft holds and the whiteboard draws. Reverse if the whiteboard's measured answer rate on those beats drops below Stagecraft's.",
+   "source": "inbox/p4-content.json"
+  },
+  {
+   "id": "p4c-board-sync-ladder",
+   "kind": "decision",
+   "at": "2026-10-06",
+   "title": "Whiteboard sync ladder: (1) a speculative board started at turn start or kernel time from the kit-predicted line; (2) the line plan raced to BOARD_SYNC_MS=1900; (3) a code board (explainerFor, then catalogue beats); (4) the template retimed to her line. Every rung is re-gated W0-W9 against her real line. TAXILA_BOARD_SYNC=0 restores the plain line plan. Reverse if the speculative board alone meets p90 <= 1.5 s.",
+   "source": "inbox/p4-content.json"
+  },
+  {
+   "id": "p4c-requested-reveal-zero-attention",
+   "kind": "decision",
+   "at": "2026-10-06",
+   "title": "A reveal the child asked for costs 0 attention (propose.js), so Director chips cannot price it out. A closing move still refuses it. Reverse if requested reveals are measured interrupting a closing or safeguard move.",
+   "source": "inbox/p4-content.json"
+  },
+  {
+   "id": "p4c-controller-lazy-chunk",
+   "kind": "decision",
+   "at": "2026-10-06",
+   "title": "The Stagecraft controller, with the Studio v2 host and engines (232 kB plus the 357 kB ext chunk), is lazy-loaded and warmed on idle. An interim board twin is drawn on a canvas until it loads, never a spinner. LessonScreen is 227.7 kB vs 222.9 kB at base. Reverse if the measured first-reveal mount on a low-end phone misses the 3 s bar because of the chunk.",
+   "source": "inbox/p4-content.json"
+  },
+  {
+   "id": "p4c-acceptance-local-2026-10-06",
+   "kind": "measurement",
+   "at": "2026-10-06",
+   "title": "Local server on the patched scratch copy (Neon TEST, real Azure), p4-content-acceptance 41/41. Child request to piece on stage: p50 2419 / p90 2552 ms (n=6, API time). Board-answered request lateness: 1127 ms (n=2). Board sync lateness: p50 1263 / p90 1453 ms (n=9, bar 1500). Chromium paint 3837 ms after send (n=1). Server-log board sources: code 13, line 3 (one at 4262 ms, the last rung).",
+   "source": "inbox/p4-content.json"
+  },
+  {
+   "id": "p4c-owner5-2026-10-06",
+   "kind": "measurement",
+   "at": "2026-10-06",
+   "title": "owner-5-visual, typed lane, local patched copy: 6/6 request kinds produced on stage; the animation request was a Stagecraft scene explainer (previously 2/2 failed). w2f-studio-gate B 21/21, board lateness p50 1359 / p90 1373 ms (n=4). w2h-studio 21/21.",
+   "source": "inbox/p4-content.json"
+  },
+  {
+   "id": "p4c-coverage-2026-10-06",
+   "kind": "measurement",
+   "at": "2026-10-06",
+   "title": "Catalogue coverage of the 385 class 4-7 topics (evals/p4-content/coverage.mjs): game/sim 368, explainer 369, boards 379, all three 365; 3 safety-excluded. One unsafe string was caught by the code check. Maths 130/141, science 63/69, evs 39/40, sst 33/34, english 52/53, hindi 48/48. Authoring spend on 2026-10-06 was $9.54 (catalogue total $10.04, cap $15).",
+   "source": "inbox/p4-content.json"
+  },
+  {
+   "id": "p4c-sim-2026-10-06",
+   "kind": "measurement",
+   "at": "2026-10-06",
+   "title": "SIMULATED, evals/stagecraft --catalogue, n=240, arm sc_rest. Ready 0.89; checked piece ready 1.00. Stage share 0.55; 3-min window coverage 0.999. 0 wrong, stale, safety or visible failures; lossless 9224/9224. Request first frame p95 3389 ms (modelled). Spend $0.078/h.",
+   "source": "inbox/p4-content.json"
+  },
+  {
+   "id": "p4c-rj-luna-spec-board-alone",
+   "kind": "rejection",
+   "at": "2026-10-06",
+   "title": "A luna speculative whiteboard as the main sync path: it lands 3.9-5.7 s after the ask, almost always after the 1.9 s deadline. In practice the code board (13/16) and the line plan answer. It is kept as a rung, but it cannot carry the 1.5 s bar.",
+   "source": "inbox/p4-content.json"
+  },
+  {
+   "id": "p4c-rj-rung-tray-blocks",
+   "kind": "rejection",
+   "at": "2026-10-06",
+   "title": "Leaving the Director's template explain rung in the tray when a Stagecraft piece arrives: the rung held the tray, so the piece never showed and the whiteboard was also declined. It is now dropped (unmounted, facts row removed) when a Stagecraft piece takes the tray.",
+   "source": "inbox/p4-content.json"
+  },
+  {
+   "id": "p4c-rj-onevent-answers",
+   "kind": "rejection",
+   "at": "2026-10-06",
+   "title": "Sending Stagecraft answers through the renderer's onEvent: the stage never forwards onEvent answers to the server, so the host never graded them. Answers now go through useStageMoment().answer and are graded by the host (gradeAny, claim keys stripped).",
+   "source": "inbox/p4-content.json"
+  },
+  {
+   "id": "p4c-rj-q8-every-string",
+   "kind": "rejection",
+   "at": "2026-10-06",
+   "title": "Running Q8 over every string of a generated spec: the cost was dominated by strings already checked in the authored example. Q8 now checks only fresh strings; the local predicates still cover all of them.",
+   "source": "inbox/p4-content.json"
+  },
+  {
+   "id": "p4c-open-w1b-item-bound",
+   "kind": "rejection",
+   "at": "2026-10-06",
+   "title": "NOT FIXED: 3 maths topics have no item-bound mount (w1b-mounts 22/25). Bindable items: c6-maths-ch07-t01 0/16, c4-maths-ch05-t01 1/18, c7-maths-ch08-t01 0/19. Cause: the engine-catalog adapters have no mode for unit fraction naming, fraction of a quantity, or fraction x fraction. That is Director/module code outside this stream's paths.",
+   "source": "inbox/p4-content.json"
+  },
+  {
+   "id": "p5-card-cap-3",
+   "kind": "decision",
+   "title": "One kit question sits on the card for at most 3 teacher turns. On the 4th pin of the same item: after hint rung >= 2, give the answer plus an isomorphic item; otherwise leave the item for later. owner-2 R5 loop went 13 -> 0 in 90 turns (local, prod settings). Reverse if a measured run shows children solving on turns 4+ at a higher rate than the isomorphic item (TAXILA_P5_CARDCAP)",
+   "at": "2026-10-05",
+   "source": "inbox/p5-interaction.json"
+  },
+  {
+   "id": "p5-change-topic-is-steering",
+   "kind": "decision",
+   "title": "'can we talk about something else' / change_topic is STEERING (owner rule). It is never a break or wrap. It gets a repair move offering ways in (req:visual / req:story / req:game / stop:continue chips). The patch-07 owner-requests F8 test is reconciled to this. Reverse only by owner directive",
+   "at": "2026-10-05",
+   "source": "inbox/p5-interaction.json"
+  },
+  {
+   "id": "p5-teach-phase-steering",
+   "kind": "decision",
+   "title": "another / example / story / slower act in the teach phase, and in practice when the last move taught. They re-teach the same idea and never advance. Root cause of owner-4's failures: requestMove only handled these with an item on the table",
+   "at": "2026-10-05",
+   "source": "inbox/p5-interaction.json"
+  },
+  {
+   "id": "p5-v1-01r-value-recheck",
+   "kind": "decision",
+   "title": "V1-01r: a module answer is graded on a server recheck. The order is: engine .logic.ts re-run; else the committed value (written/given/claimed/made/built/value/chosen) against the kit key, by number value or short label; else {unverifiable:true} with a moduleUnverified shape (ask again, never silently lost, never graded right). A forged claim:true with a wrong value grades wrong. Supersedes V1-01 (claim-trusting fallback)",
+   "at": "2026-10-05",
+   "source": "inbox/p5-interaction.json"
+  },
+  {
+   "id": "p5-patterns-growfits",
+   "kind": "decision",
+   "title": "patterns@1 CONSUMES an item only if its numbers grow by a constant step, a constant ratio, or as squares (growFits). '3 5 7 8' mounted an engine that could not represent it, so the activity was unanswerable (owner-1)",
+   "at": "2026-10-05",
+   "source": "inbox/p5-interaction.json"
+  },
+  {
+   "id": "p5-readings-lexicon",
+   "kind": "decision",
+   "title": "Whole-turn readings in code (server/conversation/lexicon.js, <= 14 words, request-shaped): confused/clarify/repeat/back/skip/harder/easier/know/boredom/frustration/thinking/identity/small_talk/oob/break/adult. oob and adult are read before the digit check and outrank requestOf. 31 false positives in 44,103 kit answers",
+   "at": "2026-10-05",
+   "source": "inbox/p5-interaction.json"
+  },
+  {
+   "id": "p5-conv2-note-routes-nonanswers",
+   "kind": "decision",
+   "title": "CONVERSATION-V2 in the server: the note model (taxila-gpt6, json, 160 tok, timeout 2.4 s, hot lane, 30 s breaker on 429) runs beside classify. It is awaited <= 2.2 s only on non-answer turns. It maps intent -> request and never grades. Distress is OR-ed in, never subtracted. thinking_aloud can only move a wrong/partial turn to no_evidence. TAXILA_CONV2=off|shadow|on. Reverse if the battery shows the note path below the lexicon-only path on the same harness",
+   "at": "2026-10-05",
+   "source": "inbox/p5-interaction.json"
+  },
+  {
+   "id": "p5-reply-guards",
+   "kind": "decision",
+   "title": "Reply guards added to textReply: bare (fewer than 1 own word on a fresh pose, fewer than 4 on a re-pose), same (>= 0.8 similar to an earlier reply), thinkq (a question at a child who is thinking), noconfirm (no confirmation before the next question). A gutted remainder (< 9 words) or the fixed fallback line gets one retry. A requested story/example is not gutted by the ahead-leak guard",
+   "at": "2026-10-05",
+   "source": "inbox/p5-interaction.json"
+  },
+  {
+   "id": "p5-review-opener-plus-1-day",
+   "kind": "decision",
+   "title": "+1 day after learned_today the next lesson opens with a REVIEW of an item the child met (never the check reserve, never certifying). From 2 learning days on, it opens with the certifying check on a never-met item (V1-10 / V1.3). due = anchor + 20 h",
+   "at": "2026-10-05",
+   "source": "inbox/p5-interaction.json"
+  },
+  {
+   "id": "p5-ms-owner2-local",
+   "kind": "measurement",
+   "title": "owner-2 seed 734732, 6 sessions x 14 turns, 90 teacher turns per run, local server with prod classify settings, Neon test branch. Turns with a defect: base HEAD 30 (R5 x13, R3 x12, R4 x6, R6 x4, R7 x2); work runs 7, 6, 9. The work-3 run shared the box with the 20-slot battery: 3 x R2.fallback; 1 R7.deny_right is a scorer false positive ('galat' is inside the next kit question). work-4 (final tree, no other load) 9: R4 x4, R3 x3, R7.deny_right x2, R7.same_again x1, R7.ignored x1, R2 x1. Over runs 2-4 the residual is 6-9 of 90 (base 30)",
+   "at": "2026-10-05",
+   "source": "inbox/p5-interaction.json"
+  },
+  {
+   "id": "p5-ms-owner4-local",
+   "kind": "measurement",
+   "title": "owner-4 steering battery, n=16 checks, local: prod 11/16; work run 1 11/16; work run 2 15/16. The failing one: a typed story request was gutted by the ahead-leak guard, which is now fixed",
+   "at": "2026-10-05",
+   "source": "inbox/p5-interaction.json"
+  },
+  {
+   "id": "p5-ms-conv2-battery",
+   "kind": "measurement",
+   "title": "CONVERSATION-V2 battery, local server with prod classify settings, the same harness for every arm. J1 gpt-6-sol, J2 gpt-6-luna; no human adjudication, so this is NOT the method behind prod's 39%. base-1 (HEAD) n=355: strict 157 (44.2%), J1 48.7%, lenient 52.4%, kappa 0.861. work-1 n=354: strict 208 (58.8%), J1 64.7%, kappa 0.881. work-2 (second pass, run beside other load: 18 note timeouts) n=355: strict 200 (56.3%), J1 60.3%, lenient 64.2%, kappa 0.873. work-2 families, strict: A 54.0, B 80.0, C 58.4, D 45.2, E 65.6, F 76.5, G 22.7. Bar NOT met (85% overall, every family >= 70%). Weakest intents in work-2: animation 0/5, answer_partial 0/4 (needs V1-05 parts data), noise 0/5, adult 0/4, oob 1/12, frustration 1/8, multi_intent 1/8, story 1/6",
+   "at": "2026-10-05",
+   "source": "inbox/p5-interaction.json"
+  },
+  {
+   "id": "p5-ms-note-latency",
+   "kind": "measurement",
+   "title": "Note model (taxila-gpt6, json, effort none) latency: p50 1791 ms, p90 2196 ms, n=47; 5 timeouts at 2.4 s in 52 calls. Under concurrent battery load, 18 'note unavailable' timeouts were logged. The turn falls through to the lexicon/classify path with no visible change",
+   "at": "2026-10-05",
+   "source": "inbox/p5-interaction.json"
+  },
+  {
+   "id": "p5-ms-w1c-root-cause",
+   "kind": "measurement",
+   "title": "w1c-three-day: a local base reproduces prod's 17/22. Root causes: (1) the why item i08 looped 7 turns, so the teach-back was never reached (fixed by the card cap); (2) the script answered the teach-back with a filler (test fixed); (3) the ledger needs pL >= 0.95 AND a generative pass on ONE skill, but the teach-back pass lands on introduced[0] (s1, pL 0.869) while s2 (pL 0.988) has none, so nothing is ever learned_today and no +1 day check exists. (3) is NOT fixed: it is a learner-model design gap",
+   "at": "2026-10-05",
+   "source": "inbox/p5-interaction.json"
+  },
+  {
+   "id": "p5-rj-ahead-leak-guts-story",
+   "kind": "rejection",
+   "title": "The ahead-leak guard stripped a REQUESTED story/example (it contains the next idea by design), which left a gutted 3-word turn: owner-4 'story ki tarah batao' typed. Now, when lastMove.request is set, the rewrite is kept and the item is marked spoiled",
+   "at": "2026-10-05",
+   "source": "inbox/p5-interaction.json"
+  },
+  {
+   "id": "p5-rj-shape-recited",
+   "kind": "rejection",
+   "title": "Shape text 'a warm yes' was recited as 'Warm yes, Meher', and '(the chips)' became 'chips-sharing game'. This re-confirms the law that sentence-shaped prompt text gets recited; both are reworded to notes",
+   "at": "2026-10-05",
+   "source": "inbox/p5-interaction.json"
+  },
+  {
+   "id": "p5-rj-voice-branch-long-ask",
+   "kind": "rejection",
+   "title": "V1-12 put a long reading passage into a voice branch's next question, which overflowed the kit prompt budget (the kit-budget test failed). BRANCH_ASK_MAX = 240: a longer next question is not posed from the branch line",
+   "at": "2026-10-05",
+   "source": "inbox/p5-interaction.json"
+  },
+  {
+   "id": "p5-rj-idk-jump-on-hint-chip",
+   "kind": "rejection",
+   "title": "Jumping straight to hint rung 2 on 'pata nahi' also fired on the Hint chip (source help), which skipped two rungs. The jump is excluded for source help",
+   "at": "2026-10-05",
+   "source": "inbox/p5-interaction.json"
+  },
+  {
+   "id": "p5-rj-test-db-url-printed",
+   "kind": "rejection",
+   "title": "Passing a quoted TAXILA_DB_URL to a prod script made a driver error print the Neon TEST branch connection string into a scratch log and the agent transcript. Use an env loader that strips quotes, and never inline the URL. The test-branch credential should be rotated",
+   "at": "2026-10-05",
+   "source": "inbox/p5-interaction.json"
+  },
+  {
+   "id": "p5-rj-trace-codes-dropped",
+   "kind": "rejection",
+   "title": "The p5 trace codes (request.*, conv2.note.*, p5.capped.*, module.unverifiable) were emitted by turn.js but silently dropped by brain/reasons.js knownReasons, because the vocabulary is closed. Caught by the p5 acceptance trace check: 0 request codes in 39 turns. Patch 09 adds the families, and a unit test keeps INTENTS and request types inside the vocabulary",
+   "at": "2026-10-05",
+   "source": "inbox/p5-interaction.json"
+  },
+  {
+   "id": "p5-recheck-unit-numbers",
+   "kind": "decision",
+   "title": "V1-01r recheck reads a number with 1-3 short unit words ('6 square units', '12 cm') as that number, on either side. owner-1 local run: a geoboard commit of '6 square units' against the bound key '6' went ungraded (verdict none). A number followed by anything containing a digit stays non-comparable",
+   "at": "2026-10-05",
+   "source": "inbox/p5-interaction.json"
+  },
+  {
+   "id": "p5-requested-story-retry",
+   "kind": "decision",
+   "title": "A requested story/example whose numbers leak the key, and that the leak repair cut to the bare question, gets one retry asking for other numbers. The retry is used only if no truth problem remains. req:story chip after change_topic, local: 2/6 bare before; 5/6 stories after in one 6-run diag (the 6th: the retry still leaked, so truth wins and the question ships alone)",
+   "at": "2026-10-05",
+   "source": "inbox/p5-interaction.json"
+  },
+  {
+   "id": "p5-ms-owner1-local",
+   "kind": "measurement",
+   "title": "owner-1 against a local work tree (seed 39430, 8 lessons): typed 57 answers, 2 wrong grades, both partial->correct on multi-part keys (needs V1-05 parts data, not in p5); module answers 36, 1 wrong (the unit-number case, now fixed and unit-tested, not re-run live). Frame checks 50/50 'unanswerable' are an artifact: the local server serves no built client frames, so frame/engine UI checks cannot be measured locally",
+   "at": "2026-10-05",
+   "source": "inbox/p5-interaction.json"
+  },
+  {
+   "id": "p5-ms-p5-acceptance-local",
+   "kind": "measurement",
+   "title": "tests/prod/p5-interaction-acceptance.mjs against the local work tree (n=42 checks, ~40 teacher turns). Run 1: 39/42. Final tree: 40/42. The trace codes pass after patch 09. Still failing: the story chip on one fade item (truth guard), and 6/39 replies that are only the question on the card",
+   "at": "2026-10-05",
+   "source": "inbox/p5-interaction.json"
+  },
+  {
+   "id": "p5-ms-owner4-hindi-scorer",
+   "kind": "measurement",
+   "title": "owner-4 hindi typed: in 2 of 3 work runs, the turn after the switch was scored 'back in English'. The turn was Hinglish with 4 English maths words ('parts', 'one-third') out of ~22, over the scorer's enShare < 0.15. Read as a scorer threshold issue, not a language revert; not changed",
+   "at": "2026-10-05",
+   "source": "inbox/p5-interaction.json"
   }
  ],
  "edges": [
@@ -18806,6 +19429,396 @@
    "src": "rj-chars-per-second-pace-target",
    "rel": "measured_by",
    "dst": "ms-diya-pace-vs-voted-2026-10-05"
+  },
+  {
+   "src": "p1dx-handsfree-live-on-cascade",
+   "rel": "inherits",
+   "dst": "duplex-continuous-engine-2026-10-04"
+  },
+  {
+   "src": "p1dx-handsfree-live-on-cascade",
+   "rel": "measured_by",
+   "dst": "m-p1dx-browser-e2e-2026-10-06"
+  },
+  {
+   "src": "p1dx-handsfree-live-on-cascade",
+   "rel": "measured_by",
+   "dst": "m-p1dx-fdb-test-2026-10-06"
+  },
+  {
+   "src": "p1dx-handsfree-live-on-cascade",
+   "rel": "measured_by",
+   "dst": "m-p1dx-ami-real-adult-2026-10-06"
+  },
+  {
+   "src": "p1dx-handsfree-live-on-cascade",
+   "rel": "inherits",
+   "dst": "duplex-safety-sticky-partials"
+  },
+  {
+   "src": "p1dx-acoustic-yield-waits-for-sustain",
+   "rel": "caused_by",
+   "dst": "rj-p1dx-yield-on-early-raised-onset"
+  },
+  {
+   "src": "p1dx-acoustic-yield-waits-for-sustain",
+   "rel": "measured_by",
+   "dst": "m-p1dx-ami-real-adult-2026-10-06"
+  },
+  {
+   "src": "p1dx-acoustic-yield-waits-for-sustain",
+   "rel": "inherits",
+   "dst": "rj-duplex-eager-overlap-yield"
+  },
+  {
+   "src": "p1dx-child-pitch-from-committed-turns",
+   "rel": "caused_by",
+   "dst": "rj-p1dx-own-pitch-from-any-quiet-voice"
+  },
+  {
+   "src": "p1dx-echo-coupling-learns-always",
+   "rel": "caused_by",
+   "dst": "rj-p1dx-coupling-gated-on-not-voicing"
+  },
+  {
+   "src": "p1dx-tone-is-not-voice",
+   "rel": "measured_by",
+   "dst": "m-p1dx-fdb-test-2026-10-06"
+  },
+  {
+   "src": "p1dx-attribution-carry",
+   "rel": "measured_by",
+   "dst": "m-p1dx-fdb-test-2026-10-06"
+  },
+  {
+   "src": "p1dx-english-listening-tokens",
+   "rel": "measured_by",
+   "dst": "m-p1dx-ami-real-adult-2026-10-06"
+  },
+  {
+   "src": "rj-p1dx-childlevel-prior-as-final-world",
+   "rel": "constrains",
+   "dst": "m-p1dx-fdb-test-2026-10-06"
+  },
+  {
+   "src": "rj-p1dx-level-below-child-rule-r2",
+   "rel": "inherits",
+   "dst": "rj-duplex-eager-overlap-yield"
+  },
+  {
+   "src": "m-p1dx-side-talk-yields-2026-10-06",
+   "rel": "part_of",
+   "dst": "m-p1dx-fdb-test-2026-10-06"
+  },
+  {
+   "src": "p2f-safety-turn-neutral",
+   "rel": "supersedes",
+   "dst": "v4-puppet-acting-policy"
+  },
+  {
+   "src": "p2f-safety-turn-neutral",
+   "rel": "inherits",
+   "dst": "design-v2-face-verdict-neutral"
+  },
+  {
+   "src": "p2f-safety-latch",
+   "rel": "part_of",
+   "dst": "p2f-safety-turn-neutral"
+  },
+  {
+   "src": "p2f-safety-latch",
+   "rel": "measured_by",
+   "dst": "p2f-acceptance-local-2026-10-05"
+  },
+  {
+   "src": "p2f-one-running-stage",
+   "rel": "caused_by",
+   "dst": "p2f-acceptance-local-2026-10-05"
+  },
+  {
+   "src": "p2f-scheduler-merge-by-part",
+   "rel": "measured_by",
+   "dst": "p2f-playat-spread-2026-10-05"
+  },
+  {
+   "src": "p2f-scheduler-merge-by-part",
+   "rel": "measured_by",
+   "dst": "p2f-lipsync-product-2026-10-05"
+  },
+  {
+   "src": "p2f-anchor-once",
+   "rel": "measured_by",
+   "dst": "p2f-playat-spread-2026-10-05"
+  },
+  {
+   "src": "p2f-anchor-once",
+   "rel": "part_of",
+   "dst": "v4-face-puppet-production"
+  },
+  {
+   "src": "p2f-chunked-loader",
+   "rel": "supersedes",
+   "dst": "rj-p2f-judged-load-single-task"
+  },
+  {
+   "src": "p2f-chunked-loader",
+   "rel": "measured_by",
+   "dst": "p2f-first-draw-2026-10-05"
+  },
+  {
+   "src": "p2f-start-tier-governor",
+   "rel": "supersedes",
+   "dst": "v4-adaptive-rate-governor"
+  },
+  {
+   "src": "p2f-start-tier-governor",
+   "rel": "measured_by",
+   "dst": "p2f-fps-throttled-2026-10-05"
+  },
+  {
+   "src": "p2f-start-tier-governor",
+   "rel": "measured_by",
+   "dst": "p2f-freezes-control-2026-10-05"
+  },
+  {
+   "src": "p2f-runtime-kill-switch",
+   "rel": "measured_by",
+   "dst": "p2f-acceptance-local-2026-10-05"
+  },
+  {
+   "src": "p2f-arjun-keeps-tutorface",
+   "rel": "constrains",
+   "dst": "v4-face-puppet-production"
+  },
+  {
+   "src": "p2f-arjun-keeps-tutorface",
+   "rel": "inherits",
+   "dst": "stylised-c-owner-directive"
+  },
+  {
+   "src": "p2f-reveal-rule-exact",
+   "rel": "measured_by",
+   "dst": "p2f-first-draw-2026-10-05"
+  },
+  {
+   "src": "p2f-ws-pool-12",
+   "rel": "part_of",
+   "dst": "v4-face-puppet-production"
+  },
+  {
+   "src": "p2f-lipsync-product-2026-10-05",
+   "rel": "part_of",
+   "dst": "owner-ship-five-2026-10-05"
+  },
+  {
+   "src": "rj-p2f-envelope-closure-metric",
+   "rel": "constrains",
+   "dst": "p2f-lipsync-product-2026-10-05"
+  },
+  {
+   "src": "rj-p2f-safety-smile-0012",
+   "rel": "part_of",
+   "dst": "p2f-safety-turn-neutral"
+  },
+  {
+   "src": "rj-p2f-young-voice-safety-arm",
+   "rel": "constrains",
+   "dst": "p2f-acceptance-local-2026-10-05"
+  },
+  {
+   "src": "p3vs-ship-shadow-gated",
+   "rel": "measured_by",
+   "dst": "p3vs-state-precision-sim-2026-10-05"
+  },
+  {
+   "src": "p3vs-ship-shadow-gated",
+   "rel": "measured_by",
+   "dst": "p3vs-acceptance-local-2026-10-06"
+  },
+  {
+   "src": "p3vs-ship-shadow-gated",
+   "rel": "constrains",
+   "dst": "ct-no-voice-emotion-inference"
+  },
+  {
+   "src": "p3vs-added-value-sim-2026-10-05",
+   "rel": "part_of",
+   "dst": "p3vs-state-precision-sim-2026-10-05"
+  },
+  {
+   "src": "p3vs-filler-detector-adult",
+   "rel": "part_of",
+   "dst": "p3vs-ship-shadow-gated"
+  },
+  {
+   "src": "p3vs-pace-consent-sweep",
+   "rel": "part_of",
+   "dst": "p3vs-ship-shadow-gated"
+  },
+  {
+   "src": "p3vs-rj-region-in-consent-copy",
+   "rel": "caused_by",
+   "dst": "p3vs-pace-consent-sweep"
+  },
+  {
+   "src": "p3vs-one-mic-tap",
+   "rel": "part_of",
+   "dst": "p3vs-ship-shadow-gated"
+  },
+  {
+   "src": "p3vs-rj-register-after-lane",
+   "rel": "part_of",
+   "dst": "p3vs-ship-shadow-gated"
+  },
+  {
+   "src": "p4c-catalogue-instant-rung",
+   "rel": "measured_by",
+   "dst": "p4c-coverage-2026-10-06"
+  },
+  {
+   "src": "p4c-personal-needs-only-generate",
+   "rel": "measured_by",
+   "dst": "p4c-sim-2026-10-06"
+  },
+  {
+   "src": "p4c-rest-rule",
+   "rel": "measured_by",
+   "dst": "p4c-sim-2026-10-06"
+  },
+  {
+   "src": "p4c-rest-rule",
+   "rel": "constrains",
+   "dst": "stagecraft-frequency-target"
+  },
+  {
+   "src": "p4c-board-sync-ladder",
+   "rel": "measured_by",
+   "dst": "p4c-acceptance-local-2026-10-06"
+  },
+  {
+   "src": "p4c-board-sync-ladder",
+   "rel": "inherits",
+   "dst": "w2e-whiteboard-ask"
+  },
+  {
+   "src": "p4c-rj-luna-spec-board-alone",
+   "rel": "caused_by",
+   "dst": "p4c-board-sync-ladder"
+  },
+  {
+   "src": "p4c-requested-reveal-zero-attention",
+   "rel": "measured_by",
+   "dst": "p4c-owner5-2026-10-06"
+  },
+  {
+   "src": "p4c-board-owns-explain",
+   "rel": "part_of",
+   "dst": "p4c-rest-rule"
+  },
+  {
+   "src": "p4c-catalogue-instant-rung",
+   "rel": "inherits",
+   "dst": "stagecraft-board-twin"
+  },
+  {
+   "src": "p4c-catalogue-instant-rung",
+   "rel": "part_of",
+   "dst": "stagecraft-lossless-reveal"
+  },
+  {
+   "src": "p4c-controller-lazy-chunk",
+   "rel": "measured_by",
+   "dst": "p4c-acceptance-local-2026-10-06"
+  },
+  {
+   "src": "p4c-open-w1b-item-bound",
+   "rel": "blocks",
+   "dst": "w1b-local-acceptance-2026-10-04"
+  },
+  {
+   "src": "p5-v1-01r-value-recheck",
+   "rel": "supersedes",
+   "dst": "v1-rj-recheck-top-level-fields"
+  },
+  {
+   "src": "p5-card-cap-3",
+   "rel": "measured_by",
+   "dst": "p5-ms-owner2-local"
+  },
+  {
+   "src": "p5-reply-guards",
+   "rel": "measured_by",
+   "dst": "p5-ms-owner2-local"
+  },
+  {
+   "src": "p5-teach-phase-steering",
+   "rel": "measured_by",
+   "dst": "p5-ms-owner4-local"
+  },
+  {
+   "src": "p5-conv2-note-routes-nonanswers",
+   "rel": "measured_by",
+   "dst": "p5-ms-conv2-battery"
+  },
+  {
+   "src": "p5-conv2-note-routes-nonanswers",
+   "rel": "measured_by",
+   "dst": "p5-ms-note-latency"
+  },
+  {
+   "src": "p5-readings-lexicon",
+   "rel": "measured_by",
+   "dst": "p5-ms-conv2-battery"
+  },
+  {
+   "src": "p5-review-opener-plus-1-day",
+   "rel": "caused_by",
+   "dst": "p5-ms-w1c-root-cause"
+  },
+  {
+   "src": "p5-card-cap-3",
+   "rel": "caused_by",
+   "dst": "p5-ms-w1c-root-cause"
+  },
+  {
+   "src": "p5-rj-ahead-leak-guts-story",
+   "rel": "constrains",
+   "dst": "p5-reply-guards"
+  },
+  {
+   "src": "p5-rj-voice-branch-long-ask",
+   "rel": "constrains",
+   "dst": "p5-card-cap-3"
+  },
+  {
+   "src": "p5-rj-idk-jump-on-hint-chip",
+   "rel": "constrains",
+   "dst": "p5-teach-phase-steering"
+  },
+  {
+   "src": "p5-rj-trace-codes-dropped",
+   "rel": "constrains",
+   "dst": "p5-conv2-note-routes-nonanswers"
+  },
+  {
+   "src": "p5-recheck-unit-numbers",
+   "rel": "part_of",
+   "dst": "p5-v1-01r-value-recheck"
+  },
+  {
+   "src": "p5-recheck-unit-numbers",
+   "rel": "caused_by",
+   "dst": "p5-ms-owner1-local"
+  },
+  {
+   "src": "p5-requested-story-retry",
+   "rel": "part_of",
+   "dst": "p5-reply-guards"
+  },
+  {
+   "src": "p5-requested-story-retry",
+   "rel": "measured_by",
+   "dst": "p5-ms-p5-acceptance-local"
   }
  ]
 }

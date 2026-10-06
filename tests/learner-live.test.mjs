@@ -4,7 +4,7 @@
 // cached fold byte for byte (TP2 on the integrated write path; the unit-level property is learner-order.test.mjs).
 // Also: the episode mapping, the two upstream ledger fixes (source weight, misconception cap), E6 on the held why,
 // voice isolation (CE8), the re-teach cooldown, and the 001 projection the parent corner reads.
-import { describe, test } from "node:test";
+import { describe, test, before, after } from "node:test";
 import assert from "node:assert/strict";
 import { __test } from "../server/routes/lesson.js";
 import { initLessonState, step, LIVE_PROBE_SHAPES, RETEACH_COOLDOWN } from "../server/director/state.js";
@@ -68,6 +68,11 @@ const LESSON_RUN = [
 ];
 
 describe("live learner path", () => {
+  // LESSON_RUN is a fixed fold fixture with the classic hint ladder (wrong, wrong, then right on one item after a repair):
+  // p5-interaction's card cap would resolve that item first. Scoped to this describe (npm test runs every file in one process).
+  let savedCap;
+  before(() => { savedCap = process.env.TAXILA_P5_CARDCAP; process.env.TAXILA_P5_CARDCAP = "off"; });
+  after(() => { if (savedCap === undefined) delete process.env.TAXILA_P5_CARDCAP; else process.env.TAXILA_P5_CARDCAP = savedCap; });
   test("replay of the staged kt_evidence rows (seq = insert order) equals the online fold, across a whole lesson", async () => {
     const { log, live } = await drive(LESSON_RUN);
     assert.ok(log.length >= 6, `the lesson wrote KT events (${log.length})`);

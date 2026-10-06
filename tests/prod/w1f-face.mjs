@@ -42,7 +42,7 @@ async function head(path) {
 }
 
 /** Open the lesson desk for the child in a fresh context; returns the page, the .glb requests and console errors. */
-async function openDesk(api, child, { flag, spoof = true, failGlb = false, delayGlbMs = 0, path }) {
+async function openDesk(api, child, { flag, spoof = true, failGlb = false, delayGlbMs = 0, path, puppet }) {
   const h = await launch({ cookieFrom: api, viewport: { width: 412, height: 860 }, launch: { args: ["--use-angle=swiftshader", "--enable-unsafe-swiftshader"] } });
   const glb = [];
   const events = [];
@@ -50,6 +50,9 @@ async function openDesk(api, child, { flag, spoof = true, failGlb = false, delay
   h.page.on("requestfinished", async (r) => { if (/\.glb(\?|$)/.test(r.url())) glb.push({ url: r.url(), status: (await r.response())?.status() ?? 0 }); });
   h.page.on("requestfailed", (r) => { if (/\.glb(\?|$)/.test(r.url())) glb.push({ url: r.url(), status: 0, failed: r.failure()?.errorText }); });
   await h.context.addInitScript(({ key, on }) => { try { if (on === null) localStorage.removeItem(key); else localStorage.setItem(key, on ? "1" : "0"); } catch {} }, { key: FLAG, on: flag });
+  // ship5: the style-C 2D puppet is Asha's lesson face (hotfix 27d51a6); "0" forces this device back to TutorFace (the
+  // face every kill switch falls back to), which is what the rig arms exercise.
+  if (puppet !== undefined) await h.context.addInitScript(({ key, v }) => { try { localStorage.setItem(key, v); } catch {} }, { key: "tx.flag.face.puppet2d", v: puppet });
   if (spoof) await h.context.addInitScript(SPOOF);
   if (failGlb) await h.page.route("**/*.glb", (route) => route.abort("failed"));
   if (delayGlbMs) await h.page.route("**/*.glb", (route) => setTimeout(() => route.continue().catch(() => {}), delayGlbMs));
@@ -71,9 +74,9 @@ function lookOf(child) {
 }
 
 /** Rig on, GPU-spoof arm: the look's plate first, its GLB loads, revealed at data-tier=B. */
-async function rigArm(api, child, expectLook) {
+async function rigArm(api, child, expectLook, { puppet } = {}) {
   {
-    const d = await openDesk(api, child, { flag: true });
+    const d = await openDesk(api, child, { flag: true, puppet });
     try {
       await d.page.waitForSelector(".tx-tutorface[data-look]", { timeout: 45_000 });
       const f0 = (await faceAttrs(d.page))[0];
@@ -172,6 +175,16 @@ await withTestAccount(async ({ api, child }) => {
 await withTestAccount(async ({ api, child }) => {
   const expectLook = lookOf(child);
   ok(expectLook === "teal", `a class-2 child's tutor wears teal (${expectLook})`);
-  await rigArm(api, child, expectLook);
+  // ship5 (owner: the 2D face ships): Asha's lesson face is the style-C puppet by default, not the GLB rig
+  {
+    const d = await openDesk(api, child, { flag: true });
+    try {
+      const puppetShown = await d.page.waitForSelector('[data-face="puppet2d"]', { timeout: 45_000 }).then(() => true, () => false);
+      const rigAsked = d.glb.length;
+      ok(puppetShown, `ship5: Asha's lesson face is the 2D puppet by default (data-face=puppet2d ${puppetShown}; ${rigAsked} glb requested)`);
+    } finally { await d.browser.close(); }
+  }
+  // the kill-switch fallback (TutorFace with her look) still runs the rig path
+  await rigArm(api, child, expectLook, { puppet: "0" });
 }, { tag: "w1f-face-teal", child: { classLevel: 2 } });
 done();

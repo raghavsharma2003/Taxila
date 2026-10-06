@@ -1,20 +1,30 @@
 // Code grading operators (COMPREHENSION-ENGINE.md §4.2) and the label → outcome maps for the closed-label LLM
 // operators. Grading is classification against verified kit keys, never free grading (CE5).
 import { outcomeIndex } from "../../learner/kt/outcomes.js";
-import { matchNumber } from "./numbers.js";
+import { numberPhrases } from "../../grading/spoken-number.js";
 import { tokens } from "./span.js";
 
 /**
  * R-KEY. key: a number (numeric compare with tolerance) or { accept: string[] } (folded-token match of any accepted
  * answer). Returns 'correct' | 'wrong' | 'NA' (NA = nothing gradable said: no update, never a wrong answer).
  */
+// A denial next to the accepted words ("parallel nahi", "not parallel") is never the key (VALUES-100 V1.1,
+// evals/grading-truth: 162/162 negated keys were credited by token containment).
+const DENY = /(?:^|[^\p{L}])(?:not|nahi|nahin|nhi|no|galat|wrong|isn'?t)(?![\p{L}])/iu;
 export function rKey(text, key, o = {}) {
-  if (typeof key === "number" || (typeof key === "string" && /^-?\d+(\.\d+)?$/.test(key))) return matchNumber(text, Number(key), o);
+  if (typeof key === "number" || (typeof key === "string" && /^-?\d+(\.\d+)?$/.test(key))) {
+    // the ONE number reader (server/grading/spoken-number.js); the child's answer is the last number phrase
+    // ("3... nahi, 4"), a reply with no readable number is NA, never wrong
+    const ph = numberPhrases(text);
+    if (!ph || !ph.length) return "NA";
+    const k = Number(key), tol = Math.max(o.tol ?? 1e-9, (o.relTol ?? 0) * Math.abs(k));
+    return Math.abs(ph.at(-1) - k) <= tol ? "correct" : "wrong";
+  }
   const t = tokens(text);
   if (!t.length) return "NA";
   const joined = ` ${t.join(" ")} `;
   const accept = (key?.accept ?? []).map((a) => ` ${tokens(a).join(" ")} `);
-  return accept.some((a) => joined.includes(a)) ? "correct" : "wrong";
+  return accept.some((a) => joined.includes(a)) && !DENY.test(String(text)) ? "correct" : "wrong";
 }
 
 /**

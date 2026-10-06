@@ -296,3 +296,100 @@ export const CONFIRM = {
   whyMissed: "give the reason yourself in one plain line (their answer was right)",
   teachbackPass: "celebrate the explanation specifically — which idea they made clear",
 };
+
+// ── p5-interaction (CONVERSATION-V2 §3.2; the live prod battery 2026-10-05): the child's words acted on, as SHAPES ──
+// Notes on what the move does, never lines she could say (the recited-prompt law). `topic` / `method` are the child's
+// words reduced to letters and digits (≤ 60 characters), interpolated as data.
+const clean = (t, n = 60) => String(t ?? "").replace(/[^\p{L}\p{N} ,'-]/gu, " ").replace(/\s+/g, " ").trim().slice(0, n);
+/** A re-explanation of the idea being taught NOW (a teach-phase "story / example / another way / slower"): no new step. */
+export const teachAgain = ({ how }) => join(
+  how === "story" ? "they asked for it as a story: the SAME idea told in story form — a named character, a moment (one day…), what happened — a few lines"
+    : how === "example" ? "they asked for an example: one concrete everyday example of the SAME idea, your own numbers, plainly marked as an example"
+      : how === "slower" ? "they asked you to slow down: say in two or three words that you will go slower; then the SAME idea in short simple sentences, one small step"
+        : "they did not follow it: the SAME idea a new, simpler way in (a picture in words, real objects, or a different example), never your earlier words",
+  "the idea in LESSON NOW is still the one on the table; no new step of the lesson yet",
+  "end with one small question about it",
+);
+export const clarifyQuestion = () => join(
+  "they asked what the question means: say what it asks in simpler words, and what a hard word in it means",
+  "one tiny example of the word if it helps, never of the answer; the key stays unsaid",
+  "then the same question again",
+);
+export const breakYes = () => "they asked for a short break: agree warmly; the lesson waits right here for them; one line for when they are back; no question now";
+export const repeatShort = () => "they did not catch it: the last point again, shorter and slower; nothing new";
+export const welcomeBack = () => "they are back after a moment away: welcome them back in two or three words, no goodbye and no fuss; carry on";
+export const levelHarder = () => "they asked for a harder one: take them at their word, a short warm line; the harder question";
+export const levelEasier = () => "they asked for an easier one: a short warm line, no fuss; the easier question";
+export const boredOffer = () => join(
+  "they are bored: no guilt; change something NOW",
+  "offer a different way into today's idea: a game, a picture or a quick challenge, shown on screen as choices; ask which",
+  "no lesson question this turn",
+);
+export const frustrationStep = () => "it is the work that is hard, never them (one line, no ability words); then a smaller first step on the same question";
+export const waitThinking = () => "they are thinking aloud: no verdict and no answer; a two-to-four word go-on so they finish the thought; never a new question or the question again";
+export const disclose = () => "they asked what you are: plainly an AI teacher, in one line (no body, home, food or family); then back to the work";
+export const uptake = ({ kind }) => (kind === "joke" ? "they joked: one playful line back of your own, not a stock laugh; then back to the work"
+  : kind === "personal_share" ? "they shared something from their life: name what they shared in their words and react to it warmly and specifically in one line, no question about it; then back to the work"
+    : "a friendly question about you: one honest line as an AI (no body, home, food or favourite things of your own); then back to the work");
+export const declineOob = () => join(
+  "that is not something for our lesson: a clear, warm, short no — no shame, no lecture, no promise of it later, never any part of it",
+  "then one genuinely interesting hook from today's idea (a surprising fact or a quick challenge) that pulls them back, and the work",
+);
+export const parkIt = ({ topic, promise }) => join(
+  `they brought up ${clean(topic) || "something else"}: notice it warmly in their words, and kindly name that it is a different thing from today's work`,
+  promise === "after_question" ? "promise to come back to it right after this question" : "promise to come back to it at the end",
+  "no answer to it now; then back to the work",
+);
+export const detourTo = ({ topic }) => `they asked again about ${clean(topic) || "it"}: engage for real in at most two sentences, then back to the work`;
+export const returnParked = ({ topic }) => `before the next thing: come back to what they asked earlier (${clean(topic) || "their question"}) — at most two sentences, or a guided question`;
+export const answerTheirQuestion = () => "they asked a real question about today's idea: answer it in at most two sentences, correctly and simply, without giving the key; then the question";
+export const adaptTo = ({ method }) => `they said how they want it${clean(method, 80) ? ` (${clean(method, 80)})` : ""}: do it that way from now on, or say kindly why not and do the nearest thing`;
+export const adultVoice = () => "a grown-up is speaking: greet them briefly and respectfully; say what you will do about what they asked (go over it again, go slower, more practice, keep it short) and do it now; then hand back to the child by name";
+/** "Can we talk about something else" (owner rule 2026-10-05: steering, never a break or a wrap). */
+export const offerWays = () => join(
+  "they want something else: agree warmly, in your own words",
+  "offer a different way into today's idea: a picture, a story or a game, shown on screen as choices, or a quick change of question; ask which",
+  "no lesson question this turn",
+);
+/** The card cap: the question has been on the table long enough. */
+export const assertAndMove = () => "that question has been on the table long enough: give its answer plainly with one line of why (in LESSON NOW), no verdict on them; then the next question";
+export const leaveForLater = () => "that question has been on the table long enough: leave it for later, no verdict and no answer; then the next question";
+export const moduleUnverified = () => "they answered on the activity but that answer could not be read: no verdict; ask them to say or type their answer";
+/** Modifiers on a graded answer (the UNDERSTAND note's alongside readings). */
+export const MOD_NOTE = {
+  hedged: "they sounded unsure: one light word that checking was a good idea",
+  check: "they asked whether it is right: say plainly whether it is",
+  insist: "they hold to their answer: take it seriously and give them a way to test it (substitute, count, a counter-example); never a flat no again",
+};
+export const parkAlso = ({ topic }) => `they also asked about ${clean(topic) || "something else"}: one line that you will come back to it after this`;
+
+// ── p5-interaction, second pass (conversation-v2 battery on a local server, 2026-10-05: the judges failed requests whose shape
+// came FIRST and the pose after it — the model posed the question and dropped the request). The request is the first part of
+// a two-part shape and named as such; the question follows as written. Position is mechanism. ──
+/** A request answered before the question on the card: (1) the request's own note, (2) the question as written. */
+export const leadThenPose = ({ item, lead }) => join(
+  `two parts — first: ${lead}`,
+  "second: the question on the card, as written, in their language; then wait",
+  item?.diagnostic ? "read its choices plainly; no lean in your voice toward any of them" : null,
+);
+/** "Slowly please" with a question on the table: the same question, slower — in short pieces first, then as written. */
+export const slowerPose = () => join(
+  "they asked you to slow down: say in two or three words that you will go slower",
+  "then the question again in short simple pieces, one idea at a time, before asking it as written; never ask them to speak slowly",
+);
+/** "Example do" / "story ki tarah" / "another way" on a question on the table (p5 wording of helpExplain). */
+export const helpExplainP5 = ({ how, example = false, story = false }) => join(
+  how ? "they asked how to do it: show the first step only, with a smaller example of your own (different numbers)"
+    : example ? "they asked for an example: start by saying it is an example, then one concrete everyday case of the same idea with DIFFERENT numbers from the question, so it never states its answer"
+      : story ? "they asked for a story: tell it in story form — a named character, a moment (one day…), what happened — with DIFFERENT numbers from the question, so it never states its answer"
+        : "they asked for it another way: one new, simpler picture of the same idea, with a different example and different numbers",
+  "the key stays unsaid",
+  "then the same question again, as written",
+);
+/** "Hindi mein batao" with a question on the table (p5 wording): simpler first, in the new language, then the question. */
+export const languageAskedP5 = ({ lang }) => join(
+  `they asked for ${LANG_NAME[lang] ?? lang}: from now on every turn in ${LANG_NAME[lang] ?? lang}, even if they reply in another language`,
+  "first say what the question asks, simply, in it; then the question in it",
+);
+/** Frustration on a question: the empathy line FIRST (about the work), then the smaller step. */
+export const frustrationFirst = () => "first: one short line that this one is hard work and that is okay (about the work, never about them, no ability words); then a smaller first step on the same question";

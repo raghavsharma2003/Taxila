@@ -194,7 +194,9 @@ test("G-PRAISE-1: the move carries the verdict, and the guard removes praise the
     // W1-A G-ASK parity: the draft also ended on a side question instead of the pinned item ("ask").
     assert.ok(out.guard.caught.includes("praise"), JSON.stringify(out.guard.caught));
     assert.equal(praiseProblem(out.reply, "not_yet"), null, out.reply);
-    assert.ok(!out.guard.final, JSON.stringify(out.guard));
+    // p5-interaction: when the one-question fix would leave only the pinned question (owner-2 R3), the model's last lead
+    // question stays before it; that one relaxation of G-ASK parity ("twoq") is the only thing allowed to remain
+    assert.ok(!out.guard.final || out.guard.final.every((p) => p === "twoq"), JSON.stringify(out.guard));
     assert.ok(item);
   } finally { replyDeps.chat = (await import("../server/azure.js")).chat; }
 });
@@ -208,9 +210,11 @@ test("G-SAY-1: 'tap a choice' needs chips or a module in the same response; the 
   assert.ok(screenProblem("Choice tap karo.", { chips: [] }, null));
   assert.ok(!screenProblem("Choice tap karo.", { chips: [{ id: "opt:0", label: "1/2" }] }, null));
   assert.ok(!screenProblem("Activity mein tap karke dekho.", {}, { id: "m3" }));
-  // a plain item (no chips) that was not heard clearly: the shape never mentions tapping
+  // a plain item (no chips, nothing mounted) that was not heard clearly: the shape never mentions tapping. (V1-11 holds a check
+  // reserve out of practice, so the first practice item can carry a mount: walk to one with nothing on screen.)
   let r = toPractice();
-  assert.ok(!r.ui.chips);
+  for (let i = 0; i < 10 && (!r.move.itemId || r.ui.chips || r.state.module || r.state.pendingWhy); i++) r = turn(r, cls("correct"));
+  assert.ok(!r.ui.chips && !r.state.module, "a plain item with nothing on screen");
   r = turn(r, NE);
   assert.equal(r.move.kind, "repair");
   assert.doesNotMatch(r.move.shape, /tap/);

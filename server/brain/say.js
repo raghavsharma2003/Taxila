@@ -5,15 +5,19 @@
 import { safetyOpeningFor, safetyModeOf } from "../relational/openings.js";
 import { chat, DEPLOY, isContentFilter } from "../azure.js";
 import { floorViolations, scrubPii } from "../director/safety.js";
-import { upcomingItem } from "../director/state.js";
-import { findItem, promptFor, revealsAnswer, posesItem, handsBack, asksWhy } from "../director/items.js";
+import { upcomingItem, hintShapeWords } from "../director/state.js";
+import { findItem, promptFor, revealsAnswer, posesItem, handsBack, asksWhy, stripRungLabel } from "../director/items.js";
 import { TURN_WORDS, FLOOR_FIX } from "../compiler/compile.js";
 import { HELPLINES } from "../compiler/floor.js";
 import { registerBroken, toAap } from "../director/register.js";
 import { praiseProblem, stripPraise, screenProblem, stripScreenRefs, leaksStage, stripStage, askParity, endOnAsk, joinAsk, lastQuestionOnly, wrapsUp, stripWrap, correctsRight, stripCorrection } from "../director/say.js";
 import { mixedUnitComparison, withoutMixedUnits } from "../director/units.js";
 import { screenContradiction, stripStrayParts } from "../director/modules.js";
+import { isBare, repeatsEarlier, tidy, leadWithoutQuestion, sentences } from "../conversation/guards.js";
+import { p5Flag } from "../conversation/flags.js";
 
+/** p5-interaction: problems a gutted teaching turn's one retry may still carry, because code repairs them (never truth). */
+const SOFT_FIX = new Set(["long", "twoq", "wrap", "script", "register", "stage"]);
 /** Text-mode hard ceiling for the reply guard (the compiled rule asks for TURN_WORDS). */
 export const REPLY_MAX_WORDS = { "6-9": 30, "10-15": 40 };
 
@@ -40,9 +44,9 @@ export const replyDeps = { chat };
 
 /** Keep whole sentences up to `max` words (last-resort guard after one rewrite failed). */
 export function trimToWords(text, max) {
-  const sentences = String(text).match(/[^.!?।]+[.!?।]*\s*/g) ?? [text];
+  const parts = p5Flag("GUARDS") ? sentences(text) : String(text).match(/[^.!?।]+[.!?।]*\s*/g) ?? [text];
   let out = "";
-  for (const s of sentences) {
+  for (const s of parts.length ? parts : [text]) {
     if (words(out + s) > max) break;
     out += s;
   }
@@ -132,9 +136,9 @@ export function fallbackReply(state, item) {
  * rewrite used to replace the WHOLE turn with the bare question — 38/394 replies in the owner's session). Exported for tests.
  */
 export function repairDrift(draft, item, lang, { noLeak = false } = {}) {
-  const sentences = String(draft).match(/[^.!?।]+[.!?।]*\s*/g) ?? [];
+  const parts = p5Flag("GUARDS") ? sentences(draft) : String(draft).match(/[^.!?।]+[.!?।]*\s*/g) ?? [];
   const lead = [];
-  for (const x of sentences) {
+  for (const x of parts) {
     if (/[?？]/.test(x)) break;
     if (noLeak && revealsAnswer(x, item)) continue;
     lead.push(x);
@@ -143,13 +147,17 @@ export function repairDrift(draft, item, lang, { noLeak = false } = {}) {
 }
 
 /** Sentences of `text` that do not state `item`'s key (what is left of a teaching turn after a leak survived). */
-export const withoutLeaks = (text, item) => (String(text).match(/[^.!?।]+[.!?।]*\s*/g) ?? []).filter((x) => !revealsAnswer(x, item)).join("").trim();
+export const withoutLeaks = (text, item) => (p5Flag("GUARDS") ? sentences(text) : String(text).match(/[^.!?।]+[.!?।]*\s*/g) ?? []).filter((x) => !revealsAnswer(x, item)).join("").trim();
 /**
  * Is what is left of a gutted teaching turn still a turn? F18 (evals/owner-truth s06 t2): every sentence of an explanation
  * "revealed" the next item, and the remainder was "” Aapka question?". A remainder must open on a word, carry some
  * content, and hand the floor back. Exported for tests.
  */
-export const coherentRemainder = (t) => !!t && !/^[\s”"'’)\]]/.test(t) && words(t) >= 6 && handsBack(t);
+// p5-interaction (owner-2 s2 t11, R6.gutted: "What unit fraction represents one pot?" shipped as a whole explain turn): a
+// remainder must also be a turn's worth of words (GUTTED_MIN, the battery's own bar); else the rewrite stands and the next
+// item is marked spoiled.
+export const GUTTED_MIN = 9;
+export const coherentRemainder = (t) => !!t && !/^[\s”"'’)\]]/.test(t) && words(t) >= (p5Flag("GUARDS") ? GUTTED_MIN : 6) && handsBack(t);
 /**
  * An upcoming item whose key is a STATEMENT of the idea being taught (a why / teach-back item, or a key of 6+ words such
  * as "Any question that can be checked by trying something") cannot be kept out of the explanation that teaches it: the
@@ -174,7 +182,9 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
   const max = REPLY_MAX_WORDS[state.ctx.ageBand] + (item?.diagnostic ? words(item.options.map((o) => o.text).join(" ")) : 0);
   const guardable = item && state.hintLevel < 4 && state.pendingWhy !== item.id;
   const mustPose = guardable && state.hintLevel === 0 && POSING_MOVES.has(state.lastMove.kind);
-  const mustHandBack = !CLOSING_MOVES.has(state.lastMove.kind);
+  // p5-interaction: a thinking-aloud wait hands back by letting them go on, never by a question (the "thinkq" guard below)
+  const thinkingWait = p5Flag("GUARDS") && state.lastMove?.request === "thinking";
+  const mustHandBack = !CLOSING_MOVES.has(state.lastMove.kind) && !thinkingWait;
   const whyProbe = !!item && state.pendingWhy === item.id;
   // A comparison across kinds of quantity (45,000 fans vs 4,500 km) in the teacher's OWN words; the kit's posed
   // question is verified content and is not judged here.
@@ -191,6 +201,13 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
   const parityOf = (t) => askParity(t, pinned);
   const wrapping = !CLOSING_MOVES.has(kindNow);
   const praiseOf = (t) => praiseProblem(t, verdict);
+  // p5-interaction guards (conversation/guards.js): her earlier lines of this lesson (the repeat guard reads the last six)
+  const G = p5Flag("GUARDS");
+  const earlier = G ? history.filter((t) => t.who === "teacher").slice(-6).map((t) => t.text) : [];
+  // p5-interaction (owner-2 R4: a 40-word question re-read in full on every hint turn): once the question has been posed,
+  // a re-pose ends on the card's form of it (UiDirectives.ask.text, ≤ 120 characters: the question sentence itself)
+  const rePose = !!item && state.pinItem === item.id && (state.pinRun ?? 0) > 1;
+  const askEnd = item ? (G && pinned && rePose ? pinned : promptFor(item, lang)) : null;
   // G-PRAISE-2: after a right answer the acknowledgement never states a wrong option as the result (say.js correctsRight).
   const right = verdict === "correct" && state.lastRight?.wrong?.length ? { ...state.lastRight, nextPrompt: item ? promptFor(item, lang) : ahead ? promptFor(ahead, lang) : "" } : null;
   const problems = (t) => [
@@ -215,12 +232,19 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     pinned && !parityOf(t).endsOnAsk && "ask",
     mustHandBack && parityOf(t).questions > 1 && "twoq",
     wrapping && wrapsUp(t) && "wrap",
+    // p5-interaction: the reply is only the question again (owner-2 R3, 9 / 90), or a line she already said (R4, 8 / 90)
+    G && pinned && isBare(t, promptFor(item, lang), pinned, rePose ? undefined : 1) && "bare",
+    G && repeatsEarlier(t, earlier) && "same",
+    // a mid-thought gets no question (conversation-v2 thinking_aloud 1/8: "new_question"); a right answer is confirmed
+    // before anything else (answer_correct 4/8: a covert probe with no uptake)
+    thinkingWait && /[?？]/.test(t) && "thinkq",
+    G && verdict === "correct" && !CLOSING_MOVES.has(kindNow) && !confirmsFirst(t) && "noconfirm",
   ].filter(Boolean);
   // The code repairs for the turn's shape (no model call): goodbye sentences out of a non-wrap turn, then the turn
   // ends on the pinned question (or keeps only its last question).
   const shapeFix = (t, f) => {
     let out = f.includes("wrap") ? stripWrap(t) : t;
-    if (pinned) out = endOnAsk(out, promptFor(item, lang));
+    if (pinned) out = endOnAsk(out, askEnd);
     else if (f.includes("drift")) out = repairDrift(out, item, lang);
     else if (f.includes("twoq")) out = lastQuestionOnly(out);
     return out;
@@ -265,7 +289,9 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     }
   }
   if (found.length) {
-    const why = [found.includes("leak") && (ahead
+    const asked = G && ["example", "story", "another"].includes(state.lastMove?.request);
+    const why = [found.includes("leak") && asked && "it gives away the answer to the question — keep what they asked for, but with different numbers and a different case from the question, so its answer is never stated",
+      found.includes("leak") && !asked && (ahead
       ? "it states the answer to the practice question that comes next — explain with different numbers or a different example, and do not answer that question"
       : "it gives away the key answer — the hint ladder has not reached rung 4"),
       found.includes("drift") && `it must ask exactly this question and no other: "${promptFor(item, lang)}"`,
@@ -282,9 +308,14 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       found.includes("parts") && `it names parts the screen does not show — ${screenContradiction(own(reply), module)?.onScreen ?? ""}`,
       found.includes("stage") && "it reads out a field name or markup (like 'Whiteboard:' or brackets) — plain spoken words only",
       found.includes("register") && (address === "aap" ? "it uses tum forms — address the child with aap forms only (aap, aapka; verbs ending -iye)" : "it uses aap — address the child with tum forms (tum, tumhara)"),
-      found.includes("ask") && !found.includes("drift") && `it must end by asking exactly this question, and ask nothing else: "${promptFor(item, lang)}"`,
+      found.includes("ask") && !found.includes("drift") && `it must end by asking exactly this question, and ask nothing else: "${askEnd}"`,
       found.includes("twoq") && !found.includes("ask") && "it asks more than one question — keep only one question, at the end",
       found.includes("wrap") && "it says goodbye or that the lesson is over, but the lesson goes on — no goodbye words",
+      found.includes("bare") && (rePose ? "it is only the question again — first answer what they just said, or give the nudge or the step, in one short line of your own; then the question"
+        : "it is only the question — say a short bridge of your own first (a few words to what they said), then the question"),
+      found.includes("same") && "it repeats what you already said earlier, almost word for word — say something new (a different nudge, example or way in); then the question",
+      found.includes("thinkq") && "they are in the middle of a thought — ask nothing at all; only a few words that let them go on and finish it",
+      found.includes("noconfirm") && "their answer was right — open by confirming it in a few words, naming what they got right, before anything else",
     ].filter(Boolean).join("; and ");
     try {
       reply = await ask([...messages, { role: "assistant", content: reply }, { role: "system", content: `Rewrite that turn: ${why}. Same move, same language, one idea, end by handing the floor back.` }]);
@@ -302,20 +333,34 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     } else if (found.includes("leak") && ahead) {
       // what is left must still be a turn (F18); else the rewrite stands and the next item is marked spoiled (turn.js)
       const left = withoutLeaks(reply, ahead).replace(/^[\s”"'’)\]]+/, "");
-      if (coherentRemainder(left)) { reply = left; guard.replaced = true; } else guard.spoilsAhead = ahead.id;
+      // p5-interaction (owner-4 "story ki tarah batao": the story was cut to "Agar cake 12 pieces ka ho, ek part mein kitne?"):
+      // when the child ASKED for this teaching (a story, an example, another way, slower, a picture), their request wins over
+      // the next item's evidence value: the rewrite stands and that item is marked spoiled (its answer is discounted)
+      if (coherentRemainder(left) && !(G && state.lastMove?.request)) { reply = left; guard.replaced = true; } else guard.spoilsAhead = ahead.id;
     } else if (found.includes("leak") || found.includes("drift")) {
       // the acknowledgement before the drift / leak stays, then the verified question (F17: never the bare question when
       // the child's words got an answer in the draft)
       reply = repairDrift(reply, item, lang, { noLeak: true });
-      if (problems(reply).includes("leak")) reply = promptFor(item, lang);
+      if (problems(reply).includes("leak")) reply = askEnd;
       guard.replaced = true;
+      // p5-interaction (acceptance 2026-10-05, the req:story chip: 2 / 6 requested stories were cut to the bare question
+      // because the story's numbers stated the key): a REQUESTED story / example / other way gets one more attempt with
+      // other numbers; it is used only when no truth problem is left (a leak still ships the question alone)
+      if (G && item && state.lastMove?.request && isBare(reply, askEnd, pinned)) {
+        try {
+          const again = await ask([...messages, { role: "assistant", content: guard.firstDraft ?? reply }, { role: "system", content: `Rewrite that turn: they asked for it this way, so keep it that way, but use different numbers and things from the question so it never gives away or works out the question's answer; two short sentences, then end by asking exactly this question: "${askEnd}". Same language.` }]);
+          let a = again;
+          if (problems(a).includes("long")) a = trimToWords(a, max);
+          if (!problems(a).filter((p) => !SOFT_FIX.has(p)).length && !problems(a).includes("long") && !isBare(a, askEnd, pinned)) { reply = a; guard.reasked = true; }
+        } catch (e) { if (isContentFilter(e)) return blocked(); }
+      }
     } else {
       if (found.includes("units")) { reply = withoutMixedUnits(reply) || fallbackReply(state, item); guard.replaced = true; }
       if (found.includes("script")) reply = reply.replace(OFF_SCRIPT[lang] ?? OFF_SCRIPT.english, "").replace(/\s{2,}/g, " ").trim();
       // What is left of a turn whose words contradicted the verdict or the screen: those sentences go; if nothing
       // that hands the floor back is left, the item's question (or the move's fixed line) is the turn.
       const keepOr = (t) => (t && handsBack(t) ? t : item && !CLOSING_MOVES.has(kindNow) && state.pendingWhy !== item.id
-        ? joinAsk(t ?? "", promptFor(item, lang)) : t || fallbackReply(state, item));
+        ? joinAsk(t ?? "", askEnd) : t || fallbackReply(state, item));
       if (found.includes("praise")) { reply = keepOr(stripPraise(reply)); guard.replaced = true; }
       if (found.includes("corrects")) { reply = keepOr(stripCorrection(reply, right)); guard.replaced = true; }
       if (found.includes("screen")) { reply = keepOr(stripScreenRefs(reply)); guard.replaced = true; }
@@ -326,8 +371,55 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       if (found.includes("long")) reply = trimToWords(reply, max);
       // Last: the turn's shape (goodbye words out, the pinned question at the end, one question), in code.
       const left = problems(reply).filter((p) => SHAPE.has(p));
-      if (left.length) { reply = shapeFix(reply, left); guard.repaired = true; }
+      if (left.length) {
+        const fixed = shapeFix(reply, left);
+        // p5-interaction: the shape fix drops every question that is not the pinned one; when that leaves only the question
+        // (the model's uptake was itself a question: owner-2 R3), the last lead question stays before it instead (goodbye
+        // sentences still go)
+        // ship5 integration (p5 x W1 "one question per turn", tests/prod/w1a-battery): on a hint turn the rung's own kit
+        // hint, as STATEMENTS only, leads first; a lead question is the last resort (it makes the turn two questions).
+        const hintLead = G && pinned && kindNow === "hint" ? hintStatements(item, state.lastMove?.hintLevel) : "";
+        const alt = G && pinned && isBare(fixed, askEnd, pinned)
+          ? (hintLead ? joinAsk(hintLead, askEnd) : keepLastLeadQuestion(left.includes("wrap") ? stripWrap(reply) : reply, askEnd)) : null;
+        reply = alt && !isBare(alt, askEnd, pinned) ? alt : fixed;
+        guard.repaired = true;
+      }
     }
+  }
+  if (G) {
+    // p5-interaction: a teaching turn the repairs above left gutted (owner-2 R6, 3 / 90: "What do you predict?" as a whole
+    // hook, after the mixed-units strip) gets one more attempt at a full turn; it is used only when it is clean.
+    // (a strip that left nothing put the fixed "lost my words" line on a teaching turn: owner-2 R2 on a local run — the same retry)
+    const fixedLine = !item && reply === fallbackReply(state, null);
+    if (TEACHING_MOVES.has(kindNow) && (words(reply) < GUTTED_MIN || fixedLine) && !guard.final) {
+      try {
+        const floorWhy = guard.firstDraft ? floorOf(guard.firstDraft).map((k) => FLOOR_FIX[k]).filter(Boolean).join("; ") : "";
+        const again = await ask([...messages, { role: "assistant", content: guard.firstDraft ?? reply }, { role: "system", content: `Rewrite that turn as a full turn: the same idea in two or three short sentences, then one small question about it${ahead ? "; do not answer the practice question that comes next" : ""}; compare only like with like${floorWhy ? `; ${floorWhy}` : ""}; same language.` }]);
+        // only the soft problems may remain, and they are repaired in code; any truth problem (floor, leak, praise, deny,
+        // units, screen, parts) keeps the turn as it was
+        const hard = problems(again).filter((p) => !SOFT_FIX.has(p));
+        if (words(again) >= GUTTED_MIN && !hard.length) {
+          let a = again;
+          const soft = problems(a);
+          if (soft.includes("wrap")) a = stripWrap(a) || a;
+          if (soft.includes("script")) a = a.replace(OFF_SCRIPT[lang] ?? OFF_SCRIPT.english, "").replace(/\s{2,}/g, " ").trim();
+          if (soft.includes("register") && address === "aap") a = toAap(a);
+          if (soft.includes("stage")) a = stripStage(a) || a;
+          if (words(a) > max) a = trimToWords(a, max);
+          if (words(a) >= GUTTED_MIN && !problems(a).filter((p) => !SOFT_FIX.has(p)).length) { reply = a; guard.regutted = true; }
+        }
+      } catch (e) { if (isContentFilter(e)) return blocked(); }
+    }
+    // a hint turn still only the question after the rewrite: the rung's own kit hint (verified content that never states
+    // the key, never a teacher note) leads the question
+    if (item && kindNow === "hint" && problems(reply).includes("bare")) {
+      // ship5 integration: statements only, so the repaired turn still asks ONE question (a kit hint can itself ask one)
+      const h = hintStatements(item, state.lastMove?.hintLevel);
+      if (h) { reply = joinAsk(h, askEnd); guard.repaired = true; }
+    }
+    // the cut marks the repairs leave (an orphan quote, an empty fragment) and a lead sentence that re-poses the question
+    const tidied = tidyAround(reply, pinned ? askEnd : null);
+    if (tidied && tidied !== reply) { reply = tidied; guard.tidied = true; }
   }
   // The final words, checked once more (debug and the evals read it): what reached the child.
   const final = problems(reply).filter((p) => p !== "long" || words(reply) > max);
@@ -336,4 +428,47 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
   // even the fixed line broke a rule. The caller turns a non-empty list into the next correction and an incident.
   const floor = final.includes("floor") ? floorOf(reply) : [];
   return { reply, guard, ...(floor.length ? { floor } : {}) };
+}
+
+/**
+ * p5-interaction: the reply with every question but its LAST lead question and the pinned one dropped, ending on the pinned
+ * question (the fallback when the strict one-question fix would leave only the bare question). Exported for tests.
+ */
+/**
+ * p5-interaction: the reply with the cut marks of the repairs tidied (conversation/guards.js tidy) and, when it ends on
+ * the pinned question, every lead sentence that is that question again dropped (a copy, a re-wording, a second form of a
+ * blanked question: owner-2 s1 t6 "Khaali jagah bhariye: 2/5 is ___ the middle. Khaali jagah bhariye: Check: …"). The
+ * question itself is verified content and is kept byte for byte. Exported for tests.
+ */
+/**
+ * ship5 integration: the rung's kit hint (verified content) as a lead with its QUESTION sentences dropped, or "" when
+ * nothing is left, it states the key, or it is a teacher's shape note. Exported for tests.
+ */
+export function hintStatements(item, hintLevel) {
+  const h = stripRungLabel(String(item?.hints?.[(hintLevel ?? 1) - 1] ?? "")).replace(/\s+/g, " ").trim();
+  if (!h || revealsAnswer(h, item) || hintShapeWords(h)) return "";
+  return sentences(h).map((x) => x.trim()).filter((x) => x && !/[?？]/.test(x)).join(" ").trim();
+}
+
+export function keepLastLeadQuestion(reply, ask) {
+  const r = String(reply ?? "").split(String(ask ?? "")).join(" ");
+  const ss = sentences(r).map((x) => x.trim()).filter(Boolean);
+  const qi = ss.map((x) => /[?？]/.test(x)).lastIndexOf(true);
+  const lead = ss.filter((x, i) => !/[?？]/.test(x) || i === qi).join(" ");
+  return `${leadWithoutQuestion(lead, ask) || lead} ${String(ask ?? "").trim()}`.replace(/\s{2,}/g, " ").trim();
+}
+
+export function tidyAround(reply, ask) {
+  const r = String(reply ?? "").trim();
+  if (ask && r.endsWith(String(ask).trim())) {
+    const lead = leadWithoutQuestion(r.slice(0, r.length - String(ask).trim().length), ask);
+    return `${tidy(lead)} ${String(ask).trim()}`.replace(/\s{2,}/g, " ").trim();
+  }
+  return tidy(r);
+}
+
+/** p5-interaction: does a reply to a RIGHT answer confirm it in its first two sentences (agreement / praise of the answer)? */
+function confirmsFirst(t) {
+  const head = sentences(t).slice(0, 2).join(" ");
+  return praiseProblem(head, "not_yet") === "praise";
 }

@@ -29,4 +29,8 @@ statement per call).
 --   020_reteach_child_history.sql  W2-C  widens reteach_attempts_chosen_by_check to add 'child_history' (selectReteach step 4b)
 -- Streams apply their file ONLY to the Neon test branch (CONDUCTOR_TEST_DATABASE_URL); production is the integration
 -- step's. 014 was never used (W1-D needed none): it stays a gap. W3 numbers are allotted in the W3 seam commit.
+
+-- ship5 (owner-ship-five-2026-10-05):
+--   021_voicesig.sql    p3-voicesig  voicesig.subject / baseline / calibration / population_norm (numbers only; rows only
+--                                    under the parent's voice_pace_memory choice; cascade on withdrawal and child delete)
 ```

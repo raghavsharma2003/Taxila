@@ -1,6 +1,8 @@
-// W1-C acceptance (BUILD-PLAN §3 W1-C; comprehension audit G1, G8): "understood" needs a success ≥ 20 h after learning,
-// so nobody could test it in one sitting. With the test clock:
-//   day 0   a scripted lesson: right answers, but "pata nahi" to every why (the typical first-lesson child: shallow);
+// W1-C acceptance (BUILD-PLAN §3 W1-C; comprehension audit G1, G8): "understood" needs a success ≥ 2 learning days after
+// learning, on an item never met (VALUES-100 V1.3; V1-10), so nobody could test it in one sitting. With the test clock:
+//   day 0   a scripted lesson: right answers, but "pata nahi" to every why (the typical first-lesson child: shallow); the
+//           child does teach the protégé at the teach-back (the lesson's generative pass: without one no skill is ever
+//           learned_today, so no check is ever due — p5-interaction root cause of the 2026-10-05 prod 17/22);
 //           the parent "how we know" card is NOT null (G1: it was null for every English / shallow child);
 //   +1 day  a lesson on a DIFFERENT topic: its opener asks a day-0 item (so it can only be the C31 delayed check; with
 //           TAXILA_DB_URL the lesson state's pendingProbe must say C31 / delayed_check), the child answers it right, and
@@ -8,7 +10,9 @@
 //           Whether the STATE rises above shallow on that alone is reported honestly: by the ladder (state.js) a
 //           correct delayed check is K / D evidence, and leaving shallow needs U ≥ U_FRAGILE, i.e. a reason. If it
 //           stays shallow the test says so (a warn naming the rule), it does not borrow the rise from reasons;
-//   +2 days a review lesson on the day-0 topic WITH reasons: the state rises above shallow (labelled: from reasons);
+//   +2 days a review lesson on the day-0 topic WITH reasons: the state rises above shallow (labelled: from reasons); its
+//           opener is the CERTIFYING check (≥ 2 learning days) on an item the child never met (V1.3: the +1 day opener was
+//           a review of a met item, which never certifies);
 //   +3 days a lesson on a third topic: its opener checks a day-0 skill again (delayed check / expired weave callback);
 //   the parent card's wording changes as the state rises.
 // And a REAL account (not @taxila.test) asking for an offset gets 403.
@@ -59,7 +63,7 @@ await withTestAccount(async ({ api, child, password }) => {
   const wording = (v) => JSON.stringify([v?.card?.rows ?? [], v?.card?.chips ?? []]);
 
   // ── day 0 ──
-  const d0 = await driveLesson(api, child.id, { topicId: DAY0, maxTurns: 18, explain: false });
+  const d0 = await driveLesson(api, child.id, { topicId: DAY0, maxTurns: 18, explain: false, teach: true });
   ok(d0.start.status === 201, `day 0 lesson starts on ${DAY0}`);
   const graded0 = d0.turns.filter((t) => t.verdict).length;
   ok(graded0 >= 3, `day 0: at least 3 graded answers (${graded0}; moves ${d0.turns.map((t) => t.move).join(",")})`);
@@ -102,6 +106,9 @@ await withTestAccount(async ({ api, child, password }) => {
   await advanceClock(api, 1);
   const d2 = await driveLesson(api, child.id, { topicId: DAY0, maxTurns: 16, explain: true });
   ok(d2.start.status === 201, "+2 days: a review lesson starts on the day-0 topic");
+  const open2 = d2.start.ui?.ask?.itemId ?? null;
+  ok(!!open2 && !d0.asked.includes(open2) && !warmTurns.some((t) => t.item === open2),
+    `+2 days: the certifying check (≥ 2 learning days, V1.3) leads, on an item never met (${open2 ?? "none"}; met: ${[...new Set([...d0.asked, ...warmTurns.map((t) => t.item)])].length} items)`);
   const c2 = await cards("+2 days card (after reasons)");
   ok(best(c2) > RANK.shallow, `+2 days: with reasons given, a day-0 skill is above shallow (${states(c2)}) — from reasons, not from the delayed check`);
 
@@ -112,9 +119,15 @@ await withTestAccount(async ({ api, child, password }) => {
   const warm3 = s3.ui?.ask?.itemId ?? null;
   const st3 = await lessonState(s3.lessonId);
   const due3 = (st3?.warmup ?? []).map((w) => w.id ?? w.itemId).filter(Boolean);
-  ok((!!warm3 && topicOfItem(warm3) === DAY0) || due3.some((id) => topicOfItem(id) === DAY0),
-    `+3 days: the opener of a ${DAY3} lesson checks a day-0 skill again (asks ${warm3 ?? "none"}; warm-up ${due3.join(", ") || "n/a"})`);
-  if (st3) ok(st3.pendingProbe?.shapeId === "C31" && topicOfItem(st3.activeItemId) === DAY0, `+3 days: it is a C31 delayed check (pendingProbe ${st3.pendingProbe?.shapeId ?? "none"} on ${st3.activeItemId ?? "-"})`);
+  const checked3 = (!!warm3 && topicOfItem(warm3) === DAY0) || due3.some((id) => topicOfItem(id) === DAY0);
+  // V1.3: a skill certified at +2 days (its check passed) is next reviewed by FSRS, not the next day; one not certified yet
+  // must be checked again here
+  const certified2 = d2.turns[0]?.verdict === "correct";
+  if (certified2 && !checked3) warn(`+3 days: no day-0 check in the opener — the day-0 skill was certified at +2 days (its check was answered right), so its next review is FSRS's, later (V1.3)`);
+  else {
+    ok(checked3, `+3 days: the opener of a ${DAY3} lesson checks a day-0 skill again (asks ${warm3 ?? "none"}; warm-up ${due3.join(", ") || "n/a"})`);
+    if (st3) ok(st3.pendingProbe?.shapeId === "C31" && topicOfItem(st3.activeItemId) === DAY0, `+3 days: it is a C31 delayed check (pendingProbe ${st3.pendingProbe?.shapeId ?? "none"} on ${st3.activeItemId ?? "-"})`);
+  }
   ui = s3.ui; seq = 0;
   for (let i = 0; i < 3 && ui?.ask?.itemId && topicOfItem(ui.ask.itemId) === DAY0; i++) {
     const rep = replyFor(ui, DAY0);

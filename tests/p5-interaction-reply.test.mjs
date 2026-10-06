@@ -1,7 +1,7 @@
 // p5-interaction reply guards in brain/say.js textReply (owner-2 on prod 2026-10-05: R3 bare question 9/90, R4 repeat 8/90,
 // R6 gutted 3/90; owner-4: a reply opening on a dangling quote; "0. 4" cut decimals). The reply model is replaced
 // (replyDeps), no network. Needs the patches (APPLY.md).
-import { test, afterEach } from "node:test";
+import { describe, test, afterEach } from "node:test";
 import assert from "node:assert/strict";
 import { textReply, replyDeps, tidyAround, GUTTED_MIN } from "../server/brain/say.js";
 import { chat } from "../server/azure.js";
@@ -17,6 +17,8 @@ function toPractice() {
   while (r.state.phase !== "practice" || !r.move.itemId || r.move.itemId.startsWith("fade:")) r = turn(r, cls("no_evidence"));
   return r;
 }
+// File-scoped: a top-level hook wraps EVERY file's tests in the shared npm-test process (rj: shared-process hook leak).
+describe('p5-interaction reply', () => {
 afterEach(() => { replyDeps.chat = chat; delete process.env.TAXILA_P5_GUARDS; });
 const scripted = (...texts) => { const seen = []; let i = 0; replyDeps.chat = async (_d, msgs) => { seen.push(msgs.at(-1).content); return { text: texts[Math.min(i++, texts.length - 1)] }; }; return seen; };
 
@@ -110,4 +112,5 @@ test("a REQUESTED story whose numbers state the key is not cut to the bare quest
   assert.equal(out.guard.reasked, true, JSON.stringify(out.guard));
   assert.match(seen.at(-1), /different numbers/);
   assert.equal(out.reply, clean);
+});
 });

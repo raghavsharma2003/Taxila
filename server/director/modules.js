@@ -21,6 +21,8 @@ import { readFileSync } from "node:fs";
 import { ENGINES, planEngine, moduleCommands, validModes } from "../../shared/engine-catalog.js";
 import { peekLessonFill, wantLessonFill } from "../forge/lesson-fills.js";
 import { gradeEvent } from "../forge/grade.js";
+import { recheckEngineAnswer } from "./recheck.js";
+import { p5Flag } from "../conversation/flags.js";
 import { explainerFor, wantExplainer } from "../forge/explainer/lesson.js";
 import { leaksOpenItem } from "../forge/explainer/guard.js";
 
@@ -396,6 +398,18 @@ export function moduleAnswerOf(state, events) {
   if (!m.itemId || m.itemId !== state.activeItemId) return null;
   const a = mine.filter((e) => e.type === "answer").at(-1);
   const d = a?.data && typeof a.data === "object" ? a.data : null;
+  // V1-01r (VALUES-100 V1.1; owner-1 2026-10-05: 8/9 forged claims accepted on prod): the frame's `correct` is a CLAIM and
+  // never the grade. 1. the act's own kind re-run by the engine's logic on the SERVER's params (recheck.js, V1-01); 2. else
+  // the committed VALUE against the verified key; 3. else no grade AND no silent drop: { unverifiable } — the Director asks
+  // the child for the answer in words (state.js moduleReaction), and the trace says so (module.unverifiable).
+  if (d && p5Flag("RECHECK")) {
+    const r = recheckEngineAnswer(m, d);
+    if (!r.unverifiable) return { correct: r.correct, value: d.value, source: "engine_rechecked", ...(r.claimMismatch ? { claimMismatch: true } : {}) };
+    const act = d.value && typeof d.value === "object" && !Array.isArray(d.value) ? d.value : d;
+    const byValue = recheckCommitted(act, m.key);
+    if (byValue != null) return { correct: byValue, value: d.value, source: "value_rechecked", ...(typeof d.correct === "boolean" && d.correct !== byValue ? { claimMismatch: true } : {}) };
+    return { unverifiable: true, value: d.value, why: r.why };
+  }
   if (!d || typeof d.correct !== "boolean") return null;
   // engines-v1-server-recheck (OWNER TEST 2026-10-04 item 1, evals/owner-truth F1): the frame's `correct` is a CLAIM. When
   // the committed value and the plan's verified key are both a number or a fraction, the SERVER decides from the value;
@@ -405,6 +419,33 @@ export function moduleAnswerOf(state, events) {
   return { correct: recheck, value: d.value, source: "engine_rechecked", ...(recheck !== d.correct ? { claimMismatch: true } : {}) };
 }
 
+/**
+ * PURE. V1-01r: the value an act COMMITTED (the child's own entry first — written / given / claimed / made / built — and the
+ * engine's `value` last, because some acts carry the target beside the entry: pv.write sends value=<key>, written=<entry>),
+ * against the verified key. Numbers and fractions by value; two short non-numeric labels by their normalised text. null
+ * when nothing comparable was committed (or the key is missing). Exported for tests.
+ */
+export function recheckCommitted(act, key) {
+  if (!act || typeof act !== "object" || key == null || String(key).trim() === "") return null;
+  let v = null;
+  for (const f of ["written", "given", "claimed", "made", "built", "value"]) if (v == null && act[f] != null && typeof act[f] !== "object") v = act[f];
+  const pick = act.chosen ?? act.choice;
+  if (v == null && pick != null && Array.isArray(act.fractions)) v = /^\d+$/.test(String(pick)) ? act.fractions[Number(pick)] : pick;
+  if (v == null) return null;
+  // a number with a short unit ("6 square units", "12 cm") is that number: owner-1 local run 2026-10-05, a geoboard commit
+  // "6 square units" against the bound key "6" went ungraded
+  const k = numericOf(key) ?? unitNumberOf(key), n = numericOf(v) ?? unitNumberOf(v);
+  if (k != null || n != null) return k != null && n != null ? Math.abs(n - k) < 1e-9 : null;
+  const lab = (x) => String(x).toLowerCase().normalize("NFKC").replace(/[^\p{L}\p{N}]+/gu, " ").trim();
+  const a = lab(v), b = lab(key);
+  return a && b && a.length <= 24 && b.length <= 24 ? a === b : null;
+}
+
+/** "6 square units" / "12 cm" / "3/4 kg" → the number; a number followed by anything but 1-3 short letter-only words → null. */
+function unitNumberOf(v) {
+  const m = String(v ?? "").trim().match(/^(-?\d+(?:\.\d+)?|-?\d+\s*\/\s*\d+)\s+((?:\p{L}{1,12}\.?\s*){1,3})$/u);
+  return m ? numericOf(m[1]) : null;
+}
 const FRAC_RE = /^\s*(-?\d+)\s*\/\s*(\d+)\s*$/;
 /** A plain number or fraction (string or number) → its value; anything else → null. Exported for tests. */
 export function numericOf(v) {

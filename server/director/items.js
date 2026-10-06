@@ -186,6 +186,34 @@ export function sameMotif(a, b) {
 }
 
 /**
+ * The delayed-check reserve (VALUES-100 V1.3: the check is a NEW form): per skill with at least two items of a check kind,
+ * one is held out of practice so a later session can check the skill on an item the child has never seen. A near
+ * transfer first (the new form by design), else the hardest practice / retrieval item. server/learner/checks.js reads the
+ * same set. Pure and deterministic per kit. Every practice path (both queue builders, harderThan, selectNext) skips it.
+ */
+const RESERVE_KINDS = ["near_transfer", "practice", "retrieval"];
+export function checkReserveIds(kit) {
+  const out = new Set();
+  // ship5 integration (V1-11r x RS-6 F0): the reserve must never take one of the two items F0 would open on. Holding out
+  // the hardest item of each skill starved the opener floor: c7-english-ch04-t01 opened on a ge 5 item for class 7 (the
+  // merged-kits gate), and a small kit fell back to its dice rung. So the reserve skips the on-track opener pair (computed
+  // with no reserve, deterministic per kit) and takes the skill's next candidate; a skill with no other candidate keeps no
+  // reserve (no check that session, V1-11's own rule for "no unseen item").
+  const C = classOfKit(kit);
+  const openers = C && contentF0() && kit?.items?.length
+    ? new Set(buildF0Queue(kit, { activeMisconceptionIds: [], C, theta: C - 0.5, weak: false }).filter((id) => !id.startsWith(DIAG_PREFIX)).slice(0, 2))
+    : new Set();
+  for (const sk of kit?.skills ?? []) {
+    const c = (kit.items ?? []).filter((i) => i.skillId === sk.id && RESERVE_KINDS.includes(i.kind));
+    if (c.length < 2) continue;
+    const pick = [...c].sort((a, b) => (b.kind === "near_transfer") - (a.kind === "near_transfer") || (b.difficulty ?? 3) - (a.difficulty ?? 3) || (a.id < b.id ? -1 : 1))
+      .find((i) => !openers.has(i.id));
+    if (pick) out.add(pick.id);
+  }
+  return out;
+}
+
+/**
  * Practice order. With `content.f0` on (default):
  * - item 1 is the item an on-track child answers right with P closest to 0.85, from the earliest skill that has one
  *   (items with a measured ge first, when the kit has two),
@@ -200,10 +228,11 @@ export function sameMotif(a, b) {
  */
 export function buildPracticeQueue(kit, { activeMisconceptionIds = [], classLevel, theta, weak = false } = {}) {
   const C = classLevel ?? classOfKit(kit);
-  if (contentF0() && C) return buildF0Queue(kit, { activeMisconceptionIds, C, theta: theta ?? C - 0.5, weak });
+  const reserved = checkReserveIds(kit);
+  if (contentF0() && C) return buildF0Queue(kit, { activeMisconceptionIds, C, theta: theta ?? C - 0.5, weak, reserved });
   const ids = [];
   for (const sk of kit.skills) {
-    ids.push(...kit.items.filter((i) => i.skillId === sk.id && i.kind !== "teachback")
+    ids.push(...kit.items.filter((i) => i.skillId === sk.id && i.kind !== "teachback" && !reserved.has(i.id))
       .sort((a, b) => a.difficulty - b.difficulty || KIND_ORDER[a.kind] - KIND_ORDER[b.kind]).map((i) => i.id));
   }
   const m = kit.misconceptions.find((x) => x.diagnostic && activeMisconceptionIds.includes(x.id)) ?? kit.misconceptions.find((x) => x.diagnostic);
@@ -211,9 +240,9 @@ export function buildPracticeQueue(kit, { activeMisconceptionIds = [], classLeve
   return ids.slice(0, QUEUE_MAX);
 }
 
-function buildF0Queue(kit, { activeMisconceptionIds, C, theta, weak }) {
+function buildF0Queue(kit, { activeMisconceptionIds, C, theta, weak, reserved = new Set() }) {
   const skillIdx = new Map(kit.skills.map((sk, i) => [sk.id, i]));
-  const pool = kit.items.filter((i) => i.kind !== "teachback" && skillIdx.has(i.skillId))
+  const pool = kit.items.filter((i) => i.kind !== "teachback" && skillIdx.has(i.skillId) && !reserved.has(i.id))
     .map((i) => ({ i, ge: itemGE(i, C), p: expectedSuccess(i, theta, C), k: skillIdx.get(i.skillId) }));
   const openable = (x) => x.i.kind !== "error_spot" && x.i.kind !== "far_transfer" && (weak || !tooFarBelow(x.i, C));
   const pick = (cands, target) => [...cands].sort((a, b) => Math.abs(a.p - target) - Math.abs(b.p - target) || a.k - b.k || a.ge - b.ge)[0] ?? null;
@@ -235,8 +264,13 @@ function buildF0Queue(kit, { activeMisconceptionIds, C, theta, weak }) {
   if (!cands.length) { const top = Math.max(...pool.map((x) => x.ge)); cands = pool.filter((x) => x.ge >= top - 0.25 && x.i.kind !== "error_spot"); }
   const firstSkill = Math.min(...cands.map((x) => x.k));
   const first = pick(cands.filter((x) => x.k === firstSkill), OPEN_TARGETS[0]);
+  // ship5 integration: when the narrowed cands hold no second item (e.g. the two measured items share a motif), item 2
+  // must still be an OPENABLE item from the whole pool, never whatever the round-robin rest puts first: that path opened
+  // c7-english-ch04-t01 on a ge 5 item for class 7 once V1-11's check reserve shortened the rest (rs6-merged-kits gate).
   const second = first && pick(cands.filter((x) => x !== first && x.k <= first.k + 1 && !sameMotif(x.i, first.i)), OPEN_TARGETS[1])
-    || first && pick(cands.filter((x) => x !== first && !sameMotif(x.i, first.i)), OPEN_TARGETS[1]);
+    || first && pick(cands.filter((x) => x !== first && !sameMotif(x.i, first.i)), OPEN_TARGETS[1])
+    || first && pick(pool.filter((x) => x !== first && openable(x) && !sameMotif(x.i, first.i)), OPEN_TARGETS[1])
+    || first && pick(pool.filter((x) => x !== first && openable(x)), OPEN_TARGETS[1]);
   const head = [first, second].filter(Boolean);
   // Round-robin the rest across skills, easiest first within each skill.
   const bySkill = kit.skills.map((_, k) => pool.filter((x) => x.k === k && !head.includes(x)).sort((a, b) => a.ge - b.ge || KIND_ORDER[a.i.kind] - KIND_ORDER[b.i.kind]));
@@ -271,7 +305,8 @@ export function harderThan(s, kit, currentId = s.activeItemId ?? s.itemsDone?.[s
   const done = new Set([...(s.itemsDone ?? []), ...(s.skipped ?? []), currentId].filter(Boolean));
   const cur = currentId ? findItem(s, kit, currentId) : null;
   const base = cur ? itemGE(cur, C) : C - 1;
-  const left = kit.items.filter((i) => i.kind !== "teachback" && !done.has(i.id));
+  const reserved = checkReserveIds(kit);
+  const left = kit.items.filter((i) => i.kind !== "teachback" && !done.has(i.id) && !reserved.has(i.id));
   const above = left.filter((i) => itemGE(i, C) > base + 0.05).sort((a, b) => itemGE(a, C) - itemGE(b, C));
   // Nothing above: null, never a step down (the caller says so and may ask Forge for an on-grade "spicy" isomorph, F3).
   return above[0] ?? null;
@@ -319,13 +354,24 @@ export function testedOut(kit, answers) {
 export function selectNext(s, kit, { easier = false, harder = false } = {}) {
   if (harder && contentF0()) return harderThan(s, kit);
   const done = new Set([...s.itemsDone, ...s.skipped]);
+  // V1.4 (evals/mastery-calibration): a settled or parked skill gets no more practice items this lesson
+  const off = new Set([...(s.pace?.settled ?? []), ...(s.pace?.parkedSkills ?? [])]);
   const ok = s.queue.map((id) => findItem(s, kit, id)).filter((it) => {
     if (!it || done.has(it.id) || it.id === s.activeItemId) return false;
+    if (it.skillId && off.has(it.skillId) && !String(it.id).startsWith("diag:")) return false;
     if (it.kind !== "error_spot") return true;
     const sk = s.skills[it.skillId];
     return !!sk && sk.pKnown >= ERROR_SPOT_P && sk.correctUnaided >= 1;
   });
-  if (!easier) return ok[0] ?? null;
+  if (!easier) {
+    // a skill the child has shown is easy for them (pace.fast): its HARDEST remaining item next, not the next easy one
+    const head = ok[0];
+    if (head?.skillId && s.pace?.fast?.includes(head.skillId)) {
+      const C = classOfKit(kit) ?? 5, g = (i) => (contentF0() ? itemGE(i, C) : i.difficulty);
+      return ok.filter((i) => i.skillId === head.skillId).sort((a, b) => g(b) - g(a))[0];
+    }
+    return head ?? null;
+  }
   if (contentF0()) { const C = classOfKit(kit) ?? 5; return [...ok].sort((a, b) => itemGE(a, C) - itemGE(b, C))[0] ?? null; }
   return [...ok].sort((a, b) => a.difficulty - b.difficulty)[0] ?? null;
 }

@@ -235,6 +235,10 @@ export function dueForChecks(ledger, now, k = 4) {
   const view = ktView(ledger, { now });
   const ids = new Set(view.due(k * 3));
   for (const sk of Object.values(ledger.skills)) {
+    // p5-interaction (w1c-three-day, "+1 day: the delayed check leads the next lesson"): the opener is due 20 h after the
+    // anchor, as before V1-10. What changed with V1.3 is what it COUNTS for: before 2 learning days it is a review of an item
+    // the child has met (server/learner/checks.js), which never certifies; from 2 days on, the certifying check on a new item
+    // (kt/ledger.js advanceDisplay: checkDayOk + novel).
     if (rank(sk.display) >= rank("learned_today") && !sk.flags.delayed && sk.anchorAt && t - new Date(sk.anchorAt).getTime() >= DELAY_MS) ids.add(sk.skillId);
   }
   return [...ids].map((id) => readSkill(ledger.skills[id], now)).filter(Boolean)

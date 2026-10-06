@@ -1,0 +1,53 @@
+// The delayed check's item (VALUES-100 V1.3: "learnt" = still right later, in a NEW form, without help). Replaces
+// routes/lesson.js warmupItemsFor, which always took the skill's EASIEST retrieval item: in the mastery simulator 99.5%
+// of delayed checks (2,982 / 2,996) were an item the child had already answered on that skill (evals/mastery-calibration,
+// 2026-10-05), so "secure" meant "remembers that one easy question".
+//
+// Selection, per skill: an item the ledger has never seen on it (ledger skill.items), of a check class (practice, near
+// transfer, retrieval; a near transfer first, it is the new form by design), at or above the median difficulty the child
+// already met on it; easiest of those first. No unseen item → no check this session (never a repeat dressed as one).
+import { getKit } from "../content/index.js";
+import { LIMITS } from "../director/state.js";
+import { checkReserveIds } from "../director/items.js";
+import { checkDayOk } from "./kt/ledger.js";
+
+const CHECK_KINDS = ["near_transfer", "practice", "retrieval"];
+const topicOf = (skillId) => String(skillId).replace(/-s\d+$/, "");
+const median = (xs) => { const v = [...xs].sort((a, b) => a - b); return v.length ? v[Math.floor((v.length - 1) / 2)] : null; };
+
+/**
+ * @param {string[]} skillIds the openers planChecks chose @param {{ ledger: any }} o
+ * @returns {Promise<any[]>} warm-up items, tagged kind "retrieval" for the Director (it poses them as the session's openers)
+ */
+export async function warmupItemsFor(skillIds, { ledger, now = Date.now() } = {}) {
+  const out = [];
+  for (const skillId of skillIds.slice(0, LIMITS.warmupMax)) {
+    const topicId = topicOf(skillId);
+    const kit = topicId ? await getKit(topicId, { generate: false }) : null;
+    if (!kit) continue;
+    const seen = new Set(ledger?.skills?.[skillId]?.items ?? []);
+    const all = kit.items.filter((i) => i.skillId === skillId && CHECK_KINDS.includes(i.kind));
+    // p5-interaction: before 2 learning days (V1.3) the opener is a REVIEW (spaced retrieval) of an item the child has met —
+    // never the reserve, which is kept for the certifying check; the ledger does not count it as the check either way
+    const anchorAt = ledger?.skills?.[skillId]?.anchorAt ?? null;
+    if (anchorAt && !checkDayOk(anchorAt, new Date(now).toISOString())) {
+      const reservedR = checkReserveIds(kit);
+      const met = all.filter((i) => seen.has(i.id) && !reservedR.has(i.id)).sort((a, b) => (a.difficulty ?? 3) - (b.difficulty ?? 3));
+      const r = met[0] ?? all.filter((i) => !reservedR.has(i.id)).sort((a, b) => (a.difficulty ?? 3) - (b.difficulty ?? 3))[0];
+      if (r) out.push({ ...r, kind: "retrieval", checkKind: r.kind, review: true, topicId, topicType: kit.topicType, kitVerified: kit.verified, expectations: kit.expectations,
+        misconceptions: kit.misconceptions.filter((m) => m.id === r.targetsMisconception).map((m) => ({ id: m.id, belief: m.belief, signs: m.signs, remediation: m.remediation })) });
+      continue;
+    }
+    const metDiff = median(all.filter((i) => seen.has(i.id)).map((i) => i.difficulty ?? 3)) ?? 1;
+    const reserved = checkReserveIds(kit);
+    const fresh = all.filter((i) => !seen.has(i.id)).sort((a, b) => reserved.has(b.id) - reserved.has(a.id));
+    const it = [...fresh].sort((a, b) => reserved.has(b.id) - reserved.has(a.id) || ((b.difficulty ?? 3) >= metDiff) - ((a.difficulty ?? 3) >= metDiff)
+      || CHECK_KINDS.indexOf(a.kind) - CHECK_KINDS.indexOf(b.kind) || (a.difficulty ?? 3) - (b.difficulty ?? 3))[0];
+    if (!it) continue;
+    out.push({
+      ...it, kind: "retrieval", checkKind: it.kind, topicId, topicType: kit.topicType, kitVerified: kit.verified, expectations: kit.expectations,
+      misconceptions: kit.misconceptions.filter((m) => m.id === it.targetsMisconception).map((m) => ({ id: m.id, belief: m.belief, signs: m.signs, remediation: m.remediation })),
+    });
+  }
+  return out;
+}

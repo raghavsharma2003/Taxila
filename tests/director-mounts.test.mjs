@@ -176,8 +176,15 @@ test("a bound engine answer is the item's answer; an unbound module's answer gra
     if (cmds.some((c) => c.op === "mount" && c.params.itemId === it.id)) { item = it; break; }
   }
   assert.ok(item, "c5 fractions-on-a-line has an item-bound number-line plan");
-  const ev = (correct) => ({ moduleId: s.module.id, engine: s.module.engine, type: "answer", name: "answer", data: { value: "x", correct }, at: 0 });
-  assert.deepEqual(moduleAnswerOf(s, [ev(true)]), { correct: true, value: "x", source: "engine" });
+  const ev = (correct, value = "x") => ({ moduleId: s.module.id, engine: s.module.engine, type: "answer", name: "answer", data: { value, correct }, at: 0 });
+  // V1-01r (ship5 p5-interaction 01): the frame's `correct` is a claim. A bound answer with no raw act the server can
+  // recompute is UNVERIFIABLE (no grade, never the claim; the Director asks for it in words) ...
+  const claimOnly = moduleAnswerOf(s, [ev(true)]);
+  assert.equal(claimOnly.unverifiable, true, JSON.stringify(claimOnly));
+  assert.ok(!("correct" in claimOnly), "a claim alone never grades");
+  // ... and a real act is re-graded by its value on the server's params: a forged correct:true on a wrong value is wrong.
+  const forged = moduleAnswerOf(s, [ev(true, { kind: "nl.read", value: "987654" })]);
+  assert.equal(forged?.correct, false, JSON.stringify(forged));
   s.module.itemId = null;
   assert.equal(moduleAnswerOf(s, [ev(true)]), null);
 });

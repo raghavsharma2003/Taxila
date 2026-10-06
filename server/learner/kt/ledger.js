@@ -26,6 +26,15 @@ import { misconceptionEffects, misLogLR, newMisconception, spendMis, updateMisco
 export const PARAMS_VERSION = "kt-launch-2026-10-02";
 export const LEARNED_P = 0.95;
 export const DELAY_MS = 20 * 3600_000;
+/**
+ * VALUES-100 V1.3: "secure" needs a correct delayed check at least 2 days later, in a NEW form, without hints. The day
+ * rule is on local learning days (dayOf, IST), start to start, so a 16:00 anchor is checkable from the second day after
+ * at any hour; 20 h (DELAY_MS) stays as the earliest REVIEW time (FSRS), not the certification delay.
+ */
+export const CHECK_MIN_DAYS = 2;
+export const checkDayOk = (anchorAt, at) => !!anchorAt && (Date.parse(dayOf(at)) - Date.parse(dayOf(anchorAt))) / DAY_MS >= CHECK_MIN_DAYS;
+/** Item keys a skill has been answered on (most recent last, bounded): what makes a check item NEW. */
+export const SEEN_ITEMS_MAX = 40;
 const DAY_MS = 86_400_000;
 const IST_MS = 5.5 * 3600_000;
 export const DISPLAY = Object.freeze(["unseen", "introduced", "practising", "learned_today", "mastered", "durable"]);
@@ -44,7 +53,7 @@ function newSkill(skillId, prior, topicType, epochId, seq, paramsVersion) {
     flags: { unaided: false, generative: false, delayed: false, durable7: false, durable30: false },
     recent: [], opp: 0, run: 0, display: "unseen", refresh: false,
     prior: { pL0: prior.pL0, source: prior.source, epochId, seq },
-    aDay: null, bDay: null, learnedAt: null, anchorAt: null, anchorSession: null, delayedMisses: 0, nextReviewAt: null,
+    aDay: null, bDay: null, learnedAt: null, anchorAt: null, anchorSession: null, delayedMisses: 0, nextReviewAt: null, items: [],
   };
 }
 
@@ -212,7 +221,9 @@ function applyEvidence(L, ev, sess, ctx) {
     sk.n += 1;
     sk.lastAt = sess.startAt;
     ctx.onKt?.(ev.id, k);
-    advanceDisplay(sk, ev, sess, ss, ev.target ? ev.target === k : i === 0);
+    const novel = !!ev.itemKey && !(sk.items ?? []).includes(ev.itemKey);
+    advanceDisplay(sk, ev, sess, ss, ev.target ? ev.target === k : i === 0, novel);
+    if (ev.itemKey && !(sk.items ?? []).includes(ev.itemKey)) sk.items = [...(sk.items ?? []), ev.itemKey].slice(-SEEN_ITEMS_MAX);
     sk.retention = sk.pL * retrievability(sk.mem, sess.startAt);
     sk.nextReviewAt = rank(sk.display) >= rank("learned_today") ? reviewAt(sk) : null;
   });
@@ -231,7 +242,7 @@ function applyEvidence(L, ev, sess, ctx) {
 
 function reviewAt(sk) {
   const fs = nextReviewAt(sk.mem);
-  const anchor = sk.anchorAt ? new Date(new Date(sk.anchorAt).getTime() + DELAY_MS).toISOString() : null;
+  const anchor = sk.anchorAt ? new Date(Date.parse(dayOf(sk.anchorAt)) + CHECK_MIN_DAYS * DAY_MS - IST_MS).toISOString() : null;
   return [fs, anchor].filter(Boolean).sort().pop() ?? null;
 }
 
@@ -239,7 +250,7 @@ function reviewAt(sk) {
  * The ledger state machine (LEARNER-MODEL §6.1 States; PRODUCT-DESIGN §6.4.1). (a), (b) and (c) count
  * only for the item's TARGET skill (the other skills of a conjunctive item get pL evidence only).
  */
-function advanceDisplay(sk, ev, sess, ss, isTarget) {
+function advanceDisplay(sk, ev, sess, ss, isTarget, novel = true) {
   const produce = formOf(ev) === "produce";
   const clean = !ev.assisted && !ev.preAttemptHelp && !ev.gamingWindowKt && !ev.controllerEasy;
   ss.attempted = true;
@@ -261,8 +272,10 @@ function advanceDisplay(sk, ev, sess, ss, isTarget) {
   // check, and spends it). Only an item / solo round, a near transfer or an error-spot can be the check: a why, predict or
   // teach-back opening the session neither uses the check up nor re-anchors the clock. The 20 h is measured
   // session start to session start (no intra-session clock, §13.1): decision learner-delayed-check-session-clock.
+  // V1.3: the check is >= 2 learning days after the anchor and on an item this skill was never answered on (a repeat is a
+  // recall of that item, not proof the skill holds in a new form: it neither counts nor spends the check)
   const due = CHECK_CLASSES.has(ev.cls) && rank(sk.display) >= rank("learned_today") && !ss.checkDone && !ss.taught
-    && sk.anchorAt && sk.anchorSession !== sess.sessionId && start - new Date(sk.anchorAt).getTime() >= DELAY_MS;
+    && sk.anchorAt && sk.anchorSession !== sess.sessionId && checkDayOk(sk.anchorAt, sess.startAt) && novel;
   // A recognition item (a tap on shown options) at the check's moment SPENDS the check without counting:
   // the options cue the answer, so a produce attempt after it is no longer an unprompted retrieval.
   if (due && !produce) ss.checkDone = true;

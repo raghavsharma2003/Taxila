@@ -1,13 +1,15 @@
 // p5-interaction / V1-01r (owner-1 on prod 2026-10-05: 8/9 forged module claims accepted; one unanswerable activity): the
 // server re-checks the VALUE a module answer committed against the verified key, never the frame's `correct` claim, and an
 // answer it cannot re-check is never graded and never dropped silently. Needs the patches (APPLY.md).
-import { test, afterEach } from "node:test";
+import { describe, test, afterEach } from "node:test";
 import assert from "node:assert/strict";
 import { moduleAnswerOf, recheckCommitted } from "../server/director/modules.js";
 import { recheckEngineAnswer, RECHECKABLE } from "../server/director/recheck.js";
 import { growFits, planEngine } from "../shared/engine-catalog.js";
 
 const SAVED = process.env.TAXILA_P5_RECHECK;
+// File-scoped: a top-level hook wraps EVERY file's tests in the shared npm-test process (rj: shared-process hook leak).
+describe('p5-interaction recheck', () => {
 afterEach(() => { if (SAVED === undefined) delete process.env.TAXILA_P5_RECHECK; else process.env.TAXILA_P5_RECHECK = SAVED; });
 const st = (engine, key, params = {}) => ({ activeItemId: "x", module: { id: "m1", engine, itemId: "x", key, params } });
 const ev = (value, correct) => [{ moduleId: "m1", type: "answer", data: { value, correct } }];
@@ -64,4 +66,5 @@ test("patterns@1 unbound: numbers that are not a sequence never become an unansw
   const kit = { topicId: "c5-maths-ch07-t02", formats: { engineHints: ["patterns@1:grow"] }, items: [], skills: [] };
   const plan = planEngine({ kit, item: { id: "q", skillId: "s", prompt_en: "Riya has 3 red, 5 blue, 7 green and 8 yellow beads.", answer: "23" }, lang: "english" });
   assert.ok(!plan || plan.engine !== "patterns@1" || plan.bindItem, `no unbound grow from 3 5 7 8 (got ${JSON.stringify(plan?.params ?? null)})`);
+});
 });

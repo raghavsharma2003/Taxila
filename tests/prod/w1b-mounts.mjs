@@ -108,7 +108,10 @@ for (const [ti, topicId] of TOPICS.entries()) {
         if (g1Checks[phase] || (phase === order[1] && !g1Checks[order[0]])) continue;
         // a NEW posing: an mcq item counts only its first attempt (first_correct / wrong), so a second commit on an item
         // already answered is no evidence by design
-        const g = [...mounted.values()].find((c) => c.engine === "scene@1" && c.goal === `g1:${asked}` && !Object.values(g1Checks).some((x) => x?.item === asked));
+        // ship5 integration: an OPEN-class item (sequence, order) stays asked after a wrong commit and a right commit on it
+        // is real evidence (C1), so the second direction may reuse it; an mcq item counts only its first attempt.
+        const reuse = (x) => x?.item === asked && x.open && x.turnOutcome === "incorrect";
+        const g = [...mounted.values()].find((c) => c.engine === "scene@1" && c.goal === `g1:${asked}` && !Object.values(g1Checks).some((x) => x?.item === asked && !reuse(x)));
         const value = g && commitValue(g.params.scene, phase);
         if (!value) break;
         const since = await maxSeq(child.id);
@@ -117,11 +120,17 @@ for (const [ti, topicId] of TOPICS.entries()) {
         cmds.push(...(ans.moduleCommands ?? []));
         for (const c of ans.moduleCommands ?? []) track(c);
         asked = ans.ui?.ask?.itemId ?? null;
-        g1Checks[phase] = { item: g.goal.slice(3), accepted: ans.status === 200, rows: since === null ? null : await rowsAfter(child.id, since) };
+        // The turn's own verdict (debug, local / test accounts): the server's grade from its binding, source 'module'. An
+        // open-class item writes its kt_evidence row when the EPISODE closes (wrong tries are not events until then:
+        // tests/learner-live "episodes"), so for it the row is read again after the lesson ends.
+        const cl = ans.debug?.classification;
+        g1Checks[phase] = { item: g.goal.slice(3), accepted: ans.status === 200, since, open: !/^pick == /.test(g.params?.scene?.probe?.correct ?? ""),
+          turnOutcome: cl?.source === "module" ? cl.outcome : null, rows: since === null ? null : await rowsAfter(child.id, since) };
       }
       if (r.end) break;
     }
     await api("POST", "/api/lesson/end", { lessonId: start.lessonId });
+    for (const x of Object.values(g1Checks)) if (x && x.since !== null && !x.rows?.some((row) => row.via === "module")) x.rows = await rowsAfter(child.id, x.since);
     const mounts = cmds.filter((c) => c.op === "mount");
     const unknown = mounts.filter((c) => !ENGINES[c.engine]);
     const badMode = mounts.filter((c) => c.params?.mode !== undefined && !ENGINES[c.engine]?.modes.includes(c.params.mode));
@@ -154,6 +163,11 @@ for (const [ti, topicId] of TOPICS.entries()) {
       // unambiguous names only: mcq first_correct / wrong, and item.open C0 (right first try). item.open C3/C4 is also
       // "right after 2+/4+ hint rungs", so a wrong commit graded on an open class is reported, not asserted
       const RIGHT = new Set(["first_correct", "C0"]);
+      // the server graded the commit from its binding on the turn itself (source 'module'): the acceptance for an open item
+      if (x.turnOutcome && (want === "correct" ? x.turnOutcome === "correct" : x.turnOutcome === "incorrect")) {
+        g1Seen[phase]++;
+        return ok(true, `${topicId}: the G1 ${phase} commit claiming correct:${phase === "wrong"} was graded ${x.turnOutcome} by the server's binding (turn verdict, source module; rows ${mod.map((row, i) => `${row.cls}:${names[i]}`).join(",") || "written at episode close"})`);
+      }
       if (want === "wrong" && mod.length && !mod.every((row) => /^item\.mcq/.test(row.cls))) return warn(`${topicId}: the G1 wrong commit graded as ${mod.map((row, i) => `${row.cls}:${names[i]}`).join(",")}: not an mcq class, direction not asserted`);
       if (mod.length) g1Seen[phase]++;
       ok(mod.length > 0 && names.every((n) => (want === "correct" ? RIGHT.has(n) : n === "wrong")),

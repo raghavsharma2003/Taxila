@@ -21,6 +21,10 @@ import { defaultLinkFactory, type LinkFactory, type RuntimeDeps } from "./runtim
 import { Store } from "./store.ts";
 import { TextLink } from "./textLink.ts";
 import { fetchSpeechStream, PCM_RATE } from "./ttsStream.ts";
+// ship5 p1-duplex: the hands-free duplex mode (ON by default; kill switch: ?duplex=0, TAXILA_DUPLEX=0, VITE_DUPLEX=0) and
+// the face seam it drives (FACE-BRIDGE.md).
+import { resolveDuplexMode } from "../duplex/flags.ts";
+import { puppetDuplexDetach, withPuppet } from "../face-puppet/duplexBridge.ts";
 
 /** §2.5.1 home state; the client never computes it, it only carries what the server answered. */
 export type HomeState = "default" | "done" | "resting";
@@ -55,6 +59,10 @@ export interface UiBridgeState {
   transport: CascadeTransport | null;
   /** EchoGuard: her own voice came back as a child turn this many times. */
   echoFlags: number;
+  /** ship5 p1-duplex: the duplex engine is deciding the floor (hands-free; no talk button). */
+  duplexLive: boolean;
+  /** ship5 p1-duplex: why the engine stepped aside for today's path (null while live or never started). */
+  duplexFallback: string | null;
 }
 
 /** Two EchoGuard flags drop open mic back to tap-to-talk for the rest of the lesson (§3.9). */
@@ -74,6 +82,7 @@ const MAX_BYTES = 2 * 1024 * 1024;
 export class UiBridge {
   readonly store = new Store<UiBridgeState>({
     ended: null, replaying: false, buffered: 0, replays: 0, cascade: false, pushToTalk: true, transport: null, echoFlags: 0,
+    duplexLive: false, duplexFallback: null,
   });
   /** Level of a replay, for lip-sync while one plays (the link's teacher meter is silent then). */
   readonly replayLevel = new LevelMeter();
@@ -121,7 +130,7 @@ export class UiBridge {
       this.detachLink();
       this.clips = [];
       this.resumedEcho = 0;
-      this.store.set({ buffered: 0, ended: null, cascade: !!ctx.cascade, transport: null, echoFlags: 0, pushToTalk: true });
+      this.store.set({ buffered: 0, ended: null, cascade: !!ctx.cascade, transport: null, echoFlags: 0, pushToTalk: true, duplexLive: false, duplexFallback: null });
       let link: TeacherLink;
       if (ctx.cascade) {
         // The cascade lane, with its speech copied into the phir-se buffer (never swapped for a TextLink).
@@ -130,6 +139,12 @@ export class UiBridge {
           levels: ctx.levels,
           speech: this.cachingStream,
           onTransport: (transport) => this.store.set({ transport }),
+          duplex: () => resolveDuplexMode(),
+          duplexFace: { wrapEmit: withPuppet, detach: puppetDuplexDetach },
+          onDuplex: (d) => {
+            if (this.link !== cascade) return;
+            if (d.live !== this.state.duplexLive || d.fallback !== this.state.duplexFallback) this.store.set({ duplexLive: d.live, duplexFallback: d.fallback });
+          },
         });
         const set = cascade.setPushToTalk.bind(cascade);
         // An own property shadows the method, so the link's own fallback (recording → tap) is seen too.

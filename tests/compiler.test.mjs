@@ -59,8 +59,17 @@ test("the item prompt is verbatim content; the key is marked unsaid until rung 4
   assert.match(check, /the key stays unsaid \(ladder rung 0 of 4\)/);
   const hinted = compile(inputAfter([...toFirstItem(), cls("incorrect")]));
   assert.match(hinted.split("\n").at(-2), /the same one again .* no new question; the key stays unsaid \(ladder rung 1 of 4\)/);
-  const atFour = compile(inputAfter([...toFirstItem(), cls("incorrect"), cls("incorrect"), cls("incorrect"), cls("incorrect")]));
-  assert.match(atFour, /rung 4 now: say the key plainly/);
+  // the classic rung 4 is the kill-switch path since p5-interaction's card cap (scoped: npm test runs every file in one process)
+  const saved = process.env.TAXILA_P5_CARDCAP;
+  process.env.TAXILA_P5_CARDCAP = "off";
+  try {
+    const atFour = compile(inputAfter([...toFirstItem(), cls("incorrect"), cls("incorrect"), cls("incorrect"), cls("incorrect")]));
+    assert.match(atFour, /rung 4 now: say the key plainly/);
+  } finally { if (saved === undefined) delete process.env.TAXILA_P5_CARDCAP; else process.env.TAXILA_P5_CARDCAP = saved; }
+  // with the cap, the question is resolved by its third turn on the card (here a repair turn came first): its answer with one
+  // line of why, then a similar question — never later than the third miss
+  const k = [1, 2, 3].find((n) => /give its answer plainly with one line of why/.test(compile(inputAfter([...toFirstItem(), ...Array(n).fill(cls("incorrect"))]))));
+  assert.ok(k != null, "the card cap resolved the question within three misses");
 });
 
 test("lanes share every byte except the voice-only branch lines", () => {
@@ -146,7 +155,8 @@ test("voice: a move the client reported as voiced is framed as already said; a n
 test("an item whose pinned text cannot compile is skipped once, and the next question is compiled", () => {
   // walked past the guidance ladder's faded step (W2-C) to the first KIT item, whose text is doctored below
   let s = lessonAfter(toFirstItem(), "text");
-  for (let i = 0; i < 8 && String(s.lastMove.itemId ?? "").startsWith("fade:"); i++) s = lessonAfter([...toFirstItem(), ...Array(i + 1).fill(cls("no_evidence"))], "text");
+  // (V1-11 holds a check reserve out of practice, so the first kit question can follow an explain turn with no item)
+  for (let i = 0; i < 10 && (!s.lastMove.itemId || String(s.lastMove.itemId).startsWith("fade:")); i++) s = lessonAfter([...toFirstItem(), ...Array(i + 1).fill(cls("no_evidence"))], "text");
   const bad = s.lastMove.itemId;
   const huge = { ...K, items: K.items.map((i) => (i.id === bad ? { ...i, prompt_hi: "bahut lamba sawaal ".repeat(400) } : i)) };
   const out = instructionsAfter({ state: s, move: s.lastMove }, huge, 300_000);

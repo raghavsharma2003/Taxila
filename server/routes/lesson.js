@@ -2,6 +2,7 @@
 // Every route acts for an authenticated guardian's child (requireChild). One compile() feeds both lanes:
 // the voice client applies `instructions` verbatim via session.update, and text mode generates its reply
 // from the SAME string (inherited rejection: two prompts for two lanes).
+import { warmupItemsFor } from "../learner/checks.js";
 import { randomUUID } from "crypto";
 import { q, one, tx } from "../db.js";
 import { need, bad, forbidden, notFound, send, HttpError } from "../http.js";
@@ -34,6 +35,7 @@ import { seamSafe } from "../seam-safe.js";
 import { studioSeam } from "../studio/seam.js";
 import { relationalSeam } from "../relational/seam.js";
 import { purposeSeam } from "../lesson/purpose.js";
+import { voicesigSeam } from "../voicesig/lesson.js";
 import { realtimeSeam } from "../voice/realtimeSession.js";
 import { fallbackReply, safeguardLine, scrubbed, textReply, words } from "../brain/say.js";
 import { clientInstructions, debugFor, floorIncidentStmt, kitFor, stageTurns, turnInsertStmt, withAsk } from "../brain/rows.js";
@@ -67,24 +69,8 @@ export const lessonInterests = (list) => (list ?? []).map((x) => String(x ?? "")
  * clears its skill's delayed_check trigger (director/state.js activate).
  * @param {string[]} skillIds openers, most urgent first
  */
-async function warmupItemsFor(skillIds) {
-  const out = [];
-  for (const skillId of skillIds.slice(0, LIMITS.warmupMax)) {
-    const st = { skillId };
-    const topicId = topicOf(st.skillId);
-    const kit = topicId ? await getKit(topicId, { generate: false }) : null;
-    const it = kit?.items
-      .filter((i) => i.skillId === st.skillId && ["retrieval", "practice", "near_transfer"].includes(i.kind))
-      .sort((a, b) => (b.kind === "retrieval") - (a.kind === "retrieval") || a.difficulty - b.difficulty)[0];
-    if (!it) continue;
-    out.push({
-      ...it, kind: "retrieval", topicId, topicType: kit.topicType, kitVerified: kit.verified, expectations: kit.expectations,
-      misconceptions: kit.misconceptions.filter((m) => m.id === it.targetsMisconception)
-        .map((m) => ({ id: m.id, belief: m.belief, signs: m.signs, remediation: m.remediation })),
-    });
-  }
-  return out;
-}
+// The delayed check's item: server/learner/checks.js (VALUES-100 V1.3: a NEW form the child has never answered on the
+// skill, from the per-skill check reserve; no unseen item → no check this session, never a repeat).
 
 /** A weave_queue row → the reducer's entry (comprehension/weave.js). */
 const weaveEntryOf = (r) => ({ childId: r.child_id, skillId: r.skill_id, kind: r.kind, anchorAt: new Date(r.anchor_at).toISOString(),
@@ -149,12 +135,15 @@ async function start(req, res, body) {
   // ~50 ms median on the Neon test branch, n = 12, before it was overlapped).
   const planP = planFor(child, guardian);
   planP.catch(() => {}); // awaited below; never an unhandled rejection if an earlier check throws first
-  const [core, memory, controls, lastLesson] = await Promise.all([
+  const [core, memory, controls, lastLesson, vsb0] = await Promise.all([
     hasConsent(guardian.id, child.id, "core_tutoring"), hasConsent(guardian.id, child.id, "memory"),
     one("select address from child_controls where child_id = $1", [child.id]).catch(() => null),
     // the name the teacher had in the child's last lesson: a new one (the child renamed her, or picked another
     // teacher) is re-introduced at the greeting, still as their AI teacher (director/shapes.js greet)
     one("select state->'ctx'->>'teacherName' as name from lesson where child_id = $1 order by started_at desc limit 1", [child.id]).catch(() => null),
+    // ship5 p3-voicesig: the child's answering-pace baseline (persisted only under the parent's voice_pace_memory choice;
+    // else an empty session one). Never throws; undefined when voicesig is switched off.
+    voicesigSeam.startRows({ q, hasConsent, guardianId: guardian.id, childId: child.id }),
   ]);
   if (!core) throw forbidden("core_tutoring consent is required before a lesson");
   const mode = body.mode === "text" || body.mode === "cascade" ? body.mode : "voice";
@@ -196,7 +185,7 @@ async function start(req, res, body) {
   const { q: plannedQ, hosted } = onTopicPlanned(consumeExpired(weaveQ, checks.consumed), kit.skills.map((x) => x.id), now);
   // Seam (no-op): a hosted woven sub-step goes to the item generator (kit isomorph or Forge ModuleRequest.want.subSkill).
   forgeSeam.wovenSubStep(hosted[0] ?? null);
-  const warmupItems = await warmupItemsFor(checks.openers);
+  const warmupItems = await warmupItemsFor(checks.openers, { ledger });
   const skillIds = [...new Set([...kit.skills.map((s) => s.id), ...warmupItems.map((w) => w.skillId)])];
   const [history, brief0, stuck] = await Promise.all([loadRecentOutcomes(child.id, kit.skills.map((s) => s.id)), buildChildBrief(child, { memory }),
     // W2-C review: items stuck on in recent lessons (rung 4 / left after don't-knows) route the guidance ladder; never evidence
@@ -251,6 +240,7 @@ async function start(req, res, body) {
     : step(state0, { event: "start", kit, now });
   const { r, instructions } = instructionsAfter({ ...first, state: { ...first.state, brief, mode, kitVerified: kit.verified, kitHash: kit.hash } }, kit, now);
   const state = r.state;
+  if (vsb0) state.vsb = vsb0;
   // W2-E: the opening's beat (ui.beat; the client's end-of-turn thresholds read it) and its Moment for the voice layer.
   state.beat = nextBeat(undefined, r.move, state);
   const openingMoment = momentOf({ move: r.move, verdict: "ungraded", engagement: "warming", relational: null, ctx: state.ctx, turn: state.turn ?? 0,
@@ -491,6 +481,9 @@ async function end(req, res, body) {
     where id = $1 and ended_at is null returning state`, [lesson.id, endedByPageHide(req, body) ? { endedBy: "pagehide" } : {}]);
   if (!claimed) return already(await one("select summary, parent_note, state from lesson where id = $1", [lesson.id]));
   const state = claimed.state;
+  // ship5 p3-voicesig: the session's answering-pace baseline goes back to the child's rows (only under the parent's
+  // voice_pace_memory choice, re-checked now), off the reply path; endSave never throws.
+  void voicesigSeam.endSave({ q, hasConsent, guardianId: guardian.id, childId: child.id, classLevel: child.class_level, vsb: state.vsb });
   // The last why / teach-back of the lesson is still held (its verdict lands "on the next turn", and there is none):
   // wait for the blind grader while the summary is written, then fold and store it like a turn would.
   const heldP = flushHeld(child, lesson, state).catch((e) => console.warn("[lesson] end: held evidence not stored:", e.message));

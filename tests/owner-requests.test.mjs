@@ -135,21 +135,34 @@ test("F7: a lesson the child stopped never closes the day; a lesson that ran its
   assert.equal(countsAsDone({ abandoned: true, did: [1] }), false);
 });
 
-test("F8: 'talk about something else' is never a stop — a yes and a question about what, with chips back to the lesson", () => {
+// owner rule (2026-10-05, decisions owner-ship-five; reconciled by p5-interaction): "can we talk about something else" is
+// STEERING — never a stop, never a break, never a wrap. The patch-07 side chat (a break move + "ask what they would like to
+// talk about") contradicted it (w2i-release case 4); the kill switch TAXILA_P5_STEER=off brings it back, tested below.
+test("F8: 'talk about something else' is steering — never a stop, a break or a wrap; a warm yes with ways in, and back", () => {
   const r = toPractice();
   const c = said(r, "can we talk about something else");
   assert.equal(c.flags.wantsToStop, false);
   const s = turn(r, c);
   assert.equal(ended(s), false);
-  assert.equal(s.move.kind, "break");
-  assert.match(s.move.shape, /ask what they would like to talk about/);
+  assert.ok(!["break", "wrap"].includes(s.move.kind), s.move.kind);
+  assert.match(s.move.shape, /a different way into today's idea/);
   assert.ok(s.ui.chips.some((x) => x.id === "stop:continue"));
-  // the next turn is their topic, for real, once; then the lesson
-  const side = turn(s, cls("no_evidence"), { text: "dinosaurs" });
-  assert.equal(side.move.kind, "break");
-  assert.match(side.move.shape, /talk with them about what they just brought up/);
-  const back = turn(side, NE, { chipId: "stop:continue" });
+  assert.ok(s.ui.chips.some((x) => x.id === "req:visual"));
+  const back = turn(s, NE, { chipId: "stop:continue" });
   assert.equal(back.move.itemId, r.move.itemId);
+});
+
+test("F8 (kill switch TAXILA_P5_STEER=off): the patch-07 side chat — a yes, a question about what, one real turn on it", () => {
+  const saved = process.env.TAXILA_P5_STEER;
+  process.env.TAXILA_P5_STEER = "off";
+  try {
+    const r = toPractice();
+    const s = turn(r, said(r, "can we talk about something else"));
+    assert.equal(s.move.kind, "break");
+    assert.match(s.move.shape, /ask what they would like to talk about/);
+    const side = turn(s, cls("no_evidence"), { text: "dinosaurs" });
+    assert.match(side.move.shape, /talk with them about what they just brought up/);
+  } finally { if (saved === undefined) delete process.env.TAXILA_P5_STEER; else process.env.TAXILA_P5_STEER = saved; }
 });
 
 test("F11: their interest, now — 'cricket ke baare mein baat karo' answers about cricket, never 'later'", () => {
@@ -186,7 +199,7 @@ test("F13/F15/F14: explain differently / example / story / slowly act on the que
   }
   const r = toPractice();
   const slow = turn(r, said(r, "slowly please", false));
-  assert.match(slow.move.shape, /you go slower/);
+  assert.match(slow.move.shape, /(you|you will) go slower/, "slower (p5 slowerPose keeps the promise to go slower)");
   assert.doesNotMatch(slow.move.shape, /say it once more, slowly/);
   assert.match(SLOWER, /never ask them to speak slowly/);
   assert.doesNotMatch(repairUnclear({ chips: false }), /slowly/, "F14: the unclear repair never tells the child to slow down");

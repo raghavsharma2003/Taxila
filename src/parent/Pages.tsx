@@ -107,7 +107,7 @@ export function Children() {
 
 // ───────────────────────────── Data and privacy ─────────────────────────────
 
-type Purpose = "learning_profile" | "memory";
+type Purpose = "learning_profile" | "memory" | "voice_pace_memory";
 const CHOICES: { purpose: Purpose; title: string; yes: string; no: string; effectYes: string; effectNo: (n: string) => string }[] = [
   { purpose: "learning_profile", title: "Remember learning across days", yes: "Yes, remember", no: "Only this session",
     effectYes: "The next lesson starts from where your child is, and a skill is checked again on a later day.",
@@ -115,6 +115,10 @@ const CHOICES: { purpose: Purpose; title: string; yes: string; no: string; effec
   { purpose: "memory", title: "Remember what your child likes", yes: "Yes", no: "No",
     effectYes: "Interests your child mentions (cricket, a pet's name) are used in examples.",
     effectNo: (t) => `${t} won't use your child's interests in examples.` },
+  // ship5 p3-voicesig. KEEP IN STEP with server/routes/parent.js CONSENT_SPEECH.voice_pace_memory (the spoken version).
+  { purpose: "voice_pace_memory", title: "Remember your child's usual answering pace", yes: "Yes, remember", no: "Only this lesson",
+    effectYes: "Only numbers about how long your child usually takes to start an answer are kept on Taxila's own database, never recordings or words. We are still testing what they can tell the teacher; for now they change nothing in lessons.",
+    effectNo: () => "Nothing about your child's answering pace is kept after a lesson. Turning this off deletes what was kept." },
 ];
 
 function currentGrant(me: Me | null, childId: string | null, purpose: string): boolean | null {

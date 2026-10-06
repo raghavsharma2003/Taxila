@@ -36,6 +36,8 @@ import { equityProfile, lessonGuidance, teachPlanFor, fadeItem, fadedContent, wo
 import { newTalk, noteChildTurn } from "./talk.js";
 import { explicitPace } from "../persona/pace.js";
 import { directorProposal } from "./proposal.js";
+import { p5Flag } from "../conversation/flags.js";
+import { parkEntry, pushLater, recentParked, dueParked, serveLater } from "../conversation/policy.js";
 
 /**
  * Probe shapes the live lane can pose AND grade today: the why-class shapes (probe.why, R-EXP against the kit's key
@@ -61,6 +63,11 @@ export const LIMITS = {
   // (or, with none to offer, moves on); past that the item is left with no verdict (no evidence) and the lesson moves
   // on. Measured on production before this: 12 repair/hint turns in a row on one diagnostic (comprehension G11).
   unclearTries: 3,
+  // p5-interaction (owner-2 R5.loop, 17 in 90 turns): one question is pinned on the card for at most this many teacher
+  // turns in a row; the next one resolves it (its answer with one line of why after real help, else left for later) and
+  // moves on. With the cap on, the choices come on the SECOND unclear reply (unclearTriesCapped), so they still show.
+  cardMax: 3,
+  unclearTriesCapped: 2,
 };
 const LEARNED = new Set(["learned_today", "mastered", "due"]);
 const join = (...parts) => parts.filter(Boolean).join("; ");
@@ -151,7 +158,13 @@ export function initLessonState({ topicId, kit, skills = {}, history = {}, stuck
     // reads (compact; set by the route from the ledger before each step), engine re-teach bookkeeping, and the
     // vibe persona whose knobs compile into the VIBE row. Voice/vibe never enter a belief (CE8).
     probeSess, pendingProbe: undefined, comp: comp ?? null, reteachCool: {}, armsUsed: [], failsPostRung3: {}, lastReteach: null, parked: [],
+    // V1.4 moving on (evals/mastery-calibration): per skill this lesson, the unaided first-try run, answers, best run;
+    // `fast` skills jump to their hardest item, `settled` skills are done for the lesson (shown they can do it),
+    // `parkedSkills` stop before wheel-spinning (10 tries without 3 right) and go to the engine's re-teach next lesson.
+    pace: { run: {}, tries: {}, best: {}, miss: {}, fast: [], settled: [], parkedSkills: [] },
     persona: newPersonaState({ band, classLevel, medium: ctx.schoolMedium ?? "english" }), vibe: null, turnsSinceError: 99,
+    // p5-interaction: the Later list (CONVERSATION-V2 §5: parked questions, returned at a boundary) and the card pins
+    later: [], pinItem: undefined, pinRun: 0,
   };
 }
 
@@ -349,11 +362,19 @@ function leavePractice(s, kit) {
   // A practice set (W2-C #7) ends when its items have all been posed (or nothing is left to pose).
   if (s.practiceSet) return s.practiceSet.posed.length >= s.practiceSet.of;
   const allUnaided = kit.skills.every((sk) => (s.skills[sk.id]?.correctUnaided ?? 0) >= 1);
-  return s.practiced >= LIMITS.practiceMax || (s.practiced >= LIMITS.practiceMin && allUnaided) || s.minutes >= LIMITS.minutes[s.ctx.ageBand];
+  // V1.4: every skill shown (settled) or parked → practice is done, however few items that took (a strong child moves on)
+  const P = s.pace;
+  const allSettled = !!P && kit.skills.every((sk) => P.settled.includes(sk.id) || P.parkedSkills.includes(sk.id));
+  return s.practiced >= LIMITS.practiceMax || (s.practiced >= LIMITS.practiceMin && allUnaided) || (s.practiced >= 2 && allSettled) || s.minutes >= LIMITS.minutes[s.ctx.ageBand];
 }
 
 function poseNext(s, input, prefix, preferred) {
   const { kit } = input;
+  // CONVERSATION-V2 §5: a question parked "after this question" comes back now that the item on the table resolved
+  if (p5Flag("STEER") && s.later?.length && s.activeItemId) {
+    const due = dueParked(s.later, "item_resolved");
+    if (due) { s.later = serveLater(s.later, due.id, s.turn); prefix = join(prefix, SH.returnParked({ topic: due.topic })); }
+  }
   s.activeItemId = undefined; s.hintLevel = 0; s.pendingWhy = undefined;
   if (leavePractice(s, kit)) return s.practiceSet ? practiceDone(s, prefix) : enterTeachback(s, prefix);
   const skipped = new Set(s.skipped);
@@ -412,8 +433,26 @@ function trap(s, kit, item, misconceptionId) {
   return plan("reteach", SH.reteach({ ...m.remediation, again: false }), { skillId: item.skillId, representation: m.remediation.representation });
 }
 
+/** V1.4 pace bookkeeping for one graded answer on a practice item (never a warm-up check, a faded step or a diagnostic). */
+export const PACE = Object.freeze({ fastP: 0.85, settleP: 0.9, settleRun: 2, parkTries: 7 });
+function notePace(s, item, right) {
+  if (!item?.skillId || item.fade || s.phase !== "practice" || String(item.id).startsWith("diag:")) return;
+  const P = (s.pace ??= { run: {}, tries: {}, best: {}, miss: {}, fast: [], settled: [], parkedSkills: [] });
+  const k = item.skillId, firstTry = s.hintLevel === 0;
+  P.tries[k] = (P.tries[k] ?? 0) + 1;
+  P.run[k] = right && firstTry ? (P.run[k] ?? 0) + 1 : right ? P.run[k] ?? 0 : 0;
+  P.best[k] = Math.max(P.best[k] ?? 0, P.run[k]);
+  P.miss[k] = right ? 0 : (P.miss[k] ?? 0) + 1;
+  const pK = s.skills[k]?.pKnown ?? 0;
+  if (right && firstTry && pK >= PACE.fastP && !P.fast.includes(k)) P.fast = [...P.fast, k];
+  if (P.run[k] >= PACE.settleRun && pK >= PACE.settleP && !P.settled.includes(k)) P.settled = [...P.settled, k];
+  if (!right && P.miss[k] >= 2) s.easier = true;                         // two misses in a row: the gentlest item next
+  if (P.tries[k] >= PACE.parkTries && P.best[k] < 3 && !P.parkedSkills.includes(k)) P.parkedSkills = [...P.parkedSkills, k];
+}
+
 function afterCorrect(s, input, item) {
   const { kit, cls } = input;
+  notePace(s, item, true);
   const unaided = s.hintLevel === 0;
   s.itemsDone.push(item.id); s.practiced += 1;
   if (s.practiceSet && unaided && s.practiceSet.posed.includes(item.id)) s.practiceSet = { ...s.practiceSet, firstTry: s.practiceSet.firstTry + 1 };
@@ -455,6 +494,9 @@ function afterWhy(s, input, item) {
 
 function afterMiss(s, input, item) {
   const { kit, cls } = input;
+  notePace(s, item, false);
+  // a parked skill (V1.4: wheel-spinning ahead) stops here: the item is left, the engine's re-teach takes it next lesson
+  if (s.pace?.parkedSkills?.includes(item.skillId) && !item.fade && s.hintLevel < 4) { s.skipped.push(item.id); return poseNext(s, input, "let's leave this one for now and come back to it with a different way next time"); }
   const m = cls?.outcome === "misconception" ? (item.misconceptions ?? kit.misconceptions).find((x) => x.id === cls.misconceptionId) : null;
   if (m) s.flagged[m.id] = (s.flagged[m.id] ?? 0) + 1;
   // P21: no 3-in-a-row in ~10 opportunities — a different approach, not more of the same.
@@ -470,7 +512,10 @@ function afterMiss(s, input, item) {
     return plan("reteach", SH.reteach({ ...m.remediation, again: true }), { item, representation: m.remediation.representation });
   }
   if (s.hintLevel >= 3) s.failsPostRung3 = { ...s.failsPostRung3, [item.skillId]: (s.failsPostRung3?.[item.skillId] ?? 0) + 1 };
-  s.hintLevel = Math.min(4, s.hintLevel + 1);
+  // p5-interaction (conversation-v2 battery dont_know 1/6 "helps"): a child who says they do not know gets a real hint, never
+  // a pump (rung 1 asks them to think again about what they just said they cannot think about)
+  const idk = p5Flag("STEER") && !!cls?.flags?.dontKnow && cls?.source !== "help" && s.hintLevel === 0;   // a Hint chip is one rung
+  s.hintLevel = Math.min(4, s.hintLevel + (idk ? 2 : 1));
   if (s.hintLevel >= 4) noteStuck(s, item);
   // Voice gentlerHint (CE8 / features.js: ≥ 3 hesitation cues on a wrong answer): the rung's CONTENT is one gentler
   // (pump instead of hint) — the hint count, the key gate and the C-outcome are unchanged. Never at the assertion.
@@ -582,8 +627,9 @@ function unclear(s, input, item, v) {
   s.unclear += 1;
   const typed = !!input.typed;
   const shown = !!(s.lastUi?.chips?.length && s.lastMove?.itemId === item.id);
-  if (s.unclear >= LIMITS.unclearTries) {
-    const chips = s.unclear === LIMITS.unclearTries && !shown ? offerChoices(s, input.kit, item) : undefined;
+  const tries = p5Flag("CARDCAP") ? LIMITS.unclearTriesCapped : LIMITS.unclearTries;
+  if (s.unclear >= tries) {
+    const chips = s.unclear === tries && !shown ? offerChoices(s, input.kit, item) : undefined;
     if (!chips) return leaveItem(s, input, item, SH.MOVE_ON_UNCLEAR);
     return plan(typed ? "hint" : "repair", SH.offerChoices(), { item, chips });
   }
@@ -611,6 +657,12 @@ function helpMove(s, input, item, help) {
       if (s.phase === "warmup") { s.phase = "teach"; return teach(s, input); }
       return poseNext(s, input);
     }
+    // p5-interaction (owner-4: "story ki tarah batao", "example do", "slowly please" said during a worked example got the
+    // NEXT teach step with the request as a prefix, 5/16 not acted on): a request for the idea another way is answered on
+    // THE idea being taught, and the teach step does not advance. Help menu chips (cls.help) keep moving on (below).
+    // (also in practice before its first item: an explain turn poseNext gave a skill nobody had explained yet)
+    if (p5Flag("STEER") && !input.cls?.help && ["another", "example", "story", "slower"].includes(help)
+      && (s.phase === "teach" || (s.phase === "practice" && TEACH_KINDS.has(s.lastMove?.kind)))) return teachAgainPlan(s, kit, help);
     // Any other help on a teaching turn moves the teaching on, more simply: a Young child in the text lane can answer a
     // teaching turn only through the Help menu, and a help that re-said the same step would hold them there for good.
     const prefix = help === "slower" ? SH.SLOWER : help === "story" ? SH.STORY_ASKED : help === "example" ? SH.EXAMPLE_ASKED
@@ -627,7 +679,7 @@ function helpMove(s, input, item, help) {
   switch (help) {
     case "skip": return leaveItem(s, input, item, SH.SKIP_ITEM);
     case "know": return pose(SH.KNOWS_IT);
-    case "slower": return pose(SH.SLOWER);
+    case "slower": return p5Flag("STEER") ? plan(moveKindFor(item), SH.slowerPose(), { item, probe: probeFor(item), chips: optionChips(item) }) : pose(SH.SLOWER);
     case "choices": {
       const chips = offerChoices(s, kit, item);
       if (chips) return plan(moveKindFor(item), SH.showChoices(), { item, probe: probeFor(item), chips });
@@ -636,7 +688,7 @@ function helpMove(s, input, item, help) {
     case "why": case "another": case "how": case "example": case "story": {
       s.hintLevel = Math.min(3, s.hintLevel + 1); // help spends a rung (the answer then counts "with help"), never the assertion
       const we = help === "how" ? kit.workedExample : null;
-      return plan("reteach", SH.helpExplain({ how: help === "how", example: help === "example", story: help === "story" }), { item, content: we ? workedContent(we, 1, 1) : [] });
+      return plan("reteach", (p5Flag("STEER") ? SH.helpExplainP5 : SH.helpExplain)({ how: help === "how", example: help === "example", story: help === "story" }), { item, content: we ? workedContent(we, 1, 1) : [] });
     }
     default: return decideAs(s, input, item, "stuck"); // "hint"
   }
@@ -665,8 +717,11 @@ const currentSkillId = (s, kit, item) => item?.skillId ?? s.lastMove?.skillId ??
 function requestMove(s, input, item, req, labels) {
   const kit = input.kit;
   switch (req.type) {
-    case "break": return plan("break", SH.stretch(), { request: "break" });
+    case "break": return plan("break", p5Flag("STEER") ? SH.breakYes() : SH.stretch(), { request: "break" });
     case "change_topic":
+      // owner rule (2026-10-05; w2i-release, OWNER-RESET #7): "can we talk about something else" is STEERING, never a break
+      // or a wrap: a warm yes and a different way into today's idea (CONVERSATION-V2 §3.2 offer_choice)
+      if (p5Flag("STEER")) return plan("repair", SH.offerWays(), { chips: waysChips(labels), request: "change_topic" });
       s.sidebar = { asked: s.turn };
       return plan("break", SH.changeTopic(), { chips: [{ id: "stop:continue", label: labels.back }, { id: "break:rest", label: labels.rest }, { id: "stop:end", label: labels.stop }], request: "change_topic" });
     case "topic": {
@@ -678,7 +733,7 @@ function requestMove(s, input, item, req, labels) {
     case "language": {
       // the lesson's language from now on (compile.js reads ctx.lang every turn; langPinned keeps it when they reply in another)
       s.ctx = { ...s.ctx, lang: req.lang, langPinned: true };
-      if (item) return plan(moveKindFor(item), SH.pose({ item, prefix: SH.languageAsked({ lang: req.lang }) }), { item, probe: probeFor(item), chips: optionChips(item), request: "language" });
+      if (item) return plan(moveKindFor(item), p5Flag("STEER") ? SH.languageAskedP5({ lang: req.lang }) : SH.pose({ item, prefix: SH.languageAsked({ lang: req.lang }) }), { item, probe: probeFor(item), chips: optionChips(item), request: "language" });
       return plan("reteach", SH.languageAsked({ lang: req.lang, teaching: true }), { skillId: currentSkillId(s, kit, item), request: "language" });
     }
     case "another": case "example": case "story": case "slower": {
@@ -691,6 +746,104 @@ function requestMove(s, input, item, req, labels) {
       // (brain/propose.js whiteboardAskOf `requested`). A picture of the question on the table is help: it spends a rung.
       if (item && s.pendingWhy !== item.id) s.hintLevel = Math.min(3, s.hintLevel + 1);
       return plan("reteach", SH.showVisual({ kind: req.kind }), { ...(item ? { item } : { skillId: currentSkillId(s, kit, item) }), representation: "diagram", visual: req.kind ?? "diagram", request: "visual" });
+    }
+    default: return p5Flag("STEER") ? p5RequestMove(s, input, item, req, labels) : null;
+  }
+}
+
+const TEACH_KINDS = new Set(["hook", "explain", "worked_example", "reteach"]);
+/** The ways-in chips (UI chrome, English): a picture, a story, a game, or back to the lesson. */
+const waysChips = (labels) => [{ id: "req:visual", label: "Show me a picture" }, { id: "req:story", label: "Tell it as a story" },
+  { id: "req:game", label: "Play a game" }, { id: "stop:continue", label: labels.back }];
+/** The request types p5-interaction adds (conversation/lexicon.js readings and the UNDERSTAND note, via policy.js). */
+export const P5_REQUESTS = new Set(["clarify", "repeat", "back", "skip", "know", "harder", "easier", "boredom", "frustration", "thinking", "identity",
+  "uptake", "decline", "answer_q", "adapt", "adopt", "adult", "park", "detour", "stop"]);
+
+/** A teach-phase re-explanation of the idea being taught now (the teach step does not advance). */
+function teachAgainPlan(s, kit, how) {
+  const skillId = currentSkillId(s, kit, null);
+  const content = (s.lastContent ?? []).filter((l) => typeof l === "string").length ? s.lastContent
+    : [`the idea being taught: ${kit.skills.find((k) => k.id === skillId)?.title ?? kit.skills[0]?.title ?? ""}`];
+  return plan("reteach", SH.teachAgain({ how }), { skillId, content, request: how });
+}
+
+/** The hardest not-yet-done practice item of a skill (difficulty, then the queue's order), or null. */
+function hardestFor(s, kit, skillId) {
+  const done = new Set([...s.itemsDone, ...s.skipped, s.activeItemId]);
+  const KINDS = new Set(["practice", "near_transfer", "far_transfer", "contrast", "predict", "translate_rep"]);
+  return kit.items.filter((i) => i.skillId === skillId && !done.has(i.id) && KINDS.has(i.kind))
+    .sort((a, b) => (b.difficulty ?? 0) - (a.difficulty ?? 0))[0] ?? null;
+}
+
+/**
+ * p5-interaction: the child's words acted on (CONVERSATION-V2 §3.2), for the request types director/requests.js does not
+ * read. Every move is session state only and never evidence; none ends a lesson (a stop read by a model alone gets ONE
+ * check-in, like a stop phrase). `lead` rides on the plan so the card cap (capPlan) keeps the uptake when it resolves.
+ */
+function p5RequestMove(s, input, item, req, labels) {
+  const kit = input.kit;
+  // with a question on the table the request is the FIRST part of a two-part shape (leadThenPose); with none, the teaching
+  // goes on with it as the prefix
+  const withLead = (lead) => {
+    if (item) return plan(moveKindFor(item), SH.leadThenPose({ item, lead }), { item, probe: probeFor(item), chips: optionChips(item), lead, request: req.type });
+    const p = resume(s, input, item, lead);
+    return p && { ...p, lead, request: req.type };
+  };
+  switch (req.type) {
+    case "clarify":
+      if (item) return plan("repair", SH.clarifyQuestion(), { item, chips: optionChips(item), request: "clarify", lead: "they asked what the question means" });
+      return teachAgainPlan(s, kit, "another");
+    case "repeat": {
+      if (item) return plan(moveKindFor(item), SH.pose({ item, prefix: SH.repeatShort() }), { item, probe: probeFor(item), chips: optionChips(item), request: "repeat" });
+      const kind = ["hook", "explain", "worked_example", "reteach"].includes(s.lastMove?.kind) ? s.lastMove.kind : "reteach";
+      return plan(kind, join(SH.repeatShort(), s.lastMove?.shape), { skillId: currentSkillId(s, kit, item), content: s.lastContent ?? [], request: "repeat" });
+    }
+    case "back": return withLead(SH.welcomeBack());
+    case "skip": return item ? { ...leaveItem(s, input, item, SH.SKIP_ITEM), request: "skip" } : helpMove(s, input, item, "skip");
+    case "know": return { ...helpMove(s, input, item, "know"), request: "know" };
+    case "harder": case "easier": {
+      if (!item || s.phase !== "practice") return req.type === "harder" ? { ...helpMove(s, input, item, "know"), request: "harder" } : teachAgainPlan(s, kit, "another");
+      s.skipped.push(item.id);                                   // left, no verdict: it was never their answer
+      if (req.type === "easier") s.easier = true;
+      else { const h = hardestFor(s, kit, item.skillId); if (h) s.nextItemId = h.id; }
+      return { ...poseNext(s, input, req.type === "harder" ? SH.levelHarder() : SH.levelEasier()), request: req.type };
+    }
+    case "boredom": return plan("repair", SH.boredOffer(), { chips: waysChips(labels), request: "boredom" });
+    case "frustration": {
+      if (!item) return teachAgainPlan(s, kit, "another");
+      const p = decideAs(s, input, item, "stuck");
+      return { ...p, shape: join(SH.frustrationFirst(), p.shape), request: "frustration" };
+    }
+    // a mid-thought: no question pinned this turn (no re-ask), the item stays the active one
+    case "thinking": return plan("repair", SH.waitThinking(), { request: "thinking" });
+    case "identity": return withLead(SH.disclose());
+    case "uptake": return withLead(SH.uptake({ kind: req.kind }));
+    case "decline": return withLead(SH.declineOob());
+    case "answer_q": return withLead(SH.answerTheirQuestion());
+    case "adapt": case "adopt":
+      if (req.method) s.prefs = [...new Set([...(s.prefs ?? []), String(req.method).slice(0, 40)])].slice(-4);
+      return withLead(SH.adaptTo({ method: req.method }));
+    case "adult": return withLead(SH.adultVoice());
+    case "park": {
+      const e = parkEntry({ topic: req.topic, learning: req.learning, turn: s.turn, itemOnTable: !!item });
+      s.later = pushLater(s.later ?? [], e);
+      return withLead(SH.parkIt({ topic: e.topic, promise: e.promise }));
+    }
+    case "detour": {
+      const p = recentParked(s.later ?? [], s.turn, req.topic);
+      if (!p) {
+        const e = parkEntry({ topic: req.topic, learning: false, turn: s.turn, itemOnTable: !!item });
+        s.later = pushLater(s.later ?? [], e);
+        return withLead(SH.parkIt({ topic: e.topic, promise: e.promise }));
+      }
+      s.later = serveLater(s.later, p.id, s.turn);
+      return withLead(SH.detourTo({ topic: p.topic }));
+    }
+    case "stop": {
+      // a stop or a leaving read by the UNDERSTAND note alone: ONE check-in (OWNER-RESET #7); a second within two turns ends it
+      if (s.stopAsked != null && s.turn - s.stopAsked <= 2) return toWrap(s, { stopping: true });
+      s.stopAsked = s.turn;
+      return plan("break", SH.stopCheck(), { chips: [{ id: "stop:continue", label: labels.go }, { id: "break:rest", label: labels.rest }, { id: "stop:end", label: labels.stop }], request: "stop" });
     }
     default: return null;
   }
@@ -713,6 +866,11 @@ function practiceDone(s, prefix) {
 }
 
 function enterTeachback(s, prefix) {
+  // CONVERSATION-V2 §5: every open parked question is offered before the wrap
+  if (p5Flag("STEER") && s.later?.length) {
+    const due = dueParked(s.later, "before_wrap");
+    if (due) { s.later = serveLater(s.later, due.id, s.turn); prefix = join(prefix, SH.returnParked({ topic: due.topic })); }
+  }
   s.phase = "teachback"; s.teachbackAsked = true; s.activeItemId = undefined; s.hintLevel = 0;
   // The lesson's teach-back IS shape C01 (announced protégé teach-back): its answer is a probe turn in the budget.
   s.pendingProbe = { skillId: s.introduced[0] ?? null, shapeId: "C01", facet: "U", mandatory: true, reason: "lesson_teachback", testWeight: testWeight(shapeById("C01")), family: "A", cls: "probe.teachback", longForm: true };
@@ -790,12 +948,17 @@ function decide(s, input, item) {
   }
   // 2a. owner-truth patch 07 (F8, items 4-5), reconciled with W2-I's stop gate above: the child's own request in words
   // (director/requests.js) is acted on THIS turn, never evidence; "keep going" in words is the stop:continue chip.
-  const req = cls?.request ?? null;
+  // p5-interaction: a ways-in chip (offerWays / boredOffer) is the request it names
+  const chipReq = p5Flag("STEER") && typeof chipId === "string" && /^req:(visual|story|game)$/.test(chipId)
+    ? (chipId === "req:story" ? { type: "story", whole: true } : { type: "visual", kind: chipId === "req:game" ? "game" : "diagram", whole: true }) : null;
+  const req = chipReq ?? cls?.request ?? null;
+  // p5-interaction: what the UNDERSTAND note read alongside a graded answer (a parked question, a hedge, a check)
+  if (p5Flag("STEER") && cls?.alsoPark) s.later = pushLater(s.later ?? [], parkEntry({ ...cls.alsoPark, turn: s.turn, itemOnTable: true }));
   if (chipId === "stop:continue" || req?.type === "continue") {
     s.stopAsked = undefined; s.sidebar = undefined;
     return resume(s, input, item, "they chose to keep going: straight back in, warmly, no fuss");
   }
-  if (req && s.phase === "teachback" && req.type !== "break") {
+  if (req && s.phase === "teachback" && req.type !== "break" && !(p5Flag("STEER") && P5_REQUESTS.has(req.type))) {
     // teaching the protégé: a language switch holds from now on; any other request re-asks the teach-back more simply
     if (req.type === "language") s.ctx = { ...s.ctx, lang: req.lang, langPinned: true };
     const p = helpMove(s, input, item, req.type === "language" ? "slower" : "another");
@@ -844,6 +1007,9 @@ function decide(s, input, item) {
  */
 function moduleReaction(s, input, item) {
   if (s.safeguard || s.phase === "done") return null;
+  // V1-01r (owner-1: 8/9 forged claims accepted): an answer the server could not re-check is never graded by the frame's
+  // claim, and never silently dropped either: the child is asked for it in words (graded against the key next turn).
+  if (input.unverified && item && p5Flag("RECHECK")) return plan("repair", SH.moduleUnverified(), { item, chips: optionChips(item), request: "module_unverified" });
   const last = (input.moduleEvents ?? []).filter((e) => e?.type === "goal_met" || e?.type === "stuck").at(-1);
   if (!last) return null;
   const chips = optionChips(item);
@@ -851,6 +1017,35 @@ function moduleReaction(s, input, item) {
   // The goal name comes from the client: interpolated into instructions only as a short plain label.
   const goal = String(last.name ?? "").replace(/[^\p{L}\p{N} /.,-]/gu, "").trim().slice(0, 40);
   return plan("celebrate", SH.moduleGoal({ goal }), { item, chips });
+}
+
+/**
+ * The card cap (p5-interaction; owner-2 R5.loop 17 / 90 turns, w1c-three-day: a why item held 7 turns): when the plan
+ * would pin the SAME question on the card for the (cardMax + 1)th turn in a row, the question is resolved instead — after
+ * real help (rung ≥ 2) its answer is given plainly with one line of why and a similar question follows (rule 15, as the
+ * assertion does); otherwise it is left for later with no verdict and no answer — and the lesson moves on. Never on a
+ * safeguarding hold. The plan's `lead` (an uptake of what the child just said) is kept. Evidence is unchanged: this turn's
+ * answer was graded before step(); the item left gets none after it.
+ */
+function capPlan(s, input, p) {
+  if (s.safeguard || !p.item || p.capped) return p;
+  const kit = input.kit;
+  const item = findItem(s, kit, p.item.id) ?? p.item;
+  const pins = s.pendingWhy !== item.id && !["safeguard", "wrap", "break", "teachback"].includes(p.kind);
+  if (!pins || item.id !== s.activeItemId || s.pinItem !== item.id || (s.pinRun ?? 0) < LIMITS.cardMax) return p;
+  const assert = s.hintLevel >= 2;
+  if (assert) { if (!s.itemsDone.includes(item.id)) s.itemsDone.push(item.id); noteStuck(s, item); }
+  // ship5 integration (p5 card cap x W1-C re-teach): under the cap the help ladder ends at rung 2, so the rung-3 fails the
+  // re-teach trigger counts (two_fails_post_rung3) could never happen and a child who kept getting it wrong was never
+  // re-taught (tests/prod/w1c-reteach 0 re-teach moves). An asserted cap after real help IS the ladder's end on that
+  // skill: it counts as one such fail, so two of them on a skill let engineReteach fire on its next answer.
+  if (assert && s.hintLevel < 3) s.failsPostRung3 = { ...s.failsPostRung3, [item.skillId]: (s.failsPostRung3?.[item.skillId] ?? 0) + 1 };
+  else if (!s.skipped.includes(item.id)) s.skipped.push(item.id);
+  s.unclear = 0;
+  const prefix = join(p.lead, assert ? SH.assertAndMove() : SH.leaveForLater());
+  const next = s.phase === "warmup" ? nextWarmup(s, input, prefix) : poseNext(s, input, prefix, assert ? isomorphicFor(s, kit, item) ?? undefined : undefined);
+  s.capped = { turn: s.turn, how: assert ? "assert" : "leave" };
+  return { ...next, content: [...(assert ? [`the answer to the question being left: ${item.answer}`] : []), ...(next.content ?? [])], capped: assert ? "assert" : "leave" };
 }
 
 /**
@@ -919,7 +1114,8 @@ export function step(prev, input) {
       s.probeSess = markAsked(s.probeSess, { skillId: t.skillId, shapeId: null, facet: "M", mandatory: true, reason: t.reason }, s.comp?.[t.skillId]?.belief ?? null);
     }
   }
-  const p = reacting ? moduleReaction(s, input, active) : decide(s, input, active);
+  let p = reacting ? moduleReaction(s, input, active) : decide(s, input, active);
+  if (p && !input.branch && p5Flag("CARDCAP")) p = capPlan(s, input, p);
   if (!p) {
     return { state: s, move: s.lastMove, moduleCommands: [], ui: s.lastUi ?? { status: "your_turn" }, end: s.phase === "done", hold: true, ...describe(s, input.kit) };
   }
@@ -928,7 +1124,9 @@ export function step(prev, input) {
   const item = p.item ? (findItem(s, input.kit, p.item.id) ?? p.item) : null;
   // Notes on the real move only: a voice branch (branchesFor, input.branch) is rendered into the appended-last
   // section, whose budget the kit load gate measured without them (compile.js checkFits).
-  const notes = input.branch ? [] : [gradedItem && !NO_VERDICT_MOVES.has(p.kind) ? SH.VERDICT_NOTE[verdictKey(input.cls)] : null, registerNote(s.ctx.address)];
+  const notes = input.branch ? [] : [gradedItem && !NO_VERDICT_MOVES.has(p.kind) ? SH.VERDICT_NOTE[verdictKey(input.cls)] : null, registerNote(s.ctx.address),
+    // p5-interaction: the UNDERSTAND note's alongside readings on a graded answer (hedge, check, insist; a parked question)
+    ...(p5Flag("STEER") && !NO_VERDICT_MOVES.has(p.kind) ? [...(input.cls?.mods ?? []).map((m) => SH.MOD_NOTE[m]), input.cls?.alsoPark ? SH.parkAlso({ topic: input.cls.alsoPark.topic }) : null] : [])];
   const move = { kind: p.kind, shape: join(p.shape, ...notes) };
   if (item) Object.assign(move, { itemId: item.id, skillId: item.skillId, hintLevel: s.hintLevel });
   if (p.skillId) move.skillId = p.skillId;
@@ -955,6 +1153,12 @@ export function step(prev, input) {
   }
   const ui = uiFor(s, p, move, item, input.kit);
   s.lastUi = ui; // what a hold re-sends (chips are momentary on the client: absent would clear them)
+  // the card pins (capPlan): how many teacher turns in a row (turns with no question on the card do not break the run)
+  // have pinned this question
+  if (!input.branch && ui.ask?.itemId) {
+    if (s.pinItem === ui.ask.itemId) s.pinRun = (s.pinRun ?? 0) + 1;
+    else { s.pinItem = ui.ask.itemId; s.pinRun = 1; }
+  }
   // The move as a kernel proposal (proposal.js, W2-C #8): returned beside the move, never stored in the state.
   const proposal = directorProposal(move, { stopping: p.stopping, ui, guidance: s.guidance, purpose: s.purpose });
   return { state: s, move, moduleCommands, ui, end: s.phase === "done", proposal, ...describe(s, input.kit) };
@@ -1104,6 +1308,8 @@ export function foldEvidence(s, evidence) {
   }
 }
 
+/** The longest next question a voice branch line poses itself (characters); a longer one waits for the next turn's instructions. */
+export const BRANCH_ASK_MAX = 240;
 const NO_FLAGS = { dontKnow: false, asksForAnswer: false, minimal: false, offTopic: false, distress: false, distressKind: null, wantsToStop: false };
 const POSING = new Set(["practice", "probe", "retrieval", "greet"]);
 /** Gap the branches assume before the child's reply (it only moves the lesson clock). */
@@ -1135,9 +1341,14 @@ export function branchesFor(s, kit) {
   };
   const render = (r) => {
     const asks = !!r.item && POSING.has(r.move.kind) && r.state.pendingWhy !== r.item.id;
+    // p5-interaction (kit-budget gate on the V1 series: V1-12's fast pace makes a long reading passage the next question, and
+    // its full text in the voice branch put the appended-last section 2 tokens over its cap): a next question longer than
+    // BRANCH_ASK_MAX characters is not posed from a branch line; it is posed as written on the next turn's instructions
+    const full = asks ? promptFor(r.item, lang) : null;
+    const long = !!full && full.length > BRANCH_ASK_MAX;
     return {
-      kind: r.move.kind.replace(/_/g, " "), text: r.move.shape,
-      ask: asks ? promptFor(r.item, lang) : null,
+      kind: r.move.kind.replace(/_/g, " "), text: long ? `${r.move.shape.split("; pose the question as written")[0]}; the next question comes on the next turn, as written` : r.move.shape,
+      ask: long ? null : full,
       content: [...r.content, ...(asks && r.item.diagnostic ? [`choices for that question: ${optionsSpoken(r.item, lang)}`] : [])],
     };
   };

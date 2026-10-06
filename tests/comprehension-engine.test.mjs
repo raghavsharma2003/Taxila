@@ -11,6 +11,8 @@ import { readFileSync } from "fs";
 
 const SK = "c5-maths-ch01-t01-s1";
 const T0 = "2026-10-01T05:00:00.000Z", T1 = "2026-10-02T06:00:00.000Z", T9 = "2026-10-10T06:00:00.000Z";
+// VALUES-100 V1.3 (V1-10): the delayed check is ≥ 2 learning days after the anchor and on an item never answered on the skill
+const T2 = "2026-10-03T06:00:00.000Z";
 let n = 0;
 const ev = (o = {}) => ({ id: `e${++n}`, seq: n, sessionId: "s1", sessionStartAt: T0, at: T0, episodeId: `ep${n}`, skillIds: [SK], itemKey: "k",
   cls: "item.open", outcome: 0, grader: "code", graderVersion: "g", topicType: "T3", ...o });
@@ -21,8 +23,8 @@ const b = (s, now = T0) => beliefFor(SK, { ...s, now });
 function understanderLog() {
   return [ev({ teach: true }), ev(), ev(), ev({ cls: "probe.why", outcome: 0, grader: "llm", spanOk: true, shapeId: "C03" }),
     ev({ cls: "probe.errorspot", outcome: 0, shapeId: "C07" }), ev({ cls: "probe.transfer.near", outcome: 0, shapeId: "C20" }),
-    ev({ sessionId: "s2", sessionStartAt: T1, at: T1, shapeId: "C31", via: "callback" }),
-    ev({ sessionId: "s2", sessionStartAt: T1, at: T1, cls: "probe.transfer.far", outcome: 0, shapeId: "C18" })];
+    ev({ sessionId: "s2", sessionStartAt: T2, at: T2, shapeId: "C31", via: "callback", itemKey: "k2" }),
+    ev({ sessionId: "s2", sessionStartAt: T2, at: T2, cls: "probe.transfer.far", outcome: 0, shapeId: "C18", itemKey: "k3" })];
 }
 
 test("shape registry: 36 shapes, each names a kit input, a closed class and an operator", () => {
@@ -32,7 +34,7 @@ test("shape registry: 36 shapes, each names a kit input, a closed class and an o
 
 test("worked trajectory (spec §2.6): the understander reaches understood only after a delayed check + far transfer", () => {
   const s = run(understanderLog());
-  const x = b(s, T1);
+  const x = b(s, T2);
   assert.equal(x.state, "understood");
   assert.ok(Math.abs(x.U - 0.795) < 0.01, `U ${x.U}`);
   assert.ok(Math.abs(x.T - 0.920) < 0.01, `T ${x.T}`);

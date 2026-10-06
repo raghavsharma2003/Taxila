@@ -166,7 +166,7 @@ test("help requests: every Hint-sheet and Help-menu id is known; none is graded;
 
 // ───────────── the repair loop (comprehension G11) ─────────────
 
-test("repair loop: unclear replies on one item are capped at 3, then the item is left with no verdict and the lesson moves on", () => {
+test("repair loop: unclear replies on one item are capped (the card cap: 3 turns on the card), then the item is left with no verdict and the lesson moves on", () => {
   // the fixture's diagnostic is second in the queue: walk to it
   let r = toItem(K);
   for (let i = 0; i < 6 && !String(r.move.itemId).startsWith("diag:"); i++) r = turn(r, K, cls("correct"));
@@ -181,13 +181,14 @@ test("repair loop: unclear replies on one item are capped at 3, then the item is
   assert.ok(sameItemTurns <= LIMITS.unclearTries - 1, `at most ${LIMITS.unclearTries - 1} re-asks on the item after the first (got ${sameItemTurns})`);
   assert.ok(r.state.skipped.includes(diag), "left with no verdict");
   assert.notEqual(r.move.kind, "wrap");
-  // a plain item with no chips gets the choices on its third unclear reply, then moves on
+  // a plain item with no chips gets the choices on its SECOND unclear reply (p5-interaction card cap: one question at most
+  // LIMITS.cardMax turns on the card; LIMITS.unclearTriesCapped), then moves on
   let p = toItem(SK, { lang: "hinglish", classLevel: 2, ageBand: "6-9" }, "c2-maths-ch01-t01-i01");
-  p = turn(p, SK, NE); p = turn(p, SK, NE);
-  const third = turn(p, SK, NE);
-  assert.ok(third.ui.chips?.some((c) => c.label === "10"), "the third unclear reply puts the choices on screen");
-  const fourth = turn(third, SK, NE);
-  assert.notEqual(fourth.move.itemId, "c2-maths-ch01-t01-i01", "past the cap: the next question");
+  p = turn(p, SK, NE);
+  const second = turn(p, SK, NE);
+  assert.ok(second.ui.chips?.some((c) => c.label === "10"), "the second unclear reply puts the choices on screen");
+  const third = turn(second, SK, NE);
+  assert.notEqual(third.move.itemId, "c2-maths-ch01-t01-i01", "past the cap: the next question");
 });
 
 // ───────────── hints (flows G5) ─────────────

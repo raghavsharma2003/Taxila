@@ -6,6 +6,7 @@
 // barge-in immediate. Pausing is too, but keeps the reply: the stream keeps arriving into the buffer and
 // resume() replays from just before where she was cut (a cough, the TV or a "hmm" must not eat her question).
 import type { TtsRequest, TurnRequest, TurnResponse } from "../../shared/contracts.ts";
+import { anchorPerfTime, isVisemeFrame, partPlayAt, puppetCut, puppetVisemes, type TtsVisemeFrame } from "../face-puppet/ttsBridge.ts";
 import { ApiError } from "./api.ts";
 import { markLineAudioStart } from "../modules/whiteboard/clock.ts";
 
@@ -90,7 +91,11 @@ export interface StreamPlayback {
  * emits each clause on ITS clock, when the sample is scheduled (fixer 2026-10-05, w2g-clause-events-on-player-clock).
  * Without a sink, clause frames go straight to onTtsEvent when they are parsed (the old behaviour).
  */
-export interface ClauseSink { clause(ev: TtsClauseEvent): void }
+export interface ClauseSink {
+  clause(ev: TtsClauseEvent): void;
+  /** V4: Diya's viseme batches for one part (server patch 01), timed by the player like the clauses. */
+  visemes?(f: TtsVisemeFrame): void;
+}
 export type SpeechStreamFetch = (req: TtsRequest, signal: AbortSignal, sink?: ClauseSink) => Promise<ReadableStream<Uint8Array>>;
 
 // ───────────── framed TTS v2 (HUMAN-VOICE §5.14, server/voice/frames.js) ─────────────
@@ -112,7 +117,7 @@ export interface TtsFrame {
 export interface TtsClauseEvent { t: "clause"; clause: number; part: number; atSample: number; atMs: number; playAt?: number }
 /** What the frame stream tells listeners: the reply it belongs to, plus the frame's JSON. */
 export type TtsEvent = { req: TtsRequest } & ({ kind: "header"; data: Record<string, unknown> } | { kind: "clause"; data: TtsClauseEvent }
-  | { kind: "voice"; data: Record<string, unknown> } | { kind: "end"; data: Record<string, unknown> });
+  | { kind: "voice"; data: Record<string, unknown> } | { kind: "end"; data: Record<string, unknown> } | { kind: "visemes"; data: TtsVisemeFrame });
 
 const listeners = new Set<(e: TtsEvent) => void>();
 /** Subscribe to framed-TTS events (clause onsets, header, end); returns the unsubscribe. */
@@ -210,7 +215,7 @@ const eventOf = (req: TtsRequest, f: TtsFrame): TtsEvent | null => {
   const data = f.payload as Record<string, unknown>;
   if (f.type === FRAME.header) return { req, kind: "header", data };
   if (f.type === FRAME.end) return { req, kind: "end", data };
-  if (f.type === FRAME.event) return data.t === "clause" ? { req, kind: "clause", data: data as unknown as TtsClauseEvent } : { req, kind: "voice", data };
+  if (f.type === FRAME.event) return data.t === "clause" ? { req, kind: "clause", data: data as unknown as TtsClauseEvent } : isVisemeFrame(data) ? { req, kind: "visemes", data } : { req, kind: "voice", data };
   return null;
 };
 
@@ -235,7 +240,7 @@ export function turnAudioEnabled(): boolean {
   return (import.meta as { env?: Record<string, string> }).env?.VITE_TURN_AUDIO === "1";
 }
 
-interface Fold { stream: ReadableStream<Uint8Array>; at: number; req: TtsRequest; sink: ClauseSink | null; pending: TtsClauseEvent[] }
+interface Fold { stream: ReadableStream<Uint8Array>; at: number; req: TtsRequest; sink: ClauseSink | null; pending: TtsClauseEvent[]; pendingV: TtsVisemeFrame[] }
 const folded = new Map<string, Fold>();
 const FOLD_TTL_MS = 30_000;
 const foldKey = (lessonId: string, seq: number) => `${lessonId}:${seq}`;
@@ -255,6 +260,7 @@ export function takeFoldedAudio(lessonId: string, seq: number, sink?: ClauseSink
   const req = f.req;
   f.sink = sink ?? { clause: (data) => emit({ req, kind: "clause", data }) };
   for (const ev of f.pending.splice(0)) f.sink.clause(ev);
+  for (const v of f.pendingV.splice(0)) f.sink.visemes?.(v);
   return f.stream;
 }
 
@@ -306,7 +312,7 @@ export async function postTurnAudio(req: TurnRequest, signal?: AbortSignal): Pro
             // parked only when this response carries the audio; else the link fetches it by seq as before
             if (audioFollows) {
               const k = foldKey(req.lessonId, ttsReq.seq);
-              fold = { stream: readable, at: Date.now(), req: ttsReq, sink: null, pending: [] };
+              fold = { stream: readable, at: Date.now(), req: ttsReq, sink: null, pending: [], pendingV: [] };
               folded.set(k, fold);
               // nobody took it (the runtime chose not to speak): release the response
               const timer: unknown = setTimeout(() => {
@@ -328,6 +334,10 @@ export async function postTurnAudio(req: TurnRequest, signal?: AbortSignal): Pro
           if (e?.kind === "clause" && fold) {
             if (fold.sink) fold.sink.clause(e.data);
             else fold.pending.push(e.data);
+          } else if (e?.kind === "visemes") {
+            // V4: like clause onsets, viseme batches belong to the player of the parked audio
+            if (fold?.sink) fold.sink.visemes?.(e.data);
+            else fold?.pendingV.push(e.data);
           } else if (e) emit(e);
         }
       }
@@ -358,6 +368,7 @@ export const fetchSpeechStream: SpeechStreamFetch = async (req, signal, sink) =>
   return pcmOfFrames(res.body, (f) => {
     const e = eventOf(req, f);
     if (e?.kind === "clause" && sink) sink.clause(e.data);
+    else if (e?.kind === "visemes") sink?.visemes?.(e.data);
     else if (e) emit(e);
   });
 };
@@ -431,7 +442,37 @@ export class PcmStreamPlayer {
         emit({ req, kind: "clause", data: { ...ev, playAt: base + ((ev.atSample - from) / PCM_RATE) * 1000 } });
       }
     };
+    // V4: Diya's viseme batches, emitted to the puppet on THIS player's timeline (anchor = ctx time `at` sounds sample
+    // `pos`, contiguous to schedPos); re-anchored (cut + re-sent) whenever the timeline moves: an underrun gap, a resume
+    const vframes: TtsVisemeFrame[] = [];
+    const vSent = new Set<TtsVisemeFrame>();
+    const reqKey = req ? `${req.lessonId}:${req.seq}` : undefined;
+    // the anchor's output time on the performance clock, converted ONCE per anchor (ship5 p2-face: converting per batch
+    // jittered one part's batches apart and the face split them into separate tracks)
+    let vAnchor: { ref: typeof anchor; perf: number } | null = null;
+    const sendVisemes = () => {
+      for (const f of vframes) {
+        if (vSent.has(f) || f.atSample >= schedPos || f.atSample < 0) continue;
+        vSent.add(f);
+        try {
+          if (vAnchor?.ref !== anchor) vAnchor = { ref: anchor, perf: anchorPerfTime(anchor.at, ctx) };
+          puppetVisemes(f, partPlayAt(f, anchor.pos, vAnchor.perf), reqKey);
+        } catch {
+          /* the face never stops the voice */
+        }
+      }
+    };
+    const reanchorVisemes = () => {
+      if (!vSent.size) return;
+      puppetCut();
+      vSent.clear();
+    };
     const sink: ClauseSink = {
+      visemes: (f) => {
+        if (finished) return;
+        vframes.push(f);
+        if (f.atSample < schedPos) sendVisemes();
+      },
       clause: (ev) => {
         if (finished) return;
         clauses.push(ev);
@@ -467,6 +508,7 @@ export class PcmStreamPlayer {
       finished = true;
       abort.abort();
       silenceSources();
+      if (vSent.size) puppetCut();
       if (this.current === handle) this.current = null;
       if (!didStart) rejectStart(new Error(status === "stopped" ? "speech stopped" : "no speech audio"));
       resolveEnd(status);
@@ -504,6 +546,7 @@ export class PcmStreamPlayer {
         }
         nextAt = now + (didStart ? RESUME_LEAD_S : this.lead);
         anchor = { at: nextAt, pos: schedPos };
+        reanchorVisemes();
       }
       resuming = false;
       src.start(nextAt);
@@ -520,6 +563,7 @@ export class PcmStreamPlayer {
       emitClauses(schedPos, total, nextAt);
       nextAt += ab.duration;
       schedPos = total;
+      sendVisemes();
       sources.add(src);
       src.onended = () => {
         sources.delete(src);
@@ -570,6 +614,7 @@ export class PcmStreamPlayer {
         // onsets that were scheduled but never sounded are told again, on the resumed timeline
         for (const ev of clauses) if (ev.atSample >= schedPos) emitted.delete(ev);
         nextAt = 0;
+        reanchorVisemes(); // her mouth closes with her voice; resume re-sends on the new timeline
         return sounding;
       },
       resume: () => {

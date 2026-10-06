@@ -49,8 +49,16 @@ export const ALLOW = {
     ["src/modules/whiteboard/palette.ts", "the board's drawing palette (chalk / paper inks), drawn inside the sandboxed engine frame (engines/explainer.tsx) like the frame's own kit palette"],
     ["src/pages/LessonDev.tsx", "dev route only (/dev/lesson, VITE_DEV_ROUTES=1): never in a production build"],
     ["src/pages/AvatarDev.tsx", "dev route only (/dev/avatar, VITE_DEV_ROUTES=1): never in a production build"],
+    // ship5 p4-content (Studio v2 in the live lesson)
+    ["src/studio-v2/core/tokens.ts", "the Studio v2 palette is defined here (the engines' C tokens)"],
+    ["src/studio-v2/core/host.css", "the Studio v2 host's own token block (--sv2-*) is defined here; the rules below it use the variables"],
+    ["src/studio-v2/engines/", "canvas engine art (sky, moon, circuit, heat maps): pixels drawn on a <canvas> inside the stage box, not CSS chrome — the same reason as src/modules/frame/ and the whiteboard palette"],
+    ["src/studio-v2/gallery/", "the engine gallery (src/studio-v2/gallery/index.html) is a dev page: not an entry of the production build (vite.config.ts inputs are index.html and modules.html)"],
   ],
-  "L-DEVA": [],
+  "L-DEVA": [
+    // ship5 integration (p2-face)
+    ["src/face-puppet/visemes.ts", "speech processing, not chrome: the TTS text → mouth-shape tables (phoneme notes, the Hindi retroflex / dental stop sets read off the line she speaks); nothing in this file is rendered (the same reason src/lesson/*.ts speech code is not scanned)"],
+  ],
   "L-HING": [["src/ui/copy.ts", "defines the wordlist itself"]],
   "L-HOLD": [],
 };
@@ -65,6 +73,10 @@ export const CONTENT = [
   ["src/modules/frame/kit/i18n.ts", (line) => /\btri\(\s*["'`]/.test(line), "the shared activity prompts and answer words (W): TrayContent; W's controls use chrome()"],
   ["src/child/lesson/useDesk.ts", (line) => /^\s*\w+:\s*\[\s*"[^"]*",\s*"[^"]*",\s*"[^"]*"\s*\],?\s*$/.test(line),
     "REQUESTS: the CHILD's words sent to the Director as a chip, one per lesson language (shown as what the child said)"],
+  // ship5 p4-content: the only Devanagari these engines carry is lesson content, never chrome
+  ["src/studio-v2/engines/ext/", (line) => !/[\u0900-\u097F]/.test(line.replace(/["'`](?:[ऽ।]|[ऽ।] \$\{[^}]*\})["'`]/g, '""').replace(/`[ऽ।] \$\{T\.\w+\}`/g, '""')),
+    "the Hindi metre marks guru (ऽ) and laghu (।) a chhand / matra activity draws as its content (the syllable weights the child sorts)"],
+  ["src/studio-v2/engines/ext/kit.ts", (line) => /\.load\(`[^`]*`,\s*"[\u0900-\u097F]+"\)/.test(line), "the Devanagari font-loading probe string (FontFace.load sample text): never drawn"],
 ];
 /** Strip the spoken-content parts of a line, leaving whatever else it renders to be tested:
  *   - the text of an element that itself carries data-speech (`<q data-speech="">…</q>`, or a self-closing one);

@@ -49,72 +49,80 @@ test("(a) + (b) must land on the same local day; pL ≥ 0.95 is necessary", () =
   assert.equal(at(fold(L0(), session("one", T0, [WHY, C0]))).display, "practising");
 });
 
-test("mastered needs a produce-form success ≥ 20 h after the anchor, in another session, first attempt, before re-teach", () => {
+// VALUES-100 V1.3 (V1-10, docs/design/values/v1/patches): "secure" needs a correct delayed check at least 2 LEARNING days
+// after the anchor (local IST days, start to start), on an item the skill was never answered on, unaided. These cases were
+// rewritten from the 20 h / same-item rule to that one (the README's "rewrite the tests to the V1.3 rule, never roll back").
+const D2 = 2 * DAY;
+test("mastered needs a produce-form success ≥ 2 learning days after the anchor, on a NEW item, in another session, first attempt, before re-teach", () => {
   const L1 = fold(L0(), learnDay("A", T0));
   assert.equal(at(L1).display, "learned_today");
+  const NEW = { itemKey: "k-new" };
   // same session, later: never a delayed check
-  assert.equal(at(fold(L1, session("A", T0, [C0]))).display, "learned_today");
-  // a different session 10 h later: too soon
-  assert.equal(at(fold(L1, session("B", T0 + 10 * H, [C0]))).display, "learned_today");
-  // 20 h later, but re-taught first
-  assert.equal(at(fold(L1, session("C", T0 + 21 * H, [{ teach: true }, C0]))).display, "learned_today");
-  // 20 h later, first attempt is a tap: a recognition item is never a delayed check
-  assert.equal(at(fold(L1, session("D", T0 + 21 * H, [{ cls: "item.mcq3", outcome: 0 }, C0]))).display, "learned_today");
-  // 20 h later, hinted: not a pass
-  assert.equal(at(fold(L1, session("E", T0 + 21 * H, [{ outcome: 2 }]))).display, "learned_today");
-  assert.equal(at(fold(L1, session("E2", T0 + 21 * H, [{ preAttemptHelp: true }]))).display, "learned_today");
-  // 20 h later, first produce attempt C0 → mastered
-  const M = fold(L1, session("F", T0 + 21 * H, [C0]));
+  assert.equal(at(fold(L1, session("A", T0, [{ ...NEW }]))).display, "learned_today");
+  // a different session 10 h later, and 21 h later (the old 20 h rule): too soon
+  assert.equal(at(fold(L1, session("B", T0 + 10 * H, [{ ...NEW }]))).display, "learned_today");
+  assert.equal(at(fold(L1, session("B2", T0 + 21 * H, [{ ...NEW }]))).display, "learned_today", "one day is not two learning days");
+  // 2 days later, but re-taught first
+  assert.equal(at(fold(L1, session("C", T0 + D2, [{ teach: true }, { ...NEW }]))).display, "learned_today");
+  // 2 days later, first attempt is a tap: a recognition item is never a delayed check
+  assert.equal(at(fold(L1, session("D", T0 + D2, [{ cls: "item.mcq3", outcome: 0, ...NEW }, { itemKey: "k-new2" }]))).display, "learned_today");
+  // 2 days later, hinted: not a pass
+  assert.equal(at(fold(L1, session("E", T0 + D2, [{ outcome: 2, ...NEW }]))).display, "learned_today");
+  assert.equal(at(fold(L1, session("E2", T0 + D2, [{ preAttemptHelp: true, ...NEW }]))).display, "learned_today");
+  // 2 days later, the SAME item again: a recall of that item, not the skill in a new form
+  assert.equal(at(fold(L1, session("E3", T0 + D2, [C0]))).display, "learned_today");
+  // 2 days later, first produce attempt C0 on a new item → mastered
+  const M = fold(L1, session("F", T0 + D2, [{ ...NEW }]));
   assert.equal(at(M).display, "mastered");
   assert.equal(at(M).flags.delayed, true);
-  // a near-transfer pass also counts as (c)
-  assert.equal(at(fold(L1, session("G", T0 + 2 * DAY, [{ cls: "probe.transfer.near", outcome: 0, grader: "code" }]))).display, "mastered");
+  // a near-transfer pass on a new item also counts as (c)
+  assert.equal(at(fold(L1, session("G", T0 + D2, [{ cls: "probe.transfer.near", outcome: 0, grader: "code", ...NEW }]))).display, "mastered");
 });
 
-test("a C1/C2 at a delayed check is neither pass nor miss: it re-anchors the 20 h clock", () => {
+test("a C1/C2 at a delayed check is neither pass nor miss: it re-anchors the 2-day clock", () => {
   const L1 = fold(L0(), learnDay("A", T0));
-  const L2 = fold(L1, session("B", T0 + 21 * H, [{ outcome: 1 }]));
+  const L2 = fold(L1, session("B", T0 + D2, [{ outcome: 1, itemKey: "k2" }]));
   assert.equal(at(L2).display, "learned_today");
   assert.equal(at(L2).delayedMisses, 0);
   assert.equal(at(L2).anchorSession, "B");
-  // 21 h after the original anchor but only 3 h after the new one: not a check
-  assert.equal(at(fold(L2, session("C", T0 + 24 * H, [C0]))).display, "learned_today");
-  assert.equal(at(fold(L2, session("D", T0 + 42 * H, [C0]))).display, "mastered");
+  // 2 days after the original anchor but the same day as the new one: not a check
+  assert.equal(at(fold(L2, session("C", T0 + D2 + 3 * H, [{ itemKey: "k3" }]))).display, "learned_today");
+  assert.equal(at(fold(L2, session("D", T0 + 2 * D2, [{ itemKey: "k3" }]))).display, "mastered");
 });
 
 test("one delayed miss sets refresh only; two consecutive misses demote one level, never two", () => {
   let L = fold(L0(), learnDay("A", T0));
-  L = fold(L, session("B", T0 + DAY, [C0]));
+  L = fold(L, session("B", T0 + D2, [{ itemKey: "k2" }]));
   assert.equal(at(L).display, "mastered");
-  L = fold(L, session("C", T0 + 3 * DAY, [{ outcome: 4 }]));
+  L = fold(L, session("C", T0 + 2 * D2, [{ outcome: 4, itemKey: "k3" }]));
   assert.equal(at(L).display, "mastered");
   assert.equal(at(L).refresh, true);
   // a pass between misses resets the count
-  const reset = fold(L, session("C2", T0 + 5 * DAY, [C0]));
+  const reset = fold(L, session("C2", T0 + 3 * D2, [{ itemKey: "k4" }]));
   assert.equal(at(reset).refresh, false);
   assert.equal(at(reset).delayedMisses, 0);
-  L = fold(L, session("D", T0 + 5 * DAY, [{ outcome: 3 }]));
+  L = fold(L, session("D", T0 + 3 * D2, [{ outcome: 3, itemKey: "k5" }]));
   assert.equal(at(L).display, "learned_today", "two consecutive misses: mastered → learned_today");
-  L = fold(L, session("E", T0 + 7 * DAY, [{ outcome: 4 }]));
+  L = fold(L, session("E", T0 + 4 * D2, [{ outcome: 4, itemKey: "k6" }]));
   assert.equal(at(L).display, "learned_today");
-  L = fold(L, session("F", T0 + 9 * DAY, [{ outcome: 4 }]));
+  L = fold(L, session("F", T0 + 5 * D2, [{ outcome: 4, itemKey: "k7" }]));
   assert.equal(at(L).display, "practising");
   assert.equal(at(L).aDay, null, "a fresh (a) + (b) day comes first");
 });
 
 test("durable: mastered plus unaided delayed successes at ≥ 7 d and ≥ 30 d after learned_today", () => {
   let L = fold(L0(), learnDay("A", T0));
-  L = fold(L, session("B", T0 + DAY, [C0]));
-  L = fold(L, session("C", T0 + 8 * DAY, [C0]));
+  L = fold(L, session("B", T0 + D2, [{ itemKey: "k2" }]));
+  L = fold(L, session("C", T0 + 9 * DAY, [{ itemKey: "k3" }]));
   assert.equal(at(L).display, "mastered");
   assert.equal(at(L).flags.durable7, true);
-  L = fold(L, session("D", T0 + 31 * DAY, [C0]));
+  L = fold(L, session("D", T0 + 31 * DAY, [{ itemKey: "k4" }]));
   assert.equal(at(L).display, "durable");
 });
 
 test("absence never lowers display; it only raises the refresh flag through R", () => {
   let L = fold(L0(), learnDay("A", T0));
-  L = fold(L, session("B", T0 + DAY, [C0]));
+  L = fold(L, session("B", T0 + D2, [{ itemKey: "k2" }]));
   const year = readSkill(at(L), new Date(T0 + 365 * DAY).toISOString());
   assert.equal(year.display, "mastered");
   assert.equal(year.refresh, true);

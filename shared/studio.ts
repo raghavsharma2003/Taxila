@@ -113,7 +113,10 @@ export type StudioArtifact =
       archetype?: string; intentId?: string; strings?: Record<string, string>; skeleton?: string }
   /** The code skeleton (LIVE-STUDIO D1 §3.4): correct by construction; interactive and host-graded when it is the activity. */
   | { kind: "skeleton"; stage?: StageSize; skeleton: string; params: Record<string, unknown>; strings: Record<string, string>; archetype?: string; intentId?: string }
-  | { kind: "image"; stage?: StageSize; src: string; alt: string };
+  | { kind: "image"; stage?: StageSize; src: string; alt: string }
+  /** A Stagecraft piece (STAGECRAFT P9): an RS-4 engine spec, a library variant, a passed live build or the board twin,
+   *  mounted by src/stagecraft (StagecraftRenderer → StageController → the Studio v2 host). Never a loading state. */
+  | { kind: "stagecraft"; stage?: StageSize; stagecraft: { rung: string; archetype?: string; spec?: unknown; boardTwin?: { values?: Record<string, unknown>; board?: { title: string; lines: string[] } } | null; board?: { values?: Record<string, unknown> } | null; cue?: { clauseIdx: number; preRollMs: number; crossFadeMs: number }; buildSha?: string | null; blobUrl?: string | null } };
 export type StudioArtifactKind = StudioArtifact["kind"];
 
 // ───────────────────────────── the whiteboard (drawing script) ─────────────────────────────

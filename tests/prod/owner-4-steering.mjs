@@ -27,9 +27,14 @@ const isEnglish = (t) => (String(t).match(DEVANAGARI) ?? []).length === 0 && enS
  * response, for persistence), persona }.
  */
 const REQUESTS = [
+  // owner rule (2026-10-05, decisions owner-ship-five; w2i-release): "can we talk about something else" is STEERING — never a
+  // break and never a wrap. Taken up = a yes and a different way in (a picture, a story, a game: the ways-in chips), or
+  // what they would like instead; never the same lesson turn again.
   { id: "talk_else", text: "can we talk about something else", persona: "meher",
-    check: (rep, c) => (/\b(what would you like|what do you want to talk|kis (?:baare|cheez)|kya baat karna|something else|kuch aur|sure|of course|zaroor|theek hai|chalo)\b/i.test(rep) && jaccard(minusAsk(rep, kitAsk(c.r)), c.prev) < 0.5 ? null
-      : "no sign the topic change was taken up (no 'what would you like to talk about', or the same lesson turn again)") },
+    check: (rep, c) => (["break", "wrap"].includes(c.r?.move?.kind) || c.r?.end ? `a ${c.r?.end ? "lesson end" : c.r?.move?.kind} (the owner rule: steering, never a break or a wrap)`
+      : (/\b(what would you like|what do you want to talk|kis (?:baare|cheez)|kya baat karna|something else|kuch aur|sure|of course|zaroor|theek hai|chalo|yes|haan|bilkul|picture|story|game|kahani|khel|chitra|different|alag)\b/i.test(rep)
+        || (c.r?.ui?.chips ?? []).some((x) => /^req:/.test(x.id))) && jaccard(minusAsk(rep, kitAsk(c.r)), c.prev) < 0.5 ? null
+      : "no sign the topic change was taken up (no yes / ways in / what they would like, or the same lesson turn again)") },
   { id: "topic_interest", text: "cricket ke baare mein baat karo", persona: "aarav",
     check: (rep) => (/\b(cricket|bat|batting|batsman|bowler|bowling|wicket|overs?|runs?|six|sixer|four|boundary|shot|pitch|stumps|innings|captain|kohli|dhoni|ipl|match|team)\b/i.test(rep) ? null : "cricket never came up: the request was ignored") },
   { id: "differently", text: "explain it differently", persona: "zoya",

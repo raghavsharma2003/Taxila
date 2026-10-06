@@ -51,8 +51,14 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
  * One child reply to the turn on the table, as a child who knows (or, with `wrong`, holds the misconception):
  * a chip matching the answer, the kit answer typed, the topic's key idea for an open "why" question, or "go on".
  */
-export function replyFor(ui, topicId, { wrong = false, explain = true } = {}) {
+export function replyFor(ui, topicId, { wrong = false, explain = true, teach = false } = {}) {
   const item = ui?.ask?.itemId ? kitItem(ui.ask.itemId) ?? fadeItemOf(ui.ask.itemId, topicId) : null;
+  // `teach`: the child teaches the protégé the big idea at the teach-back (the lesson's generative pass, ledger (b)) even
+  // when they shrug at every why (p5-interaction: without it no day-0 skill is ever learned_today, so no check is ever due)
+  if (teach && ui?.phase === "teachback") {
+    const t = kitTopic(topicId);
+    return { text: `${(t?.expectations ?? ["yeh aise hi kaam karta hai"]).slice(0, 4).map((x) => String(x).replace(/\.$/, "")).join(", aur ")}.` };
+  }
   // a child who does the items but cannot say why (the state after a typical first lesson: shallow)
   const SHRUG = "pata nahi, bas aise hi aata hai";
   if (!explain && (!item || item.kind === "why" || item.kind === "teachback") && (ui?.ask?.text || item)) return { text: SHRUG };
@@ -76,7 +82,7 @@ export function replyFor(ui, topicId, { wrong = false, explain = true } = {}) {
  * Drive a text lesson: start (optionally on a topic), answer every turn with replyFor, wait `delayMs` before each
  * reply (the child "thinking"), stop at `maxTurns` or the lesson's end, then end it. Returns what a test needs.
  */
-export async function driveLesson(api, childId, { topicId, maxTurns = 14, delayMs = 0, wrong = () => false, explain = true, end = true } = {}) {
+export async function driveLesson(api, childId, { topicId, maxTurns = 14, delayMs = 0, wrong = () => false, explain = true, teach = false, end = true } = {}) {
   const start = await api("POST", "/api/lesson/start", { childId, mode: "text", ...(topicId ? { topicId } : {}) });
   const lessonId = start.lessonId;
   const asked = [];
@@ -84,7 +90,7 @@ export async function driveLesson(api, childId, { topicId, maxTurns = 14, delayM
   let ui = start.ui, seq = 0;
   if (ui?.ask?.itemId) asked.push(ui.ask.itemId);
   for (let i = 0; i < maxTurns; i++) {
-    const rep = replyFor(ui, start.topic?.id ?? topicId, { wrong: wrong(i, ui), explain });
+    const rep = replyFor(ui, start.topic?.id ?? topicId, { wrong: wrong(i, ui), explain, teach });
     if (delayMs) await sleep(delayMs);
     const body = rep.chip ? { childText: rep.chip.label, chipId: rep.chip.id } : { childText: rep.text };
     const r = await api("POST", "/api/lesson/turn", { lessonId, typed: true, asrConfidence: 0.95, turnSeq: ++seq, ...body });

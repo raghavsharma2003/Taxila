@@ -72,7 +72,7 @@ export function StudioFrame({ artifact, px, design, lang, onEvent }: ArtifactRen
           case "event": emit.current({ type: "interaction", name: String(msg.name ?? "").slice(0, 32) }); break;
           case "answer": {
             emit.current({ type: "answer", value: msg.value });
-            const r = await answerRef.current(msg.value);
+            const r = await answerRef.current(msg.value, typeof msg.itemId === "string" && msg.itemId ? { itemId: msg.itemId.slice(0, 24) } : undefined);
             // no verdict (network): the build simply waits, as a child's teacher would
             if (r && !dead) ch.port1.postMessage({ type: "verdict", correct: !!r.correct });
             break;

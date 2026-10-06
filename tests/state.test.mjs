@@ -8,6 +8,16 @@ const K = kit();
 const fresh = (over = {}) => initLessonState({ topicId: K.topicId, kit: K, ctx: CTX, seed: 11, now: 0, ...over });
 const turn = (r, c, extra = {}) => step(r.state, { event: "turn", kit: K, cls: c, now: (r.state.turn + 1) * 20_000, ...extra });
 const NE = cls("no_evidence");
+/**
+ * The classic four-rung ladder (pump → hint → prompt → assertion, one question for five turns) is the kill-switch path since
+ * p5-interaction's card cap (one question at most 3 turns in a row: owner-2 R5.loop). Scoped per test: npm test runs every
+ * file in one process, so the switch is restored in a finally (rj-chatstream-flake-label-2026-10-05).
+ */
+function capOff(fn) {
+  const saved = process.env.TAXILA_P5_CARDCAP;
+  process.env.TAXILA_P5_CARDCAP = "off";
+  try { return fn(); } finally { if (saved === undefined) delete process.env.TAXILA_P5_CARDCAP; else process.env.TAXILA_P5_CARDCAP = saved; }
+}
 
 /** Drive a new (novice) learner from the greeting to the first practice item. */
 function toPractice() {
@@ -34,11 +44,16 @@ test("experienced learner attempts first (expertise reversal): no worked example
   let r = step(fresh({ skills }), { event: "start", kit: K, now: 0 });
   const kinds = [];
   while (!r.move.itemId) { r = turn(r, NE); kinds.push(r.move.kind); }
-  assert.deepEqual(kinds, ["hook", "practice"]);
+  // V1-11 (checks.js): each skill's check reserve is held out of practice, so the first question can be on a skill this child
+  // has not met (one short explain turn first, poseNext). What expertise reversal promises is unchanged: no worked example,
+  // and the first question is attempt-first.
+  assert.equal(kinds[0], "hook");
+  assert.ok(!kinds.includes("worked_example") && !kinds.includes("first_step"), kinds.join(","));
+  assert.ok(["practice", "probe"].includes(kinds.at(-1)), kinds.join(","));
   assert.equal(r.move.format, "F8");
 });
 
-test("hint ladder never reveals before rung 4, then poses an isomorphic item", () => {
+test("hint ladder never reveals before rung 4, then poses an isomorphic item (TAXILA_P5_CARDCAP=off)", () => capOff(() => {
   let r = toPractice();
   const item = r.item;
   const levels = [];
@@ -57,14 +72,32 @@ test("hint ladder never reveals before rung 4, then poses an isomorphic item", (
   assert.ok(r.move.itemId && r.move.itemId !== item.id, "an isomorphic item follows the assertion");
   assert.equal(r.item.skillId, item.skillId);
   assert.equal(r.move.hintLevel, 0);
+}));
+
+test("with the card cap: rungs 1-2 never reveal; the third miss gets the key plainly (in content, never the shape) and an isomorphic item", () => {
+  let r = toPractice();
+  const item = r.item;
+  for (let i = 0; i < 2; i++) {
+    r = turn(r, cls("incorrect"));
+    assert.equal(r.move.itemId, item.id);
+    assert.match(r.move.shape, /the key stays unsaid/);
+    assert.ok(!r.move.shape.includes(item.answer));
+  }
+  r = turn(r, cls("incorrect"));
+  assert.notEqual(r.move.itemId, item.id, "the question left the card after 3 turns");
+  assert.equal(r.item.skillId, item.skillId, "a similar question follows");
+  assert.match(r.move.shape, /give its answer plainly with one line of why/);
+  assert.ok(!r.move.shape.includes(`${item.answer};`), "the key rides in the content lines, not the shape");
+  assert.ok(r.content.some((l) => l.includes(String(item.answer))));
+  assert.deepEqual(evidenceFrom(r.state, cls("correct"), K).filter((e) => e.itemId === item.id), [], "no evidence on the asserted item");
 });
 
-test("no evidence is taken after an assertion (the answer was said)", () => {
+test("no evidence is taken after an assertion (the answer was said) (TAXILA_P5_CARDCAP=off)", () => capOff(() => {
   let r = toPractice();
   for (let i = 0; i < 4; i++) r = turn(r, cls("incorrect"));
   assert.equal(r.state.hintLevel, 4);
   assert.deepEqual(evidenceFrom(r.state, cls("correct"), K), []);
-});
+}));
 
 test("a misconception gets one re-teach with the kit's representation, then the ladder", () => {
   let r = toPractice();
@@ -204,7 +237,10 @@ test("a reason volunteered with the answer replaces the why; a wrong one is the 
   let r = toPractice();
   const right = { ...cls("correct"), reason: "right" };
   const ev = evidenceFrom(r.state, right, K);
-  assert.deepEqual(ev.map((e) => e.probe), ["P15", "P2"], "the volunteered reason is its own generative evidence row");
+  // (the first practice item's own probe id depends on which item V1-11's reserve leaves first; the reason row is the claim)
+  assert.equal(ev.length, 2);
+  assert.notEqual(ev[0].probe, "P2");
+  assert.equal(ev[1].probe, "P2", "the volunteered reason is its own generative evidence row");
   const next = turn(r, right);
   assert.notEqual(next.move.probe, "P2", "no 'how did you know?' after they already said how");
   const trapped = turn(r, { ...cls("correct"), reason: "misconception", reasonMisconceptionId: "c4-maths-ch05-t01-m1" });

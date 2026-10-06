@@ -290,17 +290,35 @@ async function streamParts(res, { entry, t0, setupMs, prewarmed, framed = false,
       entry.startUpTo(i + LOOKAHEAD);
       if (realise && i > 0 && entry.pauses[i] > 0) await sendPcm(silence(entry.pauses[i]));
       let evented = false;
-      const src = realise ? edgeTrim(jobs[i].read(), { lead: true, tail: i < parts.length - 1 }) : jobs[i].read();
-      for await (const chunk of src) {
-        if (abort.signal.aborted) return;
-        if (!evented && framed) {
-          evented = true;
-          ensureHeader();
-          const atSample = wrote >> 1;
-          out.json(FRAME.event, { t: "clause", clause: entry.clauses?.[i] ?? i, part: i, atSample, atMs: Math.round((atSample / PCM_RATE) * 1000) });
+      // V4: Diya's viseme batches for this part (patch 01), framed next to its audio: anchored at the part's first sample
+      // (the clause anchor), with the edge-trimmed lead so the client can shift the synthesis offsets
+      let leadMs = 0, partAt = -1, offMarks = null;
+      const vq = [];
+      const flushVis = () => {
+        if (!framed || partAt < 0 || !vq.length) return;
+        const v = [], w = [];
+        for (const m of vq.splice(0)) { v.push(...m.visemes); w.push(...(m.words ?? [])); }
+        if (v.length || w.length) out.json(FRAME.event, { t: "visemes", part: i, atSample: partAt, leadMs, v, ...(w.length ? { w } : {}) });
+      };
+      const src = realise ? edgeTrim(jobs[i].read(), { lead: true, tail: i < parts.length - 1, onLead: (n) => { leadMs = Math.round((n / PCM_RATE) * 1000); } }) : jobs[i].read();
+      try {
+        for await (const chunk of src) {
+          if (abort.signal.aborted) return;
+          if (!evented && framed) {
+            evented = true;
+            ensureHeader();
+            const atSample = wrote >> 1;
+            out.json(FRAME.event, { t: "clause", clause: entry.clauses?.[i] ?? i, part: i, atSample, atMs: Math.round((atSample / PCM_RATE) * 1000) });
+            partAt = atSample;
+            offMarks = jobs[i].marks?.onMarks?.((m) => vq.push(m)) ?? null;
+          }
+          flushVis();
+          await sendPcm(chunk);
+          if (abort.signal.aborted) return;
         }
-        await sendPcm(chunk);
-        if (abort.signal.aborted) return;
+        flushVis();
+      } finally {
+        offMarks?.();
       }
     }
     if (headed) out.json(FRAME.end, { t: "end", status: "ok", bytes: wrote, ms: Math.round(performance.now() - t0) });

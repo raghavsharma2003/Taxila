@@ -20,14 +20,20 @@ const numberLineDef = { params: {
   fractions: { type: "array" }, numbers: { type: "array" }, target: { type: "string" }, start: { type: "string" },
 } };
 
-test("F1: a bound engine's numeric commit is re-checked against the verified key; a forged claim is never graded", () => {
-  const state = { activeItemId: "i1", module: { id: "m3", itemId: "i1", key: "72" } };
+// V1-01r (p5-interaction; supersedes patch 01's flat-shape recheck, rejected v1-rj-recheck-top-level-fields): the act is
+// re-run by the engine's logic on the server's params when its kind is known (recheck.js), else the committed VALUE is
+// compared with the verified key, else the answer is { unverifiable } — never the frame's claim.
+test("F1: a bound engine's commit is re-checked against the verified key; a forged claim is never graded", () => {
+  const state = { activeItemId: "i1", module: { id: "m3", engine: "number-line@1", itemId: "i1", key: "72" } };
   const ev = (data) => [{ moduleId: "m3", type: "answer", data }];
-  assert.deepEqual(moduleAnswerOf(state, ev({ value: "82", correct: true })), { correct: false, value: "82", source: "engine_rechecked", claimMismatch: true });
-  assert.deepEqual(moduleAnswerOf(state, ev({ value: "72", correct: false })), { correct: true, value: "72", source: "engine_rechecked", claimMismatch: true });
+  assert.deepEqual(moduleAnswerOf(state, ev({ value: "82", correct: true })), { correct: false, value: "82", source: "value_rechecked", claimMismatch: true });
+  assert.deepEqual(moduleAnswerOf(state, ev({ value: "72", correct: false })), { correct: true, value: "72", source: "value_rechecked", claimMismatch: true });
   assert.equal(moduleAnswerOf(state, ev({ value: "72", correct: true })).correct, true);
-  // a non-numeric key or commit keeps the engine's verdict (the engine's own binding computed it)
-  assert.deepEqual(moduleAnswerOf({ ...state, module: { ...state.module, key: "closer to 1" } }, ev({ value: "x", correct: true })), { correct: true, value: "x", source: "engine" });
+  // the frame protocol's real shape: the act nested under data.value (owner-1 sent { value: { value } }: 8/9 accepted on prod)
+  assert.equal(moduleAnswerOf(state, ev({ value: { value: "82" }, correct: true })).correct, false);
+  // a short label key compares by its text; nothing comparable is unverifiable (asked for in words), never the claim
+  assert.equal(moduleAnswerOf({ ...state, module: { ...state.module, key: "closer to 1" } }, ev({ value: "x", correct: true })).correct, false);
+  assert.equal(moduleAnswerOf(state, ev({ value: { foo: 1 }, correct: true })).unverifiable, true);
   assert.equal(recheckValue({ written: "3/4" }, "6/8"), true);
   assert.equal(recheckValue({ chosen: 1, fractions: ["1/3", "1/2"] }, "1/2"), true);
   assert.equal(recheckValue({ chosen: 0, fractions: ["1/3", "1/2"] }, "1/2"), false);
@@ -53,14 +59,25 @@ test("F2/F3: the praise guard sees a tick emoji; the deny guard sees 'galti hui'
   assert.doesNotMatch(stripPraise("✅ Sahi! Ab agla: 5 ka double?"), /✅/);
 });
 
-test("F5: a multi-part key offers `partial`; an ungraded attempt is never told it is right", () => {
+test("F5: a multi-part key offers `partial`; an ungraded attempt is never told it is right", async () => {
   assert.equal(multiPartKey("The ones decide: 47 is bigger"), true);
   assert.equal(multiPartKey("solid, liquid and gas"), true);
   assert.equal(multiPartKey("3/4"), false);
   assert.equal(multiPartKey("one-fourth"), false);
+  // V1-02 (VALUES-100 V1.1): multi-part comes from the authored parts data (server/content/parts.js), never from commas —
+  // multiPartKey called 97% of two-rater-agreed single-part keys multi-part (v1-rj-multipartkey-punctuation). An item with
+  // no parts row is single-part; one with a row offers `partial`.
   const item = { id: "x", skillId: K.skills[0].id, kind: "predict", answer: "The ones decide: 47 is bigger", acceptable: [] };
-  const t = targetFor({ phase: "practice", hintLevel: 0 }, K, item);
-  assert.equal(t.open, true);
+  assert.equal(targetFor({ phase: "practice", hintLevel: 0 }, K, item).open, false, "no parts row: single-part");
+  const { writeFileSync, mkdtempSync } = await import("node:fs");
+  const dir = mkdtempSync(`${(await import("node:os")).tmpdir()}/parts-`);
+  writeFileSync(`${dir}/p.json`, JSON.stringify({ items: { x: { parts: ["the ones decide", "47 is bigger"] } } }));
+  const saved = process.env.TAXILA_PARTS_FILE;
+  process.env.TAXILA_PARTS_FILE = `${dir}/p.json`;
+  const { resetPartsCache } = await import("../server/content/parts.js");
+  resetPartsCache();
+  try { assert.equal(targetFor({ phase: "practice", hintLevel: 0 }, K, item).open, true, "a parts row: partial is offered"); }
+  finally { if (saved === undefined) delete process.env.TAXILA_PARTS_FILE; else process.env.TAXILA_PARTS_FILE = saved; resetPartsCache(); }
   const none = { mode: "none" };
   assert.equal(verdictFor({ outcome: "no_evidence" }, none, { childText: "photosynthesis means plants make food from sunlight" }), "attempt");
   assert.equal(verdictFor({ outcome: "no_evidence" }, none, { childText: "haan" }), "ungraded");

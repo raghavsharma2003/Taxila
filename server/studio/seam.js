@@ -28,12 +28,18 @@ import { gateClient } from "./qa/pool.js";
 import { identityOf, kitHashOf, lookup, recordGatePass, gatePassed, noteMount, noteIncident, excludedArchetypes, spendOf, ensureIdentity, hashOf, cachedStrings, rememberStrings } from "./library.js";
 import { getBuild, putBuild } from "./store.js";
 import { createGradeSession, studioEvidenceEvent, writeStudioEvidence } from "./grade.js";
+// ship5 p4-content (STAGECRAFT patch P3 + board sync): everything Stagecraft adds lives in server/stagecraft/**; with no
+// host attached (STAGECRAFT=off, or a host that failed to start) every call below is a no-op and Wave 2 is unchanged.
+import * as stagecraft from "../stagecraft/seam-bridge.js";
+import { startStagecraft, stopStagecraft, touchStagecraft } from "../stagecraft/lesson.js";
+import * as boardSync from "../stagecraft/board-sync.js";
 
 /** Bounds (LIVE-STUDIO §3.1, §3.8; STUDENT-FLOW §5.3). */
 export const STUDIO_LIMITS = Object.freeze({
   piecesPerLesson: 3,          // prefetched frame / skeleton pieces (whiteboards are per line and do not count)
   firstRevealTurn: 3,          // never during the greeting: the earliest turn a prefetched piece may be revealed
   turnsBetweenReveals: 4,      // one thing at a time, and room to teach between pieces
+  stagecraftTurnsBetweenReveals: 2, // STAGECRAFT P5: with a Stagecraft host the spacing is 2 (its rest rule caps how busy the stage is)
   retireAfterTurns: 8,         // a revealed piece leaves the tray after this many turns (kept on the Made for you shelf)
   retireAfterCompleteTurns: 2, // ...or this many turns after its last item was answered
   readyUnrevealedMs: 4 * 60_000, // a ready build not revealed within 4 minutes goes back to the library (§3.8)
@@ -88,6 +94,7 @@ function lessonState(lessonId, init) {
       const oldest = lessons.values().next().value;
       lessons.delete(oldest.lessonId);
       closeLesson(oldest, "evicted");
+      stopStagecraft(oldest.lessonId);
     }
   } else if (L) touch(L);
   return L ?? null;
@@ -178,6 +185,7 @@ function artifactOf(p) {
 
 /** The Work tray slot of a piece (shared/studio.ts StudioSlot). */
 export function slotOf(p, state = p.state) {
+  if (p.source === "stagecraft") return stagecraft.stagecraftSlot(p, state);
   const art = p.artifact?.kind === "whiteboard" ? p.artifact : p.kind === "whiteboard" ? undefined : artifactOf(p);
   const st = state === "fallback_ready" ? "fallback_shown" : state;
   return { slotId: p.slotId, intentId: p.intentId, state: st, ...(art ? { artifact: art } : {}) };
@@ -408,7 +416,9 @@ export const studioSeam = {
       redact: [ctx.child?.first_name, ctx.child?.name].filter((x) => typeof x === "string" && x.length > 1),
     });
     // the child's earlier lesson still in memory has ended: its open wrong items close as evidence now (no lesson-end hook)
-    if (L.childId) for (const other of [...lessons.values()]) if (other !== L && other.childId === L.childId) { lessons.delete(other.lessonId); closeLesson(other, "lesson_end"); }
+    if (L.childId) for (const other of [...lessons.values()]) if (other !== L && other.childId === L.childId) { lessons.delete(other.lessonId); closeLesson(other, "lesson_end"); stopStagecraft(other.lessonId); }
+    // Stagecraft (ship5 p4-content): one host per lesson, fire-and-forget (never delays the start; off/practice → none)
+    startStagecraft({ lessonId: ctx.lessonId, purpose: L.purpose, child: ctx.child ?? null, studioControl: L.studioControl }).catch(() => null);
     // Quick practice is a short item set (STUDENT-FLOW §6.1): no Studio pieces there.
     if (L.purpose === "practice") return;
     return (async () => {
@@ -437,8 +447,13 @@ export const studioSeam = {
     // turns are CONVERSATION turns: a module-only turn (a Studio answer, an activity milestone) does not move the retire /
     // gap clocks (the call site's hint; without it every call counts, as before)
     if (!hint?.moduleOnly) L.turn++;
+    touchStagecraft(lessonId);
     const pieces = [...L.pieces.values()];
-    if (!pieces.length) return null;
+    if (!pieces.length) {
+      // no Wave 2 piece: Stagecraft may still propose (a request, the plan); without a host this is null as before
+      const v0 = stagecraft.augmentView(lessonId, { statuses: [], onScreen: null }, hint?.stagecraftPoint ?? null);
+      return v0?.propose || v0?.steer || v0?.offer ? v0 : null;
+    }
     const statuses = pieces.filter((p) => p.kind !== "whiteboard").map(statusOf);
     const on = L.onScreen ? L.pieces.get(L.onScreen) : null;
     const onScreen = on && VISIBLE.has(on.state) ? { ...on.facts, ...(on.lastItemId ? { itemId: on.lastItemId } : {}) } : null;
@@ -458,9 +473,10 @@ export const studioSeam = {
     if (on && VISIBLE.has(on.state) && on.kind !== "whiteboard") {
       const turns = L.turn - (on.revealedTurn ?? L.turn);
       if (turns >= STUDIO_LIMITS.retireAfterTurns || (on.completeTurn != null && L.turn - on.completeTurn >= STUDIO_LIMITS.retireAfterCompleteTurns)) view.propose = { retire: on.intentId };
-      return view;
+      return stagecraft.augmentView(lessonId, view, hint?.stagecraftPoint ?? null);
     }
-    if (L.safety || L.turn < STUDIO_LIMITS.firstRevealTurn || L.turn - L.lastRevealTurn < STUDIO_LIMITS.turnsBetweenReveals) return view;
+    const spacing = stagecraft.hostFor(lessonId) ? STUDIO_LIMITS.stagecraftTurnsBetweenReveals : STUDIO_LIMITS.turnsBetweenReveals;
+    if (L.safety || L.turn < STUDIO_LIMITS.firstRevealTurn || L.turn - L.lastRevealTurn < spacing) return stagecraft.augmentView(lessonId, view, hint?.stagecraftPoint ?? null);
     // with the lesson's current beat (the call site's hint), a piece is offered only in the beat it was made for; without
     // it (the seam commit's call site), on the lesson clock
     const beat = typeof hint?.beat === "string" ? hint.beat : null;
@@ -469,7 +485,7 @@ export const studioSeam = {
     const own = (p) => (beat && (BEAT_NEED[beat] ?? []).includes(p.need) ? 0 : 1);
     const next = pieces.filter((p) => isRevealable(p) && fits(p)).sort((x, y) => own(x) - own(y) || x.neededAtMs - y.neededAtMs)[0];
     if (next) { view.propose = { reveal: next.intentId }; if (next.facts) view.revealing = next.facts; }
-    return view;
+    return stagecraft.augmentView(lessonId, view, hint?.stagecraftPoint ?? null);
   },
 
   /**
@@ -492,10 +508,15 @@ export const studioSeam = {
     const trayTaken = typeof hint?.tray === "string" && DIRECTOR_TRAYS.has(hint.tray);
     if (turnStudio?.reveal) {
       const p = L.pieces.get(turnStudio.reveal);
+      // ship5 p4-content: the Director's only thing in the tray is its template explain rung (turn.js drops it when a
+      // Stagecraft piece takes the tray, as it does for the live board): the tray is not taken for a Stagecraft piece
+      const trayTaken = typeof hint?.tray === "string" && DIRECTOR_TRAYS.has(hint.tray) && !(p?.source === "stagecraft" && hint?.rungTray);
       // the turn moved into a beat the piece was not made for, the tray is the Director's, or her move asks its own
       // question: it waits for its moment; onReveal skips it on this turn
       const beat = typeof hint?.beat === "string" ? hint.beat : null;
-      if (p && !VISIBLE.has(p.state) && (trayTaken || !!hint?.asking || (beat && !beatsFor(p).includes(beat)))) p.heldTurn = L.turn;
+      // a Stagecraft piece was admitted for this beat by the reveal policy (its want): only the tray and her own question
+      // hold it, and a piece the CHILD asked for is held only by the Director's tray (her question is about it)
+      if (p && !VISIBLE.has(p.state) && (trayTaken || (!!hint?.asking && !p.requested) || (beat && p.source !== "stagecraft" && !beatsFor(p).includes(beat)))) p.heldTurn = L.turn;
       else if (p && (isRevealable(p) || VISIBLE.has(p.state))) { L.shown = { intentId: p.intentId, revealing: !VISIBLE.has(p.state) }; return slotOf(p, p.source === "skeleton" ? "fallback_ready" : "revealed"); }
     }
     const on = L.onScreen ? L.pieces.get(L.onScreen) : null;
@@ -543,7 +564,9 @@ export const studioSeam = {
       if (L.onScreen && L.onScreen !== p.intentId) retirePiece(L, L.onScreen, "replaced");
       p.state = "revealed"; p.revealedTurn = L.turn; p.revealedAt = Date.now();
       L.onScreen = p.intentId; L.lastRevealTurn = L.turn;
-      p.grade = createGradeSession(p.archetype, p.params);
+      if (p.source === "stagecraft") stagecraft.noteRevealed(L.lessonId, p.intentId);
+      // a Stagecraft piece is graded by its engine registry over the spec the server revealed (gradeAny), never the frame
+      p.grade = stagecraft.gradeSessionFor(p) ?? createGradeSession(p.archetype, p.params);
       push(L, { t: "status", status: statusOf(p) });
       if (p.source === "library" && p.buildSha) noteMount(p.buildSha).catch(() => {});
       return writeMount(L, p, ev.childId ?? L.childId);
@@ -579,7 +602,8 @@ export const studioSeam = {
     // W2 integration: the template board this live board replaces (explainer@1, open-item guarded by W2-B). A live board
     // that fails the drawing gate or times out shows it instead of leaving an accepted slot empty; no fallback → voice.
     const fb = ask.fallback?.script ? normalizeScript(ask.fallback.script, { strict: false }) : null;
-    const fallbackScript = fb?.ok ? fb.script : null;
+    // ship5 p4-content: the template drawn as the last rung is re-timed to her line (it draws while she speaks: W6)
+    const fallbackScript = fb?.ok ? boardSync.retimeToLine(fb.script, ask.line?.text) : null;
     const showFallbackOrFail = () => {
       if (fallbackScript && !p.retired && L.onScreen === intentId) {
         p.artifact = { kind: "whiteboard", stage: { w: fallbackScript.board.w, h: fallbackScript.board.h }, script: fallbackScript };
@@ -593,7 +617,10 @@ export const studioSeam = {
       p.state = "failed"; p.fallback = "voice";
       push(L, { t: "status", status: { state: "failed", intentId, fallback: "voice" } });
     };
-    deps.planWhiteboard(ask, { kit: L.kit ?? undefined, prev, redact: L.redact, budgetMs: STUDIO_LIMITS.wbBudgetMs })
+    // ship5 p4-content board sync: the speculative board (prepareWhiteboard), the line plan raced against the sync deadline,
+    // then the kit's code board, all re-gated against her line (TAXILA_BOARD_SYNC=0: exactly deps.planWhiteboard)
+    boardSync.plan(ask, { kit: L.kit ?? undefined, prev, redact: L.redact, budgetMs: STUDIO_LIMITS.wbBudgetMs, planWhiteboard: deps.planWhiteboard, fallbackScript,
+      onLateSpend: (usd) => { try { breaker.spend(usd); } catch { /* accounting never breaks a lesson */ } L.wbUsdPending = (L.wbUsdPending ?? 0) + usd; } })
       .then((r) => {
         // spend: every board counts toward the global breaker and the child's caps, drawn or not (W2-F fixer)
         const usd = Number(r?.usd) || 0;
@@ -602,8 +629,9 @@ export const studioSeam = {
         if (r?.ok && r.script) {
           p.artifact = { kind: "whiteboard", stage: { w: r.script.board.w, h: r.script.board.h }, script: r.script };
           p.facts = r.script.facts ?? null;
-          p.state = "revealed"; p.revealedAt = Date.now(); p.revealedTurn = L.turn;
+          p.state = "revealed"; p.revealedAt = Date.now(); p.revealedTurn = L.turn; p.boardSource = r.source ?? "line"; p.syncMs = r.syncMs ?? null;
           L.wbPrev = r.script;
+          console.info(`[studio] whiteboard drawn source=${p.boardSource} sync=${p.syncMs ?? "?"}ms spec=${r.specState ?? "-"}`);
           push(L, { t: "script", intentId, script: r.script });
           push(L, { t: "status", status: { state: "revealed", intentId, buildSha: "whiteboard", facts: p.facts ?? { kind: "whiteboard", archetype: "whiteboard", onScreen: {} } } });
           // ONE studio_mount row per whiteboard beat (its first board): the Made for you and parent feeds list a beat's
@@ -629,6 +657,25 @@ export const studioSeam = {
   },
 
   /**
+   * ship5 p4-content board sync: start the speculative board for an accepted whiteboard ask BEFORE her line exists (turn.js
+   * calls it right after the kernel, with the move's kit content as the line). Same guards as requestIntent; synchronous,
+   * in memory, fire-and-forget; never throws. → true when a speculative plan started.
+   */
+  prepareWhiteboard(ask) {
+    try {
+      const lessonId = ask?.line?.lessonId || ask?.intent?.lessonId;
+      if (!lessonId || ask?.intent?.kind !== "whiteboard") return false;
+      const L = lessonState(lessonId, {});
+      if (L.safety || L.studioControl === "off") return false;
+      const decision = routerDecide({ intent: ask.intent, child: { bondStage: L.bondStage ?? undefined, studioControl: L.studioControl ?? "on", safetyMode: !!L.safety } });
+      if (decision.action !== "whiteboard") return false;
+      const on = L.onScreen ? L.pieces.get(L.onScreen) : null;
+      if (on && VISIBLE.has(on.state) && on.kind !== "whiteboard" && !on.grade?.complete) return false;
+      return boardSync.prepare(ask, { kit: L.kit ?? undefined, prev: ask.mode === "continue" ? L.wbPrev : null, redact: L.redact, planWhiteboard: deps.planWhiteboard, budgetMs: STUDIO_LIMITS.wbBudgetMs });
+    } catch { return false; }
+  },
+
+  /**
    * The facts row for the reply prompt (both voice lanes; director/modules.js factsRow shape): what is on screen as
    * values, or null when nothing is. Never a piece in flight.
    */
@@ -651,6 +698,7 @@ export const studioSeam = {
     const L = lessons.get(lessonId);
     if (!L) return;
     L.safety = true;
+    stagecraft.noteSafety(lessonId, true);
     if (L.onScreen) retirePiece(L, L.onScreen, "safety");
   },
 };
@@ -660,7 +708,7 @@ function retirePiece(L, intentId, why) {
   if (!p || p.state === "retired") return;
   const wasVisible = VISIBLE.has(p.state);
   p.state = "retired"; p.retired = true; p.retiredWhy = why;
-  if (L.onScreen === intentId) L.onScreen = null;
+  if (L.onScreen === intentId) { L.onScreen = null; if (why !== "replaced") stagecraft.noteRetired(L.lessonId); }
   push(L, { t: "status", status: statusOf(p) });
   if (p.mountId) dbq("update studio_mount set outcome = outcome || $2::jsonb where id = $1", [p.mountId, JSON.stringify({ retired: why })]).catch(() => {});
   // the piece leaves with items the child got wrong and never got right: ONE incorrect event per such item (W2-H fixer):
@@ -754,6 +802,7 @@ export async function hostAnswer({ lessonId, intentId, value, itemId, mount, chi
   const r = p.grade.grade(value, typeof itemId === "string" ? { itemId: itemId.slice(0, 24) } : {});
   if (p.state === "revealed") { p.state = "in_use"; push(L, { t: "status", status: statusOf(p) }); }
   p.lastItemId = r.itemId;
+  if (p.source === "stagecraft" && !r.ungraded) stagecraft.noteVerdict(lessonId, r.correct ? "right" : "wrong");
   if (!r.correct && signatureOf(p, value)) (p.signatureHits ??= new Set()).add(r.itemId);
   if (r.complete && p.completeTurn == null) p.completeTurn = L.turn;
   if (!r.complete) p.completeTurn = null;
@@ -859,7 +908,7 @@ function rowOf(f) {
 export function isStudioRow(line) {
   if (typeof line !== "string" || !line.startsWith(STUDIO_ROW_PREFIX)) return false;
   const head = line.slice(STUDIO_ROW_PREFIX.length).split(" · ")[0];
-  return ARCHETYPES.has(head) && head !== "whiteboard";
+  return (ARCHETYPES.has(head) && head !== "whiteboard") || stagecraft.isStageArchetype(head);
 }
 
 /**

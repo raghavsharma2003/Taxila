@@ -68,7 +68,11 @@ var Studio = {
     if (s.length > 512) j = null;
     if (pending > 4) return;
     pending++;
-    send({ type: "answer", value: j });
+    // the item ON SCREEN, read from the seam (data-item, required by every multi-item archetype): the host grades the
+    // answer against the item the child saw, never against its own pointer (VALUES-100 V1.1, evals/grading-truth:
+    // without it a wrong try that equals an earlier item's answer was told "right")
+    var shown = null; try { var el = document.querySelector("[data-item]"); shown = el ? String(el.getAttribute("data-item") || "").slice(0, 24) || null : null; } catch (e) {}
+    send(shown ? { type: "answer", value: j, itemId: shown } : { type: "answer", value: j });
   },
   onVerdict: function (cb) { if (typeof cb === "function" && cbs.length < 8) cbs.push(cb); },
   event: function (n, d) { var now = Date.now(); if (now - evT > 1000) { evT = now; evN = 0; } if (++evN > 10) return; var s = ""; try { s = JSON.stringify(d || {}); } catch (e) {} if (s.length > 1024) return; send({ type: "event", name: String(n).slice(0, 32) }); },

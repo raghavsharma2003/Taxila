@@ -15,6 +15,7 @@ import { StudioWhiteboard } from "../modules/whiteboard/StudioWhiteboard.tsx";
 import { StudioFrame } from "./StudioFrame.tsx";
 import { SkeletonRenderer } from "./skeletons.tsx";
 import { ImageRenderer } from "./ImageRenderer.tsx";
+import { StagecraftRenderer } from "../stagecraft/StagecraftRenderer.tsx";
 
 /** What a renderer may tell the stage. An answer is host-graded (LIVE-STUDIO §3.10); `correct` is never trusted. */
 export type StudioStageEvent =
@@ -46,6 +47,7 @@ export const RENDERERS: { [K in StudioArtifactKind]?: ArtifactRenderer<K> } = {
   frame: StudioFrame,           // W2-H: a gate-passed build (hash-CSP, opaque origin, host-graded)
   skeleton: SkeletonRenderer,   // W2-H: the code skeleton (the sketch while making; the activity when the build is not there)
   image: ImageRenderer,         // W2-H: art only (W3-G's image lane fills it)
+  stagecraft: StagecraftRenderer as unknown as ArtifactRenderer<"stagecraft">,   // STAGECRAFT P10: src/stagecraft (needs P9)
 };
 
 export function rendererFor<K extends StudioArtifactKind>(kind: K): ArtifactRenderer<K> | null {

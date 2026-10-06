@@ -1,7 +1,7 @@
 // p5-interaction (owner directive 2026-10-05, priority 5): the Director acts on the child's words. Pure: no network, no
 // model. The phrases are the ones the live prod battery sent (evals/prod-runs/2026-10-05-day0: owner-2, owner-4) and the
 // conversation-v2 battery's intents. Needs docs/design/ship5/p5-interaction/patches applied (APPLY.md).
-import { test, afterEach } from "node:test";
+import { describe, test, afterEach } from "node:test";
 import assert from "node:assert/strict";
 import { initLessonState, step, LIMITS } from "../server/director/state.js";
 import { classifyFast, targetFor } from "../server/director/classify.js";
@@ -30,6 +30,8 @@ function said(r, text, typed = true) {
 }
 const ended = (r) => r.end || r.move.kind === "wrap" || r.state.phase === "done";
 const SAVED = { ...process.env };
+// File-scoped: a top-level hook wraps EVERY file's tests in the shared npm-test process (rj: shared-process hook leak).
+describe('p5-interaction director', () => {
 afterEach(() => { for (const k of ["TAXILA_P5", "TAXILA_P5_STEER", "TAXILA_P5_CARDCAP", "TAXILA_P5_GUARDS", "TAXILA_P5_RECHECK", "TAXILA_CONV2"]) { if (k in SAVED) process.env[k] = SAVED[k]; else delete process.env[k]; } });
 
 // ── the card cap (owner-2 R5.loop: 17 of 90 turns; w1c-three-day: a why item held 7 turns) ──
@@ -209,4 +211,5 @@ test("safety still outranks every reading: distress words with a steering phrase
   assert.equal(c.flags.distress, true);
   const s = turn(r, c);
   assert.equal(s.move.kind, "safeguard");
+});
 });

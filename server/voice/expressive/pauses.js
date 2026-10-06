@@ -41,8 +41,9 @@ export function offsetOf(buf) {
  * @param {{ lead?: boolean, tail?: boolean }} o
  * @returns {AsyncGenerator<Buffer>}
  */
-export async function* edgeTrim(src, { lead = false, tail = false } = {}) {
+export async function* edgeTrim(src, { lead = false, tail = false, onLead } = {}) {
   let carry = Buffer.alloc(0);
+  let consumed = 0; // samples taken from src while leading (V4: onLead reports how many the trim removed)
   let leading = lead;
   let held = Buffer.alloc(0); // tail hold-back
   let dropped = 0;
@@ -53,6 +54,7 @@ export async function* edgeTrim(src, { lead = false, tail = false } = {}) {
     carry = buf.subarray(even);
     buf = buf.subarray(0, even);
     if (leading) {
+      consumed += buf.length >> 1;
       // the dropped audio's last KEEP_MS rides along, so the pre-roll survives any chunk boundary
       const all = Buffer.concat([pre, buf]);
       const on = onsetOf(all);
@@ -64,6 +66,8 @@ export async function* edgeTrim(src, { lead = false, tail = false } = {}) {
       const cut = on < 0 ? 0 : Math.max(0, on - samplesOf(KEEP_MS));
       buf = all.subarray(cut * 2);
       leading = false;
+      // samples removed before the first kept one = consumed - kept (V4: the face shifts the part's viseme offsets by it)
+      try { onLead?.(consumed - (buf.length >> 1)); } catch { /* a listener never stops the voice */ }
     }
     if (!tail) { if (buf.length) yield buf; continue; }
     held = Buffer.concat([held, buf]);

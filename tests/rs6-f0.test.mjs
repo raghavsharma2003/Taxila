@@ -83,7 +83,12 @@ test("harder one: next step up in ge, reaching past the queue; easier one: gentl
   const s2 = { ...S0(), queue: kit.items.map((i) => i.id), activeItemId: null };
   assert.equal(I.selectNext(s2, kit, { easier: true }).id, "t-i01");
   const top = { ...S0(), itemsDone: kit.items.filter((i) => i.id !== "t-i07").map((i) => i.id), activeItemId: "t-i05" };
-  assert.equal(I.harderThan(top, kit)?.id, "t-i07");
+  // V1-11 (VALUES-100 V1.3, applied at ship5 integration): t-s3's check reserve (its hardest non-opener item, t-i07) is held
+  // out of practice for the delayed check on a never-seen item, so "harder one" never reaches it: nothing above -> null.
+  assert.ok(I.checkReserveIds(kit).has("t-i07"));
+  assert.equal(I.harderThan(top, kit), null);
+  const kit1 = { ...kit, items: kit.items.filter((i) => i.skillId !== "t-s3" || i.id === "t-i07") };   // one t-s3 item: no reserve
+  assert.equal(I.harderThan(top, kit1)?.id, "t-i07");
 });
 
 test("fast-forward: two fast unaided rights skip the warm-up rungs; three in a row skip the skill; test-out needs 3 on-grade", () => {

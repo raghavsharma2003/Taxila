@@ -217,6 +217,12 @@ export interface VoiceUtterance {
   bargeIn: boolean;
   at: number;
   features: { [feature: string]: number | undefined };
+  /**
+   * ship5 p3-voicesig: this utterance's knowledge-voice numbers (src/voicesig/types.ts KnowledgeVoice: timing, pauses,
+   * filler runs, audio quality; never audio, text or a state name). Top-level, NEVER inside `features` (that would 400).
+   * The server reads it in server/voicesig/lesson.js and does not store it.
+   */
+  kv?: import("../src/voicesig/types.ts").KnowledgeVoice;
 }
 export interface TurnResponse {
   /**
