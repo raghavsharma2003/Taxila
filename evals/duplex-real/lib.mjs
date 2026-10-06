@@ -86,7 +86,8 @@ export function to24k(x) {
  * Lane socket configs. D4 = production eastus2 (taxila-live-transcribe = gpt-live-transcribe, the sttSession production
  * shape: script prompt, near_field noise reduction, server VAD 1,500 ms as the duplex backstop). MAI = the India lane
  * candidate (taxila-mai-tx2-stream on the South India account; prompt and keywords are refused by that deployment, so
- * language "hi" only; same server VAD backstop). Keys are read from env and never printed.
+ * language "hi" only; it REFUSES turn_detection ("Turn detection is not supported for this transcription model", probe
+ * 2026-10-06), so there is no server VAD backstop: finals come only from client commits, i.e. the engine's probes). Keys are read from env and never printed.
  */
 export async function laneSocket(lane) {
   const { sttSession } = await import(ROOT + "server/voice/stt.js");
@@ -99,7 +100,7 @@ export async function laneSocket(lane) {
   }
   if (lane === "MAI") {
     const host = new URL(process.env.AZURE_AI_SOUTHINDIA_ENDPOINT).host;
-    const session = { type: "transcription", audio: { input: { format: { type: "audio/pcm", rate: SR_OUT }, noise_reduction: { type: "near_field" }, transcription: { model: process.env.DUPLEX_REAL_MAI || "taxila-mai-tx2-stream", language: "hi" }, turn_detection: vad } } };
+    const session = { type: "transcription", audio: { input: { format: { type: "audio/pcm", rate: SR_OUT }, noise_reduction: { type: "near_field" }, transcription: { model: process.env.DUPLEX_REAL_MAI || "taxila-mai-tx2-stream", language: "hi" }, turn_detection: null } } };
     return { url: `wss://${host}/openai/v1/realtime?intent=transcription`, headers: { "api-key": process.env.AZURE_AI_SOUTHINDIA_KEY }, session, model: session.audio.input.transcription.model, region: "southindia" };
   }
   throw new Error(`unknown lane ${lane}`);
