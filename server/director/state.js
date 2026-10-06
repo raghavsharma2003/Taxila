@@ -757,7 +757,7 @@ const waysChips = (labels) => [{ id: "req:visual", label: "Show me a picture" },
   { id: "req:game", label: "Play a game" }, { id: "stop:continue", label: labels.back }];
 /** The request types p5-interaction adds (conversation/lexicon.js readings and the UNDERSTAND note, via policy.js). */
 export const P5_REQUESTS = new Set(["clarify", "repeat", "back", "skip", "know", "harder", "easier", "boredom", "frustration", "thinking", "identity",
-  "uptake", "decline", "answer_q", "adapt", "adopt", "adult", "park", "detour", "stop"]);
+  "uptake", "decline", "answer_q", "adapt", "adopt", "adult", "park", "detour", "stop", "hold_checkin", "ask_invite"]);
 
 /** A teach-phase re-explanation of the idea being taught now (the teach step does not advance). */
 function teachAgainPlan(s, kit, how) {
@@ -816,6 +816,10 @@ function p5RequestMove(s, input, item, req, labels) {
     }
     // a mid-thought: no question pinned this turn (no re-ask), the item stays the active one
     case "thinking": return plan("repair", SH.waitThinking(), { request: "thinking" });
+    // ship5 fixer (experience B4): the duplex floor's hold offer (the child said "ruko / ek second" and then stayed quiet):
+    // one warm check-in, no verdict, the item stays the active one (V5.2)
+    case "hold_checkin": return plan("repair", SH.holdCheckin(), { request: "hold_checkin" });
+    case "ask_invite": return plan("repair", SH.inviteQuestion(), { request: "ask_invite" });
     case "identity": return withLead(SH.disclose());
     case "uptake": return withLead(SH.uptake({ kind: req.kind }));
     case "decline": return withLead(SH.declineOob());
@@ -1028,7 +1032,9 @@ function moduleReaction(s, input, item) {
  * answer was graded before step(); the item left gets none after it.
  */
 function capPlan(s, input, p) {
-  if (s.safeguard || !p.item || p.capped) return p;
+  // ship5 fixer (experience B1): the child's own ask to SEE it is honoured, never capped away (the cap turned "picture
+  // dikhao" into the next practice question, 2/2 in the request probe); their next answer turn caps as before
+  if (s.safeguard || !p.item || p.capped || p.request === "visual") return p;
   const kit = input.kit;
   const item = findItem(s, kit, p.item.id) ?? p.item;
   const pins = s.pendingWhy !== item.id && !["safeguard", "wrap", "break", "teachback"].includes(p.kind);

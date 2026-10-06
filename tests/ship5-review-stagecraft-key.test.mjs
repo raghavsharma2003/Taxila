@@ -32,3 +32,13 @@ test("ship5 review: a model-written key that contradicts the cited kit item is n
   assert.equal(g.correct, false,
     `a model-authored key reached the child: generated_spec admitted (checks ${JSON.stringify(r.checks)}) and the wrong tap "empire" graded ${JSON.stringify(g)}`);
 });
+
+test("ship5 fix B2: the checked authored spec's own keys verify; a computed-key engine always verifies", async () => {
+  const { keysVerified } = await import("../server/stagecraft/builders.js");
+  const spec = structuredClone(authoredSpec(TOPIC, ARCH));
+  assert.equal(keysVerified(ARCH, spec, TOPIC), true, "the authored scene's own task is a checked key");
+  const bad = structuredClone(spec);
+  bad.task = { kind: "tap", prompt: "Which of these came first?", options: ["har", "empire"], answer: "empire", src: "c7-sst-ch04-t01-i02" };
+  assert.equal(keysVerified(ARCH, bad, TOPIC), false);
+  assert.equal(keysVerified("slice-at@1", {}, TOPIC), true, "a base engine grades from its own physics");
+});

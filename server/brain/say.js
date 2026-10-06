@@ -10,14 +10,14 @@ import { findItem, promptFor, revealsAnswer, posesItem, handsBack, asksWhy, stri
 import { TURN_WORDS, FLOOR_FIX } from "../compiler/compile.js";
 import { HELPLINES } from "../compiler/floor.js";
 import { registerBroken, toAap } from "../director/register.js";
-import { praiseProblem, stripPraise, screenProblem, stripScreenRefs, leaksStage, stripStage, askParity, endOnAsk, joinAsk, lastQuestionOnly, wrapsUp, stripWrap, correctsRight, stripCorrection } from "../director/say.js";
+import { praiseProblem, stripPraise, screenProblem, stripScreenRefs, leaksStage, stripStage, saysCantShow, stripCantShow, askParity, endOnAsk, joinAsk, lastQuestionOnly, wrapsUp, stripWrap, correctsRight, stripCorrection } from "../director/say.js";
 import { mixedUnitComparison, withoutMixedUnits } from "../director/units.js";
 import { screenContradiction, stripStrayParts } from "../director/modules.js";
 import { isBare, repeatsEarlier, tidy, leadWithoutQuestion, sentences } from "../conversation/guards.js";
 import { p5Flag } from "../conversation/flags.js";
 
 /** p5-interaction: problems a gutted teaching turn's one retry may still carry, because code repairs them (never truth). */
-const SOFT_FIX = new Set(["long", "twoq", "wrap", "script", "register", "stage"]);
+const SOFT_FIX = new Set(["long", "twoq", "wrap", "script", "register", "stage", "cantshow"]);
 /** Text-mode hard ceiling for the reply guard (the compiled rule asks for TURN_WORDS). */
 export const REPLY_MAX_WORDS = { "6-9": 30, "10-15": 40 };
 
@@ -222,6 +222,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     screenContradiction(own(t), module) && "parts",
     registerBroken(t, address) && "register",
     leaksStage(t) && "stage",
+    saysCantShow(t) && "cantshow",
     (guardable && revealsAnswer(t, item) || ahead && revealsAnswer(t, ahead)) && "leak",
     mixedUnitComparison(own(t)) && "units",
     mustPose && !posesItem(t, item, lang) && "drift",
@@ -306,7 +307,8 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       found.includes("corrects") && `it implies their answer was wrong or that the answer is something else, but their answer ${JSON.stringify(String(right.key))} was right — confirm it plainly and do not name any other answer as the result`,
       found.includes("screen") && "it tells them to tap or pick something on the screen, but nothing is on the screen to tap this turn — ask them to say it",
       found.includes("parts") && `it names parts the screen does not show — ${screenContradiction(own(reply), module)?.onScreen ?? ""}`,
-      found.includes("stage") && "it reads out a field name or markup (like 'Whiteboard:' or brackets) — plain spoken words only",
+      found.includes("cantshow") && "it says you cannot show or draw — never say that; the board draws for you: talk about the idea itself",
+      found.includes("stage") && "it reads out a field name, markup or a text picture (like 'Whiteboard:', brackets or rows of symbols like ●●●) — plain spoken words only; the board draws pictures, never your words",
       found.includes("register") && (address === "aap" ? "it uses tum forms — address the child with aap forms only (aap, aapka; verbs ending -iye)" : "it uses aap — address the child with tum forms (tum, tumhara)"),
       found.includes("ask") && !found.includes("drift") && `it must end by asking exactly this question, and ask nothing else: "${askEnd}"`,
       found.includes("twoq") && !found.includes("ask") && "it asks more than one question — keep only one question, at the end",
@@ -368,6 +370,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       if (found.includes("parts")) { reply = keepOr(stripStrayParts(reply, module, undefined, { keep: item ? promptFor(item, lang) : "" })); guard.replaced = true; }
       if (found.includes("register") && address === "aap") { reply = toAap(reply); guard.repaired = true; }
       if (found.includes("stage")) { reply = stripStage(reply) || fallbackReply(state, item); guard.replaced = true; }
+      if (found.includes("cantshow")) { reply = keepOr(stripCantShow(reply)); guard.replaced = true; }
       if (found.includes("long")) reply = trimToWords(reply, max);
       // Last: the turn's shape (goodbye words out, the pinned question at the end, one question), in code.
       const left = problems(reply).filter((p) => SHAPE.has(p));
@@ -405,6 +408,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
           if (soft.includes("script")) a = a.replace(OFF_SCRIPT[lang] ?? OFF_SCRIPT.english, "").replace(/\s{2,}/g, " ").trim();
           if (soft.includes("register") && address === "aap") a = toAap(a);
           if (soft.includes("stage")) a = stripStage(a) || a;
+          if (soft.includes("cantshow")) a = stripCantShow(a) || a;
           if (words(a) > max) a = trimToWords(a, max);
           if (words(a) >= GUTTED_MIN && !problems(a).filter((p) => !SOFT_FIX.has(p)).length) { reply = a; guard.regutted = true; }
         }
@@ -420,6 +424,12 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     // the cut marks the repairs leave (an orphan quote, an empty fragment) and a lead sentence that re-poses the question
     const tidied = tidyAround(reply, pinned ? askEnd : null);
     if (tidied && tidied !== reply) { reply = tidied; guard.tidied = true; }
+  }
+  // ship5 fixer (experience B4: "apna maths sawaal likho" to a child talking hands-free): on a spoken lane her OWN words ask
+  // the child to say it, never to write or type it (the pinned kit question is verified content and is left byte for byte)
+  if (state.mode !== "text") {
+    const spoken = speakNotWrite(reply, askEnd);
+    if (spoken !== reply) { reply = spoken; guard.spoken = true; }
   }
   // The final words, checked once more (debug and the evals read it): what reached the child.
   const final = problems(reply).filter((p) => p !== "long" || words(reply) > max);
@@ -471,4 +481,20 @@ export function tidyAround(reply, ask) {
 function confirmsFirst(t) {
   const head = sentences(t).slice(0, 2).join(" ");
   return praiseProblem(head, "not_yet") === "praise";
+}
+
+/** Imperatives to write / type → the spoken form (her own words only; the pinned question at the end is kept). Exported for tests. */
+const WRITE_TO_SAY = [
+  [/\blikh\s+(?:kar|ke)\s+(?:bhejo|batao|dikhao)\b/gi, "bolkar batao"], [/\blikh\s+(?:kar|ke)\s+(?:bhejiye|bataiye|dikhaiye)\b/gi, "bolkar bataiye"],
+  [/\blikh\s+do\b/gi, "bata do"], [/\blikh\s+dijiye\b/gi, "bata dijiye"], [/\blikhiye\b/gi, "bataiye"], [/\blikho\b/gi, "batao"],
+  [/\btype\s+(?:karo|kar\s+do)\b/gi, "bolo"], [/\btype\s+(?:kijiye|kariye|kar\s+dijiye)\b/gi, "boliye"],
+  [/\b(?:write|type)\s+(?:it|that|this|your\s+answer|the\s+answer)(?:\s+down)?\b/gi, "say it"], [/\bwrite\s+down\b/gi, "say"],
+];
+export function speakNotWrite(reply, askEnd = null) {
+  const r = String(reply ?? "");
+  const ask = askEnd ? String(askEnd).trim() : "";
+  const cut = ask && r.trim().endsWith(ask) ? r.trim().length - ask.length : r.length;
+  let lead = r.slice(0, cut);
+  for (const [re, to] of WRITE_TO_SAY) lead = lead.replace(re, (m) => (m[0] === m[0].toUpperCase() ? to[0].toUpperCase() + to.slice(1) : to));
+  return lead + r.slice(cut);
 }

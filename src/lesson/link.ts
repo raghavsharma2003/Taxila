@@ -27,7 +27,9 @@ export type LinkEvent =
   /** Streaming ASR text for a child utterance (captions only, never evidence). */
   | { type: "child_partial"; itemId: string; text: string }
   /** A finished child turn. text "" + asrConfidence 0 means "the child spoke but ASR failed". */
-  | { type: "child_final"; text: string; startedAt: number; typed: boolean; itemId?: string; asrConfidence?: number; chipId?: string; duplex?: import("../../shared/contracts.ts").TurnRequest["duplex"] }
+  | { type: "child_final"; text: string; startedAt: number; typed: boolean; itemId?: string; asrConfidence?: number; chipId?: string; duplex?: import("../../shared/contracts.ts").TurnRequest["duplex"];
+    /** ship5 fixer (B3): the duplex engine merged this turn with a revoked commit whose words were `text` */
+    revokeOf?: { turnId: number; text: string } }
   | { type: "response_start"; responseId: string; at: number }
   | { type: "teacher_delta"; responseId: string; delta: string }
   /** Authoritative text of one teacher turn (emitted once per response, possibly partial if cut off). */

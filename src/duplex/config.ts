@@ -95,8 +95,11 @@ export const RATE = { nodMs: 3000 as Ms, mmMs: 12000 as Ms, reactChangeMs: 500 a
 /** A backchannel opportunity (BOP): a 200-500 ms falling dip after >= 1.5 s of child speech (v1 NOD, Ward & Tsukahara). */
 export const BOP = { minVoicedMs: 1500 as Ms, dipMinMs: 200 as Ms, dipMaxMs: 500 as Ms, lowRange: 0.33, mmDipMinMs: 400 as Ms };
 
-/** Hold requests (G3): face only; a check-in look at 8 s; an offer the child can refuse at 15 s (CUT_IN hold_offer). */
-export const HOLD = { checkinMs: 8000 as Ms, offerMs: 15000 as Ms };
+/** Hold requests (G3): face only; a check-in look at 4 s; an offer the child can refuse at 8 s (CUT_IN hold_offer). */
+// ship5 fixer (2026-10-06, experience review B4): the offer moved 15 s → 8 s and the look 8 s → 4 s. In the e2e lessons a
+// child's "ruko ruko didi ek second" left 12 s+ of dead air (the offer never came before they spoke again). [E] — not
+// measured on children; the pilot's hold lengths should set these.
+export const HOLD = { checkinMs: 4000 as Ms, offerMs: 8000 as Ms };
 /** Safety (G1): the safeguard speaks at a TRP (pComplete >= 0.6) or after this much silence; never over child voice. */
 export const SAFETY = { silenceMs: 1500 as Ms, speakPc: 0.6, presenceMs: 6000 as Ms };
 /** The closed CUT_IN list's conditions (G6, §3.4). */

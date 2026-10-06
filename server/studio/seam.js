@@ -510,7 +510,12 @@ export const studioSeam = {
       const p = L.pieces.get(turnStudio.reveal);
       // ship5 p4-content: the Director's only thing in the tray is its template explain rung (turn.js drops it when a
       // Stagecraft piece takes the tray, as it does for the live board): the tray is not taken for a Stagecraft piece
-      const trayTaken = typeof hint?.tray === "string" && DIRECTOR_TRAYS.has(hint.tray) && !(p?.source === "stagecraft" && hint?.rungTray);
+      // ship5 fixer (experience B1): on the CHILD's visual request the Director's tray holds only its "show" of the item
+      // (requests.js visual → reteach + diagram representation); the piece the child asked for takes it (turn.js drops the
+      // Director's show). Before, the requested piece was held by that show while the whiteboard was declined because a
+      // reveal was ready: nothing new reached the stage on 9/9 request turns, and her line pointed at the old screen.
+      const trayTaken = typeof hint?.tray === "string" && DIRECTOR_TRAYS.has(hint.tray)
+        && !(p?.source === "stagecraft" && (hint?.rungTray || (hint?.visualRequest && hint.tray === "module" && p.requested)));
       // the turn moved into a beat the piece was not made for, the tray is the Director's, or her move asks its own
       // question: it waits for its moment; onReveal skips it on this turn
       const beat = typeof hint?.beat === "string" ? hint.beat : null;
@@ -589,7 +594,8 @@ export const studioSeam = {
     const decision = routerDecide({ intent: ask.intent, child: { bondStage: L.bondStage ?? undefined, studioControl: L.studioControl ?? "on", safetyMode: !!L.safety } });
     if (decision.action !== "whiteboard") return null;
     const on = L.onScreen ? L.pieces.get(L.onScreen) : null;
-    if (on && VISIBLE.has(on.state) && on.kind !== "whiteboard" && !on.grade?.complete) return null;
+    // (a piece the turn's accepted retire takes down does not hold the tray: the child asked for the board)
+    if (on && VISIBLE.has(on.state) && on.kind !== "whiteboard" && !on.grade?.complete && !(ask.replaces && ask.replaces === on.intentId)) return null;
     const intentId = String(ask.intent.intentId);
     if (L.pieces.has(intentId)) { const p = L.pieces.get(intentId); return { slotId: p.slotId, intentId, state: p.artifact ? "revealed" : "planning" }; }
     const p = { intentId, slotId: `${intentId}:slot`, kind: "whiteboard", archetype: "whiteboard", source: "whiteboard", skillId: ask.intent.skillId ?? null,
@@ -604,13 +610,23 @@ export const studioSeam = {
     const fb = ask.fallback?.script ? normalizeScript(ask.fallback.script, { strict: false }) : null;
     // ship5 p4-content: the template drawn as the last rung is re-timed to her line (it draws while she speaks: W6)
     const fallbackScript = fb?.ok ? boardSync.retimeToLine(fb.script, ask.line?.text) : null;
+    // ship5 review B3: the template is drawn only when it passes the same whiteboard gate (W0-W9: numbers from truth,
+    // counts match her line, no answer reveal) against her REAL line; a refused template is never shown (voice instead).
+    const gatedFallback = () => {
+      if (!fb?.ok) return null;
+      try {
+        const prior = ask.mode === "continue" ? (prev?.ops ?? []).filter((x) => x.op !== "erase") : [];
+        return boardSync.templateBoard(ask, fb.script, boardSync.gateCtxFor(ask, { kit: L.kit ?? undefined, redact: L.redact ?? [], prior }))?.script ?? null;
+      } catch { return null; }
+    };
     const showFallbackOrFail = () => {
-      if (fallbackScript && !p.retired && L.onScreen === intentId) {
-        p.artifact = { kind: "whiteboard", stage: { w: fallbackScript.board.w, h: fallbackScript.board.h }, script: fallbackScript };
+      const shown = fallbackScript && !p.retired && L.onScreen === intentId ? gatedFallback() : null;
+      if (shown) {
+        p.artifact = { kind: "whiteboard", stage: { w: shown.board.w, h: shown.board.h }, script: shown };
         // a board, never an interactive piece (brain/propose.js reads kind/archetype "whiteboard" as not holding attention)
-        p.facts = scriptFacts(fallbackScript, { kind: "whiteboard", archetype: "whiteboard" });
+        p.facts = scriptFacts(shown, { kind: "whiteboard", archetype: "whiteboard" });
         p.state = "revealed"; p.revealedAt = Date.now(); p.revealedTurn = L.turn; p.source = "template";
-        push(L, { t: "script", intentId, script: fallbackScript });
+        push(L, { t: "script", intentId, script: shown });
         push(L, { t: "status", status: { state: "revealed", intentId, buildSha: "whiteboard", facts: p.facts } });
         return;
       }
@@ -648,7 +664,7 @@ export const studioSeam = {
         } else {
           // telemetry: check ids only (never her line, never the child): why the board stayed calm
           const failing = (r?.gate?.checks ?? []).filter((c) => !c.pass).map((c) => c.id).slice(0, 6);
-          console.info(`[studio] whiteboard not drawn ${r?.empty ? "nothing_to_draw" : failing.join(",") || String(r?.why ?? "").slice(0, 40)} ${r?.ms ?? 0}ms${fallbackScript ? " (template board shown)" : ""}`);
+          console.info(`[studio] whiteboard not drawn ${r?.empty ? "nothing_to_draw" : failing.join(",") || String(r?.why ?? "").slice(0, 40)} ${r?.ms ?? 0}ms${fallbackScript ? " (template re-gated)" : ""}`);
           showFallbackOrFail();
         }
       })

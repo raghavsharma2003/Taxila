@@ -187,7 +187,10 @@ export class Governor {
         else if (this.phase === "committed") this.pendingRevoke = true;
         else if (this.phase === "her_turn" && this.spoke && !this.spoke.safeguard && this.revocable(o.at)) this.pendingRevoke = true;
         else if (this.phase === "her_turn") { this.overlapOnsetAt = o.at; this.go("overlap", o.t); }
-        else if (this.phase === "handover" || this.phase === "idle" || this.phase === "hold_requested") this.go("child_turn", o.t);
+        // ship5 fixer (experience B3/B4): after a granted hold the child's next words are a NEW turn: the hold phrase ("ruko
+        // ruko didi ek second") was floor control, and folding it in sent "ruko ruko didi ek second aur batao na" as one turn
+        else if (this.phase === "hold_requested") { this.beginTurn(o.t, o.at); this.go("child_turn", o.t); }
+        else if (this.phase === "handover" || this.phase === "idle") this.go("child_turn", o.t);
         break;
       case "context":
         if (!HER_FLOOR.has(this.phase) && this.phase !== "committed") {

@@ -607,6 +607,10 @@ export class LessonRuntime {
         else this.removeCaption(id);
         // "" with confidence 0 = the child spoke and ASR failed: still worth a Director call (repair move).
         if ((e.text || e.asrConfidence === 0) && this.state.phase === "live") {
+          const input: ChildInput = { childText: e.text, startedAt: e.startedAt, asrConfidence: e.asrConfidence, chipId: e.chipId, typed: e.typed, ...(voice ? { voiceFeatures: voice } : {}), ...(e.duplex ? { duplex: e.duplex } : {}) };
+          // ship5 fixer (experience B3): a turn the duplex engine merged with a revoked commit never re-sends words
+          // already sent: it supersedes the revoked turn while that is still in flight, else only its new words go
+          if (e.revokeOf) { void this.revokedTurn(input, e.revokeOf.text); return; }
           this.queueTurn({ childText: e.text, startedAt: e.startedAt, asrConfidence: e.asrConfidence, chipId: e.chipId, typed: e.typed, ...(voice ? { voiceFeatures: voice } : {}), ...(e.duplex ? { duplex: e.duplex } : {}) });
         }
         return;
@@ -658,6 +662,21 @@ export class LessonRuntime {
   // ───────────── Director turns ─────────────
 
   /** Serialise Director calls: each sees the previous one's state, and answers apply in order. null = a module milestone. */
+  /** The new words of a merged turn after a revoke, kept until the edit lands (an edit that lost the race is replayed). */
+  private revokeRest: ChildInput | null = null;
+
+  /** ship5 fixer (B3): the merged turn after a duplex revoke (see child_final). */
+  private async revokedTurn(input: ChildInput, sentText: string): Promise<void> {
+    const rest = freshWords(input.childText, sentText);
+    if (await this.outbox.edit(input.childText)) {
+      // the revoked turn was still in flight: the merged words replace it under its turnSeq; if it landed meanwhile the
+      // server replays it (editLanded) and runTurn then sends the new words alone
+      this.revokeRest = rest ? { ...input, childText: rest } : null;
+      return;
+    }
+    if (rest) this.queueTurn({ ...input, childText: rest });
+  }
+
   private queueTurn(input: ChildInput | null): void {
     const gen = this.generation;
     // A child turn that failed: no reply is coming, so the wait is settled AFTER pendingTurns drops (the floor
@@ -753,6 +772,10 @@ export class LessonRuntime {
         this.store.set((s) => ({ held: [...s.held, turnSeq] }));
         res = await this.outbox.send(req, (r, signal) => this.api.turn(r, signal), { turnSeq });
         this.store.set((s) => ({ held: s.held.filter((x) => x !== turnSeq) }));
+        // ship5 fixer (B3): a revoke's merged edit arrived after the revoked turn landed: only its new words go next
+        const rest = this.revokeRest;
+        this.revokeRest = null;
+        if (rest && res.editLanded) this.queueTurn(rest);
       } else {
         res = await this.api.turn(req); // a module milestone: its events are re-buffered on failure
       }
@@ -1091,4 +1114,22 @@ function isLaneFallback(err: unknown): boolean {
 
 function messageOf(err: unknown): string {
   return err instanceof Error ? err.message : String(err);
+}
+
+/**
+ * ship5 fixer (B3): the words of `merged` after the already-sent `sent` (token-level common prefix, punctuation and case
+ * folded). Nothing in common → all of `merged` (it is not a continuation we can read). Exported for tests.
+ */
+export function freshWords(merged: string, sent: string): string {
+  const tok = (x: string) => x.split(/\s+/).filter(Boolean);
+  const norm = (w: string) => w.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, "");
+  const a = tok(merged), b = tok(sent).map(norm).filter(Boolean);
+  let i = 0, j = 0;
+  while (i < a.length && j < b.length) {
+    const w = norm(a[i]);
+    if (!w) { i++; continue; }
+    if (w !== b[j]) break;
+    i++; j++;
+  }
+  return j === 0 ? merged.trim() : a.slice(i).join(" ").trim();
 }

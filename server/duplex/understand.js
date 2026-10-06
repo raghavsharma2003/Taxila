@@ -125,7 +125,9 @@ export function understand(text, ctx = {}) {
   if (m || vals.length >= 2) {
     const markerTok = m ? t.slice(0, m.index + m[0].length).split(" ").filter(Boolean).length - 1 : -1;
     const lastVal = vals.length ? vals[vals.length - 1].at : -1;
-    if (m && markerTok >= lastVal) repairOpen = true;
+    // ship5 fixer (experience B4: "nahi nahi, galat hai" waited 6.4 s on the stretched backstop): with no value in the turn
+    // a marker is an open repair only at the tail; words after it ("galat hai") complete the child's own statement
+    if (m && markerTok >= lastVal) repairOpen = vals.length > 0 || markerTok >= toks.length - 1;
     else if (m || (vals.length >= 2 && vals[vals.length - 1].v !== vals[vals.length - 2].v)) repaired = true;
   }
   const scored = hold.held && !holdTail ? hold.rest : raw;

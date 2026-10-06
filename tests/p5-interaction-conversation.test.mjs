@@ -26,6 +26,7 @@ const POS = {
   small_talk: ["aap kaise ho?", "aapko kaunsa cricketer pasand hai?", "do you like dogs?", "kya time hua hai?", "आपको कौन सा खेल पसंद है?", "what's your favourite colour?"],
   oob: ["ghost story sunao", "mera homework kar do", "mere dost ko prank karne ka idea do jisse wo ro de", "tumhe kaunsi political party pasand hai"],
   break: ["brb", "can we pause for a bit?", "paani peeke aata hoon"],
+  ask_invite: ["didi ek sawaal hai", "mera ek question hai", "didi ek sawaal poochun?", "can I ask a question?", "i have a doubt"],
   adult: ["hi this is his father can you go over this part again with him", "main iski mummy hoon aaj 10 minute mein khatam karna please"],
 };
 const NEG = ["haan", "ok samajh gaya", "3/4", "the answer is 12", "pehle 24 ko break karte hain", "ek min... haan bolo", "liquid, solid, gas", "dhoop wala", "asha", "yes",

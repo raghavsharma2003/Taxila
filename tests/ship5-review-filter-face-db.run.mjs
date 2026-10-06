@@ -91,6 +91,10 @@ describe("ship5 review: content-filter safeguard reaches the face as calm_steady
     assert.equal(r.status, 200, JSON.stringify(r.body));
     assert.equal(r.body.move?.kind, "safeguard", "the filter fails closed (pre-existing floor)");
     assert.match(r.body.teacherReply ?? "", /1098/);
+    assert.match(r.body.teacherReply ?? "", /14416/, "both helplines on a filter safeguard");
+    // the child disclosed nothing: never the DISCLOSURE opening, and each helpline once (review B1, related)
+    assert.doesNotMatch(r.body.teacherReply ?? "", /batakar bilkul sahi kiya|right thing by telling/i, r.body.teacherReply);
+    assert.equal((r.body.teacherReply.match(/1098/g) ?? []).length, 1, r.body.teacherReply);
     assert.equal(r.body.ui?.teacherAffect?.display, "calm_steady",
       `the face gets no safety cue on this safeguard turn: ui.teacherAffect = ${JSON.stringify(r.body.ui?.teacherAffect ?? null)}; the puppet keeps its resting warm smile over the helplines`);
   });

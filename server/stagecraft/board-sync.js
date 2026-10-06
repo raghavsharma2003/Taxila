@@ -27,6 +27,8 @@ import { catalogueEntry } from "./catalogue.js";
 // deadline is ≤ ~1.2 s late (the bar is 1.5 s p90), while the speculative board (started ~1.5 s earlier, at the kernel)
 // gets the longest lead it can have
 export const BOARD_SYNC_MS = () => Math.max(300, Number(process.env.TAXILA_BOARD_SYNC_MS) || 1900);
+/** The sync deadline for a board the child asked for, when a code board is already in hand (ms). */
+export const REQUESTED_SYNC_MS = 600;
 export const boardSyncOn = (env = process.env) => env.TAXILA_BOARD_SYNC !== "0";
 const SPEC_TTL_MS = 60_000;
 const specs = new Map();         // intentId → { at, promise, result, contentText }
@@ -207,7 +209,9 @@ export async function plan(ask, o) {
   // the code board is computed now (pure, ~ms) so the deadline never waits on it
   const code = codeBoard(ask, { kit: o.kit, lessonId: ask?.line?.lessonId, band: ctx.band }, ctx);
   // 2. until the sync deadline: the first of the line plan (if it passes) or the speculative board (if it lands and passes)
-  const deadlineAt = t0 + BOARD_SYNC_MS();
+  // ship5 fixer (experience B1, V3.3 "a child's request is answered on stage within 3 s p90"): when the CHILD asked for
+  // the board and a code board already passes against her line, the line plan gets a short head start only
+  const deadlineAt = t0 + (ask?.requested && code ? Math.min(BOARD_SYNC_MS(), REQUESTED_SYNC_MS) : BOARD_SYNC_MS());
   const specE = specs.get(String(ask?.intent?.intentId ?? ""));
   let line = null;
   for (;;) {

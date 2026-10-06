@@ -76,7 +76,11 @@ export function floorIncidentStmt(childId, lessonId, turnSeq, families, lane) {
 }
 
 /** W2 seam: the relational directive's face display rides the ui (UiDirectives.teacherAffect); none = the ui unchanged. */
-export function withSeamUi(ui, relational) {
+export function withSeamUi(ui, relational, { safety = false } = {}) {
+  // TA8 (relational/affect.js): a safeguarding turn is calm_steady on the face, whatever the relational directive said.
+  // Structural, not left to the directive: the directive is decided once per turn BEFORE a content-filter re-plan can
+  // turn the move into a safeguard (ship5 review B1: the puppet kept its warm smile over the helplines).
+  if (safety) return { ...ui, teacherAffect: { display: "calm_steady", intensity: 1 } };
   const affect = relational?.ui?.teacherAffect;
   return affect ? { ...ui, teacherAffect: { display: affect.display, intensity: affect.intensity } } : ui;
 }

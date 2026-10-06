@@ -40,7 +40,7 @@ export interface CascadeSurface {
   /** End her reply because the child took the floor (teacher_interrupted). */
   stop(): void;
   /** Emit a child LinkEvent to the runtime (child_final carries `duplex`; child_partial carries captions). */
-  emitChild(e: { type: "child_final"; text: string; startedAt: number; itemId?: string; asrConfidence?: number; duplex: DuplexTurn["duplex"] } | { type: "child_partial"; itemId: string; text: string }): void;
+  emitChild(e: { type: "child_final"; text: string; startedAt: number; itemId?: string; asrConfidence?: number; duplex: DuplexTurn["duplex"]; revokeOf?: DuplexTurn["revokeOf"] } | { type: "child_partial"; itemId: string; text: string }): void;
   /** input_audio_buffer.commit on the transcription call. */
   sttCommit(): void;
   /** The server VAD silence (the backstop under duplex), or null = restore the token's own turn detection. */
@@ -243,6 +243,7 @@ export class CascadeDuplex {
     this.s.emitChild({
       type: "child_final", text: turn.text, startedAt: turn.startedAt, itemId,
       ...(turn.asrConfidence !== undefined ? { asrConfidence: turn.asrConfidence } : {}),
+      ...(turn.revokeOf ? { revokeOf: turn.revokeOf } : {}),
       duplex: turn.duplex,
     });
   }

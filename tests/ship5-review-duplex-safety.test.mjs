@@ -35,6 +35,7 @@ function rig() {
       pending.push([start + ms + 500, { type: "conversation.item.input_audio_transcription.completed", item_id: id, transcript: text }]);
       pending.sort((a, b) => a[0] - b[0]);
     },
+    tone(ms, f0) { const start = c.now(); while (c.now() < start + ms) { frame(true, f0); c.run(c.now() + 20); } },
     her(text) { live.setUi({ beat: "explain" }); herOn = true; live.herStart(text); } };
   live.start(); r.quiet(800); return r;
 }
@@ -55,3 +56,12 @@ for (const f0 of [260, 600]) {
     assert.ok(yielded && yielded[1] <= end, `she stopped talking over the distress line ${yielded ? yielded[1] - onset : "never"} ms after its onset (the line lasted ${end - onset} ms)`);
   });
 }
+
+test("ship5 fix B4: a wordless steady tone at 573 Hz (a cooker whistle) over her line is still not the child: she keeps talking", () => {
+  const r = rig();
+  r.her(LINE); r.quiet(1500);
+  r.tone(1200, 573);
+  r.quiet(300);
+  const yielded = r.ev.find((e) => e[0] === "pause" || e[0] === "stop");
+  assert.equal(yielded, undefined, `she yielded to a whistle: ${JSON.stringify(r.ev.map((e) => e.slice(0, 2)))}`);
+});

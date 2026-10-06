@@ -385,6 +385,11 @@ export async function lessonTurn(req, body) {
     noteReason = note ? `conv2.${c2 === "shadow" ? "shadow" : "note"}.${note.intent}` : "conv2.no_note";
     mark("noted");
   }
+  // ship5 fixer (experience B4): the duplex floor's hold offer (TurnRequest.duplex.cutInReason "hold_offer": the child asked
+  // her to wait, then stayed quiet ~8 s) arrives with no words; it is a check-in, never a "say that again" repair
+  if (cls && !childText && body.duplex?.cutInReason === "hold_offer" && !cls.flags?.distress && !pendingSafetyOf(body)) {
+    cls = { ...cls, outcome: "no_evidence", source: "request", request: { type: "hold_checkin", whole: true }, lowAsr: false };
+  }
   // p5-interaction: an answer's own words beside the grade (a hedge, "is it right?", "I'm right") ride on the move as notes
   if (cls && childText && p5Flag("STEER")) cls = withAnswerMods(cls, childText);
   // safety-robust (2026-10-05; INTEGRATION.md §2.1, PLAN X-1 / W2.5-2): the duplex floor's sticky partial-safety state
@@ -439,7 +444,9 @@ export async function lessonTurn(req, body) {
     const beat = nextBeat(prev.beat, r.move, next);
     // the Director's only new thing on screen is its template whiteboard rung (W2-B): the live board replaces it (owner
     // priority 6), the rung stays the fallback when Studio declines
-    const rungMounted = r.ui?.tray === "module" && next.module?.engine === RUNG_ENGINE;
+    // ship5 fixer (experience B1): on the child's visual request the Director's tray holds its "show" of the item; the
+    // board the child asked for replaces it exactly as it replaces the template rung (one thing in the tray)
+    const rungMounted = r.ui?.tray === "module" && (next.module?.engine === RUNG_ENGINE || (!!r.move?.visual && !!next.module));
     const wb = whiteboardAskOf({ beat, lane, late, strained: frustrationLoop(next.affect ?? initialAffect()), move: r.move, studioView: late ? null : studioView, rungMounted, requested: !!r.move?.visual });
     const t1 = performance.now();
     const proposals = proposalsOf({ r, relational, studioView: late ? null : studioView, whiteboard: wb.proposals, vibe: next.vibe });
@@ -514,11 +521,13 @@ export async function lessonTurn(req, body) {
       { beat: kernel.beat?.type ?? null, tray: r.ui?.tray ?? null, safety: r.move.kind === "safeguard" || !!incident,
         asking: !!r.move.itemId && ASKING_MOVES.has(r.move.kind),
         // ship5 p4-content: the Director's tray holds only its template explain rung (W2-B): a Stagecraft piece may take it
-        rungTray: r.ui?.tray === "module" && next.module?.engine === RUNG_ENGINE }) : null), null);
+        rungTray: r.ui?.tray === "module" && next.module?.engine === RUNG_ENGINE,
+        // ship5 fixer: the child asked to see it (requests.js visual): a piece they asked for may take the Director's show
+        visualRequest: !!r.move?.visual }) : null), null);
   // ship5 p4-content: a Stagecraft piece took the tray from the Director's template rung (the same rule as the live board
   // below: the rung is the floor, a real piece replaces it): its mount / param commands go, a rung already on screen is
   // unmounted, and its facts row leaves the move's content, so her line names only what the child sees.
-  if (!late && studioSlot?.artifact?.kind === "stagecraft" && next.module?.engine === RUNG_ENGINE) {
+  if (!late && studioSlot?.artifact?.kind === "stagecraft" && next.module && (next.module.engine === RUNG_ENGINE || (r.move?.visual && r.ui?.tray === "module"))) {
     const id = next.module.id;
     const mountedNow = r.moduleCommands.some((c) => c.op === "mount" && c.moduleId === id);
     r = { ...r, moduleCommands: [...r.moduleCommands.filter((c) => c.moduleId !== id || c.op === "unmount"), ...(mountedNow ? [] : [{ op: "unmount", moduleId: id }])] };
@@ -562,7 +571,7 @@ export async function lessonTurn(req, body) {
     const hit = await pickSpeculation(specs, key);
     speculation = specs.length ? { tried: specs.length, hit: !!hit, ...(hit ? {} : { differs: await missReason(specs, key) }) } : undefined;
     if (hit) trace.push(...hit.trace.map((t) => ({ ...t, speculative: true })));
-    let filtered;
+    let filtered, filteredSafeguard = false;
     ({ reply: teacherReply, guard, filtered, floor: replyFloor = [] } = hit
       ? hit.result
       : await textReply({ instructions, state: next, kit, childText: said, trace, history: historyOf(next), verdict, ui: withStudioSlot(r.ui, studioSlot), module: next.module }));
@@ -577,6 +586,7 @@ export async function lessonTurn(req, body) {
       next = r.state;
       noteDid(next, { cls: blockedCls, target, activeItem, kit, childText, tapped, hintLevel: state.hintLevel, seq: childRowSeq(staged), leaked });
       teacherReply = fallbackReply(next, null);
+      filteredSafeguard = true;
       guard = { ...guard, caught: [...new Set([...(guard?.caught ?? []), "content_filter"])], replaced: true };
       replyFloor = [];
       // the move is now the safeguard: the kernel runs again so the floor freezes everything below it
@@ -597,7 +607,11 @@ export async function lessonTurn(req, body) {
     // The neutral CHECK opening only when a classifier-only safeguard fired on pleading, loneliness, a stop or a goodbye
     // (it must not tell the child they disclosed something: AT-B1 cascade, CONVERSATION-V2 F10); otherwise DISCLOSURE.
     // Once per safeguarding episode (the first safeguard turn): a repeated opening reads robotic (AT-B1 cascade).
-    if (r.move.kind === "safeguard" && teacherReply && !prev.safeguard) {
+    // A safeguard the content filter caused is answered by the fixed line alone (say.js safeguardLine: the check form with
+    // both helplines when only the filter or the model read distress): prepending the DISCLOSURE opening told a child who
+    // disclosed nothing "you did the right thing by telling me" and named the helplines twice (ship5 review B1, owner-5).
+    if (filteredSafeguard) { /* the fixed line is the whole reply */ }
+    else if (r.move.kind === "safeguard" && teacherReply && !prev.safeguard) {
       const pleading = signalsOf(childText, { harm: false }).some((x) => ["goodbye_distress", "loneliness", "end_request", "goodbye", "tired"].includes(x.kind));
       teacherReply = withSafetyOpening(teacherReply, next.ctx?.lang, { address: next.ctx?.address,
         kind: scanSafety(childText).distress || relFx.safety || !pleading ? "disclosure" : "check", stripPreface: stripSafetyPreface });
@@ -641,7 +655,10 @@ export async function lessonTurn(req, body) {
           item: next.lastMove?.itemId ? findItem(next, kit, next.lastMove.itemId) : null, line: { text: teacherReply, teacherReplySeq } }),
           // W2 integration: the template board it replaces rides along as the slot's fallback, so a live board that fails
           // the drawing gate shows the guarded template (W2-B, open-item safe) instead of an empty stage
-          ...(ask.payload?.replacesRung && next.module?.engine === RUNG_ENGINE && next.module?.params?.script ? { fallback: { script: next.module.params.script } } : {}) })
+          ...(ask.payload?.replacesRung && next.module?.engine === RUNG_ENGINE && next.module?.params?.script ? { fallback: { script: next.module.params.script } } : {}),
+          // ship5 fixer (experience B1): the piece this turn's accepted retire takes down does not hold the board's tray
+          ...(turnStudioNow()?.retire ? { replaces: String(turnStudioNow().retire) } : {}),
+          ...(ask.payload?.requested ? { requested: true } : {}) })
         : null), null);
       if (ack?.slotId && ack?.intentId) {
         studioSlot = { slotId: String(ack.slotId), intentId: String(ack.intentId), state: ack.state ?? "planning" };
@@ -651,7 +668,7 @@ export async function lessonTurn(req, body) {
         // (the client's tray shows one thing; a mounted module would win the tray over the studio slot). Its mount / param
         // commands go, a rung already on screen is unmounted, and its facts row leaves the move's content, so the next turn
         // never points at values that are not on screen. A declined ask keeps the rung (below).
-        if (ask.payload?.replacesRung && next.module?.engine === RUNG_ENGINE) {
+        if (ask.payload?.replacesRung && next.module && (next.module.engine === RUNG_ENGINE || r.move?.visual)) {
           const id = next.module.id;
           const mountedNow = r.moduleCommands.some((c) => c.op === "mount" && c.moduleId === id);
           r = { ...r, moduleCommands: [...r.moduleCommands.filter((c) => c.moduleId !== id || c.op === "unmount"), ...(mountedNow ? [] : [{ op: "unmount", moduleId: id }])] };
@@ -676,8 +693,9 @@ export async function lessonTurn(req, body) {
     const line = (next.lastContent ?? []).map((x) => String(typeof x === "string" ? x : "")).join(" ").trim() || String(kit?.skills?.find((k) => k.id === next.lastMove?.skillId)?.title ?? "");
     if (ask && line) {
       const ack = seamSafe("studio.requestIntent", () => (typeof studioSeam.requestIntent === "function"
-        ? studioSeam.requestIntent(whiteboardIntentOf({ lessonId: lesson.id, turn: next.turn, beat: kernel.beat ?? { id: "visual", type: "explain" }, next, kit,
-          item: next.lastMove?.itemId ? findItem(next, kit, next.lastMove.itemId) : null, line: { text: line } }))
+        ? studioSeam.requestIntent({ ...whiteboardIntentOf({ lessonId: lesson.id, turn: next.turn, beat: kernel.beat ?? { id: "visual", type: "explain" }, next, kit,
+          item: next.lastMove?.itemId ? findItem(next, kit, next.lastMove.itemId) : null, line: { text: line } }), requested: true,
+          ...(turnStudioNow()?.retire ? { replaces: String(turnStudioNow().retire) } : {}) })
         : null), null);
       if (ack?.slotId && ack?.intentId) { studioSlot = { slotId: String(ack.slotId), intentId: String(ack.intentId), state: ack.state ?? "planning" }; wbAcked = true; moment = null; }
     }
@@ -713,7 +731,8 @@ export async function lessonTurn(req, body) {
       ...(lateSafeguard ? { teacherReply, teacherReplySeq } : {}), end: true, late: true }
     : {
       move: r.move, moduleCommands: r.moduleCommands,
-      ui: withStudioSlot(withSeamUi(withAsk(r.ui, teacherReply, { ...uiVerdictOf(cls, target, state), ...(kernel.beat ? { beat: uiBeatOf(kernel.beat) } : {}) }), relational), studioSlot),
+      ui: withStudioSlot(withSeamUi(withAsk(r.ui, teacherReply, { ...uiVerdictOf(cls, target, state), ...(kernel.beat ? { beat: uiBeatOf(kernel.beat) } : {}) }), relational,
+        { safety: r.move.kind === "safeguard" || !!incident }), studioSlot),
       ...(teacherReply ? { teacherReply, teacherReplySeq } : {}), ...(speakNow ? { speakNow } : {}), ...(r.end ? { end: true } : {}),
       // W2 seams: what Studio does on this turn (W2-H proposes through statusFacts; W2-E's kernel arbitrates from BR1) and the
       // turn's Moment (W2-E). Both absent until filled.
@@ -823,6 +842,8 @@ export async function lessonTurn(req, body) {
       ...(speculation ? { speculation } : {}), ...(prewarmed ? { ttsPrewarmed: true } : {}),
       item: item ? { id: item.id, kind: item.kind, prompt_en: item.prompt_en, prompt_hi: item.prompt_hi, answer: item.answer, acceptable: item.acceptable, ...(item.options ? { options: item.options.map((o) => o.text) } : {}) } : null,
       kitVerified: kit.verified, ms, timings: trace,
+      stage: { accepted: kernel.arb.accepted.map((p) => p.kind), rejected: kernel.arb.rejected.map((x) => `${x.p.kind}:${x.why}`), wb: kernel.wb?.declined ?? null, studioPropose: studioView?.propose ?? null,
+        point: stagecraftPoint ? { want: stagecraftPoint.want?.family ?? null, request: stagecraftPoint.request?.kind ?? null } : null, slot: studioSlot?.artifact?.kind ?? null, tray: r.ui?.tray ?? null },
       ...(voice ? { voice: { reliable: voice.reliable, signals: voice.signals, z: voice.z } } : {}),
       ...(vsTurn?.trace && !vsSafety ? { vs: { ...vsTurn.trace, read: vsTurn.read, hints: vsTurn.hints, reasons: vsReasons } } : {}),
     };
@@ -1146,3 +1167,6 @@ export function earlierExchanges(recent = [], n = 2) {
   }
   return out;
 }
+
+/** The duplex floor's sticky partial-safety state on the request (never trusted to subtract). */
+const pendingSafetyOf = (body) => !!body?.duplex?.safetyPending;

@@ -479,7 +479,11 @@ export class EngineHost {
     // p1-duplex (2026-10-06): a steady tone read by YIN at the top of its range is not a voice (a pressure-cooker whistle,
     // ~3 kHz, aliases to 485-618 Hz, median 573, on every frame; children's speech f0 on TaxilaFDB TRAIN: p99 513 Hz)
     const openF0 = OVERLAP.toneF0Hz > 0 ? this.audio.burstF0Hz(onset) : null;
-    const tonal = openF0 !== null && openF0 >= OVERLAP.toneF0Hz;
+    // ...but only while the burst carries no words: a whistle is never transcribed, and a child crying or shouting above
+    // 540 Hz is (ship5 review B4: "मुझे मर जाना है" at f0 545-700 Hz was "not the child", no hush and no yield, and the
+    // safeguard waited 4.5 s). Words (her own echo stripped) end the tone reading; the safety predicate then sees them.
+    const ownWords = words ? this.echo.stripAll(words, t, this.fanin.lag.p90) : "";
+    const tonal = openF0 !== null && openF0 >= OVERLAP.toneF0Hz && !ownWords && !this.safety.state().distress;
     let lowVoice = burstF0 !== null && childF0 !== null && 12 * Math.log2(childF0 / burstF0) >= OVERLAP.notChildSemitones;
     // p1-duplex (2026-10-06, TaxilaFDB TRAIN F9 her_tv): a TV voice breaks into many short bursts; one too short to carry its
     // own pitch (< 3 f0 frames) inherited nothing, so the TV's late words ("संभावना") arrived on it and yielded her as a turn.

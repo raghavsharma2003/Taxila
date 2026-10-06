@@ -54,6 +54,9 @@ const OOB = /\b(?:(?:ghost|horror|bhoot|bhoot\s+ki|darawni|scary)\s+(?:story|kah
 /** Words of an attempt (a number), or more words than a request carries: never read as one of these. */
 const attemptLike = (t) => /\d/.test(t);
 
+// ship5 fixer (experience B4): "didi ek sawaal hai" — the child wants to ASK something: she invites it (a go-ahead), never a
+// new question of her own (she answered "apna maths sawaal likho" plus an English fill-in-the-blank, 2026-10-06)
+const ASK_INVITE = /^(?:(?:didi|di|ma'?am|sir|bhaiya|teacher)\s+)?(?:(?:mera|meri|mere|mujhe|ek|do)\s+)*(?:sawaal|sawal|savaal|question|doubt|baat)\s+(?:hai|h|he|poochna\s+hai|puchna\s+hai|poochni\s+hai|puchni\s+hai|poochun|puchu|puchun|pooch\s+sakti|pooch\s+sakta|pooch\s+sakte|hai\s+(?:didi|di|ma'?am|sir))(?:\s+(?:didi|di|ma'?am|sir|na|ji))?\s*\??$|^(?:can\s+i|may\s+i)\s+ask\s+(?:you\s+)?(?:a|one|something)(?:\s+question)?\s*\??$|^i\s+have\s+a\s+(?:question|doubt)\s*\.?$/i;
 /**
  * PURE. The code-first reading of a child's turn, or null.
  * @param {string} text  the child's words (typed, or an ASR transcript)
@@ -85,6 +88,7 @@ export function readIntent(text) {
   if (FRUSTRATION.test(t)) return hit("frustration");
   if (BOREDOM.test(t)) return hit("boredom");
   if (REPEAT.test(t)) return hit("repeat");
+  if (ASK_INVITE.test(t)) return hit("ask_invite");
   if (IDENTITY.test(t)) return hit("identity");
   if (SMALL_TALK.test(t)) return hit("small_talk");
   return null;
@@ -92,7 +96,7 @@ export function readIntent(text) {
 
 /** The p5 reading types (state.js acts on each; tests enumerate them). */
 export const P5_TYPES = Object.freeze(["confused", "clarify", "repeat", "back", "skip", "harder", "easier", "know", "boredom", "frustration",
-  "thinking", "identity", "small_talk", "oob", "break", "adult"]);
+  "thinking", "identity", "small_talk", "oob", "break", "adult", "ask_invite"]);
 
 // ── modifiers on an ANSWER (CONVERSATION-V2 §3.2): read in code beside the grade; they never change the grade ──
 const HEDGED = /\b(?:shayad|shaayad|maybe|perhaps|i\s+think|mujhe\s+lagta\s+hai|lagta\s+hai|not\s+sure|pakka\s+nahi|sure\s+nahi|i\s+guess|probably)\b/i;

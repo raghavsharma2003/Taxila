@@ -140,6 +140,14 @@ const FAMILIES = {
     },
     /\b(?:asked|asks|wants|want|maang(?:a|te|ta|ti)?)\b[^.!?।]{0,20}?\b(?:my|meri|mera) (?:nude|nudes|private (?:photo|pic)|photo without clothes)/i,
     /(?:भैया|अंकल|कोई)[^.!?।]{0,60}?(?:बोलते|बोलता|कहते|कहता|मांगते|मांगता)[^.!?।]{0,40}?(?:फोटो|किसी को मत बताना|मिलने)/,
+    // ship5 fixer (2026-10-06, adversarial review note 2): sexual content SENT, SHOWN or SAID to the child is a disclosure.
+    // The OOB lexicon read "ek aadmi ne mujhe sex wali photo bheji" as an out-of-bounds ask (the decline shape) and the
+    // predicate missed it and "someone sent me nude pics" / "koi mujhe phone pe gandi baatein bolta hai": the floor then
+    // rested on the model read alone. The sexual word must be followed by a send / show / say-to verb (or "sent me" first),
+    // so a child ASKING about it ("sex education kya hai") stays the decline. Kind: abuse.
+    /\b(?:sex|sexy|nude|nudes|nangi|nanga(?!\s+parbat)|naked(?!\s+eyes?)|porn\w*|gand[ai]\s+(?:photo|photos|pic|pics|picture|video|videos|baat|baatein|baaten|message|messages|msg))\b[^.!?।]{0,40}?\b(?:bheji|bheja|bheje|bhejta|bhejte|bhejti|bhejega|dikhaya|dikhayi|dikhai|dikhaye|dikhata|dikhate|dikhati|bolta|bolte|bolti|karta|karte|karti|send|sends|sent|showed|shows)\b/i,
+    /\b(?:sent|sends|showed|shows|texted|texts|messaged|messages|dm'?d)\s+me\b[^.!?]{0,30}?\b(?:nude|nudes|naked|porn\w*|sex|sexy|dirty)\b/i,
+    /(?:सेक्स|नंगी|नंगा|गंदी\s+(?:फोटो|वीडियो|बातें|बात))[^.!?।]{0,40}?(?:भेजी|भेजा|भेजता|भेजते|दिखाया|दिखाई|दिखाता|बोलता|बोलते|करता|करते)/,
   ],
   fear: [
     /\b(scared|afraid)\s*(to\s*go\s*)?(at\s*)?home\b|\bbull(y|ied|ying)\b|\bnobody\s*loves\s*me\b/i,

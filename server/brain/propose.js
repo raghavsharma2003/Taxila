@@ -78,7 +78,9 @@ export function whiteboardAskOf({ beat, lane, late, strained, move = null, studi
   const on = studioView?.onScreen;
   const interactive = !!on && typeof on.kind === "string" && on.kind !== "whiteboard" && on.archetype !== "whiteboard";
   if (interactive && !studioView?.propose?.retire) return { proposals: [], declined: "studio_rejected.attention" };
-  if (studioView?.propose?.reveal) return { proposals: [], declined: "studio_rejected.reveal_ready" };
+  // a ready reveal answers the beat — but the child's own ask for the board outranks a reveal the child did not ask for
+  // (ship5 fixer, experience B1: "diagram bana ke dikhao" got neither the board nor the piece, both waiting on the other)
+  if (studioView?.propose?.reveal && !(requested && !studioView.propose.requested)) return { proposals: [], declined: "studio_rejected.reveal_ready" };
   return {
     proposals: [proposal("studio", "ask_whiteboard", AUTHORITY.studio, { payload: { beat: beat?.type ?? "explain", beatId: beat?.id ?? null, ...(rungMounted ? { replacesRung: true } : {}), ...(requested ? { requested: true } : {}) },
       urgency: requested ? 3 : 2, costs: { attention: rungMounted ? 0 : 1 }, reason: ["studio.whiteboard_asked", requested ? "child.asked_visual" : `beat.${beat.type}`, ...(rungMounted ? ["studio.replaces_rung"] : [])] })],

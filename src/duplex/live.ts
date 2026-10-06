@@ -58,6 +58,12 @@ export interface DuplexTurn {
   itemId?: string;
   /** "" with 0 = the child spoke and the transcript is empty (the Director's repair move). */
   asrConfidence?: number;
+  /**
+   * ship5 fixer (experience B3): this commit follows a REVOKE of the commit whose words were `text` (the child went on
+   * before her verdict word): the engine merged the fragments, so `text` here starts with those already-sent words. The
+   * runtime supersedes the revoked turn while it is still in flight, else sends only the new words (never an answer twice).
+   */
+  revokeOf?: { turnId: number; text: string };
   /** TurnRequest.duplex (shared/contracts.ts): hashes and codes only, never words. */
   duplex: {
     transcriptHash: string;
@@ -282,6 +288,9 @@ export class DuplexLive {
   private turnSeq = 0;
   /** The turn the engine committed last, until her reply to it starts (a revoke drops that reply). */
   private pendingTurn: number | null = null;
+  /** The words of each commit not yet answered, and the revoked commit the next commit merges (ship5 fixer, B3). */
+  private lastCommit: { turnId: number; text: string } | null = null;
+  private revoked: { turnId: number; text: string } | null = null;
   private ui: TurnUi = {};
   private overlapOnsetAt: number | null = null;
   private lastItemId: string | undefined;
@@ -442,6 +451,9 @@ export class DuplexLive {
     if (this.mode === "shadow") return;
     if (c.to === "stt") { port.sttCommit(); return; }
     if (c.to === "think") {
+      // the engine re-opens the revoked turn (fanin.begin(prevTurnStart)): the merged turn that follows carries the
+      // revoked commit's words, whether or not her reply to it had started, so the runtime never sends them twice
+      if (c.op === "revoke" && this.lastCommit) this.revoked = this.lastCommit;
       if (c.op === "revoke" && this.pendingTurn !== null) {
         this.stats.revokes++;
         this.stats.dropped++;
@@ -467,8 +479,12 @@ export class DuplexLive {
         this.stats.commits++;
         this.pendingTurn = turnId;
         const text = String(c.text ?? "").trim();
+        const revokeOf = this.revoked;
+        this.revoked = null;
+        this.lastCommit = { turnId, text };
         port.commit({
           turnId, text, startedAt: pk.firstOnsetAt ?? c.t, itemId: this.lastItemId,
+          ...(revokeOf ? { revokeOf } : {}),
           ...(text ? {} : { asrConfidence: 0 }),
           duplex: {
             transcriptHash: c.textHash,

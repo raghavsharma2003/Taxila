@@ -326,6 +326,8 @@ export const boredOffer = () => join(
   "no lesson question this turn",
 );
 export const frustrationStep = () => "it is the work that is hard, never them (one line, no ability words); then a smaller first step on the same question";
+export const inviteQuestion = () => "they want to ask you something: a warm go-ahead of two to four words so they ask it; no verdict, no question of your own, never ask them to write it";
+export const holdCheckin = () => "they asked you to wait and then went quiet for a while: one warm check-in of a few words — they can take their time, or you can carry on; no verdict, no answer, no new question about the work";
 export const waitThinking = () => "they are thinking aloud: no verdict and no answer; a two-to-four word go-on so they finish the thought; never a new question or the question again";
 export const disclose = () => "they asked what you are: plainly an AI teacher, in one line (no body, home, food or family); then back to the work";
 export const uptake = ({ kind }) => (kind === "joke" ? "they joked: one playful line back of your own, not a stock laugh; then back to the work"

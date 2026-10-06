@@ -143,6 +143,12 @@ export function createBuilders(deps = {}) {
     if (v.fellBack) return { ok: false, usd, why: "fell_back" };
     // the code-checked kit-id validator: a cited id that is not this topic's kit makes the spec unusable (never trusted)
     if (unknownKitIds(kitTopicAny(key.topicId), v.spec).length) return { ok: false, usd, why: "unknown_kit_id" };
+    // "A model never grades" (ship5 review B2): every graded key of a model-written spec must be a key a CHECKED spec of
+    // this topic already carries (the authored catalogue spec, verified against the kit when it was built, or the reviewed
+    // default), unless the engine computes the key from numbers on screen (pure maths: the engine owns that truth). A key
+    // the model authored (a tap answer, a date, a bin, an order, a rhyme) is never graded against: the spec is refused and
+    // the checked engine default serves.
+    if (!keysVerified(c.archetype, v.spec, key.topicId)) return { ok: false, usd, why: "unverified_key" };
     // Q8 on every child-visible string the model WROTE: strings already in this topic's checked authored spec (or the
     // reviewed default) were checked when that spec was; the new ones go through Content Safety (+ the brain classifier
     // for Hindi / Hinglish) — fail closed (ship5 p4-content: this keeps Content Safety to the strings that need it)
@@ -188,6 +194,32 @@ export function createBuilders(deps = {}) {
 }
 
 export { stringsOfSpec } from "./catalogue.js";
+
+/** Extension engines whose keys are computed by the engine from the numbers the spec puts on screen (no authored fact). */
+export const COMPUTED_KEY_ARCHETYPES = new Set(["dukaan@1", "fraction-ops@1", "geo-forge@1", "mirror-paint@1", "pattern-lab@1",
+  "pictograph@1", "rule-machine@1", "sieve-storm@1", "solid-view@1", "zero-pair@1"]);
+const norm = (x) => String(x ?? "").normalize("NFKC").toLowerCase().replace(/\s+/g, " ").trim();
+const keysOf = (archetype, spec) => { try { return ENGINE_SPECS_EXT[archetype]?.keys?.(spec) ?? []; } catch { return null; } };
+/**
+ * Are all of a generated spec's graded keys verified? Base RS-4 engines grade from the engine's own physics over the
+ * spec's numbers (no authored key). An extension engine's keys are verified when the engine computes them, or when each
+ * (prompt, key) pair — or (kit src, key) for a key that cites a kit item — is one a checked spec of this topic carries.
+ */
+export function keysVerified(archetype, spec, topicId) {
+  if (!ENGINE_SPECS_EXT[archetype]) return true;
+  if (COMPUTED_KEY_ARCHETYPES.has(archetype)) return true;
+  const mine = keysOf(archetype, spec);
+  if (!mine) return false;
+  if (!mine.length) return true;
+  const checked = [authoredSpec(topicId, archetype), ENGINE_SPECS_EXT[archetype].defaultSpec].filter(Boolean);
+  const pairs = new Set(), bySrc = new Map();
+  for (const cs of checked) for (const k of keysOf(archetype, cs) ?? []) {
+    pairs.add(`${norm(k.prompt)}\u0000${norm(k.key)}`);
+    if (k.src) bySrc.set(k.src, [...(bySrc.get(k.src) ?? []), norm(k.key)]);
+  }
+  return mine.every((k) => (k.src && bySrc.has(k.src) ? bySrc.get(k.src).includes(norm(k.key)) && !!k.src
+    : pairs.has(`${norm(k.prompt)}\u0000${norm(k.key)}`)));
+}
 
 function setPath(obj, path, value) {
   const parts = String(path).split(".");

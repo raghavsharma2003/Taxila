@@ -181,10 +181,28 @@ export function askFromReply(reply) {
 
 // ── G-LEAK-1 (audit §4.4: "Whiteboard: 45,000 ko…") ──
 const STAGE = /(?:^|[\s(—-])(?:whiteboard|board|ask|shape|move|note|key|ladder|rung|lesson now|one more check|turn shape|your move)\s*:|[\[\]*#_]{1,}|\bTURN SHAPE\b|\bLESSON NOW\b/i;
+// ship5 review (experience B2, owner-5 V3.ascii): a text "diagram" — a run of shape glyphs ("●●●●● ●●●●●"), box drawing or
+// ASCII rules — is markup too: on the spoken lane it is read aloud, and a picture belongs on the board, never in her words.
+const ART_GLYPH = "●○◯◉■□▪▫▲△▼▽◆◇★☆•◦✓✔✗✘⬤⚫⚪🔴🔵🟢🟡🟠🟣🟤⬛⬜🟥🟦🟩🟨";
+export const TEXT_ART = new RegExp(`(?:[${ART_GLYPH}][\\s,]*){3,}|[\\u2500-\\u257F\\u2580-\\u259F]{2,}|[-=~*+|]{4,}|-{2,}>|<-{2,}`, "gu");
+// ship5 fixer (experience B1 / owner-5 V3.cant_draw): "main nayi picture nahi dikha sakta" — she never says she cannot
+// show or draw (the board draws; F16, the owner's session). The sentence is removed; the rest of the turn stands.
+const CANT_SHOW = /\b(i can'?t|i cannot|i am not able to|i'm not able to|main|mai|mein)\s+(?:\w+\s+){0,4}(?:draw|show|bana|dikha)\w*\s+(?:nahi|nahin)\s+(?:sakta|sakti|sakte|paunga|paungi|paati|paata)\b|\b(i can'?t|i cannot|i'm not able to|i am not able to)\s+(?:\w+\s+){0,3}(?:draw|show|make)\b|\b(?:dikha|bana|draw\s+kar|show\s+kar)\s+nahi\s+(?:sakta|sakti|sakte|paunga|paungi|payenge|paati|paata)\b|\b(?:main|mai)\s+(?:\w+\s+){0,4}nahi\s+(?:\w+\s+){0,2}(?:dikha|bana)\s+(?:sakta|sakti)\b/i;
+export const saysCantShow = (text) => CANT_SHOW.test(String(text ?? ""));
+/** The line without the sentence (or clause before a comma + "par/but") that says she cannot show or draw. */
+export function stripCantShow(text) {
+  const parts = String(text ?? "").match(/[^.!?।]+[.!?।]*\s*/g) ?? [];
+  return parts.map((x) => {
+    if (!CANT_SHOW.test(x)) return x;
+    const m = x.match(/,\s*(?:par|but|lekin|magar)\s+(.*)$/i);
+    return m ? m[1].charAt(0).toUpperCase() + m[1].slice(1) : "";
+  }).join("").replace(/\s{2,}/g, " ").trim();
+}
 /** Does a spoken line carry a stage direction, a prompt field name or markup? */
-export const leaksStage = (text) => STAGE.test(String(text ?? "").replace(/_{2,}/g, " "));
+export const leaksStage = (text) => STAGE.test(String(text ?? "").replace(/_{2,}/g, " ")) || new RegExp(TEXT_ART.source, "u").test(String(text ?? ""));
 /** The line without field labels and markup (the words after a label stay: they were meant to be said). */
 export const stripStage = (text) => String(text ?? "")
+  .replace(TEXT_ART, " ")
   .replace(/(^|[\s(—-])(?:whiteboard|board|ask|shape|move|note|key|ladder|rung|lesson now|one more check|turn shape|your move)\s*:\s*/gi, "$1")
   .replace(/\[[^\]]*\]/g, " ").replace(/[\[\]*#]+/g, "").replace(/\s{2,}/g, " ").replace(/\s+([,.!?])/g, "$1").trim();
 
