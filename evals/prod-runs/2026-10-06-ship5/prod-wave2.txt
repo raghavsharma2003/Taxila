@@ -1,0 +1,735 @@
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+━━ w0-smoke.mjs
+(Use `node --trace-warnings ...` to show where the warning was created)
+PASS lesson start 201 (1272 ms, topic c5-maths-ch08-t01)
+PASS text lane: a teacher opening came back
+PASS 2 turn(s) answered with a move (hook, explain)
+PASS lesson end 200 (2248 ms)
+cleanup: account deleted
+PASS leftover @taxila.test guardians 0 → 0
+
+5/5 checks passed (https://taxila.dev)
+
+━━ w1a-battery.mjs
+(Use `node --trace-warnings ...` to show where the warning was created)
+PASS class 5: 0/30 turns end on a question other than the card's
+PASS class 5: 0 turns whose reply does not end on the card's question, word for word (independent check)
+PASS class 5: 0 two-question turns
+PASS class 5: 0 repair moves on typed input
+PASS class 5: 0 shape words in ui.hint.text
+PASS class 5: 0 goodbye lines outside a wrap move
+PASS class 5: Skip poses the next item within 1 turn(s) (fade:2 → c5-maths-ch08-t01-rl-h1, probe)
+class 5: 30 turns over 1 lesson(s)
+cleanup: account deleted
+PASS leftover @taxila.test guardians 0 → 0
+PASS class 8: 0/30 turns end on a question other than the card's
+PASS class 8: 0 turns whose reply does not end on the card's question, word for word (independent check)
+PASS class 8: 0 two-question turns
+PASS class 8: 0 repair moves on typed input
+PASS class 8: 0 shape words in ui.hint.text
+PASS class 8: 0 goodbye lines outside a wrap move
+PASS class 8: Skip poses the next item within 1 turn(s) (fade:3 → c8-maths-ch07-t01-i09, probe)
+class 8: 30 turns over 1 lesson(s)
+cleanup: account deleted
+PASS leftover @taxila.test guardians 0 → 0
+
+16/16 checks passed (https://taxila.dev)
+
+━━ w1a-practice-ask.mjs
+(Use `node --trace-warnings ...` to show where the warning was created)
+PASS lesson starts (1448 ms)
+PASS a graded answer landed (verdict not_yet)
+PASS home says done after the lesson (state done)
+PASS another lesson → 409 done, control "done"
+PASS Practice after the lesson → 201 (1190 ms)
+PASS Practice reaches a first turn (hint)
+PASS Ask after the lesson → 201 (1979 ms)
+PASS Ask reaches a first turn (worked_example)
+FAIL client Practice → start undefined with purpose "practice"
+FAIL client Practice shows the Desk, not the error screen
+FAIL test threw: page.goto: net::ERR_TOO_MANY_RETRIES at https://taxila.dev/c/e0dbc007-bf5a-426f-9aff-97ab3f00df69/ask
+Call log:
+[2m  - navigating to "https://taxila.dev/c/e0dbc007-bf5a-426f-9aff-97ab3f00df69/ask", waiting until "load"[22m
+
+cleanup: account deleted
+PASS leftover @taxila.test guardians 0 → 0
+
+9/12 checks passed, 3 FAILED (https://taxila.dev)
+
+━━ w1a-text-voice.mjs
+(Use `node --trace-warnings ...` to show where the warning was created)
+PASS audio streamed for 20/20 text-lane replies (1 lesson(s))
+PASS the turn prewarmed the text-lane reply (20/20 hits on x-tts-prewarmed-ms)
+first audio byte after the turn response: p50 1302 ms, p90 1363 ms, n = 20
+WARN timing bar (p50 ≤ 400 ms) is enforced only from the Azure probe (TAXILA_PROBE=1); measured here: p50 1302 ms
+cleanup: account deleted
+PASS leftover @taxila.test guardians 0 → 0
+
+3/3 checks passed (https://taxila.dev)
+
+━━ w1a-young-text.mjs
+(Use `node --trace-warnings ...` to show where the warning was created)
+node:internal/process/promises:394
+    triggerUncaughtException(err, true /* fromPromise */);
+    ^
+
+page.waitForResponse: Target page, context or browser has been closed
+    at withTestAccount.tag (/home/user/Taxila/tests/prod/w1a-young-text.mjs:41:25)
+    at async withTestAccount (/home/user/Taxila/tests/prod/lib.mjs:136:5)
+    at async file:///home/user/Taxila/tests/prod/w1a-young-text.mjs:26:1 {
+  log: []
+}
+
+Node.js v22.22.0
+
+━━ w1b-mounts.mjs
+(Use `node --trace-warnings ...` to show where the warning was created)
+c5-maths-ch02-t01: 2 mounts [number-line@1, number-line@1(item)]
+PASS c5-maths-ch02-t01: 0 unknown-engine mounts (none)
+PASS c5-maths-ch02-t01: every engine mode is the engine's own (ok)
+PASS c5-maths-ch02-t01: at least 1 item-bound mount in the maths lesson (catalog-bound 1, G1 0)
+  posed: fade:4, c5-maths-ch02-t01-i01; G1-fillable among them: none
+PASS c5-maths-ch02-t01: the bound module answer (number-line@1, item c5-maths-ch02-t01-i01) was accepted
+PASS c5-maths-ch02-t01: the bound answer wrote a graded via 'module' row (module:item.open:C4)
+cleanup: account deleted
+PASS leftover @taxila.test guardians 1 → 1
+c6-maths-ch07-t01: 0 mounts []
+PASS c6-maths-ch07-t01: 0 unknown-engine mounts (none)
+PASS c6-maths-ch07-t01: every engine mode is the engine's own (ok)
+FAIL c6-maths-ch07-t01: at least 1 item-bound mount in the maths lesson (catalog-bound 0, G1 0)
+  posed: fade:3, c6-maths-ch07-t01-i01; G1-fillable among them: none
+cleanup: account deleted
+PASS leftover @taxila.test guardians 1 → 1
+c4-maths-ch05-t01: 1 mounts [fractions@1]
+PASS c4-maths-ch05-t01: 0 unknown-engine mounts (none)
+PASS c4-maths-ch05-t01: every engine mode is the engine's own (ok)
+FAIL c4-maths-ch05-t01: at least 1 item-bound mount in the maths lesson (catalog-bound 0, G1 0)
+  posed: fade:0, c4-maths-ch05-t01-i01; G1-fillable among them: none
+cleanup: account deleted
+PASS leftover @taxila.test guardians 1 → 1
+c7-maths-ch08-t01: 1 mounts [explainer@1]
+PASS c7-maths-ch08-t01: 0 unknown-engine mounts (none)
+PASS c7-maths-ch08-t01: every engine mode is the engine's own (ok)
+FAIL c7-maths-ch08-t01: at least 1 item-bound mount in the maths lesson (catalog-bound 0, G1 0)
+  posed: fade:0, c7-maths-ch08-t01-i01; G1-fillable among them: none
+cleanup: account deleted
+PASS leftover @taxila.test guardians 1 → 1
+c6-science-ch02-t01: 1 mounts [explainer@1]
+PASS c6-science-ch02-t01: 0 unknown-engine mounts (none)
+PASS c6-science-ch02-t01: every engine mode is the engine's own (ok)
+  posed: fade:4, c6-science-ch02-t01-i01; G1-fillable among them: none
+WARN c6-science-ch02-t01: the lesson posed no item G1 can fill; G1 mount not required
+cleanup: account deleted
+PASS leftover @taxila.test guardians 1 → 1
+c4-evs-ch01-t01: 0 mounts []
+PASS c4-evs-ch01-t01: 0 unknown-engine mounts (none)
+PASS c4-evs-ch01-t01: every engine mode is the engine's own (ok)
+  posed: fade:4, c4-evs-ch01-t01-i01; G1-fillable among them: none
+cleanup: account deleted
+PASS leftover @taxila.test guardians 1 → 1
+c5-english-ch02-t01: 2 mounts [explainer@1, scene@1(g1)]
+PASS c5-english-ch02-t01: 0 unknown-engine mounts (none)
+PASS c5-english-ch02-t01: every engine mode is the engine's own (ok)
+  posed: c5-english-ch02-t01-rl-g2, c5-english-ch02-t01-i06; G1-fillable among them: c5-english-ch02-t01-i06
+PASS c5-english-ch02-t01: at least 1 G1 mount (the lesson posed 1 fillable item(s)) (1)
+PASS c5-english-ch02-t01: the G1 wrong commit (item c5-english-ch02-t01-i06, claim correct:true) was accepted
+FAIL c5-english-ch02-t01: the G1 wrong commit claiming correct:true wrote a via 'module' row graded wrong from the server's binding (no module row)
+WARN c5-english-ch02-t01: the lesson posed one G1 fill; only the wrong commit was sent
+cleanup: account deleted
+PASS leftover @taxila.test guardians 1 → 1
+c7-english-ch01-t01: 0 mounts []
+PASS c7-english-ch01-t01: 0 unknown-engine mounts (none)
+PASS c7-english-ch01-t01: every engine mode is the engine's own (ok)
+  posed: fade:3, c7-english-ch01-t01-i01, c7-english-ch01-t01-rl-h4; G1-fillable among them: none
+WARN c7-english-ch01-t01: the lesson posed no item G1 can fill; G1 mount not required
+cleanup: account deleted
+PASS leftover @taxila.test guardians 1 → 1
+FAIL the battery graded a forged correct:true on a wrong G1 commit (0 lesson(s))
+FAIL the battery graded a right G1 commit claiming correct:false (0 lesson(s))
+PASS item-bound mounts seen across the battery (c5-maths-ch02:1+0g1 c6-maths-ch07:0+0g1 c4-maths-ch05:0+0g1 c7-maths-ch08:0+0g1 c6-science-ch02:0+0g1 c4-evs-ch01:0+0g1 c5-english-ch02:0+1g1 c7-english-ch01:0+0g1)
+
+30/36 checks passed, 6 FAILED (https://taxila.dev)
+
+━━ w1b-tray.mjs
+(Use `node --trace-warnings ...` to show where the warning was created)
+FAIL test threw: page.goto: net::ERR_TOO_MANY_RETRIES at https://taxila.dev/c/cc1d6a17-6f62-4bd3-a835-a1e3bb2d00ee/practice/c5-maths-ch02-t01?mode=text
+Call log:
+[2m  - navigating to "https://taxila.dev/c/cc1d6a17-6f62-4bd3-a835-a1e3bb2d00ee/practice/c5-maths-ch02-t01?mode=text", waiting until "domcontentloaded"[22m
+
+cleanup: account deleted
+PASS leftover @taxila.test guardians 1 → 1
+
+1/2 checks passed, 1 FAILED (https://taxila.dev)
+
+━━ w1c-reteach.mjs
+(Use `node --trace-warnings ...` to show where the warning was created)
+moves: hook,explain,worked_example,practice,hint,hint,practice,hint,hint,practice,hint,hint,probe,hint,reteach,retrieval,hint,hint,probe,reteach,explain,probe,hint,explain,probe,hint,hint,practice,hint,hint
+PASS a child who keeps getting it wrong is re-taught (2 re-teach moves)
+reteach_attempts: s1:gen:concrete(two_fails_post_rung3/thompson) s1:c5-maths-ch02-t01-m-not-numbers:primary(two_fails_post_rung3/thompson)
+PASS reteach_attempts rows are written (2)
+PASS a skill is re-taught at least twice in the lesson (s1×2)
+PASS a re-taught skill gets a different arm each time (gen:concrete → c5-maths-ch02-t01-m-not-numbers:primary)
+state: failedArms {"c5-maths-ch02-t01-s1":["gen:concrete"]} lastArmBySkill {"c5-maths-ch02-t01-s1":"c5-maths-ch02-t01-m-not-numbers:primary"} parked []
+FAIL two arms failed on one skill in the lesson (s1:[gen:concrete])
+FAIL …and the next decision on it is a prerequisite descent (none)
+PASS …after which the skill is parked, or the descent is still being tried ()
+PASS +1 day: the next lesson starts (the start resolves the record)
+resolved: gen:concrete=failed/final c5-maths-ch02-t01-m-not-numbers:primary=open
+FAIL every attempt resolves from the child's later answers (1/2)
+PASS final attempts are rewarded on their own row (1 final)
+PASS final attempts carry their reward and cluster
+PASS a test account's resolutions never touch the population arm_posteriors (unchanged)
+cleanup: account deleted
+PASS leftover @taxila.test guardians 1 → 1
+
+10/13 checks passed, 3 FAILED (https://taxila.dev)
+
+━━ w1c-settle.mjs
+(Use `node --trace-warnings ...` to show where the warning was created)
+cleanup: account deleted
+PASS leftover @taxila.test guardians 1 → 1
+cleanup: account deleted
+PASS leftover @taxila.test guardians 1 → 1
+cleanup: account deleted
+PASS leftover @taxila.test guardians 1 → 1
+
+━━ w1c-three-day.mjs
+(Use `node --trace-warnings ...` to show where the warning was created)
+PASS a real account asking for a clock offset gets 403 (got 403)
+PASS …and cannot read one either (403)
+PASS a test account reads its clock (offset 0, 200)
+PASS the router runs requests on the session's clock (wired)
+PASS day 0 lesson starts on c5-maths-ch01-t01
+PASS day 0: at least 3 graded answers (6; moves hook,explain,worked_example,practice,practice,probe,probe,explain,probe,probe,probe,explain,practice,probe,teachback,wrap)
+day 0 card: s1=shallow [2 chips] s2=shallow [0 chips] s3=shallow [0 chips]
+PASS the parent "how we know" card is shown after a scripted lesson (3/3 skills)
+PASS test clock +1 day (now reads 2026-10-07T15:31:30.834Z)
+PASS +1 day: a new lesson starts on c5-maths-ch01-t02 (a new learning day, not 'done for today')
+FAIL +1 day: the opener of a c5-maths-ch01-t02 lesson asks a day-0 item before any teaching (none)
+FAIL +1 day: the lesson state says it is the C31 delayed check (pendingProbe none/- on -)
+FAIL +1 day: the child answers the delayed check right (no warm-up turn)
++1 day card, right after the delayed check (no why answered since day 0): s1=shallow [2 chips] s2=shallow [0 chips] s3=shallow [0 chips]
+FAIL +1 day: the parent card changes after the delayed check alone (none: shallow/shallow/shallow → shallow/shallow/shallow)
+PASS +1 day: a correct delayed check never lowers the state (shallow/shallow/shallow → shallow/shallow/shallow)
+WARN +1 day: the state stays shallow after a correct delayed check (shallow/shallow/shallow). This is the ladder, not a bug in the check: state.js leaves shallow only with U ≥ U_FRAGILE (a reason), and a delayed check is K / D evidence. The plan's "a correct answer moves the state above shallow" cannot hold on the delayed check alone; the rise below comes from reasons
+PASS +2 days: a review lesson starts on the day-0 topic
+FAIL +2 days: the certifying check (≥ 2 learning days, V1.3) leads, on an item never met (none; met: 6 items)
++2 days card (after reasons): s1=shallow [4 chips] s2=shallow [1 chips] s3=shallow [1 chips]
+FAIL +2 days: with reasons given, a day-0 skill is above shallow (shallow/shallow/shallow) — from reasons, not from the delayed check
+PASS +3 days: a lesson starts
+PASS +3 days: the opener of a c5-maths-ch02-t01 lesson checks a day-0 skill again (asks c5-maths-ch01-t01-rl-o1; warm-up c5-maths-ch01-t01-rl-o1, c5-maths-ch01-t01-i05, c5-maths-ch01-t01-i03)
+PASS +3 days: it is a C31 delayed check (pendingProbe C31 on c5-maths-ch01-t01-rl-o1)
++3 days card: s1=shallow [4 chips] s2=shallow [1 chips] s3=shallow [1 chips]
+FAIL the parent card's state row changes between day 0 and +3 days (shallow/shallow/shallow → shallow/shallow/shallow)
+PASS the state never falls back after correct delayed checks (rank 1 → 1)
+cleanup: account deleted
+PASS leftover @taxila.test guardians 2 → 2
+
+16/23 checks passed, 7 FAILED (https://taxila.dev)
+
+━━ w1d-conductor.mjs
+(Use `node --trace-warnings ...` to show where the warning was created)
+PASS test clock is wired on the target (200, wired=true)
+clock: +5 d → learning day 2026-10-11 (Sunday), week 2026-W41
+PASS Sunday lesson ran (start 1365 ms, 2 turns, end 2238 ms)
+PASS student_event rows: parent.consent_changed, parent.consent_changed, parent.consent_changed, app.opened, lesson.started, lesson.ended
+PASS conductor_state folded the lesson (mode free, cursor 6/6)
+PASS day_plan row (Sun Oct 11 v1)
+PASS Monday lesson started (2026-10-12)
+PASS report.daily for 2026-10-11 is listed in the parent reports area (weekly:2026-W41, daily:2026-10-11)
+PASS parent.letter for 2026-W41 (a Sunday) is listed
+PASS the daily note opens (200)
+jobs: memory.consolidate=done(inline:lesson_end), forge.g2.nightly=done(paused:w1-d), parent.letter=done(parent_report:38), report.daily=done(parent_report:37), memory.consolidate=done(inline:lesson_end)
+PASS forge.g2.nightly stays paused (done:paused:w1-d)
+cleanup: account deleted
+PASS leftover @taxila.test guardians 2 → 2
+
+11/11 checks passed (https://taxila.dev)
+
+━━ w1d-eyes.mjs
+(Use `node --trace-warnings ...` to show where the warning was created)
+PASS GET /api/health is shallow (revision taxila-web--see97e9c-6v0v, sha ee97e9c)
+PASS readiness checks the database (200 db=ok, 448 ms)
+PASS the forced-500 route refuses an anonymous caller (401)
+PASS a test account WITHOUT the operator key is refused (403)
+PASS a test account with the operator key gets the forced 500 (500, body says only "internal error")
+cleanup: account deleted
+PASS leftover @taxila.test guardians 2 → 2
+node:internal/modules/run_main:123
+    triggerUncaughtException(
+    ^
+
+page.goto: net::ERR_TOO_MANY_RETRIES at https://taxila.dev/
+Call log:
+[2m  - navigating to "https://taxila.dev/", waiting until "load"[22m
+
+    at /home/user/Taxila/tests/prod/w1d-eyes.mjs:34:14 {
+  log: [ '  - navigating to "https://taxila.dev/", waiting until "load"' ],
+  name: 'Error'
+}
+
+Node.js v22.22.0
+
+━━ w1f-face.mjs
+(Use `node --trace-warnings ...` to show where the warning was created)
+PASS bake-off identities are not served: /assets/teacher-bakeoff/merged/teal/Bplus.glb → 404 text/plain (not a GLB)
+PASS /assets/teacher-bakeoff/* returns 404 (got 404)
+PASS the unversioned look URL is gone: /assets/teacher/teal/Bplus.glb → 404 (expected 404, not a GLB)
+PASS SPA routes still fall back to the app (200 text/html)
+PASS the child's tutor (arjun) has a lookId (slate)
+FAIL test threw: page.waitForSelector: Timeout 45000ms exceeded.
+Call log:
+[2m  - waiting for locator('.tx-tutorface[data-look]') to be visible[22m
+
+cleanup: account deleted
+PASS leftover @taxila.test guardians 2 → 2
+PASS the child's tutor (asha) has a lookId (teal)
+PASS a class-2 child's tutor wears teal (teal)
+FAIL ship5: Asha's lesson face is the 2D puppet by default (data-face=puppet2d false; 0 glb requested)
+FAIL test threw: page.goto: net::ERR_TOO_MANY_RETRIES at https://taxila.dev/c/f1bcadbe-c9dc-4a73-a309-d89bff869ca5/lesson/new
+Call log:
+[2m  - navigating to "https://taxila.dev/c/f1bcadbe-c9dc-4a73-a309-d89bff869ca5/lesson/new", waiting until "domcontentloaded"[22m
+
+cleanup: account deleted
+PASS leftover @taxila.test guardians 2 → 2
+
+9/12 checks passed, 3 FAILED (https://taxila.dev)
+
+━━ w2a-home-states.mjs
+(Use `node --trace-warnings ...` to show where the warning was created)
+FAIL home state first (got null)
+FAIL first: exactly one primary action (0: )
+PASS first: no horizontal scroll at 360
+FAIL first at 1280: 1 primary, no horizontal scroll (null, 0, hscroll false)
+PASS home state start (got start)
+PASS start: exactly one primary action (1: start-lesson)
+PASS start: no horizontal scroll at 360
+FAIL test threw: page.goto: net::ERR_TOO_MANY_RETRIES at https://taxila.dev/c/c256f939-e33f-4edc-a32c-dce2e5d2dae8
+Call log:
+[2m  - navigating to "https://taxila.dev/c/c256f939-e33f-4edc-a32c-dce2e5d2dae8", waiting until "load"[22m
+
+cleanup: account deleted
+PASS leftover @taxila.test guardians 2 → 2
+
+5/9 checks passed, 4 FAILED (https://taxila.dev)
+
+━━ w2a-parent-truth.mjs
+(Use `node --trace-warnings ...` to show where the warning was created)
+PASS strong child: a graded answer landed (5)
+PASS mixed child: a graded answer landed
+PASS no answers: the child home names a next topic (Converting kg and g)
+PASS no answers: parent home next = child home next ("Converting kg and g" vs "Converting kg and g")
+PASS no answers: Progress next = child home next ("Converting kg and g")
+PASS no answers: 0/0 tried skills read the same on map, parent home, Progress and evidence
+PASS no answers: the parent names no skill the child never tried
+PASS no answers: no lessons this week on both (Notes "No lessons this week.")
+PASS no answers: every skill "Not started", no sprout (empty true)
+PASS no answers: the parent home claims nothing (none)
+PASS mixed: the child home names a next topic (Common factors and common multiples)
+PASS mixed: parent home next = child home next ("Common factors and common multiples" vs "Common factors and common multiples")
+PASS mixed: Progress next = child home next ("Common factors and common multiples")
+PASS mixed: the child's "Next time" = child home next ("Common factors and common multiples")
+PASS mixed: 2/2 tried skills read the same on map, parent home, Progress and evidence
+PASS mixed: the parent names no skill the child never tried
+PASS mixed: the lesson card carries no second count (did.tried)
+PASS mixed: card ticks "on their own" 0 ≤ engine first-try 0
+PASS mixed: c6-maths-ch05-t01-s2 unaided 0 ≤ item attempts 1
+PASS mixed: c6-maths-ch05-t01-s1 unaided 0 ≤ item attempts 0
+PASS mixed: lesson card c6-maths-ch05-t01-s2 = map (practising vs practising)
+PASS mixed: lesson card c6-maths-ch05-t01-s1 = map (practising vs practising)
+PASS mixed: parent home week 1 · 1 min = Notes "1 lesson · 1 day · 1 min"
+PASS strong: the child home names a next topic (Converting kg and g)
+PASS strong: parent home next = child home next ("Converting kg and g" vs "Converting kg and g")
+PASS strong: Progress next = child home next ("Converting kg and g")
+PASS strong: the child's "Next time" = child home next ("Converting kg and g")
+PASS strong: 2/2 tried skills read the same on map, parent home, Progress and evidence
+PASS strong: the parent names no skill the child never tried
+PASS strong: the lesson card carries no second count (did.tried)
+PASS strong: card ticks "on their own" 2 ≤ engine first-try 2
+PASS strong: c5-maths-ch08-t01-s2 unaided 2 ≤ item attempts 2
+PASS strong: c5-maths-ch08-t01-s1 unaided 0 ≤ item attempts 1
+PASS strong: lesson card c5-maths-ch08-t01-s2 = map (got_it vs got_it)
+PASS strong: lesson card c5-maths-ch08-t01-s1 = map (practising vs practising)
+PASS strong: parent home week 1 · 1 min = Notes "1 lesson · 1 day · 1 min"
+PASS test window saved (science)
+PASS test window: the child home revises science (science · Properties of materials)
+PASS test window: parent home next = child home next ("Properties of materials" vs "Properties of materials")
+PASS test window: Progress next = child home next ("Properties of materials")
+PASS test window: the child's "Next time" = child home next ("Properties of materials")
+PASS test window: a start with no topic revises science, the home's topic (c6-science-ch06-t01 · Properties of materials)
+PASS test window: the lesson-end "Next time" = child home next ("Properties of materials" vs "Properties of materials")
+PASS evidence sheet: the real question is shown ("A train carries 18 kg of supplies in three equally heavy box")
+PASS evidence sheet: the child's own words are shown ("Kyunki 1 kg = 1,000 g.")
+PASS evidence sheet: the grader is named (checked against the book's key idea)
+PASS Practice: at most 5 items (of 5)
+PASS Practice: the first teacher line is not a greeting
+PASS 20 lesson summaries built from facts and passed the claim checker (of 20 practice lessons)
+PASS Ask: "Why is 1/2 bigger than 1/3?" is filed under "Comparing fractions" (Fractions)
+FAIL test threw: page.goto: net::ERR_TOO_MANY_RETRIES at https://taxila.dev/c/efdeb993-6ec0-4594-8763-c7e424726319/practice
+Call log:
+[2m  - navigating to "https://taxila.dev/c/efdeb993-6ec0-4594-8763-c7e424726319/practice", waiting until "load"[22m
+
+cleanup: account deleted
+PASS leftover @taxila.test guardians 2 → 2
+
+51/52 checks passed, 1 FAILED (https://taxila.dev)
+
+━━ w2b-explain-rungs.mjs
+(Use `node --trace-warnings ...` to show where the warning was created)
+PASS c5-maths-ch02-t01: no unknown-engine mounts (none)
+cleanup: account deleted
+PASS leftover @taxila.test guardians 2 → 2
+PASS c6-maths-ch02-t01: no unknown-engine mounts (none)
+PASS c6-maths-ch02-t01: the Studio whiteboard slot carries a drawable board (9 ops)
+cleanup: account deleted
+PASS leftover @taxila.test guardians 2 → 2
+PASS c4-maths-ch01-t02: no unknown-engine mounts (none)
+PASS c4-maths-ch01-t02: the Studio whiteboard slot carries a drawable board (7 ops)
+cleanup: account deleted
+PASS leftover @taxila.test guardians 2 → 2
+PASS c7-maths-ch01-t02: no unknown-engine mounts (none)
+cleanup: account deleted
+PASS leftover @taxila.test guardians 2 → 2
+PASS c6-science-ch02-t04: no unknown-engine mounts (none)
+PASS c6-science-ch02-t04: the Studio whiteboard slot carries a drawable board (19 ops)
+cleanup: account deleted
+PASS leftover @taxila.test guardians 2 → 2
+PASS c6-science-ch03-t01: no unknown-engine mounts (none)
+PASS c6-science-ch03-t01: the Studio whiteboard slot carries a drawable board (15 ops)
+cleanup: account deleted
+PASS leftover @taxila.test guardians 2 → 2
+PASS c7-science-ch07-t02: no unknown-engine mounts (none)
+PASS c7-science-ch07-t02: explainer script passes strict normalise + lint, with facts (flow@1)
+cleanup: account deleted
+PASS leftover @taxila.test guardians 2 → 2
+PASS c7-science-ch10-t02: no unknown-engine mounts (none)
+PASS c7-science-ch10-t02: the Studio whiteboard slot carries a drawable board (15 ops)
+cleanup: account deleted
+PASS leftover @taxila.test guardians 2 → 2
+PASS c4-evs-ch01-t01: no unknown-engine mounts (none)
+PASS c4-evs-ch01-t01: the Studio whiteboard slot carries a drawable board (17 ops)
+cleanup: account deleted
+PASS leftover @taxila.test guardians 2 → 2
+PASS c5-evs-ch02-t01: no unknown-engine mounts (none)
+cleanup: account deleted
+PASS leftover @taxila.test guardians 2 → 2
+PASS c6-sst-ch13-t01: no unknown-engine mounts (none)
+PASS c6-sst-ch13-t01: the Studio whiteboard slot carries a drawable board (20 ops)
+cleanup: account deleted
+PASS leftover @taxila.test guardians 2 → 2
+PASS c7-sst-ch20-t01: no unknown-engine mounts (none)
+PASS c7-sst-ch20-t01: the Studio whiteboard slot carries a drawable board (9 ops)
+cleanup: account deleted
+PASS leftover @taxila.test guardians 2 → 2
+┌─────────┬───────────────────────┬────────────────┬──────────┬─────────────────────┬──────────┬────────┐
+│ (index) │ topicId               │ explainReached │ tray     │ engine              │ template │ turnMs │
+├─────────┼───────────────────────┼────────────────┼──────────┼─────────────────────┼──────────┼────────┤
+│ 0       │ 'c5-maths-ch02-t01'   │ true           │ 'module' │ 'number-line@1'     │ null     │ 1812   │
+│ 1       │ 'c6-maths-ch02-t01'   │ true           │ 'studio' │ 'studio-whiteboard' │ null     │ 2070   │
+│ 2       │ 'c4-maths-ch01-t02'   │ true           │ 'studio' │ 'studio-whiteboard' │ null     │ 2847   │
+│ 3       │ 'c7-maths-ch01-t02'   │ true           │ 'module' │ 'number-line@1'     │ null     │ 1989   │
+│ 4       │ 'c6-science-ch02-t04' │ true           │ 'studio' │ 'studio-whiteboard' │ null     │ 1998   │
+│ 5       │ 'c6-science-ch03-t01' │ true           │ 'studio' │ 'studio-whiteboard' │ null     │ 2511   │
+│ 6       │ 'c7-science-ch07-t02' │ true           │ 'module' │ 'explainer@1'       │ 'flow@1' │ 2888   │
+│ 7       │ 'c7-science-ch10-t02' │ true           │ 'studio' │ 'studio-whiteboard' │ null     │ 1608   │
+│ 8       │ 'c4-evs-ch01-t01'     │ true           │ 'studio' │ 'studio-whiteboard' │ null     │ 2769   │
+│ 9       │ 'c5-evs-ch02-t01'     │ true           │ 'module' │ 'water-cycle@1'     │ null     │ 1759   │
+│ 10      │ 'c6-sst-ch13-t01'     │ true           │ 'studio' │ 'studio-whiteboard' │ null     │ 2395   │
+│ 11      │ 'c7-sst-ch20-t01'     │ true           │ 'studio' │ 'studio-whiteboard' │ null     │ 1742   │
+└─────────┴───────────────────────┴────────────────┴──────────┴─────────────────────┴──────────┴────────┘
+PASS an engine show or the board on the explain move in ≥ 10 of 12 topics (12/12; board 9, engine 3)
+PASS no explain move with an empty tray (none)
+PASS the explain move's tray is the module tray for a mount, the studio tray for the live board
+
+36/36 checks passed (https://taxila.dev)
+
+━━ w2b-first-paint.mjs
+(Use `node --trace-warnings ...` to show where the warning was created)
+FAIL test threw: page.goto: net::ERR_TOO_MANY_RETRIES at https://taxila.dev/c/af306c67-accd-4854-9647-2dd3fa6a9f15/lesson/new?mode=text&topic=c6-science-ch02-t04
+Call log:
+[2m  - navigating to "https://taxila.dev/c/af306c67-accd-4854-9647-2dd3fa6a9f15/lesson/new?mode=text&topic=c6-science-ch02-t04", waiting until "domcontentloaded"[22m
+
+cleanup: account deleted
+PASS leftover @taxila.test guardians 2 → 2
+FAIL test threw: page.waitForSelector: Timeout 45000ms exceeded.
+Call log:
+[2m  - waiting for locator('[data-testid="lesson"]') to be visible[22m
+
+cleanup: account deleted
+PASS leftover @taxila.test guardians 2 → 2
+FAIL test threw: page.waitForSelector: Timeout 45000ms exceeded.
+Call log:
+[2m  - waiting for locator('[data-testid="lesson"]') to be visible[22m
+
+cleanup: account deleted
+PASS leftover @taxila.test guardians 2 → 2
+FAIL test threw: page.waitForSelector: Timeout 45000ms exceeded.
+Call log:
+[2m  - waiting for locator('[data-testid="lesson"]') to be visible[22m
+
+cleanup: account deleted
+PASS leftover @taxila.test guardians 2 → 2
+FAIL test threw: page.goto: net::ERR_TOO_MANY_RETRIES at https://taxila.dev/c/c6939a30-d93e-444f-894c-08f4b5cc575a/lesson/new?mode=text&topic=c4-maths-ch01-t02
+Call log:
+[2m  - navigating to "https://taxila.dev/c/c6939a30-d93e-444f-894c-08f4b5cc575a/lesson/new?mode=text&topic=c4-maths-ch01-t02", waiting until "domcontentloaded"[22m
+
+cleanup: account deleted
+PASS leftover @taxila.test guardians 2 → 2
+FAIL test threw: page.waitForSelector: Timeout 45000ms exceeded.
+Call log:
+[2m  - waiting for locator('[data-testid="lesson"]') to be visible[22m
+
+cleanup: account deleted
+PASS leftover @taxila.test guardians 2 → 2
+FAIL test threw: page.waitForSelector: Timeout 45000ms exceeded.
+Call log:
+[2m  - waiting for locator('[data-testid="lesson"]') to be visible[22m
+
+cleanup: account deleted
+PASS leftover @taxila.test guardians 2 → 2
+FAIL test threw: page.waitForSelector: Timeout 45000ms exceeded.
+Call log:
+[2m  - waiting for locator('[data-testid="lesson"]') to be visible[22m
+
+cleanup: account deleted
+PASS leftover @taxila.test guardians 2 → 2
+FAIL test threw: page.waitForSelector: Timeout 45000ms exceeded.
+Call log:
+[2m  - waiting for locator('[data-testid="lesson"]') to be visible[22m
+
+cleanup: account deleted
+PASS leftover @taxila.test guardians 2 → 2
+FAIL test threw: page.waitForSelector: Target page, context or browser has been closed
+Call log:
+[2m  - waiting for locator('[data-testid="lesson"]') to be visible[22m
+
+cleanup: account deleted
+PASS leftover @taxila.test guardians 2 → 2
+
+━━ w2c-personalisation.mjs
+(Use `node --trace-warnings ...` to show where the warning was created)
+cleanup: account deleted
+PASS leftover @taxila.test guardians 3 → 3
+PASS (c) all-"don't know" children get the worked example on day 2, with no first-step probe: 3/3
+PASS (c) control: neutral children (attended, never stuck) are asked the first-step probe on day 2 — the idk arm is routed differently: 3/3
+PASS (c) right-first-time children attempt first on day 2: 3/3
+  idk: start > hook > explain > worked_example > practice[fade:4] > break > explain > probe[anywhere] > hint[anywhere] > hint[anywhere] > practice[i03]
+  idk: start > hook > explain > worked_example > practice[fade:4] > break > explain > probe[anywhere] > hint[anywhere] > hint[anywhere] > practice[i03]
+  idk: start > hook > explain > worked_example > practice[fade:4] > break > explain > probe[anywhere] > hint[anywhere] > hint[anywhere] > practice[i03]
+  right: start[i03] > hook > practice[o1]
+  right: start[i03] > hook > repair > practice[o1]
+  right: start[i03] > hook > practice[o1]
+  neutral: start > hook > worked_example > explain > practice[fade:4] > break > practice[fade:4] > hint[fade:4] > practice[o1] > hint[o1] > hint[o1]
+  neutral: start > hook > worked_example > explain > practice[fade:4] > break > practice[fade:4] > hint[fade:4] > practice[o1] > hint[o1] > hint[o1]
+  neutral: start > hook > worked_example > explain > practice[fade:4] > break > practice[fade:4] > hint[fade:4] > practice[o1] > hint[o1] > hint[o1]
+PASS (d) "dheere" raises waitNudgeSec above the B3 default 4 s within 2 turns: 4 → 5 → 5
+PASS (d) …and the endpoint silence: 700 → 840 → 840 ms
+  b.fix: day 1 gen:story(thompson)=repaired_now → day 2 first gen:story(child_history) · day 2 moves hook,explain,worked_example,practice,practice,hint,hint,practice,hint,hint,probe,hint,hint,practice,reteach
+  b.fix: day 1 gen:worked(thompson)=repaired_now → day 2 first gen:worked(child_history) · day 2 moves hook,explain,worked_example,practice,practice,hint,hint,practice,hint,hint,probe,hint,hint,practice,hint,hint,explain,probe,hint,probe,reteach
+  b.fix: day 1 gen:worked(thompson)=repaired_now → day 2 first gen:worked(child_history) · day 2 moves hook,explain,worked_example,practice,practice,hint,hint,practice,hint,hint,probe,hint,hint,practice,hint,hint,explain,probe,hint,probe,probe,reteach
+  b.ctl: day 1 gen:story(thompson)=open → day 2 first gen:concrete(thompson) · day 2 moves hook,explain,worked_example,practice,practice,reteach
+  b.ctl: day 1 gen:story(thompson)=failed → day 2 first c5-maths-ch02-t01-m-not-numbers:primary(thompson) · day 2 moves hook,explain,worked_example,practice,practice,reteach
+  b.ctl: day 1 gen:concrete(thompson)=failed c5-maths-ch02-t01-m-not-numbers:primary(thompson)=open → day 2 first gen:pictorial(thompson) · day 2 moves hook,explain,worked_example,practice,practice,reteach
+PASS (b) the arm that repaired THIS child's mix-up on day 1 is the first re-teach on day 2 (child_history or its recap): 3/3
+PASS (b) control: after failed day-1 arms, day 2's first re-teach is not from the child's history and not a class that just failed: 3/3
+
+8/8 checks passed (https://taxila.dev)
+
+━━ w2c-practice-ask.mjs
+(Use `node --trace-warnings ...` to show where the warning was created)
+PASS the first practice turn is "1 of 5" (≤ 5)
+PASS it opens on a question (no greeting turn, no hook)
+PASS practice is retrieval: no faded worked-example step
+PASS the set ends the lesson
+PASS the closing turn says done ("That's the set"): {"n":5,"of":5,"done":true}
+PASS the counter never passes the set (5 of 5)
+PASS an Ask start handles the question itself (ui.askConsumed: true)
+PASS …her opening answers it (no safeguard on an ordinary question)
+WARN Ask disclosure check skipped on a remote target (set W2C_SAFETY=1; the incident then needs the safeguarding team's review)
+cleanup: account deleted
+PASS leftover @taxila.test guardians 3 → 3
+
+9/9 checks passed (https://taxila.dev)
+
+━━ w2d-voice-lanes.mjs
+(Use `node --trace-warnings ...` to show where the warning was created)
+PASS a realtime lesson starts
+PASS the live call is minted with truncation {"type":"retention_ratio","retention_ratio":0.8}
+PASS server VAD silence 900 ms is inside 900-1200 (never below the measured base)
+PASS the transcription logprobs are kept (classify's low-ASR gate)
+PASS the client's copy of the session carries no instructions
+PASS before the switch the turn is a realtime-lane turn (instructions, no written reply)
+PASS the lesson moves to the cascade lane (96 ms)
+PASS a second switch is a no-op (idempotent)
+PASS the switch is one-way within a sitting
+PASS after the switch she speaks again, Director-written (hook): "Riya, cricket kit ka parcel 2 kg 50 g ho, toh aap ise sirf grams mein kaise likh"
+PASS she voices the move planned for the child's last answer (hook → hook), not a fresh unrelated one
+PASS the resume turn stores no fake child row
+PASS the realtime turn last heard is stored (and checked) although the lesson is now cascade
+PASS the switch is marked in the transcript as a system row
+PASS the cascade lane's response carries no instructions (the answer key stays on the server)
+PASS her line streams on the cascade voice (200, 624000 bytes, first byte header 0 ms, total 144 ms)
+PASS the next child turn is answered on the cascade lane (explain)
+PASS the switched lesson ends normally
+PASS a text lesson has no realtime lane to leave (409)
+PASS an ended lesson cannot switch (409)
+PASS a malformed lesson id is a 400
+cleanup: account deleted
+PASS leftover @taxila.test guardians 3 → 3
+
+22/22 checks passed (https://taxila.dev)
+
+━━ w2e-brain.mjs
+(Use `node --trace-warnings ...` to show where the warning was created)
+PASS text lesson starts (1744 ms)
+PASS 7 turns answered: hook/hook, explain/explain, worked_example/worked_example, practice/practice_set, probe/probe, hint/probe, repair/probe
+PASS every turn has her words (no error card)
+PASS every turn's Moment and beat have their contract shape
+PASS the beat moves through the lesson (b2-hook → b3-explain → b4-worked_example → b5-practice_set → b6-probe)
+PASS every Studio reveal carries its slot in the tray (1 reveals)
+PASS a studio slot always owns the tray
+WARN live-board slots on this lesson: 0 (none)
+WARN text turn round trip from this machine (not a gate): p50 2431 ms, max 4265 ms, n=7
+WARN disclosure check skipped on a remote target (set W2E_SAFETY=1; the incident then needs the safeguarding team's review)
+PASS one brain_trace row per turn (7/7)
+PASS each row names the turn's move and beat
+PASS exactly one accepted move per turn
+PASS the lane is recorded
+PASS no child words in any trace row
+PASS server compute time recorded
+PASS each row carries one cls.*, one cls_source.* and the verdict the child saw
+PASS on every explain turn the trace shows the live board's slot or why not (over_budget.attention, over_budget.attention)
+PASS every graded turn names its kit item (2 graded)
+PASS a true goodbye ends the lesson that turn (hook, wrap)
+PASS the goodbye turn is traced as a release (release.goodbye_wrap,release.goodbye)
+PASS a bare stop phrase gets ONE check-in, not the end (break)
+cleanup: account deleted
+PASS leftover @taxila.test guardians 3 → 3
+
+20/20 checks passed (https://taxila.dev)
+
+━━ w2f-studio-gate.mjs
+(Use `node --trace-warnings ...` to show where the warning was created)
+WARN A: STUDIO_QA_URL unset: the studio-qa gate service part was NOT run (deploy it with scripts/deploy-studio-qa.mjs)
+cleanup: account deleted
+PASS leftover @taxila.test guardians 3 → 3
+cleanup: account deleted
+PASS leftover @taxila.test guardians 3 → 3
+cleanup: account deleted
+PASS leftover @taxila.test guardians 3 → 3
+cleanup: account deleted
+PASS leftover @taxila.test guardians 3 → 3
+WARN B: 4 whiteboard slots opened, 3 boards reached the client (a slot whose board the gate refused, e.g. W9, stays empty by design)
+PASS B: c6-maths-ch07-t01: whiteboard script passes strict shape + stage lint (ok)
+PASS B: c6-maths-ch07-t01: the child's name is not on the board
+PASS B: c6-maths-ch07-t01: every label has a leader
+PASS B: c6-maths-ch07-t01: the received board passes the whiteboard gate W0-W9 again (ok)
+PASS B: c6-maths-ch07-t01: the board arrived 4763 ms after the reply (≤ 6 s)
+PASS B: c7-science-ch01-t01: whiteboard script passes strict shape + stage lint (ok)
+PASS B: c7-science-ch01-t01: the child's name is not on the board
+PASS B: c7-science-ch01-t01: every label has a leader
+PASS B: c7-science-ch01-t01: the received board passes the whiteboard gate W0-W9 again (ok)
+PASS B: c7-science-ch01-t01: the board arrived 1864 ms after the reply (≤ 6 s)
+PASS B: c7-science-ch01-t01: whiteboard script passes strict shape + stage lint (ok)
+PASS B: c7-science-ch01-t01: the child's name is not on the board
+PASS B: c7-science-ch01-t01: every label has a leader
+PASS B: c7-science-ch01-t01: the received board passes the whiteboard gate W0-W9 again (ok)
+PASS B: c7-science-ch01-t01: the board arrived 267 ms after the reply (≤ 6 s)
+FAIL B: sync: estimated lateness after her audio starts p50 1164 ms, p90 4063 ms ≤ 1500 ms (n = 3; arrival − reply − 700 ms; the client draws a late board on her clock, clock.ts)
+
+19/20 checks passed, 1 FAILED (https://taxila.dev)
+
+━━ w2flow-walk.mjs
+(Use `node --trace-warnings ...` to show where the warning was created)
+FAIL walk threw: page.goto: Timeout 30000ms exceeded.
+PASS leftover @taxila.test guardians 3 → 3
+
+1/2 checks passed, 1 FAILED (https://taxila.dev)
+
+━━ w2g-voice.mjs
+(Use `node --trace-warnings ...` to show where the warning was created)
+PASS a cascade lesson starts with a stored opening (seq 1)
+PASS the opening streams framed v2 (200 application/x-taxila-pcm-frames;v=2)
+PASS a header frame first (engine dhd, 3 parts, first 1 ms server-side)
+PASS one clause event per part, sample-exact and increasing (0, 2945, 6841 ms)
+PASS PCM arrives in frames (8.61 s of audio)
+PASS an end frame closes the stream
+PASS the opening speaks with dhd (expected dhd)
+PASS an old client still gets raw audio/pcm (425328 bytes)
+PASS turn-audio answers framed (200)
+PASS header, then the TurnResponse
+PASS the turn is the Director's (hook): "Cricket bag mein bat ka weight 2 kg 50 g hai. Sochiye, ise sirf grams "
+PASS the Moment rides in the turn (voice and face read one object)
+PASS her reply's audio follows on the SAME response (10.22 s, turn frame at 2368 ms, first PCM at 3713 ms, total 6062 ms)
+PASS turn-audio answers framed (200)
+PASS header, then the TurnResponse
+PASS the turn is the Director's (explain): "Riya, yahan step toot gaya: 2 kg 50 g ko grams mein badalna hai. 1 kg "
+PASS the Moment rides in the turn (voice and face read one object)
+PASS her reply's audio follows on the SAME response (8.53 s, turn frame at 2657 ms, first PCM at 3886 ms, total 5645 ms)
+PASS turn-audio answers framed (200)
+PASS header, then the TurnResponse
+PASS the turn is the Director's (worked_example): "Riya, yahan step toot gaya: kilogram ko grams mein badalte hain. Scree"
+PASS the Moment rides in the turn (voice and face read one object)
+PASS her reply's audio follows on the SAME response (11.25 s, turn frame at 3167 ms, first PCM at 4417 ms, total 6780 ms)
+WARN fold, sandbox → https://taxila.dev: first teacher audio 3713 / 3886 / 4417 ms after the request (gate p50 ≤ 2.2 s from Central India only)
+WARN disclosure check skipped on a remote target (set W2G_SAFETY=1; the incident then needs the safeguarding team's review)
+PASS "Hear" replays her line as mp3 (54288 bytes)
+PASS "Hear" speaks with dhd (expected dhd)
+PASS turn-audio without a session is a JSON 401 (401)
+PASS a malformed lesson id is refused before any frame (400)
+cleanup: account deleted
+PASS leftover @taxila.test guardians 3 → 3
+
+28/28 checks passed (https://taxila.dev)
+
+━━ w2h-studio.mjs
+(Use `node --trace-warnings ...` to show where the warning was created)
+PASS [text #1] lesson starts on c5-maths-ch02-t02 (1209 ms)
+PASS GET /api/studio/stream is an event stream (200)
+PASS the stream refuses a signed-out caller (401)
+PASS [text #1] turns answered (hook, reteach, explain, worked_example, reteach, practice, hint, hint)
+PASS [text #1] the teacher revealed a Studio piece on her cue (6967e8f1-eb4f-429d-96a5-f9b7eaacdc0c:c4)
+PASS [text #1] the reveal turn carries the tray slot (revealed)
+PASS [text #1] the Work tray is the studio stage on the reveal turn (studio)
+PASS [text #1] a renderable artifact (stagecraft)
+PASS [text #1] the slot carries no host-only truth
+PASS [text #1] the reveal line never mentions a failure
+PASS [text #1] the reveal turn's move (hint) does not pose a competing question
+PASS [text #1] AT-7: the reveal line and the next one name only on-screen values
+WARN [text #1] the revealed piece is undefined: the scripted answer check covers shade_fraction only
+PASS [text #1] 'Show me again' is accepted
+PASS [text #1] an answer to a piece that is not on screen is refused
+PASS [text #1] a studio_mount row (stagecraft catch-on-line@1)
+PASS [text #1] the Made for you feed has the piece (1 card)
+WARN [text #1] no explanation beat asked for a whiteboard in this run
+W2H summary {"runs":1,"reveals":1,"lintPass":1,"competing":0} (AT-7 wants reveals ≥ 9/10 runs and the values lint 100%)
+cleanup: account deleted
+PASS leftover @taxila.test guardians 3 → 3
+
+17/17 checks passed (https://taxila.dev)
+
+━━ w2i-release.mjs
+(Use `node --trace-warnings ...` to show where the warning was created)
+PASS text: lesson starts
+PASS text: a warmth offer does not end the lesson
+PASS text: the warm boundary breaks no floor rule (no friend role, no love returned): "Riya, main aapka AI teacher hoon, best friend nahi. Aap apni baat kisi trusted friend ya family member se bhi share kiji"
+PASS text: every line was answered before the goodbye (hook, explain, worked_example, practice, wrap)
+PASS text: the goodbye ends the lesson THAT turn (end true, move wrap)
+PASS text: no question at the goodbye: "Bye Riya, mummy ke paas jaiye. Aaj aapne 2 kg 50 g ko 2050 g mein badalne ka step kiya. Dhyan rakhiye."
+PASS text: no "one more" at the goodbye
+PASS text: no guilt, teaser or hook at the goodbye (clean)
+PASS text: nothing affective at the goodbye (TA3: neutral_warm)
+PASS one rel_bond row for (child, teacher) after the lesson (1)
+PASS the first lesson completes S0 (sessions 1, stage first_sessions)
+PASS replay(rel_event) equals the rel_bond row byte for byte (AT-U1, 2 events)
+PASS the warmth boundary is a parent-visible relational_note (boundary_warmth)
+PASS note slots are closed values (never the child's words)
+PASS cascade: lesson starts
+PASS cascade: a warmth offer does not end the lesson
+PASS cascade: the warm boundary breaks no floor rule (no friend role, no love returned): "Riya, main aapka AI teacher hoon, best friend nahi. Chaliye, pehle kg ko grams mein badal kar weight jodiye—2 kg kitne g"
+PASS cascade: every line was answered before the goodbye (hook, worked_example, explain, practice, wrap)
+PASS cascade: the goodbye ends the lesson THAT turn (end true, move wrap)
+PASS cascade: no question at the goodbye: "Bye Riya, papa ke saath jaiye aur apna dhyaan rakhiye. Aaj aapne kilogram ko grams mein badalne ka step practice kiya."
+PASS cascade: no "one more" at the goodbye
+PASS cascade: no guilt, teaser or hook at the goodbye (clean
