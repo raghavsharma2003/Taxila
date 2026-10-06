@@ -28,6 +28,12 @@ const SCALE = Number(arg("--scale", 1));
 const MODEL_N = Number(arg("--model", 0));
 const STUDIO_STAMP = arg("--studio-stamp", "half");
 const PARTS = arg("--parts", join(HERE, "data/parts-labels.json"));
+// round2 truth stream: which classes' kits (default 4-7, the VALUES scope; "1-9" for every kit), a JSON dump of the model
+// leg's raw rows (re-scored offline by evals/grading-truth/guard-eval.mjs), and a code guard applied to the SAME model
+// labels (paired before/after on one set of model calls)
+const CLASSES = (arg("--classes", "4-7").match(/^(\d)-(\d)$/) ?? [null, "4", "7"]).slice(1).map(Number);
+const DUMP = arg("--dump-model", null);
+const GUARD = arg("--guard", null);
 const OUT = arg("--out", join(HERE, "results", new Date().toISOString().slice(0, 10)));
 const imp = (rel) => import(pathToFileURL(join(ROOT, rel)).href);
 
@@ -46,7 +52,7 @@ const wrongKind = (truth, verdict) => {
 };
 
 // ───────────── kits (c4-c7, the VALUES scope) ─────────────
-const KIT_FILES = readdirSync(join(MAIN, "data/kits")).filter((f) => /^c[4-7]-.*\.json$/.test(f)).sort();
+const KIT_FILES = readdirSync(join(MAIN, "data/kits")).filter((f) => { const m = /^c(\d)-.*\.json$/.exec(f); return m && +m[1] >= CLASSES[0] && +m[1] <= CLASSES[1]; }).sort();
 const { getKit } = await imp("server/content/index.js");
 const kits = [];
 for (const f of KIT_FILES) {
@@ -193,6 +199,14 @@ for (const { kit, cls, subject } of kits) {
       // WEAK truth: another item's key is assumed wrong for this one, but two items can share an answer ("p = 7" and
       // "... x = 7"); a disagreement here is listed for a human look, never counted as a proven wrong grade
       if (other) run(String(other.answer), "incorrect", "text-wrong:other-item-key(weak-truth)");
+      // round2 truth (owner-1 on prod 2026-10-06: "tens first" for "25, 38, 52" was credited): a child repeating the
+      // item's own first nudge ("Compare the tens first", "Which number has the fewest tens?") has not answered it. Only
+      // hints 1-2 (rungs 3-4 often state the answer), and never one that matches a key / acceptable entry
+      for (const h of (item.hints ?? []).slice(0, 2)) {
+        const ht = String(h ?? "").replace(/[?]+\s*$/, "").trim();
+        if (ht.split(/\s+/).length < 2 || [key, ...(item.acceptable ?? [])].some((a) => norm0(a) && (norm0(ht).includes(norm0(a)) || norm0(a).includes(norm0(ht))))) continue;
+        run(ht, "incorrect", "text-wrong:hint-as-answer");
+      }
       // negation of the key ("not X" / "X nahi"): never the key
       if (key.split(/\s+/).length <= 4) run(R.chance(0.5) ? `not ${key}` : `${key} nahi`, "incorrect", "text-wrong:negated-key");
       const parts = partsLabels.items?.[item.id]?.parts;
@@ -506,28 +520,40 @@ for (const { kit } of R.shuffle(kits).slice(0, Math.round(120 * SCALE))) for (co
 }
 
 // ═════════════ 7. optional: the lesson classifier's MODEL leg on sampled deferred cases ═════════════
-const modelRows = [];
+const modelRows = [], guardRows = [];
 section(7);
 if (MODEL_N > 0) {
   for (const line of readFileSync(join(MAIN, ".env.local"), "utf8").split("\n")) { const m = line.match(/^([A-Z0-9_]+)=(.*)$/); if (m && !process.env[m[1]]) process.env[m[1]] = m[2].replace(/^"(.*)"$/, "$1"); }
   await imp("server/net.js");
   // stratified over the six questions the model leg answers, equal shares, paired across trees (same seed, same pool)
-  const bucket = (c) => /acceptable-in-sentence\(complete/.test(c.kind) ? "complete-single-or-multi(2-rater)" : /partial/.test(c.kind) || c.truth === "partial" ? "partial(2-rater)"
+  const bucket = (c) => /hint-as-answer/.test(c.kind) ? "hint-as-answer" : /acceptable-in-sentence\(complete/.test(c.kind) ? "complete-single-or-multi(2-rater)" : /partial/.test(c.kind) || c.truth === "partial" ? "partial(2-rater)"
     : /^num:/.test(c.kind) ? "number-forms-correct" : /^num-wrong/.test(c.kind) ? "number-wrong" : /^text-wrong/.test(c.kind) ? "text-wrong(negated/other)" : "hedge/self-correct/other";
-  const pool = R.shuffle(deferred), per = Math.ceil(MODEL_N / 6), byB = {}, chosen = [];
+  const NB = new Set(deferred.map((d) => bucket(d.c))).size;
+  const pool = R.shuffle(deferred), per = Math.ceil(MODEL_N / NB), byB = {}, chosen = [];
   for (const d of pool) { const b = bucket(d.c); if ((byB[b] ?? 0) >= per) continue; byB[b] = (byB[b] ?? 0) + 1; d.c.bucket = b; chosen.push(d); }
   let i = 0;
+  const guard = GUARD ? await import(pathToFileURL(resolve(GUARD)).href) : null;
+  const vOf = (o) => (o === "correct" ? "correct" : o === "partial" ? "partial" : o === "incorrect" || o === "misconception" ? "incorrect" : "abstain");
   const work = async () => { while (i < chosen.length) { const d = chosen[i++]; try {
     const r = await CL.classify({ ...d.args, trace: [] });
-    const o = r.outcome, verdict = o === "correct" ? "correct" : o === "partial" ? "partial" : o === "incorrect" || o === "misconception" ? "incorrect" : "abstain";
-    modelRows.push({ ...d.c, grader: "lesson.classify(model)", source: r.source, fallback: !!r.fallback, modelOutcome: o, verdict, wrong: wrongKind(d.c.truth, verdict) });
+    const o = r.outcome, verdict = vOf(o);
+    const row = { ...d.c, grader: "lesson.classify(model)", source: r.source, fallback: !!r.fallback, modelOutcome: o, verdict, wrong: wrongKind(d.c.truth, verdict),
+      ...(r.source === "error" ? { error: "model unavailable (source error)" } : {}) };
+    modelRows.push(row);
+    if (guard) {
+      const g = guard.corroborate({ target: d.target, text: d.args.childText, result: r });
+      const gv = vOf(g.outcome);
+      guardRows.push({ ...d.c, grader: "lesson.classify(model)+guard", source: r.source, modelOutcome: o, guardOutcome: g.outcome, guardWhy: g.why ?? null, verdict: gv, wrong: wrongKind(d.c.truth, gv) });
+    }
   } catch (e) { modelRows.push({ ...d.c, grader: "lesson.classify(model)", verdict: "abstain", error: String(e.message).slice(0, 80), wrong: null }); } } };
   // Review v1: concurrency is a flag; the model leg shares the production deployment's rate limit (6 workers x 3 trees hit 429s)
   await Promise.all(Array.from({ length: Number(arg("--model-conc", 6)) }, work));
 }
 
 // ───────────── report ─────────────
-const all = [...cases.filter((c) => c.truth !== "skip"), ...modelRows];
+const all = [...cases.filter((c) => c.truth !== "skip"), ...modelRows, ...guardRows];
+if (DUMP) writeFileSync(DUMP, JSON.stringify(modelRows.map((r) => ({ itemId: r.itemId, input: r.input, truth: r.truth, kind: r.kind, bucket: r.bucket, modelOutcome: r.modelOutcome ?? null,
+  source: r.source ?? null, error: r.error ?? null, fallback: !!r.fallback })), null, 0));
 const groups = {};
 for (const c of all) {
   const g = (groups[c.grader] ??= { n: 0, wrong: 0, false_credit: 0, false_fail: 0, partial_miss: 0, abstain: 0, uncredited: 0, byTruth: {}, byKindWrong: {}, byKindUncredited: {} });
@@ -537,7 +563,8 @@ for (const c of all) {
   if (c.wrong) { g.wrong++; g[c.wrong]++; const k = `${c.wrong} · ${c.kind}`; g.byKindWrong[k] = (g.byKindWrong[k] ?? 0) + 1; }
 }
 const meta = { label: LABEL, root: ROOT, seed: SEED, scale: SCALE, studioStamp: STUDIO_STAMP, date: new Date().toISOString(), lessonItems, boundPlans, moduleNoReplay: noReplay, placementBank: bank.length,
-  ext: EXT?.error ? `not loaded: ${EXT.error}` : `${EXT?.ARCHETYPES_EXT?.length ?? 0} extension archetypes`, modelN: MODEL_N, modelDeploy: MODEL_N ? (process.env.DEPLOY_CLASSIFY || process.env.DEPLOY_FAST || "taxila-fast") : null };
+  ext: EXT?.error ? `not loaded: ${EXT.error}` : `${EXT?.ARCHETYPES_EXT?.length ?? 0} extension archetypes`, classes: CLASSES, guard: GUARD,
+  modelErrors: modelRows.filter((r) => r.error).length, modelN: MODEL_N, modelDeploy: MODEL_N ? (process.env.DEPLOY_CLASSIFY || process.env.DEPLOY_FAST || "taxila-fast") : null };
 mkdirSync(OUT, { recursive: true });
 const wrongRows = all.filter((c) => c.wrong);
 writeFileSync(join(OUT, `${LABEL}.json`), JSON.stringify({ meta, summary: groups, wrong: wrongRows, uncreditedSample: all.filter((c) => c.verdict === "abstain" && c.truth === "correct").slice(0, 200), model: modelRows }, null, 1));

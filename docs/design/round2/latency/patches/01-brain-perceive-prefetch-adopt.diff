@@ -1,0 +1,91 @@
+--- a/server/brain/turn.js
++++ b/server/brain/turn.js
+@@ -54,6 +54,8 @@
+ import { understand } from "../conversation/understand.js";
+ import { applyNote, withAnswerMods } from "../conversation/policy.js";
+ import { conv2Mode, p5Flag } from "../conversation/flags.js";
++// Round 2, stream latency: the perceive stage as one function the turn PREFETCH shares (adopted on identical inputs only)
++import { perceive, fingerprint as prefetchFingerprint, adoptPrefetch, adoptMissOf } from "../latency/perceive.js";
+ import { childTurnRow, clientInstructions, debugFor, floorIncidentStmt, incidentStmt, kitFor, laneOf, runTurnTx, stageTurns, turnInsertStmt, turnLane, withAsk, withSeamUi, withStudioSlot } from "./rows.js";
+ 
+ /**
+@@ -356,33 +358,38 @@
+   // arrived. Each used to read Date.now() when it ran, so a classifier call that crossed a 6 s boundary
+   // moved the compiled "minute" line and every speculation missed on that alone (2/8 turns,
+   // evals/cascade-latency.mjs 2026-10-02: "minute 0.7 || minute 0.8").
+-  const now = Date.now();
+-  const fast = classified ? classifyFast(clsArgs) : null;
+   // A low-confidence transcript is already decided (no evidence, source "asr"); only the model's distress
+   // backup is pending, so its one likely plan is speculated. A distress verdict changes the plan (safeguard),
+   // its key no longer matches, and the real reply is written as before.
+-  const specs = textLane && !late && fast && !fast.result
+-    ? speculate(state, target, fast.flags, { ...planCtx, now }, { said, historyOf }, fast.lowAsr ? { outcomes: ["no_evidence"], source: "asr" } : {})
+-    : [];
+   // CONVERSATION-V2 UNDERSTAND (server/conversation/understand.js): when the bytes decided nothing, a model reads what the
+   // child MEANS, in parallel with classify(). It is waited on only when classify() says the turn is not an answer, at most
+   // NOTE_WAIT_MS from its start; a 429, an error or a timeout is no note (today's path). Off / shadow: TAXILA_CONV2.
+-  const c2 = conv2Mode();
+-  const noteT0 = performance.now();
+-  const noteP = c2 !== "off" && !late && fast && !fast.result && !fast.lowAsr && !fast.request && childText && !help
+-    ? understand({ cls: child.class_level, topicTitle: state.ctx?.topicTitle, phase: state.phase, teacherLast: heard ?? "",
+-      ask: target.mode === "item" && activeItem ? promptFor(activeItem, state.ctx?.lang) : null, key: target.mode === "item" ? target.key ?? null : null,
+-      earlier: earlierExchanges(state.recent, 2), said: childText, trace }) : null;
+-  noteP?.catch(() => {});
++  // Round 2 latency (server/latency/perceive.js): the same perceive stage, run here or ADOPTED from the turn prefetch the
++  // device sent on its stable partial transcript (POST /api/lesson/turn-prefetch) when every classify input, the stored
++  // state and the words are byte-identical and classifyFast on this turn's real ASR confidence agrees; plus the
++  // note-parallel reply (a non-answer's no-note reply is written while the note is out). Speculation keeps one clock: an
++  // adopted perception's plans were stepped at the prefetch's `now`, so this turn plans at that `now` too.
++  const noteArgs = { cls: child.class_level, topicTitle: state.ctx?.topicTitle, phase: state.phase, teacherLast: heard ?? "",
++    ask: target.mode === "item" && activeItem ? promptFor(activeItem, state.ctx?.lang) : null, key: target.mode === "item" ? target.key ?? null : null,
++    earlier: earlierExchanges(state.recent, 2), said: childText };
++  const pre = classified && textLane && !late && !edited && !laneResume && !help && !moduleOnly && !moduleEvents.length && !body.chipId && childText
++    ? adoptPrefetch(lesson.id, { fp: prefetchFingerprint({ lessonId: lesson.id, state: lesson.state, clsArgs, bargeIn: !!body.teacherInterrupted }), fast: classifyFast(clsArgs) })
++    : null;
++  const P = pre ?? perceive(PERCEIVE_DEPS, { classified, clsArgs, state, target, planCtx, said, historyOf, textLane, late, help, childText, noteArgs });
++  const { now, fast, specs, noteP, noteT0, c2 } = P;
++  if (pre) mark("prefetch_adopted");
+   let cls;
+-  try { cls = classified ? await classify(clsArgs) : null; } finally { clsDone(); }
++  try { cls = classified ? await P.clsP : null; } finally { clsDone(); }
++  if (pre) trace.push(...pre.prefetch.trace.map((t) => ({ ...t, prefetched: true })));
+   mark("classified");
+-  let noteReason = null;
++  let noteReason = null, noteDebug = null;
+   if (noteP && cls) {
+     const nonAnswer = cls.outcome === "no_evidence" && !cls.request && !cls.help && !cls.flags?.distress;
++    const waitT0 = performance.now();
+     const note = await settleWithin(noteP, nonAnswer ? Math.max(0, NOTE_WAIT_MS - (performance.now() - noteT0)) : 0);
+     if (note) cls = applyNote(cls, note, { mode: c2 });
+     noteReason = note ? `conv2.${c2 === "shadow" ? "shadow" : "note"}.${note.intent}` : "conv2.no_note";
++    noteDebug = { nonAnswer, intent: note?.intent ?? null, waitedMs: Math.round(performance.now() - waitT0), parallel: P.noteParallel ? await settleWithin(P.noteParallel, 0) : null };
+     mark("noted");
+   }
+   // ship5 fixer (experience B4): the duplex floor's hold offer (TurnRequest.duplex.cutInReason "hold_offer": the child asked
+@@ -781,7 +788,7 @@
+         inputsHash: inputsHashOf({ prev: state, cls, move: r.move, itemId: r.move.itemId ?? null, kitHash: state.kitHash ?? null, lane }),
+         proposals: kernel.proposals, arb: kernel.arb, reasons: [`lane.${lane}`, ...(late ? ["turn.late"] : []), ...(moduleOnly ? ["turn.module_only"] : []),
+           ...(help ? ["turn.help"] : []), ...(laneResume ? [revoice ? "turn.lane_resume_revoice" : "turn.lane_resume"] : []), ...(kernel.replanned ? ["turn.replanned"] : []), ...(kernel.wb.declined ? [kernel.wb.declined] : []),
+-          ...(speculation ? [speculation.hit ? "turn.speculation_hit" : "turn.speculation_miss"] : []), ...(wbAcked ? ["studio.whiteboard_slot"] : []),
++          ...(speculation ? [speculation.hit ? "turn.speculation_hit" : "turn.speculation_miss"] : []), ...(pre ? ["turn.prefetch_adopted"] : []), ...(wbAcked ? ["studio.whiteboard_slot"] : []),
+           ...(rungReplaced ? ["studio.rung_replaced"] : []), ...studioReasons, ...releaseReasons,
+           ...comprehensionReasons({ cls, classified, help: !!help, uiVerdict: uiV, guard }), ...vsReasons,
+           ...(guard?.caught?.includes("unavailable") ? ["turn.fallback_reply"] : []),
+@@ -840,6 +847,7 @@
+       probe: next.pendingProbe ?? null, vibe: next.vibe ?? null, held: (next.kt?.deferred ?? []).map((d) => d.event.id), carried: carried.map((x) => ({ id: x.event.id, graded: !!x.results?.length })),
+       skills: skillChanges, flagged: next.flagged, guard, verdict, spoiled: next.spoiled, ...(skipped ? { skipped } : {}),
+       ...(speculation ? { speculation } : {}), ...(prewarmed ? { ttsPrewarmed: true } : {}),
++      prefetch: pre ? { adopted: true, aheadMs: pre.prefetch.aheadMs } : { adopted: false, miss: adoptMissOf(lesson.id) }, ...(noteDebug ? { note: noteDebug } : {}),
+       item: item ? { id: item.id, kind: item.kind, prompt_en: item.prompt_en, prompt_hi: item.prompt_hi, answer: item.answer, acceptable: item.acceptable, ...(item.options ? { options: item.options.map((o) => o.text) } : {}) } : null,
+       kitVerified: kit.verified, ms, timings: trace,
+       stage: { accepted: kernel.arb.accepted.map((p) => p.kind), rejected: kernel.arb.rejected.map((x) => `${x.p.kind}:${x.why}`), wb: kernel.wb?.declined ?? null, studioPropose: studioView?.propose ?? null,
+@@ -1153,6 +1161,9 @@
+   }));
+ }
+ 
++/** What perceive() (server/latency/perceive.js) calls: the turn's own functions, so the prefetch runs the turn's code. */
++const PERCEIVE_DEPS = { classifyFast, classify, understand, speculate, planTurn, replyKey, textReply, conv2Mode };
++
+ /** CONVERSATION-V2 §4.4: the longest a non-answer turn waits on the UNDERSTAND note from its start (gpt-6-sol p90 2174 ms). */
+ export const NOTE_WAIT_MS = Number(process.env.TAXILA_NOTE_WAIT_MS ?? 2200);
+ /** The promise's value if it settles within `ms` (0: only if already settled), else null. Never throws. */

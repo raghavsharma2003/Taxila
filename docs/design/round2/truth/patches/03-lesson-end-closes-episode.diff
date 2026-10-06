@@ -1,0 +1,76 @@
+diff --git a/server/brain/turn.js b/server/brain/turn.js
+index fd4e0e6..7e4c27c 100644
+--- a/server/brain/turn.js
++++ b/server/brain/turn.js
+@@ -14,7 +14,7 @@ import { gamingDiscount, nextAffect } from "../learner/affect.js";
+ import { skillStateStmt, evidenceStmt, misconceptionFlagStmt, misconceptionResolveStmt } from "../learner/model.js";
+ import { canWrite } from "../learner/mode.js";
+ import { ledgerStmts } from "../learner/writer.js";
+-import { LIVE_FOLD_CTX, answerEvents, closeEvents, compactBelief, skillsMapFor, snapshotFromKt, legacySkillState, loadLive, commitLive, evictLive } from "../learner/live.js";
++import { LIVE_FOLD_CTX, answerEvents, closeEvents, endEvents, compactBelief, skillsMapFor, snapshotFromKt, legacySkillState, loadLive, commitLive, evictLive } from "../learner/live.js";
+ import { newLearnerState, fuseEvidence, beliefFor, noteOutcome, auditRow, weaveEnqueue } from "../comprehension/index.js";
+ import { facetStmts, probeLogStmt, reteachStmt, gradeAuditStmt, weaveEnqueueStmt } from "../comprehension/store.js";
+ import { gradeLater, settledGrade, finalEvent, awaitGrade, forgetGrade, pregrade } from "../comprehension/later.js";
+@@ -1114,10 +1114,15 @@ export function spoiledBy(teacherText, state, kit, activeItem) {
+ const END_GRADE_WAIT_MS = 6000;
+ export async function flushHeld(child, lesson, state) {
+   const held = state.kt?.deferred ?? [];
+-  if (!held.length || !canWrite(child, "kt")) return;
++  // round2 truth: an open item episode the lesson ended on closes as a leave does (live.js endEvents)
++  const open = state.kt?.ep && !state.kt.ep.closed && state.kt.ep.wrong > 0 && !state.kt.ep.mcq;
++  if ((!held.length && !open) || !canWrite(child, "kt")) return;
++  const kitE = open ? await kitFor(lesson.topic_id, state).catch(() => null) : null;
++  const closing = open ? endEvents({ lessonId: lesson.id, startedAt: lesson.started_at, now: Date.now(), state, kit: kitE }) : [];
++  if (!held.length && !closing.length) return;
+   const carried = await Promise.all(held.map(async (d) => finalEvent(d.event, await awaitGrade(d.event.id, END_GRADE_WAIT_MS))));
+   const live = await loadLive(child);
+-  const events = carried.map((x) => x.event);
++  const events = [...carried.map((x) => x.event), ...closing];
+   const after = fuseEvidence(live.state, events, LIVE_FOLD_CTX);
+   const now = Date.now();
+   const stmts = ledgerStmts(child, live.state.ledger, after.ledger, events).map((st) => (/^with ins as \(insert into kt_evidence/.test(st.text) ? { ...st, ktEvidence: true } : st));
+@@ -1130,6 +1135,7 @@ export async function flushHeld(child, lesson, state) {
+   }
+   // the lesson state forgets them in the same transaction, so a retried end cannot store them twice
+   stmts.push({ text: "update lesson set state = state #- '{kt,deferred}' where id = $1 returning id", params: [lesson.id] });
++  if (closing.length) stmts.push({ text: "update lesson set state = jsonb_set(state, '{kt,ep,closed}', 'true'::jsonb) where id = $1 and state #> '{kt,ep}' is not null returning id", params: [lesson.id] });
+   const { seqs } = await runTurnTx(child, stmts);
+   commitLive(child, live.maxSeq, after, seqs);
+   for (const d of held) forgetGrade(d.event.id);
+diff --git a/server/learner/live.js b/server/learner/live.js
+index 355f2a2..2fdeb58 100644
+--- a/server/learner/live.js
++++ b/server/learner/live.js
+@@ -135,6 +135,7 @@ export function answerEvents(c) {
+       ep.closed = true;
+     } else {
+       ep.wrong += 1;
++      ep.via = viaOf(ev);                                                     // round2 truth: endEvents writes the leave with it
+     }
+   }
+   const tb = evidence.filter((ev) => ev.probe === "P1");
+@@ -174,6 +175,24 @@ export function closeEvents(c, a) {
+   return { events, ep };
+ }
+ 
++/**
++ * round2 truth (prod w1b-mounts 2026-10-06: a G1 open-class commit answered wrong, then the lesson ended, wrote NO row):
++ * the lesson end is the Director leaving the item. An open episode with wrong tries and no correct answer closes exactly
++ * as closeEvents closes it on a leave (P15, C4, episodeEnded; the misconception shown rides on it), so a wrong answer the
++ * child gave is never silently dropped. Options items already wrote their first try. Pure; [] when nothing is open.
++ * @param {{ lessonId: string, startedAt: any, now: number, state: any, kit: any }} c
++ * @returns {any[]}
++ */
++export function endEvents({ lessonId, startedAt, now, state, kit }) {
++  const ep = state?.kt?.ep;
++  if (!ep || ep.closed || ep.mcq || !(ep.wrong > 0) || !ep.itemId || !ep.skillId) return [];
++  const ctr = { k: 0 };
++  const base = baseOf({ lessonId, startedAt, now, childSeq: "end" }, ctr, { grader: "code", topicType: kit?.topicType, kitVerified: kit?.verified !== false });
++  const ev = { skillId: ep.skillId, itemId: ep.itemId, probe: "P15", outcome: "incorrect", hintsUsed: 4, weight: 1, ...(ep.mis ? { misconceptionId: ep.mis } : {}) };
++  const e = fromLegacyEvidence(ev, base({ episodeId: `${lessonId}:${ep.itemId}`, triesBefore: ep.wrong, episodeEnded: true }));
++  return e ? [{ ...e, target: ep.skillId, via: ep.via === "module" ? "module" : "dialogue" }] : [];
++}
++
+ function baseOf(c, ctr, { grader, topicType, kitVerified }) {
+   const at = new Date(c.now).toISOString();
+   const sessionStartAt = new Date(c.startedAt ?? c.now).toISOString();

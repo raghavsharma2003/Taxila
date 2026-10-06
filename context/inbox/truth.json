@@ -1,0 +1,204 @@
+{
+ "stream": "truth",
+ "at": "2026-10-06",
+ "source": "docs/design/round2/truth (RESEARCH.md, APPLY.md, patches 01-05)",
+ "nodes": [
+  {
+   "id": "truth-d1-pace-park-hands-to-ladder",
+   "kind": "decision",
+   "at": "2026-10-06",
+   "title": "A miss that V1.4's pace park would leave, on a skill with a re-teach arm in flight, IS the re-check's verdict: cooldown cleared, engineReteach decides at once (another arm → prerequisite descent → engine park). Bounded: max 9 tries in the sim (V1.4 line 10). Reverse if V1.4 overload (10 tries without 3 right) exceeds 5% of skill-sessions in the mastery-calibration sim with it on."
+  },
+  {
+   "id": "truth-d2-options-item-never-its-own-recheck",
+   "kind": "decision",
+   "at": "2026-10-06",
+   "title": "A re-teach on an options item (diagnostic / tap) retires it with no further verdict; the re-check is isomorphicFor (a fresh produce item on the skill). Re-asking 2-3 options after feedback is elimination and the fold grades try 1 only. Engine path and afterMiss kit remediation. Reverse if a kit skill has no isomorphic produce item (then measure the fallback)."
+  },
+  {
+   "id": "truth-d3-lesson-end-closes-open-episode",
+   "kind": "decision",
+   "at": "2026-10-06",
+   "title": "The lesson end closes an open item episode with wrong tries exactly as a leave does (live.js endEvents: P15 / C4, misconception and via carried), in flushHeld's transaction; the state marks the episode closed. Reverse if the ledger gets an 'abandoned' outcome class distinct from C4."
+  },
+  {
+   "id": "truth-d4-teachback-credits-every-covered-skill",
+   "kind": "decision",
+   "at": "2026-10-06",
+   "title": "A probe.teachback event advances the display of every skill in its skill_ids (derived from stored cls + skill_ids: replay-stable). learned_today still needs each skill's own unaided correct, 2 of 3 recent right and pL ≥ 0.95. Reverse if, on the pilot, skills that reached learned_today only via a shared teach-back fail their certifying check > 10 points more often than skills whose (b) came from a skill-specific why."
+  },
+  {
+   "id": "truth-d4b-performance-only-scheduling-not-adopted",
+   "kind": "decision",
+   "at": "2026-10-06",
+   "title": "Considered, not adopted: scheduling the delayed check from performance alone (ASSISTments ARRS 7/14/30/60 days after 3-in-a-row; Khan Mastery Challenges; Duolingo HLR) without the generative pass. Revisit if practice-purpose lessons leave > 20% of skills with ≥ 3 unaided right answers and no check within 7 days (kt_skill_state on the pilot)."
+  },
+  {
+   "id": "truth-d5-model-label-must-be-corroborated",
+   "kind": "decision",
+   "at": "2026-10-06",
+   "title": "server/grading/corroborate.js: a model 'correct' on a keyed item stands only if one complete form (key, unlabelled/complete acceptable, correct option) is carried by the reply's words (no foreign number; the form's numbers in order; no opposite decisive word, swapped counted-thing/era/unit word or negated key; > half the content words for a word-only form); a fail/partial on words that ARE the key (or only its numbers) → no evidence. Reverse if uncredited correct answers exceed 25% of model-leg cases on a held-out seed, or the pilot re-asks more than once per 10 answered items."
+  },
+  {
+   "id": "ms-truth-reteach-sim-2026-10-06",
+   "kind": "measurement",
+   "at": "2026-10-06",
+   "title": "Director sim, c5-maths-ch02-t01, always-wrong child, 40 seeds x 3 skills (deterministic, no model): skill-runs left pace-parked with a re-teach arm in flight and no decision HEAD 80/120 → patched 0/120; max tries on a skill 7 → 9."
+  },
+  {
+   "id": "ms-truth-local-batteries-2026-10-06",
+   "kind": "measurement",
+   "at": "2026-10-06",
+   "title": "Local server (Neon TEST branch, real Azure models, scripted children, n = 1-2 per file): w1c-reteach HEAD 13/13 (n=1; prod failure is model-dependent) / patched 13/13 (n=2); w1c-three-day HEAD 16/23 (n=1) / patched 20/23 (n=2); round2-truth acceptance A+B+C HEAD 6 FAIL / patched 0 FAIL; w1b-mounts patched: forged G1 graded both directions in 2 lessons each."
+  },
+  {
+   "id": "ms-truth-grading-det-noparts-2026-10-06",
+   "kind": "measurement",
+   "at": "2026-10-06",
+   "title": "grading-truth deterministic paths on HEAD in the PRODUCTION configuration (no kits-parts file), classes 1-9, seed 7, n = 78,810: 870 wrong (838 = exact match on a kit acceptable entry two raters call partial, over 326 items). The earlier '0 in 35,088' was measured with TAXILA_PARTS_FILE set."
+  },
+  {
+   "id": "ms-truth-grading-model-leg-2026-10-06",
+   "kind": "measurement",
+   "at": "2026-10-06",
+   "title": "grading-truth model leg (taxila-fast, classes 1-9, stratified over 7 buckets incl. new hint-as-answer), paired before/after corroborate on the same labels: seed 7 n=1,878 wrong 385 → 242, uncredited 45 → 56; seed 11 n=1,889 wrong 382 → ~249; proven-truth classes 62 → 7 (s7) and 57 → 11 (s11, before the last two rule refinements); the remainder is two-rater partial truth (kit acceptables that are partial). Held-out seed 13: see APPLY.md."
+  },
+  {
+   "id": "rj-truth-pace-park-preempts-ladder",
+   "kind": "rejection",
+   "at": "2026-10-06",
+   "title": "V1.4 pace park (7 tries, no run of 3) leaving the item and skipping the skill while W1-C's re-teach re-check was pending: the ladder never reached 'two arms → descent' and the arm in flight never resolved (prod w1c-reteach 10/13; sim 80/120 skill-runs stuck)."
+  },
+  {
+   "id": "rj-truth-options-item-own-recheck",
+   "kind": "rejection",
+   "at": "2026-10-06",
+   "title": "Re-asking the same diagnostic / options item after its re-teach: elimination (2 options, one already wrong), and answerEvents grades the first try only, so the re-check carried no evidence and the attempt could not resolve."
+  },
+  {
+   "id": "rj-truth-end-drops-open-episode",
+   "kind": "rejection",
+   "at": "2026-10-06",
+   "title": "Lesson end without closing an open item episode: a wrong answer on an open item followed by End wrote no kt_evidence row at all (closeEvents runs only inside a turn), against integration-episode-close-carries-misconception."
+  },
+  {
+   "id": "rj-truth-w1b-test-reads-debug-on-prod",
+   "kind": "rejection",
+   "at": "2026-10-06",
+   "title": "w1b-mounts' open-class G1 check read ans.debug.classification; production never sends debug (rows.js debugFor), so on taxila.dev it always fell through to 'no module row' and the right commit was never sent (0 lessons graded). The server's turn verdict is ui.verdict."
+  },
+  {
+   "id": "rj-truth-teachback-credits-first-skill-only",
+   "kind": "rejection",
+   "at": "2026-10-06",
+   "title": "Ledger advancing only target = skillIds[0] on the conjunctive teach-back: the generative pass went to the first taught skill (s1, recent [0,1]) and never to the skill done unaided (s2, recent [1,1], pL .987): 3/3 local day-0 traces, no learned_today, no check due (prod w1c-three-day 16/23)."
+  },
+  {
+   "id": "rj-truth-model-credit-uncorroborated",
+   "kind": "rejection",
+   "at": "2026-10-06",
+   "title": "Taking the classifier model's 'key' label as the grade: 'tens first' credited for '25, 38, 52', '10/15 and 9/15' for 'Ali is wrong: 4/9 < 3/4' (prod owner-1); hint-as-answer credited 49/300 (seed 7)."
+  },
+  {
+   "id": "rj-truth-handover-park-on-first-arm",
+   "kind": "rejection",
+   "at": "2026-10-06",
+   "title": "First cut of the pace-park handover: parked the skill (engine park) whenever the pace park fired, even with only 1 failed arm. Sim: 0 descents, every skill parked after one arm; W1-C's second arm and descent never ran. Replaced by handing the decision to engineReteach."
+  },
+  {
+   "id": "rj-truth-guard-half-cover",
+   "kind": "rejection",
+   "at": "2026-10-06",
+   "title": "corroborate minCover 0.5: a 2-word form was 'carried' by one shared word ('Think of the star used to find north' for 'Pole Star'; 'tissue' for 'phloem tissue'). Now > half (0.6)."
+  },
+  {
+   "id": "rj-truth-guard-list-split",
+   "kind": "rejection",
+   "at": "2026-10-06",
+   "title": "Reading a reply's numbers per comma / 'and' segment always: broke Indian grouping ('1,00,000') and 'one hundred and forty-six' (uncredited 51 → 69 on seed 7). Now the whole reply first, segments only when the shared reader cannot read it (spoken lists)."
+  },
+  {
+   "id": "rj-truth-guard-scale-words-decisive",
+   "kind": "rejection",
+   "at": "2026-10-06",
+   "title": "Counting lakh / crore / million as decisive words in corroborate: 'two lakh thirty-six thousand…' for '2,36,408' read as a swapped word. Scale words are part of the number; the value check decides them."
+  }
+ ],
+ "edges": [
+  {
+   "src": "truth-d1-pace-park-hands-to-ladder",
+   "rel": "supersedes",
+   "dst": "rj-truth-pace-park-preempts-ladder"
+  },
+  {
+   "src": "truth-d1-pace-park-hands-to-ladder",
+   "rel": "supersedes",
+   "dst": "rj-truth-handover-park-on-first-arm"
+  },
+  {
+   "src": "truth-d2-options-item-never-its-own-recheck",
+   "rel": "supersedes",
+   "dst": "rj-truth-options-item-own-recheck"
+  },
+  {
+   "src": "truth-d3-lesson-end-closes-open-episode",
+   "rel": "supersedes",
+   "dst": "rj-truth-end-drops-open-episode"
+  },
+  {
+   "src": "truth-d4-teachback-credits-every-covered-skill",
+   "rel": "supersedes",
+   "dst": "rj-truth-teachback-credits-first-skill-only"
+  },
+  {
+   "src": "truth-d5-model-label-must-be-corroborated",
+   "rel": "supersedes",
+   "dst": "rj-truth-model-credit-uncorroborated"
+  },
+  {
+   "src": "truth-d5-model-label-must-be-corroborated",
+   "rel": "supersedes",
+   "dst": "rj-truth-guard-half-cover"
+  },
+  {
+   "src": "truth-d5-model-label-must-be-corroborated",
+   "rel": "supersedes",
+   "dst": "rj-truth-guard-list-split"
+  },
+  {
+   "src": "truth-d5-model-label-must-be-corroborated",
+   "rel": "supersedes",
+   "dst": "rj-truth-guard-scale-words-decisive"
+  },
+  {
+   "src": "truth-d1-pace-park-hands-to-ladder",
+   "rel": "measured_by",
+   "dst": "ms-truth-reteach-sim-2026-10-06"
+  },
+  {
+   "src": "truth-d4-teachback-credits-every-covered-skill",
+   "rel": "measured_by",
+   "dst": "ms-truth-local-batteries-2026-10-06"
+  },
+  {
+   "src": "truth-d5-model-label-must-be-corroborated",
+   "rel": "measured_by",
+   "dst": "ms-truth-grading-model-leg-2026-10-06"
+  },
+  {
+   "src": "ms-truth-grading-det-noparts-2026-10-06",
+   "rel": "blocks",
+   "dst": "truth-d5-model-label-must-be-corroborated"
+  },
+  {
+   "src": "rj-truth-w1b-test-reads-debug-on-prod",
+   "rel": "part_of",
+   "dst": "truth-d3-lesson-end-closes-open-episode"
+  },
+  {
+   "src": "truth-d4b-performance-only-scheduling-not-adopted",
+   "rel": "part_of",
+   "dst": "truth-d4-teachback-credits-every-covered-skill"
+  }
+ ]
+}

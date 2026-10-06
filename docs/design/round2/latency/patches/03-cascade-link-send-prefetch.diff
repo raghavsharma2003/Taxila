@@ -1,0 +1,73 @@
+--- a/src/lesson/cascadeLink.ts
++++ b/src/lesson/cascadeLink.ts
+@@ -26,6 +26,8 @@
+ import { fetchSpeechStream, PcmStreamPlayer, type SpeechStreamFetch, type StreamPlayback } from "./ttsStream.ts";
+ import { MicVad } from "./vad.ts";
+ import { FragmentMerger, PREDICTIVE_SILENCE_MS, predictiveEnabled, resumeCeilingMs, turnContext, type TurnFinal } from "./turnModel.ts";
++// Round 2 latency: the stable partial transcript goes to POST /api/lesson/turn-prefetch the moment the child is quiet
++import { TurnPrefetcher, prefetchEnabled } from "../latency/prefetch.ts";
+ // ship5 p1-duplex: the hands-free duplex engine (src/duplex/cascadeDuplex.ts). Off unless the caller passes `duplex`.
+ import type { CascadeDuplex, CascadeDuplexOptions, CascadeDuplexState } from "../duplex/cascadeDuplex.ts";
+ import type { DuplexMode } from "../duplex/flags.ts";
+@@ -67,6 +69,12 @@
+    */
+   predictive?: boolean;
+   /**
++   * Round 2 latency (src/latency/prefetch.ts): send the stable partial transcript to /api/lesson/turn-prefetch once the child
++   * is quiet, so the server starts classify / the note / the speculative replies before the final transcript. Default from
++   * prefetchEnabled() (ON; kill switch ?prefetch=0 or VITE_TURN_PREFETCH=0). The turn itself is unchanged.
++   */
++  prefetch?: boolean;
++  /**
+    * ship5 p1-duplex: the hands-free duplex engine decides the child's floor (no talk button; a final is not a turn).
+    * A mode or a resolver (src/duplex/flags.ts resolveDuplexMode: device override, server kill switch, build default).
+    * Absent or "off" = today's path byte for byte. Any failure falls back to today's path (onDuplex reports it).
+@@ -329,6 +337,7 @@
+   private audioEl: HTMLAudioElement | null = null;
+   private mic: MediaStream | null = null;
+   private micVad: MicVad | null = null;
++  private readonly prefetcher: TurnPrefetcher | null;
+   private player: PcmStreamPlayer | null = null;
+   private pc: RTCPeerConnection | null = null;
+   private dc: RTCDataChannel | null = null;
+@@ -373,6 +382,7 @@
+     this.onTransport = opts.onTransport;
+     this.ctx = opts.audioContext ?? null;
+     this.merger = opts.predictive ?? predictiveEnabled() ? new FragmentMerger() : null;
++    this.prefetcher = opts.prefetch ?? prefetchEnabled() ? new TurnPrefetcher({ lessonId: opts.lessonId }) : null;
+     this.onDuplex = opts.onDuplex;
+     this.duplexFace = opts.duplexFace;
+     this.duplexOptions = opts.duplexOptions;
+@@ -615,6 +625,12 @@
+   // ───────────── child side ─────────────
+ 
+   private onChildEvent(e: LinkEvent): void {
++    // Round 2 latency: the prefetcher reads the partials and the item's end (it never changes what the turn sends)
++    if (this.prefetcher) {
++      if (e.type === "child_partial") this.prefetcher.onPartial(e.itemId, e.text);
++      else if (e.type === "child_speech_start") this.prefetcher.onSpeech();
++      else if (e.type === "child_final" || e.type === "child_silent") this.prefetcher.onFinal();
++    }
+     // turn.predictive (W2-E L1): a final that reads unfinished waits for the child to go on, and merges with the next.
+     if (this.merger && !this.current?.paused && !this.duplexDeciding) {
+       if (e.type === "child_speech_start" && this.merger.onSpeechStart()) {
+@@ -703,6 +719,11 @@
+   }
+ 
+   private onLocalVad(edge: "onset" | "sustain" | "offset"): void {
++    // Round 2 latency: the device heard the child stop (offset) or go on (onset); hands-free only
++    if (this.prefetcher && !this.pushToTalk) {
++      if (edge === "offset") this.prefetcher.onQuiet();
++      else if (edge === "onset") this.prefetcher.onSpeech();
++    }
+     if (edge === "onset" && this.recorder) this.recorder.heard = true;
+     const cur = this.current;
+     if (!cur?.playing || this.pushToTalk || edge === "offset" || this.duplexDeciding) return;
+@@ -795,6 +816,7 @@
+     this.pauseTimer = null;
+     cur.playback.stop();
+     if (byChild) this.events.emit({ type: "teacher_interrupted", responseId: cur.id });
++    if (byChild) this.prefetcher?.setInterrupted(true);
+     if (cur.playing) this.events.emit({ type: "teacher_audio_end" });
+     this.events.emit({ type: "response_done", responseId: cur.id, status });
+   }

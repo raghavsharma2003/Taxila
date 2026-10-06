@@ -1,0 +1,74 @@
+diff --git a/server/director/state.js b/server/director/state.js
+index aca7335..90ca37d 100644
+--- a/server/director/state.js
++++ b/server/director/state.js
+@@ -496,7 +496,12 @@ function afterMiss(s, input, item) {
+   const { kit, cls } = input;
+   notePace(s, item, false);
+   // a parked skill (V1.4: wheel-spinning ahead) stops here: the item is left, the engine's re-teach takes it next lesson
+-  if (s.pace?.parkedSkills?.includes(item.skillId) && !item.fade && s.hintLevel < 4) { s.skipped.push(item.id); return poseNext(s, input, "let's leave this one for now and come back to it with a different way next time"); }
++  if (s.pace?.parkedSkills?.includes(item.skillId) && !item.fade && s.hintLevel < 4) {
++    // round2 truth: the pace park hands the skill to the engine's re-teach ladder when an arm is in flight on it
++    const handed = ladderHandover(s, input, item);
++    if (handed) return handed;
++    s.skipped.push(item.id); return poseNext(s, input, "let's leave this one for now and come back to it with a different way next time");
++  }
+   const m = cls?.outcome === "misconception" ? (item.misconceptions ?? kit.misconceptions).find((x) => x.id === cls.misconceptionId) : null;
+   if (m) s.flagged[m.id] = (s.flagged[m.id] ?? 0) + 1;
+   // P21: no 3-in-a-row in ~10 opportunities — a different approach, not more of the same.
+@@ -508,6 +513,15 @@ function afterMiss(s, input, item) {
+   }
+   if (m?.remediation && !s.retaught.includes(m.id)) {
+     s.retaught.push(m.id);
++    // round2 truth: an options item is never re-asked after its re-teach (elimination; see engineReteach): retired, and
++    // the re-check is a fresh item on the skill
++    if ((item.options?.length ?? 0) >= 2) {
++      if (!s.itemsDone.includes(item.id)) s.itemsDone.push(item.id);
++      s.activeItemId = undefined; s.hintLevel = 0;
++      const iso = isomorphicFor(s, kit, item);
++      if (iso) s.nextItemId = iso.id;
++      return plan("reteach", SH.reteach({ ...m.remediation, again: false }), { skillId: item.skillId, representation: m.remediation.representation });
++    }
+     s.hintLevel = Math.min(3, s.hintLevel + 1);   // a re-teach spends a rung but never reaches the assertion
+     return plan("reteach", SH.reteach({ ...m.remediation, again: true }), { item, representation: m.remediation.representation });
+   }
+@@ -590,10 +604,39 @@ function engineReteach(s, input, item, v) {
+     s.itemsDone.push(item.id); s.practiced += 1; s.activeItemId = undefined;
+     return plan("reteach", SH.reteach({ representation, moveShape, again: false }), { skillId: k, representation });
+   }
++  // round2 truth (prod w1c-reteach 10/13): an options item (a diagnostic, a tap question) cannot be its own re-check: a second
++  // try on the same 2-3 options is elimination, and the learner fold grades only the first try (live.js answerEvents), so
++  // the attempt had no later answer to resolve from. The item is retired with no further verdict and the re-check is a
++  // fresh item on the skill (isomorphicFor), posed next, exactly as a re-teach after a right answer moves on.
++  if ((item.options?.length ?? 0) >= 2) {
++    if (!s.itemsDone.includes(item.id)) s.itemsDone.push(item.id);
++    s.activeItemId = undefined; s.hintLevel = 0;
++    const iso = isomorphicFor(s, kit, item);
++    if (iso) s.nextItemId = iso.id;
++    return plan("reteach", SH.reteach({ representation, moveShape, again: false }), { skillId: k, representation });
++  }
+   s.hintLevel = Math.min(3, s.hintLevel + 1);
+   return plan("reteach", SH.reteach({ representation, moveShape, again: true }), { item, skillId: k, representation });
+ }
+ 
++/**
++ * round2 truth (prod w1c-reteach 10/13, 2026-10-06): V1.4's pace park (PACE.parkTries tries without a run of 3) and W1-C's
++ * re-teach ladder (a different arm, then 2 failed arms → prerequisite descent, 3 → park) both act on a struggling skill, and
++ * the pace park won by default: it left the item while the ladder's re-check (RETEACH_COOLDOWN graded items on the skill)
++ * was still pending, and a pace-parked skill gets no more items, so the ladder never reached its next decision and the arm
++ * in flight never got a later answer to resolve from. Now a miss that the pace park would leave, on a skill with an arm in
++ * flight, IS the re-check's verdict: the cooldown is cleared and the ladder decides at once (engineReteach: the arm in
++ * flight counts as failed): another arm, the prerequisite descent, or the engine's park (s.parked, the Conductor's spaced
++ * re-teach). Bounded: each decision moves the ladder one rung, and the third failure parks, so at most two more tries on
++ * the skill (7 + 2 < V1.4's 10-try wheel-spin line). null when no arm is in flight: the plain pace park stands.
++ */
++function ladderHandover(s, input, item) {
++  const k = item.skillId, last = s.lastArmBySkill?.[k];
++  if (!last || (s.parked ?? []).includes(k) || !s.comp?.[k]?.belief) return null;
++  s.reteachCool = { ...s.reteachCool, [k]: 0 };
++  return engineReteach(s, input, item, verdict(input.cls) === "stuck" ? "stuck" : "wrong");
++}
++
+ /**
+  * "Show me choices" tiles for the item on the table: a diagnostic's own options (opt:i, graded by the option's tag),
+  * else the key and two distractors (items.js choicesFor; pick:i, graded in code against the key). The generated

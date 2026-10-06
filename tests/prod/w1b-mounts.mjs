@@ -79,7 +79,13 @@ for (const [ti, topicId] of TOPICS.entries()) {
     const mounted = new Map();
     const track = (c) => { if (c.op === "mount") mounted.set(c.moduleId, c); else if (c.op === "unmount") mounted.delete(c.moduleId); };
     for (const c of start.moduleCommands ?? []) track(c);
-    for (const [i, line] of LINES.entries()) {
+    // round2 truth: which items a lesson poses is not under the test's control, so a science/English lesson that has not yet
+    // posed a G1-fillable item gets up to EXTRA more turns answered with the asked item's key (0 lessons graded on prod
+    // 2026-10-06 came partly from the only G1 item being posed late)
+    const EXTRA = /-(science|english|evs)-/.test(topicId) ? 8 : 0;
+    const lines = [...LINES, ...Array.from({ length: EXTRA }, () => "ok")];
+    for (const [i, line] of lines.entries()) {
+      if (i >= LINES.length && g1Checks.wrong && g1Checks.right) break;
       const key = i >= 5 && asked ? K.find(asked)?.answer : null;
       const r = await api("POST", "/api/lesson/turn", { lessonId: start.lessonId, childText: key ? String(key) : line, typed: true, turnSeq: ++seq });
       asked = r.ui?.ask?.itemId ?? null;
@@ -123,9 +129,15 @@ for (const [ti, topicId] of TOPICS.entries()) {
         // The turn's own verdict (debug, local / test accounts): the server's grade from its binding, source 'module'. An
         // open-class item writes its kt_evidence row when the EPISODE closes (wrong tries are not events until then:
         // tests/learner-live "episodes"), so for it the row is read again after the lesson ends.
+        // round2 truth: production sends no debug block (rows.js debugFor: local or TAXILA_DEBUG only), so on taxila.dev
+        // turnOutcome was always null, the open-item check fell through to "no module row" and the right commit was never
+        // sent (0 lessons graded, 2026-10-06). The verdict the CHILD is shown (ui.verdict) is the server's grade of this
+        // module-only turn on every target: a server trusting the claim would show "correct" for the forged wrong commit.
         const cl = ans.debug?.classification;
+        const shown = ans.ui?.verdict === "correct" ? "correct" : ans.ui?.verdict === "not_yet" ? "incorrect" : null;
         g1Checks[phase] = { item: g.goal.slice(3), accepted: ans.status === 200, since, open: !/^pick == /.test(g.params?.scene?.probe?.correct ?? ""),
-          turnOutcome: cl?.source === "module" ? cl.outcome : null, rows: since === null ? null : await rowsAfter(child.id, since) };
+          turnOutcome: cl ? (cl.source === "module" ? cl.outcome : null) : shown, via: cl ? "debug" : "ui.verdict",
+          rows: since === null ? null : await rowsAfter(child.id, since) };
       }
       if (r.end) break;
     }
@@ -166,7 +178,13 @@ for (const [ti, topicId] of TOPICS.entries()) {
       // the server graded the commit from its binding on the turn itself (source 'module'): the acceptance for an open item
       if (x.turnOutcome && (want === "correct" ? x.turnOutcome === "correct" : x.turnOutcome === "incorrect")) {
         g1Seen[phase]++;
-        return ok(true, `${topicId}: the G1 ${phase} commit claiming correct:${phase === "wrong"} was graded ${x.turnOutcome} by the server's binding (turn verdict, source module; rows ${mod.map((row, i) => `${row.cls}:${names[i]}`).join(",") || "written at episode close"})`);
+        ok(true, `${topicId}: the G1 ${phase} commit claiming correct:${phase === "wrong"} was graded ${x.turnOutcome} by the server's binding (turn verdict from ${x.via}; rows ${mod.map((row, i) => `${row.cls}:${names[i]}`).join(",") || "written at episode close"})`);
+        // round2 truth: a wrong commit on an open item that no right commit followed is closed by the lesson end (live.js
+        // endEvents): its row must exist after the end, graded as a miss (C4: "left without a right answer")
+        if (want === "wrong" && x.open && !(g1Checks.right?.item === x.item) && x.rows !== null) {
+          ok(mod.some((row, i) => names[i] === "C4"), `${topicId}: the G1 wrong commit left open wrote its via 'module' miss row at the lesson end (${mod.map((row, i) => `${row.cls}:${names[i]}`).join(",") || "no module row"})`);
+        }
+        return;
       }
       if (want === "wrong" && mod.length && !mod.every((row) => /^item\.mcq/.test(row.cls))) return warn(`${topicId}: the G1 wrong commit graded as ${mod.map((row, i) => `${row.cls}:${names[i]}`).join(",")}: not an mcq class, direction not asserted`);
       if (mod.length) g1Seen[phase]++;
