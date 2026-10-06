@@ -83,22 +83,34 @@ be shown** [M, `evals/content/coverage.mjs`]. The ship-five coverage counted boa
 
 ## 3. The design chosen: board-first, then her words
 
-1. **Preselect at kernel time** (`server/stagecraft/board-first.js`, new): when the kernel accepts a whiteboard ask, pick
-   the kit's explain-rung board (code pick, library) or a catalogue board, made legible
-   (`server/stagecraft/board-legible.js`), gated against the predicted line on every check that does not depend on her
-   exact words (W0-W4, W7, W9). Pure, about 16 ms, no model call.
-2. **Her line is written from it.** Its facts become one `on screen now … board · …` row in the move's content, so the
-   reply names what is drawn.
+1. **Preselect at kernel time** (`server/stagecraft/board-first.js`, new). When the kernel accepts a whiteboard ask, the
+   board is picked from three sources: the kit's explain-rung board (code pick, then library), or a catalogue board made
+   legible (`server/stagecraft/board-legible.js`). The pick is pure, about 16 ms, with no model call.
+   - It is gated with the FULL gate against the predicted line (the kit text her line is written from). Only W6.timing
+     waits for her real line: it depends on her spoken length alone.
+   - W9 (no answer reveal) is checked as if her line said no number at all. Her real line can only free values, so a
+     board that passes here cannot fail W9 later.
+2. **Her line is written from it.** Its facts and its DRAWN COUNTS (equal parts, equal boxes, dots: the families W8
+   checks) become one telegraphic `on screen now … board · …` row in the move's content. The row holds values only, so
+   the reply names what is drawn.
 3. **Re-gate on her real line, show at once.** `requestIntent` re-times the preselected board to her line and re-runs the
-   FULL gate W0-W9. A pass is drawn synchronously, and the slot rides the turn response with its artifact (ready before
-   her audio starts). A fail falls through to the existing ladder unchanged, so this can only add boards.
-4. **W8 reads "N groups, each with M"** as N × M (the owner-5 prod failure), narrowly: a partition count she said times
+   full gate W0-W9.
+   - A pass is drawn synchronously, and the slot rides the turn response with its artifact (lateness −700 ms: ready
+     before her audio).
+   - A fail falls through to the existing ladder unchanged (spec, line plan, code, template).
+4. **A continued board keeps the board on screen.** Her row names that board. If the board passes the full gate against
+   her new line, it stays up at once, and a continuation drawing replaces it when one lands. Before, the slot sat on an
+   empty stage while the planner ran, or failed with "nothing to draw" while she pointed at the board.
+5. **W8 reads "N groups, each with M"** as N × M (the owner-5 prod failure), narrowly: a partition count she said times
    another number she said.
-5. **Legibility fit for catalogue boards**: geometry shrunk so the smallest text reaches 11 px; text sizes untouched.
-   Every shrunk board is re-gated (overlaps it causes are refused, not hidden).
-6. **Fraction modes** (w1b-mounts): `fractions@1` gains `name` (a fixed shaded shape; the child builds n/d) and `of`
-   (N objects; the child regroups and gives a/b of N). The adapters bind items whose key the engine's own logic computes,
-   and the server re-grades the raw act (`recheck.js`), never the frame's `correct`.
+6. **Legibility fit for catalogue boards.** Geometry is shrunk so the smallest text reaches 11 px; text sizes are
+   untouched. Every shrunk board is re-gated, so overlaps the shrink causes are refused, never hidden.
+7. **Fraction modes** (w1b-mounts). `fractions@1` gains two modes:
+   - `name`: a fixed shaded shape; the child builds n/d.
+   - `of`: N objects; the child regroups and gives a/b of N.
+
+   The adapters bind items whose key the engine's own logic computes. The server re-grades the raw act (`recheck.js`),
+   never the frame's `correct`.
 
 Rejected alternatives (and why), logged to `context/inbox/content.json`:
 - Waiting longer for the model board (raise the 7 s budget): the board is already late. Every extra second is lateness.
@@ -107,7 +119,18 @@ Rejected alternatives (and why), logged to `context/inbox/content.json`:
 - Pushing the piece on the Studio SSE before the reply returns: the client opens that stream only when a stage mounts,
   so the first reveal of a lesson could not use it. And a picture 2 s ahead of her words is exactly the successive
   presentation contiguity warns against. The latency stream owns the reply path.
+- Deferring W5 and W8 to her real line as well (first build, 96.8% offline coverage): tried live, rejected. Maths explain
+  boards that did not match the kit text were preselected, and her line (written from the move's content) contradicted
+  them. They were refused on her real line 6/6 times and then fell to the slow line planner.
+- Preselecting under the predicted line's W9 withhold set: tried live, rejected. 19 of 27 refusals were W9: a number the
+  predicted line freed (a key) was never said in her real line.
+- A facts row with labels only: tried live, rejected. Her line named its own counts and W8 refused the board (8/8 on
+  c6-maths explain). The row now carries the drawn counts.
 
-Pre-registered expectations (stated before the after-runs): preselect covers ≥ 90% of explain and worked-example asks
-over the 385 class 4-7 topics (offline, measured 745/770 = 96.8%). On the battery, board lateness p90 ≤ 1500 ms, with
-most boards in the turn response itself. Request → stage for pieces is unchanged by this stream (it is the reply time).
+Pre-registered expectations (stated before the after-runs):
+- Preselect covers ≥ 90% of explain and worked-example asks over the 385 class 4-7 topics. Offline: first build
+  745/770; final rules (W9 line-proof, only W6 deferred) 697/770 = 90.5%.
+- On the battery, board lateness p90 ≤ 1500 ms, with most boards in the turn response itself.
+- Request → stage for pieces is unchanged by this stream (it is the reply time).
+
+Outcomes are in APPLY.md.

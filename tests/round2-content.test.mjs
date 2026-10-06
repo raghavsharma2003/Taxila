@@ -34,6 +34,13 @@ const askFor = (topicId, { id = "t:wb:1", beat = "explain", content, line = "", 
   intent: { intentId: id, lessonId: id.split(":wb:")[0], kind: "whiteboard", beat, style: { band: "B3" } },
   line: { lessonId: id.split(":wb:")[0], text: line }, mode, kit: { topicId, content: content ?? [] }, ...(requested ? { requested: true } : {}) });
 
+// a deterministic board-first pick: c4 fractions, the "more equal parts, smaller part" line → the catalogue board of one
+// whole in 4 equal parts (its row names "equal parts 4"); a line from the row passes, a line with 6 parts is refused (W8)
+const C4 = "c4-maths-ch05-t01";
+const c4Ask = (id) => { const kit = kitOf(C4); return askFor(C4, { id, content: [kit.expectations[2]] }); };
+const GOOD = "Board par dekho: ek roti 4 equal parts mein kati hai. Ek part ko kya kehte hain?";
+const BAD = "Board par dekho: roti 6 equal parts mein kati hai.";
+
 describe("W8 reads 'N equal groups, each with M' as N x M (patch 01: the owner-5 production failure)", () => {
   it("the kit's own equal-groups board passes against the exact production line", { skip: W8_PATCHED ? false : "patch 01-whiteboard-w8-groups.diff not applied" }, () => {
     const kit = kitOf("c6-maths-ch07-t01");
@@ -109,21 +116,25 @@ describe("board-first preselect", () => {
     assert.ok(ok / n >= 0.9, `preselected ${ok}/${n}`);
     assert.ok(ms < 60, `${ms.toFixed(1)} ms per ask`);
   });
-  it("re-gates on her REAL line: a line written from the row passes, a contradicting line falls through (null)", { skip: W8_PATCHED ? false : "needs patch 01 (the line names 3 groups of 5)" }, () => {
-    const kit = kitOf("c6-maths-ch07-t01");
-    const content = [`worked example: ${kit.workedExample.problem}`];
-    const a = askFor(kit.topicId, { id: "rg1:wb:1", beat: "worked_example", content });
+  it("re-gates on her REAL line: a line written from the row passes, a contradicting line falls through (null)", () => {
+    const kit = kitOf(C4);
+    const a = c4Ask("rg1:wb:1");
     const pick = BF.preselect(a, { kit });
-    assert.ok(pick?.row?.includes("3 5 15"), pick?.row);
-    const good = { ...a, line: { ...a.line, text: "Board par dekho: 3 equal groups, each with 5 dots. Ek group mein kitne dots hain?" } };
+    assert.match(pick?.row ?? "", /equal parts 4/, "the row names the drawn counts W8 checks");
+    const good = { ...a, line: { ...a.line, text: GOOD } };
     const r = BF.takePreselected(good, gateCtxFor(good, { kit }));
     assert.equal(r?.ok, true); assert.equal(r.source, "first"); assert.ok(r.syncMs < 200);
-    const a2 = askFor(kit.topicId, { id: "rg2:wb:1", beat: "worked_example", content });
+    const a2 = c4Ask("rg2:wb:1");
     BF.preselect(a2, { kit });
-    const bad = { ...a2, line: { ...a2.line, text: "Board par dekho: 7 equal parts mein kata hua roti." } };
+    const bad = { ...a2, line: { ...a2.line, text: BAD } };
     assert.equal(BF.takePreselected(bad, gateCtxFor(bad, { kit })), null);
-    assert.match(BF.pickState(bad), /^rejected:/);
+    assert.equal(BF.pickState(bad), "rejected:W8.counts_match_line");
     assert.equal(BF.takePreselected(good, gateCtxFor(good, { kit })), null, "a pick is used once");
+  });
+  it("W9 is checked as if her line said no number: the 3 x 5 board waits for a line that says 3 and 5", () => {
+    const kit = kitOf("c6-maths-ch07-t01");
+    const p = BF.preselect(askFor(kit.topicId, { id: "w9:wb:1", beat: "worked_example", content: [`worked example: ${kit.workedExample.problem}`] }), { kit });
+    assert.doesNotMatch(p?.row ?? "", /numbers 3 5 15/, "item answers (5, 15) are never preselected onto the board");
   });
   it("never on a continued board; the kill switch turns it off", () => {
     const kit = kitOf("c5-evs-ch01-t01");
@@ -134,44 +145,50 @@ describe("board-first preselect", () => {
     finally { if (was === undefined) delete process.env.TAXILA_BOARD_FIRST; else process.env.TAXILA_BOARD_FIRST = was; }
   });
   it("board-sync takes the preselected board as rung 0 (patch 02)", { skip: SYNC_PATCHED ? false : "patch 02-board-sync-first.diff not applied" }, async () => {
-    const kit = kitOf("c6-maths-ch07-t01");
-    const a = askFor(kit.topicId, { id: "bs1:wb:1", beat: "worked_example", content: [`worked example: ${kit.workedExample.problem}`] });
+    const kit = kitOf(C4);
+    const a = c4Ask("bs1:wb:1");
     BF.preselect(a, { kit });
-    const line = { ...a, line: { ...a.line, text: "Board par dekho: 3 equal groups, each with 5 dots. Ek group mein kitne dots?" } };
     let called = 0;
-    const r = await boardSync.plan(line, { kit, planWhiteboard: async () => { called++; return { ok: false }; }, budgetMs: 7000 });
+    const r = await boardSync.plan({ ...a, line: { ...a.line, text: GOOD } }, { kit, planWhiteboard: async () => { called++; return { ok: false }; }, budgetMs: 7000 });
     assert.equal(r.source, "first"); assert.ok(r.syncMs < 200); assert.equal(called, 0, "no model call when the preselected board passes");
   });
 });
 
 describe("seam: preselect, then requestIntent draws synchronously (patch 03)", () => {
-  const T = "c6-maths-ch07-t01";
   before(() => { seam._setDeps({ planWhiteboard: async () => ({ ok: false, usd: 0 }), q: async () => [], writeEvidence: async () => ({ written: true }) }); });
+  const open = (id) => { const kit = kitOf(C4); seam.studioSeam.prefetch({ lessonId: id, purpose: "practice", kit, topicId: C4, child: { id: `child-${id}`, class_level: 4, language_pref: "hinglish" } }); return kit; };
   it("a preselected board rides the ack with its artifact; a safeguarded lesson preselects nothing", { skip: SEAM_PATCHED ? false : "patch 03-studio-seam-first.diff not applied" }, () => {
-    const kit = kitOf(T);
-    const id = "r2c-1";
-    seam.studioSeam.prefetch({ lessonId: id, purpose: "practice", kit, topicId: T, child: { id: "child-1", class_level: 6, language_pref: "english" } });
-    const base = askFor(T, { id: `${id}:wb:4`, beat: "worked_example", content: [`worked example: ${kit.workedExample.problem}`] });
+    const id = "r2c-1"; open(id);
+    const base = c4Ask(`${id}:wb:4`);
     const row = seam.studioSeam.preselectWhiteboard(base);
     assert.ok(BF.isBoardFirstRow(row), String(row));
-    const ack = seam.studioSeam.requestIntent({ ...base, line: { ...base.line, text: "Board par dekho: 3 equal groups, each with 5 dots. Ek group mein kitne dots?" } });
+    const ack = seam.studioSeam.requestIntent({ ...base, line: { ...base.line, text: GOOD } });
     assert.equal(ack.state, "revealed");
     assert.equal(ack.artifact?.kind, "whiteboard");
     assert.ok(ack.artifact.script.ops.length > 0);
-    const id2 = "r2c-2";
-    seam.studioSeam.prefetch({ lessonId: id2, purpose: "practice", kit, topicId: T, child: { id: "child-2", class_level: 6, language_pref: "english" } });
+    const id2 = "r2c-2"; open(id2);
     seam.studioSeam.onSafety(id2);
-    assert.equal(seam.studioSeam.preselectWhiteboard(askFor(T, { id: `${id2}:wb:4`, beat: "worked_example", content: [`worked example: ${kit.workedExample.problem}`] })), null);
+    assert.equal(seam.studioSeam.preselectWhiteboard(c4Ask(`${id2}:wb:4`)), null);
   });
   it("a line that contradicts the preselected board falls through to the ladder (planning, never a wrong board)", { skip: SEAM_PATCHED ? false : "patch 03-studio-seam-first.diff not applied" }, () => {
-    const kit = kitOf(T);
-    const id = "r2c-3";
-    seam.studioSeam.prefetch({ lessonId: id, purpose: "practice", kit, topicId: T, child: { id: "child-3", class_level: 6, language_pref: "english" } });
-    const base = askFor(T, { id: `${id}:wb:4`, beat: "worked_example", content: [`worked example: ${kit.workedExample.problem}`] });
+    const id = "r2c-3"; open(id);
+    const base = c4Ask(`${id}:wb:4`);
     seam.studioSeam.preselectWhiteboard(base);
-    const ack = seam.studioSeam.requestIntent({ ...base, line: { ...base.line, text: "Board par dekho: 7 equal parts mein kata hua roti." } });
+    const ack = seam.studioSeam.requestIntent({ ...base, line: { ...base.line, text: BAD } });
     assert.equal(ack.state, "planning");
     assert.equal(ack.artifact, undefined);
+  });
+  it("a continued board: her row is the board on screen", { skip: SEAM_PATCHED ? false : "patch 03-studio-seam-first.diff not applied" }, () => {
+    const id = "r2c-4"; open(id);
+    const base = c4Ask(`${id}:wb:4`);
+    seam.studioSeam.preselectWhiteboard(base);
+    seam.studioSeam.requestIntent({ ...base, line: { ...base.line, text: GOOD } });
+    const cont = { ...c4Ask(`${id}:wb:5`), mode: "continue" };
+    assert.match(seam.studioSeam.preselectWhiteboard(cont) ?? "", /equal parts 4/);
+    // the board on screen, re-gated on her new line, stays up at once (no empty stage while a continuation plans)
+    const ack = seam.studioSeam.requestIntent({ ...cont, line: { ...cont.line, text: "Ab board par dekho: 4 equal parts mein se ek part ko quarter kehte hain." } });
+    assert.equal(ack.state, "revealed");
+    assert.equal(ack.artifact?.kind, "whiteboard");
   });
 });
 

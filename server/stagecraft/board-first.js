@@ -9,8 +9,10 @@
 //
 // The reversal (what a human teacher does, and what authored whiteboard video does: the drawing is decided, then narrated):
 //   1. at kernel time (her line does not exist yet), pick the kit's own code / library / catalogue board for the move, gated
-//      against the predicted line on every check that does not depend on her exact words (shape, stage, overlap, anchors,
-//      numbers from truth, register, no answer reveal: W0-W4, W7, W9). ~20 ms, pure, no model call.
+//      with the FULL gate against the predicted line (the kit text her line is written from), only W6.timing deferred (it
+//      depends on her line's spoken length alone). ~16 ms, pure, no model call. (Deferring W5 and W8 as well covered 96.8%
+//      of asks offline but was rejected live: maths explain boards that did not match the kit line were preselected, then
+//      refused against her real line 6/6 times; local server, 2026-10-06.)
 //   2. its facts go into the move's content as ONE telegraphic row ("on screen now … board · …"): values, never a sentence,
 //      so her line is written about what IS drawn (AT-7 "she names only on-screen values" by construction).
 //   3. when her line exists, the board is re-timed to it and re-gated with the FULL gate W0-W9 against her REAL line; a pass
@@ -28,8 +30,8 @@ import { scriptFacts } from "../../shared/whiteboard.js";
 export const STUDIO_ROW_PREFIX = "on screen now (values to use when you point at the screen; never what is hidden): ";
 
 export const boardFirstOn = (env = process.env) => env.TAXILA_BOARD_FIRST !== "0";
-/** Checks that depend on her exact words: deferred to the re-gate against her real line. Everything else must pass now. */
-export const LINE_BOUND = new Set(["W5.words_from_line_or_kit", "W6.timing", "W8.counts_match_line"]);
+/** Checks deferred to the re-gate against her real line (spoken length only). Everything else must pass now. */
+export const LINE_BOUND = new Set(["W6.timing"]);
 /** The row head: distinct from every Studio archetype so isStudioRow never confuses it with a piece. */
 export const ROW_HEAD = "board";
 const TTL_MS = 60_000;
@@ -40,9 +42,26 @@ export function isBoardFirstRow(line) {
   return typeof line === "string" && line.startsWith(`${STUDIO_ROW_PREFIX}${ROW_HEAD}`) && (line.length === STUDIO_ROW_PREFIX.length + ROW_HEAD.length || line.startsWith(`${STUDIO_ROW_PREFIX}${ROW_HEAD} · `));
 }
 
-/** StudioFacts.onScreen → "on screen now …: board · k v · …" (whole entries only, ≤ 360 chars), or null. */
-export function rowOfFacts(facts) {
-  const on = facts?.onScreen ?? {};
+/**
+ * The drawn counts W8 checks her line against (the same families as server/studio/qa/whiteboard.js shapeFamilies: sectors
+ * of one circle, boxes of one size, dots of one radius, each ≥ 2), as row values: "equal parts 4 · dots 15". Without them
+ * her line named its own counts and W8 refused the board (8/8 c6-maths explain refusals, local server, 2026-10-06).
+ */
+export function countsOf(script) {
+  const fam = new Map();
+  for (const o of script?.ops ?? []) {
+    const k = o.op === "sector" && Array.isArray(o.c) ? `equal parts@${Math.round(o.c[0] / 4)},${Math.round(o.c[1] / 4)},${Math.round(o.r / 4)}`
+      : o.op === "rect" ? `equal boxes@${Math.round(o.w / 3)}x${Math.round(o.h / 3)}` : o.op === "circle" && o.r < 40 ? `dots@${Math.round(o.r / 3)}` : null;
+    if (k) fam.set(k, (fam.get(k) ?? 0) + 1);
+  }
+  const out = {};
+  for (const [k, n] of fam) if (n >= 2) { const name = k.split("@")[0]; out[name] = out[name] ? `${out[name]}, ${n}` : String(n); }
+  return out;
+}
+
+/** StudioFacts.onScreen (+ drawn counts) → "on screen now …: board · k v · …" (whole entries only, ≤ 360 chars), or null. */
+export function rowOfFacts(facts, counts = {}) {
+  const on = { ...counts, ...(facts?.onScreen ?? {}) };
   let row = STUDIO_ROW_PREFIX + ROW_HEAD;
   let n = 0;
   for (const [k, v] of Object.entries(on)) {
@@ -85,7 +104,10 @@ export function preselect(ask, { kit, redact = [], now = Date.now() } = {}) {
     const predicted = predictedLineOf(ask, kit);
     if (predicted.length < 12) return null;
     const a2 = { ...ask, line: { ...(ask.line ?? {}), text: predicted } };
-    const ctx = gateCtxFor(a2, { kit, redact });
+    // W9 (no answer reveal) as if her line said NO number: the withheld set can only shrink once her real line exists
+    // (withheldValues frees the values a line says), so a board that passes here cannot fail W9 later (measured live
+    // 2026-10-06: 19/27 refusals were W9 when the predicted line's numbers freed a key her real line never said)
+    const ctx = { ...gateCtxFor(a2, { kit, redact }), withhold: gateCtxFor({ ...ask, line: { ...(ask.line ?? {}), text: "" } }, { kit, redact }).withhold };
     const band = ctx.band ?? "B3";
     for (const c of candidates(a2, kit, ask?.line?.lessonId ?? ask?.intent?.lessonId, band, predicted)) {
       const s = withSectors(retime(c.script, Math.max(800, Number(c.script.durationMs) || 0), ctx.speechMs), ctx.reply);
@@ -93,7 +115,7 @@ export function preselect(ask, { kit, redact = [], now = Date.now() } = {}) {
       const failing = r.ok ? [] : (r.gate?.checks ?? []).filter((x) => !x.pass).map((x) => x.id);
       if (!r.ok && (!r.gate?.script || failing.some((f) => !LINE_BOUND.has(f)))) continue;
       const facts = r.ok ? r.script.facts : scriptFacts(r.gate.script, { kind: "diagram", archetype: "whiteboard" });
-      const row = rowOfFacts(facts);
+      const row = rowOfFacts(facts, countsOf(s));
       if (!row) continue;
       const pick = { at: now, script: s, facts, by: c.by, template: c.template, row, predicted, strict: r.ok };
       picks.set(id, pick);

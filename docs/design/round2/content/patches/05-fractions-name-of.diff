@@ -1,0 +1,347 @@
+diff --git a/server/director/recheck.js b/server/director/recheck.js
+index 212abe4..5231f4b 100644
+--- a/server/director/recheck.js
++++ b/server/director/recheck.js
+@@ -49,6 +49,10 @@ const RECHECK = {
+     "fr.add": (p, a) => { const s = shadedOf(a.value); return s ? FR.addCorrect(FR.normalize(p), s.shaded, s.parts) : null; },
+     "fr.equivalent": (p, a) => { const s = shadedOf(a.value), c = FR.normalize(p); return s && c.target ? FR.equivalentCorrect(c.target, s.shaded, s.parts) : null; },
+     "fr.compare": (p, a) => { const c = FR.normalize(p); return a.chosen == null ? null : FR.compareCorrect(c.fractions, c.question, String(a.chosen)); },
++    // round 2 content: name the shaded fraction (the act carries the built "top/bottom"), a fraction of a set (the number)
++    "fr.name": (p, a) => { const s = shadedOf(a.value), c = FR.normalize(p); return s && !c.error && c.mode === "name" ? FR.nameCorrect(c, s.shaded, s.parts) : null; },
++    "fr.of": (p, a) => { const c = FR.normalize(p); const v = typeof a.value === "number" ? a.value : /^\d{1,3}$/.test(String(a.value ?? "").trim()) ? Number(a.value) : null;
++      return v != null && !c.error && c.mode === "of" ? FR.ofCorrect(c, v) : null; },
+   },
+   "fraction-bars@1": {
+     compare_answer: (p, a) => { const c = FB.normalizeConfig(p); const fr = c.denominators.map((d, i) => ({ n: c.numerators[i], d }));
+diff --git a/shared/engine-catalog.js b/shared/engine-catalog.js
+index 522211e..ff8eaf3 100644
+--- a/shared/engine-catalog.js
++++ b/shared/engine-catalog.js
+@@ -27,7 +27,7 @@ export const ENGINES = {
+   "number-line@1": { subjects: ["maths"], modes: ["place", "read", "jump"] },
+   "collections@1": { subjects: ["maths"], modes: ["count", "make", "compare"] },
+   "place-value@1": { subjects: ["maths"], modes: ["build", "read", "compare"] },
+-  "fractions@1": { subjects: ["maths"], modes: ["make", "compare", "equivalent", "add"] },
++  "fractions@1": { subjects: ["maths"], modes: ["make", "compare", "equivalent", "add", "name", "of"] },
+   "multiply-divide@1": { subjects: ["maths"], modes: ["array", "share", "factors"] },
+   "geoboard@1": { subjects: ["maths"], modes: ["build", "measure", "contrast"] },
+   "data-graphs@1": { subjects: ["maths"], modes: ["build", "read"] },
+@@ -206,6 +206,34 @@ function sequenceIn(p) {
+   return null;
+ }
+ 
++
++// round 2 content (w1b-mounts: 3 of 3 maths fraction lessons posed an item no engine could bind): fraction words and a
++// fraction read off a key written in words ("One quarter, 1/4"), for the name / of adapters only
++const FRAC_WORDS = { half: [1, 2], "a half": [1, 2], "one half": [1, 2], "a third": [1, 3], "one third": [1, 3], "a quarter": [1, 4], "one quarter": [1, 4],
++  "one fourth": [1, 4], "a fourth": [1, 4], "one fifth": [1, 5], "a fifth": [1, 5], "one sixth": [1, 6], "one eighth": [1, 8], "two thirds": [2, 3],
++  "three quarters": [3, 4], "three fourths": [3, 4] };
++const FRAC_WORD_RX = new RegExp(`\\b(${Object.keys(FRAC_WORDS).sort((a, b) => b.length - a.length).map((w) => w.replace(" ", "[\\s-]+")).join("|")})\\b`, "i");
++const fracWord = (t) => { const m = String(t).match(FRAC_WORD_RX); return m ? FRAC_WORDS[m[1].toLowerCase().replace(/[\s-]+/g, " ")] ?? null : null; };
++const SMALL = { one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10, eleven: 11, twelve: 12 };
++const smallNum = (w) => (/^\d+$/.test(w) ? Number(w) : SMALL[String(w).toLowerCase()] ?? null);
++/** The ONE fraction a key states ("1/4", "One quarter, 1/4", "3/4 of a roti"), or null when it states another number too. */
++function keyFraction(a) {
++  const s = String(a ?? "");
++  const fr = fracsIn(s);
++  const others = numsIn(s).filter((x) => !fr.some(([n, d]) => n === x || d === x));
++  if (fr.length === 1 && !others.length) return fr[0];
++  if (!fr.length && !numsIn(s).length) return fracWord(s);
++  return null;
++}
++/** The ONE whole number a key states ("5", "5 marbles", "3 drumsticks"), or null. */
++function keyWhole(a) {
++  if (fracsIn(String(a ?? "")).length) return null;
++  const ns = numsIn(String(a ?? ""));
++  return ns.length === 1 && Number.isInteger(ns[0]) && ns[0] >= 0 ? ns[0] : null;
++}
++const OF_RX = new RegExp(`(?:\\b(\\d+)\\s*/\\s*(\\d+)|\\b(${Object.keys(FRAC_WORDS).sort((a, b) => b.length - a.length).map((w) => w.replace(" ", "[\\s-]+")).join("|")}))\\s+of\\s+(?:the\\s+|these\\s+)?(\\d+)\\b(?!\\s*/)`, "i");
++const PART = "(?:parts?|pieces?|squares?|sections?|slices?|strips?|columns?|rows?|bits?)";
++
+ /** Each adapter returns { params, key?, bindItem, why } — key is the engine-truth answer the params imply. */
+ const ADAPT = {
+   "fraction-bars@1": (p, ans) => {
+@@ -223,9 +251,38 @@ const ADAPT = {
+     }
+     return null;
+   },
+-  "fractions@1": (p, ans, rep) => {
++  "fractions@1": (p, ans, rep, _preset, actx) => {
+     const fr = fracsIn(p);
++    const raw = actx?.rawAnswer ?? (Array.isArray(ans) ? `${ans[0]}/${ans[1]}` : ans);
+     const model = /circle|pizza|roti|chapati|cake|pie/i.test(`${p} ${rep ?? ""}`) ? { model: "circle" } : {};
++    // name (round 2 content): "A roti is cut into 4 equal pieces. What fraction is one piece?", "a square paper folded into
++    // 4 equal parts with 3 parts coloured. Say the coloured part as a fraction" → shade N of D on a fixed shape; the child
++    // builds the fraction. Bound only when the key states exactly that fraction (an equal value counts) and nothing else.
++    const cut = p.match(new RegExp(`\\b(?:cut|divided|split|folded|broken|made)\\b[^.?!]{0,24}?\\binto\\s+(\\d+|${Object.keys(SMALL).join("|")})\\s+equal\\s+${PART}`, "i"));
++    if (cut && !fr.length && /\b(what fraction|what do we call|fractional unit|as a fraction|what part of)\b/i.test(p)) {
++      const d = smallNum(cut[1]);
++      const tail = p.slice(cut.index + cut[0].length);
++      const many = tail.match(new RegExp(`\\b(\\d+|${Object.keys(SMALL).join("|")})\\s+(?:of (?:the|them|these)\\s+)?${PART}?\\s*(?:are|is|were|was|get|got)?\\s*(?:coloured|colored|shaded|painted|eaten|taken|used|blue|red|green|yellow|filled)\\b`, "i"));
++      const one = /\b(?:one|each|1)\s+(?:piece|part|square|section|slice|strip|bit)\b/i.test(tail) || /fractional unit/i.test(p);
++      const n = many ? smallNum(many[1]) : one ? 1 : null;
++      const k = keyFraction(raw);
++      if (d && n && d >= 2 && d <= 24 && n >= 1 && n <= d) {
++        const ok = !!k && frEq(k, [n, d]);
++        return { params: { mode: "name", target: `${n}/${d}`, parts: d, shaded: n, ...model }, key: `${n}/${d}`, bindItem: ok, why: ok ? "name: shaded of equal parts = kit key" : "name: key is not the shaded fraction" };
++      }
++    }
++    // of (round 2 content): "What is half of 10 laddoos?", "Find 1/4 of 20.", "What is 1/3 of 12?" → a set of N objects; the
++    // child gives a/b of N. Bound when the key is that whole number and nothing else (never a fraction of a fraction).
++    const ofM = p.match(OF_RX);
++    if (ofM) {
++      const f = ofM[1] ? [Number(ofM[1]), Number(ofM[2])] : fracWord(ofM[3]);
++      const N = Number(ofM[4]);
++      if (f && f[1] >= 2 && f[1] <= 12 && f[0] >= 1 && f[0] <= f[1] && N >= 2 && N <= 60 && (f[0] * N) % f[1] === 0) {
++        const v = (f[0] * N) / f[1];
++        const ok = keyWhole(raw) === v && fr.length <= 1;
++        return { params: { mode: "of", target: `${f[0]}/${f[1]}`, count: N }, key: String(v), bindItem: ok, why: ok ? "of: a/b of N = kit key" : "of: key is not a/b of N" };
++      }
++    }
+     if (fr.length === 2 && /\+/.test(p) && fr.every((f) => f[1] <= 24)) {
+       const sum = [fr[0][0] * fr[1][1] + fr[1][0] * fr[0][1], fr[0][1] * fr[1][1]];
+       const lcm = (fr[0][1] * fr[1][1]) / gcd(fr[0][1], fr[1][1]);
+diff --git a/src/modules/frame/engines/fractions.logic.ts b/src/modules/frame/engines/fractions.logic.ts
+index 1101724..b27a484 100644
+--- a/src/modules/frame/engines/fractions.logic.ts
++++ b/src/modules/frame/engines/fractions.logic.ts
+@@ -1,8 +1,10 @@
+-// fractions@1 — make, compare, find equivalent and add fractions on bars or circles (maths M04).
++// fractions@1 — make, compare, find equivalent and add fractions on bars or circles (maths M04); name the shaded
++// fraction of a fixed shape, and find a fraction of a set of objects (round 2 content: the kit's commonest fraction items).
+ // Every verdict is cross-multiplication on small integers.
+ import { fmtQ, fractionsRaw, parseFracRaw, q, qAdd, qCmp, qEq, type Q } from "../kit/math.ts";
+ 
+-export type Mode = "make" | "compare" | "equivalent" | "add";
++export type Mode = "make" | "compare" | "equivalent" | "add" | "name" | "of";
++export const MAX_SET = 60;
+ export const MAX_D = 24;
+ 
+ export interface FrConfig {
+@@ -14,6 +16,8 @@ export interface FrConfig {
+   wholes: number; // add: result shapes
+   question: "bigger" | "smaller";
+   equivalentOk: boolean;
++  shaded: number; // name: the parts shaded on the fixed shape
++  count: number; // of: the objects in the set
+   hideAnswer: boolean;
+   issues: string[];
+   error: string | null;
+@@ -27,7 +31,7 @@ export function normalize(p: Record<string, unknown>): FrConfig {
+   const given = fractionsRaw(p.operands ?? p.fractions);
+   const target = p.target !== undefined ? parseFracRaw(p.target) : null;
+   if (p.target !== undefined && !target) issues.push(`target: ${JSON.stringify(p.target)} is not a fraction`);
+-  let mode: Mode = ["make", "compare", "equivalent", "add"].includes(p.mode as string) ? (p.mode as Mode) : "make";
++  let mode: Mode = ["make", "compare", "equivalent", "add", "name", "of"].includes(p.mode as string) ? (p.mode as Mode) : "make";
+   if (p.mode === "show" || p.mode === "predict" || p.mode === undefined) mode = given.length >= 2 ? "compare" : "make";
+   const rep = String(p.representation ?? "").toLowerCase();
+   const model = p.model === "circle" || p.model === "bar" ? p.model : /circle|pizza|roti|chapati|cake|pie|circular/.test(rep) ? "circle" : "bar";
+@@ -37,7 +41,21 @@ export function normalize(p: Record<string, unknown>): FrConfig {
+   let t: Q | null = null;
+   let parts = typeof p.parts === "number" ? Math.round(p.parts) : 0;
+   let wholes = 1;
+-  if (mode === "make") {
++  let shaded = 0, count = 0;
++  if (mode === "name") {
++    t = target ?? fr[0] ?? q(1, 4);
++    if (!parts) parts = t.d;
++    shaded = typeof p.shaded === "number" ? Math.round(p.shaded) : (t.n * parts) / t.d;
++    if (parts < 2 || parts > MAX_D) error = `name: parts ${parts} outside 2-${MAX_D}`;
++    else if (!Number.isInteger(shaded) || shaded < 1 || shaded > parts) error = `name: ${shaded} shaded of ${parts} parts is not a fraction to name`;
++    else if (!qEq(q(shaded, parts), t)) error = `name: ${shaded}/${parts} shaded is not ${fmtQ(t)}`;
++  } else if (mode === "of") {
++    t = target ?? fr[0] ?? q(1, 2);
++    count = typeof p.count === "number" ? Math.round(p.count) : 0;
++    if (count < 2 || count > MAX_SET) error = `of: a set of ${count} objects is outside 2-${MAX_SET}`;
++    else if (t.d < 2 || t.d > 12 || t.n < 1 || t.n > t.d) error = `of: ${fmtQ(t)} is not a proper fraction with a denominator 2-12`;
++    else if ((t.n * count) % t.d !== 0) error = `of: ${fmtQ(t)} of ${count} is not a whole number of objects`;
++  } else if (mode === "make") {
+     t = target ?? fr[0] ?? q(3, 4);
+     if (!parts) parts = t.d;
+     if (parts < 1 || parts > MAX_D) {
+@@ -73,6 +91,8 @@ export function normalize(p: Record<string, unknown>): FrConfig {
+     wholes,
+     question: p.question === "smaller" ? "smaller" : "bigger",
+     equivalentOk: p.equivalentOk !== false,
++    shaded,
++    count,
+     hideAnswer: p.mode === "predict" || p.predict === true,
+     issues,
+     error,
+@@ -128,3 +148,23 @@ export function addMisc(c: Pick<FrConfig, "fractions">, shaded: number, parts: n
+ }
+ 
+ export const fmt = (f: Q) => `${f.n}/${f.d}`;
++
++/** name: the fraction the child built (top / bottom) names the shaded part of the fixed shape (an equal value counts). */
++export function nameCorrect(c: Pick<FrConfig, "target">, top: number, bottom: number): boolean {
++  if (!c.target || !Number.isInteger(top) || !Number.isInteger(bottom) || bottom < 1 || top < 0) return false;
++  return qEq(q(top, bottom), c.target);
++}
++/** of: the number given is the fraction of the set (a/b of N = a × N / b). */
++export function ofValue(c: Pick<FrConfig, "target" | "count">): number | null {
++  if (!c.target || !c.count) return null;
++  const v = (c.target.n * c.count) / c.target.d;
++  return Number.isInteger(v) ? v : null;
++}
++export const ofCorrect = (c: Pick<FrConfig, "target" | "count">, value: number): boolean => Number.isInteger(value) && ofValue(c) === value;
++/** of: the misconception "a/b of N is N / a" or "N - a" style slips, logged as facts (never graded differently). */
++export function ofMisc(c: Pick<FrConfig, "target" | "count">, value: number): string | null {
++  if (!c.target || ofCorrect(c, value)) return null;
++  if (c.target.n > 1 && value === c.count / c.target.d) return "unit_fraction_only";
++  if (value === c.count - c.target.d || value === c.count / c.target.n) return "wrong_operation";
++  return null;
++}
+diff --git a/src/modules/frame/engines/fractions.tsx b/src/modules/frame/engines/fractions.tsx
+index b0b6fd8..5393924 100644
+--- a/src/modules/frame/engines/fractions.tsx
++++ b/src/modules/frame/engines/fractions.tsx
+@@ -5,6 +5,11 @@
+ //   equivalent: the given fraction is shown; cut the second shape into a different number of parts (−/+ parts)
+ //               and shade the same amount, Check.
+ //   add:        two operands are shown; shade their sum on the result shape(s), Check (add_across is logged).
++//   name:       a fixed shape with some parts shaded; set the top (shaded parts) and bottom (equal parts) of the
++//               fraction, Check (any equal value is right). Round 2 content: "a roti cut into 4 equal pieces, what
++//               fraction is one piece?" had no mode to bind to.
++//   of:         a set of N objects; split it into equal groups (−/+ groups), then give a/b of N, Check. The verdict is on
++//               the number only (grouping is the tool, not the answer); unit_fraction_only / wrong_operation are logged.
+ // Highlight targets: "shape:<i>", "part:<i>:<k>", "label:<i>", "parts", "check", "same". Reveal: the answer.
+ import { useMemo, useState } from "react";
+ import type { EngineModule, EngineProps } from "../engine.ts";
+@@ -13,14 +18,14 @@ import { say, tri, W } from "../kit/i18n.ts";
+ import { q, qEq, type Q } from "../kit/math.ts";
+ import { useTracker } from "../kit/tracker.ts";
+ import { Btn, CheckBtn, cls, EngineRoot, Prompt, Stepper, useEngineError, useHl, useIssues, Verdict } from "../kit/ui.tsx";
+-import { addCorrect, addMisc, compareCorrect, compareMisc, equivalentCorrect, fmt, makeCorrect, normalize } from "./fractions.logic.ts";
++import { addCorrect, addMisc, compareCorrect, compareMisc, equivalentCorrect, fmt, makeCorrect, nameCorrect, normalize, ofCorrect, ofMisc, ofValue } from "./fractions.logic.ts";
+ 
+ const def = defineEngine({
+   id: "fractions@1",
+   title: "Fractions",
+   subjects: ["maths"],
+   params: {
+-    mode: { type: "string", enum: ["make", "compare", "equivalent", "add", ...GENERIC_MODES], default: "make", doc: "make / compare / equivalent / add" },
++    mode: { type: "string", enum: ["make", "compare", "equivalent", "add", "name", "of", ...GENERIC_MODES], default: "make", doc: "make / compare / equivalent / add / name / of" },
+     model: { type: "string", enum: ["bar", "circle"], doc: "bar (default) or circle (part-whole); default from representation" },
+     target: { type: "string", doc: "make: 'n/d' to shade; equivalent: the given fraction" },
+     parts: { type: "number", min: 1, max: 24, doc: "make: parts the shape is cut into (default: the target's denominator); equivalent: fix the second shape's parts ('1/3 = ?/6')" },
+@@ -28,8 +33,10 @@ const def = defineEngine({
+     operands: { type: "array", doc: "add: the two operands (alias of fractions)" },
+     question: { type: "string", enum: ["bigger", "smaller"], default: "bigger", doc: "compare question" },
+     equivalentOk: { type: "boolean", default: true, doc: "make: accept equivalent shadings (2/4 for 1/2)" },
++    shaded: { type: "number", min: 1, max: 24, doc: "name: parts shaded on the fixed shape (default: the target's numerator scaled to parts)" },
++    count: { type: "number", min: 2, max: 60, doc: "of: how many objects in the set" },
+   },
+-  emits: ["fr.shade", "fr.compare", "fr.refine", "fr.add"],
++  emits: ["fr.shade", "fr.compare", "fr.refine", "fr.add", "fr.name", "fr.of"],
+ });
+ 
+ const TX = {
+@@ -38,6 +45,12 @@ const TX = {
+   add: tri("Shade the answer", "Jawab mein rang bharo", "जवाब में रंग भरो"),
+   parts: tri("Parts", "Tukde", "टुकड़े"),
+   shaded: tri("Shaded", "Rang", "रंग"),
++  name: tri("What fraction is shaded?", "Kitna hissa rang hua hai?", "कितना हिस्सा रंगा है?"),
++  top: tri("Shaded parts", "Rang wale tukde", "रंग वाले टुकड़े"),
++  bottom: tri("Equal parts", "Barabar tukde", "बराबर टुकड़े"),
++  of: tri("of", "ka", "का"),
++  groups: tri("Groups", "Group", "समूह"),
++  answer: tri("Answer", "Jawab", "जवाब"),
+ };
+ 
+ const BW = 300;
+@@ -77,12 +90,21 @@ function Fractions({ params, goal, lang, ageBand, highlight, revealed, api }: En
+   useIssues(c.issues, api);
+   useEngineError(c.error, api);
+   const hl = useHl(highlight);
+-  const key = `${c.mode}|${c.model}|${c.fractions.map(fmt).join(",")}|${c.target ? fmt(c.target) : ""}|${c.parts}|${c.question}`;
++  const key = `${c.mode}|${c.model}|${c.fractions.map(fmt).join(",")}|${c.target ? fmt(c.target) : ""}|${c.parts}|${c.question}|${c.shaded}|${c.count}`;
+   const t = useTracker(api, key, { stuckAfterChanges: 20 });
+   const fixedParts = c.mode === "equivalent" && c.parts > 0;
+   const startParts = c.mode === "equivalent" ? (fixedParts ? c.parts : c.target ? c.target.d * 2 : 4) : c.parts;
+   const [s, setS] = useState({ key, on: fill(0, startParts * c.wholes), parts: startParts, pick: null as string | null, verdict: null as boolean | null });
+   if (s.key !== key) setS({ key, on: fill(0, startParts * c.wholes), parts: startParts, pick: null, verdict: null });
++  // name: the fraction the child builds; of: the groups the set is split into and the number given
++  const [nm, setNm] = useState({ key, top: 0, bottom: 1, groups: 1, value: 0 });
++  if (nm.key !== key) setNm({ key, top: 0, bottom: 1, groups: 1, value: 0 });
++  const setN = (patch: Partial<typeof nm>, act: string) => {
++    if (t.done) return;
++    setNm({ ...nm, ...patch });
++    setS({ ...s, verdict: null });
++    t.change(act, { ...nm, ...patch, key: undefined });
++  };
+   const shaded = s.on.filter(Boolean).length;
+ 
+   const shade = (on: boolean[]) => {
+@@ -110,6 +132,15 @@ function Fractions({ params, goal, lang, ageBand, highlight, revealed, api }: En
+       const ok = equivalentCorrect(c.target!, shaded, s.parts);
+       setS({ ...s, verdict: ok });
+       t.answer({ kind: "fr.equivalent", value: `${shaded}/${s.parts}`, given: fmt(c.target!), same_value: qEq(q(shaded, s.parts), c.target!) }, ok, g);
++    } else if (c.mode === "name") {
++      const ok = nameCorrect(c, nm.top, nm.bottom);
++      setS({ ...s, verdict: ok });
++      t.answer({ kind: "fr.name", value: `${nm.top}/${nm.bottom}`, shaded: c.shaded, parts: c.parts }, ok, g);
++    } else if (c.mode === "of") {
++      const ok = ofCorrect(c, nm.value);
++      const misc = ofMisc(c, nm.value);
++      setS({ ...s, verdict: ok });
++      t.answer({ kind: "fr.of", value: nm.value, groups: nm.groups, count: c.count, of: fmt(c.target!), ...(misc && { misc }) }, ok, g);
+     } else if (c.mode === "add") {
+       const ok = addCorrect(c, shaded, s.parts);
+       const misc = addMisc(c, shaded, s.parts);
+@@ -199,6 +230,39 @@ function Fractions({ params, goal, lang, ageBand, highlight, revealed, api }: En
+           {steppers}
+         </>
+       )}
++      {c.mode === "name" && c.target && (
++        <>
++          <Prompt>{say(TX.name, lang)}</Prompt>
++          <div className="fr-shapes" data-exempt-hit>
++            <Shape model={c.model} parts={c.parts} on={fill(c.shaded, c.parts)} idx={0} hlOf={hl} label={`${c.shaded} of ${c.parts} equal parts shaded`} />
++          </div>
++          <Stepper label={say(TX.top, lang)} value={nm.top} min={0} max={24} onChange={(v) => setN({ top: v }, "fr.name.top")} target="top" hl={hl("top").cls} lang={lang} />
++          <Stepper label={say(TX.bottom, lang)} value={nm.bottom} min={1} max={24} onChange={(v) => setN({ bottom: v }, "fr.name.bottom")} target="bottom" hl={hl("bottom").cls} lang={lang} />
++          <output className="ek-readout fr-built" aria-live="polite" data-built>{nm.top}/{nm.bottom}</output>
++          {revealed && <span className="ek-note" data-reveal>{fmt(c.target)}</span>}
++        </>
++      )}
++      {c.mode === "of" && c.target && (
++        <>
++          <Prompt>{labelOf(c.target, 0)} {say(TX.of, lang)} {c.count} = ?</Prompt>
++          <div className="fr-set" data-exempt-hit role="img" aria-label={`${c.count} objects in ${nm.groups} group(s)`} data-groups={nm.groups}>
++            {Array.from({ length: nm.groups }, (_, g) => {
++              const per = Math.floor(c.count / nm.groups);
++              const n = g < nm.groups - 1 ? per : c.count - per * (nm.groups - 1);
++              const h = hl(`group:${g}`);
++              return (
++                <span key={h.key} className={cls("fr-group", h.cls)} data-group={g}>
++                  {Array.from({ length: n }, (_, k) => <span key={k} className="fr-dot" />)}
++                </span>
++              );
++            })}
++          </div>
++          {c.count % nm.groups !== 0 && <span className="ek-note" data-note="uneven">{c.count} ÷ {nm.groups} ≠ ✓</span>}
++          <Stepper label={say(TX.groups, lang)} value={nm.groups} min={1} max={12} onChange={(v) => setN({ groups: v }, "fr.of.groups")} target="groups" hl={hl("groups").cls} lang={lang} />
++          <Stepper label={say(TX.answer, lang)} value={nm.value} min={0} max={c.count} onChange={(v) => setN({ value: v }, "fr.of.value")} target="answer" hl={hl("answer").cls} lang={lang} />
++          {revealed && <span className="ek-note" data-reveal>{ofValue(c)}</span>}
++        </>
++      )}
+       {c.mode !== "compare" && <div className="ek-row"><CheckBtn lang={lang} onClick={commit} disabled={!!c.error} hl={hl("check").cls} /></div>}
+       <Verdict ok={s.verdict} lang={lang} />
+     </EngineRoot>
+diff --git a/src/modules/frame/kit/kit.css b/src/modules/frame/kit/kit.css
+index 46b9518..2eccd45 100644
+--- a/src/modules/frame/kit/kit.css
++++ b/src/modules/frame/kit/kit.css
+@@ -93,6 +93,11 @@ button.fr-shape { cursor: pointer; }
+ .fr-part.is-on { fill: var(--fx-fill); }
+ .fr-part.is-tap { cursor: pointer; }
+ .fr-part.is-ghost { stroke: var(--fx-accent); stroke-width: 4; stroke-dasharray: 7 4; }
++/* fractions@1 name / of (round 2 content) */
++.fr-built { font-size: 1.4em; font-weight: 700; }
++.fr-set { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; max-width: 340px; margin: 0 auto; }
++.fr-group { display: flex; flex-wrap: wrap; gap: 4px; padding: 6px; border: 2px dashed var(--fx-line); border-radius: var(--fx-radius); max-width: 150px; justify-content: center; }
++.fr-dot { width: 14px; height: 14px; border-radius: 50%; background: var(--fx-fill); border: 1.5px solid var(--fx-ink); }
+ .fr-label { font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; }
+ 
+ /* multiply-divide@1 */

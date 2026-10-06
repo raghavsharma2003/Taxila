@@ -1,0 +1,48 @@
+diff --git a/evals/engines-coverage.mjs b/evals/engines-coverage.mjs
+index f797822..8963f5a 100644
+--- a/evals/engines-coverage.mjs
++++ b/evals/engines-coverage.mjs
+@@ -53,12 +53,16 @@ export function frameVerdict(engine, params, value) {
+     }
+     case "fractions@1": {
+       const c = FR.normalize(params);
++      // round 2 content: name: the child builds the key as top / bottom
++      if (c.mode === "name") { const kq = parseQ(v); return !!kq && FR.nameCorrect(c, kq.n, kq.d); }
+       const k = parseQ(v);
+       if (!k) return false;
+       if (c.mode === "compare") {
+         const idx = c.fractions.findIndex((f) => qEq(f, k));
+         return idx >= 0 && FR.compareCorrect(c.fractions, c.question, String(idx));
+       }
++      // round 2 content: name: the child builds the key as top / bottom; of: the child gives the key as a whole number
++      if (c.mode === "of") return /^\d+$/.test(String(v).trim()) && FR.ofCorrect(c, Number(v));
+       // equivalent with a fixed second shape ("1/3 = ?/6"): the key is how many of its parts are shaded
+       if (c.mode === "equivalent" && c.parts > 0) return Number.isInteger(Number(v)) && FR.equivalentCorrect(c.target, Number(v), c.parts);
+       const parts = c.parts;
+@@ -189,7 +193,10 @@ export function run({ classes = /^c[1-9]-/ } = {}) {
+         if (!plan.bindItem) continue;
+         items.bound++;
+         e.bound++;
+-        const key = parseKey(item.answer);
++        // round 2 content: a fraction-naming key may be written in words around its fraction ("One quarter, 1/4"): the
++        // child's action is that fraction (the adapter binds only when the key states exactly one)
++        const key0 = parseKey(item.answer);
++        const key = plan.engine === "fractions@1" && plan.params?.mode === "name" ? (String(key0).match(/\d+\s*\/\s*\d+/)?.[0].replace(/\s+/g, "") ?? key0) : key0;
+         const yes = frameVerdict(plan.engine, plan.params, key);
+         if (yes === null) { items.noReplay++; continue; }
+         if (yes) items.agree++;
+diff --git a/tests/engine-catalog.test.mjs b/tests/engine-catalog.test.mjs
+index e2e857e..1554287 100644
+--- a/tests/engine-catalog.test.mjs
++++ b/tests/engine-catalog.test.mjs
+@@ -45,6 +45,10 @@ function visibleText(engine, params) {
+     }
+     case "fractions@1": {
+       const c = FR.normalize(params);
++      // round 2 content: name shows a shaded shape and the child's own readout (the target is never printed); of shows
++      // "a/b of N = ?"
++      if (c.mode === "name") return "";
++      if (c.mode === "of") return `${FR.fmt(c.target)} of ${c.count} = ?`;
+       return [c.target ? FR.fmt(c.target) : "", ...c.fractions.map(FR.fmt)].join(" | ");
+     }
+     case "patterns@1": return PT.normalize(params).terms.join(", ");

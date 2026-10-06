@@ -13,8 +13,8 @@
 //   B. Board sync on explanation beats: BOARD_TOPICS walked with 6 lines each, x --reps. Every whiteboard slot either
 //      fills with a board that re-passes strict shape + lint + the full gate W0-W9 against her line, or her line does not
 //      point at the screen; lateness as above.
-//   M. Item-bound maths mounts (w1b-mounts' bar on the three production failures): each lesson answers the items it poses
-//      for up to 6 turns; a mount whose goal is item:<id> (a bound engine plan) must appear.
+//   M. Item-bound maths mounts (w1b-mounts' bar on the three production failures): a practice lesson answers the items it
+//      poses for up to 8 turns; a mount whose goal is item:<id> (a bound engine plan) must appear.
 //   D. Coverage (offline, the shipped files): evals/content/coverage.mjs.
 // Bars: R piece p90 ≤ 3000 ms; R+B board lateness p90 ≤ 1500 ms; 0 slots failed-and-pointed-at; R real 100%; M ≥ 1 per topic.
 //
@@ -158,21 +158,26 @@ if (PARTS.includes("M") && left() > 90_000) await withTestAccount(async ({ api }
   const { skipped } = await pool(MOUNT_TOPICS.map(([topicId, p]) => async () => {
     const persona = { ...PERSONAS[p], topics: [topicId] };
     const child = await freshChild(api, persona);
-    const L = await openLesson(api, child, { topicId, persona });
+    // purpose "practice", as w1b-mounts: the lesson poses items from the start (a learn lesson spends its first turns on
+    // the hook, the explanation and the faded worked example)
+    const L = await openLesson(api, child, { topicId, persona, purpose: "practice" });
     const kit = (() => { try { return kitOf(topicId); } catch { return null; } })();
     const mounts = [...(L.opening.moduleCommands ?? [])].filter((c) => c.op === "mount");
     try {
       await L.turn(GREET[persona.style] ?? GREET.hinglish, { kind: "greet" });
       mounts.push(...(L.last?.moduleCommands ?? []).filter((c) => c.op === "mount"));
-      for (let k = 0; k < 6 && !L.ended && !mounts.some((c) => /^item:/.test(c.goal ?? "")); k++) {
+      for (let k = 0; k < 8 && !L.ended && !mounts.some((c) => /^(item|g1):/.test(c.goal ?? "")); k++) {
         const item = kit ? itemOf(kit, L.last?.ui?.ask?.itemId) : null;
         const text = item ? answersFor(item, kit, persona).correct : ordinaryTurn(L, persona).text;
         const row = await L.turn(text);
         mounts.push(...(row.r?.moduleCommands ?? []).filter((c) => c.op === "mount"));
       }
-      const bound = mounts.filter((c) => /^item:/.test(c.goal ?? ""));
-      ok(bound.length >= 1, `M ${topicId}: an item-bound mount (goal item:<id>) in the lesson — ${bound.map((c) => `${c.engine} ${c.params?.mode ?? ""} ${c.goal}`).join("; ") || `none (mounts: ${mounts.map((c) => `${c.engine}${c.params?.mode ? ` ${c.params.mode}` : ""}`).join(", ") || "none"})`}`);
-      out.mounts.push({ topicId, bound: bound.map((c) => ({ engine: c.engine, mode: c.params?.mode, goal: c.goal })), mounts: mounts.map((c) => c.engine) });
+      // w1b-mounts' bar: a catalog-bound plan (item:<id>) or a G1 fill (g1:<id>), both graded by the server
+      const bound = mounts.filter((c) => /^(item|g1):/.test(c.goal ?? ""));
+      const posed = L.rows.map((x) => `${x.r?.move?.kind ?? "?"}:${x.r?.ui?.ask?.itemId?.replace(/^.*-(i\d+|rl-\w+)$/, "$1") ?? "-"}`).join(" ");
+      ok(bound.length >= 1, `M ${topicId}: an item-bound mount (goal item:<id> or g1:<id>) in the lesson — ${bound.map((c) => `${c.engine} ${c.params?.mode ?? ""} ${c.goal}`).join("; ") || `none (mounts: ${mounts.map((c) => `${c.engine}${c.params?.mode ? ` ${c.params.mode}` : ""}`).join(", ") || "none"})`}`);
+      console.log(`  M ${topicId} posed: ${posed}`);
+      out.mounts.push({ topicId, bound: bound.map((c) => ({ engine: c.engine, mode: c.params?.mode, goal: c.goal })), mounts: mounts.map((c) => c.engine), posed });
     } finally { await L.end(); }
   }));
   out.skipped.M = skipped;

@@ -1,0 +1,35 @@
+diff --git a/server/stagecraft/board-sync.js b/server/stagecraft/board-sync.js
+index ffcf80e..3b4cafa 100644
+--- a/server/stagecraft/board-sync.js
++++ b/server/stagecraft/board-sync.js
+@@ -22,6 +22,8 @@ import { gateWhiteboard, withheldValues, numbersIn, partitionCounts } from "../s
+ import { speechMsOf, redactLine, WB_BOARD, sectorsForCutCircles } from "../studio/plan.js";
+ import { explainerFor } from "../forge/explainer/lesson.js";
+ import { catalogueEntry } from "./catalogue.js";
++import { fitLegible } from "./board-legible.js";
++import { takePreselected } from "./board-first.js";
+ 
+ // 1900 ms after the ask: her audio starts ~700 ms after the reply (text lane prewarm), so even a code board shown at the
+ // deadline is ≤ ~1.2 s late (the bar is 1.5 s p90), while the speculative board (started ~1.5 s earlier, at the kernel)
+@@ -165,7 +167,9 @@ export function codeBoard(ask, { kit, lessonId, band = "B3" } = {}, ctx) {
+     // 2. the topic's authored catalogue boards (data/studio-catalogue: one per line of its checked explainer, kit-grounded,
+     //    strict-shape and lint clean): the first that, re-timed, passes the gate against HER line
+     const cat = catalogueEntry(kit.topicId ?? ask?.kit?.topicId);
+-    for (const b of cat?.boards ?? []) {
++    // round 2 content: the authored boards are 800 x 500 and 95.8% fail W1 at the phone tray as drawn: made legible first
++    for (const b0 of cat?.boards ?? []) {
++      const b = { ...b0, script: fitLegible(b0.script) };
+       const s = withSectors(retime(b.script, Math.max(800, Number(b.script.durationMs) || 0), ctx.speechMs), ctx.reply);
+       const r = regate(s, ask, ctx);
+       if (r.ok) return { ...r, template: `catalogue:${b.line}`, by: "catalogue" };
+@@ -202,6 +206,10 @@ export async function plan(ask, o) {
+   const prior = ask?.mode === "continue" ? (o.prev?.ops ?? []).filter((x) => x.op !== "erase") : [];
+   const ctx = gateCtxFor(ask, { kit: o.kit, redact: o.redact, prior });
+   const tag = (r, source, extra = {}) => ({ ok: true, script: r.script, gate: r.gate, usd: extra.usd ?? 0, ms: Date.now() - t0, source, syncMs: Date.now() - t0, ...extra });
++  // 0. round 2 content, board-first: the board chosen at kernel time (its facts were in her line's content), re-gated on her
++  // real line with the full gate (the seam takes it synchronously first; this is the same rung for any other caller)
++  const first = takePreselected(ask, ctx, t0);
++  if (first) return first;
+   // 1. the speculative board, already in: no line plan is paid for
+   const early = takeSpec(ask, ctx);
+   if (early) return tag(early, "spec", { usd: early.usd });

@@ -1,0 +1,59 @@
+diff --git a/server/brain/turn.js b/server/brain/turn.js
+index fd4e0e6..2b27622 100644
+--- a/server/brain/turn.js
++++ b/server/brain/turn.js
+@@ -34,6 +34,7 @@ import { awaitSettled } from "../comprehension/session.js";
+ import { seamSafe as guardSeam } from "../seam-safe.js";
+ import { duplexRegistry } from "../duplex/registry.js";
+ import { studioSeam, isStudioRow } from "../studio/seam.js";
++import { isBoardFirstRow } from "../stagecraft/board-first.js";
+ import { stagecraftPointFor } from "../stagecraft/kernel-point.js";   // STAGECRAFT P4 (ship5 p4-content): null unless the lesson runs a host
+ import { relationalSeam } from "../relational/seam.js";
+ import { expressiveSeam } from "../voice/expressive/seam.js";
+@@ -490,6 +491,14 @@ export async function lessonTurn(req, body) {
+     seamSafe("studio.prepareWhiteboard", () => studioSeam.prepareWhiteboard(whiteboardIntentOf({ lessonId: lesson.id, turn: next.turn, beat: kernel.beat ?? { id: "visual", type: "explain" }, next, kit,
+       item: next.lastMove?.itemId ? findItem(next, kit, next.lastMove.itemId) : null, line: { text: "" } })), false);
+   }
++  // round 2 content, board-first: the board for an accepted whiteboard ask is chosen NOW (kit code / library / catalogue,
++  // gated on everything that does not depend on her exact words), and its facts row joins the move's content below, so her
++  // line is written about what will be drawn; requestIntent re-gates it against her real line (any lane, the child's
++  // request included). null = nothing preselected, the turn is exactly as before.
++  const wbFirstRow = !late && kernel.arb.accepted.some((p) => p.kind === "ask_whiteboard") && typeof studioSeam.preselectWhiteboard === "function"
++    ? seamSafe("studio.preselectWhiteboard", () => studioSeam.preselectWhiteboard({ ...whiteboardIntentOf({ lessonId: lesson.id, turn: next.turn, beat: kernel.beat ?? { id: "visual", type: "explain" }, next, kit,
++      item: next.lastMove?.itemId ? findItem(next, kit, next.lastMove.itemId) : null, line: { text: "" } }), ...(turnStudioOf(kernel.arb)?.retire ? { replaces: String(turnStudioOf(kernel.arb).retire) } : {}) }), null)
++    : null;
+   // W1-C settle: start the blind grade of this turn's held why / teach-back NOW (or adopt the pregrade), while the reply
+   // is written and the turn commits, not after; the post-commit launchGrades below is then a no-op for the same event
+   // ids (later.js gradeLater is idempotent per event id).
+@@ -541,8 +550,10 @@ export async function lessonTurn(req, body) {
+   if (!late) {
+     const studioRow = studioSlot ? seamSafe("studio.factsRowForSlot", () => (typeof studioSeam.factsRowForSlot === "function" ? studioSeam.factsRowForSlot(lesson.id, studioSlot) : null), null) : null;
+     const before = Array.isArray(next.lastContent) ? next.lastContent : [];
+-    const kept = before.filter((l) => !isStudioRow(l));
+-    const content = studioRow ? [...kept, studioRow] : kept;
++    const kept = before.filter((l) => !isStudioRow(l) && !isBoardFirstRow(l));
++    // the board-first row only when no other piece takes the tray this turn (one thing on screen)
++    const boardRow = wbFirstRow && !(studioSlot?.artifact && studioSlot.artifact.kind !== "whiteboard") ? wbFirstRow : null;
++    const content = [...kept, ...(studioRow ? [studioRow] : []), ...(boardRow ? [boardRow] : [])];
+     if (content.length !== before.length || content.some((l, i) => l !== before[i])) {
+       next.lastContent = content;
+       try { instructions = instructionsFor(next, kit); } catch (e) {
+@@ -661,7 +672,8 @@ export async function lessonTurn(req, body) {
+           ...(ask.payload?.requested ? { requested: true } : {}) })
+         : null), null);
+       if (ack?.slotId && ack?.intentId) {
+-        studioSlot = { slotId: String(ack.slotId), intentId: String(ack.intentId), state: ack.state ?? "planning" };
++        // round 2 content: a board-first board is drawn at the ack: the slot carries it on this response (no poll, no wait)
++        studioSlot = { slotId: String(ack.slotId), intentId: String(ack.intentId), state: ack.state ?? "planning", ...(ack.artifact ? { artifact: ack.artifact } : {}) };
+         wbAcked = true;
+         next.wbBeat = kernel.beat?.id;
+         // The live board IS the explanation surface: the Director's template rung (explainer@1) is not mounted beside it
+@@ -697,7 +709,7 @@ export async function lessonTurn(req, body) {
+           item: next.lastMove?.itemId ? findItem(next, kit, next.lastMove.itemId) : null, line: { text: line } }), requested: true,
+           ...(turnStudioNow()?.retire ? { replaces: String(turnStudioNow().retire) } : {}) })
+         : null), null);
+-      if (ack?.slotId && ack?.intentId) { studioSlot = { slotId: String(ack.slotId), intentId: String(ack.intentId), state: ack.state ?? "planning" }; wbAcked = true; moment = null; }
++      if (ack?.slotId && ack?.intentId) { studioSlot = { slotId: String(ack.slotId), intentId: String(ack.intentId), state: ack.state ?? "planning", ...(ack.artifact ? { artifact: ack.artifact } : {}) }; wbAcked = true; moment = null; }
+     }
+   }
+   // A late answer (the page-hide beacon already closed the lesson) that was a disclosure still gets the fixed

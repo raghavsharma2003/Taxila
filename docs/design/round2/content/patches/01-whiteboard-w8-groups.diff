@@ -1,0 +1,15 @@
+diff --git a/server/studio/qa/whiteboard.js b/server/studio/qa/whiteboard.js
+index e34dc6d..a3fcef3 100644
+--- a/server/studio/qa/whiteboard.js
++++ b/server/studio/qa/whiteboard.js
+@@ -456,7 +456,9 @@ export function gateWhiteboard(raw, ctx) {
+   const said = partitionCounts(ctx.reply);
+   const lineNums = new Set([...numbersIn(ctx.reply)].filter((x) => /^\d+$/.test(x)).map(Number));
+   const fams = shapeFamilies(ops);
+-  const okCount = (n) => said.has(n) || lineNums.has(n) || [...said].some((a) => [...said].some((b) => a * b === n));
++  // round2 content: "3 equal groups, each with 5 dots" is 15 dots: a count she partitions by (said) times a number she says
++  // (owner-5 on prod 2026-10-06: the kit's own equal-groups board of 15 dots was refused against exactly that line)
++  const okCount = (n) => said.has(n) || lineNums.has(n) || [...said].some((a) => [...said, ...lineNums].some((b) => a * b === n));
+   const badCount = said.size ? fams.filter((f) => !okCount(f.n)).map((f) => `${f.kind} x${f.n}`) : [];
+   const cut = circleCutByLines(ops);
+   add("W8.counts_match_line", badCount.length === 0 && cut.length === 0, { said: [...said], families: fams.map((f) => `${f.kind} x${f.n}`), bad: badCount, cutByLines: cut });
