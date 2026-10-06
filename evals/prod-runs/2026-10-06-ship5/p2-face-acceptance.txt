@@ -1,0 +1,38 @@
+(Use `node --trace-warnings ...` to show where the warning was created)
+PASS config: GET /api/face/config → 200 (404 = patch 03 not deployed)
+PASS config: puppet2d and visemes ship ON ({"puppet2d":true,"visemes":true,"rev":"r8"})
+PASS pack: /face-puppet/r8/geom.json → 200 application/json
+PASS pack: /face-puppet/r8/face.webp → 200 image/webp
+PASS pack: /face-puppet/r8/mouth_rest.webp → 200 image/webp
+PASS pack: /face-puppet/r8/rest-medium.webp → 200 image/webp
+PASS pack: /face-puppet/r8/rest-close.webp → 200 image/webp
+FAIL lesson: her opening was scheduled on the player
+FAIL lesson: the face is the live puppet ({"puppet":false,"phase":null,"label":null,"tutorFace":false,"live":false})
+FAIL lesson: AI disclosure on the face host (null)
+PASS lesson: no page errors []
+FAIL lesson: first draw undefined ms, reveal undefined ms (undefined) after mount
+FAIL lesson: the live face was revealed before her first sound (reveal undefined, sound undefined)
+FAIL lesson: Diya's viseme frames reached the face (0 batches, 0 visemes)
+PASS lesson: every batch of one part carries one playAt (max spread 0.00 ms)
+FAIL lesson: 0.0% of speaking frames are drawn from her visemes (n = 0)
+FAIL test threw: Cannot read properties of undefined (reading 'map')
+cleanup: account deleted
+PASS leftover @taxila.test guardians 3 → 3
+PASS arjun: no puppet for Arjun ({"puppet":false,"phase":null,"label":null,"tutorFace":false,"live":false})
+FAIL arjun: his own face (TutorFace) is shown
+PASS arjun: no page errors []
+cleanup: account deleted
+PASS leftover @taxila.test guardians 3 → 3
+FAIL kill: the lesson shows TutorFace, the automatic fallback ({"puppet":false,"phase":null,"label":null,"tutorFace":false,"live":false})
+FAIL kill: the face is still labelled (null)
+PASS kill: no page errors []
+cleanup: account deleted
+PASS leftover @taxila.test guardians 3 → 3
+FAIL packfail: the lesson shows TutorFace, the automatic fallback ({"puppet":false,"phase":null,"label":null,"tutorFace":false,"live":false})
+FAIL packfail: the face is still labelled (null)
+PASS packfail: no page errors []
+cleanup: account deleted
+PASS leftover @taxila.test guardians 3 → 3
+WARN safety: skipped on a remote target (a distress line opens a REAL safeguarding incident; set P2F_SAFETY=1 when the safeguarding team expects it)
+
+17/30 checks passed, 13 FAILED (https://taxila.dev)

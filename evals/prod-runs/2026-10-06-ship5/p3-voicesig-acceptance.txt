@@ -1,0 +1,44 @@
+(Use `node --trace-warnings ...` to show where the warning was created)
+PASS config: GET /api/voicesig/config → 200 (404 = patch 06 not deployed)
+PASS config: voice signals ship ON (mode shadow; off = killed)
+PASS config: the shared front-end is on for clients
+PASS status: 8 knowledge states listed (8)
+PASS status: fluentRecall carries population simulated, precision null, recall 0, n 0
+PASS status: fluentRecall is not measured on children → "shadow: precision not yet measured on children (pilot pending); numbers shown are simulated or adult speech"
+PASS status: workingAloud carries population none, precision null, recall null, n 0
+PASS status: workingAloud is not measured on children → "shadow: precision not yet measured on children (pilot pending); numbers shown are simulated or adult speech"
+PASS status: fragileCorrect carries population simulated, precision 0.855, recall 0.291, n 5542
+PASS status: fragileCorrect is not measured on children → "shadow: precision not yet measured on children (pilot pending); numbers shown are simulated or adult speech"
+PASS status: heldBelief carries population simulated, precision 0.591, recall 0.139, n 4760
+PASS status: heldBelief is not measured on children → "shadow: precision not yet measured on children (pilot pending); numbers shown are simulated or adult speech"
+PASS status: effortfulGuess carries population simulated, precision 0.486, recall 0.336, n 7026
+PASS status: effortfulGuess is not measured on children → "shadow: precision not yet measured on children (pilot pending); numbers shown are simulated or adult speech"
+PASS status: rapidGuess carries population simulated, precision 0.737, recall 0.43, n 3583
+PASS status: rapidGuess is not measured on children → "shadow: precision not yet measured on children (pilot pending); numbers shown are simulated or adult speech"
+PASS status: searching carries population simulated, precision 1, recall 0.847, n 14830
+PASS status: searching is not measured on children → "shadow: precision not yet measured on children (pilot pending); numbers shown are simulated or adult speech"
+PASS status: absent carries population simulated, precision null, recall 0, n 0
+PASS status: absent is not measured on children → "shadow: precision not yet measured on children (pilot pending); numbers shown are simulated or adult speech"
+PASS status: no state-of-mind word in the payload (none)
+PASS lesson: starts
+PASS lesson: spoken turn 1 with kv accepted (200)
+PASS lesson: spoken turn 2 with kv accepted (200)
+PASS lesson: spoken turn 3 with kv accepted (200)
+PASS lesson: spoken turn 4 with kv accepted (200)
+PASS lesson: spoken turn 5 with kv accepted (200)
+PASS lesson: spoken turn 6 with kv accepted (200)
+PASS lesson: every read is shadow unless its state is live on the status page
+PASS lesson: a shadow read hands the Director no tie-breaker
+PASS lesson: debug.vs names no state of mind
+PASS lesson: brain_trace carries vs.* codes on 6/6 turns
+PASS lesson: no state-of-mind word in any trace code
+PASS lesson: the session baseline learned (6 turns, 10 rows)
+PASS lesson: in shadow the move is the same with and without kv (hook / hook)
+PASS pace: the parent can turn on "Remember answering pace" (200; 400 "unknown purpose" = patch 05 missing)
+PASS pace: lesson end stored 5 answering-pace rows under the parent's choice
+PASS pace: turning it off deleted them at once
+cleanup: account deleted
+PASS leftover @taxila.test guardians 3 → 3
+WARN safety: arm skipped on a remote target (set P3VS_SAFETY=1 when the safeguarding team expects a test incident)
+
+39/39 checks passed (https://taxila.dev)
