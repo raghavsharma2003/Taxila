@@ -59,7 +59,10 @@ export const HL = {
     "good night", "kal milte(?: hain)?", "abhi jaana (?:hai|padega)", "(?:jaana|jana) padega", "khana lag gaya",
   ],
   end_request: [
-    "^(?:ab |abhi |aaj )?bas(?: karo| kijiye| karte hain| kar do| kar lo| kar lein| karein| ho gaya| ab| yaar| itna hi)?",
+    // round 2 safety floor (2026-10-07, stop-drill with the models hung): "haan bas" (a yes to the check-in), and
+    // "aaj itna hi kaafi hai" / "aaj ke liye itna kaafi hai" (before the shorter "aaj … itna hi", which would not close)
+    "aaj (?:ke liye )?(?:bas )?itna (?:hi )?(?:kaafi|kafi|enough)(?: hai)?",
+    "^(?:(?:haan|han|ha|ok|okay|achha|acha|accha|theek hai|thik hai) )?(?:ab |abhi |aaj )?bas(?: karo| kijiye| karte hain| kar do| kar lo| kar lein| karein| ho gaya| ab| yaar| itna hi)?",
     "(?:lesson|class|padhai|padhna)(?: ab| aaj| yahin| abhi)* (?:band|khatam|stop|end|rok)(?: kar)?(?: do| dein| de| karo| karein| kijiye| kar sakte| sakte)?",
     "(?:aaj |ab )?yahin (?:stop|khatam|band|rok)", "aaj (?:ke liye )?(?:bas )?itna hi", "kal (?:continue|padhenge|padh lenge|karte hain)", "kal (?:se )?padh(?:unga|ungi|aunga|aungi|enge)",
     "^(?:(?:abhi|ab|please|plz) )*stop (?:karo|kar do|kijiye|karein)", "ab (?:band|bas) karo", "khatam karo(?: yaar| na)?", "(?:lesson|class|padhai) band karo",

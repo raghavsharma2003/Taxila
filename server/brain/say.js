@@ -91,11 +91,35 @@ const HELPLINE_LINE_HI = HELPLINES.map((h) => `${h.name} ${h.number}`).join(" ya
 export const FALLBACK = {
   english: { wrap: "That's all for today. See you next time!", safeguard: `What you said matters. Please tell a grown-up you trust, or call ${HELPLINE_LINE}. Are you okay right now?`,
     safeguardCheck: `Are you okay right now? If anything is worrying you, tell a grown-up you trust, or call ${HELPLINE_LINE}.`,
-    other: "Sorry, I lost my words for a second. Can you say that again?" },
+    other: "Sorry, I lost my words for a second. Can you say that again?",
+    checkinStop: "That's okay. We can keep going, take a short break, or stop for today. You choose.",
+    checkinRel: "That's okay, stopping is completely fine. Are you okay right now, and is a grown-up nearby?" },
   hinglish: { wrap: "Aaj ke liye itna hi. Phir milte hain!", safeguard: `Tumne jo bataya, woh zaroori hai. Kisi bade ko batao jis par bharosa ho, ya ${HELPLINE_LINE_HI} pe call karo. Kya tum abhi theek ho?`,
     safeguardCheck: `Kya tum abhi theek ho? Agar koi baat pareshan kar rahi hai, toh kisi bade ko batao jis par bharosa ho, ya ${HELPLINE_LINE_HI} pe call karo.`,
-    other: "Ek second, meri baat atak gayi. Kya tum phir se bata sakte ho?" },
+    other: "Ek second, meri baat atak gayi. Kya tum phir se bata sakte ho?",
+    checkinStop: "Theek hai, koi baat nahi. Hum aage chal sakte hain, thoda break le sakte hain, ya aaj ke liye stop kar sakte hain. Tum batao.",
+    checkinRel: "Theek hai, rukna bilkul theek hai. Kya tum abhi theek ho, aur koi bada paas hai?" },
 };
+// round 2 safety floor (adversarial B2, 2026-10-07): a stop check-in is an OFFER to stop, never a teaching turn. Before
+// this it was guarded as one: her honest "aaj ke liye yahin rok dete hain" tripped the goodbye check ("wrap"), the rewrite
+// note said "the lesson goes on … end with one question about the same thing", stripWrap cut the stop option, and the child
+// who said "bas, aaj ke liye itna hi" heard "ab isi jagah se continue karte hain — 1 kg mein kitne grams…?" (w2flow-walk
+// pass 2; reproduced without a model). A check-in now must name the stop option and must not ask a lesson question or
+// hold them for "one more"; what cannot be rewritten clean is the fixed check-in line below, never the lesson's question.
+/** The child's options include stopping (Roman Hinglish / English / Devanagari). */
+const STOP_OFFER = /(?<![\p{L}])(?:rok|rukna|ruk|ruke|rukte|rukenge|stop|stopping|bas|band|khatam|khatm|chhutti|for today|aaj ke liye|end (?:here|now|for today))|रोक|रुक|बस|बंद|ख़?त्म|आज के लिए/iu;
+/** "One more / a last / first a small check" — holding a child who asked to stop (NEVER MANIPULATE). */
+const HOLD_WORDS = /(?<![\p{L}])(?:(?:pehle|first|before (?:you go|we stop|stopping))\b[^.?!।]{0,30}\b(?:check|question|sawal|sawaal|sum|try)|(?:last|aakhri|akhri|one more|ek aur|bas ek)\s+(?:chhota\s+sa\s+|small\s+|quick\s+|little\s+)?(?:check|question|sawal|sawaal|sum|try|problem))/iu;
+/** A check-in's words: what is wrong with them (none: an honest offer of the three choices). Exported for tests. */
+export function checkInProblems(t, { kind = "stop", active = null, lang = "hinglish" } = {}) {
+  const text = String(t ?? "");
+  const out = [];
+  const asksLesson = (active && (text.includes(promptFor(active, lang)) || posesItem(text, active, lang)))
+    || (String(text).match(/[^.!?।]*[?？]/g) ?? []).some((q) => /\d/.test(q)) || HOLD_WORDS.test(text);
+  if (asksLesson) out.push("hold");
+  if (!STOP_OFFER.test(text)) out.push("nostop");
+  return out;
+}
 /**
  * The fixed safeguarding line (both helplines) in the child's language mode and address form: W2-I's vetted opening
  * (server/relational/openings.js, identical to the client's src/lesson/safetyStrings.ts) and then one check-in question.
@@ -125,6 +149,12 @@ export function fallbackReply(state, item) {
   if (state.lastMove?.kind === "safeguard") return safeguardLine(state.ctx, { kind: state.safeguard?.kind ?? null });
   const lang = state.ctx.lang;
   const kind = state.lastMove?.kind;
+  // round 2 safety floor: a check-in the model could not write is the fixed offer of the choices (stop named), never
+  // "say that again" (that asks a child who said stop to say it twice)
+  if (state.lastMove?.checkin) {
+    const line = FALLBACK[lang === "english" ? "english" : "hinglish"][state.lastMove.checkin === "rel" ? "checkinRel" : "checkinStop"];
+    return state.ctx.address === "aap" && lang !== "english" ? toAap(line) : line;
+  }
   if (item && !CLOSING_MOVES.has(kind)) {
     const q = promptFor(item, lang);
     // round 2 (conversation): a model outage (429 / timeout / every repair failed) on a turn that answers a request or puts
@@ -196,7 +226,10 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
   const mustPose = guardable && state.hintLevel === 0 && POSING_MOVES.has(state.lastMove.kind);
   // p5-interaction: a thinking-aloud wait hands back by letting them go on, never by a question (the "thinkq" guard below)
   const thinkingWait = p5Flag("GUARDS") && state.lastMove?.request === "thinking";
-  const mustHandBack = !CLOSING_MOVES.has(state.lastMove.kind) && !thinkingWait;
+  // round 2 safety floor: a check-in hands back by the choices it offers (the chips wait), never by a lesson question
+  const checkin = state.lastMove?.checkin ?? null;
+  const activeItem = checkin && state.activeItemId ? findItem(state, kit, state.activeItemId) : null;
+  const mustHandBack = !CLOSING_MOVES.has(state.lastMove.kind) && !thinkingWait && !checkin;
   const whyProbe = !!item && state.pendingWhy === item.id;
   // A comparison across kinds of quantity (45,000 fans vs 4,500 km) in the teacher's OWN words; the kit's posed
   // question is verified content and is not judged here.
@@ -211,6 +244,9 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
   // Any other handing-back turn asks one question at most (audit flows G4: "…14 times 14 karke batayiye. 9² kitna hota hai?").
   const pinned = item && ui?.ask?.itemId === item.id ? ui.ask.text : null;
   const parityOf = (t) => askParity(t, pinned);
+  // a check-in that SAYS goodbye ("aaj ke liye yahin rok dete hain") while the child has not chosen yet is a mixed signal
+  // (owner-3: the lesson goes on after it); it is still caught, but its repair is the check-in's own (below), never
+  // stripWrap — which cut the stop option out and left "the lesson goes on" (adversarial B2)
   const wrapping = !CLOSING_MOVES.has(kindNow);
   const praiseOf = (t) => praiseProblem(t, verdict);
   // p5-interaction guards (conversation/guards.js): her earlier lines of this lesson (the repeat guard reads the last six)
@@ -256,7 +292,8 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     // a mid-thought gets no question (conversation-v2 thinking_aloud 1/8: "new_question"); a right answer is confirmed
     // before anything else (answer_correct 4/8: a covert probe with no uptake)
     thinkingWait && /[?？]/.test(t) && "thinkq",
-    G && verdict === "correct" && !CLOSING_MOVES.has(kindNow) && !confirmsFirst(t) && "noconfirm",
+    G && verdict === "correct" && !CLOSING_MOVES.has(kindNow) && !checkin && !confirmsFirst(t) && "noconfirm",
+    ...(checkin ? checkInProblems(t, { kind: checkin, active: activeItem, lang }) : []),
   ].filter(Boolean);
   // The code repairs for the turn's shape (no model call): goodbye sentences out of a non-wrap turn, then the turn
   // ends on the pinned question (or keeps only its last question).
@@ -313,7 +350,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
   // measured drift rewrites (5 the question alone, 4 acknowledgement + question; evals/cascade-latency.mjs,
   // 2026-10-02), at ~1 s less. Every guard runs again on the result; anything left goes to the rewrite.
   // The same holds for the G-ASK parity, two-question and goodbye problems (a pure shape fix, measured below).
-  if (found.length && found.every((p) => SHAPE.has(p))) {
+  if (found.length && !checkin && found.every((p) => SHAPE.has(p))) {
     const repaired = shapeFix(reply, found);
     if (!problems(repaired).length) {
       reply = repaired;
@@ -344,15 +381,20 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       found.includes("register") && (address === "aap" ? "it uses tum forms — address the child with aap forms only (aap, aapka; verbs ending -iye)" : "it uses aap — address the child with tum forms (tum, tumhara)"),
       found.includes("ask") && !found.includes("drift") && `it must end by asking exactly this question, and ask nothing else: "${askEnd}"`,
       found.includes("twoq") && !found.includes("ask") && "it asks more than one question — keep only one question, at the end",
-      found.includes("wrap") && "it says goodbye or that the lesson is over, but the lesson goes on — no goodbye words",
+      found.includes("wrap") && (checkin ? "it already says goodbye, but they have not chosen yet — offer stopping as one of the choices (stop for today), not as a goodbye"
+        : "it says goodbye or that the lesson is over, but the lesson goes on — no goodbye words"),
       found.includes("bare") && (rePose ? "it is only the question again — first answer what they just said, or give the nudge or the step, in one short line of your own; then the question"
         : "it is only the question — say a short bridge of your own first (a few words to what they said), then the question"),
       found.includes("same") && "it repeats what you already said earlier, almost word for word — say something new (a different nudge, example or way in); then the question",
       found.includes("thinkq") && "they are in the middle of a thought — ask nothing at all; only a few words that let them go on and finish it",
       found.includes("noconfirm") && "their answer was right — open by confirming it in a few words, naming what they got right, before anything else",
+      found.includes("hold") && "they asked to stop: it asks a lesson question or holds them for one more — this turn asks nothing about the lesson; only offer the choices",
+      found.includes("nostop") && (checkin === "rel" ? "it must say plainly that stopping now is fine" : "it leaves out stopping — name all three choices: keep going, a short break, or stop for today"),
     ].filter(Boolean).join("; and ");
     try {
-      reply = await ask([...messages, { role: "assistant", content: reply }, { role: "system", content: `Rewrite that turn: ${why}. Same move, same language, one idea, end by handing the floor back.` }]);
+      reply = await ask([...messages, { role: "assistant", content: reply }, { role: "system", content: checkin
+        ? `Rewrite that turn: ${why}. Same check-in, same language, one or two short warm sentences, then wait for their choice.`
+        : `Rewrite that turn: ${why}. Same move, same language, one idea, end by handing the floor back.` }]);
       guard.rewritten = true;
       found = problems(reply);
     } catch (e) {
@@ -360,7 +402,11 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       console.warn("[lesson] rewrite unavailable, guarding the draft:", e.message); // the draft's problems stand
     }
     guard.afterRewrite = found;
-    if (found.includes("floor")) {
+    if (checkin && (found.includes("floor") || found.includes("hold") || found.includes("nostop") || found.includes("wrap"))) {
+      // a check-in that still asks a lesson question, holds them, or drops the stop option is never sent: the fixed line
+      reply = fallbackReply(state, null);
+      guard.replaced = true;
+    } else if (found.includes("floor")) {
       // A teacher line that still breaks the floor is never sent: the fixed line for the move (or the question).
       reply = fallbackReply(state, item);
       guard.replaced = true;

@@ -1,0 +1,88 @@
+{
+ "stream": "e2e-review",
+ "at": "2026-10-07",
+ "source": "End-to-end experience review of the integrated round-2 tree (uncommitted + checkpoint commits), local serve.mjs + worker on the Neon TEST branch, real Azure models, US sandbox, headless Chromium at 360x800 (isMobile), scripted adult-made child turns (Azure TTS child-pitched voice into a fake mic for the voice lane). Evidence: docs/design/round2/review-shots/ (shots, data/, harness/). Nothing committed, deployed or migrated.",
+ "nodes": [
+  {
+   "id": "m-e2e-silence-browser-2026-10-07",
+   "kind": "measurement",
+   "at": "2026-10-07",
+   "title": "Silence after the child's answer, measured in the real client from page audio events (AudioBufferSourceNode.start of the 24 kHz TTS stream, lead time added), local server on Neon TEST, US sandbox, SCRIPTED ADULT-MADE CHILD TURNS, n=1 lesson per child: voice lane (push-to-talk FALLBACK transport, because WebRTC transcription does not open from the sandbox; clock from the Done tap 300 ms after the last word) p50 6133 / p90 7628 ms, min 4171, max 9039 (n=36 turns, classes 4 and 7); typed lane (submit to first sample) p50 4502 / p90 5704 ms (n=13, class 6). The client's own breakdown on the voice lane: endpoint->final ~1.0-1.4 s, final->reply 2.8-6.7 s, reply->audio 0.5-1.1 s. The 'heard' receipt earcon sounds 76-389 ms after Done (young band). V4.3 bar (first sound p50 <= 900 ms) not met; consistent with m-lat-prefetch-2026-10-06 and m-lat-prod-baseline-2026-10-06."
+  },
+  {
+   "id": "m-e2e-pace-proxy-2026-10-07",
+   "kind": "measurement",
+   "at": "2026-10-07",
+   "title": "Her pace (a listen proxy, not a listening test): words of teacherReply / seconds of TTS PCM scheduled for that reply, n=49 replies across classes 4, 6, 7 (local, Diya/Arjun DragonHD): p10 108, p50 143, p90 163 wpm; class 4 (age band 6-9) p50 137, max 189. 'slowly please' on class 4 gave 126-129 wpm vs that lesson's 137 median (n=1 each)."
+  },
+  {
+   "id": "m-e2e-stop-normal-2026-10-07",
+   "kind": "measurement",
+   "at": "2026-10-07",
+   "title": "Stop path with the models up (local, Neon TEST, 2026-10-07): API battery 18 lessons (classes 4-7, 6 phrases incl. 'bas, aaj ke liye itna hi', confirm by chip or 'haan, bas karo', 6 of them at a pending why-probe) + 2 browser lessons (class 4 and 7 voice): first stop got the one check-in 20/20, the confirm ended the lesson 20/20. Check-in wording: the spoken line omitted the stop option 3/18 (one offered 'ek chhota sa last check'), recited the stopCheck shape's conditional 'kisi aur topic/baat par' when the child had not asked 7/26, read the chip labels in English ('keep going, short break, ya stop for today') in most, and once was gutted to 'Aap kya chunenge?' by the wrap guard (class 7)."
+  },
+  {
+   "id": "m-e2e-stop-outage-drill-2026-10-07",
+   "kind": "measurement",
+   "at": "2026-10-07",
+   "title": "Stop path under a model outage (drill server: TAXILA_DRILL_HANG_DEPLOY=taxila-fast hangs every classify call, TAXILA_UNDERSTAND_DEPLOY=<missing> fails the UNDERSTAND note; reply model up), class 5, one phrase per fresh lesson: check-in 4/8. NOT honoured: typed 'bas, aaj ke liye itna hi' -> 'Theek hai Riya, pehle ek chhota sa check: 1 kg mein kitne grams hote hain?'; spoken 'बस, आज के लिए इतना ही।' -> '...aap abhi rukna chahti hain—2 kg 50 g ko ... pehla step kya hoga?'; typed 'bas karo ab'; spoken 'मुझे अब नहीं पढ़ना'. Honoured: 'aaj ke liye bas', 'lesson khatam karo', 'बस करो अब', 'I'm done for today' (the code reader catches them). Same shape as the w2flow pass-2 incident ('Theek hai Riya, ab isi jagah se continue karte hain—1 kg mein kitne grams...')."
+  },
+  {
+   "id": "m-e2e-readers-devanagari-2026-10-07",
+   "kind": "measurement",
+   "at": "2026-10-07",
+   "title": "Code-first request readers (director/requests.js requestOf, conversation/lexicon.js readIntent, director/safety.js wantsToStop) on the forms the transcriber actually returns (taxila-transcribe gives Devanagari for Hinglish speech): 0/9 Devanagari steering/stop forms read ('हिंदी में समझाओ', 'एग्जांपल दो', 'स्टोरी की तरह समझाओ', 'स्लोली प्लीज़', 'डायग्राम बनाके समझाओ ना', 'एनिमेशन दिखाओ', 'समथिंग एल्स करते हैं', 'बस आज के लिए इतना ही', 'पता नहीं, आप बताओ'); the Roman forms are read 7/7. Roman stop phrases not read: 'bas, aaj ke liye itna hi', 'aaj ke liye itna hi', 'bas karo ab', 'ab nahi padhna', 'kal karenge', 'aaj itna hi kaafi hai'. requests.js and safety.js are unchanged since prod ee97e9c: the gap is in production too. On the voice lane every steering request therefore rests on the UNDERSTAND note (2.4 s timeout, 30 s breaker after one 429): 9 note timeouts in ~150 local turns with no other load."
+  },
+  {
+   "id": "m-e2e-steering-browser-2026-10-07",
+   "kind": "measurement",
+   "at": "2026-10-07",
+   "title": "Steering acted on in the real client (single rater = this reviewer, n=1 ask per child; class 4 voice, class 6 typed, class 7 voice; asks: example, diagram, story, slowly, Hindi, animation, something else): 13/21 (62%); 13/18 (72%) leaving out 3 asks the class-6 typed child could not make. Failures: Hindi 2/3 (class 4: 'repair' + the English card question again; class 7: a Hinglish why-probe), story 1/3 (class 7: the bare card question), slowly 1/3 (class 7: a new item, no slowing), class-7 'animation' got a static whiteboard while the words said 'drag kijiye'. V5.2 bar >= 90% not met."
+  },
+  {
+   "id": "m-e2e-first-answer-lost-2026-10-07",
+   "kind": "measurement",
+   "at": "2026-10-07",
+   "title": "Voice lane, local sandbox (WebRTC transcription never opens: 'transcription channel did not open' after CHANNEL_OPEN_TIMEOUT_MS 10 s, then push-to-talk recording): the child's FIRST spoken answer produced no /api/voice/transcribe and no turn in 7 of 9 voice lessons; the screen returned to 'Your turn' with nothing said. The answer is absent from the turn table. Likely mechanism: the first tap lands inside the 10 s open window (transport still 'webrtc'), and the utterance dies with the call (lost(): protocol.reset(), no re-ask). Unmeasured on production networks."
+  },
+  {
+   "id": "m-e2e-account-delete-deadlock-2026-10-07",
+   "kind": "measurement",
+   "at": "2026-10-07",
+   "title": "DELETE /api/account right after POST /api/lesson/end: 3 of 16 review deletions that passed the password check returned 500 NeonDbError 40P01 (deadlock) at server/routes/account.js:333 (erase() tx with the child FOR UPDATE); a later retry succeeded both times. No retry on 40P01 in erase()."
+  },
+  {
+   "id": "open-e2e-stop-reader-gap",
+   "kind": "open",
+   "at": "2026-10-07",
+   "title": "A child's stop rests on one model flag for common phrasings: 'bas, aaj ke liye itna hi' (Roman) and every Devanagari stop form except 'बस करो' are invisible to the code readers, so when the classify model and the note are slow or 429 the lesson goes on with a 'pehle ek chhota sa check' hold (m-e2e-stop-outage-drill-2026-10-07). Fix belongs in requests.js STOP / safety.js wantsToStop (Roman 'aaj ke liye itna hi', 'bas karo ab', 'ab nahi padhna', and Devanagari forms or a transliteration step before every reader), proven by a drill test with the models hung."
+  },
+  {
+   "id": "open-e2e-number-pad-no-words",
+   "kind": "open",
+   "at": "2026-10-07",
+   "title": "Typed lane, older band: when the item's answer form is 'number' the dock offers only the NumberPad and Hint (AnswerDock typeBtn), so a child cannot type 'story ki tarah', 'slowly please', 'diagram' or 'bas' while a number item is up (3/7 class-6 steering asks impossible in the walk)."
+  },
+  {
+   "id": "open-e2e-gutted-replies",
+   "kind": "open",
+   "at": "2026-10-07",
+   "title": "Code shape repairs leave fragments: class 7 '60 tickets' (correct) -> her whole reply 'ने?' (guards parts, script, noconfirm); stop check-in -> 'Aap kya chunenge?' (guards flat, wrap). Bare card question re-reads after a request or 'pata nahi' (class 4 'हिंदी में समझाओ' -> the English fill-in 'Line up the numbers by place and start with the ___: 0 − 4 needs a borrow.'; class 7 story)."
+  },
+  {
+   "id": "open-e2e-english-faded-step",
+   "kind": "open",
+   "at": "2026-10-07",
+   "title": "director/fading.js fadeItem builds prompt_hi as 'Khaali jagah bharo: ' + the kit's ENGLISH fadedVersion line, so a Hinglish class-4 child hears an English cloze ('Line up the numbers by place and start with the ___: 0 − 4 needs a borrow.'), re-read 4 turns running in one lesson and kept after 'Hindi mein samjhao'."
+  }
+ ],
+ "edges": [
+  { "src": "open-e2e-stop-reader-gap", "rel": "measured_by", "dst": "m-e2e-stop-outage-drill-2026-10-07" },
+  { "src": "open-e2e-stop-reader-gap", "rel": "measured_by", "dst": "m-e2e-readers-devanagari-2026-10-07" },
+  { "src": "open-e2e-stop-reader-gap", "rel": "caused_by", "dst": "m-e2e-readers-devanagari-2026-10-07" },
+  { "src": "open-e2e-number-pad-no-words", "rel": "measured_by", "dst": "m-e2e-steering-browser-2026-10-07" },
+  { "src": "open-e2e-gutted-replies", "rel": "measured_by", "dst": "m-e2e-steering-browser-2026-10-07" },
+  { "src": "open-e2e-english-faded-step", "rel": "measured_by", "dst": "m-e2e-steering-browser-2026-10-07" },
+  { "src": "m-e2e-silence-browser-2026-10-07", "rel": "part_of", "dst": "m-lat-prod-baseline-2026-10-06" }
+ ]
+}

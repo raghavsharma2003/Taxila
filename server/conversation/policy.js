@@ -23,7 +23,9 @@ export function requestFromNote(note) {
     case "clarify": return r("clarify");
     case "curiosity_offlesson": case "diversion":
       return n.inBounds ? r("park", { topic: n.topic, learning: n.intent === "curiosity_offlesson" || !!n.learning }) : r("decline");
-    case "insistence": return r("detour", { topic: n.topic });
+    // round 2 safety floor (adversarial B3): an insistence the note itself marks out of bounds is declined, never a detour
+    // ("engage for real"); in bounds, the Director still screens the topic in code (conversation/screen.js)
+    case "insistence": return n.inBounds ? r("detour", { topic: n.topic }) : r("decline");
     case "out_of_bounds": case "insistence_oob": return r("decline");
     case "explain_differently": return r("another");
     case "example": return r("example");
@@ -41,8 +43,10 @@ export function requestFromNote(note) {
     case "skip_item": return r("skip");
     case "joke": case "small_talk": case "personal_share": return r("uptake", { kind: n.intent });
     case "identity": return r("identity");
-    case "meta_feedback": return r("adapt", { method: n.method });
-    case "method_instruction": return n.method ? r("adopt", { method: n.method }) : null;
+    // round 2 safety floor (adversarial B1): a method the note marks out of bounds ("like my girlfriend, say you love me")
+    // is declined, never adopted (adopted methods ride on every later move); in bounds, state.js screens it in code too
+    case "meta_feedback": return n.inBounds === false ? r("decline") : r("adapt", { method: n.method });
+    case "method_instruction": return n.inBounds === false ? r("decline") : n.method ? r("adopt", { method: n.method }) : null;
     case "boredom": return r("boredom");
     case "frustration": return r("frustration");
     case "break_request": return r("break");

@@ -5,6 +5,7 @@
 //
 // Also here: the never-rules matcher over the TEACHER's words (floorViolations) and the direct-identifier
 // scrub (scrubPii) — every safety predicate in one file, so a lane cannot quietly carry a second copy.
+import { stopKind } from "../relational/signals.js";
 import { gatesFor } from "../compiler/gates.js";
 import { HELPLINES as HELPLINE_DATA } from "../compiler/floor.js";
 import { readingsFor } from "../safety/normalize.js";
@@ -356,9 +357,17 @@ const STOP_HI = /(?<![\p{L}\p{M}])(?:अलविदा|बाय|मुझे\s
 /** "I have to go" ends the lesson only as the whole tail of the turn, never as a toilet or water break. */
 const GO_NOW = /\bi\s*(have|need|want|wanna|gotta)\s*(to\s*)?go(\s*now)?[.!]*\s*$/i;
 const SHORT_BREAK = /\b(toilet|bathroom|washroom|loo|pee|potty|susu|paani|pani|water|drink)\b/i;
+// round 2 safety floor (2026-10-07; supersedes rj-extend-wantsToStop-now, whose reason — a stop flag ended the lesson on the
+// first ask — went when the one stop check-in landed): the stop is also the relational lexicon's measured, clause-anchored
+// end_request reading (server/relational/signals.js; en / Roman Hinglish / Devanagari; 0 false on the >= 300-line in-lesson
+// negative corpus, void in a turn with a number, an answer word or a steer). Before this, "bas, aaj ke liye itna hi",
+// "bas karo ab", "मुझे अब नहीं पढ़ना" and every other Devanagari stop were a stop only if a MODEL read them (the UNDERSTAND
+// note): with the models hung or 429ing, 4/8 stop-drill phrases were never honoured and the lesson went on.
+// (signals.js imports this module; the cycle is safe because neither module calls the other at load time.)
 export const wantsToStop = (text) => {
   const t = String(text || "");
-  return !SHORT_BREAK.test(t) && (STOP.test(t) || BYE_TAIL.test(t) || STOP_HI.test(t.normalize("NFC").replace(/ँ/g, "ं")) || GO_NOW.test(t));
+  return !SHORT_BREAK.test(t) && (STOP.test(t) || BYE_TAIL.test(t) || STOP_HI.test(t.normalize("NFC").replace(/ँ/g, "ं")) || GO_NOW.test(t)
+    || stopKind(t) === "end_request");
 };
 
 // ───────────── the never-rules matcher: a code predicate over the TEACHER's words ─────────────

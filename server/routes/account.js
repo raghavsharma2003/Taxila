@@ -327,10 +327,24 @@ function safetyFirst(guardianId, childId, receipt) {
   ];
 }
 const erasureCode = () => `TX-${randomBytes(4).toString("hex").toUpperCase()}`;
+/**
+ * A transaction that lost a deadlock (40P01) or a serialization race (40001) wrote nothing: run it again, up to `tries`
+ * times. Round-2 fix (2026-10-07): DELETE /api/account sent right after a lesson ended returned 500 on 3/16 (e2e review)
+ * and 1/4 (fix-r2 battery) from a 40P01 against the lesson-end writers, so a parent's erasure failed and had to be
+ * re-sent by hand (the same backstop the Conductor writers carry, rejected.md lock-order entry). Exported for tests.
+ */
+export async function withDeadlockRetry(fn, { tries = 3, waitMs = (i) => 50 * (i + 1) * (1 + Math.random()) } = {}) {
+  for (let i = 0; ; i++) {
+    try { return await fn(); } catch (e) {
+      if (i + 1 >= tries || !["40P01", "40001"].includes(e?.code)) throw e;
+      await new Promise((r) => setTimeout(r, waitMs(i)));
+    }
+  }
+}
 /** Run an erasure transaction; a tripped safety guard → 409 { code: "erase_review" } + one content-free audit row. */
 async function erase(guardianId, stmts, what) {
   try {
-    return await tx(stmts);
+    return await withDeadlockRetry(() => tx(stmts));
   } catch (e) {
     if (e?.code !== GUARD_FAILED) throw e;
     await q("insert into audit(guardian_id, action, detail) values ($1, 'erase_deferred', $2)", [guardianId, { what }]);

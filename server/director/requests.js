@@ -29,6 +29,8 @@
 // not a request. The words a child uses for these come from the owner's session (evals/owner-truth/results/
 // 2026-10-04T18-30-08) and the owner tests (tests/prod/owner-3/4/5-*.mjs); the unit test is tests/requests.test.mjs.
 
+import { stopKind } from "../relational/signals.js";
+
 const T = (s) => String(s ?? "").toLowerCase().normalize("NFKC").replace(/[’`]/g, "'").replace(/\s+/g, " ").trim();
 /** Strip the leading politeness and fillers a child wraps a request in ("ok", "please", "didi", "ma'am"). */
 const core = (t) => t.replace(/^(?:(?:ok(?:ay)?|achha|accha|acha|hmm+|haan|ha|ji|please|plz|pls|arre|arey|yaar|didi|bhaiya|ma'?am|sir|teacher|miss|umm+|uh+|so|and|aur|but|par|lekin|nahi|no|wait|ruko)[\s,!.]+)+/i, "")
@@ -87,7 +89,9 @@ export function requestOf(text) {
   if (SHORT_BREAK.test(t) && /\b(?:jaana|jana|jau|jaun|go|break|peena|pina|drink|chahiye)\b/.test(t) && !attemptLike(t)) return { type: "break", whole };
   if (BREAK.test(t)) return { type: "break", whole };
   if (CHANGE_TOPIC.test(t)) return { type: "change_topic", whole };
-  if (STOP.test(t)) return { type: "stop", whole };
+  // round 2 safety floor: the relational lexicon's anchored end_request reading too (en / hl / Devanagari; safety.js
+  // wantsToStop reads the same), so "bas, aaj ke liye itna hi" is a stop in code with no model (stop-drill 4/8 → 8/8)
+  if (STOP.test(t) || stopKind(text) === "end_request") return { type: "stop", whole };
   if (CONTINUE.test(t)) return { type: "continue", whole };
   if (LANG_REQ.test(t)) {
     const lang = LANG.hinglish.test(t) ? "hinglish" : LANG.english.test(t) ? "english" : LANG.hindi.test(t) ? "hindi" : null;

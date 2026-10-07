@@ -244,7 +244,10 @@ export const takeBreak = () => join(
   "offer a choice: an easier one, a short stretch break, or keep going",
 );
 /** The child said a stop phrase (state.js decide; OWNER RESET #7): a shape, never a line she could recite. */
-export const stopCheck = () => "they said they want to stop: acknowledge it warmly in one short line, no guilt and no pressure; offer the three choices on the chips (keep going, a short break, or stop for today) and wait; if they asked to talk about something else, say you can do that too";
+// round 2 safety floor (2026-10-07, experience review): the "something else" clause was recited on 7/26 check-ins where the
+// child had not asked (change_topic has its own move); and a check-in that asks a lesson question is a hold (NEVER
+// MANIPULATE), so the shape says so — brain/say.js enforces it in code (checkInProblems).
+export const stopCheck = () => "they said they want to stop: acknowledge it warmly in one short line, no guilt and no pressure; offer the three choices on the chips (keep going, a short break, or stop for today) and wait; no lesson question this turn";
 /** A goodbye right after distress (RELATIONAL-OS I-7): one gentle check before they go; never a hold. */
 export const relCheckIn = () => "they are leaving after something hard: one gentle check that they are okay and that a grown-up is near; stopping is fine; the chips let them stop now";
 export const stretch = () => "a 30-second stretch: stand, stretch, say ready when back";

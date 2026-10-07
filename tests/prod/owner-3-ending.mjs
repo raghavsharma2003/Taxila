@@ -151,7 +151,10 @@ await withTestAccount(async ({ api, child: first }) => {
     const persona = PERSONAS.zoya;
     const now = new Date(Date.now() + 5.5 * 3600_000); // IST, the controls' default zone
     const hh = (h) => String((h + 24) % 24).padStart(2, "0");
-    const closed = { hoursStart: `${hh(now.getUTCHours() + 2)}:00`, hoursEnd: `${hh(now.getUTCHours() + 3)}:00` };
+    // a window that excludes now and never wraps midnight (the server refuses end <= start: from 21:00 IST "+2..+3" read
+    // 23:00-00:00 and the harness threw, 2026-10-07 fix-r2 battery)
+    const h = now.getUTCHours();
+    const closed = h + 3 <= 23 ? { hoursStart: `${hh(h + 2)}:00`, hoursEnd: `${hh(h + 3)}:00` } : { hoursStart: `${hh(h - 3)}:00`, hoursEnd: `${hh(h - 2)}:00` };
     const child = await freshChild(api, persona, closed);
     const r = await api("POST", "/api/lesson/start", { childId: child.id, mode: "text" }, [200, 201, 409]).then((x) => x, (x) => x);
     ok(r.status === 409, `parent's lesson hours (${closed.hoursStart}-${closed.hoursEnd} IST) refuse a start: ${r.status} ${r.error ?? r.body?.error ?? ""}`);

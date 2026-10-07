@@ -37,6 +37,7 @@ import { newTalk, noteChildTurn } from "./talk.js";
 import { explicitPace } from "../persona/pace.js";
 import { directorProposal } from "./proposal.js";
 import { p5Flag } from "../conversation/flags.js";
+import { unsafeChildPhrase } from "../conversation/screen.js";
 import { parkEntry, pushLater, recentParked, dueParked, serveLater } from "../conversation/policy.js";
 
 /**
@@ -770,6 +771,9 @@ function requestMove(s, input, item, req, labels) {
     case "topic": {
       const subject = String(req.subject ?? "").replace(/[^\p{L}\p{N} ]/gu, "").trim().slice(0, 30);
       if (!subject) return null;
+      // round 2 safety floor: the subject is the child's words; one that fails the code screen is declined, never taught
+      if (unsafeChildPhrase(subject)) return item ? plan(moveKindFor(item), SH.leadThenPose({ item, lead: SH.declineOob() }), { item, probe: probeFor(item), chips: optionChips(item), request: "decline" })
+        : plan("repair", SH.declineOob(), { request: "decline" });
       if (item) return plan(moveKindFor(item), SH.pose({ item, prefix: SH.topicAsked({ subject }) }), { item, probe: probeFor(item), chips: optionChips(item), request: "topic" });
       return plan("reteach", SH.topicAsked({ subject, teaching: true }), { skillId: currentSkillId(s, kit, item), request: "topic" });
     }
@@ -868,6 +872,10 @@ function p5RequestMove(s, input, item, req, labels) {
     case "decline": return withLead(SH.declineOob());
     case "answer_q": return withLead(SH.answerTheirQuestion());
     case "adapt": case "adopt":
+      // round 2 safety floor (adversarial B1): the method is the child's words as a model lifted them; it is written into
+      // her instructions (this move, and s.prefs on EVERY later move) only when it passes the code screen. A failing one
+      // is declined like an out-of-bounds ask, and never stored.
+      if (req.method && unsafeChildPhrase(req.method)) return withLead(SH.declineOob());
       if (req.method) s.prefs = [...new Set([...(s.prefs ?? []), String(req.method).slice(0, 40)])].slice(-4);
       return withLead(SH.adaptTo({ method: req.method }));
     case "adult": return withLead(SH.adultVoice());
@@ -877,11 +885,15 @@ function p5RequestMove(s, input, item, req, labels) {
     // noise and the lesson answered "aapne 7 kaha, poori baat dobara kahiye" (w1a-battery: repair moves on typed input 1+1).
     case "unclear": if (input.typed) return null; return item ? withLead(SH.unclearAgain()) : plan("repair", SH.unclearAgain(), { request: "unclear" });
     case "park": {
+      // round 2 safety floor (adversarial B3): a parked topic is promised back later ("we'll come back to X"): screened too
+      if (unsafeChildPhrase(req.topic)) return withLead(SH.declineOob());
       const e = parkEntry({ topic: req.topic, learning: req.learning, turn: s.turn, itemOnTable: !!item });
       s.later = pushLater(s.later ?? [], e);
       return withLead(SH.parkIt({ topic: e.topic, promise: e.promise }));
     }
     case "detour": {
+      // round 2 safety floor (adversarial B3): "engage for real" only on a topic that passes the code screen
+      if (unsafeChildPhrase(req.topic)) return withLead(SH.declineOob());
       const p = recentParked(s.later ?? [], s.turn, req.topic);
       // round 2 (conversation): a push again with nothing parked (the first ask got an uptake, or was parked more than
       // DETOUR_WITHIN turns ago) is still a second ask: a short real engagement now, never a second "later" (battery
@@ -894,7 +906,7 @@ function p5RequestMove(s, input, item, req, labels) {
       // a stop or a leaving read by the UNDERSTAND note alone: ONE check-in (OWNER-RESET #7); a second within two turns ends it
       if (s.stopAsked != null && s.turn - s.stopAsked <= 2) return toWrap(s, { stopping: true });
       s.stopAsked = s.turn;
-      return plan("break", SH.stopCheck(), { chips: [{ id: "stop:continue", label: labels.go }, { id: "break:rest", label: labels.rest }, { id: "stop:end", label: labels.stop }], request: "stop" });
+      return plan("break", SH.stopCheck(), { chips: [{ id: "stop:continue", label: labels.go }, { id: "break:rest", label: labels.rest }, { id: "stop:end", label: labels.stop }], request: "stop", checkin: "stop" });
     }
     default: return null;
   }
@@ -995,7 +1007,7 @@ function decide(s, input, item) {
     if (!checkIn && (cls?.relRelease || cls?.source === "relational" || stopKind(input.text) === "leaving" || cls?.request?.type === "goodbye" || (s.stopAsked != null && s.turn - s.stopAsked <= 2))) return toWrap(s, { stopping: true });
     if (s.stopAsked != null && checkIn) return toWrap(s, { stopping: true });      // the check-in was given: let them go
     s.stopAsked = s.turn;
-    return plan("break", checkIn ? SH.relCheckIn() : SH.stopCheck(), { chips: [{ id: "stop:continue", label: labels.go }, { id: "break:rest", label: labels.rest }, { id: "stop:end", label: labels.stop }] });
+    return plan("break", checkIn ? SH.relCheckIn() : SH.stopCheck(), { chips: [{ id: "stop:continue", label: labels.go }, { id: "break:rest", label: labels.rest }, { id: "stop:end", label: labels.stop }], checkin: checkIn ? "rel" : "stop" });
   }
   // 2a. owner-truth patch 07 (F8, items 4-5), reconciled with W2-I's stop gate above: the child's own request in words
   // (director/requests.js) is acted on THIS turn, never evidence; "keep going" in words is the stop:continue chip.
@@ -1202,6 +1214,9 @@ export function step(prev, input) {
   const moduleCommands = reacting ? [] : planModule(s, { kit: input.kit, item, move, lang: s.ctx.lang, band: s.probeSess?.band ?? bandOf(s.ctx.classLevel), representation: p.representation });
   // The child's request this move answers (requests.js): the brain reads it (a visual request asks Studio on any lane).
   if (p.request) move.request = p.request;
+  // round 2 safety floor: a stop check-in ("stop") or the relational goodbye check-in ("rel") — brain/say.js guards its
+  // words as an offer to stop, never as a teaching turn that "goes on" (adversarial B2)
+  if (p.checkin) move.checkin = p.checkin;
   // round 2 (conversation): the request's own note, for the lead slot's last instruction (brain/say.js)
   if (p.lead && p5Flag("STEER")) move.lead = String(p.lead).slice(0, 400);
   if (p.visual) {

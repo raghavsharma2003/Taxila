@@ -104,6 +104,17 @@ export function supports(form, text, allowedNums, negForms = null, prompt = "") 
     const f = sideOf(fw, g), t = sideOf(tw, g);
     if (f.a !== f.b && ((f.a && t.b && !t.a) || (f.b && t.a && !t.b))) return { ok: false, keyLike: false, why: "opposite_word", cover: 0 };
   }
+  // round 2 integrated-tree fix (adversarial N1b/N1c, 2026-10-07): the opposite word is judged against EVERY complete form,
+  // not this one alone — "yes they are equal, 3/4" took the other side of the sibling form "no" and still matched
+  // "3/4 is bigger"; "right, 4/9 > 3/4" took the other side of "wrong". A side the forms take (and never its opposite) that
+  // the reply contradicts is a contradiction of the answer, whichever form carries the number.
+  // It decides the CREDIT only (keyLike / subset, the false-fail direction, are unchanged: paired replay below).
+  const crossOpposite = !!negForms && SIDES.some((g) => {
+    const taken = negForms.map((x) => sideOf(new Set(words(x)), g)).filter((x) => x.a !== x.b);
+    if (!taken.length || !(taken.every((x) => x.a) || taken.every((x) => x.b))) return false;
+    const t = sideOf(tw, g);
+    return (taken[0].a && t.b && !t.a) || (taken[0].b && t.a && !t.b);
+  });
   const fc = content(form), tc = content(text);
   // a negator in the reply next to the words of ANY complete form, when that form has none: "not X", "X nahi" (checked
   // over all forms, so "Largest: Jupiter. Smallest: Mercury. nahi" is negated for the shorter forms too)
@@ -125,9 +136,20 @@ export function supports(form, text, allowedNums, negForms = null, prompt = "") 
   const present = distinctF.every((v) => has(carried, v)) || (distinctR.length > 0 && distinctR.every((v) => has(carried, v)));
   const numsOk = present && (inOrder(distinctF, carried) || inOrder(distinctR, carried));
   const cover = fc.size ? [...fc].filter((w) => tc.has(w)).length / fc.size : 1;
+  // round 2 integrated-tree fix (adversarial N1a/N1c/N1d): a form with numbers is carried by its numbers only when the reply
+  // brings no OTHER number beyond the question's ("1/3, 1/4, 3/4" lists the key's numbers, not "3/4 is bigger"; a longer form that has
+  // them all, in order, still carries it), and when the side the form takes ("bigger", "no", "wrong") is in the reply or the
+  // question asks it ("3/4" answers "which is bigger?", not "are they equal?" nor "Ali says 4/9 > 3/4. Check.")
+  // (a number the QUESTION states may come along: "3/4 is bigger than 4/9" for "Ali says 4/9 > 3/4")
+  const promptN = [...(nums(prompt) ?? []), ...rawNums(prompt)];
+  const extraNum = fnv.length > 0 && tn.some((v) => !has(fnv, v) && !has(rawF, v) && !has(promptN, v));
+  const missingSide = fnv.length > 0 && SIDES.some((g) => {
+    const f = sideOf(fw, g), t = sideOf(tw, g), q = sideOf(promptW, g);
+    return f.a !== f.b && !t.a && !t.b && !(f.a ? q.a : q.b);
+  });
   // a form with numbers is carried by its numbers (all, in order, nothing foreign, no contradiction); a form of words only
   // by more than half of its content words
-  const ok = numsOk && !missingDecisive && (fnv.length > 0 || (fc.size > 0 && cover >= CORROBORATE.minCover) || (fc.size === 0 && fw.size > 0 && [...fw].every((w) => tw.has(w))));
+  const ok = numsOk && !missingDecisive && !extraNum && !missingSide && !crossOpposite && (fnv.length > 0 || (fc.size > 0 && cover >= CORROBORATE.minCover) || (fc.size === 0 && fw.size > 0 && [...fw].every((w) => tw.has(w))));
   const keyLike = numsOk && cover >= CORROBORATE.keyLikeCover && (fnv.length > 0 || fc.size > 0);
   // the reply is (almost) all words of this form, numbers included and in order, nothing foreign or contradicting: it may
   // be a PART of a multi-part answer ("switch off fans" for "Any four: switch off lights and fans …") — a fail of it
@@ -136,7 +158,7 @@ export function supports(form, text, allowedNums, negForms = null, prompt = "") 
   const precision = tc.size ? [...tc].filter((w) => fc.has(w)).length / tc.size : 0;
   const subset = tn2 && ((tc.size > 0 && precision >= CORROBORATE.keyLikeCover) || (tc.size === 0 && tn.length > 0))
     && (inOrder(tn.filter((v) => has(fnv, v)), fnv) || tn.length <= 1);
-  return { ok, keyLike, subset, why: ok ? null : !present ? "missing_number" : !numsOk ? "number_order" : missingDecisive ? "missing_decisive" : "low_cover", cover };
+  return { ok, keyLike, subset, why: ok ? null : !present ? "missing_number" : !numsOk ? "number_order" : missingDecisive ? "missing_decisive" : crossOpposite ? "opposite_word" : extraNum ? "extra_number" : missingSide ? "missing_side" : "low_cover", cover };
 }
 
 /**
