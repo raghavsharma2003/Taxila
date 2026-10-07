@@ -156,7 +156,7 @@ export function ktEvidenceStmt(child, ev) {
   [ev.id, c.id, ev.sessionId, ev.sessionStartAt ?? ev.at, ev.episodeId, ev.at ?? ev.sessionStartAt, ev.skillIds, ev.teach ? "teach" : ev.cls, ev.teach ? -1 : ev.outcome,
     ev.grader ?? "code", ev.graderVersion ?? "v0", ev.itemKey ?? "", !!ev.teach, ev.assisted ?? null, !!ev.controllerEasy, !!ev.gamingWindowKt,
     !!ev.preAttemptHelp, ev.form ?? null, ev.target ?? null, ev.topicType ?? null, ev.misconceptionId ?? null, ev.discriminates ?? null,
-    ev.misRoute ?? null, ev.entryRung ?? 0, !!ev.contaminated, ev.kitVerified ?? null, ev.paramsVersion ?? "kt-launch-2026-10-02", legalModeOf(c),
+    ev.misRoute ?? null, ev.entryRung ?? 0, !!ev.contaminated, ev.kitVerified ?? null, ev.paramsVersion ?? "kt-r2-2026-10-07", legalModeOf(c),
     // CE contract fields (007_comprehension.sql): the facet fold reads them on replay, so they are the log too.
     ev.via ?? null, ev.ebo ?? null, ev.shapeId ?? null, ev.weaveHost ?? null, !!ev.coincident, !!ev.unfamiliarContext, !!ev.deferenceDiscount,
     typeof ev.spanOk === "boolean" ? ev.spanOk : null]);

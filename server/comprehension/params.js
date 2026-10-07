@@ -3,7 +3,7 @@
 // under both STUDENT-SIM truth families and recalibrated on pilot delayed items (CE-M6), never fitted to
 // simulator output (SIM6).
 
-export const COMP_PARAMS_VERSION = "comp-launch-2026-10-02";
+export const COMP_PARAMS_VERSION = "comp-r2-2026-10-07";
 
 /** Facet priors and the per-(skill, facet, session) log-evidence cap (±log 20; K keeps ±log 50). */
 export const FACET = Object.freeze({ U0: 0.2, T0: 0.2, CAP: Math.log(20), TAU: 0.10, TEACH_CAP: 0.10 });

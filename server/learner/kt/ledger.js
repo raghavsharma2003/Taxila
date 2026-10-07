@@ -23,7 +23,8 @@ import { addObs, currentTheta, defaultItemMeta, initialBase, newEpoch, openEpoch
 import { priorFromTheta } from "./priors.js";
 import { misconceptionEffects, misLogLR, newMisconception, spendMis, updateMisconception } from "./misconception.js";
 
-export const PARAMS_VERSION = "kt-launch-2026-10-02";
+// round 2 (2026-10-07): reteach ladder + fresh re-check items and corroborate rules change how evidence folds.
+export const PARAMS_VERSION = "kt-r2-2026-10-07";
 export const LEARNED_P = 0.95;
 export const DELAY_MS = 20 * 3600_000;
 /**
