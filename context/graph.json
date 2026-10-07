@@ -14568,6 +14568,13 @@
    "title": "Owner 2026-10-06: 'Arjun face idc, just finish the other features; cosmetic changes are not important right now.' The Arjun 2D face stream was dropped from round 2 (restarted with 5 streams: latency, truth, conversation, content, duplex-real). Cosmetic work waits until the features meet their bars. Reverse if: the owner asks for a cosmetic item.",
    "at": "2026-10-06",
    "source": "inbox/owner-no-cosmetics.json"
+  },
+  {
+   "id": "ms-test-cred-shared-with-prod-2026-10-07",
+   "kind": "measurement",
+   "title": "2026-10-07: the Neon TEST branch role (taxila_owner) had the SAME password as production main (compared by sha256 prefix, never printed): Neon child branches inherit the parent's role passwords. So the test URL a round-1 builder printed into a scratch log and session output also exposed the production password (sandbox-only; not public). The test branch password was rotated by owner approval (ALTER ROLE over the Neon HTTPS driver; new works, old rejected, prod unaffected; .env.local updated, nothing printed). Production rotation is pending owner approval because it needs a coordinated update of DATABASE_URL on taxila-web, taxila-worker and the conductor jobs. Note: direct TCP to Neon (pg on 5432) times out from this sandbox; the HTTPS driver works.",
+   "at": "2026-10-07",
+   "source": "inbox/test-cred-rotation.json"
   }
  ],
  "edges": [

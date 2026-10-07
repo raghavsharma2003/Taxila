@@ -1,0 +1,115 @@
+{
+ "stream": "conversation",
+ "at": "2026-10-07",
+ "source": "docs/design/round2/conversation/",
+ "nodes": [
+  {
+   "id": "d-conv-lead-slot",
+   "kind": "decision",
+   "at": "2026-10-07",
+   "title": "Lead slot: on a turn with a pinned card question that answers a child's request or re-poses the question, the reply model writes ONLY what comes before the question (one-job, last-positioned note); code strips its questions, refuses a lead under 4 words, a lead that names the item's key (even a key the question names: odd/even), or a lead that drops/defers the question, and appends the card question byte for byte; every truth guard runs on the joined turn. Same deployment, same single call on the common path. Rationale: the battery's commonest failure was one generation doing two jobs (respond + re-pose verbatim) and dropping the first (Bridge NAACL 2024: decision given -> +76% preferred; Laban et al. 2025: -39% multi-turn). Kill switch TAXILA_P5_LEADSLOT=off. Reverse if: the judges' or the owner's ear find joined turns stitched/incoherent, or leaks/answer-gives rise on the battery (measure ask_for_answer and every 'reveals' check)."
+  },
+  {
+   "id": "d-conv-prefs-every-move",
+   "kind": "decision",
+   "at": "2026-10-07",
+   "title": "How the child asked to be taught (s.prefs, last two) rides on every later move and is rendered droppable in MOVE; a child who ASKED for Hindi gets 'everyday words in Hindi, English only for a maths/science term'. Rationale: s.prefs was written by state.js and never read (a method request lasted one turn); preference slots are forgotten over turns unless code re-sends them. Reverse if: the prefs line is recited, or owner-4 Hindi/method checks regress."
+  },
+  {
+   "id": "d-conv-unclear-reading",
+   "kind": "decision",
+   "at": "2026-10-07",
+   "title": "A broken-off line (a stuttered function word or a filler, >= 1 content word, ending on a word that cannot end a thought; 3-9 words, no '?') and the note's 'noise' become request 'unclear': no verdict, a no-blame 'say it again or finish it' (never 'slowly': rj-ot-shape-slowly-recited). Reduplication and article-drill answers excluded; the kit-answer scan stays <= 40/44,103. Reverse if: a real answer is read as unclear on any kit scan or owner run."
+  },
+  {
+   "id": "d-conv-fallback-lead",
+   "kind": "decision",
+   "at": "2026-10-07",
+   "title": "fallbackReply with a card question (429 / timeout / every repair failed) is no longer the bare question: a fixed code lead chosen by the move's request (identity -> 'AI teacher' so the floor holds with every model down; unclear -> say it again; help requests and re-poses -> the kit hint's statements when safe, else a generic lead; first pose with no request -> the question alone as before). Reverse if: a fixed lead is judged confusing or repeats across turns."
+  },
+  {
+   "id": "m-conv-battery-2026-10-07-runA",
+   "kind": "measurement",
+   "at": "2026-10-07",
+   "title": "Conversation-v2 battery, same harness/judges (J1 gpt-6-sol, J2 mistral-m35), local servers on Neon TEST, HEAD 617df2b vs HEAD+patches 01,02,04,05 (floor/leak-skip in; key refusal and drop guard NOT in), both arms run at the same time, concurrency 2, 0 reply-model 429s, n=355 cases (10 distress offline): strict 199/355 (56.1%) -> 212/355 (59.7%) (paired: 34 lost / 47 gained, McNemar 1.78, n.s.); J1 65.6% -> 73.0% (28/54, McNemar 7.62, p<0.01); lenient 71.5% -> 77.7% (24/46, p~0.01). Families strict after: A 59.4 B 54.3 C 62.8 D 59.7 E 65.6 F 64.7 G 40.9. Code metrics (evals/conversation-r2/codemetrics.mjs): bare card-question replies to a child's case line 18/365 -> 6/365; J>=0.8 repeats 21/1108 -> 9/1110. Raw: docs/design/round2/conversation/battery/."
+  },
+  {
+   "id": "m-conv-heldout-2026-10-07",
+   "kind": "measurement",
+   "at": "2026-10-07",
+   "title": "Held-out battery (evals/conversation-r2/heldout-cases.mjs, 78 new utterances weighted to the weakest families, written by the same agent after the code but before any run; no code change after seeing a held-out result except the key-refusal and drop guards, which came from the MAIN battery), same harness and judges, same servers/time as runA: strict 27/77 (35.1%) -> 44/77 (57.1%) (paired 6 lost / 23 gained, McNemar 8.83, p~0.003); J1 53.2% -> 70.1%."
+  },
+  {
+   "id": "m-conv-owner-local-2026-10-07",
+   "kind": "measurement",
+   "at": "2026-10-07",
+   "title": "Owner scripts on local servers (Neon TEST), same time, n=1 run each: owner-2 seed 157001 (90 turns) HEAD 9 defects on 7 turns (R3 x5, R7 x2, R4, R6) -> patched 7 on 7 (R3 x4, R6 x2, R2 x1); owner-4 steering 14/16 (S.hindi x2) -> 15/16 (S.example x1); p5-interaction-acceptance 41/42 (3/37 card-question-only) -> 42/42. Checker fix: owner-4 childSlow matched 'main dheere bolungi'."
+  },
+  {
+   "id": "m-conv-429-storm-2026-10-07",
+   "kind": "measurement",
+   "at": "2026-10-07",
+   "title": "A first battery attempt at concurrency 4 per arm plus owner scripts in parallel (and other agents on the same quota) hit taxila-fast 429 on ~90% of reply calls (967 'reply unavailable' in one arm's ~1070 turns); the reply lane has no failover deployment in code, so every such turn shipped a fixed fallback line. Those runs were discarded. Under that storm the owner-2 arm with the fallback lead had R3 bare x5 vs x14 without it (n=90 each, not a controlled comparison)."
+  },
+  {
+   "id": "rj-conv-fixed-lead-without-key-check",
+   "kind": "rejection",
+   "at": "2026-10-07",
+   "title": "Tried: the lead slot with only the joined-turn leak guard as the truth check. Broke: ask_for_answer-05 shipped '36 even hai, kyunki ... 36 odd hai ya even?' — revealsAnswer cannot see a key the question itself names, and a lead written before the question gave it. Instead: any mention of the item's key/acceptable in the lead refuses the slot (falls through to the HEAD one-call path) and the note says 'never its answer'."
+  },
+  {
+   "id": "rj-conv-lead-drops-question",
+   "kind": "rejection",
+   "at": "2026-10-07",
+   "title": "Tried: accepting any >= 4-word lead. Broke: 'Isse abhi chhod dete hain ... <the same question>?' and 'let's stop here ... Why ...?' — a lead that agrees to drop or defer the question contradicts the question code appends after it (a confusing reply by construction). Instead: such leads are refused (compose.js leadDropsQuestion)."
+  },
+  {
+   "id": "rj-conv-lead-repair-after-floor",
+   "kind": "rejection",
+   "at": "2026-10-07",
+   "title": "Tried: the last-resort lead-only repair on any turn still bare after the other repairs. Broke: tests/lesson-safety 'ai_denial draft' — after a floor catch replaced the turn, the lead repair made one more model call on the same words (rejected, but it called). Instead: never after a floor or leak catch (a truth repair stands)."
+  }
+ ],
+ "edges": [
+  {
+   "src": "d-conv-lead-slot",
+   "rel": "measured_by",
+   "dst": "m-conv-battery-2026-10-07-runA"
+  },
+  {
+   "src": "d-conv-lead-slot",
+   "rel": "measured_by",
+   "dst": "m-conv-heldout-2026-10-07"
+  },
+  {
+   "src": "rj-conv-fixed-lead-without-key-check",
+   "rel": "constrains",
+   "dst": "d-conv-lead-slot"
+  },
+  {
+   "src": "rj-conv-lead-drops-question",
+   "rel": "constrains",
+   "dst": "d-conv-lead-slot"
+  },
+  {
+   "src": "rj-conv-lead-repair-after-floor",
+   "rel": "constrains",
+   "dst": "d-conv-lead-slot"
+  },
+  {
+   "src": "d-conv-prefs-every-move",
+   "rel": "measured_by",
+   "dst": "m-conv-owner-local-2026-10-07"
+  },
+  {
+   "src": "d-conv-unclear-reading",
+   "rel": "measured_by",
+   "dst": "m-conv-battery-2026-10-07-runA"
+  },
+  {
+   "src": "d-conv-fallback-lead",
+   "rel": "measured_by",
+   "dst": "m-conv-429-storm-2026-10-07"
+  }
+ ]
+}
