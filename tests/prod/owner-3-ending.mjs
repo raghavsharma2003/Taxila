@@ -20,7 +20,9 @@
 import { arg, withTestAccount, ok, warn, done, BASE, SEED, pick, PERSONAS, GREET, freshChild, openLesson, openingOf, ordinaryTurn, floorViolations, RX, compact, save, norm } from "./_owner.mjs";
 
 // The owner's phrases verbatim, plus the common Hinglish / English forms children use.
-const STOP_PHRASES = ["lesson khatam", "end the lesson", "I'm done", "bas", "lesson is over", "ab band karo", "mujhe lesson khatam karna hai", "I want to stop"];
+const STOP_PHRASES = ["lesson khatam", "end the lesson", "I'm done", "bas", "lesson is over", "ab band karo", "mujhe lesson khatam karna hai", "I want to stop",
+  // round 2 (2026-10-07): the phrase the experience review reproduced being ignored on prod, and a Devanagari form
+  "bas, aaj ke liye itna hi", "अब बस करते हैं"];
 const AFTER = ["confirm", "continue", "break"];
 const GOODBYE = ["bye! mujhe jaana hai", "ok bye, I have to go now"];
 const lanes = arg("lanes", "both");
