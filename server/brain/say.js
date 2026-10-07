@@ -15,6 +15,8 @@ import { mixedUnitComparison, withoutMixedUnits } from "../director/units.js";
 import { screenContradiction, stripStrayParts } from "../director/modules.js";
 import { isBare, repeatsEarlier, tidy, leadWithoutQuestion, sentences } from "../conversation/guards.js";
 import { p5Flag } from "../conversation/flags.js";
+import { leadSlotWanted, leadSlotNote, cleanLead, leadOk, composeTurn, LEAD_MAX_WORDS } from "../conversation/compose.js";
+import { fallbackLead } from "../conversation/fallback-lead.js";
 
 /** p5-interaction: problems a gutted teaching turn's one retry may still carry, because code repairs them (never truth). */
 const SOFT_FIX = new Set(["long", "twoq", "wrap", "script", "register", "stage", "cantshow"]);
@@ -123,7 +125,17 @@ export function fallbackReply(state, item) {
   if (state.lastMove?.kind === "safeguard") return safeguardLine(state.ctx, { kind: state.safeguard?.kind ?? null });
   const lang = state.ctx.lang;
   const kind = state.lastMove?.kind;
-  if (item && !CLOSING_MOVES.has(kind)) return promptFor(item, lang);
+  if (item && !CLOSING_MOVES.has(kind)) {
+    const q = promptFor(item, lang);
+    // round 2 (conversation): a model outage (429 / timeout / every repair failed) on a turn that answers a request or puts
+    // the question again is no longer a bare re-ask: a fixed code lead for what the move is doing, then the question
+    // (conversation/fallback-lead.js; owner-2 prod R3 x4 + R2). Same kill switch as the lead slot.
+    if (!p5Flag("LEADSLOT")) return q;
+    const lead = fallbackLead({ request: state.lastMove?.request ?? null, hint: hintStatements(item, state.lastMove?.hintLevel),
+      rePose: state.pinItem === item.id && (state.pinRun ?? 0) > 1, lang });
+    if (!lead) return q;
+    return composeTurn(state.ctx.address === "aap" && lang !== "english" ? toAap(lead) : lead, q);
+  }
   const lines = FALLBACK[lang === "english" ? "english" : "hinglish"];
   const line = lines[kind] ?? lines.other;
   // The fixed lines are written in tum forms; an "aap" child hears them in aap forms (G-REG-1).
@@ -208,6 +220,11 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
   // a re-pose ends on the card's form of it (UiDirectives.ask.text, ≤ 120 characters: the question sentence itself)
   const rePose = !!item && state.pinItem === item.id && (state.pinRun ?? 0) > 1;
   const askEnd = item ? (G && pinned && rePose ? pinned : promptFor(item, lang)) : null;
+  // round 2 (conversation): a lead-slot turn's length is its OWN words (the card question after them is verified content,
+  // like a diagnostic's options): within the lead budget it is not "long"
+  const slotState = { on: false };
+  const slotLength = (t) => slotState.on && !!askEnd && String(t).trim().endsWith(String(askEnd).trim())
+    && words(String(t).trim().slice(0, String(t).trim().length - String(askEnd).trim().length)) <= (LEAD_MAX_WORDS[state.ctx.ageBand] ?? 30);
   // G-PRAISE-2: after a right answer the acknowledgement never states a wrong option as the result (say.js correctsRight).
   const right = verdict === "correct" && state.lastRight?.wrong?.length ? { ...state.lastRight, nextPrompt: item ? promptFor(item, lang) : ahead ? promptFor(ahead, lang) : "" } : null;
   const problems = (t) => [
@@ -229,7 +246,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     whyProbe && !asksWhy(t) && "nowhy",
     mustHandBack && !handsBack(t) && "flat",
     !scriptOk(t, lang) && "script",
-    words(t) > max && "long",
+    words(t) > max && !slotLength(t) && "long",
     pinned && !parityOf(t).endsOnAsk && "ask",
     mustHandBack && parityOf(t).questions > 1 && "twoq",
     wrapping && wrapsUp(t) && "wrap",
@@ -263,18 +280,33 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
   // Replies take ~1-2 s (measured in evals/director-sim.mjs); a stuck call is cut at 6 s and retried once.
   const ask = (msgs) => replyDeps.chat(DEPLOY.reply, msgs, { maxTokens: 220, effort: "none", timeoutMs: 6000, trace }).then((r) => r.text.trim());
   let reply;
+  const guardSlot = {};
   // The content filter blocking the reply call (the child's words are in it) is a safety signal, not an
   // outage: the caller fails CLOSED to the safeguarding protocol (turn(): `filtered`).
   const blocked = () => ({ reply: fallbackReply(state, item), filtered: true, guard: { caught: ["content_filter"], rewritten: false, replaced: true } });
+  // round 2 (conversation): the LEAD SLOT. A turn that answers a request before the card question, or puts the same
+  // question again, is written as two parts: the model writes only what comes before the question, code adds the question
+  // byte for byte (conversation/compose.js). A lead that comes back unusable falls through to the one-call path.
+  const slot = G && p5Flag("LEADSLOT") && !!item && leadSlotWanted({ request: state.lastMove?.request ?? null, rePose, pinned, diagnostic: !!item?.diagnostic,
+    whyProbe, closing: CLOSING_MOVES.has(kindNow) });
+  const leadMax = LEAD_MAX_WORDS[state.ctx.ageBand] ?? 30;
+  const leadCall = async (why = null, draft = null) => {
+    const extra = [...(draft ? [{ role: "assistant", content: draft }] : []), { role: "system", content: leadSlotNote({ lead: state.lastMove?.lead ?? null, why, ageBand: state.ctx.ageBand }) }];
+    const raw = await ask([...messages, ...extra]);
+    const lead = cleanLead(raw, askEnd, leadMax);
+    return leadOk(lead, [item?.answer, ...(item?.acceptable ?? [])]) ? composeTurn(lead, askEnd) : null;
+  };
   try {
-    reply = await ask(messages);
+    reply = slot ? (await leadCall()) : null;
+    if (reply) { guardSlot.used = true; slotState.on = true; }
+    reply ??= await ask(messages);
   } catch (e) {
     if (isContentFilter(e)) { console.warn("[lesson] reply blocked by the content filter"); return blocked(); }
     console.warn("[lesson] reply unavailable, falling back:", e.message);
     return { reply: fallbackReply(state, item), guard: { caught: ["unavailable"], rewritten: false, replaced: true } };
   }
   let found = problems(reply);
-  const guard = { caught: found, rewritten: false, replaced: false, ...(found.length ? { firstDraft: reply } : {}) };
+  const guard = { caught: found, rewritten: false, replaced: false, ...(found.length ? { firstDraft: reply } : {}), ...(guardSlot.used ? { leadSlot: true } : {}) };
   // Drift (a posing turn that asked some other question) is repaired without a model call when it is the
   // only problem besides the hand-back the posed question supplies: what the draft said BEFORE its first
   // question (the acknowledgement), then the verified question itself — what the rewrite produced in 9/9
@@ -420,6 +452,25 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       // ship5 integration: statements only, so the repaired turn still asks ONE question (a kit hint can itself ask one)
       const h = hintStatements(item, state.lastMove?.hintLevel);
       if (h) { reply = joinAsk(h, askEnd); guard.repaired = true; }
+    }
+    // round 2 (conversation): a turn still only the question, or a line she already said, after every repair above: one
+    // lead-slot call (the model writes only the response to what they said; code adds the question). Used only when the
+    // joined turn has no problem the old one did not have; never after a floor or leak catch (a truth repair stands).
+    if (p5Flag("LEADSLOT") && item && pinned && !whyProbe && !item.diagnostic && !CLOSING_MOVES.has(kindNow) && !guard.caught.some((c) => c === "floor" || c === "leak")) {
+      const left = problems(reply);
+      if (left.includes("bare") || left.includes("same")) {
+        try {
+          const why = left.includes("bare") ? "your last try was only the question: first respond to what they just said (or give the nudge or the step) in your own words"
+            : "your last try repeated what you said earlier: say something new (a different nudge, example or way in)";
+          const again = await leadCall(why, guard.firstDraft ?? reply);
+          if (again) {
+            const was = new Set(left), prevOn = slotState.on;
+            slotState.on = true;
+            const now = problems(again);
+            if (!now.includes("bare") && !now.includes("same") && now.every((p) => was.has(p))) { reply = again; guard.leadRepair = true; } else slotState.on = prevOn;
+          }
+        } catch (e) { if (isContentFilter(e)) return blocked(); }
+      }
     }
     // the cut marks the repairs leave (an orphan quote, an empty fragment) and a lead sentence that re-poses the question
     const tidied = tidyAround(reply, pinned ? askEnd : null);

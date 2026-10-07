@@ -22,8 +22,12 @@ import { routes as studio } from "./routes/studio.js";
 import { routes as face } from "./face-puppet/config.js";
 // ship5 p1-duplex: the hands-free duplex kill switch (GET /api/duplex/config). One-line seam; the route lives in server/duplex.
 import { duplexConfigRoutes as duplex } from "./duplex/config.js";
+// duplex-real (round 2): the duplex engine's content-blind shadow summaries (POST /api/duplex/shadow → one stdout line).
+import { duplexShadowRoutes as duplexShadow } from "./duplex/shadowLog.js";
 // ship5 p3-voicesig: the client kill switch and the status page's per-state table (GET /api/voicesig/config|status).
 import { routes as voicesig } from "./voicesig/routes.js";
+// Round 2 latency: POST /api/lesson/turn-prefetch (the device's stable partial starts the turn's perceive stage). One line.
+import { routes as latency } from "./latency/routes.js";
 
-register({ ...lesson, ...tts, ...parent, ...modules, ...voice, ...tutor, ...forge, ...child, ...testClock, ...studio, ...voicesig, ...duplex, ...face, ...lane });
+register({ ...lesson, ...tts, ...parent, ...modules, ...voice, ...tutor, ...forge, ...child, ...testClock, ...studio, ...voicesig, ...duplex, ...duplexShadow, ...face, ...latency, ...lane });
 export { handle, register };

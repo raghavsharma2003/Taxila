@@ -188,6 +188,8 @@ function moveParts(move, voiced, rel) {
       // compile threw a BudgetError → POST /api/lesson/turn 500 on a live turn (w2c-personalisation, w1c-three-day). The
       // move's own shape is what the turn must do; the rapport note is the one part that can go.
       ...(shape ? [{ text: `- relational note (a note, not words to say): ${shape}`, drop: 10 }] : []),
+      // round 2 (conversation): how they asked to be taught, kept on every turn (droppable like the rapport note)
+      ...(move.prefs?.length ? [{ text: `- how they asked you to teach (keep doing it): ${move.prefs.map((x) => String(x).replace(/[^\p{L}\p{N} ,'-]/gu, " ").trim().slice(0, 40)).join("; ")}`, drop: 9 }] : []),
     ];
 }
 
@@ -198,9 +200,12 @@ const LANGUAGE = {
 };
 /** The child ASKED for this language (director/requests.js, OWNER TEST item 4, F12): it holds whatever they reply in. */
 const PINNED = { hinglish: "Hinglish", hindi: "simple Hindi", english: "simple English" };
+// round 2 (conversation; owner-4 2026-10-06 "Hindi mein samjhao": the next turn read as English, "equal parts", "total",
+// "one-third"): a child who ASKED for Hindi gets Hindi words for everyday things; English stays only for a maths or science term
+const PINNED_MORE = { hindi: " Everyday words in Hindi (barabar, hissa, kul, kitne); English only for a maths or science term." };
 function languageRule(language, ageBand, pinned = false) {
   const words = ageBand === "6-9" ? " Short everyday words a 7-year-old knows." : "";
-  const rule = pinned && PINNED[language] ? `they asked for ${PINNED[language]}: every turn in ${PINNED[language]} (Roman script when written), even when they reply in another language.` : LANGUAGE[language] ?? LANGUAGE.hinglish;
+  const rule = pinned && PINNED[language] ? `they asked for ${PINNED[language]}: every turn in ${PINNED[language]} (Roman script when written), even when they reply in another language.${PINNED_MORE[language] ?? ""}` : LANGUAGE[language] ?? LANGUAGE.hinglish;
   return `LANGUAGE: ${rule} Maths and science words in English, with the Hindi word beside a new one.${words} Plain speech only: no markdown, no emoji, no symbols like ÷ or =.`;
 }
 

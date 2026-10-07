@@ -27,7 +27,7 @@ export const ENGINES = {
   "number-line@1": { subjects: ["maths"], modes: ["place", "read", "jump"] },
   "collections@1": { subjects: ["maths"], modes: ["count", "make", "compare"] },
   "place-value@1": { subjects: ["maths"], modes: ["build", "read", "compare"] },
-  "fractions@1": { subjects: ["maths"], modes: ["make", "compare", "equivalent", "add"] },
+  "fractions@1": { subjects: ["maths"], modes: ["make", "compare", "equivalent", "add", "name", "of"] },
   "multiply-divide@1": { subjects: ["maths"], modes: ["array", "share", "factors"] },
   "geoboard@1": { subjects: ["maths"], modes: ["build", "measure", "contrast"] },
   "data-graphs@1": { subjects: ["maths"], modes: ["build", "read"] },
@@ -206,6 +206,34 @@ function sequenceIn(p) {
   return null;
 }
 
+
+// round 2 content (w1b-mounts: 3 of 3 maths fraction lessons posed an item no engine could bind): fraction words and a
+// fraction read off a key written in words ("One quarter, 1/4"), for the name / of adapters only
+const FRAC_WORDS = { half: [1, 2], "a half": [1, 2], "one half": [1, 2], "a third": [1, 3], "one third": [1, 3], "a quarter": [1, 4], "one quarter": [1, 4],
+  "one fourth": [1, 4], "a fourth": [1, 4], "one fifth": [1, 5], "a fifth": [1, 5], "one sixth": [1, 6], "one eighth": [1, 8], "two thirds": [2, 3],
+  "three quarters": [3, 4], "three fourths": [3, 4] };
+const FRAC_WORD_RX = new RegExp(`\\b(${Object.keys(FRAC_WORDS).sort((a, b) => b.length - a.length).map((w) => w.replace(" ", "[\\s-]+")).join("|")})\\b`, "i");
+const fracWord = (t) => { const m = String(t).match(FRAC_WORD_RX); return m ? FRAC_WORDS[m[1].toLowerCase().replace(/[\s-]+/g, " ")] ?? null : null; };
+const SMALL = { one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10, eleven: 11, twelve: 12 };
+const smallNum = (w) => (/^\d+$/.test(w) ? Number(w) : SMALL[String(w).toLowerCase()] ?? null);
+/** The ONE fraction a key states ("1/4", "One quarter, 1/4", "3/4 of a roti"), or null when it states another number too. */
+function keyFraction(a) {
+  const s = String(a ?? "");
+  const fr = fracsIn(s);
+  const others = numsIn(s).filter((x) => !fr.some(([n, d]) => n === x || d === x));
+  if (fr.length === 1 && !others.length) return fr[0];
+  if (!fr.length && !numsIn(s).length) return fracWord(s);
+  return null;
+}
+/** The ONE whole number a key states ("5", "5 marbles", "3 drumsticks"), or null. */
+function keyWhole(a) {
+  if (fracsIn(String(a ?? "")).length) return null;
+  const ns = numsIn(String(a ?? ""));
+  return ns.length === 1 && Number.isInteger(ns[0]) && ns[0] >= 0 ? ns[0] : null;
+}
+const OF_RX = new RegExp(`(?:\\b(\\d+)\\s*/\\s*(\\d+)|\\b(${Object.keys(FRAC_WORDS).sort((a, b) => b.length - a.length).map((w) => w.replace(" ", "[\\s-]+")).join("|")}))\\s+of\\s+(?:the\\s+|these\\s+)?(\\d+)\\b(?!\\s*/)`, "i");
+const PART = "(?:parts?|pieces?|squares?|sections?|slices?|strips?|columns?|rows?|bits?)";
+
 /** Each adapter returns { params, key?, bindItem, why } — key is the engine-truth answer the params imply. */
 const ADAPT = {
   "fraction-bars@1": (p, ans) => {
@@ -223,9 +251,38 @@ const ADAPT = {
     }
     return null;
   },
-  "fractions@1": (p, ans, rep) => {
+  "fractions@1": (p, ans, rep, _preset, actx) => {
     const fr = fracsIn(p);
+    const raw = actx?.rawAnswer ?? (Array.isArray(ans) ? `${ans[0]}/${ans[1]}` : ans);
     const model = /circle|pizza|roti|chapati|cake|pie/i.test(`${p} ${rep ?? ""}`) ? { model: "circle" } : {};
+    // name (round 2 content): "A roti is cut into 4 equal pieces. What fraction is one piece?", "a square paper folded into
+    // 4 equal parts with 3 parts coloured. Say the coloured part as a fraction" → shade N of D on a fixed shape; the child
+    // builds the fraction. Bound only when the key states exactly that fraction (an equal value counts) and nothing else.
+    const cut = p.match(new RegExp(`\\b(?:cut|divided|split|folded|broken|made)\\b[^.?!]{0,24}?\\binto\\s+(\\d+|${Object.keys(SMALL).join("|")})\\s+equal\\s+${PART}`, "i"));
+    if (cut && !fr.length && /\b(what fraction|what do we call|fractional unit|as a fraction|what part of)\b/i.test(p)) {
+      const d = smallNum(cut[1]);
+      const tail = p.slice(cut.index + cut[0].length);
+      const many = tail.match(new RegExp(`\\b(\\d+|${Object.keys(SMALL).join("|")})\\s+(?:of (?:the|them|these)\\s+)?${PART}?\\s*(?:are|is|were|was|get|got)?\\s*(?:coloured|colored|shaded|painted|eaten|taken|used|blue|red|green|yellow|filled)\\b`, "i"));
+      const one = /\b(?:one|each|1)\s+(?:piece|part|square|section|slice|strip|bit)\b/i.test(tail) || /fractional unit/i.test(p);
+      const n = many ? smallNum(many[1]) : one ? 1 : null;
+      const k = keyFraction(raw);
+      if (d && n && d >= 2 && d <= 24 && n >= 1 && n <= d) {
+        const ok = !!k && frEq(k, [n, d]);
+        return { params: { mode: "name", target: `${n}/${d}`, parts: d, shaded: n, ...model }, key: `${n}/${d}`, bindItem: ok, why: ok ? "name: shaded of equal parts = kit key" : "name: key is not the shaded fraction" };
+      }
+    }
+    // of (round 2 content): "What is half of 10 laddoos?", "Find 1/4 of 20.", "What is 1/3 of 12?" → a set of N objects; the
+    // child gives a/b of N. Bound when the key is that whole number and nothing else (never a fraction of a fraction).
+    const ofM = p.match(OF_RX);
+    if (ofM) {
+      const f = ofM[1] ? [Number(ofM[1]), Number(ofM[2])] : fracWord(ofM[3]);
+      const N = Number(ofM[4]);
+      if (f && f[1] >= 2 && f[1] <= 12 && f[0] >= 1 && f[0] <= f[1] && N >= 2 && N <= 60 && (f[0] * N) % f[1] === 0) {
+        const v = (f[0] * N) / f[1];
+        const ok = keyWhole(raw) === v && fr.length <= 1;
+        return { params: { mode: "of", target: `${f[0]}/${f[1]}`, count: N }, key: String(v), bindItem: ok, why: ok ? "of: a/b of N = kit key" : "of: key is not a/b of N" };
+      }
+    }
     if (fr.length === 2 && /\+/.test(p) && fr.every((f) => f[1] <= 24)) {
       const sum = [fr[0][0] * fr[1][1] + fr[1][0] * fr[0][1], fr[0][1] * fr[1][1]];
       const lcm = (fr[0][1] * fr[1][1]) / gcd(fr[0][1], fr[1][1]);

@@ -19,13 +19,15 @@ function toPractice() {
 }
 // File-scoped: a top-level hook wraps EVERY file's tests in the shared npm-test process (rj: shared-process hook leak).
 describe('p5-interaction reply', () => {
-afterEach(() => { replyDeps.chat = chat; delete process.env.TAXILA_P5_GUARDS; });
+afterEach(() => { replyDeps.chat = chat; delete process.env.TAXILA_P5_GUARDS; delete process.env.TAXILA_P5_LEADSLOT; });
 const scripted = (...texts) => { const seen = []; let i = 0; replyDeps.chat = async (_d, msgs) => { seen.push(msgs.at(-1).content); return { text: texts[Math.min(i++, texts.length - 1)] }; }; return seen; };
 
 test("bare: a reply that is only the question again is rewritten (one model call) with a reason that asks for an uptake", async () => {
   const r = turn(toPractice(), cls("incorrect"));               // a hint move on the item
   const item = r.item;
   const q = promptFor(item, CTX.lang);
+  // round 2: the one-call path (the lead slot off) — its own tests are tests/round2-conversation-compose.test.mjs
+  process.env.TAXILA_P5_LEADSLOT = "off";
   const seen = scripted(q, `Socho, dono tukde barabar hain kya? ${q}`);
   const out = await textReply({ instructions: "x", state: r.state, kit: K, childText: "1/3", history: [], ui: r.ui, module: r.state.module, verdict: "not_yet" });
   assert.ok(out.guard.caught.includes("bare"), JSON.stringify(out.guard));
@@ -104,6 +106,9 @@ test("a REQUESTED story whose numbers state the key is not cut to the bare quest
   const r = turn(r0, { ...cls("no_evidence"), source: "chip", request: { type: "story", whole: true } });
   assert.equal(r.state.lastMove?.request, "story");
   const item = r.item, q = r.ui.ask.text, key = String(item.answer);
+  // round 2: the one-call path's re-ask (with the lead slot on, a lead naming the key is refused before it is written:
+  // tests/round2-conversation.test.mjs)
+  process.env.TAXILA_P5_LEADSLOT = "off";
   const leaky = `Ek din Riya ne socha, jawab ${key} hai, haan ${key}. ${q}`;
   const clean = `Ek din Riya ne ek roti ke barabar tukde kiye aur sabko ek-ek diya. ${q}`;
   const seen = scripted(leaky, leaky, clean);

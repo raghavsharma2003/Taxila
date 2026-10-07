@@ -33,6 +33,7 @@ import { createGradeSession, studioEvidenceEvent, writeStudioEvidence } from "./
 import * as stagecraft from "../stagecraft/seam-bridge.js";
 import { startStagecraft, stopStagecraft, touchStagecraft } from "../stagecraft/lesson.js";
 import * as boardSync from "../stagecraft/board-sync.js";
+import * as boardFirst from "../stagecraft/board-first.js";
 
 /** Bounds (LIVE-STUDIO §3.1, §3.8; STUDENT-FLOW §5.3). */
 export const STUDIO_LIMITS = Object.freeze({
@@ -619,7 +620,24 @@ export const studioSeam = {
         return boardSync.templateBoard(ask, fb.script, boardSync.gateCtxFor(ask, { kit: L.kit ?? undefined, redact: L.redact ?? [], prior }))?.script ?? null;
       } catch { return null; }
     };
+    // round 2 content: a CONTINUED board that draws nothing new (her line restates what the board already shows: measured
+    // c7-science "screen par flow dekhiye: …" twice in 27 boards) keeps the board on screen, when it passes the full gate
+    // against her line now; before, the slot failed while her line pointed at the board that was still there
+    const keptPrevious = () => {
+      if (ask.mode !== "continue" || !prev?.ops?.length || p.retired || L.onScreen !== intentId) return null;
+      try {
+        const { facts: _f, ...raw0 } = prev;
+        const ctx = boardSync.gateCtxFor(ask, { kit: L.kit ?? undefined, redact: L.redact ?? [], prior: [] });
+        // it redraws beside her NEW line: paced to it (W6 is about her line's length, not the board's)
+        const raw = boardSync.retime(raw0, Math.max(800, Number(raw0.durationMs) || 0), ctx.speechMs);
+        const r = boardSync.regate(raw, ask, ctx);
+        if (!r.ok) console.info(`[studio] kept board refused ${(r.gate?.checks ?? []).filter((c) => !c.pass).map((c) => c.id).slice(0, 4).join(",")}`);
+        return r.ok ? r.script : null;
+      } catch { return null; }
+    };
     const showFallbackOrFail = () => {
+      const kept = keptPrevious();
+      if (kept) { drawn({ ok: true, script: kept, source: "kept", syncMs: null }); return; }
       const shown = fallbackScript && !p.retired && L.onScreen === intentId ? gatedFallback() : null;
       if (shown) {
         p.artifact = { kind: "whiteboard", stage: { w: shown.board.w, h: shown.board.h }, script: shown };
@@ -633,6 +651,41 @@ export const studioSeam = {
       p.state = "failed"; p.fallback = "voice";
       push(L, { t: "status", status: { state: "failed", intentId, fallback: "voice" } });
     };
+    // a board passed the gate against her line: on the slot, on the wire, in the mount row (shared by board-first and the ladder)
+    const drawn = (r) => {
+      p.artifact = { kind: "whiteboard", stage: { w: r.script.board.w, h: r.script.board.h }, script: r.script };
+      p.facts = r.script.facts ?? null;
+      p.state = "revealed"; p.revealedAt = Date.now(); p.revealedTurn = L.turn; p.boardSource = r.source ?? "line"; p.syncMs = r.syncMs ?? null;
+      L.wbPrev = r.script;
+      console.info(`[studio] whiteboard drawn source=${p.boardSource} sync=${p.syncMs ?? "?"}ms spec=${r.specState ?? "-"}`);
+      push(L, { t: "script", intentId, script: r.script });
+      push(L, { t: "status", status: { state: "revealed", intentId, buildSha: "whiteboard", facts: p.facts ?? { kind: "whiteboard", archetype: "whiteboard", onScreen: {} } } });
+      // ONE studio_mount row per whiteboard beat (its first board): the Made for you and parent feeds list a beat's
+      // board once, not every line of it; the later boards of the beat add their spend to that row
+      const head = L.wbBeatHead;
+      if (!head) {
+        L.wbBeatHead = p;
+        p.usd = L.wbUsdPending; L.wbUsdPending = 0;
+        if (L.childId) writeMount(L, p, L.childId);
+      } else if (head.mountId && L.wbUsdPending > 0) {
+        const add = L.wbUsdPending; L.wbUsdPending = 0;
+        dbq("update studio_mount set usd = coalesce(usd, 0) + $2 where id = $1", [head.mountId, add]).catch(() => {});
+      }
+    };
+    // round 2 content, board-first: the board chosen at kernel time (her line was written from its facts row), re-timed and
+    // re-gated on her REAL line with the full gate W0-W9. A pass is drawn NOW and rides this turn's response; a fail runs the
+    // ladder below exactly as before.
+    const first = boardFirst.takePreselected(ask, boardSync.gateCtxFor(ask, { kit: L.kit ?? undefined, redact: L.redact ?? [], prior: [] }));
+    if (first) {
+      drawn(first);
+      return { slotId: p.slotId, intentId, state: "revealed", artifact: p.artifact };
+    }
+    { const st = boardFirst.pickState(ask); if (st !== "none") console.info(`[studio] board-first ${st} topic=${String(ask?.kit?.topicId ?? "").slice(0, 40)} beat=${ask?.intent?.beat ?? "-"}`); }
+    // a CONTINUED board: the board on screen, re-gated on her new line, stays up NOW (her row named it); the continuation
+    // plan below still runs and replaces it when it lands (the same slot's {t:"script"}), else the kept board stays.
+    // Before: the slot planned with an empty stage for up to the 7 s budget (measured: 7/45 boards, lateness up to ~6 s).
+    const keptNow = ask.mode === "continue" ? keptPrevious() : null;
+    if (keptNow) drawn({ ok: true, script: keptNow, source: "kept", syncMs: 0 });
     // ship5 p4-content board sync: the speculative board (prepareWhiteboard), the line plan raced against the sync deadline,
     // then the kit's code board, all re-gated against her line (TAXILA_BOARD_SYNC=0: exactly deps.planWhiteboard)
     boardSync.plan(ask, { kit: L.kit ?? undefined, prev, redact: L.redact, budgetMs: STUDIO_LIMITS.wbBudgetMs, planWhiteboard: deps.planWhiteboard, fallbackScript,
@@ -642,34 +695,17 @@ export const studioSeam = {
         const usd = Number(r?.usd) || 0;
         try { breaker.spend(usd); } catch { /* spend accounting never breaks a lesson */ }
         L.wbUsdPending = (L.wbUsdPending ?? 0) + usd;
-        if (r?.ok && r.script) {
-          p.artifact = { kind: "whiteboard", stage: { w: r.script.board.w, h: r.script.board.h }, script: r.script };
-          p.facts = r.script.facts ?? null;
-          p.state = "revealed"; p.revealedAt = Date.now(); p.revealedTurn = L.turn; p.boardSource = r.source ?? "line"; p.syncMs = r.syncMs ?? null;
-          L.wbPrev = r.script;
-          console.info(`[studio] whiteboard drawn source=${p.boardSource} sync=${p.syncMs ?? "?"}ms spec=${r.specState ?? "-"}`);
-          push(L, { t: "script", intentId, script: r.script });
-          push(L, { t: "status", status: { state: "revealed", intentId, buildSha: "whiteboard", facts: p.facts ?? { kind: "whiteboard", archetype: "whiteboard", onScreen: {} } } });
-          // ONE studio_mount row per whiteboard beat (its first board): the Made for you and parent feeds list a beat's
-          // board once, not every line of it; the later boards of the beat add their spend to that row
-          const head = L.wbBeatHead;
-          if (!head) {
-            L.wbBeatHead = p;
-            p.usd = L.wbUsdPending; L.wbUsdPending = 0;
-            if (L.childId) writeMount(L, p, L.childId);
-          } else if (head.mountId && L.wbUsdPending > 0) {
-            const add = L.wbUsdPending; L.wbUsdPending = 0;
-            dbq("update studio_mount set usd = coalesce(usd, 0) + $2 where id = $1", [head.mountId, add]).catch(() => {});
-          }
-        } else {
+        if (r?.ok && r.script) drawn(r);
+        else if (keptNow) { /* the kept board stays: never a failed slot under a board she is pointing at */ }
+        else {
           // telemetry: check ids only (never her line, never the child): why the board stayed calm
           const failing = (r?.gate?.checks ?? []).filter((c) => !c.pass).map((c) => c.id).slice(0, 6);
           console.info(`[studio] whiteboard not drawn ${r?.empty ? "nothing_to_draw" : failing.join(",") || String(r?.why ?? "").slice(0, 40)} ${r?.ms ?? 0}ms${fallbackScript ? " (template re-gated)" : ""}`);
           showFallbackOrFail();
         }
       })
-      .catch(() => showFallbackOrFail());
-    return { slotId: p.slotId, intentId, state: "planning" };
+      .catch(() => { if (!keptNow) showFallbackOrFail(); });
+    return keptNow ? { slotId: p.slotId, intentId, state: "revealed", artifact: p.artifact } : { slotId: p.slotId, intentId, state: "planning" };
   },
 
   /**
@@ -689,6 +725,33 @@ export const studioSeam = {
       if (on && VISIBLE.has(on.state) && on.kind !== "whiteboard" && !on.grade?.complete) return false;
       return boardSync.prepare(ask, { kit: L.kit ?? undefined, prev: ask.mode === "continue" ? L.wbPrev : null, redact: L.redact, planWhiteboard: deps.planWhiteboard, budgetMs: STUDIO_LIMITS.wbBudgetMs });
     } catch { return false; }
+  },
+
+  /**
+   * Round 2 content, board-first: pick the board for an accepted whiteboard ask BEFORE her line is written (turn.js, right
+   * after the kernel), so her line is written from it. Same guards as requestIntent (safety, the parent's Studio switch,
+   * the router's whiteboard rule, an interactive piece mid-use). Synchronous, pure, ~16 ms; never throws.
+   * → the facts row for the move's content ("on screen now …: board · …"), or null (nothing changes).
+   */
+  preselectWhiteboard(ask) {
+    try {
+      const lessonId = ask?.line?.lessonId || ask?.intent?.lessonId;
+      if (!lessonId || ask?.intent?.kind !== "whiteboard") return null;
+      const L = lessonState(lessonId, {});
+      // a continued board draws on the one on screen: her line is told what that board shows (values only), so it points
+      // at what is there; a continue that adds nothing keeps it (requestIntent keptPrevious)
+      if (ask?.mode === "continue") {
+        const on0 = L.onScreen ? L.pieces.get(L.onScreen) : null;
+        return !L.safety && on0?.kind === "whiteboard" && VISIBLE.has(on0.state) && L.wbPrev?.facts ? boardFirst.rowOfFacts(L.wbPrev.facts, boardFirst.countsOf(L.wbPrev)) : null;
+      }
+      if (L.safety || L.studioControl === "off") return null;
+      const decision = routerDecide({ intent: ask.intent, child: { bondStage: L.bondStage ?? undefined, studioControl: L.studioControl ?? "on", safetyMode: !!L.safety } });
+      if (decision.action !== "whiteboard") return null;
+      const on = L.onScreen ? L.pieces.get(L.onScreen) : null;
+      if (on && VISIBLE.has(on.state) && on.kind !== "whiteboard" && !on.grade?.complete && !(ask.replaces && ask.replaces === on.intentId)) return null;
+      if (L.pieces.has(String(ask.intent.intentId))) return null;
+      return boardFirst.preselect(ask, { kit: L.kit ?? undefined, redact: L.redact ?? [] })?.row ?? null;
+    } catch { return null; }
   },
 
   /**

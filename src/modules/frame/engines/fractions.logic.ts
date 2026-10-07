@@ -1,8 +1,10 @@
-// fractions@1 — make, compare, find equivalent and add fractions on bars or circles (maths M04).
+// fractions@1 — make, compare, find equivalent and add fractions on bars or circles (maths M04); name the shaded
+// fraction of a fixed shape, and find a fraction of a set of objects (round 2 content: the kit's commonest fraction items).
 // Every verdict is cross-multiplication on small integers.
 import { fmtQ, fractionsRaw, parseFracRaw, q, qAdd, qCmp, qEq, type Q } from "../kit/math.ts";
 
-export type Mode = "make" | "compare" | "equivalent" | "add";
+export type Mode = "make" | "compare" | "equivalent" | "add" | "name" | "of";
+export const MAX_SET = 60;
 export const MAX_D = 24;
 
 export interface FrConfig {
@@ -14,6 +16,8 @@ export interface FrConfig {
   wholes: number; // add: result shapes
   question: "bigger" | "smaller";
   equivalentOk: boolean;
+  shaded: number; // name: the parts shaded on the fixed shape
+  count: number; // of: the objects in the set
   hideAnswer: boolean;
   issues: string[];
   error: string | null;
@@ -27,7 +31,7 @@ export function normalize(p: Record<string, unknown>): FrConfig {
   const given = fractionsRaw(p.operands ?? p.fractions);
   const target = p.target !== undefined ? parseFracRaw(p.target) : null;
   if (p.target !== undefined && !target) issues.push(`target: ${JSON.stringify(p.target)} is not a fraction`);
-  let mode: Mode = ["make", "compare", "equivalent", "add"].includes(p.mode as string) ? (p.mode as Mode) : "make";
+  let mode: Mode = ["make", "compare", "equivalent", "add", "name", "of"].includes(p.mode as string) ? (p.mode as Mode) : "make";
   if (p.mode === "show" || p.mode === "predict" || p.mode === undefined) mode = given.length >= 2 ? "compare" : "make";
   const rep = String(p.representation ?? "").toLowerCase();
   const model = p.model === "circle" || p.model === "bar" ? p.model : /circle|pizza|roti|chapati|cake|pie|circular/.test(rep) ? "circle" : "bar";
@@ -37,7 +41,21 @@ export function normalize(p: Record<string, unknown>): FrConfig {
   let t: Q | null = null;
   let parts = typeof p.parts === "number" ? Math.round(p.parts) : 0;
   let wholes = 1;
-  if (mode === "make") {
+  let shaded = 0, count = 0;
+  if (mode === "name") {
+    t = target ?? fr[0] ?? q(1, 4);
+    if (!parts) parts = t.d;
+    shaded = typeof p.shaded === "number" ? Math.round(p.shaded) : (t.n * parts) / t.d;
+    if (parts < 2 || parts > MAX_D) error = `name: parts ${parts} outside 2-${MAX_D}`;
+    else if (!Number.isInteger(shaded) || shaded < 1 || shaded > parts) error = `name: ${shaded} shaded of ${parts} parts is not a fraction to name`;
+    else if (!qEq(q(shaded, parts), t)) error = `name: ${shaded}/${parts} shaded is not ${fmtQ(t)}`;
+  } else if (mode === "of") {
+    t = target ?? fr[0] ?? q(1, 2);
+    count = typeof p.count === "number" ? Math.round(p.count) : 0;
+    if (count < 2 || count > MAX_SET) error = `of: a set of ${count} objects is outside 2-${MAX_SET}`;
+    else if (t.d < 2 || t.d > 12 || t.n < 1 || t.n > t.d) error = `of: ${fmtQ(t)} is not a proper fraction with a denominator 2-12`;
+    else if ((t.n * count) % t.d !== 0) error = `of: ${fmtQ(t)} of ${count} is not a whole number of objects`;
+  } else if (mode === "make") {
     t = target ?? fr[0] ?? q(3, 4);
     if (!parts) parts = t.d;
     if (parts < 1 || parts > MAX_D) {
@@ -73,6 +91,8 @@ export function normalize(p: Record<string, unknown>): FrConfig {
     wholes,
     question: p.question === "smaller" ? "smaller" : "bigger",
     equivalentOk: p.equivalentOk !== false,
+    shaded,
+    count,
     hideAnswer: p.mode === "predict" || p.predict === true,
     issues,
     error,
@@ -128,3 +148,23 @@ export function addMisc(c: Pick<FrConfig, "fractions">, shaded: number, parts: n
 }
 
 export const fmt = (f: Q) => `${f.n}/${f.d}`;
+
+/** name: the fraction the child built (top / bottom) names the shaded part of the fixed shape (an equal value counts). */
+export function nameCorrect(c: Pick<FrConfig, "target">, top: number, bottom: number): boolean {
+  if (!c.target || !Number.isInteger(top) || !Number.isInteger(bottom) || bottom < 1 || top < 0) return false;
+  return qEq(q(top, bottom), c.target);
+}
+/** of: the number given is the fraction of the set (a/b of N = a × N / b). */
+export function ofValue(c: Pick<FrConfig, "target" | "count">): number | null {
+  if (!c.target || !c.count) return null;
+  const v = (c.target.n * c.count) / c.target.d;
+  return Number.isInteger(v) ? v : null;
+}
+export const ofCorrect = (c: Pick<FrConfig, "target" | "count">, value: number): boolean => Number.isInteger(value) && ofValue(c) === value;
+/** of: the misconception "a/b of N is N / a" or "N - a" style slips, logged as facts (never graded differently). */
+export function ofMisc(c: Pick<FrConfig, "target" | "count">, value: number): string | null {
+  if (!c.target || ofCorrect(c, value)) return null;
+  if (c.target.n > 1 && value === c.count / c.target.d) return "unit_fraction_only";
+  if (value === c.count - c.target.d || value === c.count / c.target.n) return "wrong_operation";
+  return null;
+}

@@ -54,7 +54,9 @@ test("13 ka square: the card's question is the one she asks — a reply that ask
   const p = askParity(out.reply, hinted.ui.ask.text);
   assert.ok(p.endsOnAsk, `ends on the card's question: ${out.reply}`);
   assert.equal(p.questions, 1, out.reply);
-  assert.ok(out.guard.caught.includes("ask"), JSON.stringify(out.guard));
+  // round 2 (conversation): with the lead slot the model never writes the question, so the drift is not caught and repaired
+  // but never written: the card question is appended by code (the behaviour above is what matters, and is unchanged)
+  assert.ok(out.guard.caught.includes("ask") || out.guard.leadSlot, JSON.stringify(out.guard));
   assert.ok(!out.guard.final, JSON.stringify(out.guard));
 });
 

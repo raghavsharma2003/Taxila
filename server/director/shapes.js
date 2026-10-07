@@ -221,7 +221,7 @@ export const languageAsked = ({ lang, teaching = false }) => join(
 );
 /** "Show me a diagram" (item 5): a picture on the stage this turn; state.js step adds whether one is mounted. */
 export const showVisual = ({ kind = "diagram" } = {}) => join(
-  kind === "game" ? "they want to play: the activity is the way in now" : kind === "animation" ? "they asked to see it moving" : "they asked to see it: a picture of the same idea",
+  kind === "game" ? "they want to play: the activity is the way in now" : kind === "animation" ? "they asked to see it moving: name the movement in your first words — what on the screen they can move, drag or tap, and what changes as they do (never a video you do not have)" : "they asked to see it: a picture of the same idea",
   "one idea; let the picture do the work; a few words about what to look at",
   "the key stays unsaid; then one small question about what they see",
 );
@@ -347,6 +347,8 @@ export const returnParked = ({ topic }) => `before the next thing: come back to 
 export const answerTheirQuestion = () => "they asked a real question about today's idea: answer it in at most two sentences, correctly and simply, without giving the key; then the question";
 export const adaptTo = ({ method }) => `they said how they want it${clean(method, 80) ? ` (${clean(method, 80)})` : ""}: do it that way from now on, or say kindly why not and do the nearest thing`;
 export const adultVoice = () => "a grown-up is speaking: greet them briefly and respectfully; say what you will do about what they asked (go over it again, go slower, more practice, keep it short) and do it now; then hand back to the child by name";
+/** Round 2: a garbled / broken-off turn (an ASR fragment, a false start). Never a verdict; the line was unclear, not them. */
+export const unclearAgain = () => "you did not catch all of what they said: no verdict and no blame (the line was unclear, never them); ask them in a few warm words to say it again or finish the thought";
 /** "Can we talk about something else" (owner rule 2026-10-05: steering, never a break or a wrap). */
 export const offerWays = () => join(
   "they want something else: agree warmly, in your own words",

@@ -49,6 +49,10 @@ const RECHECK = {
     "fr.add": (p, a) => { const s = shadedOf(a.value); return s ? FR.addCorrect(FR.normalize(p), s.shaded, s.parts) : null; },
     "fr.equivalent": (p, a) => { const s = shadedOf(a.value), c = FR.normalize(p); return s && c.target ? FR.equivalentCorrect(c.target, s.shaded, s.parts) : null; },
     "fr.compare": (p, a) => { const c = FR.normalize(p); return a.chosen == null ? null : FR.compareCorrect(c.fractions, c.question, String(a.chosen)); },
+    // round 2 content: name the shaded fraction (the act carries the built "top/bottom"), a fraction of a set (the number)
+    "fr.name": (p, a) => { const s = shadedOf(a.value), c = FR.normalize(p); return s && !c.error && c.mode === "name" ? FR.nameCorrect(c, s.shaded, s.parts) : null; },
+    "fr.of": (p, a) => { const c = FR.normalize(p); const v = typeof a.value === "number" ? a.value : /^\d{1,3}$/.test(String(a.value ?? "").trim()) ? Number(a.value) : null;
+      return v != null && !c.error && c.mode === "of" ? FR.ofCorrect(c, v) : null; },
   },
   "fraction-bars@1": {
     compare_answer: (p, a) => { const c = FB.normalizeConfig(p); const fr = c.denominators.map((d, i) => ({ n: c.numerators[i], d }));

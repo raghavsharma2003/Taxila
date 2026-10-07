@@ -14,7 +14,7 @@ import { gamingDiscount, nextAffect } from "../learner/affect.js";
 import { skillStateStmt, evidenceStmt, misconceptionFlagStmt, misconceptionResolveStmt } from "../learner/model.js";
 import { canWrite } from "../learner/mode.js";
 import { ledgerStmts } from "../learner/writer.js";
-import { LIVE_FOLD_CTX, answerEvents, closeEvents, compactBelief, skillsMapFor, snapshotFromKt, legacySkillState, loadLive, commitLive, evictLive } from "../learner/live.js";
+import { LIVE_FOLD_CTX, answerEvents, closeEvents, endEvents, compactBelief, skillsMapFor, snapshotFromKt, legacySkillState, loadLive, commitLive, evictLive } from "../learner/live.js";
 import { newLearnerState, fuseEvidence, beliefFor, noteOutcome, auditRow, weaveEnqueue } from "../comprehension/index.js";
 import { facetStmts, probeLogStmt, reteachStmt, gradeAuditStmt, weaveEnqueueStmt } from "../comprehension/store.js";
 import { gradeLater, settledGrade, finalEvent, awaitGrade, forgetGrade, pregrade } from "../comprehension/later.js";
@@ -34,6 +34,7 @@ import { awaitSettled } from "../comprehension/session.js";
 import { seamSafe as guardSeam } from "../seam-safe.js";
 import { duplexRegistry } from "../duplex/registry.js";
 import { studioSeam, isStudioRow } from "../studio/seam.js";
+import { isBoardFirstRow } from "../stagecraft/board-first.js";
 import { stagecraftPointFor } from "../stagecraft/kernel-point.js";   // STAGECRAFT P4 (ship5 p4-content): null unless the lesson runs a host
 import { relationalSeam } from "../relational/seam.js";
 import { expressiveSeam } from "../voice/expressive/seam.js";
@@ -54,6 +55,8 @@ import { turnSignals } from "../persona/signals.js";
 import { understand } from "../conversation/understand.js";
 import { applyNote, withAnswerMods } from "../conversation/policy.js";
 import { conv2Mode, p5Flag } from "../conversation/flags.js";
+// Round 2, stream latency: the perceive stage as one function the turn PREFETCH shares (adopted on identical inputs only)
+import { perceive, fingerprint as prefetchFingerprint, adoptPrefetch, adoptMissOf } from "../latency/perceive.js";
 import { childTurnRow, clientInstructions, debugFor, floorIncidentStmt, incidentStmt, kitFor, laneOf, runTurnTx, stageTurns, turnInsertStmt, turnLane, withAsk, withSeamUi, withStudioSlot } from "./rows.js";
 
 /**
@@ -356,33 +359,38 @@ export async function lessonTurn(req, body) {
   // arrived. Each used to read Date.now() when it ran, so a classifier call that crossed a 6 s boundary
   // moved the compiled "minute" line and every speculation missed on that alone (2/8 turns,
   // evals/cascade-latency.mjs 2026-10-02: "minute 0.7 || minute 0.8").
-  const now = Date.now();
-  const fast = classified ? classifyFast(clsArgs) : null;
   // A low-confidence transcript is already decided (no evidence, source "asr"); only the model's distress
   // backup is pending, so its one likely plan is speculated. A distress verdict changes the plan (safeguard),
   // its key no longer matches, and the real reply is written as before.
-  const specs = textLane && !late && fast && !fast.result
-    ? speculate(state, target, fast.flags, { ...planCtx, now }, { said, historyOf }, fast.lowAsr ? { outcomes: ["no_evidence"], source: "asr" } : {})
-    : [];
   // CONVERSATION-V2 UNDERSTAND (server/conversation/understand.js): when the bytes decided nothing, a model reads what the
   // child MEANS, in parallel with classify(). It is waited on only when classify() says the turn is not an answer, at most
   // NOTE_WAIT_MS from its start; a 429, an error or a timeout is no note (today's path). Off / shadow: TAXILA_CONV2.
-  const c2 = conv2Mode();
-  const noteT0 = performance.now();
-  const noteP = c2 !== "off" && !late && fast && !fast.result && !fast.lowAsr && !fast.request && childText && !help
-    ? understand({ cls: child.class_level, topicTitle: state.ctx?.topicTitle, phase: state.phase, teacherLast: heard ?? "",
-      ask: target.mode === "item" && activeItem ? promptFor(activeItem, state.ctx?.lang) : null, key: target.mode === "item" ? target.key ?? null : null,
-      earlier: earlierExchanges(state.recent, 2), said: childText, trace }) : null;
-  noteP?.catch(() => {});
+  // Round 2 latency (server/latency/perceive.js): the same perceive stage, run here or ADOPTED from the turn prefetch the
+  // device sent on its stable partial transcript (POST /api/lesson/turn-prefetch) when every classify input, the stored
+  // state and the words are byte-identical and classifyFast on this turn's real ASR confidence agrees; plus the
+  // note-parallel reply (a non-answer's no-note reply is written while the note is out). Speculation keeps one clock: an
+  // adopted perception's plans were stepped at the prefetch's `now`, so this turn plans at that `now` too.
+  const noteArgs = { cls: child.class_level, topicTitle: state.ctx?.topicTitle, phase: state.phase, teacherLast: heard ?? "",
+    ask: target.mode === "item" && activeItem ? promptFor(activeItem, state.ctx?.lang) : null, key: target.mode === "item" ? target.key ?? null : null,
+    earlier: earlierExchanges(state.recent, 2), said: childText };
+  const pre = classified && textLane && !late && !edited && !laneResume && !help && !moduleOnly && !moduleEvents.length && !body.chipId && childText
+    ? adoptPrefetch(lesson.id, { fp: prefetchFingerprint({ lessonId: lesson.id, state: lesson.state, clsArgs, bargeIn: !!body.teacherInterrupted }), fast: classifyFast(clsArgs) })
+    : null;
+  const P = pre ?? perceive(PERCEIVE_DEPS, { classified, clsArgs, state, target, planCtx, said, historyOf, textLane, late, help, childText, noteArgs });
+  const { now, fast, specs, noteP, noteT0, c2 } = P;
+  if (pre) mark("prefetch_adopted");
   let cls;
-  try { cls = classified ? await classify(clsArgs) : null; } finally { clsDone(); }
+  try { cls = classified ? await P.clsP : null; } finally { clsDone(); }
+  if (pre) trace.push(...pre.prefetch.trace.map((t) => ({ ...t, prefetched: true })));
   mark("classified");
-  let noteReason = null;
+  let noteReason = null, noteDebug = null;
   if (noteP && cls) {
     const nonAnswer = cls.outcome === "no_evidence" && !cls.request && !cls.help && !cls.flags?.distress;
+    const waitT0 = performance.now();
     const note = await settleWithin(noteP, nonAnswer ? Math.max(0, NOTE_WAIT_MS - (performance.now() - noteT0)) : 0);
     if (note) cls = applyNote(cls, note, { mode: c2 });
     noteReason = note ? `conv2.${c2 === "shadow" ? "shadow" : "note"}.${note.intent}` : "conv2.no_note";
+    noteDebug = { nonAnswer, intent: note?.intent ?? null, waitedMs: Math.round(performance.now() - waitT0), parallel: P.noteParallel ? await settleWithin(P.noteParallel, 0) : null };
     mark("noted");
   }
   // ship5 fixer (experience B4): the duplex floor's hold offer (TurnRequest.duplex.cutInReason "hold_offer": the child asked
@@ -490,6 +498,14 @@ export async function lessonTurn(req, body) {
     seamSafe("studio.prepareWhiteboard", () => studioSeam.prepareWhiteboard(whiteboardIntentOf({ lessonId: lesson.id, turn: next.turn, beat: kernel.beat ?? { id: "visual", type: "explain" }, next, kit,
       item: next.lastMove?.itemId ? findItem(next, kit, next.lastMove.itemId) : null, line: { text: "" } })), false);
   }
+  // round 2 content, board-first: the board for an accepted whiteboard ask is chosen NOW (kit code / library / catalogue,
+  // gated on everything that does not depend on her exact words), and its facts row joins the move's content below, so her
+  // line is written about what will be drawn; requestIntent re-gates it against her real line (any lane, the child's
+  // request included). null = nothing preselected, the turn is exactly as before.
+  const wbFirstRow = !late && kernel.arb.accepted.some((p) => p.kind === "ask_whiteboard") && typeof studioSeam.preselectWhiteboard === "function"
+    ? seamSafe("studio.preselectWhiteboard", () => studioSeam.preselectWhiteboard({ ...whiteboardIntentOf({ lessonId: lesson.id, turn: next.turn, beat: kernel.beat ?? { id: "visual", type: "explain" }, next, kit,
+      item: next.lastMove?.itemId ? findItem(next, kit, next.lastMove.itemId) : null, line: { text: "" } }), ...(turnStudioOf(kernel.arb)?.retire ? { replaces: String(turnStudioOf(kernel.arb).retire) } : {}) }), null)
+    : null;
   // W1-C settle: start the blind grade of this turn's held why / teach-back NOW (or adopt the pregrade), while the reply
   // is written and the turn commits, not after; the post-commit launchGrades below is then a no-op for the same event
   // ids (later.js gradeLater is idempotent per event id).
@@ -541,8 +557,10 @@ export async function lessonTurn(req, body) {
   if (!late) {
     const studioRow = studioSlot ? seamSafe("studio.factsRowForSlot", () => (typeof studioSeam.factsRowForSlot === "function" ? studioSeam.factsRowForSlot(lesson.id, studioSlot) : null), null) : null;
     const before = Array.isArray(next.lastContent) ? next.lastContent : [];
-    const kept = before.filter((l) => !isStudioRow(l));
-    const content = studioRow ? [...kept, studioRow] : kept;
+    const kept = before.filter((l) => !isStudioRow(l) && !isBoardFirstRow(l));
+    // the board-first row only when no other piece takes the tray this turn (one thing on screen)
+    const boardRow = wbFirstRow && !(studioSlot?.artifact && studioSlot.artifact.kind !== "whiteboard") ? wbFirstRow : null;
+    const content = [...kept, ...(studioRow ? [studioRow] : []), ...(boardRow ? [boardRow] : [])];
     if (content.length !== before.length || content.some((l, i) => l !== before[i])) {
       next.lastContent = content;
       try { instructions = instructionsFor(next, kit); } catch (e) {
@@ -661,7 +679,8 @@ export async function lessonTurn(req, body) {
           ...(ask.payload?.requested ? { requested: true } : {}) })
         : null), null);
       if (ack?.slotId && ack?.intentId) {
-        studioSlot = { slotId: String(ack.slotId), intentId: String(ack.intentId), state: ack.state ?? "planning" };
+        // round 2 content: a board-first board is drawn at the ack: the slot carries it on this response (no poll, no wait)
+        studioSlot = { slotId: String(ack.slotId), intentId: String(ack.intentId), state: ack.state ?? "planning", ...(ack.artifact ? { artifact: ack.artifact } : {}) };
         wbAcked = true;
         next.wbBeat = kernel.beat?.id;
         // The live board IS the explanation surface: the Director's template rung (explainer@1) is not mounted beside it
@@ -697,7 +716,7 @@ export async function lessonTurn(req, body) {
           item: next.lastMove?.itemId ? findItem(next, kit, next.lastMove.itemId) : null, line: { text: line } }), requested: true,
           ...(turnStudioNow()?.retire ? { replaces: String(turnStudioNow().retire) } : {}) })
         : null), null);
-      if (ack?.slotId && ack?.intentId) { studioSlot = { slotId: String(ack.slotId), intentId: String(ack.intentId), state: ack.state ?? "planning" }; wbAcked = true; moment = null; }
+      if (ack?.slotId && ack?.intentId) { studioSlot = { slotId: String(ack.slotId), intentId: String(ack.intentId), state: ack.state ?? "planning", ...(ack.artifact ? { artifact: ack.artifact } : {}) }; wbAcked = true; moment = null; }
     }
   }
   // A late answer (the page-hide beacon already closed the lesson) that was a disclosure still gets the fixed
@@ -781,7 +800,7 @@ export async function lessonTurn(req, body) {
         inputsHash: inputsHashOf({ prev: state, cls, move: r.move, itemId: r.move.itemId ?? null, kitHash: state.kitHash ?? null, lane }),
         proposals: kernel.proposals, arb: kernel.arb, reasons: [`lane.${lane}`, ...(late ? ["turn.late"] : []), ...(moduleOnly ? ["turn.module_only"] : []),
           ...(help ? ["turn.help"] : []), ...(laneResume ? [revoice ? "turn.lane_resume_revoice" : "turn.lane_resume"] : []), ...(kernel.replanned ? ["turn.replanned"] : []), ...(kernel.wb.declined ? [kernel.wb.declined] : []),
-          ...(speculation ? [speculation.hit ? "turn.speculation_hit" : "turn.speculation_miss"] : []), ...(wbAcked ? ["studio.whiteboard_slot"] : []),
+          ...(speculation ? [speculation.hit ? "turn.speculation_hit" : "turn.speculation_miss"] : []), ...(pre ? ["turn.prefetch_adopted"] : []), ...(wbAcked ? ["studio.whiteboard_slot"] : []),
           ...(rungReplaced ? ["studio.rung_replaced"] : []), ...studioReasons, ...releaseReasons,
           ...comprehensionReasons({ cls, classified, help: !!help, uiVerdict: uiV, guard }), ...vsReasons,
           ...(guard?.caught?.includes("unavailable") ? ["turn.fallback_reply"] : []),
@@ -840,6 +859,7 @@ export async function lessonTurn(req, body) {
       probe: next.pendingProbe ?? null, vibe: next.vibe ?? null, held: (next.kt?.deferred ?? []).map((d) => d.event.id), carried: carried.map((x) => ({ id: x.event.id, graded: !!x.results?.length })),
       skills: skillChanges, flagged: next.flagged, guard, verdict, spoiled: next.spoiled, ...(skipped ? { skipped } : {}),
       ...(speculation ? { speculation } : {}), ...(prewarmed ? { ttsPrewarmed: true } : {}),
+      prefetch: pre ? { adopted: true, aheadMs: pre.prefetch.aheadMs } : { adopted: false, miss: adoptMissOf(lesson.id) }, ...(noteDebug ? { note: noteDebug } : {}),
       item: item ? { id: item.id, kind: item.kind, prompt_en: item.prompt_en, prompt_hi: item.prompt_hi, answer: item.answer, acceptable: item.acceptable, ...(item.options ? { options: item.options.map((o) => o.text) } : {}) } : null,
       kitVerified: kit.verified, ms, timings: trace,
       stage: { accepted: kernel.arb.accepted.map((p) => p.kind), rejected: kernel.arb.rejected.map((x) => `${x.p.kind}:${x.why}`), wb: kernel.wb?.declined ?? null, studioPropose: studioView?.propose ?? null,
@@ -1114,10 +1134,15 @@ export function spoiledBy(teacherText, state, kit, activeItem) {
 const END_GRADE_WAIT_MS = 6000;
 export async function flushHeld(child, lesson, state) {
   const held = state.kt?.deferred ?? [];
-  if (!held.length || !canWrite(child, "kt")) return;
+  // round2 truth: an open item episode the lesson ended on closes as a leave does (live.js endEvents)
+  const open = state.kt?.ep && !state.kt.ep.closed && state.kt.ep.wrong > 0 && !state.kt.ep.mcq;
+  if ((!held.length && !open) || !canWrite(child, "kt")) return;
+  const kitE = open ? await kitFor(lesson.topic_id, state).catch(() => null) : null;
+  const closing = open ? endEvents({ lessonId: lesson.id, startedAt: lesson.started_at, now: Date.now(), state, kit: kitE }) : [];
+  if (!held.length && !closing.length) return;
   const carried = await Promise.all(held.map(async (d) => finalEvent(d.event, await awaitGrade(d.event.id, END_GRADE_WAIT_MS))));
   const live = await loadLive(child);
-  const events = carried.map((x) => x.event);
+  const events = [...carried.map((x) => x.event), ...closing];
   const after = fuseEvidence(live.state, events, LIVE_FOLD_CTX);
   const now = Date.now();
   const stmts = ledgerStmts(child, live.state.ledger, after.ledger, events).map((st) => (/^with ins as \(insert into kt_evidence/.test(st.text) ? { ...st, ktEvidence: true } : st));
@@ -1130,6 +1155,7 @@ export async function flushHeld(child, lesson, state) {
   }
   // the lesson state forgets them in the same transaction, so a retried end cannot store them twice
   stmts.push({ text: "update lesson set state = state #- '{kt,deferred}' where id = $1 returning id", params: [lesson.id] });
+  if (closing.length) stmts.push({ text: "update lesson set state = jsonb_set(state, '{kt,ep,closed}', 'true'::jsonb) where id = $1 and state #> '{kt,ep}' is not null returning id", params: [lesson.id] });
   const { seqs } = await runTurnTx(child, stmts);
   commitLive(child, live.maxSeq, after, seqs);
   for (const d of held) forgetGrade(d.event.id);
@@ -1152,6 +1178,9 @@ export async function missReason(specs, key) {
     return `${parts} [spec: ${String(a[i] ?? "").slice(0, 120)} || real: ${String(b[i] ?? "").slice(0, 120)}]`;
   }));
 }
+
+/** What perceive() (server/latency/perceive.js) calls: the turn's own functions, so the prefetch runs the turn's code. */
+const PERCEIVE_DEPS = { classifyFast, classify, understand, speculate, planTurn, replyKey, textReply, conv2Mode };
 
 /** CONVERSATION-V2 §4.4: the longest a non-answer turn waits on the UNDERSTAND note from its start (gpt-6-sol p90 2174 ms). */
 export const NOTE_WAIT_MS = Number(process.env.TAXILA_NOTE_WAIT_MS ?? 2200);

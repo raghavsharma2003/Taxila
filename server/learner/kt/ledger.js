@@ -222,7 +222,11 @@ function applyEvidence(L, ev, sess, ctx) {
     sk.lastAt = sess.startAt;
     ctx.onKt?.(ev.id, k);
     const novel = !!ev.itemKey && !(sk.items ?? []).includes(ev.itemKey);
-    advanceDisplay(sk, ev, sess, ss, ev.target ? ev.target === k : i === 0, novel);
+    // round2 truth: the teach-back is ONE conjunctive event over the taught skills (live.js answerEvents); its generative
+    // pass is evidence for EVERY skill it covers, not only skillIds[0] (which credited (b) to the first skill taught, often
+    // not the one the child had done unaided: w1c-three-day day 0, 3/3 local runs, no skill learned_today, no check due).
+    // Derived from the stored cls and skill_ids, so a replay of kt_evidence reproduces it.
+    advanceDisplay(sk, ev, sess, ss, ev.cls === "probe.teachback" ? true : ev.target ? ev.target === k : i === 0, novel);
     if (ev.itemKey && !(sk.items ?? []).includes(ev.itemKey)) sk.items = [...(sk.items ?? []), ev.itemKey].slice(-SEEN_ITEMS_MAX);
     sk.retention = sk.pL * retrievability(sk.mem, sess.startAt);
     sk.nextReviewAt = rank(sk.display) >= rank("learned_today") ? reviewAt(sk) : null;

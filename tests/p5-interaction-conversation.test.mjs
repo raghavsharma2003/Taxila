@@ -28,8 +28,10 @@ const POS = {
   break: ["brb", "can we pause for a bit?", "paani peeke aata hoon"],
   ask_invite: ["didi ek sawaal hai", "mera ek question hai", "didi ek sawaal poochun?", "can I ask a question?", "i have a doubt"],
   adult: ["hi this is his father can you go over this part again with him", "main iski mummy hoon aaj 10 minute mein khatam karna please"],
+  // round 2 (conversation): a broken-off line (a stutter or filler, ending on a word that cannot end a thought)
+  unclear: ["umm wo jo bada wala ki", "the the bigger piece is the", "uh i mean it goes to the"],
 };
-const NEG = ["haan", "ok samajh gaya", "3/4", "the answer is 12", "pehle 24 ko break karte hain", "ek min... haan bolo", "liquid, solid, gas", "dhoop wala", "asha", "yes",
+const NEG = ["hmm haan ok", "a the the", "cham cham ghan ghan zor se", "dheere dheere chalo", "haan", "ok samajh gaya", "3/4", "the answer is 12", "pehle 24 ko break karte hain", "ek min... haan bolo", "liquid, solid, gas", "dhoop wala", "asha", "yes",
   "hmm", "pata nahi", "i think it is half", "samajh gaya", "haan haan samajh gaya boss", "Four lakh eight thousand nineteen", "what is 3 times 4?",
   "why does the bar get bigger?", "kyunki 3 se divide hota hai", "see you have to add 5 and 3 to get 8", "i'm done, it's 24", "3/4 hai kyunki",
   "haan toh", "Prakrit, Brahmi lipi, pattharon par", "the election commission counts the votes"];
@@ -102,7 +104,9 @@ test("applyNote: the note never grades, never subtracts distress, and only route
 
 test("a stop or a leaving read by the note alone is a check-in request, never an end", () => {
   for (const i of ["end_request", "leaving"]) assert.deepEqual(requestFromNote(NOTE({ intent: i })).type, "stop");
-  for (const i of ["backchannel", "noise", "answer_correct", "dont_know"]) assert.equal(requestFromNote(NOTE({ intent: i })), null, i);
+  for (const i of ["backchannel", "answer_correct", "dont_know"]) assert.equal(requestFromNote(NOTE({ intent: i })), null, i);
+  // round 2 (conversation): a garbled turn is a no-blame repair request (battery noise 0/5 took the default path)
+  assert.equal(requestFromNote(NOTE({ intent: "noise" })).type, "unclear");
 });
 
 test("understand(): a usable note; a 429 opens the breaker (no calls for BREAKER_MS); errors and junk are null; never throws", async () => {

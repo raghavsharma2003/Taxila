@@ -496,7 +496,12 @@ function afterMiss(s, input, item) {
   const { kit, cls } = input;
   notePace(s, item, false);
   // a parked skill (V1.4: wheel-spinning ahead) stops here: the item is left, the engine's re-teach takes it next lesson
-  if (s.pace?.parkedSkills?.includes(item.skillId) && !item.fade && s.hintLevel < 4) { s.skipped.push(item.id); return poseNext(s, input, "let's leave this one for now and come back to it with a different way next time"); }
+  if (s.pace?.parkedSkills?.includes(item.skillId) && !item.fade && s.hintLevel < 4) {
+    // round2 truth: the pace park hands the skill to the engine's re-teach ladder when an arm is in flight on it
+    const handed = ladderHandover(s, input, item);
+    if (handed) return handed;
+    s.skipped.push(item.id); return poseNext(s, input, "let's leave this one for now and come back to it with a different way next time");
+  }
   const m = cls?.outcome === "misconception" ? (item.misconceptions ?? kit.misconceptions).find((x) => x.id === cls.misconceptionId) : null;
   if (m) s.flagged[m.id] = (s.flagged[m.id] ?? 0) + 1;
   // P21: no 3-in-a-row in ~10 opportunities — a different approach, not more of the same.
@@ -508,6 +513,15 @@ function afterMiss(s, input, item) {
   }
   if (m?.remediation && !s.retaught.includes(m.id)) {
     s.retaught.push(m.id);
+    // round2 truth: an options item is never re-asked after its re-teach (elimination; see engineReteach): retired, and
+    // the re-check is a fresh item on the skill
+    if ((item.options?.length ?? 0) >= 2) {
+      if (!s.itemsDone.includes(item.id)) s.itemsDone.push(item.id);
+      s.activeItemId = undefined; s.hintLevel = 0;
+      const iso = isomorphicFor(s, kit, item);
+      if (iso) s.nextItemId = iso.id;
+      return plan("reteach", SH.reteach({ ...m.remediation, again: false }), { skillId: item.skillId, representation: m.remediation.representation });
+    }
     s.hintLevel = Math.min(3, s.hintLevel + 1);   // a re-teach spends a rung but never reaches the assertion
     return plan("reteach", SH.reteach({ ...m.remediation, again: true }), { item, representation: m.remediation.representation });
   }
@@ -590,8 +604,37 @@ function engineReteach(s, input, item, v) {
     s.itemsDone.push(item.id); s.practiced += 1; s.activeItemId = undefined;
     return plan("reteach", SH.reteach({ representation, moveShape, again: false }), { skillId: k, representation });
   }
+  // round2 truth (prod w1c-reteach 10/13): an options item (a diagnostic, a tap question) cannot be its own re-check: a second
+  // try on the same 2-3 options is elimination, and the learner fold grades only the first try (live.js answerEvents), so
+  // the attempt had no later answer to resolve from. The item is retired with no further verdict and the re-check is a
+  // fresh item on the skill (isomorphicFor), posed next, exactly as a re-teach after a right answer moves on.
+  if ((item.options?.length ?? 0) >= 2) {
+    if (!s.itemsDone.includes(item.id)) s.itemsDone.push(item.id);
+    s.activeItemId = undefined; s.hintLevel = 0;
+    const iso = isomorphicFor(s, kit, item);
+    if (iso) s.nextItemId = iso.id;
+    return plan("reteach", SH.reteach({ representation, moveShape, again: false }), { skillId: k, representation });
+  }
   s.hintLevel = Math.min(3, s.hintLevel + 1);
   return plan("reteach", SH.reteach({ representation, moveShape, again: true }), { item, skillId: k, representation });
+}
+
+/**
+ * round2 truth (prod w1c-reteach 10/13, 2026-10-06): V1.4's pace park (PACE.parkTries tries without a run of 3) and W1-C's
+ * re-teach ladder (a different arm, then 2 failed arms → prerequisite descent, 3 → park) both act on a struggling skill, and
+ * the pace park won by default: it left the item while the ladder's re-check (RETEACH_COOLDOWN graded items on the skill)
+ * was still pending, and a pace-parked skill gets no more items, so the ladder never reached its next decision and the arm
+ * in flight never got a later answer to resolve from. Now a miss that the pace park would leave, on a skill with an arm in
+ * flight, IS the re-check's verdict: the cooldown is cleared and the ladder decides at once (engineReteach: the arm in
+ * flight counts as failed): another arm, the prerequisite descent, or the engine's park (s.parked, the Conductor's spaced
+ * re-teach). Bounded: each decision moves the ladder one rung, and the third failure parks, so at most two more tries on
+ * the skill (7 + 2 < V1.4's 10-try wheel-spin line). null when no arm is in flight: the plain pace park stands.
+ */
+function ladderHandover(s, input, item) {
+  const k = item.skillId, last = s.lastArmBySkill?.[k];
+  if (!last || (s.parked ?? []).includes(k) || !s.comp?.[k]?.belief) return null;
+  s.reteachCool = { ...s.reteachCool, [k]: 0 };
+  return engineReteach(s, input, item, verdict(input.cls) === "stuck" ? "stuck" : "wrong");
 }
 
 /**
@@ -757,7 +800,7 @@ const waysChips = (labels) => [{ id: "req:visual", label: "Show me a picture" },
   { id: "req:game", label: "Play a game" }, { id: "stop:continue", label: labels.back }];
 /** The request types p5-interaction adds (conversation/lexicon.js readings and the UNDERSTAND note, via policy.js). */
 export const P5_REQUESTS = new Set(["clarify", "repeat", "back", "skip", "know", "harder", "easier", "boredom", "frustration", "thinking", "identity",
-  "uptake", "decline", "answer_q", "adapt", "adopt", "adult", "park", "detour", "stop", "hold_checkin", "ask_invite"]);
+  "uptake", "decline", "answer_q", "adapt", "adopt", "adult", "park", "detour", "stop", "hold_checkin", "ask_invite", "unclear"]);
 
 /** A teach-phase re-explanation of the idea being taught now (the teach step does not advance). */
 function teachAgainPlan(s, kit, how) {
@@ -828,6 +871,8 @@ function p5RequestMove(s, input, item, req, labels) {
       if (req.method) s.prefs = [...new Set([...(s.prefs ?? []), String(req.method).slice(0, 40)])].slice(-4);
       return withLead(SH.adaptTo({ method: req.method }));
     case "adult": return withLead(SH.adultVoice());
+    // round 2 (conversation): a broken-off or garbled turn: no verdict, a no-blame ask to say it again or finish it
+    case "unclear": return item ? withLead(SH.unclearAgain()) : plan("repair", SH.unclearAgain(), { request: "unclear" });
     case "park": {
       const e = parkEntry({ topic: req.topic, learning: req.learning, turn: s.turn, itemOnTable: !!item });
       s.later = pushLater(s.later ?? [], e);
@@ -835,11 +880,10 @@ function p5RequestMove(s, input, item, req, labels) {
     }
     case "detour": {
       const p = recentParked(s.later ?? [], s.turn, req.topic);
-      if (!p) {
-        const e = parkEntry({ topic: req.topic, learning: false, turn: s.turn, itemOnTable: !!item });
-        s.later = pushLater(s.later ?? [], e);
-        return withLead(SH.parkIt({ topic: e.topic, promise: e.promise }));
-      }
+      // round 2 (conversation): a push again with nothing parked (the first ask got an uptake, or was parked more than
+      // DETOUR_WITHIN turns ago) is still a second ask: a short real engagement now, never a second "later" (battery
+      // insistence: "refuses" 4/10 on the local base run 2026-10-06)
+      if (!p) return withLead(SH.detourTo({ topic: req.topic }));
       s.later = serveLater(s.later, p.id, s.turn);
       return withLead(SH.detourTo({ topic: p.topic }));
     }
@@ -1136,6 +1180,9 @@ export function step(prev, input) {
     // p5-interaction: the UNDERSTAND note's alongside readings on a graded answer (hedge, check, insist; a parked question)
     ...(p5Flag("STEER") && !NO_VERDICT_MOVES.has(p.kind) ? [...(input.cls?.mods ?? []).map((m) => SH.MOD_NOTE[m]), input.cls?.alsoPark ? SH.parkAlso({ topic: input.cls.alsoPark.topic }) : null] : [])];
   const move = { kind: p.kind, shape: join(p.shape, ...notes) };
+  // round 2 (conversation): how the child asked to be taught ("step by step", "picture first") rides on every later move
+  // (compile.js renders it, droppable): before this, s.prefs was written and never read, so a method request lasted one turn
+  if (p5Flag("STEER") && s.prefs?.length && !["safeguard", "wrap"].includes(p.kind)) move.prefs = s.prefs.slice(-2);
   if (item) Object.assign(move, { itemId: item.id, skillId: item.skillId, hintLevel: s.hintLevel });
   if (p.skillId) move.skillId = p.skillId;
   if (p.probe) move.probe = p.probe;
@@ -1152,6 +1199,8 @@ export function step(prev, input) {
   const moduleCommands = reacting ? [] : planModule(s, { kit: input.kit, item, move, lang: s.ctx.lang, band: s.probeSess?.band ?? bandOf(s.ctx.classLevel), representation: p.representation });
   // The child's request this move answers (requests.js): the brain reads it (a visual request asks Studio on any lane).
   if (p.request) move.request = p.request;
+  // round 2 (conversation): the request's own note, for the lead slot's last instruction (brain/say.js)
+  if (p.lead && p5Flag("STEER")) move.lead = String(p.lead).slice(0, 400);
   if (p.visual) {
     move.visual = p.visual;
     // what is on the stage decides the words: point at it, or (nothing mounted) show it with things they know — never a

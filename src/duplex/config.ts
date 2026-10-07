@@ -85,7 +85,7 @@ export const VERDICT_DELAY_MS: Ms = 1200;
  * pause (stage A has no semantic estimate in production, and on real adult Hindi through the real STT the lexical "this
  * clause is complete" read committed inside 22-58 % of >= 500 ms thinking pauses: evals/duplex-real). One mutable row so
  * the sweep (evals/duplex-real/eot-sweep.mjs, TRAIN half of eot-bench Hindi) can set it; the values below were chosen on
- * TRAIN and reported on TEST (docs/design/round2/duplex-real/REPORT.md). Closed answers keep their own waits (extraWait).
+ * TRAIN and reported on TEST (docs/design/round2/duplex-real/CRITERIA.md, context/inbox/duplex-real.json). Closed answers keep their own waits (extraWait).
  */
 // Chosen on TRAIN (even row ids, 77 holds >= 500 ms, both lanes; evals/duplex-real/eot-sweep.mjs 2026-10-07): uniform 1,100 ms
 // gave the fewest cut-offs (D4 18.2 -> 9.1 %, MAI 68.8 -> 15.6 %) at gap p50 922 / 911 ms; prosody-split rows cut more for

@@ -48,6 +48,8 @@ export function requestFromNote(note) {
     case "break_request": return r("break");
     case "thinking_aloud": return r("thinking");
     case "adult_voice": return r("adult");
+    // round 2: a garbled turn gets a no-blame "say it again / finish it" (the battery's noise 0/5 took the default path)
+    case "noise": return r("unclear");
     // a stop or a leaving read by a model alone: one check-in, never an end (the stop chip / a second stop / the bytes end it)
     case "end_request": case "leaving": return r("stop", { fromNote: true });
     default: return null;

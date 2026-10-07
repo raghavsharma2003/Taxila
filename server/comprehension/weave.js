@@ -62,16 +62,19 @@ export function expire(q, now) {
 
 /**
  * Session-open plan (§3.5.7; the Conductor hook planChecks): 2-4 openers from due skills and expired weave entries,
- * lowest retention first, plus protégé returns for skills whose U is open (3-10 days after the anchor).
- * @param {{ q: any[], due: { skillId: string, retention: number }[], beliefs?: Record<string, any>, now: string, openers?: number }} o
+ * due delayed checks first, then lowest retention, plus protégé returns for skills whose U is open (3-10 days after the anchor).
+ * @param {{ q: any[], due: { skillId: string, retention: number, check?: boolean }[], beliefs?: Record<string, any>, now: string, openers?: number }} o
  */
 export function planChecks({ q, due, beliefs = {}, now, openers = 3 }) {
   const t = new Date(now).getTime();
   const expired = q.filter((e) => e.status === "expired").map((e) => e.skillId);
+  // round2 truth: a due delayed check (`check`, learner/live.js dueForChecks) always takes an opener slot before a review
+  // or an expired weave entry, in the order dueForChecks gave; the rest by lowest retention, as before.
   const pool = new Map();
-  for (const d of due) pool.set(d.skillId, d.retention);
-  for (const s of expired) if (!pool.has(s)) pool.set(s, beliefs[s]?.retention ?? 0.5);
-  const callbacks = [...pool.entries()].sort((a, b) => a[1] - b[1] || (a[0] < b[0] ? -1 : 1)).slice(0, openers).map(([skillId]) => skillId);
+  due.forEach((d, i) => pool.set(d.skillId, { r: d.retention, check: d.check ? i + 1 : 0 }));
+  for (const s of expired) if (!pool.has(s)) pool.set(s, { r: beliefs[s]?.retention ?? 0.5, check: 0 });
+  const callbacks = [...pool.entries()].sort((a, b) => (!!b[1].check - !!a[1].check) || (a[1].check - b[1].check) || a[1].r - b[1].r || (a[0] < b[0] ? -1 : 1))
+    .slice(0, openers).map(([skillId]) => skillId);
   const protege = Object.values(beliefs).filter((b) => b && b.open?.includes("U") && b.U >= 0.3 && ["learned_today", "mastered"].includes(b.display))
     .filter((b) => { const a = q.find((e) => e.skillId === b.skillId)?.anchorAt; const d = a ? (t - new Date(a).getTime()) / DAY : 0;
       return d >= WEAVE.PROTEGE_MIN_D && d <= WEAVE.PROTEGE_MAX_D; })

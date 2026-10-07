@@ -51,6 +51,25 @@ const ADULT = /\b(?:(?:hi|hello|namaste)[\s,]+)?(?:this\s+is\s+(?:his|her|their)
 const THINK_TRAIL = /(?:\b(?:because|so|then|but|wait|toh|phir|fir|aur|lekin|kyunki|kyuki|matlab|ruko)|\.{3}|…)\s*$/i;
 const OOB = /\b(?:(?:ghost|horror|bhoot|bhoot\s+ki|darawni|scary)\s+(?:story|kahani|movie|film)|horror\s+(?:movie|film|story)|gaali|gali\s+(?:do|batao|sikhao)|bad\s+words?|(?:swear|curse)\s+words?|girl\s*friend|boy\s*friend|(?:kiss|sex)|how\s+to\s+(?:hack|kill|make\s+a\s+bomb|steal)|hack\s+(?:karna|karo|kaise|sikhao)|(?:mera|my)\s+(?:homework|essay|assignment)\s+(?:kar|likh|do|write)|(?:homework|essay|assignment)\s+(?:kar|likh)\s*(?:do|dijiye|ke\s+do|kar\s+do)|do\s+my\s+(?:homework|essay)|write\s+my\s+(?:essay|homework)|(?:pubg|bgmi|free\s*fire)\s+(?:kill|killing)\s+(?:tips|trick)|(?:bomb|gun|pistol)\s+(?:banana|kaise|banao|kaise\s+banate)|prank\b[^?]{0,40}\b(?:ro\s+de|rula|rone|hurt|chot|cry)|(?:aapko|tumhe|tumko|your)\s+(?:kaunsi|kaun\s*si|which|favou?rite)\s+(?:political\s+)?party(?:\s+(?:pasand|achhi|best))?)\b/i;
 
+// round 2 (conversation): a garbled or broken-off turn (an ASR fragment, a false start): a stutter or a filler AND it stops on
+// a word that cannot end a thought (an article, a postposition, a filler). Not a verdict on anything: she did not catch
+// all of it. General shape only (no battery phrase is listed): a disfluency + a dangling end, 3-9 words, no question mark.
+const FILLER = /^(?:uh+|um+|umm+|mm+|hm+|hmm+|err+|erm+|aa+|haa+|ahh*|uhh*)$/;
+const DANGLING = /^(?:the|a|an|of|with|like|to|for|and|um+|uh+|mm+|ki|ka|ke|ko|se|wo|woh|vo|naa|na|jo|ye|yeh|mein|par|pe|matlab|wala|wali|wale)$/;
+const STUTTER_EXTRA = /^(?:i|it|is|kya|haan|ha|wo|woh|mm+|hm+)$/;
+/** PURE. Is the turn a fragment she should ask to hear again (stutter or filler, and a dangling last word)? */
+export function fragmentLike(t) {
+  const w = T(t).replace(/[.,!…]+/g, " ").split(/\s+/).filter(Boolean);
+  if (w.length < 3 || w.length > 9 || /[?？]/.test(String(t))) return false;
+  // a stutter is a repeated FUNCTION word ("the the", "ki ki", "kya kya"): a repeated content word is Hindi reduplication
+  // ("cham cham", "dheere dheere"), never a sign of a broken line
+  const stutter = w.some((x, i) => i > 0 && x === w[i - 1] && (DANGLING.test(x) || STUTTER_EXTRA.test(x)));
+  const filler = w.some((x) => FILLER.test(x));
+  // and at least one content word: an article drill's answer ("a the the", "an, a, a") is an answer, not a fragment
+  const content = w.some((x) => !DANGLING.test(x) && !FILLER.test(x) && !STUTTER_EXTRA.test(x) && x.length >= 2);
+  return (stutter || filler) && content && DANGLING.test(w.at(-1));
+}
+
 /** Words of an attempt (a number), or more words than a request carries: never read as one of these. */
 const attemptLike = (t) => /\d/.test(t);
 
@@ -72,6 +91,9 @@ export function readIntent(text) {
   if (OOB.test(t) && n <= 12) return hit("oob");
   if (ADULT.test(t)) return hit("adult");
   if (attemptLike(t)) return null;
+  // before the thinking readings: a stutter that trails off on "the" / "ki" is a broken line, and the repair (say it again,
+  // or finish it) serves a child who was also thinking
+  if (fragmentLike(t)) return hit("unclear");
   if (BREAK.test(t)) return hit("break");
   if (BACK.test(t)) return hit("back");
   if (CONFUSED.test(t)) return hit("confused");
@@ -96,7 +118,7 @@ export function readIntent(text) {
 
 /** The p5 reading types (state.js acts on each; tests enumerate them). */
 export const P5_TYPES = Object.freeze(["confused", "clarify", "repeat", "back", "skip", "harder", "easier", "know", "boredom", "frustration",
-  "thinking", "identity", "small_talk", "oob", "break", "adult", "ask_invite"]);
+  "thinking", "identity", "small_talk", "oob", "break", "adult", "ask_invite", "unclear"]);
 
 // ── modifiers on an ANSWER (CONVERSATION-V2 §3.2): read in code beside the grade; they never change the grade ──
 const HEDGED = /\b(?:shayad|shaayad|maybe|perhaps|i\s+think|mujhe\s+lagta\s+hai|lagta\s+hai|not\s+sure|pakka\s+nahi|sure\s+nahi|i\s+guess|probably)\b/i;

@@ -135,6 +135,7 @@ export function answerEvents(c) {
       ep.closed = true;
     } else {
       ep.wrong += 1;
+      ep.via = viaOf(ev);                                                     // round2 truth: endEvents writes the leave with it
     }
   }
   const tb = evidence.filter((ev) => ev.probe === "P1");
@@ -172,6 +173,24 @@ export function closeEvents(c, a) {
       episodeId: `${lessonId}:teach:${move.kind}:${move.skillId}`, skillId: move.skillId, topicType }), via: "dialogue" });
   }
   return { events, ep };
+}
+
+/**
+ * round2 truth (prod w1b-mounts 2026-10-06: a G1 open-class commit answered wrong, then the lesson ended, wrote NO row):
+ * the lesson end is the Director leaving the item. An open episode with wrong tries and no correct answer closes exactly
+ * as closeEvents closes it on a leave (P15, C4, episodeEnded; the misconception shown rides on it), so a wrong answer the
+ * child gave is never silently dropped. Options items already wrote their first try. Pure; [] when nothing is open.
+ * @param {{ lessonId: string, startedAt: any, now: number, state: any, kit: any }} c
+ * @returns {any[]}
+ */
+export function endEvents({ lessonId, startedAt, now, state, kit }) {
+  const ep = state?.kt?.ep;
+  if (!ep || ep.closed || ep.mcq || !(ep.wrong > 0) || !ep.itemId || !ep.skillId) return [];
+  const ctr = { k: 0 };
+  const base = baseOf({ lessonId, startedAt, now, childSeq: "end" }, ctr, { grader: "code", topicType: kit?.topicType, kitVerified: kit?.verified !== false });
+  const ev = { skillId: ep.skillId, itemId: ep.itemId, probe: "P15", outcome: "incorrect", hintsUsed: 4, weight: 1, ...(ep.mis ? { misconceptionId: ep.mis } : {}) };
+  const e = fromLegacyEvidence(ev, base({ episodeId: `${lessonId}:${ep.itemId}`, triesBefore: ep.wrong, episodeEnded: true }));
+  return e ? [{ ...e, target: ep.skillId, via: ep.via === "module" ? "module" : "dialogue" }] : [];
 }
 
 function baseOf(c, ctr, { grader, topicType, kitVerified }) {
@@ -227,22 +246,30 @@ export function snapshotFromKt(sk, now) {
 /**
  * Skills whose delayed check is due at session open (INTEGRATION.md §4): ktView.due() AND every learned skill
  * with no delayed pass yet whose anchor is ≥ 20 h old (FSRS's first interval is usually > 1 day, so without the
- * second set the next-day check never runs — found by the comprehension simulator). Lowest retention first.
- * @returns {{ skillId: string, retention: number }[]}
+ * second set the next-day check never runs — found by the comprehension simulator).
+ * Order (round2 truth, V1 "the delayed check leads the next lesson every time it is due"): the delayed checks FIRST
+ * (`check: true`; oldest anchor first, so a check that has waited is never starved), then FSRS reviews by lowest
+ * retention. Before this, a just-learned skill (high retention) sorted behind every mastered skill's review and lost
+ * its opener slot: evals/next-day-check/sim.mjs, 1,000 starts, seed 7: the opener was the due check in 354/645.
+ * @returns {{ skillId: string, retention: number, check?: boolean }[]}
  */
 export function dueForChecks(ledger, now, k = 4) {
   const t = new Date(now).getTime();
   const view = ktView(ledger, { now });
   const ids = new Set(view.due(k * 3));
+  const checks = new Set();
   for (const sk of Object.values(ledger.skills)) {
     // p5-interaction (w1c-three-day, "+1 day: the delayed check leads the next lesson"): the opener is due 20 h after the
     // anchor, as before V1-10. What changed with V1.3 is what it COUNTS for: before 2 learning days it is a review of an item
     // the child has met (server/learner/checks.js), which never certifies; from 2 days on, the certifying check on a new item
     // (kt/ledger.js advanceDisplay: checkDayOk + novel).
-    if (rank(sk.display) >= rank("learned_today") && !sk.flags.delayed && sk.anchorAt && t - new Date(sk.anchorAt).getTime() >= DELAY_MS) ids.add(sk.skillId);
+    if (rank(sk.display) >= rank("learned_today") && !sk.flags.delayed && sk.anchorAt && t - new Date(sk.anchorAt).getTime() >= DELAY_MS) { ids.add(sk.skillId); checks.add(sk.skillId); }
   }
   return [...ids].map((id) => readSkill(ledger.skills[id], now)).filter(Boolean)
-    .sort((a, b) => a.retention - b.retention || (a.skillId < b.skillId ? -1 : 1)).map((s) => ({ skillId: s.skillId, retention: s.retention }));
+    .sort((a, b) => checks.has(b.skillId) - checks.has(a.skillId)
+      || (checks.has(a.skillId) && a.anchorAt !== b.anchorAt ? (a.anchorAt < b.anchorAt ? -1 : 1) : 0)
+      || a.retention - b.retention || (a.skillId < b.skillId ? -1 : 1))
+    .map((s) => ({ skillId: s.skillId, retention: s.retention, ...(checks.has(s.skillId) ? { check: true } : {}) }));
 }
 
 /** Kit fields a probe shape needs (COMPREHENSION-ENGINE.md §4.3), present on this kit for this skill. */

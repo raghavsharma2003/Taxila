@@ -1,0 +1,139 @@
+{
+ "stream": "duplex-real",
+ "at": "2026-10-07",
+ "source": "docs/design/round2/duplex-real/ (RESEARCH.md, CRITERIA.md, APPLY.md, patches/01); evals/duplex-real/results/*",
+ "nodes": [
+  {
+   "id": "m-dxr-eot-hindi-real-stt-2026-10-07",
+   "kind": "measurement",
+   "at": "2026-10-07",
+   "title": "REAL RECORDED ADULT HINDI SPEECH + REAL STT (LiveKit eot-bench Hindi, CC BY 4.0: 400 turns, 147 holds >= 500 ms, 674 >= 100 ms), streamed 1x real time from the US sandbox to the production sockets with DuplexLive in the loop (probes live), context from her previous line (275 free, 100 closed yes/no, 25 open). HEAD -> this tree, live runs: D4 thinking-pause cut-offs 33/147 22.4% [16.5-29.8] -> 12/147 8.2% [4.7-13.7], all holds 39/674 -> 12/674, in-speech commits 12 -> 4, decision gap p50/p90 774/1677 -> 923/2060 ms; MAI 37/147 25.2% -> 19/147 12.9% [8.4-19.3], 49/674 -> 22/674, in-speech 28 -> 7, gap p50 2474 -> 910 ms. Baselines on the same holds: silence-640 41/147 27.9%, silence-900 7/147 4.8%. TEST half only (70 holds, wait chosen on TRAIN): D4 12/70 -> 5/70, MAI 20/70 -> 7/70, gap 768 -> 931 / 2522 -> 906; silence-900 3/70. Replays of the recorded socket events reproduce each live run exactly. evals/duplex-real/results/eot-{D4,MAI}-{before,after}.json."
+  },
+  {
+   "id": "m-dxr-ami-real-stt-2026-10-07",
+   "kind": "measurement",
+   "at": "2026-10-07",
+   "title": "REAL RECORDED ADULT ENGLISH SPEECH (AMI CC BY 4.0, 4 meetings, 16 headset channels, 48 pairs, incl. Indian-L1 adults) + REAL gpt-live-transcribe events recorded live, replayed open loop (her = another participant). HEAD / this tree: continuers kept 138/195 70.8% [64.0-76.7] / 139/195; barge-ins stopped within 200 ms 18/51 / 17/51 (p50 among stopped 180 / 310 ms: one item); room-talk false yields 38/239 15.9% / 37/239; self-yield on headset bleed 116/730 15.9% both. Same meetings with SIMULATED STT (p1-duplex): continuers 75.8%, room 7.7% - the real transcriber makes both worse. Continuer failures: barge_in (acoustic sustain on 330-1000 ms 'yeah') 26, G7 revoke 26, repair_request 4."
+  },
+  {
+   "id": "m-dxr-shadow-records-nothing-2026-10-06",
+   "kind": "measurement",
+   "at": "2026-10-07",
+   "title": "Prod shadow (TAXILA_DUPLEX=shadow, web ee97e9c) records NOTHING: CascadeLink passes no log sink to CascadeDuplex and there was no route or table, so 0 prod lessons have engine-vs-shipped evidence. tests/prod/round2-duplex-real.mjs on taxila.dev 2026-10-07: POST /api/duplex/shadow 404, bundle without telemetry (1/7); local server with this stream: 10/10."
+  },
+  {
+   "id": "m-dxr-semantic-arm-2026-10-07",
+   "kind": "measurement",
+   "at": "2026-10-07",
+   "title": "Semantic estimate on real Hindi transcripts (server/duplex/semantic.js, grok-4-1-fast-non-reasoning on Azure, real calls p50 570 / p90 714 ms, delivered after their own latency in the replay; open_explanation context): MAI cut-offs 50/147 with and without, gap 2357 -> 2343 ms; D4 15/147 both. 212-319 asks per 400 turns; estimates are stale (text hash moved) by the pause. No effect as wired."
+  },
+  {
+   "id": "m-dxr-taxilafdb-regression-check-2026-10-07",
+   "kind": "measurement",
+   "at": "2026-10-07",
+   "title": "TaxilaFDB TEST (SIMULATED, 960 streams x D4/FAST/MAI_HOME, herAct) HEAD -> this tree: thinking-pause cut-offs 2.7/2.7/3.4% unchanged; gap p50 1150/360/320 -> 1160/480/370 ms (the open-turn wait); missed, continuers, barge stop 140 ms, TV/sibling false yields unchanged; MAI_HOME safety 82/84 -> 83/84, non-safety speech after distress 2 -> 1. Also: HEAD's own cut-offs 20-25/732 vs 0/732 at p1-duplex final (fdb-r2-test-final.json) - a regression from ship-five integration, not chased."
+  },
+  {
+   "id": "dxr-open-turn-wait-1100",
+   "kind": "decision",
+   "at": "2026-10-07",
+   "title": "Outside closed answers a turn_end SPEAK waits 1,100 ms of child silence (config.ts OPEN_TURN_WAIT; questions to her and 'pata nahi' exempt), and a yes/no answer longer than 3 words is read as a free turn (exchangeOf). Chosen on the TRAIN half of eot-bench Hindi (fewest cut-offs with gap p50 <= ~920 ms on both lanes), reported on TEST. Reverse if ET-1 actors or the prod shadow telemetry show open-context cut-offs <= 3% at a shorter wait, or children's 'missed reply' (silence >= 2.5 s after a reply-worthy end) rises above 8%."
+  },
+  {
+   "id": "dxr-shadow-telemetry",
+   "kind": "decision",
+   "at": "2026-10-07",
+   "title": "Shadow evidence is a content-blind summary per lesson (src/duplex/shadowTelemetry.ts: engine vs shipped gap, would-cut-off, shipped cut-off, overlap yield vs stop, safety rows) beaconed to POST /api/duplex/shadow and written as one stdout line (Log Analytics), lesson id salted-hashed; no migration. Reverse if Log Analytics retention is too short for the S gate (then a table behind a migration on the TEST branch first)."
+  },
+  {
+   "id": "dxr-switch-criteria",
+   "kind": "decision",
+   "at": "2026-10-07",
+   "title": "Shadow -> live needs Gate R (real speech through the real STT on the India lane: cut-offs <= 3% and <= silence-900, gap p50 <= 350 ms measured from India, continuers >= 90%, >= 50% of barge-ins stopped within 200 ms, other-voice false yields <= 10%, echo self-yield <= 2%, safety floor unchanged) then Gate S (prod shadow: >= 300 turns / 30 lessons, would-cut-off <= 3% and <= shipped, undecided <= 8%, 0 unexplained safety disagreements), then ET-1 adults, then the ET-2 child pilot. Met today: R2b and R7 only. docs/design/round2/duplex-real/CRITERIA.md; scorer evals/duplex-real/criteria.mjs."
+  },
+  {
+   "id": "rj-dxr-revoke-epoch-previous-turn",
+   "kind": "rejection",
+   "at": "2026-10-07",
+   "title": "Tried (shipped in ship five): a G7 revoke re-opens the fan-in epoch saved at HER LAST LINE. Broke on real speech (eot-bench hi__4015 -> hi__4016): a revoke before her reply sounded re-opened the previous exchange, so the merged commit carried an already-answered turn's words. Now a SPEAK / CUT_IN pins the epoch (host.ts); tests/duplex-real-replay.test.mjs fails on the old code."
+  },
+  {
+   "id": "rj-dxr-fifo-commit-by-arrival",
+   "kind": "rejection",
+   "at": "2026-10-07",
+   "title": "Tried: matching a final to the oldest commit at or after its item's start, with arrival time standing in for an unknown start. Broke on MAI (no speech_started): the item 'starts' after the probe that produced it, the commit was dropped as stale and coverage fell to arrival - lag; 233/400 eot-bench ends waited for the silence backstop (gap p50 2,474 ms). Now a start-less final answers the oldest commit sent before it arrived."
+  },
+  {
+   "id": "rj-dxr-commit-empty-as-child-silent",
+   "kind": "rejection",
+   "at": "2026-10-07",
+   "title": "Tried (ship five): every input_audio_buffer_commit_empty on the call is a push-to-talk press with no audio (child_silent). Broke under duplex: the engine's own probes produce it (AMI 165-483 per 30-40 min channel, eot-bench 7/400 turns), flipping the floor to your_turn mid-turn and resuming a reply the engine had paused for a barge-in. Now consumed by CascadeDuplex while the engine decides."
+  },
+  {
+   "id": "rj-dxr-stage-a-lexical-end-on-open-speech",
+   "kind": "rejection",
+   "at": "2026-10-07",
+   "title": "Tried: stage A committing an open / free / elaborated yes-no turn as soon as the words look complete (zero silence wait outside closed answers). Broke on real Hindi through the real STT: with correct coverage MAI cut 85/147 thinking pauses (57.8%), D4 24/147; adults pause after complete clauses and between digit groups. Replaced by dxr-open-turn-wait-1100; still 8-13% vs silence-900 4.8%."
+  },
+  {
+   "id": "rj-dxr-armed-revoke",
+   "kind": "rejection",
+   "at": "2026-10-07",
+   "title": "Tried: on an OPEN reply, arm the G7 revoke at the child's onset and fire it only if the overlap reads as a barge-in. AMI real STT: continuers 138 -> 142/195, room false yields 38 -> 35/239, but barge-ins stopped 36 -> 34/51 and within 200 ms 18 -> 15/51. Inside the noise and costs the nearest bar; reverted (results/ami-raw-D4-after2-real.json)."
+  },
+  {
+   "id": "rj-dxr-semantic-as-wired",
+   "kind": "rejection",
+   "at": "2026-10-07",
+   "title": "Tried: the existing stage A semantic estimator (asked while words grow, >= 2 new words and >= 600 ms apart) on real Hindi transcripts with real Azure latency. Changed no decision (MAI 50/147 either way). Revisit only with the ask moved to the pause onset on the final text, measured on the same replay."
+  },
+  {
+   "id": "rj-dxr-ami-turns-floor-sort",
+   "kind": "rejection",
+   "at": "2026-10-07",
+   "title": "Eval bug (evals/duplex-real/ami-real.mjs record --pass turns): the channel floor was re-sorted for every masked frame (O(n^2 log n)), pinning a core per process; real-time pacing fell behind and the 2026-10-07 first turns pass ran 1 h 26 min without finishing. Fixed (floor computed once); any turns-pass number from a CPU-bound run is invalid."
+  }
+ ],
+ "edges": [
+  {
+   "src": "dxr-open-turn-wait-1100",
+   "rel": "supersedes",
+   "dst": "rj-dxr-stage-a-lexical-end-on-open-speech"
+  },
+  {
+   "src": "dxr-switch-criteria",
+   "rel": "measured_by",
+   "dst": "m-dxr-eot-hindi-real-stt-2026-10-07"
+  },
+  {
+   "src": "dxr-switch-criteria",
+   "rel": "measured_by",
+   "dst": "m-dxr-ami-real-stt-2026-10-07"
+  },
+  {
+   "src": "dxr-open-turn-wait-1100",
+   "rel": "measured_by",
+   "dst": "m-dxr-eot-hindi-real-stt-2026-10-07"
+  },
+  {
+   "src": "dxr-shadow-telemetry",
+   "rel": "caused_by",
+   "dst": "m-dxr-shadow-records-nothing-2026-10-06"
+  },
+  {
+   "src": "rj-dxr-armed-revoke",
+   "rel": "caused_by",
+   "dst": "m-dxr-ami-real-stt-2026-10-07"
+  },
+  {
+   "src": "rj-dxr-revoke-epoch-previous-turn",
+   "rel": "caused_by",
+   "dst": "rj-ship5-revoke-merge-resend"
+  },
+  {
+   "src": "m-dxr-ami-real-stt-2026-10-07",
+   "rel": "inherits",
+   "dst": "m-p1dx-ami-real-adult-2026-10-06"
+  }
+ ]
+}

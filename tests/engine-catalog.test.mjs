@@ -45,6 +45,10 @@ function visibleText(engine, params) {
     }
     case "fractions@1": {
       const c = FR.normalize(params);
+      // round 2 content: name shows a shaded shape and the child's own readout (the target is never printed); of shows
+      // "a/b of N = ?"
+      if (c.mode === "name") return "";
+      if (c.mode === "of") return `${FR.fmt(c.target)} of ${c.count} = ?`;
       return [c.target ? FR.fmt(c.target) : "", ...c.fractions.map(FR.fmt)].join(" | ");
     }
     case "patterns@1": return PT.normalize(params).terms.join(", ");

@@ -9,6 +9,7 @@ import { scanSafety, wantsToStop, scrubPii, readability } from "./safety.js";
 import { whyKey, norm as normAnswer, posesItem, revealsAnswer } from "./items.js";
 import { INTEREST_IDS } from "../../shared/interests.js";
 import { partsOf } from "../content/parts.js";
+import { corroborate } from "../grading/corroborate.js";
 import { plainNumberKey, numberPhrases, selfCorrected, unitsAfterNumbers, tailAgrees, signConflict, bareOfDecisive } from "../grading/spoken-number.js";
 import { requestOf, FLOW_REQUESTS } from "./requests.js";
 import { readIntent } from "../conversation/lexicon.js";
@@ -628,7 +629,9 @@ async function classifyModel(args, target, text, flags, trace, done, fast = {}) 
     const signals = signalsOn() ? parseSignals(json) : null;
     if (signals) Object.assign(flags, signalFlags(signals));
     // `fallback`: the fallback deployment answered (brain_trace cls_source.fallback); the label is a model label either way
-    return { ...label, source: "model", flags, ...(signals ? { signals } : {}), ...(viaFallback ? { fallback: true } : {}) };
+    // round2 truth (grading/corroborate.js): the label is a proposal; a credit the child's words cannot carry, or a fail of
+    // words that ARE the key, becomes no evidence (a re-ask the Director grades in code), never a wrong grade
+    return corroborate({ target, text, result: { ...label, source: "model", flags, ...(signals ? { signals } : {}), ...(viaFallback ? { fallback: true } : {}) } });
   };
   const filtered = () => {
     console.warn("[classify] blocked by the content filter: routed to safeguarding");

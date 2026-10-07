@@ -1,4 +1,4 @@
-// duplex-real (round 2): engine fixes found on REAL speech through the REAL STT (evals/duplex-real; RESEARCH.md, REPORT.md).
+// duplex-real (round 2): engine fixes found on REAL speech through the REAL STT (evals/duplex-real; docs/design/round2/duplex-real/CRITERIA.md).
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import { TurnTranscript } from "../server/duplex/fanin.js";
@@ -65,8 +65,7 @@ describe("duplex-real: an empty micro-commit is not the child", () => {
   });
 });
 
-// ── governor G7: an open reply's revoke waits for the overlap to be a barge-in (AMI real speech: continuers killed replies) ──
-import { Governor } from "../src/duplex/governor.ts";
+// ── the open-turn wait and the yes/no elaboration ──
 import { NEUTRAL_CONTEXT } from "../src/duplex/host.ts";
 import { estimate } from "../src/duplex/engineRules.ts";
 import { OPEN_TURN_WAIT } from "../src/duplex/config.ts";
@@ -91,35 +90,9 @@ function tick(over = {}) {
   return merge(base, over);
 }
 const stub = (d) => ({ id: { id: "stub", stage: "A", version: "t" }, contract: "cce/2026-10-04", reset() {}, tick: () => ({ confidence: 0.9, pComplete: 0.95, pHoldWanted: 0.05, reasons: [], engine: { id: "stub", stage: "A", version: "t" }, ...d }) });
-const OPEN_SPEAK = { action: "SPEAK", detail: { action: "SPEAK", reason: "turn_end", firstSound: "body", verdictNotBefore: null } };
-const openReply = () => {
-  const g = new Governor({ flags: FLAGS });
-  g.phase = "child_turn"; g.phaseSince = 1000;
-  g.decide(tick(), stub(OPEN_SPEAK));
-  g.observe({ kind: "her_start", t: 5300, utteranceId: "r1" });
-  return g;
-};
-
-describe("duplex-real: G7 on an open reply", () => {
-  it("a continuer right after her reply starts opens an overlap, and a continuer verdict keeps her reply (no revoke)", () => {
-    const g = openReply();
-    g.observe({ kind: "child_onset", t: 5500, at: 5480 });
-    assert.equal(g.phase, "overlap");
-    const out = g.decide(tick({ t: 5900, phase: "overlap", child: { voicing: false } }), stub({ action: "KEEP_TALKING", detail: { action: "KEEP_TALKING", reason: "continuer", unduck: true } }));
-    assert.equal(out.decision.action, "KEEP_TALKING");
-    assert.ok(!out.events.some((e) => e.kind === "revoke"));
-  });
-  it("the same onset read as a barge-in becomes the revoke (merge, reply dropped)", () => {
-    const g = openReply();
-    g.observe({ kind: "child_onset", t: 5500, at: 5480 });
-    const out = g.decide(tick({ t: 6100, phase: "overlap", child: { voicing: true, silenceRunMs: 0, voicedRunMs: 620 } }), stub({ action: "YIELD", detail: { action: "YIELD", reason: "barge_in", atWordBoundary: true, resumable: true } }));
-    assert.equal(out.decision.action, "YIELD");
-    assert.equal(out.decision.detail.reason, "revoke");
-    assert.equal(out.decision.detail.resumable, false);
-    assert.ok(out.events.some((e) => e.kind === "revoke"));
-  });
-});
-
+// (A G7 change that armed the revoke on an open reply until the overlap read as a barge-in was tried and REVERTED: on AMI
+// real speech it kept 4 more continuers of 195 but stopped 2 fewer barge-ins of 51 and moved her stop p50 180 -> 320 ms;
+// context/inbox/duplex-real.json rj-dxr-armed-revoke.)
 describe("duplex-real: open-turn wait and the yes/no elaboration", () => {
   it("OPEN_TURN_WAIT holds 1,100 ms outside closed answers (chosen on TRAIN)", () => {
     assert.deepEqual({ ...OPEN_TURN_WAIT }, { prosodyFinal: 1100, neutral: 1100, prosodyContinue: 1100 });

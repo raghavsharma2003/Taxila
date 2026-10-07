@@ -2,7 +2,8 @@
 // (server/learner/kt/ledger.js, unchanged: K, D, M and θ) and then through facets.js (U, T) with the PRE-event
 // retrievability, in the same seq order and with the same de-duplication, so replay always equals the online fold
 // (TP1-TP2 extended to `comp`). Pure: no clock, no randomness, no I/O.
-import { fold as ktFold, foldOrder, newLedger, canonical, ledgerDigest } from "../learner/kt/ledger.js";
+import { fold as ktFold, foldOrder, newLedger, canonical, ledgerDigest, rank, DELAY_MS } from "../learner/kt/ledger.js";
+import { ITEM_CLASSES } from "../learner/kt/outcomes.js";
 import { retrievability, daysBetween } from "../learner/kt/fsrs.js";
 import { applyFacetEvent, applyFacetTeach, facetDrop, facetsOfClass, newFacet } from "./facets.js";
 import { COMP_PARAMS_VERSION, FACET } from "./params.js";
@@ -89,10 +90,17 @@ export function fuseEvidence(state, events, ctx = {}) {
     const rechecked = !!preSk?.anchorSession && post.anchorSession !== preSk.anchorSession;   // a delayed check ran
     if (preSk && (post.flags.delayed !== preSk.flags.delayed || post.delayedMisses !== preSk.delayedMisses || rechecked)) moved.push("D");
     if (ev.misconceptionId || ev.discriminates) moved.push("M");
-    if (moved.some((m) => m !== "K") || ev.via === "weave" || ev.via === "callback") {
+    // round2 truth: the first item answer on a learned skill in a later session (>= 20 h after its anchor) is the
+    // session-open delayed check / review (C31, director/state.js activate). It is a moment the parent card must show even
+    // when only K moved: a +1 day review never certifies (V1.3), so D does not move, and before this the card stayed
+    // byte-identical after it (w1c-three-day "the parent card changes after the delayed check alone": none). VALUES-100
+    // V1.5. Item events carry no shapeId, so this is read from held state only (replay-stable); once per skill per session.
+    const recheck = !!preSk && rank(preSk.display) >= rank("learned_today") && ITEM_CLASSES.has(ev.cls) && !!anchor
+      && preSk.anchorSession !== ev.sessionId && delayDays * 86_400_000 >= DELAY_MS && !c.reasons.some((r) => r.at === startAt && r.recheck);
+    if (moved.some((m) => m !== "K") || ev.via === "weave" || ev.via === "callback" || recheck) {
       c.reasons = [...c.reasons, {
-        evId: ev.id, at: startAt, shapeId: ev.shapeId, cls: ev.cls, outcome: ev.outcome, grader: ev.grader, via: ev.via ?? "dialogue",
-        help: ev.entryRung ?? 0, delayDays: Math.round(delayDays * 10) / 10, moved,
+        evId: ev.id, at: startAt, shapeId: ev.shapeId ?? (recheck ? "C31" : undefined), cls: ev.cls, outcome: ev.outcome, grader: ev.grader, via: ev.via ?? "dialogue",
+        help: ev.entryRung ?? 0, delayDays: Math.round(delayDays * 10) / 10, moved, ...(recheck ? { recheck: true } : {}),
       }].slice(-8);
     }
   }

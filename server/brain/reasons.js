@@ -12,7 +12,7 @@ const BEATS = ["arrive", "warmup", "hook", "explain", "worked_example", "contras
 // here rather than imported so this module stays pure and dependency-free.
 const REQUEST_TYPES = ["another", "example", "story", "slower", "visual", "language", "topic", "change_topic", "break", "stop", "goodbye",
   "continue", "confused", "thinking", "choices", "why", "how", "clarify", "repeat", "back", "skip", "know", "harder", "easier", "boredom",
-  "frustration", "identity", "uptake", "decline", "answer_q", "adapt", "adopt", "adult", "park", "detour", "hold_checkin", "ask_invite"];
+  "frustration", "identity", "uptake", "decline", "answer_q", "adapt", "adopt", "adult", "park", "detour", "hold_checkin", "ask_invite", "unclear"];
 // the CONVERSATION-V2 note's intents (conversation/understand.js INTENTS; a test keeps the two lists equal)
 const CONV2_INTENTS = ["answer_correct", "answer_wrong", "answer_partial", "answer_hedged", "thinking_aloud", "self_correction", "dont_know",
   "ask_for_answer", "insist_wrong", "check_my_work", "question_on_topic", "clarify", "curiosity_offlesson", "explain_differently",
