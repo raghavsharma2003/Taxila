@@ -1,0 +1,72 @@
+{
+ "stream": "integrate-r2",
+ "at": "2026-10-07",
+ "source": "round-2 integration on the main tree (truth 01-07, conversation 01-06, latency 01-03, content 01-06, duplex-real 01 + in-place duplex files); local server + worker on the Neon TEST branch; nothing committed, deployed or migrated",
+ "nodes": [
+  {
+   "id": "m-integ-r2-gates-2026-10-07",
+   "kind": "measurement",
+   "at": "2026-10-07",
+   "title": "Round-2 integrated tree gates (2026-10-07, main tree, all 23 patches + 2 integration fixes): tsc -b exit 0; vite build exit 0; npm test (one process) 2,167 tests, 2,164 pass, 0 fail, 3 skipped, both before and after the two integration fixes; check-prompt-budget PASS; persona invariants 70/70; runtime-image-imports green; lint-ui 93 findings, all in src/ui-v3 (untouched, pre-existing; 0 in any file the patches touch). Production-image simulation (server shared data src dist package.json copied to a scratch dir, node_modules linked, NODE_ENV=production, TAXILA_DB=test): /?ready=1 200, /modules.html 200, POST /api/duplex/shadow 204, POST /api/lesson/turn-prefetch 204. Conflicts: only server/index.js (latency 02 vs duplex-real 01 register lines), resolved by hand keeping both routes and `...lane` last."
+  },
+  {
+   "id": "m-integ-r2-battery-local-2026-10-07",
+   "kind": "measurement",
+   "at": "2026-10-07",
+   "title": "Round-2 integrated tree, local battery (serve.mjs + worker, Neon TEST, real Azure models, US sandbox, adult/scripted children, n=1 run per file unless noted). Pass 1 ran 2 lanes in parallel (plus an instrumented w1a run); pass 2 re-ran every failure single-lane after the integration fixes and with Azure Speech configured (India resource). Final: wave 2 = 26 of 28 files green (w2b-first-paint: headless Chromium closed mid-run + first paint p90 1035 ms n=3; w2flow-walk: pass 2 failed the child-stop path once, a third run ended on a natural wrap and failed only 'a wrong answer was marked not yet (0)'). owner-1 5/7 (typed 1/59 wrong->correct on an error_spot item answered '3/4' while the teacher's own re-ask was 'which is bigger: 4/9 or 3/4?'; place-value not verified on that seed; frame misgrades 0 after the harness fix), owner-2 3 then 6 defects on 90 turns (R3 bare question, R6 gutted, R7 same again, R2 fallback), owner-3 40/40, owner-4 17/17 (pass 1 15/17 with a model timeout fallback), owner-5 14/14, p1 pass, p2 31/31 (0 visemes when AZURE_SPEECH_* unset), p3 pass, p4 45/46 (request->stage p90 3393 ms n=6), p5 41/42 (1/37 bare card question), round2-truth 25/26 (1/19 proven-wrong credited: 'sequence-reversed' answer on a predict item), round2-conversation 30/31 (Hindi persistence miss, both passes), round2-latency 15/15, round2-content 27/30 (pass 1 board lateness p90 3796 ms n=15; pass 2 item-bound maths mount missing on c6/c7 and request->stage p90 3146 ms n=6), round2-duplex-real 10/10."
+  },
+  {
+   "id": "rj-integ-unclear-on-typed",
+   "kind": "rejection",
+   "at": "2026-10-07",
+   "title": "Conversation round 2's 'unclear' request (the note's noise / lexicon fragment -> 'say it again or finish it') fired on TYPED input: a typed bare '7' got 'aapne 7 kaha, poori baat dobara kahiye' as a repair move (w1a-battery 'repair moves on typed input' 1+1, a regression vs prod 0+0). Typed text is never garbled-by-ASR, and audit G4 already says typed input never gets 'say it again'. Fixed in server/director/state.js requestMove: case unclear returns null when input.typed (the phase decides; on an item that is the typed nudge). Proven by tests/round2-conversation.test.mjs (fails without the fix) and w1a-battery 16/16 after. Reverse only if typed fragments measurably go unanswered."
+  },
+  {
+   "id": "rj-integ-of-mode-harness-key",
+   "kind": "rejection",
+   "at": "2026-10-07",
+   "title": "Two acceptance harnesses read a bound engine's `params.target` as the answer. For fractions@1 mode 'of' (content patch 05) target is the fraction a/b and the answer is a/b of count, so w1b-mounts sent '1/4' as a raw value (ungradeable: no via='module' row) and owner-1 called the frame's correct '5' a misgrade. Harness fixes, not product: w1b-mounts now sends the fr.of act object with the whole number (50/50 after), owner-1 uses planKeyOf() for director plans and module answers (frame misgrades 0 after). Lesson: a new engine mode must update every harness that derives a key from plan params, not only engine-catalog.test."
+  },
+  {
+   "id": "rj-integ-parallel-battery-lanes",
+   "kind": "rejection",
+   "at": "2026-10-07",
+   "title": "Running the local acceptance battery in parallel lanes against one local server is not a valid measurement: every file's 'leftover @taxila.test guardians N -> N' check counts accounts another lane created (w0-smoke, w1b-tray, w1c-settle, w2i-safety, w2f, round2-truth failed only on it), and the extra load produced 46 taxila-gpt6 + 21 gpt6-luna + 6 taxila-fast timeouts that surfaced as fallback lines (owner-4) and w1c-settle / w2b-first-paint timeouts. Re-run single-lane, all of those passed. Run the battery single-lane."
+  },
+  {
+   "id": "o-integ-stop-path-continue",
+   "kind": "open",
+   "at": "2026-10-07",
+   "title": "w2flow-walk pass 2 (local, integrated tree, n=1): the child's 'bas, aaj ke liye itna hi' got a break move whose spoken line was 'Theek hai Riya, ab isi jagah se continue karte hain' + the card question, and the follow-up stop left the lesson in practice ('the lesson ends' FAIL). Not reproduced in the next run (natural wrap). The director's stop check-in carries no item/ui.ask in the unit fixture, so the lead slot is not the proven cause; the line contradicts SH.stopCheck (no pressure, offer the three chips). Needs a deterministic repro of the stop path on the integrated tree before deploy: NEVER MANIPULATE (stop when they want) is floor."
+  },
+  {
+   "id": "o-integ-board-first-c6-w8",
+   "kind": "open",
+   "at": "2026-10-07",
+   "title": "Board-first preselect on the integrated tree refused c6-maths-ch07-t01 explain on W8.counts_match_line in every one of 9 local occurrences (the content stream logged the same pattern); those asks fall to the old ladder, which under model timeouts left a slot unfilled while her line pointed at the screen once (p4 pass 1). Board-first covered every other topic it was asked on."
+  },
+  {
+   "id": "o-integ-local-speech-env",
+   "kind": "open",
+   "at": "2026-10-07",
+   "title": ".env.local has no AZURE_SPEECH_REGION / AZURE_SPEECH_KEY, so a local server speaks through gpt-4o-mini-tts and p2-face reports 0 Diya visemes (29/31). Mapped from the AZURE_AI_CENTRALINDIA_* pair at launch (values never printed) p2 is 31/31. Either add the pair to .env.local or make the local launcher map it."
+  }
+ ],
+ "edges": [
+  {
+   "src": "rj-integ-unclear-on-typed",
+   "rel": "caused_by",
+   "dst": "d-conv-unclear-reading"
+  },
+  {
+   "src": "rj-integ-of-mode-harness-key",
+   "rel": "caused_by",
+   "dst": "dec-content-fraction-name-of"
+  },
+  {
+   "src": "o-integ-board-first-c6-w8",
+   "rel": "caused_by",
+   "dst": "dec-content-board-first"
+  }
+ ]
+}
