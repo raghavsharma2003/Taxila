@@ -107,6 +107,13 @@ export class Governor {
   private yielded: { at: Ms; resumable: boolean; onsetAt: Ms } | null = null;
   private overlapOnsetAt: Ms | null = null;
   private pendingRevoke = false;
+  /**
+   * duplex-real (AMI real speech through the real STT, 2026-10-07): a child onset while her OPEN reply (no verdict word) is
+   * audible and still revocable no longer revokes at once. It opens an ordinary overlap; only if that overlap is read as a barge-in (a YIELD)
+   * does the yield become the revoke. Before, any onset revoked, so a "yeah" / "mm-hmm" / "हाँ" right after her reply
+   * started killed the reply (26 of 56 continuer failures and 14 of 37 room-talk false yields were revokes).
+   */
+  private revokeArmedAt: Ms | null = null;
   private pendingSafeguardDefer = false;
   private pose: string | null = null;
   private quarantined = false;
@@ -155,6 +162,7 @@ export class Governor {
         if (this.spoke) this.spoke.verdictPlayed = true;
         break;
       case "her_end": {
+        this.revokeArmedAt = null;
         const wasSafeguard = !!this.spoke?.safeguard;
         this.spoke = null;
         this.yielded = null;
@@ -185,7 +193,10 @@ export class Governor {
         // first sound): defer it to the next pause instead of talking over them
         if ((this.phase === "committed" || this.phase === "her_turn") && this.spoke?.safeguard) this.pendingSafeguardDefer = true;
         else if (this.phase === "committed") this.pendingRevoke = true;
-        else if (this.phase === "her_turn" && this.spoke && !this.spoke.safeguard && this.revocable(o.at)) this.pendingRevoke = true;
+        // a closed answer before her verdict word still revokes at once (a self-correction must never hear the verdict);
+        // an OPEN reply arms the revoke and lets the overlap classifier tell a continuer from the child going on
+        else if (this.phase === "her_turn" && this.spoke && !this.spoke.safeguard && this.revocable(o.at) && this.spoke.verdictNotBefore !== null) this.pendingRevoke = true;
+        else if (this.phase === "her_turn" && this.spoke && !this.spoke.safeguard && this.revocable(o.at)) { this.revokeArmedAt = o.at; this.overlapOnsetAt = o.at; this.go("overlap", o.t); }
         else if (this.phase === "her_turn") { this.overlapOnsetAt = o.at; this.go("overlap", o.t); }
         // ship5 fixer (experience B3/B4): after a granted hold the child's next words are a NEW turn: the hold phrase ("ruko
         // ruko didi ek second") was floor control, and folding it in sent "ruko ruko didi ek second aur batao na" as one turn
@@ -468,6 +479,22 @@ export class Governor {
   /** Phase transitions and bookkeeping that follow the governed action. */
   private finish(tick: EngineTick, d: EngineDecision): EngineDecision {
     const t = tick.t;
+    // duplex-real: an armed revoke (see revokeArmedAt) fires only when the overlap it opened is read as a barge-in
+    if (this.revokeArmedAt !== null) {
+      const armed = this.revokeArmedAt;
+      const det0 = d.detail;
+      if (d.action === "YIELD" && det0?.action === "YIELD" && det0.reason !== "revoke" && det0.reason !== "safety") {
+        this.revokeArmedAt = null;
+        if (this.spoke && !this.spoke.safeguard && this.revocable(armed)) {
+          d = { ...d, detail: { action: "YIELD", reason: "revoke", atWordBoundary: true, resumable: false }, reasons: (["repaired", ...d.reasons.filter((r) => r !== "repaired")] as ReasonCode[]).slice(0, 12) };
+          this.events.push({ kind: "revoke", at: t });
+          this.spoke = null;
+          this.overlapOnsetAt = null;
+          this.go("child_turn", t);
+        }
+      } else if (this.phase !== "overlap" && this.phase !== "her_turn") this.revokeArmedAt = null;
+      else if (d.action === "KEEP_TALKING" && det0?.action === "KEEP_TALKING" && det0.unduck) this.revokeArmedAt = null; // a continuer: her reply stands
+    }
     this.lastGovernedPH = d.pHoldWanted;
     const det = d.detail;
     if (d.action === "SPEAK" || d.action === "CUT_IN") {

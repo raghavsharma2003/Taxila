@@ -64,3 +64,69 @@ describe("duplex-real: an empty micro-commit is not the child", () => {
     assert.equal(d.onServerError("input_audio_buffer_commit_empty", "buffer too small"), false);
   });
 });
+
+// ── governor G7: an open reply's revoke waits for the overlap to be a barge-in (AMI real speech: continuers killed replies) ──
+import { Governor } from "../src/duplex/governor.ts";
+import { NEUTRAL_CONTEXT } from "../src/duplex/host.ts";
+import { estimate } from "../src/duplex/engineRules.ts";
+import { OPEN_TURN_WAIT } from "../src/duplex/config.ts";
+
+const FLAGS = { shadow: false, semantic: false, trained: false, cutIn: false, audioBackchannel: false, lexicalBackchannel: false };
+function tick(over = {}) {
+  const base = {
+    contract: "cce/2026-10-04", t: 5000, cause: "timer", phase: "child_turn", phaseSince: 1000,
+    child: { voicing: false, voicedProb: 0, silenceRunMs: 400, voicedRunMs: 500, turnVoicedMs: 800, pausesThisTurn: 0, firstOnsetAt: 1200, lastOnsetAt: 1200, lastOffsetAt: 4600,
+      prosody: { f0Hz: null, f0SlopeStPerS: null, f0RelRange: null, energyDb: -58, energySlopeDbPerS: null, finalLengthening: null, speechRateSylPerS: null }, targetSpeaker: null },
+    transcript: { text: "मुझे लगता है ये ठीक है", stablePrefix: "", stability: 1, isFinal: true, words: null, coverageEndMs: 4600, unseenVoicedMs: 0, source: "sim", lagMsEstimate: 300, textHash: "h1", echoRemovedTokens: 0, updatedAt: 4800 },
+    markers: { cue: "plain", lexP: 0.9, form: "none", values: [], lastValueAgeMs: null, holdRequest: false, fillerTail: false, openTail: false, projection: false, wordSearch: false,
+      repairOpen: false, repaired: false, yieldTag: false, idk: false, asks: false, questionComplete: false, stopRequest: false, repeatRequest: false, codeSwitchAtEdge: false, offTaskMs: 0 },
+    her: { speaking: false, utteranceId: null, playedMs: 0, totalMs: null, heardUpTo: null, atClauseBoundary: false, lastAct: "statement", handedOverAt: 1000, recentWords: [], outputLevelDb: null },
+    context: { ...NEUTRAL_CONTEXT, exchange: "free" },
+    pace: { sessions: 0, holdPauseMs: null, answerGapMs: null, speechRateSylPerS: null, fillerRatePerMin: null, source: "band_default", strain: false },
+    screen: { events: [], busy: false, lastEventAt: null }, overlap: null,
+    safety: { distress: false, kind: null, firstAt: null, checkedThroughMs: 4600, source: null },
+    estimates: { semantic: null, acoustic: null }, last: null, lastActs: {},
+  };
+  const merge = (a, b) => { for (const [k, v] of Object.entries(b)) a[k] = v && typeof v === "object" && !Array.isArray(v) && a[k] && typeof a[k] === "object" ? merge({ ...a[k] }, v) : v; return a; };
+  return merge(base, over);
+}
+const stub = (d) => ({ id: { id: "stub", stage: "A", version: "t" }, contract: "cce/2026-10-04", reset() {}, tick: () => ({ confidence: 0.9, pComplete: 0.95, pHoldWanted: 0.05, reasons: [], engine: { id: "stub", stage: "A", version: "t" }, ...d }) });
+const OPEN_SPEAK = { action: "SPEAK", detail: { action: "SPEAK", reason: "turn_end", firstSound: "body", verdictNotBefore: null } };
+const openReply = () => {
+  const g = new Governor({ flags: FLAGS });
+  g.phase = "child_turn"; g.phaseSince = 1000;
+  g.decide(tick(), stub(OPEN_SPEAK));
+  g.observe({ kind: "her_start", t: 5300, utteranceId: "r1" });
+  return g;
+};
+
+describe("duplex-real: G7 on an open reply", () => {
+  it("a continuer right after her reply starts opens an overlap, and a continuer verdict keeps her reply (no revoke)", () => {
+    const g = openReply();
+    g.observe({ kind: "child_onset", t: 5500, at: 5480 });
+    assert.equal(g.phase, "overlap");
+    const out = g.decide(tick({ t: 5900, phase: "overlap", child: { voicing: false } }), stub({ action: "KEEP_TALKING", detail: { action: "KEEP_TALKING", reason: "continuer", unduck: true } }));
+    assert.equal(out.decision.action, "KEEP_TALKING");
+    assert.ok(!out.events.some((e) => e.kind === "revoke"));
+  });
+  it("the same onset read as a barge-in becomes the revoke (merge, reply dropped)", () => {
+    const g = openReply();
+    g.observe({ kind: "child_onset", t: 5500, at: 5480 });
+    const out = g.decide(tick({ t: 6100, phase: "overlap", child: { voicing: true, silenceRunMs: 0, voicedRunMs: 620 } }), stub({ action: "YIELD", detail: { action: "YIELD", reason: "barge_in", atWordBoundary: true, resumable: true } }));
+    assert.equal(out.decision.action, "YIELD");
+    assert.equal(out.decision.detail.reason, "revoke");
+    assert.equal(out.decision.detail.resumable, false);
+    assert.ok(out.events.some((e) => e.kind === "revoke"));
+  });
+});
+
+describe("duplex-real: open-turn wait and the yes/no elaboration", () => {
+  it("OPEN_TURN_WAIT holds 1,100 ms outside closed answers (chosen on TRAIN)", () => {
+    assert.deepEqual({ ...OPEN_TURN_WAIT }, { prosodyFinal: 1100, neutral: 1100, prosodyContinue: 1100 });
+  });
+  it("after a yes/no question, a bare 'हाँ जी' is a closed answer; 'हाँ जी, मेरा नाम रिया है और …' is read as a free turn", () => {
+    const yn = { ...NEUTRAL_CONTEXT, exchange: "closed_answer", expected: { form: "yes_no", slots: 1 } };
+    assert.equal(estimate(tick({ context: yn, transcript: { text: "हाँ जी" } })).exchange, "closed_answer");
+    assert.equal(estimate(tick({ context: yn, transcript: { text: "हाँ जी, मेरा नाम रिया है और" } })).exchange, "free");
+  });
+});

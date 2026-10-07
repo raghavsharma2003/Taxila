@@ -154,7 +154,8 @@ if (import.meta.url === `file://${process.argv[1]}`) {
         if (fs.existsSync(file)) { console.log(m, X, "cached"); return; }
         const { x, mask } = micOf(argv[2], M, X, pass);
         const cx = M.chans[X];
-        const frames = { db: mask ? cx.db.map((d, k) => (mask[k] ? floorOf(cx.db) : d)) : cx.db, f0: mask ? cx.f0.map((f, k) => (mask[k] ? null : f)) : cx.f0 };
+        const fl = floorOf(cx.db); // once: sorting the whole channel per masked frame made the turns pass CPU-bound (lagging real time)
+        const frames = { db: mask ? cx.db.map((d, k) => (mask[k] ? fl : d)) : cx.db, f0: mask ? cx.f0.map((f, k) => (mask[k] ? null : f)) : cx.f0 };
         const t0 = Date.now();
         const r = await runSession({ id: `${m}-${X}-${pass}`, x, frames, her: [], stt: { lane }, band: "B4", DuplexLive });
         const turns = pass === "turns" ? scoreTurns(M, X, r.acts, r.phases) : null;
