@@ -872,7 +872,10 @@ function p5RequestMove(s, input, item, req, labels) {
       return withLead(SH.adaptTo({ method: req.method }));
     case "adult": return withLead(SH.adultVoice());
     // round 2 (conversation): a broken-off or garbled turn: no verdict, a no-blame ask to say it again or finish it
-    case "unclear": return item ? withLead(SH.unclearAgain()) : plan("repair", SH.unclearAgain(), { request: "unclear" });
+    // Typed input never gets "say it again" (they typed it; audit G4, unclear() above): no move of its own, so the phase
+    // decides (a typed non-answer on an item gets the typed nudge). Round 2 integration: the note read a typed bare "7" as
+    // noise and the lesson answered "aapne 7 kaha, poori baat dobara kahiye" (w1a-battery: repair moves on typed input 1+1).
+    case "unclear": if (input.typed) return null; return item ? withLead(SH.unclearAgain()) : plan("repair", SH.unclearAgain(), { request: "unclear" });
     case "park": {
       const e = parkEntry({ topic: req.topic, learning: req.learning, turn: s.turn, itemOnTable: !!item });
       s.later = pushLater(s.later ?? [], e);

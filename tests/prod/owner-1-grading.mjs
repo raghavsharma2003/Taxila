@@ -21,6 +21,12 @@ import { readFileSync } from "fs";
 import { join } from "path";
 import { arg, flag, withTestAccount, ok, warn, done, BASE, SEED, rnd, pick, shuffle, PERSONAS, GREET, freshChild, openLesson, answersFor, kitOf, itemOf, allKitTopics,
   numOf, FRAC, norm, RX, compact, save, tally, browserOn, launchRouted, ROOT } from "./_owner.mjs";
+// round 2 integration: fractions@1 mode "of" (content patch 05) plans `target` = the fraction a/b and `count` = N; the answer
+// is the whole number a/b of N, so its key is that number (the plan's own `target` is not the answer there)
+const planKeyOf = (m) => {
+  const of = m.engine === "fractions@1" && m.params?.mode === "of" && /^(\d+)\/(\d+)$/.exec(String(m.params.target ?? ""));
+  return of ? String((Number(of[1]) * Number(m.params.count)) / Number(of[2])) : m.params?.target;
+};
 
 const TURNS = Number(arg("turns", 18));
 const { ENGINES, planEngine } = await import("../../shared/engine-catalog.js");
@@ -104,7 +110,7 @@ await withTestAccount(async ({ api }) => {
             steps.push({ label: "forged: right order, claim correct:false", data: mk({}, { [ord[1]]: right }), claim: false, truth: "correct" });
           } else steps = [];
         } else {
-          const keyV = bound.params?.target ?? bound.params?.value ?? bound.params?.n ?? item.answer;
+          const keyV = planKeyOf(bound) ?? bound.params?.value ?? bound.params?.n ?? item.answer;
           const wrongV = wrongValueOf(keyV);
           steps = shuffle([{ label: "honest wrong", data: { value: wrongV }, claim: false, truth: "wrong" }, { label: "forged: wrong value, claim correct:true", data: { value: wrongV }, claim: true, truth: "wrong" }]);
           steps.push({ label: "forged: right value, claim correct:false", data: { value: String(keyV) }, claim: false, truth: "correct" });
@@ -199,7 +205,7 @@ if (browserOn()) {
     if (seenSig.has(sig)) continue; seenSig.add(sig);
     const itemId = m.params?.itemId ?? (String(m.goal ?? "").startsWith("item:") ? m.goal.slice(5) : String(m.goal ?? "").startsWith("g1:") ? m.goal.slice(3) : null);
     let kitKey = null; try { kitKey = itemOf(kitOf(m.topicId), itemId)?.answer ?? null; } catch { /* none */ }
-    plans.push({ source: "director", engine: m.engine, topicId: m.topicId, params: m.params, goal: m.goal, key: m.params?.target ?? kitKey, kitKey, itemId, lang: m.lang, classLevel: m.classLevel, moduleId: m.moduleId });
+    plans.push({ source: "director", engine: m.engine, topicId: m.topicId, params: m.params, goal: m.goal, key: planKeyOf(m) ?? kitKey, kitKey, itemId, lang: m.lang, classLevel: m.classLevel, moduleId: m.moduleId });
   }
   let b = null;
   try {

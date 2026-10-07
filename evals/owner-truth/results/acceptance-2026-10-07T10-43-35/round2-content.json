@@ -1,0 +1,5457 @@
+{
+ "base": "http://127.0.0.1:8790",
+ "startedAt": "2026-10-07T10:43:35.152Z",
+ "conc": 4,
+ "reps": 1,
+ "requests": [
+  {
+   "tag": "picture \"picture dikhao\" (typed, c5-maths-ch02-t01, rep 1)",
+   "kind": "stagecraft",
+   "real": true,
+   "pieceMs": 2426,
+   "refers": true,
+   "turnMs": 2426,
+   "reply": "Aarav, screen par 0 se 1 tak equal gaps dekhiye; 5/4 ke liye 1 ke baad ek gap aur badhiye. Aap point kahan rakhenge?",
+   "transcript": {
+    "lessonId": "39d9dc99-d373-44f2-b103-898b7d193726",
+    "mode": "text",
+    "topicId": "c5-maths-ch02-t01",
+    "opening": {
+     "reply": "Namaste Aarav, main Arjun, aapka AI teacher. Aaj fractions ko number line par rakhenge—cricket pitch jaisa. Aapko cricket mein kya pasand hai?",
+     "ui": {
+      "status": "your_turn",
+      "phase": "warmup",
+      "handover": "answer",
+      "answerForm": "words",
+      "tray": "none",
+      "shortTitle": "Fractions on a line",
+      "beat": {
+       "beatId": "b1-arrive",
+       "type": "arrive",
+       "index": 1
+      },
+      "ask": {
+       "text": "Aapko cricket mein kya pasand hai?"
+      }
+     },
+     "moduleCommands": []
+    },
+    "rows": [
+     {
+      "n": 1,
+      "child": "haan ready hoon",
+      "kind": "greet",
+      "ms": 1782,
+      "r": {
+       "move": {
+        "kind": "hook"
+       },
+       "teacherReply": "Aarav, cricket pitch ko 4 equal parts mein baantiye; 5/4 pitch ke end se aage hoga ya pehle? Ab apni prediction batayiye—baad mein Bittu ko sikhayenge.",
+       "ui": {
+        "status": "your_turn",
+        "phase": "teach",
+        "handover": "answer",
+        "answerForm": "words",
+        "tray": "none",
+        "shortTitle": "Fractions on a line",
+        "beat": {
+         "beatId": "b2-hook",
+         "type": "hook",
+         "index": 2
+        },
+        "ask": {
+         "text": "Aarav, cricket pitch ko 4 equal parts mein baantiye; 5/4 pitch ke end se aage hoga ya pehle?"
+        }
+       },
+       "moduleCommands": []
+      }
+     },
+     {
+      "n": 2,
+      "child": "haan bolo",
+      "kind": "filler",
+      "ms": 2745,
+      "r": {
+       "move": {
+        "kind": "explain"
+       },
+       "teacherReply": "Aarav, 0 se 1 tak 5 equal gaps banenge; har gap 1/5. Screen par 2/5 ke liye kitne gaps ginenge?",
+       "ui": {
+        "status": "your_turn",
+        "phase": "teach",
+        "handover": "answer",
+        "answerForm": "words",
+        "tray": "module",
+        "shortTitle": "Fractions on a line",
+        "beat": {
+         "beatId": "b3-explain",
+         "type": "explain",
+         "index": 3
+        },
+        "ask": {
+         "text": "Screen par 2/5 ke liye kitne gaps ginenge?"
+        }
+       },
+       "moduleCommands": [
+        {
+         "op": "mount",
+         "moduleId": "m2",
+         "engine": "number-line@1",
+         "params": {
+          "topicId": "c5-maths-ch02-t01",
+          "skillId": null,
+          "lang": "hinglish",
+          "fractions": [
+           [
+            2,
+            5
+           ]
+          ],
+          "numbers": [
+           0,
+           1
+          ]
+         }
+        }
+       ]
+      }
+     },
+     {
+      "n": 3,
+      "child": "picture dikhao",
+      "kind": "visual",
+      "ms": 2426,
+      "r": {
+       "move": {
+        "kind": "reteach"
+       },
+       "teacherReply": "Aarav, screen par 0 se 1 tak equal gaps dekhiye; 5/4 ke liye 1 ke baad ek gap aur badhiye. Aap point kahan rakhenge?",
+       "ui": {
+        "status": "your_turn",
+        "phase": "teach",
+        "handover": "answer",
+        "answerForm": "words",
+        "tray": "studio",
+        "shortTitle": "Fractions on a line",
+        "beat": {
+         "beatId": "b3-explain",
+         "type": "explain",
+         "index": 3
+        },
+        "ask": {
+         "text": "Aap point kahan rakhenge?"
+        },
+        "studioSlot": {
+         "slotId": "39d9dc99-d373-44f2-b103-898b7d193726:c1:slot",
+         "intentId": "39d9dc99-d373-44f2-b103-898b7d193726:c1",
+         "state": "revealed",
+         "artifact": {
+          "kind": "stagecraft",
+          "stage": {
+           "w": 1000,
+           "h": 625
+          },
+          "stagecraft": {
+           "rung": "engine_default",
+           "archetype": "scene-explainer@1",
+           "spec": {
+            "archetype": "scene-explainer@1",
+            "skills": [
+             "c5-maths-ch02-t01"
+            ],
+            "lang": "en",
+            "strings": {
+             "again": "Show again",
+             "yourTurn": "Your turn",
+             "check": "Check",
+             "right": "Got it",
+             "look": "Look again",
+             "myth": "MYTH",
+             "busted": "NOT TRUE",
+             "order": "Tap them in order"
+            },
+            "title": "Fractions on the number line",
+            "accent": "ion",
+            "targets": "c5-maths-ch02-t01-m-all-less-than-one",
+            "scenes": [
+             {
+              "id": "s1",
+              "layout": "split",
+              "els": [
+               {
+                "id": "title",
+                "type": "title",
+                "text": "Fractions on a line"
+               },
+               {
+                "id": "myth",
+                "type": "myth",
+                "text": "Every fraction is less than 1"
+               }
+              ]
+             },
+             {
+              "id": "s2",
+              "layout": "row",
+              "els": [
+               {
+                "id": "ax",
+                "type": "axis",
+                "min": 0,
+                "max": 1,
+                "step": 0.2,
+                "scale": "linear",
+                "y": 420
+               },
+               {
+                "id": "zero",
+                "type": "label",
+                "text": "0",
+                "x": 100,
+                "y": 455
+               },
+               {
+                "id": "one",
+                "type": "label",
+                "text": "1",
+                "x": 800,
+                "y": 455
+               },
+               {
+                "id": "m1",
+                "type": "mark",
+                "axis": "ax",
+                "value": 0.2,
+                "text": "1/5",
+                "color": "ion"
+               },
+               {
+                "id": "m2",
+                "type": "mark",
+                "axis": "ax",
+                "value": 0.4,
+                "text": "2/5",
+                "color": "mint"
+               },
+               {
+                "id": "m3",
+                "type": "mark",
+                "axis": "ax",
+                "value": 0.6,
+                "text": "3/5",
+                "color": "amber"
+               },
+               {
+                "id": "m4",
+                "type": "mark",
+                "axis": "ax",
+                "value": 0.8,
+                "text": "4/5",
+                "color": "sun"
+               },
+               {
+                "id": "den",
+                "type": "node",
+                "text": "Bottom: 5",
+                "sub": "equal gaps",
+                "glyph": "ruler",
+                "color": "ion"
+               },
+               {
+                "id": "num",
+                "type": "node",
+                "text": "Top: 2",
+                "sub": "gaps from 0",
+                "glyph": "compass",
+                "color": "mint"
+               }
+              ]
+             },
+             {
+              "id": "s3",
+              "layout": "row",
+              "els": [
+               {
+                "id": "ax2",
+                "type": "axis",
+                "min": 0,
+                "max": 2,
+                "step": 0.25,
+                "scale": "linear",
+                "y": 420
+               },
+               {
+                "id": "p0",
+                "type": "label",
+                "text": "0",
+                "x": 80,
+                "y": 455
+               },
+               {
+                "id": "p1",
+                "type": "label",
+                "text": "1",
+                "x": 430,
+                "y": 455
+               },
+               {
+                "id": "p2",
+                "type": "label",
+                "text": "2",
+                "x": 800,
+                "y": 455
+               },
+               {
+                "id": "past",
+                "type": "node",
+                "text": "5/4",
+                "sub": "one quarter past 1",
+                "glyph": "spark",
+                "color": "amber"
+               },
+               {
+                "id": "before",
+                "type": "node",
+                "text": "before 1",
+                "sub": "less than 1",
+                "glyph": "question",
+                "color": "ion"
+               },
+               {
+                "id": "beyond",
+                "type": "node",
+                "text": "after 1",
+                "sub": "greater than 1",
+                "color": "amber"
+               }
+              ]
+             }
+            ],
+            "text": {
+             "L1": "Fractions are numbers, so they have places on a number line.",
+             "L2": "The bottom number tells how many equal gaps to make from 0 to 1.",
+             "L3": "Count gaps, not marks. Four marks between 0 and 1 make five equal gaps.",
+             "L4": "So each gap is one fifth. The top number tells how many gaps to count from 0.",
+             "L5": "To mark two fifths, count two gaps from 0. That mark is 2/5.",
+             "L6": "A fraction can also go beyond 1. If the top number is bigger than the bottom number, it lies past 1.",
+             "L7": "For example, 5/4 is one quarter past 1, so it is after 1.",
+             "L8": "Now use these ideas to choose where 5/4 belongs."
+            },
+            "narration": {
+             "L1": {
+              "text": "Fractions are numbers, so they have places on a number line.",
+              "dur": 3,
+              "lead": 0,
+              "tail": 0,
+              "pauses": []
+             },
+             "L2": {
+              "text": "The bottom number tells how many equal gaps to make from 0 to 1.",
+              "dur": 4,
+              "lead": 0,
+              "tail": 0,
+              "pauses": []
+             },
+             "L3": {
+              "text": "Count gaps, not marks. Four marks between 0 and 1 make five equal gaps.",
+              "dur": 4,
+              "lead": 0,
+              "tail": 0,
+              "pauses": []
+             },
+             "L4": {
+              "text": "So each gap is one fifth. The top number tells how many gaps to count from 0.",
+              "dur": 4,
+              "lead": 0,
+              "tail": 0,
+              "pauses": []
+             },
+             "L5": {
+              "text": "To mark two fifths, count two gaps from 0. That mark is 2/5.",
+              "dur": 3.5,
+              "lead": 0,
+              "tail": 0,
+              "pauses": []
+             },
+             "L6": {
+              "text": "A fraction can also go beyond 1. If the top number is bigger than the bottom number, it lies past 1.",
+              "dur": 4,
+              "lead": 0,
+              "tail": 0,
+              "pauses": []
+             },
+             "L7": {
+              "text": "For example, 5/4 is one quarter past 1, so it is after 1.",
+              "dur": 3,
+              "lead": 0,
+              "tail": 0,
+              "pauses": []
+             },
+             "L8": {
+              "text": "Now use these ideas to choose where 5/4 belongs.",
+              "dur": 2.5,
+              "lead": 0,
+              "tail": 0,
+              "pauses": []
+             }
+            },
+            "beats": [
+             {
+              "line": "L1",
+              "gap": 0.3,
+              "scene": "s1",
+              "cues": [
+               {
+                "at": 0,
+                "do": "show",
+                "dur": 0.8,
+                "target": "title"
+               }
+              ]
+             },
+             {
+              "line": "L2",
+              "gap": 0.3,
+              "scene": "s2",
+              "cues": [
+               {
+                "at": 0,
+                "do": "show",
+                "dur": 0.8,
+                "target": "ax"
+               },
+               {
+                "at": 0.5,
+                "do": "show",
+                "dur": 0.8,
+                "target": "den"
+               }
+              ]
+             },
+             {
+              "line": "L3",
+              "gap": 0.3,
+              "scene": "s2",
+              "cues": [
+               {
+                "at": 0,
+                "do": "show",
+                "dur": 1,
+                "target": [
+                 "m1",
+                 "m2",
+                 "m3",
+                 "m4"
+                ]
+               },
+               {
+                "at": 0.8,
+                "do": "highlight",
+                "dur": 1,
+                "target": "den"
+               }
+              ]
+             },
+             {
+              "line": "L4",
+              "gap": 0.3,
+              "scene": "s2",
+              "cues": [
+               {
+                "at": 0,
+                "do": "show",
+                "dur": 0.8,
+                "target": "num"
+               },
+               {
+                "at": 0.7,
+                "do": "flow",
+                "dur": 0.6,
+                "target": "m1",
+                "to": 1
+               }
+              ]
+             },
+             {
+              "line": "L5",
+              "gap": 0.3,
+              "scene": "s2",
+              "cues": [
+               {
+                "at": 0,
+                "do": "highlight",
+                "dur": 1.2,
+                "target": "m2"
+               }
+              ]
+             },
+             {
+              "line": "L6",
+              "gap": 0.4,
+              "scene": "s1",
+              "cues": [
+               {
+                "at": 0,
+                "do": "show",
+                "dur": 0.8,
+                "target": "myth"
+               },
+               {
+                "at": 0.8,
+                "do": "bust",
+                "dur": 1,
+                "target": "myth"
+               }
+              ]
+             },
+             {
+              "line": "L7",
+              "gap": 0.3,
+              "scene": "s3",
+              "cues": [
+               {
+                "at": 0,
+                "do": "show",
+                "dur": 0.8,
+                "target": "ax2"
+               },
+               {
+                "at": 0.5,
+                "do": "show",
+                "dur": 0.8,
+                "target": "past"
+               },
+               {
+                "at": 1.2,
+                "do": "highlight",
+                "dur": 1,
+                "target": "beyond"
+               }
+              ]
+             },
+             {
+              "line": "L8",
+              "gap": 0,
+              "scene": "s3",
+              "cues": [
+               {
+                "at": 0,
+                "do": "interactive",
+                "dur": 1
+               }
+              ]
+             }
+            ],
+            "task": {
+             "kind": "tap",
+             "prompt": "Where does 5/4 belong on the number line?",
+             "options": [
+              "before",
+              "beyond"
+             ],
+             "answer": "beyond",
+             "src": "c5-maths-ch02-t01-i04"
+            }
+           },
+           "boardTwin": {
+            "scriptRef": "board:c5-maths-ch02-t01-s1|explain|-|-",
+            "values": {
+             "title": "Cinematic explainer",
+             "need": "explain"
+            },
+            "board": {
+             "title": "Cinematic explainer",
+             "lines": [
+              "line",
+              "equal",
+              "gaps",
+              "mark"
+             ],
+             "figure": {
+              "kind": "none"
+             }
+            }
+           },
+           "board": null,
+           "cue": {
+            "clauseIdx": 0,
+            "preRollMs": 400,
+            "crossFadeMs": 420
+           },
+           "buildSha": null,
+           "blobUrl": null
+          }
+         }
+        }
+       },
+       "moduleCommands": [
+        {
+         "op": "unmount",
+         "moduleId": "m2"
+        }
+       ],
+       "studio": {
+        "reveal": "39d9dc99-d373-44f2-b103-898b7d193726:c1"
+       }
+      }
+     }
+    ]
+   }
+  },
+  {
+   "tag": "picture \"picture dikhao\" (spoken, c5-maths-ch02-t01, rep 1)",
+   "kind": "stagecraft",
+   "real": true,
+   "pieceMs": 2662,
+   "refers": true,
+   "turnMs": 2662,
+   "reply": "Aarav, screen par 0 aur 1 dekhiye; 5 ko neeche dekhkar line ko 5 equal gaps mein baantne ka pehla mark kahan hoga?",
+   "transcript": {
+    "lessonId": "24a9a4bb-cf23-4cc4-bc87-56365a5527a8",
+    "mode": "cascade",
+    "topicId": "c5-maths-ch02-t01",
+    "opening": {
+     "reply": "Namaste Aarav, main Arjun, aapka AI teacher hoon. Aaj fractions ko number line par cricket pitch ki tarah place karenge. Aap ready hain?",
+     "ui": {
+      "status": "your_turn",
+      "phase": "warmup",
+      "handover": "answer",
+      "answerForm": "words",
+      "tray": "none",
+      "shortTitle": "Fractions on a line",
+      "beat": {
+       "beatId": "b1-arrive",
+       "type": "arrive",
+       "index": 1
+      },
+      "ask": {
+       "text": "Aap ready hain?"
+      }
+     },
+     "moduleCommands": []
+    },
+    "rows": [
+     {
+      "n": 1,
+      "child": "haan ready hoon",
+      "kind": "greet",
+      "ms": 2312,
+      "r": {
+       "move": {
+        "kind": "hook"
+       },
+       "teacherReply": "Cricket pitch ko 4 equal parts mein baantiye; 5/4 ka point pitch ke aage hoga ya andar? End mein aap Bittu ko sikhaayenge.",
+       "ui": {
+        "status": "your_turn",
+        "phase": "teach",
+        "handover": "answer",
+        "answerForm": "words",
+        "tray": "none",
+        "shortTitle": "Fractions on a line",
+        "beat": {
+         "beatId": "b2-hook",
+         "type": "hook",
+         "index": 2
+        },
+        "ask": {
+         "text": "Cricket pitch ko 4 equal parts mein baantiye; 5/4 ka point pitch ke aage hoga ya andar?"
+        }
+       },
+       "moduleCommands": []
+      }
+     },
+     {
+      "n": 2,
+      "child": "haan",
+      "kind": "filler",
+      "ms": 1887,
+      "r": {
+       "move": {
+        "kind": "explain"
+       },
+       "teacherReply": "Pehle 0 se 1 ko 5 equal gaps mein baantiye; har gap 1/5 hai. Screen par 2/5, 0 se kitne gaps door hoga?",
+       "ui": {
+        "status": "your_turn",
+        "phase": "teach",
+        "handover": "answer",
+        "answerForm": "words",
+        "tray": "module",
+        "shortTitle": "Fractions on a line",
+        "beat": {
+         "beatId": "b3-explain",
+         "type": "explain",
+         "index": 3
+        },
+        "ask": {
+         "text": "Screen par 2/5, 0 se kitne gaps door hoga?"
+        }
+       },
+       "moduleCommands": [
+        {
+         "op": "mount",
+         "moduleId": "m2",
+         "engine": "number-line@1",
+         "params": {
+          "topicId": "c5-maths-ch02-t01",
+          "skillId": null,
+          "lang": "hinglish",
+          "fractions": [
+           [
+            2,
+            5
+           ]
+          ],
+          "numbers": [
+           0,
+           1
+          ]
+         }
+        }
+       ]
+      }
+     },
+     {
+      "n": 3,
+      "child": "picture dikhao",
+      "kind": "visual",
+      "ms": 2662,
+      "r": {
+       "move": {
+        "kind": "reteach"
+       },
+       "teacherReply": "Aarav, screen par 0 aur 1 dekhiye; 5 ko neeche dekhkar line ko 5 equal gaps mein baantne ka pehla mark kahan hoga?",
+       "ui": {
+        "status": "your_turn",
+        "phase": "teach",
+        "handover": "answer",
+        "answerForm": "words",
+        "tray": "studio",
+        "shortTitle": "Fractions on a line",
+        "beat": {
+         "beatId": "b3-explain",
+         "type": "explain",
+         "index": 3
+        },
+        "ask": {
+         "text": "Aarav, screen par 0 aur 1 dekhiye; 5 ko neeche dekhkar line ko 5 equal gaps mein baantne ka pehla mark kahan hoga?"
+        },
+        "studioSlot": {
+         "slotId": "24a9a4bb-cf23-4cc4-bc87-56365a5527a8:c1:slot",
+         "intentId": "24a9a4bb-cf23-4cc4-bc87-56365a5527a8:c1",
+         "state": "revealed",
+         "artifact": {
+          "kind": "stagecraft",
+          "stage": {
+           "w": 1000,
+           "h": 625
+          },
+          "stagecraft": {
+           "rung": "engine_default",
+           "archetype": "scene-explainer@1",
+           "spec": {
+            "archetype": "scene-explainer@1",
+            "skills": [
+             "c5-maths-ch02-t01"
+            ],
+            "lang": "en",
+            "strings": {
+             "again": "Show again",
+             "yourTurn": "Your turn",
+             "check": "Check",
+             "right": "Got it",
+             "look": "Look again",
+             "myth": "MYTH",
+             "busted": "NOT TRUE",
+             "order": "Tap them in order"
+            },
+            "title": "Fractions on the number line",
+            "accent": "ion",
+            "targets": "c5-maths-ch02-t01-m-all-less-than-one",
+            "scenes": [
+             {
+              "id": "s1",
+              "layout": "split",
+              "els": [
+               {
+                "id": "title",
+                "type": "title",
+                "text": "Fractions on a line"
+               },
+               {
+                "id": "myth",
+                "type": "myth",
+                "text": "Every fraction is less than 1"
+               }
+              ]
+             },
+             {
+              "id": "s2",
+              "layout": "row",
+              "els": [
+               {
+                "id": "ax",
+                "type": "axis",
+                "min": 0,
+                "max": 1,
+                "step": 0.2,
+                "scale": "linear",
+                "y": 420
+               },
+               {
+                "id": "zero",
+                "type": "label",
+                "text": "0",
+                "x": 100,
+                "y": 455
+               },
+               {
+                "id": "one",
+                "type": "label",
+                "text": "1",
+                "x": 800,
+                "y": 455
+               },
+               {
+                "id": "m1",
+                "type": "mark",
+                "axis": "ax",
+                "value": 0.2,
+                "text": "1/5",
+                "color": "ion"
+               },
+               {
+                "id": "m2",
+                "type": "mark",
+                "axis": "ax",
+                "value": 0.4,
+                "text": "2/5",
+                "color": "mint"
+               },
+               {
+                "id": "m3",
+                "type": "mark",
+                "axis": "ax",
+                "value": 0.6,
+                "text": "3/5",
+                "color": "amber"
+               },
+               {
+                "id": "m4",
+                "type": "mark",
+                "axis": "ax",
+                "value": 0.8,
+                "text": "4/5",
+                "color": "sun"
+               },
+               {
+                "id": "den",
+                "type": "node",
+                "text": "Bottom: 5",
+                "sub": "equal gaps",
+                "glyph": "ruler",
+                "color": "ion"
+               },
+               {
+                "id": "num",
+                "type": "node",
+                "text": "Top: 2",
+                "sub": "gaps from 0",
+                "glyph": "compass",
+                "color": "mint"
+               }
+              ]
+             },
+             {
+              "id": "s3",
+              "layout": "row",
+              "els": [
+               {
+                "id": "ax2",
+                "type": "axis",
+                "min": 0,
+                "max": 2,
+                "step": 0.25,
+                "scale": "linear",
+                "y": 420
+               },
+               {
+                "id": "p0",
+                "type": "label",
+                "text": "0",
+                "x": 80,
+                "y": 455
+               },
+               {
+                "id": "p1",
+                "type": "label",
+                "text": "1",
+                "x": 430,
+                "y": 455
+               },
+               {
+                "id": "p2",
+                "type": "label",
+                "text": "2",
+                "x": 800,
+                "y": 455
+               },
+               {
+                "id": "past",
+                "type": "node",
+                "text": "5/4",
+                "sub": "one quarter past 1",
+                "glyph": "spark",
+                "color": "amber"
+               },
+               {
+                "id": "before",
+                "type": "node",
+                "text": "before 1",
+                "sub": "less than 1",
+                "glyph": "question",
+                "color": "ion"
+               },
+               {
+                "id": "beyond",
+                "type": "node",
+                "text": "after 1",
+                "sub": "greater than 1",
+                "color": "amber"
+               }
+              ]
+             }
+            ],
+            "text": {
+             "L1": "Fractions are numbers, so they have places on a number line.",
+             "L2": "The bottom number tells how many equal gaps to make from 0 to 1.",
+             "L3": "Count gaps, not marks. Four marks between 0 and 1 make five equal gaps.",
+             "L4": "So each gap is one fifth. The top number tells how many gaps to count from 0.",
+             "L5": "To mark two fifths, count two gaps from 0. That mark is 2/5.",
+             "L6": "A fraction can also go beyond 1. If the top number is bigger than the bottom number, it lies past 1.",
+             "L7": "For example, 5/4 is one quarter past 1, so it is after 1.",
+             "L8": "Now use these ideas to choose where 5/4 belongs."
+            },
+            "narration": {
+             "L1": {
+              "text": "Fractions are numbers, so they have places on a number line.",
+              "dur": 3,
+              "lead": 0,
+              "tail": 0,
+              "pauses": []
+             },
+             "L2": {
+              "text": "The bottom number tells how many equal gaps to make from 0 to 1.",
+              "dur": 4,
+              "lead": 0,
+              "tail": 0,
+              "pauses": []
+             },
+             "L3": {
+              "text": "Count gaps, not marks. Four marks between 0 and 1 make five equal gaps.",
+              "dur": 4,
+              "lead": 0,
+              "tail": 0,
+              "pauses": []
+             },
+             "L4": {
+              "text": "So each gap is one fifth. The top number tells how many gaps to count from 0.",
+              "dur": 4,
+              "lead": 0,
+              "tail": 0,
+              "pauses": []
+             },
+             "L5": {
+              "text": "To mark two fifths, count two gaps from 0. That mark is 2/5.",
+              "dur": 3.5,
+              "lead": 0,
+              "tail": 0,
+              "pauses": []
+             },
+             "L6": {
+              "text": "A fraction can also go beyond 1. If the top number is bigger than the bottom number, it lies past 1.",
+              "dur": 4,
+              "lead": 0,
+              "tail": 0,
+              "pauses": []
+             },
+             "L7": {
+              "text": "For example, 5/4 is one quarter past 1, so it is after 1.",
+              "dur": 3,
+              "lead": 0,
+              "tail": 0,
+              "pauses": []
+             },
+             "L8": {
+              "text": "Now use these ideas to choose where 5/4 belongs.",
+              "dur": 2.5,
+              "lead": 0,
+              "tail": 0,
+              "pauses": []
+             }
+            },
+            "beats": [
+             {
+              "line": "L1",
+              "gap": 0.3,
+              "scene": "s1",
+              "cues": [
+               {
+                "at": 0,
+                "do": "show",
+                "dur": 0.8,
+                "target": "title"
+               }
+              ]
+             },
+             {
+              "line": "L2",
+              "gap": 0.3,
+              "scene": "s2",
+              "cues": [
+               {
+                "at": 0,
+                "do": "show",
+                "dur": 0.8,
+                "target": "ax"
+               },
+               {
+                "at": 0.5,
+                "do": "show",
+                "dur": 0.8,
+                "target": "den"
+               }
+              ]
+             },
+             {
+              "line": "L3",
+              "gap": 0.3,
+              "scene": "s2",
+              "cues": [
+               {
+                "at": 0,
+                "do": "show",
+                "dur": 1,
+                "target": [
+                 "m1",
+                 "m2",
+                 "m3",
+                 "m4"
+                ]
+               },
+               {
+                "at": 0.8,
+                "do": "highlight",
+                "dur": 1,
+                "target": "den"
+               }
+              ]
+             },
+             {
+              "line": "L4",
+              "gap": 0.3,
+              "scene": "s2",
+              "cues": [
+               {
+                "at": 0,
+                "do": "show",
+                "dur": 0.8,
+                "target": "num"
+               },
+               {
+                "at": 0.7,
+                "do": "flow",
+                "dur": 0.6,
+                "target": "m1",
+                "to": 1
+               }
+              ]
+             },
+             {
+              "line": "L5",
+              "gap": 0.3,
+              "scene": "s2",
+              "cues": [
+               {
+                "at": 0,
+                "do": "highlight",
+                "dur": 1.2,
+                "target": "m2"
+               }
+              ]
+             },
+             {
+              "line": "L6",
+              "gap": 0.4,
+              "scene": "s1",
+              "cues": [
+               {
+                "at": 0,
+                "do": "show",
+                "dur": 0.8,
+                "target": "myth"
+               },
+               {
+                "at": 0.8,
+                "do": "bust",
+                "dur": 1,
+                "target": "myth"
+               }
+              ]
+             },
+             {
+              "line": "L7",
+              "gap": 0.3,
+              "scene": "s3",
+              "cues": [
+               {
+                "at": 0,
+                "do": "show",
+                "dur": 0.8,
+                "target": "ax2"
+               },
+               {
+                "at": 0.5,
+                "do": "show",
+                "dur": 0.8,
+                "target": "past"
+               },
+               {
+                "at": 1.2,
+                "do": "highlight",
+                "dur": 1,
+                "target": "beyond"
+               }
+              ]
+             },
+             {
+              "line": "L8",
+              "gap": 0,
+              "scene": "s3",
+              "cues": [
+               {
+                "at": 0,
+                "do": "interactive",
+                "dur": 1
+               }
+              ]
+             }
+            ],
+            "task": {
+             "kind": "tap",
+             "prompt": "Where does 5/4 belong on the number line?",
+             "options": [
+              "before",
+              "beyond"
+             ],
+             "answer": "beyond",
+             "src": "c5-maths-ch02-t01-i04"
+            }
+           },
+           "boardTwin": {
+            "scriptRef": "board:c5-maths-ch02-t01-s1|explain|-|-",
+            "values": {
+             "title": "Cinematic explainer",
+             "need": "explain"
+            },
+            "board": {
+             "title": "Cinematic explainer",
+             "lines": [
+              "line",
+              "equal",
+              "gaps",
+              "mark"
+             ],
+             "figure": {
+              "kind": "none"
+             }
+            }
+           },
+           "board": null,
+           "cue": {
+            "clauseIdx": 0,
+            "preRollMs": 400,
+            "crossFadeMs": 420
+           },
+           "buildSha": null,
+           "blobUrl": null
+          }
+         }
+        }
+       },
+       "moduleCommands": [
+        {
+         "op": "unmount",
+         "moduleId": "m2"
+        }
+       ],
+       "studio": {
+        "reveal": "24a9a4bb-cf23-4cc4-bc87-56365a5527a8:c1"
+       }
+      }
+     }
+    ]
+   }
+  },
+  {
+   "tag": "diagram \"show me a diagram\" (typed, c6-maths-ch07-t01, rep 1)",
+   "kind": "board",
+   "real": true,
+   "boardLateMs": -97,
+   "inResponse": false,
+   "refers": true,
+   "turnMs": 2395,
+   "reply": "Meher, on the screen see 3 equal groups, each holding 5 dots. Look at one group: how many dots does it contain?",
+   "transcript": {
+    "lessonId": "9223fece-fb03-44bb-bbff-ec5f24607732",
+    "mode": "text",
+    "topicId": "c6-maths-ch07-t01",
+    "opening": {
+     "reply": "Hi Meher, main Arjun, tumhara AI teacher hoon. Aaj fractional units aur equal shares ko painting ke slices se samjhenge. Ready?",
+     "ui": {
+      "status": "your_turn",
+      "phase": "warmup",
+      "handover": "answer",
+      "answerForm": "words",
+      "tray": "none",
+      "shortTitle": "Fractional units",
+      "beat": {
+       "beatId": "b1-arrive",
+       "type": "arrive",
+       "index": 1
+      },
+      "ask": {
+       "text": "Ready?"
+      }
+     },
+     "moduleCommands": []
+    },
+    "rows": [
+     {
+      "n": 1,
+      "child": "hi! yes I'm ready",
+      "kind": "greet",
+      "ms": 1581,
+      "r": {
+       "move": {
+        "kind": "hook"
+       },
+       "teacherReply": "Meher, imagine one painted roti shared equally among 2 or 6 siblings. Which share would you pick, and why? Later, you’ll teach this to Bittu.",
+       "ui": {
+        "status": "your_turn",
+        "phase": "teach",
+        "handover": "answer",
+        "answerForm": "words",
+        "tray": "none",
+        "shortTitle": "Fractional units",
+        "beat": {
+         "beatId": "b2-hook",
+         "type": "hook",
+         "index": 2
+        },
+        "ask": {
+         "text": "Which share would you pick, and why?"
+        }
+       },
+       "moduleCommands": []
+      }
+     },
+     {
+      "n": 2,
+      "child": "alright",
+      "kind": "filler",
+      "ms": 4744,
+      "r": {
+       "move": {
+        "kind": "explain"
+       },
+       "teacherReply": "Meher, if one whole painting is split into 3 equal boxes, one box is the fractional unit one-third. What does one box represent?",
+       "ui": {
+        "status": "your_turn",
+        "phase": "teach",
+        "handover": "answer",
+        "answerForm": "words",
+        "tray": "studio",
+        "shortTitle": "Fractional units",
+        "beat": {
+         "beatId": "b3-explain",
+         "type": "explain",
+         "index": 3
+        },
+        "ask": {
+         "text": "What does one box represent?"
+        },
+        "studioSlot": {
+         "slotId": "9223fece-fb03-44bb-bbff-ec5f24607732:wb:2:slot",
+         "intentId": "9223fece-fb03-44bb-bbff-ec5f24607732:wb:2",
+         "state": "planning"
+        }
+       },
+       "moduleCommands": []
+      }
+     },
+     {
+      "n": 3,
+      "child": "show me a diagram",
+      "kind": "visual",
+      "ms": 2395,
+      "r": {
+       "move": {
+        "kind": "reteach"
+       },
+       "teacherReply": "Meher, on the screen see 3 equal groups, each holding 5 dots. Look at one group: how many dots does it contain?",
+       "ui": {
+        "status": "your_turn",
+        "phase": "teach",
+        "handover": "answer",
+        "answerForm": "words",
+        "tray": "studio",
+        "shortTitle": "Fractional units",
+        "beat": {
+         "beatId": "b3-explain",
+         "type": "explain",
+         "index": 3
+        },
+        "ask": {
+         "text": "Look at one group: how many dots does it contain?"
+        },
+        "studioSlot": {
+         "slotId": "9223fece-fb03-44bb-bbff-ec5f24607732:wb:3:slot",
+         "intentId": "9223fece-fb03-44bb-bbff-ec5f24607732:wb:3",
+         "state": "planning"
+        }
+       },
+       "moduleCommands": []
+      }
+     }
+    ]
+   }
+  },
+  {
+   "tag": "diagram \"show me a diagram\" (spoken, c6-maths-ch07-t01, rep 1)",
+   "kind": "board",
+   "real": true,
+   "boardLateMs": 4398,
+   "inResponse": false,
+   "refers": true,
+   "turnMs": 4335,
+   "reply": "Meher, screen par 3 equal groups dekho; har group mein 5 objects hain. Sab groups milakar total kitne objects dikh rahe hain?",
+   "transcript": {
+    "lessonId": "25630bee-c155-4d0a-ad8b-b066754851b1",
+    "mode": "cascade",
+    "topicId": "c6-maths-ch07-t01",
+    "opening": {
+     "reply": "Hi Meher, main Arjun, tumhara AI teacher. Aaj fractional units aur equal shares, painting ke slices jaise. Ready ho—painting mein kya banana pasand hai?",
+     "ui": {
+      "status": "your_turn",
+      "phase": "warmup",
+      "handover": "answer",
+      "answerForm": "words",
+      "tray": "none",
+      "shortTitle": "Fractional units",
+      "beat": {
+       "beatId": "b1-arrive",
+       "type": "arrive",
+       "index": 1
+      },
+      "ask": {
+       "text": "Ready ho—painting mein kya banana pasand hai?"
+      }
+     },
+     "moduleCommands": []
+    },
+    "rows": [
+     {
+      "n": 1,
+      "child": "hi yes i'm ready",
+      "kind": "greet",
+      "ms": 1767,
+      "r": {
+       "move": {
+        "kind": "hook"
+       },
+       "teacherReply": "Meher, socho ek painted cake ko 2 ya 6 equal parts mein baanta: tum kaunsa slice logi, aur kyun? Bittu ko end mein tum sikhaogi.",
+       "ui": {
+        "status": "your_turn",
+        "phase": "teach",
+        "handover": "answer",
+        "answerForm": "words",
+        "tray": "none",
+        "shortTitle": "Fractional units",
+        "beat": {
+         "beatId": "b2-hook",
+         "type": "hook",
+         "index": 2
+        },
+        "ask": {
+         "text": "Meher, socho ek painted cake ko 2 ya 6 equal parts mein baanta: tum kaunsa slice logi, aur kyun?"
+        }
+       },
+       "moduleCommands": []
+      }
+     },
+     {
+      "n": 2,
+      "child": "yes",
+      "kind": "filler",
+      "ms": 4385,
+      "r": {
+       "move": {
+        "kind": "explain"
+       },
+       "teacherReply": "Meher, whole ko 3 equal parts mein baanto; har part one-third, yani 1 of 3 equal parts. Screen par 3 groups hain—ek group ko kya kahoge?",
+       "ui": {
+        "status": "your_turn",
+        "phase": "teach",
+        "handover": "answer",
+        "answerForm": "words",
+        "tray": "studio",
+        "shortTitle": "Fractional units",
+        "beat": {
+         "beatId": "b3-explain",
+         "type": "explain",
+         "index": 3
+        },
+        "ask": {
+         "text": "Screen par 3 groups hain—ek group ko kya kahoge?"
+        },
+        "studioSlot": {
+         "slotId": "25630bee-c155-4d0a-ad8b-b066754851b1:wb:2:slot",
+         "intentId": "25630bee-c155-4d0a-ad8b-b066754851b1:wb:2",
+         "state": "planning"
+        }
+       },
+       "moduleCommands": []
+      }
+     },
+     {
+      "n": 3,
+      "child": "show me a diagram",
+      "kind": "visual",
+      "ms": 4335,
+      "r": {
+       "move": {
+        "kind": "reteach"
+       },
+       "teacherReply": "Meher, screen par 3 equal groups dekho; har group mein 5 objects hain. Sab groups milakar total kitne objects dikh rahe hain?",
+       "ui": {
+        "status": "your_turn",
+        "phase": "teach",
+        "handover": "answer",
+        "answerForm": "words",
+        "tray": "studio",
+        "shortTitle": "Fractional units",
+        "beat": {
+         "beatId": "b3-explain",
+         "type": "explain",
+         "index": 3
+        },
+        "ask": {
+         "text": "Sab groups milakar total kitne objects dikh rahe hain?"
+        },
+        "studioSlot": {
+         "slotId": "25630bee-c155-4d0a-ad8b-b066754851b1:wb:3:slot",
+         "intentId": "25630bee-c155-4d0a-ad8b-b066754851b1:wb:3",
+         "state": "planning"
+        }
+       },
+       "moduleCommands": []
+      }
+     }
+    ]
+   }
+  },
+  {
+   "tag": "draw \"draw it\" (spoken, c5-evs-ch01-t01, rep 1)",
+   "kind": "board",
+   "real": true,
+   "boardLateMs": -700,
+   "inResponse": true,
+   "refers": true,
+   "turnMs": 2285,
+   "reply": "Screen par water-cycle picture dekhiye: clouds, rain, river aur sun ko follow kijiye. Clouds ke paas water kis form mein dikhta hai?",
+   "transcript": {
+    "lessonId": "b368cef9-0422-4a3d-8abc-fa18ce7eb85f",
+    "mode": "cascade",
+    "topicId": "c5-evs-ch01-t01",
+    "opening": {
+     "reply": "Namaste Zoya, main Arjun, aapka AI teacher. Aaj water ke forms aur places dekhenge—dance steps ki tarah badalte hain. Aapko dance mein kya pasand hai?",
+     "ui": {
+      "status": "your_turn",
+      "phase": "warmup",
+      "handover": "answer",
+      "answerForm": "words",
+      "tray": "none",
+      "shortTitle": "Forms of water",
+      "beat": {
+       "beatId": "b1-arrive",
+       "type": "arrive",
+       "index": 1
+      },
+      "ask": {
+       "text": "Aapko dance mein kya pasand hai?"
+      }
+     },
+     "moduleCommands": []
+    },
+    "rows": [
+     {
+      "n": 1,
+      "child": "haan ready hoon",
+      "kind": "greet",
+      "ms": 1561,
+      "r": {
+       "move": {
+        "kind": "hook"
+       },
+       "teacherReply": "Badiya, Zoya. Monsoon mein dance practice ke baad geeli school uniform dhoop mein rakhenge— aapke hisaab se pehle kya hoga?",
+       "ui": {
+        "status": "your_turn",
+        "phase": "teach",
+        "handover": "answer",
+        "answerForm": "words",
+        "tray": "none",
+        "shortTitle": "Forms of water",
+        "beat": {
+         "beatId": "b2-hook",
+         "type": "hook",
+         "index": 2
+        },
+        "ask": {
+         "text": "Monsoon mein dance practice ke baad geeli school uniform dhoop mein rakhenge— aapke hisaab se pehle kya hoga?"
+        }
+       },
+       "moduleCommands": []
+      }
+     },
+     {
+      "n": 2,
+      "child": "mummy bula rahi thi haan",
+      "kind": "filler",
+      "ms": 2277,
+      "r": {
+       "move": {
+        "kind": "explain"
+       },
+       "teacherReply": "Welcome back, Zoya. Water ke teen forms: liquid nadiyon mein, solid ice glaciers mein, water vapour hawa mein. Aap ek-ek example batayiye.",
+       "ui": {
+        "status": "your_turn",
+        "phase": "teach",
+        "handover": "answer",
+        "answerForm": "words",
+        "tray": "module",
+        "shortTitle": "Forms of water",
+        "beat": {
+         "beatId": "b3-explain",
+         "type": "explain",
+         "index": 3
+        },
+        "ask": {
+         "text": "Aap ek-ek example batayiye."
+        }
+       },
+       "moduleCommands": [
+        {
+         "op": "mount",
+         "moduleId": "m2",
+         "engine": "water-cycle@1",
+         "params": {
+          "topicId": "c5-evs-ch01-t01",
+          "skillId": null,
+          "lang": "hinglish",
+          "scene": "states"
+         }
+        }
+       ]
+      }
+     },
+     {
+      "n": 3,
+      "child": "draw it",
+      "kind": "visual",
+      "ms": 2285,
+      "r": {
+       "move": {
+        "kind": "reteach"
+       },
+       "teacherReply": "Screen par water-cycle picture dekhiye: clouds, rain, river aur sun ko follow kijiye. Clouds ke paas water kis form mein dikhta hai?",
+       "ui": {
+        "status": "your_turn",
+        "phase": "teach",
+        "handover": "answer",
+        "answerForm": "words",
+        "tray": "studio",
+        "shortTitle": "Forms of water",
+        "beat": {
+         "beatId": "b3-explain",
+         "type": "explain",
+         "index": 3
+        },
+        "ask": {
+         "text": "Clouds ke paas water kis form mein dikhta hai?"
+        },
+        "studioSlot": {
+         "slotId": "b368cef9-0422-4a3d-8abc-fa18ce7eb85f:wb:3:slot",
+         "intentId": "b368cef9-0422-4a3d-8abc-fa18ce7eb85f:wb:3",
+         "state": "revealed",
+         "artifact": {
+          "kind": "whiteboard",
+          "stage": {
+           "w": 400,
+           "h": 300
+          },
+          "script": {
+           "v": 1,
+           "scriptId": "b368cef9-0422-4a3d-8abc-fa18ce7eb85f:wb:3",
+           "line": {
+            "lessonId": "b368cef9-0422-4a3d-8abc-fa18ce7eb85f",
+            "teacherReplySeq": 7
+           },
+           "anchor": "line_audio_start",
+           "board": {
+            "w": 400,
+            "h": 300,
+            "ground": "chalk"
+           },
+           "mode": "fresh",
+           "durationMs": 11018,
+           "ops": [
+            {
+             "id": "t0",
+             "op": "text",
+             "startMs": 219,
+             "endMs": 1220,
+             "ink": "accent",
+             "at": [
+              200,
+              52
+             ],
+             "text": "evaporates",
+             "size": "m"
+            },
+            {
+             "id": "o1",
+             "op": "arrow",
+             "startMs": 1475,
+             "endMs": 2295,
+             "ink": "accent",
+             "from": [
+              241.6,
+              84
+             ],
+             "to": [
+              288.4,
+              120
+             ],
+             "bend": -0.25
+            },
+            {
+             "id": "t1",
+             "op": "text",
+             "startMs": 2513,
+             "endMs": 3515,
+             "at": [
+              330,
+              152
+             ],
+             "text": "condenses",
+             "size": "m"
+            },
+            {
+             "id": "o2",
+             "op": "arrow",
+             "startMs": 3770,
+             "endMs": 4589,
+             "ink": "accent",
+             "from": [
+              288.4,
+              184
+             ],
+             "to": [
+              241.6,
+              220
+             ],
+             "bend": -0.25
+            },
+            {
+             "id": "t2",
+             "op": "text",
+             "startMs": 4808,
+             "endMs": 5810,
+             "at": [
+              200,
+              252
+             ],
+             "text": "freezes",
+             "size": "m"
+            },
+            {
+             "id": "o3",
+             "op": "arrow",
+             "startMs": 6065,
+             "endMs": 6884,
+             "ink": "accent",
+             "from": [
+              158.4,
+              220
+             ],
+             "to": [
+              111.6,
+              184
+             ],
+             "bend": -0.25
+            },
+            {
+             "id": "t3",
+             "op": "text",
+             "startMs": 7103,
+             "endMs": 8104,
+             "at": [
+              70,
+              152
+             ],
+             "text": "melts",
+             "size": "m"
+            },
+            {
+             "id": "o4",
+             "op": "arrow",
+             "startMs": 8359,
+             "endMs": 9179,
+             "ink": "accent",
+             "from": [
+              111.6,
+              120
+             ],
+             "to": [
+              158.4,
+              84
+             ],
+             "bend": -0.25
+            },
+            {
+             "id": "o5",
+             "op": "highlight",
+             "startMs": 9725,
+             "endMs": 10818,
+             "ink": "mark",
+             "target": "t0",
+             "style": "circle"
+            }
+           ],
+           "facts": {
+            "kind": "diagram",
+            "archetype": "whiteboard",
+            "onScreen": {
+             "labels": "evaporates | condenses | freezes | melts"
+            }
+           }
+          }
+         }
+        }
+       },
+       "moduleCommands": [
+        {
+         "op": "unmount",
+         "moduleId": "m2"
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "tag": "draw \"draw it\" (typed, c5-evs-ch01-t01, rep 1)",
+   "kind": "board",
+   "real": true,
+   "boardLateMs": -700,
+   "inResponse": true,
+   "refers": true,
+   "turnMs": 2139,
+   "reply": "Screen par water-cycle picture dekhiye: ice, paani aur vapour ke arrows par focus kijiye. Ice se paani banne par kaunsa label hoga?",
+   "transcript": {
+    "lessonId": "2fefa473-cbf2-4c32-932c-8058d9173bb7",
+    "mode": "text",
+    "topicId": "c5-evs-ch01-t01",
+    "opening": {
+     "reply": "Namaste Zoya, main Arjun, aapka AI teacher hoon. Aaj water ke forms aur places dekhenge—dance steps jaise badalte hain. Aapko dance mein kya pasand hai?",
+     "ui": {
+      "status": "your_turn",
+      "phase": "warmup",
+      "handover": "answer",
+      "answerForm": "words",
+      "tray": "none",
+      "shortTitle": "Forms of water",
+      "beat": {
+       "beatId": "b1-arrive",
+       "type": "arrive",
+       "index": 1
+      },
+      "ask": {
+       "text": "Aapko dance mein kya pasand hai?"
+      }
+     },
+     "moduleCommands": []
+    },
+    "rows": [
+     {
+      "n": 1,
+      "child": "haan ready hoon",
+      "kind": "greet",
+      "ms": 2426,
+      "r": {
+       "move": {
+        "kind": "hook"
+       },
+       "teacherReply": "Monsoon mein dance uniform geeli ho jaaye, toh dhoop mein paani dheere-dheere water vapour ban kar udta hai. Aap uniform dhoop mein sukhayenge ya andar rakhenge—kyon?",
+       "ui": {
+        "status": "your_turn",
+        "phase": "teach",
+        "handover": "answer",
+        "answerForm": "words",
+        "tray": "none",
+        "shortTitle": "Forms of water",
+        "beat": {
+         "beatId": "b2-hook",
+         "type": "hook",
+         "index": 2
+        },
+        "ask": {
+         "text": "Aap uniform dhoop mein sukhayenge ya andar rakhenge—kyon?"
+        }
+       },
+       "moduleCommands": []
+      }
+     },
+     {
+      "n": 2,
+      "child": "mummy bula rahi thi, haan",
+      "kind": "filler",
+      "ms": 2475,
+      "r": {
+       "move": {
+        "kind": "explain"
+       },
+       "teacherReply": "Wapas aaiye. Water ke teen forms: liquid paani, solid ice, aur invisible water vapour; screen par bhi yahi row hai. Baraf ka example dijiye.",
+       "ui": {
+        "status": "your_turn",
+        "phase": "teach",
+        "handover": "answer",
+        "answerForm": "words",
+        "tray": "module",
+        "shortTitle": "Forms of water",
+        "beat": {
+         "beatId": "b3-explain",
+         "type": "explain",
+         "index": 3
+        },
+        "ask": {
+         "text": "Baraf ka example dijiye."
+        }
+       },
+       "moduleCommands": [
+        {
+         "op": "mount",
+         "moduleId": "m2",
+         "engine": "water-cycle@1",
+         "params": {
+          "topicId": "c5-evs-ch01-t01",
+          "skillId": null,
+          "lang": "hinglish",
+          "scene": "states"
+         }
+        }
+       ]
+      }
+     },
+     {
+      "n": 3,
+      "child": "draw it",
+      "kind": "visual",
+      "ms": 2139,
+      "r": {
+       "move": {
+        "kind": "reteach"
+       },
+       "teacherReply": "Screen par water-cycle picture dekhiye: ice, paani aur vapour ke arrows par focus kijiye. Ice se paani banne par kaunsa label hoga?",
+       "ui": {
+        "status": "your_turn",
+        "phase": "teach",
+        "handover": "answer",
+        "answerForm": "words",
+        "tray": "studio",
+        "shortTitle": "Forms of water",
+        "beat": {
+         "beatId": "b3-explain",
+         "type": "explain",
+         "index": 3
+        },
+        "ask": {
+         "text": "Ice se paani banne par kaunsa label hoga?"
+        },
+        "studioSlot": {
+         "slotId": "2fefa473-cbf2-4c32-932c-8058d9173bb7:wb:3:slot",
+         "intentId": "2fefa473-cbf2-4c32-932c-8058d9173bb7:wb:3",
+         "state": "revealed",
+         "artifact": {
+          "kind": "whiteboard",
+          "stage": {
+           "w": 400,
+           "h": 300
+          },
+          "script": {
+           "v": 1,
+           "scriptId": "2fefa473-cbf2-4c32-932c-8058d9173bb7:wb:3",
+           "line": {
+            "lessonId": "2fefa473-cbf2-4c32-932c-8058d9173bb7",
+            "teacherReplySeq": 7
+           },
+           "anchor": "line_audio_start",
+           "board": {
+            "w": 400,
+            "h": 300,
+            "ground": "chalk"
+           },
+           "mode": "fresh",
+           "durationMs": 10936,
+           "ops": [
+            {
+             "id": "t0",
+             "op": "text",
+             "startMs": 217,
+             "endMs": 1211,
+             "ink": "accent",
+             "at": [
+              200,
+              52
+             ],
+             "text": "evaporates",
+             "size": "m"
+            },
+            {
+             "id": "o1",
+             "op": "arrow",
+             "startMs": 1464,
+             "endMs": 2277,
+             "ink": "accent",
+             "from": [
+              241.6,
+              84
+             ],
+             "to": [
+              288.4,
+              120
+             ],
+             "bend": -0.25
+            },
+            {
+             "id": "t1",
+             "op": "text",
+             "startMs": 2494,
+             "endMs": 3488,
+             "at": [
+              330,
+              152
+             ],
+             "text": "condenses",
+             "size": "m"
+            },
+            {
+             "id": "o2",
+             "op": "arrow",
+             "startMs": 3741,
+             "endMs": 4555,
+             "ink": "accent",
+             "from": [
+              288.4,
+              184
+             ],
+             "to": [
+              241.6,
+              220
+             ],
+             "bend": -0.25
+            },
+            {
+             "id": "t2",
+             "op": "text",
+             "startMs": 4772,
+             "endMs": 5766,
+             "at": [
+              200,
+              252
+             ],
+             "text": "freezes",
+             "size": "m"
+            },
+            {
+             "id": "o3",
+             "op": "arrow",
+             "startMs": 6019,
+             "endMs": 6832,
+             "ink": "accent",
+             "from": [
+              158.4,
+              220
+             ],
+             "to": [
+              111.6,
+              184
+             ],
+             "bend": -0.25
+            },
+            {
+             "id": "t3",
+             "op": "text",
+             "startMs": 7049,
+             "endMs": 8043,
+             "at": [
+              70,
+              152
+             ],
+             "text": "melts",
+             "size": "m"
+            },
+            {
+             "id": "o4",
+             "op": "arrow",
+             "startMs": 8296,
+             "endMs": 9110,
+             "ink": "accent",
+             "from": [
+              111.6,
+              120
+             ],
+             "to": [
+              158.4,
+              84
+             ],
+             "bend": -0.25
+            },
+            {
+             "id": "o5",
+             "op": "highlight",
+             "startMs": 9652,
+             "endMs": 10736,
+             "ink": "mark",
+             "target": "t0",
+             "style": "circle"
+            }
+           ],
+           "facts": {
+            "kind": "diagram",
+            "archetype": "whiteboard",
+            "onScreen": {
+             "labels": "evaporates | condenses | freezes | melts"
+            }
+           }
+          }
+         }
+        }
+       },
+       "moduleCommands": [
+        {
+         "op": "unmount",
+         "moduleId": "m2"
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "tag": "whiteboard \"whiteboard pe bana ke samjhao\" (typed, c7-maths-ch08-t01, rep 1)",
+   "kind": "board",
+   "real": true,
+   "boardLateMs": -700,
+   "inResponse": true,
+   "refers": true,
+   "turnMs": 2073,
+   "reply": "Screen ke board par fraction, of, fraction dekhiye; pehle pehli roti ko 5 parts mein sochiye. Aap kaunsa hissa shade karenge?",
+   "transcript": {
+    "lessonId": "cb7aa2d4-73a8-4117-8ce3-13ca486cf7cd",
+    "mode": "text",
+    "topicId": "c7-maths-ch08-t01",
+    "opening": {
+     "reply": "Namaste Kabir, main Arjun, aapka AI teacher hoon. Aaj fractions multiply karenge—cricket mein runs ke parts jaisa. Aap ready hain?",
+     "ui": {
+      "status": "your_turn",
+      "phase": "warmup",
+      "handover": "answer",
+      "answerForm": "words",
+      "tray": "none",
+      "shortTitle": "Multiplying fractions",
+      "beat": {
+       "beatId": "b1-arrive",
+       "type": "arrive",
+       "index": 1
+      },
+      "ask": {
+       "text": "Aap ready hain?"
+      }
+     },
+     "moduleCommands": []
+    },
+    "rows": [
+     {
+      "n": 1,
+      "child": "haan bhai ready, chalo shuru karo haha",
+      "kind": "greet",
+      "ms": 2517,
+      "r": {
+       "move": {
+        "kind": "hook"
+       },
+       "teacherReply": "Haha, cricket pitch par 3/4 over ka 2/3 hissa khelna ho, toh aapke hisaab se kitna over hoga? Prediction dijiye.",
+       "ui": {
+        "status": "your_turn",
+        "phase": "teach",
+        "handover": "answer",
+        "answerForm": "words",
+        "tray": "none",
+        "shortTitle": "Multiplying fractions",
+        "beat": {
+         "beatId": "b2-hook",
+         "type": "hook",
+         "index": 2
+        },
+        "ask": {
+         "text": "Haha, cricket pitch par 3/4 over ka 2/3 hissa khelna ho, toh aapke hisaab se kitna over hoga?"
+        },
+        "teacherAffect": {
+         "display": "playful",
+         "intensity": 1
+        }
+       },
+       "moduleCommands": []
+      }
+     },
+     {
+      "n": 2,
+      "child": "lol theek hai",
+      "kind": "filler",
+      "ms": 4091,
+      "r": {
+       "move": {
+        "kind": "explain"
+       },
+       "teacherReply": "Screen par 3/5 roti dikh rahi hai; ab isi quantity ka fraction lena matlab uske 5 parts mein se kuch parts chunna. Aap kya notice kar rahe hain?",
+       "ui": {
+        "status": "your_turn",
+        "phase": "teach",
+        "handover": "answer",
+        "answerForm": "words",
+        "tray": "studio",
+        "shortTitle": "Multiplying fractions",
+        "beat": {
+         "beatId": "b3-explain",
+         "type": "explain",
+         "index": 3
+        },
+        "ask": {
+         "text": "Aap kya notice kar rahe hain?"
+        },
+        "teacherAffect": {
+         "display": "playful",
+         "intensity": 1
+        },
+        "studioSlot": {
+         "slotId": "cb7aa2d4-73a8-4117-8ce3-13ca486cf7cd:wb:2:slot",
+         "intentId": "cb7aa2d4-73a8-4117-8ce3-13ca486cf7cd:wb:2",
+         "state": "revealed",
+         "artifact": {
+          "kind": "whiteboard",
+          "stage": {
+           "w": 800,
+           "h": 500
+          },
+          "script": {
+           "v": 1,
+           "scriptId": "cb7aa2d4-73a8-4117-8ce3-13ca486cf7cd:wb:2",
+           "line": {
+            "lessonId": "cb7aa2d4-73a8-4117-8ce3-13ca486cf7cd",
+            "teacherReplySeq": 5
+           },
+           "anchor": "line_audio_start",
+           "board": {
+            "w": 800,
+            "h": 500,
+            "ground": "chalk"
+           },
+           "mode": "fresh",
+           "durationMs": 13190,
+           "ops": [
+            {
+             "id": "f1",
+             "op": "text",
+             "startMs": 0,
+             "endMs": 2338,
+             "ink": "chalk",
+             "weight": 1,
+             "at": [
+              170,
+              150
+             ],
+             "text": "fraction",
+             "size": "l"
+            },
+            {
+             "id": "of",
+             "op": "text",
+             "startMs": 1299,
+             "endMs": 2858,
+             "ink": "accent",
+             "weight": 1,
+             "at": [
+              375,
+              150
+             ],
+             "text": "of",
+             "size": "l"
+            },
+            {
+             "id": "f2",
+             "op": "text",
+             "startMs": 2078,
+             "endMs": 4417,
+             "ink": "chalk",
+             "weight": 1,
+             "at": [
+              480,
+              150
+             ],
+             "text": "fraction",
+             "size": "l"
+            },
+            {
+             "id": "mult",
+             "op": "arrow",
+             "startMs": 4936,
+             "endMs": 7015,
+             "ink": "mark",
+             "weight": 2,
+             "from": [
+              390,
+              210
+             ],
+             "to": [
+              390,
+              310
+             ]
+            },
+            {
+             "id": "times",
+             "op": "text",
+             "startMs": 7275,
+             "endMs": 10132,
+             "ink": "good",
+             "weight": 2,
+             "at": [
+              350,
+              350
+             ],
+             "text": "multiply",
+             "size": "l"
+            },
+            {
+             "id": "h1",
+             "op": "highlight",
+             "startMs": 10392,
+             "endMs": 12990,
+             "ink": "good",
+             "weight": 2,
+             "target": "times",
+             "style": "underline"
+            }
+           ],
+           "facts": {
+            "kind": "diagram",
+            "archetype": "whiteboard",
+            "onScreen": {
+             "labels": "fraction | of | fraction | multiply"
+            }
+           }
+          }
+         }
+        }
+       },
+       "moduleCommands": []
+      }
+     },
+     {
+      "n": 3,
+      "child": "whiteboard pe bana ke samjhao",
+      "kind": "visual",
+      "ms": 2073,
+      "r": {
+       "move": {
+        "kind": "reteach"
+       },
+       "teacherReply": "Screen ke board par fraction, of, fraction dekhiye; pehle pehli roti ko 5 parts mein sochiye. Aap kaunsa hissa shade karenge?",
+       "ui": {
+        "status": "your_turn",
+        "phase": "teach",
+        "handover": "answer",
+        "answerForm": "words",
+        "tray": "studio",
+        "shortTitle": "Multiplying fractions",
+        "beat": {
+         "beatId": "b3-explain",
+         "type": "explain",
+         "index": 3
+        },
+        "ask": {
+         "text": "Aap kaunsa hissa shade karenge?"
+        },
+        "studioSlot": {
+         "slotId": "cb7aa2d4-73a8-4117-8ce3-13ca486cf7cd:wb:3:slot",
+         "intentId": "cb7aa2d4-73a8-4117-8ce3-13ca486cf7cd:wb:3",
+         "state": "revealed",
+         "artifact": {
+          "kind": "whiteboard",
+          "stage": {
+           "w": 800,
+           "h": 500
+          },
+          "script": {
+           "v": 1,
+           "scriptId": "cb7aa2d4-73a8-4117-8ce3-13ca486cf7cd:wb:3",
+           "line": {
+            "lessonId": "cb7aa2d4-73a8-4117-8ce3-13ca486cf7cd",
+            "teacherReplySeq": 7
+           },
+           "anchor": "line_audio_start",
+           "board": {
+            "w": 800,
+            "h": 500,
+            "ground": "chalk"
+           },
+           "mode": "continue",
+           "durationMs": 10705,
+           "ops": [
+            {
+             "id": "f1",
+             "op": "text",
+             "startMs": 0,
+             "endMs": 1891,
+             "ink": "chalk",
+             "weight": 1,
+             "at": [
+              170,
+              150
+             ],
+             "text": "fraction",
+             "size": "l"
+            },
+            {
+             "id": "of",
+             "op": "text",
+             "startMs": 1051,
+             "endMs": 2311,
+             "ink": "accent",
+             "weight": 1,
+             "at": [
+              375,
+              150
+             ],
+             "text": "of",
+             "size": "l"
+            },
+            {
+             "id": "f2",
+             "op": "text",
+             "startMs": 1681,
+             "endMs": 3572,
+             "ink": "chalk",
+             "weight": 1,
+             "at": [
+              480,
+              150
+             ],
+             "text": "fraction",
+             "size": "l"
+            },
+            {
+             "id": "mult",
+             "op": "arrow",
+             "startMs": 3992,
+             "endMs": 5673,
+             "ink": "mark",
+             "weight": 2,
+             "from": [
+              390,
+              210
+             ],
+             "to": [
+              390,
+              310
+             ]
+            },
+            {
+             "id": "times",
+             "op": "text",
+             "startMs": 5883,
+             "endMs": 8194,
+             "ink": "good",
+             "weight": 2,
+             "at": [
+              350,
+              350
+             ],
+             "text": "multiply",
+             "size": "l"
+            },
+            {
+             "id": "h1",
+             "op": "highlight",
+             "startMs": 8404,
+             "endMs": 10505,
+             "ink": "good",
+             "weight": 2,
+             "target": "times",
+             "style": "underline"
+            }
+           ],
+           "facts": {
+            "kind": "diagram",
+            "archetype": "whiteboard",
+            "onScreen": {
+             "labels": "fraction | of | fraction | multiply"
+            }
+           }
+          }
+         }
+        }
+       },
+       "moduleCommands": []
+      }
+     }
+    ]
+   }
+  },
+  {
+   "tag": "whiteboard \"whiteboard pe bana ke samjhao\" (spoken, c7-maths-ch08-t01, rep 1)",
+   "kind": "board",
+   "real": true,
+   "boardLateMs": -700,
+   "inResponse": true,
+   "refers": true,
+   "turnMs": 3383,
+   "reply": "Kabir, whiteboard par 3/5 roti dekhiye: 5 parts mein 3 shaded hain. Aap pehle kya mark karenge?",
+   "transcript": {
+    "lessonId": "66112685-e3eb-4f78-8be1-48831f087f00",
+    "mode": "cascade",
+    "topicId": "c7-maths-ch08-t01",
+    "opening": {
+     "reply": "Namaste Kabir, main Arjun, aapka AI teacher hoon. Aaj fractions multiply karenge—cricket mein half-over ka half! Aap ready hain?",
+     "ui": {
+      "status": "your_turn",
+      "phase": "warmup",
+      "handover": "answer",
+      "answerForm": "words",
+      "tray": "none",
+      "shortTitle": "Multiplying fractions",
+      "beat": {
+       "beatId": "b1-arrive",
+       "type": "arrive",
+       "index": 1
+      },
+      "ask": {
+       "text": "Aap ready hain?"
+      }
+     },
+     "moduleCommands": []
+    },
+    "rows": [
+     {
+      "n": 1,
+      "child": "haan bhai ready chalo shuru karo haha",
+      "kind": "greet",
+      "ms": 2719,
+      "r": {
+       "move": {
+        "kind": "hook"
+       },
+       "teacherReply": "Kabir, maan lijiye aap half over ka three-fourths khelte hain—poore over ka kitna hissa hoga, aap kya predict karenge? Bittu ko bhi samjhayenge.",
+       "ui": {
+        "status": "your_turn",
+        "phase": "teach",
+        "handover": "answer",
+        "answerForm": "words",
+        "tray": "none",
+        "shortTitle": "Multiplying fractions",
+        "beat": {
+         "beatId": "b2-hook",
+         "type": "hook",
+         "index": 2
+        },
+        "ask": {
+         "text": "Kabir, maan lijiye aap half over ka three-fourths khelte hain—poore over ka kitna hissa hoga, aap kya predict karenge?"
+        },
+        "teacherAffect": {
+         "display": "playful",
+         "intensity": 1
+        }
+       },
+       "moduleCommands": []
+      }
+     },
+     {
+      "n": 2,
+      "child": "lol theek hai",
+      "kind": "filler",
+      "ms": 4143,
+      "r": {
+       "move": {
+        "kind": "explain"
+       },
+       "teacherReply": "Kabir, screen par roti ke 5 parts mein 3 shaded hain, yani fraction 3/5. Ab 1 whole roti ka 3/5 nikaalna ho, kaise likhenge?",
+       "ui": {
+        "status": "your_turn",
+        "phase": "teach",
+        "handover": "answer",
+        "answerForm": "words",
+        "tray": "studio",
+        "shortTitle": "Multiplying fractions",
+        "beat": {
+         "beatId": "b3-explain",
+         "type": "explain",
+         "index": 3
+        },
+        "ask": {
+         "text": "Ab 1 whole roti ka 3/5 nikaalna ho, kaise likhenge?"
+        },
+        "teacherAffect": {
+         "display": "playful",
+         "intensity": 1
+        },
+        "studioSlot": {
+         "slotId": "66112685-e3eb-4f78-8be1-48831f087f00:wb:2:slot",
+         "intentId": "66112685-e3eb-4f78-8be1-48831f087f00:wb:2",
+         "state": "revealed",
+         "artifact": {
+          "kind": "whiteboard",
+          "stage": {
+           "w": 800,
+           "h": 500
+          },
+          "script": {
+           "v": 1,
+           "scriptId": "66112685-e3eb-4f78-8be1-48831f087f00:wb:2",
+           "line": {
+            "lessonId": "66112685-e3eb-4f78-8be1-48831f087f00",
+            "teacherReplySeq": 5
+           },
+           "anchor": "line_audio_start",
+           "board": {
+            "w": 800,
+            "h": 500,
+            "ground": "chalk"
+           },
+           "mode": "fresh",
+           "durationMs": 13026,
+           "ops": [
+            {
+             "id": "f1",
+             "op": "text",
+             "startMs": 0,
+             "endMs": 2309,
+             "ink": "chalk",
+             "weight": 1,
+             "at": [
+              170,
+              150
+             ],
+             "text": "fraction",
+             "size": "l"
+            },
+            {
+             "id": "of",
+             "op": "text",
+             "startMs": 1283,
+             "endMs": 2822,
+             "ink": "accent",
+             "weight": 1,
+             "at": [
+              375,
+              150
+             ],
+             "text": "of",
+             "size": "l"
+            },
+            {
+             "id": "f2",
+             "op": "text",
+             "startMs": 2052,
+             "endMs": 4361,
+             "ink": "chalk",
+             "weight": 1,
+             "at": [
+              480,
+              150
+             ],
+             "text": "fraction",
+             "size": "l"
+            },
+            {
+             "id": "mult",
+             "op": "arrow",
+             "startMs": 4874,
+             "endMs": 6926,
+             "ink": "mark",
+             "weight": 2,
+             "from": [
+              390,
+              210
+             ],
+             "to": [
+              390,
+              310
+             ]
+            },
+            {
+             "id": "times",
+             "op": "text",
+             "startMs": 7183,
+             "endMs": 10005,
+             "ink": "good",
+             "weight": 2,
+             "at": [
+              350,
+              350
+             ],
+             "text": "multiply",
+             "size": "l"
+            },
+            {
+             "id": "h1",
+             "op": "highlight",
+             "startMs": 10261,
+             "endMs": 12826,
+             "ink": "good",
+             "weight": 2,
+             "target": "times",
+             "style": "underline"
+            }
+           ],
+           "facts": {
+            "kind": "diagram",
+            "archetype": "whiteboard",
+            "onScreen": {
+             "labels": "fraction | of | fraction | multiply"
+            }
+           }
+          }
+         }
+        }
+       },
+       "moduleCommands": []
+      }
+     },
+     {
+      "n": 3,
+      "child": "whiteboard pe bana ke samjhao",
+      "kind": "visual",
+      "ms": 3383,
+      "r": {
+       "move": {
+        "kind": "reteach"
+       },
+       "teacherReply": "Kabir, whiteboard par 3/5 roti dekhiye: 5 parts mein 3 shaded hain. Aap pehle kya mark karenge?",
+       "ui": {
+        "status": "your_turn",
+        "phase": "teach",
+        "handover": "answer",
+        "answerForm": "words",
+        "tray": "studio",
+        "shortTitle": "Multiplying fractions",
+        "beat": {
+         "beatId": "b3-explain",
+         "type": "explain",
+         "index": 3
+        },
+        "ask": {
+         "text": "Aap pehle kya mark karenge?"
+        },
+        "studioSlot": {
+         "slotId": "66112685-e3eb-4f78-8be1-48831f087f00:wb:3:slot",
+         "intentId": "66112685-e3eb-4f78-8be1-48831f087f00:wb:3",
+         "state": "revealed",
+         "artifact": {
+          "kind": "whiteboard",
+          "stage": {
+           "w": 800,
+           "h": 500
+          },
+          "script": {
+           "v": 1,
+           "scriptId": "66112685-e3eb-4f78-8be1-48831f087f00:wb:3",
+           "line": {
+            "lessonId": "66112685-e3eb-4f78-8be1-48831f087f00",
+            "teacherReplySeq": 7
+           },
+           "anchor": "line_audio_start",
+           "board": {
+            "w": 800,
+            "h": 500,
+            "ground": "chalk"
+           },
+           "mode": "continue",
+           "durationMs": 9554,
+           "ops": [
+            {
+             "id": "f1",
+             "op": "text",
+             "startMs": 0,
+             "endMs": 1684,
+             "ink": "chalk",
+             "weight": 1,
+             "at": [
+              170,
+              150
+             ],
+             "text": "fraction",
+             "size": "l"
+            },
+            {
+             "id": "of",
+             "op": "text",
+             "startMs": 936,
+             "endMs": 2058,
+             "ink": "accent",
+             "weight": 1,
+             "at": [
+              375,
+              150
+             ],
+             "text": "of",
+             "size": "l"
+            },
+            {
+             "id": "f2",
+             "op": "text",
+             "startMs": 1497,
+             "endMs": 3181,
+             "ink": "chalk",
+             "weight": 1,
+             "at": [
+              480,
+              150
+             ],
+             "text": "fraction",
+             "size": "l"
+            },
+            {
+             "id": "mult",
+             "op": "arrow",
+             "startMs": 3555,
+             "endMs": 5051,
+             "ink": "mark",
+             "weight": 2,
+             "from": [
+              390,
+              210
+             ],
+             "to": [
+              390,
+              310
+             ]
+            },
+            {
+             "id": "times",
+             "op": "text",
+             "startMs": 5239,
+             "endMs": 7297,
+             "ink": "good",
+             "weight": 2,
+             "at": [
+              350,
+              350
+             ],
+             "text": "multiply",
+             "size": "l"
+            },
+            {
+             "id": "h1",
+             "op": "highlight",
+             "startMs": 7483,
+             "endMs": 9354,
+             "ink": "good",
+             "weight": 2,
+             "target": "times",
+             "style": "underline"
+            }
+           ],
+           "facts": {
+            "kind": "diagram",
+            "archetype": "whiteboard",
+            "onScreen": {
+             "labels": "fraction | of | fraction | multiply"
+            }
+           }
+          }
+         }
+        }
+       },
+       "moduleCommands": []
+      }
+     }
+    ]
+   }
+  },
+  {
+   "tag": "game \"game khelna hai\" (typed, c4-maths-ch05-t01, rep 1)",
+   "kind": "stagecraft",
+   "real": true,
+   "pieceMs": 2608,
+   "refers": true,
+   "turnMs": 2608,
+   "reply": "Screen par Fraction Slice dekho: shape ko equal parts mein kaatna hai. Tum pehle kitne barabar parts banaoge?",
+   "transcript": {
+    "lessonId": "a3bf9b06-8d76-4f6e-841e-42f7742ad340",
+    "mode": "text",
+    "topicId": "c4-maths-ch05-t01",
+    "opening": {
+     "reply": "Namaste Golu, main Asha, tumhari AI teacher. Aaj cartoons jaise equal shares mein fractions dekhenge; tumhe kaunsa cartoon pasand hai?",
+     "ui": {
+      "status": "your_turn",
+      "phase": "warmup",
+      "handover": "answer",
+      "answerForm": "words",
+      "tray": "none",
+      "shortTitle": "Equal shares",
+      "beat": {
+       "beatId": "b1-arrive",
+       "type": "arrive",
+       "index": 1
+      },
+      "ask": {
+       "text": "Aaj cartoons jaise equal shares mein fractions dekhenge; tumhe kaunsa cartoon pasand hai?"
+      }
+     },
+     "moduleCommands": []
+    },
+    "rows": [
+     {
+      "n": 1,
+      "child": "haan",
+      "kind": "greet",
+      "ms": 1468,
+      "r": {
+       "move": {
+        "kind": "hook"
+       },
+       "teacherReply": "Golu, cartoon party mein ek cake chaar friends mein baantna ho, tum kya karoge—barabar tukde ya koi aur tareeka?",
+       "ui": {
+        "status": "your_turn",
+        "phase": "teach",
+        "handover": "answer",
+        "answerForm": "words",
+        "tray": "none",
+        "shortTitle": "Equal shares",
+        "beat": {
+         "beatId": "b2-hook",
+         "type": "hook",
+         "index": 2
+        },
+        "ask": {
+         "text": "Golu, cartoon party mein ek cake chaar friends mein baantna ho, tum kya karoge—barabar tukde ya koi aur tareeka?"
+        }
+       },
+       "moduleCommands": []
+      }
+     },
+     {
+      "n": 2,
+      "child": "pata nahi",
+      "kind": "filler",
+      "ms": 2509,
+      "r": {
+       "move": {
+        "kind": "explain"
+       },
+       "teacherReply": "Koi baat nahi, Golu. Cake ko teen barabar tukdon mein baantoge; har tukda one-third kehlata hai. Teen tukdon mein kitne equal parts hain?",
+       "ui": {
+        "status": "your_turn",
+        "phase": "teach",
+        "handover": "answer",
+        "answerForm": "words",
+        "tray": "module",
+        "shortTitle": "Equal shares",
+        "beat": {
+         "beatId": "b3-explain",
+         "type": "explain",
+         "index": 3
+        },
+        "ask": {
+         "text": "Teen tukdon mein kitne equal parts hain?"
+        }
+       },
+       "moduleCommands": [
+        {
+         "op": "mount",
+         "moduleId": "m2",
+         "engine": "fractions@1",
+         "params": {
+          "topicId": "c4-maths-ch05-t01",
+          "skillId": null,
+          "lang": "hinglish",
+          "fractions": [
+           [
+            1,
+            3
+           ]
+          ],
+          "numbers": [
+           15
+          ]
+         }
+        }
+       ]
+      }
+     },
+     {
+      "n": 3,
+      "child": "game khelna hai",
+      "kind": "visual",
+      "ms": 2608,
+      "r": {
+       "move": {
+        "kind": "reteach"
+       },
+       "teacherReply": "Screen par Fraction Slice dekho: shape ko equal parts mein kaatna hai. Tum pehle kitne barabar parts banaoge?",
+       "ui": {
+        "status": "your_turn",
+        "phase": "teach",
+        "handover": "answer",
+        "answerForm": "words",
+        "tray": "studio",
+        "shortTitle": "Equal shares",
+        "beat": {
+         "beatId": "b3-explain",
+         "type": "explain",
+         "index": 3
+        },
+        "ask": {
+         "text": "Tum pehle kitne barabar parts banaoge?"
+        },
+        "studioSlot": {
+         "slotId": "a3bf9b06-8d76-4f6e-841e-42f7742ad340:c1:slot",
+         "intentId": "a3bf9b06-8d76-4f6e-841e-42f7742ad340:c1",
+         "state": "revealed",
+         "artifact": {
+          "kind": "stagecraft",
+          "stage": {
+           "w": 1000,
+           "h": 625
+          },
+          "stagecraft": {
+           "rung": "engine_default",
+           "archetype": "slice-at@1",
+           "spec": {
+            "archetype": "slice-at@1",
+            "skills": [
+             "c4-maths-ch05-t01"
+            ],
+            "lang": "en",
+            "strings": {
+             "coach": "Swipe through the bar",
+             "wave": "Wave",
+             "cut": "Cut the bar",
+             "parts": "Equal parts",
+             "exact": "CLEAN CUT",
+             "close": "CLOSE",
+             "offBy": "off by",
+             "runDone": "Run complete",
+             "accuracy": "accuracy",
+             "sliced": "sliced",
+             "chain": "chain",
+             "smaller": "smaller piece"
+            },
+            "waves": [
+             {
+              "title": "Halves and quarters",
+              "sub": "Cut the bar as the fraction asks",
+              "items": [
+               {
+                "cut": "1/2"
+               },
+               {
+                "cut": "1/4"
+               },
+               {
+                "cut": "3/4"
+               }
+              ],
+              "gravity": 0.85,
+              "gap": 2.6,
+              "marks": true
+             },
+             {
+              "title": "Equal thirds",
+              "sub": "Make every share the same size",
+              "items": [
+               {
+                "cut": "1/3"
+               },
+               {
+                "cut": "2/3"
+               },
+               {
+                "parts": 3
+               }
+              ],
+              "gravity": 0.95,
+              "gap": 2.4,
+              "marks": false
+             },
+             {
+              "title": "Fair sharing",
+              "sub": "Each piece must match the others",
+              "items": [
+               {
+                "parts": 4
+               },
+               {
+                "parts": 3
+               },
+               {
+                "cut": "1/4"
+               }
+              ],
+              "gravity": 0.8,
+              "gap": 3.2,
+              "marks": false,
+              "targets": "c4-maths-ch05-t01-m-unequal-parts"
+             },
+             {
+              "title": "Piece size",
+              "sub": "Notice how more parts change each piece",
+              "items": [
+               {
+                "cut": "1/2"
+               },
+               {
+                "cut": "1/3"
+               },
+               {
+                "cut": "1/4"
+               }
+              ],
+              "gravity": 1,
+              "gap": 2.4,
+              "marks": false,
+              "targets": "c4-maths-ch05-t01-m-bigger-denominator-bigger"
+             }
+            ]
+           },
+           "boardTwin": {
+            "scriptRef": "board:c4-maths-ch05-t01-s1|practice|-|-",
+            "values": {
+             "title": "Fraction Slice",
+             "need": "practice"
+            },
+            "board": {
+             "title": "Fraction Slice",
+             "lines": [
+              "equal",
+              "fraction",
+              "piece",
+              "part"
+             ],
+             "figure": {
+              "kind": "none"
+             }
+            }
+           },
+           "board": null,
+           "cue": {
+            "clauseIdx": 0,
+            "preRollMs": 400,
+            "crossFadeMs": 420
+           },
+           "buildSha": null,
+           "blobUrl": null
+          }
+         }
+        }
+       },
+       "moduleCommands": [
+        {
+         "op": "unmount",
+         "moduleId": "m2"
+        }
+       ],
+       "studio": {
+        "reveal": "a3bf9b06-8d76-4f6e-841e-42f7742ad340:c1"
+       }
+      }
+     }
+    ]
+   }
+  },
+  {
+   "tag": "game \"game khelna hai\" (spoken, c4-maths-ch05-t01, rep 1)",
+   "kind": "stagecraft",
+   "real": true,
+   "pieceMs": 2496,
+   "refers": true,
+   "turnMs": 2496,
+   "reply": "Golu, screen ke Fraction Slice ko dekho; line kheenchkar pizza ko equal parts mein baanto. Kitne parts banenge?",
+   "transcript": {
+    "lessonId": "63a64d6c-f548-4635-9ad8-bd591ab947d4",
+    "mode": "cascade",
+    "topicId": "c4-maths-ch05-t01",
+    "opening": {
+     "reply": "Namaste Golu, main Asha, tumhari AI teacher. Aaj cartoon-pizza jaise equal shares mein fractions dekhenge. Tumhe kaunsa cartoon pasand hai?",
+     "ui": {
+      "status": "your_turn",
+      "phase": "warmup",
+      "handover": "answer",
+      "answerForm": "words",
+      "tray": "none",
+      "shortTitle": "Equal shares",
+      "beat": {
+       "beatId": "b1-arrive",
+       "type": "arrive",
+       "index": 1
+      },
+      "ask": {
+       "text": "Tumhe kaunsa cartoon pasand hai?"
+      }
+     },
+     "moduleCommands": []
+    },
+    "rows": [
+     {
+      "n": 1,
+      "child": "haan",
+      "kind": "greet",
+      "ms": 2634,
+      "r": {
+       "move": {
+        "kind": "hook"
+       },
+       "teacherReply": "Golu, cartoon party mein ek roti do characters ko barabar deni hai. Dono ko same size ka hissa milega. Tum roti kaise baantoge?",
+       "ui": {
+        "status": "your_turn",
+        "phase": "teach",
+        "handover": "answer",
+        "answerForm": "words",
+        "tray": "none",
+        "shortTitle": "Equal shares",
+        "beat": {
+         "beatId": "b2-hook",
+         "type": "hook",
+         "index": 2
+        },
+        "ask": {
+         "text": "Tum roti kaise baantoge?"
+        }
+       },
+       "moduleCommands": []
+      }
+     },
+     {
+      "n": 2,
+      "child": "hmm",
+      "kind": "filler",
+      "ms": 2782,
+      "r": {
+       "move": {
+        "kind": "explain"
+       },
+       "teacherReply": "Golu, teen equal cartoon-parts mein se ek part ko one-third kehte hain. Screen par 1/3 hai—tum teen parts kaise karoge?",
+       "ui": {
+        "status": "your_turn",
+        "phase": "teach",
+        "handover": "answer",
+        "answerForm": "words",
+        "tray": "module",
+        "shortTitle": "Equal shares",
+        "beat": {
+         "beatId": "b3-explain",
+         "type": "explain",
+         "index": 3
+        },
+        "ask": {
+         "text": "Screen par 1/3 hai—tum teen parts kaise karoge?"
+        }
+       },
+       "moduleCommands": [
+        {
+         "op": "mount",
+         "moduleId": "m2",
+         "engine": "fractions@1",
+         "params": {
+          "topicId": "c4-maths-ch05-t01",
+          "skillId": null,
+          "lang": "hinglish",
+          "fractions": [
+           [
+            1,
+            3
+           ]
+          ],
+          "numbers": [
+           15
+          ]
+         }
+        }
+       ]
+      }
+     },
+     {
+      "n": 3,
+      "child": "game khelna hai",
+      "kind": "visual",
+      "ms": 2496,
+      "r": {
+       "move": {
+        "kind": "reteach"
+       },
+       "teacherReply": "Golu, screen ke Fraction Slice ko dekho; line kheenchkar pizza ko equal parts mein baanto. Kitne parts banenge?",
+       "ui": {
+        "status": "your_turn",
+        "phase": "teach",
+        "handover": "answer",
+        "answerForm": "words",
+        "tray": "studio",
+        "shortTitle": "Equal shares",
+        "beat": {
+         "beatId": "b3-explain",
+         "type": "explain",
+         "index": 3
+        },
+        "ask": {
+         "text": "Kitne parts banenge?"
+        },
+        "studioSlot": {
+         "slotId": "63a64d6c-f548-4635-9ad8-bd591ab947d4:c1:slot",
+         "intentId": "63a64d6c-f548-4635-9ad8-bd591ab947d4:c1",
+         "state": "revealed",
+         "artifact": {
+          "kind": "stagecraft",
+          "stage": {
+           "w": 1000,
+           "h": 625
+          },
+          "stagecraft": {
+           "rung": "engine_default",
+           "archetype": "slice-at@1",
+           "spec": {
+            "archetype": "slice-at@1",
+            "skills": [
+             "c4-maths-ch05-t01"
+            ],
+            "lang": "en",
+            "strings": {
+             "coach": "Swipe through the bar",
+             "wave": "Wave",
+             "cut": "Cut the bar",
+             "parts": "Equal parts",
+             "exact": "CLEAN CUT",
+             "close": "CLOSE",
+             "offBy": "off by",
+             "runDone": "Run complete",
+             "accuracy": "accuracy",
+             "sliced": "sliced",
+             "chain": "chain",
+             "smaller": "smaller piece"
+            },
+            "waves": [
+             {
+              "title": "Halves and quarters",
+              "sub": "Cut the bar as the fraction asks",
+              "items": [
+               {
+                "cut": "1/2"
+               },
+               {
+                "cut": "1/4"
+               },
+               {
+                "cut": "3/4"
+               }
+              ],
+              "gravity": 0.85,
+              "gap": 2.6,
+              "marks": true
+             },
+             {
+              "title": "Equal thirds",
+              "sub": "Make every share the same size",
+              "items": [
+               {
+                "cut": "1/3"
+               },
+               {
+                "cut": "2/3"
+               },
+               {
+                "parts": 3
+               }
+              ],
+              "gravity": 0.95,
+              "gap": 2.4,
+              "marks": false
+             },
+             {
+              "title": "Fair sharing",
+              "sub": "Each piece must match the others",
+              "items": [
+               {
+                "parts": 4
+               },
+               {
+                "parts": 3
+               },
+               {
+                "cut": "1/4"
+               }
+              ],
+              "gravity": 0.8,
+              "gap": 3.2,
+              "marks": false,
+              "targets": "c4-maths-ch05-t01-m-unequal-parts"
+             },
+             {
+              "title": "Piece size",
+              "sub": "Notice how more parts change each piece",
+              "items": [
+               {
+                "cut": "1/2"
+               },
+               {
+                "cut": "1/3"
+               },
+               {
+                "cut": "1/4"
+               }
+              ],
+              "gravity": 1,
+              "gap": 2.4,
+              "marks": false,
+              "targets": "c4-maths-ch05-t01-m-bigger-denominator-bigger"
+             }
+            ]
+           },
+           "boardTwin": {
+            "scriptRef": "board:c4-maths-ch05-t01-s1|practice|-|-",
+            "values": {
+             "title": "Fraction Slice",
+             "need": "practice"
+            },
+            "board": {
+             "title": "Fraction Slice",
+             "lines": [
+              "equal",
+              "fraction",
+              "piece",
+              "part"
+             ],
+             "figure": {
+              "kind": "none"
+             }
+            }
+           },
+           "board": null,
+           "cue": {
+            "clauseIdx": 0,
+            "preRollMs": 400,
+            "crossFadeMs": 420
+           },
+           "buildSha": null,
+           "blobUrl": null
+          }
+         }
+        }
+       },
+       "moduleCommands": [
+        {
+         "op": "unmount",
+         "moduleId": "m2"
+        }
+       ],
+       "studio": {
+        "reveal": "63a64d6c-f548-4635-9ad8-bd591ab947d4:c1"
+       }
+      }
+     }
+    ]
+   }
+  },
+  {
+   "tag": "animation \"animation dikhao na\" (typed, c6-science-ch01-t01, rep 1)",
+   "kind": "stagecraft",
+   "real": true,
+   "pieceMs": 2906,
+   "refers": true,
+   "turnMs": 2906,
+   "reply": "Ishaan, screen par “Observe” ko drag karke “Ask” ke paas le jaiye; step ki jagah badlegi. Aap pehle kya notice karenge?",
+   "transcript": {
+    "lessonId": "ce138d81-a8f7-4ba1-b206-0dae950925c3",
+    "mode": "text",
+    "topicId": "c6-science-ch01-t01",
+    "opening": {
+     "reply": "Namaste Ishaan, main Arjun, aapka AI teacher. Aaj dekhenge scientists kaise find out karte hain—football mein aap kis position par khelna pasand karenge?",
+     "ui": {
+      "status": "your_turn",
+      "phase": "warmup",
+      "handover": "answer",
+      "answerForm": "words",
+      "tray": "none",
+      "shortTitle": "How scientists find out",
+      "beat": {
+       "beatId": "b1-arrive",
+       "type": "arrive",
+       "index": 1
+      },
+      "ask": {
+       "text": "Aaj dekhenge scientists kaise find out karte hain—football mein aap kis position par khelna pasand karenge?"
+      }
+     },
+     "moduleCommands": []
+    },
+    "rows": [
+     {
+      "n": 1,
+      "child": "नमस्ते, हाँ तैयार हूँ",
+      "kind": "greet",
+      "ms": 1909,
+      "r": {
+       "move": {
+        "kind": "hook"
+       },
+       "teacherReply": "Ishaan, penalty mein ball left ya right jaayegi—test se pehle aapki prediction kya hai, aur uska reason kya hoga? Ab aap bataiye.",
+       "ui": {
+        "status": "your_turn",
+        "phase": "teach",
+        "handover": "answer",
+        "answerForm": "words",
+        "tray": "none",
+        "shortTitle": "How scientists find out",
+        "beat": {
+         "beatId": "b2-hook",
+         "type": "hook",
+         "index": 2
+        },
+        "ask": {
+         "text": "Ishaan, penalty mein ball left ya right jaayegi—test se pehle aapki prediction kya hai, aur uska reason kya hoga?"
+        }
+       },
+       "moduleCommands": []
+      }
+     },
+     {
+      "n": 2,
+      "child": "समझ गया",
+      "kind": "filler",
+      "ms": 2649,
+      "r": {
+       "move": {
+        "kind": "explain"
+       },
+       "teacherReply": "Ishaan, observation ko testable question banaiye: “Kya अलग-अलग हवा में ball की दूरी बदलती है?” Aap apna question banaiye.",
+       "ui": {
+        "status": "your_turn",
+        "phase": "teach",
+        "handover": "answer",
+        "answerForm": "words",
+        "tray": "studio",
+        "shortTitle": "How scientists find out",
+        "beat": {
+         "beatId": "b3-explain",
+         "type": "explain",
+         "index": 3
+        },
+        "ask": {
+         "text": "Ishaan, observation ko testable question banaiye: “Kya अलग-अलग हवा में ball की दूरी बदलती है?"
+        },
+        "studioSlot": {
+         "slotId": "ce138d81-a8f7-4ba1-b206-0dae950925c3:wb:2:slot",
+         "intentId": "ce138d81-a8f7-4ba1-b206-0dae950925c3:wb:2",
+         "state": "revealed",
+         "artifact": {
+          "kind": "whiteboard",
+          "stage": {
+           "w": 400,
+           "h": 300
+          },
+          "script": {
+           "v": 1,
+           "scriptId": "ce138d81-a8f7-4ba1-b206-0dae950925c3:wb:2",
+           "line": {
+            "lessonId": "ce138d81-a8f7-4ba1-b206-0dae950925c3",
+            "teacherReplySeq": 5
+           },
+           "anchor": "line_audio_start",
+           "board": {
+            "w": 400,
+            "h": 300,
+            "ground": "chalk"
+           },
+           "mode": "fresh",
+           "durationMs": 10158,
+           "ops": [
+            {
+             "id": "b0",
+             "op": "rect",
+             "startMs": 100,
+             "endMs": 627,
+             "weight": 2,
+             "at": [
+              25,
+              30
+             ],
+             "w": 160,
+             "h": 58,
+             "round": 10
+            },
+            {
+             "id": "t0",
+             "op": "text",
+             "startMs": 677,
+             "endMs": 1304,
+             "at": [
+              105,
+              61
+             ],
+             "text": "Observe",
+             "size": "m"
+            },
+            {
+             "id": "o1",
+             "op": "arrow",
+             "startMs": 1505,
+             "endMs": 2069,
+             "ink": "accent",
+             "from": [
+              105,
+              91
+             ],
+             "to": [
+              105,
+              133
+             ]
+            },
+            {
+             "id": "b1",
+             "op": "rect",
+             "startMs": 2170,
+             "endMs": 2696,
+             "weight": 2,
+             "at": [
+              25,
+              136
+             ],
+             "w": 160,
+             "h": 58,
+             "round": 10
+            },
+            {
+             "id": "t1",
+             "op": "text",
+             "startMs": 2746,
+             "endMs": 3123,
+             "at": [
+              105,
+              155
+             ],
+             "text": "Ask a testable",
+             "size": "s"
+            },
+            {
+             "id": "o2",
+             "op": "text",
+             "startMs": 3123,
+             "endMs": 3499,
+             "at": [
+              105,
+              179
+             ],
+             "text": "question",
+             "size": "s"
+            },
+            {
+             "id": "o3",
+             "op": "arrow",
+             "startMs": 3700,
+             "endMs": 4264,
+             "ink": "accent",
+             "from": [
+              105,
+              197
+             ],
+             "to": [
+              105,
+              239
+             ]
+            },
+            {
+             "id": "b2",
+             "op": "rect",
+             "startMs": 4364,
+             "endMs": 4891,
+             "weight": 2,
+             "at": [
+              25,
+              242
+             ],
+             "w": 160,
+             "h": 58,
+             "round": 10
+            },
+            {
+             "id": "t2",
+             "op": "text",
+             "startMs": 4941,
+             "endMs": 5317,
+             "at": [
+              105,
+              261
+             ],
+             "text": "Predict with",
+             "size": "s"
+            },
+            {
+             "id": "o4",
+             "op": "text",
+             "startMs": 5317,
+             "endMs": 5694,
+             "at": [
+              105,
+              285
+             ],
+             "text": "a reason",
+             "size": "s"
+            },
+            {
+             "id": "o5",
+             "op": "arrow",
+             "startMs": 5894,
+             "endMs": 6459,
+             "ink": "accent",
+             "from": [
+              188,
+              271
+             ],
+             "to": [
+              212,
+              59
+             ],
+             "bend": 0.2
+            },
+            {
+             "id": "b3",
+             "op": "rect",
+             "startMs": 6559,
+             "endMs": 7086,
+             "weight": 2,
+             "at": [
+              215,
+              30
+             ],
+             "w": 160,
+             "h": 58,
+             "round": 10
+            },
+            {
+             "id": "t3",
+             "op": "text",
+             "startMs": 7136,
+             "endMs": 7763,
+             "at": [
+              295,
+              61
+             ],
+             "text": "Test fairly",
+             "size": "s"
+            },
+            {
+             "id": "o6",
+             "op": "arrow",
+             "startMs": 7964,
+             "endMs": 8528,
+             "ink": "accent",
+             "from": [
+              295,
+              91
+             ],
+             "to": [
+              295,
+              133
+             ]
+            },
+            {
+             "id": "b4",
+             "op": "rect",
+             "startMs": 8628,
+             "endMs": 9155,
+             "weight": 2,
+             "at": [
+              215,
+              136
+             ],
+             "w": 160,
+             "h": 58,
+             "round": 10
+            },
+            {
+             "id": "t4",
+             "op": "text",
+             "startMs": 9205,
+             "endMs": 9581,
+             "at": [
+              295,
+              155
+             ],
+             "text": "Observe and",
+             "size": "s"
+            },
+            {
+             "id": "o7",
+             "op": "text",
+             "startMs": 9581,
+             "endMs": 9958,
+             "at": [
+              295,
+              179
+             ],
+             "text": "conclude",
+             "size": "s"
+            }
+           ],
+           "facts": {
+            "kind": "diagram",
+            "archetype": "whiteboard",
+            "onScreen": {
+             "labels": "Observe | Ask a testable | question | Pr"
+            }
+           }
+          }
+         }
+        }
+       },
+       "moduleCommands": []
+      }
+     },
+     {
+      "n": 3,
+      "child": "animation dikhao na",
+      "kind": "visual",
+      "ms": 2906,
+      "r": {
+       "move": {
+        "kind": "reteach"
+       },
+       "teacherReply": "Ishaan, screen par “Observe” ko drag karke “Ask” ke paas le jaiye; step ki jagah badlegi. Aap pehle kya notice karenge?",
+       "ui": {
+        "status": "your_turn",
+        "phase": "teach",
+        "handover": "answer",
+        "answerForm": "words",
+        "tray": "studio",
+        "shortTitle": "How scientists find out",
+        "beat": {
+         "beatId": "b3-explain",
+         "type": "explain",
+         "index": 3
+        },
+        "ask": {
+         "text": "Aap pehle kya notice karenge?"
+        },
+        "studioSlot": {
+         "slotId": "ce138d81-a8f7-4ba1-b206-0dae950925c3:c1:slot",
+         "intentId": "ce138d81-a8f7-4ba1-b206-0dae950925c3:c1",
+         "state": "revealed",
+         "artifact": {
+          "kind": "stagecraft",
+          "stage": {
+           "w": 1000,
+           "h": 625
+          },
+          "stagecraft": {
+           "rung": "engine_default",
+           "archetype": "scene-explainer@1",
+           "spec": {
+            "archetype": "scene-explainer@1",
+            "skills": [
+             "c6-science-ch01-t01"
+            ],
+            "lang": "en",
+            "strings": {
+             "again": "Show again",
+             "yourTurn": "Your turn",
+             "check": "Check",
+             "right": "Got it",
+             "look": "Look again",
+             "myth": "MYTH",
+             "busted": "NOT TRUE",
+             "order": "Tap them in order"
+            },
+            "title": "How scientists find out",
+            "accent": "sci",
+            "targets": "c6-science-ch01-t01-m1",
+            "scenes": [
+             {
+              "id": "s1",
+              "layout": "split",
+              "els": [
+               {
+                "id": "title",
+                "type": "title",
+                "text": "How scientists find out"
+               },
+               {
+                "id": "myth",
+                "type": "myth",
+                "text": "Science is facts to memorise"
+               },
+               {
+                "id": "book",
+                "type": "glyph",
+                "name": "book",
+                "x": 220,
+                "y": 350,
+                "size": 120,
+                "color": "amber"
+               },
+               {
+                "id": "eye",
+                "type": "glyph",
+                "name": "eye",
+                "x": 760,
+                "y": 350,
+                "size": 120,
+                "color": "sci"
+               }
+              ]
+             },
+             {
+              "id": "s2",
+              "layout": "cycle",
+              "els": [
+               {
+                "id": "observe",
+                "type": "node",
+                "text": "Observe",
+                "sub": "notice something",
+                "glyph": "eye",
+                "color": "sci"
+               },
+               {
+                "id": "question",
+                "type": "node",
+                "text": "Ask",
+                "sub": "testable question",
+                "glyph": "question",
+                "color": "ion"
+               },
+               {
+                "id": "predict",
+                "type": "node",
+                "text": "Predict",
+                "sub": "reason first",
+                "glyph": "compass",
+                "color": "amber"
+               },
+               {
+                "id": "test",
+                "type": "node",
+                "text": "Test",
+                "sub": "try fairly",
+                "glyph": "beaker",
+                "color": "mint"
+               },
+               {
+                "id": "conclude",
+                "type": "node",
+                "text": "Conclude",
+                "sub": "record result",
+                "glyph": "note",
+                "color": "volt"
+               },
+               {
+                "id": "a1",
+                "type": "arrow",
+                "from": "observe",
+                "to": "question",
+                "text": "ask"
+               },
+               {
+                "id": "a2",
+                "type": "arrow",
+                "from": "question",
+                "to": "predict",
+                "text": "predict"
+               },
+               {
+                "id": "a3",
+                "type": "arrow",
+                "from": "predict",
+                "to": "test",
+                "text": "test"
+               },
+               {
+                "id": "a4",
+                "type": "arrow",
+                "from": "test",
+                "to": "conclude",
+                "text": "record"
+               },
+               {
+                "id": "a5",
+                "type": "arrow",
+                "from": "conclude",
+                "to": "observe",
+                "text": "new question"
+               }
+              ]
+             },
+             {
+              "id": "s3",
+              "layout": "row",
+              "els": [
+               {
+                "id": "curd",
+                "type": "title",
+                "text": "Curd example"
+               },
+               {
+                "id": "warm",
+                "type": "node",
+                "text": "Warm bowl",
+                "sub": "same milk",
+                "glyph": "beaker",
+                "color": "amber"
+               },
+               {
+                "id": "cool",
+                "type": "node",
+                "text": "Cool bowl",
+                "sub": "same milk",
+                "glyph": "beaker",
+                "color": "ion"
+               },
+               {
+                "id": "compare",
+                "type": "bars",
+                "values": [
+                 1,
+                 2
+                ],
+                "labels": [
+                 "warm",
+                 "cool"
+                ],
+                "unit": "set"
+               }
+              ]
+             },
+             {
+              "id": "s4",
+              "layout": "split",
+              "els": [
+               {
+                "id": "wrong",
+                "type": "myth",
+                "text": "A wrong prediction wastes the test"
+               },
+               {
+                "id": "result",
+                "type": "node",
+                "text": "Result",
+                "sub": "learn something",
+                "glyph": "note",
+                "color": "mint"
+               },
+               {
+                "id": "next",
+                "type": "node",
+                "text": "New question",
+                "sub": "keep exploring",
+                "glyph": "question",
+                "color": "volt"
+               },
+               {
+                "id": "a6",
+                "type": "arrow",
+                "from": "result",
+                "to": "next",
+                "text": "leads to"
+               }
+              ]
+             },
+             {
+              "id": "s5",
+              "layout": "row",
+              "els": [
+               {
+                "id": "checkTitle",
+                "type": "title",
+                "text": "Your turn"
+               },
+               {
+                "id": "step1",
+                "type": "label",
+                "text": "Observe"
+               },
+               {
+                "id": "step2",
+                "type": "label",
+                "text": "Ask"
+               },
+               {
+                "id": "step3",
+                "type": "label",
+                "text": "Predict"
+               },
+               {
+                "id": "step4",
+                "type": "label",
+                "text": "Test"
+               },
+               {
+                "id": "step5",
+                "type": "label",
+                "text": "Conclude"
+               }
+              ]
+             }
+            ],
+            "text": {
+             "L1": "Science is not just a list of facts to memorise. It is a way of finding out by observing, asking questions and testing ideas.",
+             "L2": "Start by noticing something. Ask a question that you can answer by doing something and observing or measuring what happens.",
+             "L3": "Before the test, make a prediction. It is a guess with a reason, based on what you already know.",
+             "L4": "For example, ask whether curd sets faster in a warm place or a cool place. Predict that the warm bowl will set first because the starter bacteria work faster in warmth.",
+             "L5": "Test fairly with the same milk, the same amount and the same starter. Keep one bowl warm and one bowl cool, then observe and record them after the same time.",
+             "L6": "The result may support the prediction or may not. A wrong prediction is still useful because it teaches us something new and leads to another question.",
+             "L7": "Remember the circle: observe, ask, predict, test and conclude. Then use what you learned to ask a new question."
+            },
+            "narration": {
+             "L1": {
+              "text": "Science is not just a list of facts to memorise. It is a way of finding out by observing, asking questions and testing ideas.",
+              "dur": 6,
+              "lead": 0,
+              "tail": 0,
+              "pauses": []
+             },
+             "L2": {
+              "text": "Start by noticing something. Ask a question that you can answer by doing something and observing or measuring what happens.",
+              "dur": 6,
+              "lead": 0,
+              "tail": 0,
+              "pauses": []
+             },
+             "L3": {
+              "text": "Before the test, make a prediction. It is a guess with a reason, based on what you already know.",
+              "dur": 5,
+              "lead": 0,
+              "tail": 0,
+              "pauses": []
+             },
+             "L4": {
+              "text": "For example, ask whether curd sets faster in a warm place or a cool place. Predict that the warm bowl will set first because the starter bacteria work faster in warmth.",
+              "dur": 8,
+              "lead": 0,
+              "tail": 0,
+              "pauses": []
+             },
+             "L5": {
+              "text": "Test fairly with the same milk, the same amount and the same starter. Keep one bowl warm and one bowl cool, then observe and record them after the same time.",
+              "dur": 8,
+              "lead": 0,
+              "tail": 0,
+              "pauses": []
+             },
+             "L6": {
+              "text": "The result may support the prediction or may not. A wrong prediction is still useful because it teaches us something new and leads to another question.",
+              "dur": 7,
+              "lead": 0,
+              "tail": 0,
+              "pauses": []
+             },
+             "L7": {
+              "text": "Remember the circle: observe, ask, predict, test and conclude. Then use what you learned to ask a new question.",
+              "dur": 6,
+              "lead": 0,
+              "tail": 0,
+              "pauses": []
+             }
+            },
+            "beats": [
+             {
+              "line": "L1",
+              "gap": 0.4,
+              "scene": "s1",
+              "cues": [
+               {
+                "at": 0,
+                "do": "show",
+                "dur": 0.6,
+                "target": "title"
+               },
+               {
+                "at": 0.8,
+                "do": "show",
+                "dur": 0.6,
+                "target": "myth"
+               },
+               {
+                "at": 2,
+                "do": "bust",
+                "dur": 1,
+                "target": "myth"
+               }
+              ]
+             },
+             {
+              "line": "L2",
+              "gap": 0.4,
+              "scene": "s2",
+              "cues": [
+               {
+                "at": 0,
+                "do": "show",
+                "dur": 0.5,
+                "target": "observe"
+               },
+               {
+                "at": 0.7,
+                "do": "show",
+                "dur": 0.5,
+                "target": "question"
+               },
+               {
+                "at": 1.4,
+                "do": "flow",
+                "dur": 0.6,
+                "target": "a1",
+                "to": 1
+               }
+              ]
+             },
+             {
+              "line": "L3",
+              "gap": 0.4,
+              "scene": "s2",
+              "cues": [
+               {
+                "at": 0,
+                "do": "show",
+                "dur": 0.5,
+                "target": "predict"
+               },
+               {
+                "at": 0.7,
+                "do": "highlight",
+                "dur": 1,
+                "target": "predict"
+               }
+              ]
+             },
+             {
+              "line": "L4",
+              "gap": 0.4,
+              "scene": "s3",
+              "cues": [
+               {
+                "at": 0,
+                "do": "show",
+                "dur": 0.5,
+                "target": "curd"
+               },
+               {
+                "at": 0.7,
+                "do": "show",
+                "dur": 0.7,
+                "target": [
+                 "warm",
+                 "cool"
+                ]
+               },
+               {
+                "at": 2,
+                "do": "highlight",
+                "dur": 1,
+                "target": "warm"
+               }
+              ]
+             },
+             {
+              "line": "L5",
+              "gap": 0.4,
+              "scene": "s3",
+              "cues": [
+               {
+                "at": 0,
+                "do": "show",
+                "dur": 0.7,
+                "target": "compare"
+               },
+               {
+                "at": 1,
+                "do": "highlight",
+                "dur": 1,
+                "target": "compare"
+               }
+              ]
+             },
+             {
+              "line": "L6",
+              "gap": 0.4,
+              "scene": "s4",
+              "cues": [
+               {
+                "at": 0,
+                "do": "show",
+                "dur": 0.6,
+                "target": "wrong"
+               },
+               {
+                "at": 1,
+                "do": "bust",
+                "dur": 1,
+                "target": "wrong"
+               },
+               {
+                "at": 2,
+                "do": "show",
+                "dur": 0.6,
+                "target": "result"
+               },
+               {
+                "at": 3,
+                "do": "show",
+                "dur": 0.6,
+                "target": "next"
+               }
+              ]
+             },
+             {
+              "line": "L7",
+              "gap": 0,
+              "scene": "s2",
+              "cues": [
+               {
+                "at": 0,
+                "do": "show",
+                "dur": 0.8,
+                "target": [
+                 "a2",
+                 "a3",
+                 "a4",
+                 "a5"
+                ]
+               },
+               {
+                "at": 1,
+                "do": "flow",
+                "dur": 1,
+                "target": [
+                 "a2",
+                 "a3",
+                 "a4",
+                 "a5"
+                ],
+                "to": 1
+               },
+               {
+                "at": "end",
+                "do": "interactive"
+               }
+              ]
+             }
+            ],
+            "task": {
+             "kind": "order",
+             "prompt": "Put the steps of finding out in order, starting with noticing something.",
+             "items": [
+              "step1",
+              "step2",
+              "step3",
+              "step4",
+              "step5"
+             ],
+             "src": "c6-science-ch01-t01-i09"
+            }
+           },
+           "boardTwin": {
+            "scriptRef": "board:c6-science-ch01-t01-s1|explain|-|-",
+            "values": {
+             "title": "Cinematic explainer",
+             "need": "explain"
+            },
+            "board": {
+             "title": "Cinematic explainer",
+             "lines": [
+              "test",
+              "curd",
+              "faster",
+              "science"
+             ],
+             "figure": {
+              "kind": "none"
+             }
+            }
+           },
+           "board": null,
+           "cue": {
+            "clauseIdx": 0,
+            "preRollMs": 400,
+            "crossFadeMs": 420
+           },
+           "buildSha": null,
+           "blobUrl": null
+          }
+         }
+        }
+       },
+       "moduleCommands": [],
+       "studio": {
+        "reveal": "ce138d81-a8f7-4ba1-b206-0dae950925c3:c1"
+       }
+      }
+     }
+    ]
+   }
+  },
+  {
+   "tag": "animation \"animation dikhao na\" (spoken, c6-science-ch01-t01, rep 1)",
+   "kind": "stagecraft",
+   "real": true,
+   "pieceMs": 2997,
+   "refers": true,
+   "turnMs": 2997,
+   "reply": "Screen par Observe, Ask, Predict, Test ko drag karke order badaliye; har step move karne par scene ka label badlega. Aap pehle kya drag karenge?",
+   "transcript": {
+    "lessonId": "852f7735-363b-452c-9068-e0e32b094137",
+    "mode": "cascade",
+    "topicId": "c6-science-ch01-t01",
+    "opening": {
+     "reply": "Namaste Ishaan! Main Arjun, aapka AI teacher. Aaj dekhenge scientists kaise find out karte hain—football mein aap pehle kya notice karte hain?",
+     "ui": {
+      "status": "your_turn",
+      "phase": "warmup",
+      "handover": "answer",
+      "answerForm": "words",
+      "tray": "none",
+      "shortTitle": "How scientists find out",
+      "beat": {
+       "beatId": "b1-arrive",
+       "type": "arrive",
+       "index": 1
+      },
+      "ask": {
+       "text": "Aaj dekhenge scientists kaise find out karte hain—football mein aap pehle kya notice karte hain?"
+      }
+     },
+     "moduleCommands": []
+    },
+    "rows": [
+     {
+      "n": 1,
+      "child": "नमस्ते हाँ तैयार हूँ",
+      "kind": "greet",
+      "ms": 1618,
+      "r": {
+       "move": {
+        "kind": "hook"
+       },
+       "teacherReply": "Ishaan, football ko zyada zor se kick karne par aapka prediction kya hai—ball door jayegi ya paas, aur kyun? Bittu ko ant mein samjhaiyega.",
+       "ui": {
+        "status": "your_turn",
+        "phase": "teach",
+        "handover": "answer",
+        "answerForm": "words",
+        "tray": "none",
+        "shortTitle": "How scientists find out",
+        "beat": {
+         "beatId": "b2-hook",
+         "type": "hook",
+         "index": 2
+        },
+        "ask": {
+         "text": "Ishaan, football ko zyada zor se kick karne par aapka prediction kya hai—ball door jayegi ya paas, aur kyun?"
+        }
+       },
+       "moduleCommands": []
+      }
+     },
+     {
+      "n": 2,
+      "child": "हाँ",
+      "kind": "filler",
+      "ms": 3491,
+      "r": {
+       "move": {
+        "kind": "explain"
+       },
+       "teacherReply": "Ishaan, pehle observation bataiye: “Ball ko kick karne par woh ______.” Aap is khaali jagah mein kya dekhenge?",
+       "ui": {
+        "status": "your_turn",
+        "phase": "teach",
+        "handover": "answer",
+        "answerForm": "words",
+        "tray": "studio",
+        "shortTitle": "How scientists find out",
+        "beat": {
+         "beatId": "b3-explain",
+         "type": "explain",
+         "index": 3
+        },
+        "ask": {
+         "text": "” Aap is khaali jagah mein kya dekhenge?"
+        },
+        "studioSlot": {
+         "slotId": "852f7735-363b-452c-9068-e0e32b094137:wb:2:slot",
+         "intentId": "852f7735-363b-452c-9068-e0e32b094137:wb:2",
+         "state": "revealed",
+         "artifact": {
+          "kind": "whiteboard",
+          "stage": {
+           "w": 400,
+           "h": 300
+          },
+          "script": {
+           "v": 1,
+           "scriptId": "852f7735-363b-452c-9068-e0e32b094137:wb:2",
+           "line": {
+            "lessonId": "852f7735-363b-452c-9068-e0e32b094137",
+            "teacherReplySeq": 5
+           },
+           "anchor": "line_audio_start",
+           "board": {
+            "w": 400,
+            "h": 300,
+            "ground": "chalk"
+           },
+           "mode": "fresh",
+           "durationMs": 9253,
+           "ops": [
+            {
+             "id": "b0",
+             "op": "rect",
+             "startMs": 91,
+             "endMs": 570,
+             "weight": 2,
+             "at": [
+              25,
+              30
+             ],
+             "w": 160,
+             "h": 58,
+             "round": 10
+            },
+            {
+             "id": "t0",
+             "op": "text",
+             "startMs": 616,
+             "endMs": 1186,
+             "at": [
+              105,
+              61
+             ],
+             "text": "Observe",
+             "size": "m"
+            },
+            {
+             "id": "o1",
+             "op": "arrow",
+             "startMs": 1368,
+             "endMs": 1881,
+             "ink": "accent",
+             "from": [
+              105,
+              91
+             ],
+             "to": [
+              105,
+              133
+             ]
+            },
+            {
+             "id": "b1",
+             "op": "rect",
+             "startMs": 1973,
+             "endMs": 2451,
+             "weight": 2,
+             "at": [
+              25,
+              136
+             ],
+             "w": 160,
+             "h": 58,
+             "round": 10
+            },
+            {
+             "id": "t1",
+             "op": "text",
+             "startMs": 2497,
+             "endMs": 2839,
+             "at": [
+              105,
+              155
+             ],
+             "text": "Ask a testable",
+             "size": "s"
+            },
+            {
+             "id": "o2",
+             "op": "text",
+             "startMs": 2839,
+             "endMs": 3181,
+             "at": [
+              105,
+              179
+             ],
+             "text": "question",
+             "size": "s"
+            },
+            {
+             "id": "o3",
+             "op": "arrow",
+             "startMs": 3364,
+             "endMs": 3877,
+             "ink": "accent",
+             "from": [
+              105,
+              197
+             ],
+             "to": [
+              105,
+              239
+             ]
+            },
+            {
+             "id": "b2",
+             "op": "rect",
+             "startMs": 3968,
+             "endMs": 4447,
+             "weight": 2,
+             "at": [
+              25,
+              242
+             ],
+             "w": 160,
+             "h": 58,
+             "round": 10
+            },
+            {
+             "id": "t2",
+             "op": "text",
+             "startMs": 4492,
+             "endMs": 4834,
+             "at": [
+              105,
+              261
+             ],
+             "text": "Predict with",
+             "size": "s"
+            },
+            {
+             "id": "o4",
+             "op": "text",
+             "startMs": 4834,
+             "endMs": 5176,
+             "at": [
+              105,
+              285
+             ],
+             "text": "a reason",
+             "size": "s"
+            },
+            {
+             "id": "o5",
+             "op": "arrow",
+             "startMs": 5359,
+             "endMs": 5872,
+             "ink": "accent",
+             "from": [
+              188,
+              271
+             ],
+             "to": [
+              212,
+              59
+             ],
+             "bend": 0.2
+            },
+            {
+             "id": "b3",
+             "op": "rect",
+             "startMs": 5963,
+             "endMs": 6442,
+             "weight": 2,
+             "at": [
+              215,
+              30
+             ],
+             "w": 160,
+             "h": 58,
+             "round": 10
+            },
+            {
+             "id": "t3",
+             "op": "text",
+             "startMs": 6488,
+             "endMs": 7058,
+             "at": [
+              295,
+              61
+             ],
+             "text": "Test fairly",
+             "size": "s"
+            },
+            {
+             "id": "o6",
+             "op": "arrow",
+             "startMs": 7240,
+             "endMs": 7753,
+             "ink": "accent",
+             "from": [
+              295,
+              91
+             ],
+             "to": [
+              295,
+              133
+             ]
+            },
+            {
+             "id": "b4",
+             "op": "rect",
+             "startMs": 7844,
+             "endMs": 8323,
+             "weight": 2,
+             "at": [
+              215,
+              136
+             ],
+             "w": 160,
+             "h": 58,
+             "round": 10
+            },
+            {
+             "id": "t4",
+             "op": "text",
+             "startMs": 8369,
+             "endMs": 8711,
+             "at": [
+              295,
+              155
+             ],
+             "text": "Observe and",
+             "size": "s"
+            },
+            {
+             "id": "o7",
+             "op": "text",
+             "startMs": 8711,
+             "endMs": 9053,
+             "at": [
+              295,
+              179
+             ],
+             "text": "conclude",
+             "size": "s"
+            }
+           ],
+           "facts": {
+            "kind": "diagram",
+            "archetype": "whiteboard",
+            "onScreen": {
+             "labels": "Observe | Ask a testable | question | Pr"
+            }
+           }
+          }
+         }
+        }
+       },
+       "moduleCommands": []
+      }
+     },
+     {
+      "n": 3,
+      "child": "animation dikhao na",
+      "kind": "visual",
+      "ms": 2997,
+      "r": {
+       "move": {
+        "kind": "reteach"
+       },
+       "teacherReply": "Screen par Observe, Ask, Predict, Test ko drag karke order badaliye; har step move karne par scene ka label badlega. Aap pehle kya drag karenge?",
+       "ui": {
+        "status": "your_turn",
+        "phase": "teach",
+        "handover": "answer",
+        "answerForm": "words",
+        "tray": "studio",
+        "shortTitle": "How scientists find out",
+        "beat": {
+         "beatId": "b3-explain",
+         "type": "explain",
+         "index": 3
+        },
+        "ask": {
+         "text": "Aap pehle kya drag karenge?"
+        },
+        "studioSlot": {
+         "slotId": "852f7735-363b-452c-9068-e0e32b094137:c1:slot",
+         "intentId": "852f7735-363b-452c-9068-e0e32b094137:c1",
+         "state": "revealed",
+         "artifact": {
+          "kind": "stagecraft",
+          "stage": {
+           "w": 1000,
+           "h": 625
+          },
+          "stagecraft": {
+           "rung": "engine_default",
+           "archetype": "scene-explainer@1",
+           "spec": {
+            "archetype": "scene-explainer@1",
+            "skills": [
+             "c6-science-ch01-t01"
+            ],
+            "lang": "en",
+            "strings": {
+             "again": "Show again",
+             "yourTurn": "Your turn",
+             "check": "Check",
+             "right": "Got it",
+             "look": "Look again",
+             "myth": "MYTH",
+             "busted": "NOT TRUE",
+             "order": "Tap them in order"
+            },
+            "title": "How scientists find out",
+            "accent": "sci",
+            "targets": "c6-science-ch01-t01-m1",
+            "scenes": [
+             {
+              "id": "s1",
+              "layout": "split",
+              "els": [
+               {
+                "id": "title",
+                "type": "title",
+                "text": "How scientists find out"
+               },
+               {
+                "id": "myth",
+                "type": "myth",
+                "text": "Science is facts to memorise"
+               },
+               {
+                "id": "book",
+                "type": "glyph",
+                "name": "book",
+                "x": 220,
+                "y": 350,
+                "size": 120,
+                "color": "amber"
+               },
+               {
+                "id": "eye",
+                "type": "glyph",
+                "name": "eye",
+                "x": 760,
+                "y": 350,
+                "size": 120,
+                "color": "sci"
+               }
+              ]
+             },
+             {
+              "id": "s2",
+              "layout": "cycle",
+              "els": [
+               {
+                "id": "observe",
+                "type": "node",
+                "text": "Observe",
+                "sub": "notice something",
+                "glyph": "eye",
+                "color": "sci"
+               },
+               {
+                "id": "question",
+                "type": "node",
+                "text": "Ask",
+                "sub": "testable question",
+                "glyph": "question",
+                "color": "ion"
+               },
+               {
+                "id": "predict",
+                "type": "node",
+                "text": "Predict",
+                "sub": "reason first",
+                "glyph": "compass",
+                "color": "amber"
+               },
+               {
+                "id": "test",
+                "type": "node",
+                "text": "Test",
+                "sub": "try fairly",
+                "glyph": "beaker",
+                "color": "mint"
+               },
+               {
+                "id": "conclude",
+                "type": "node",
+                "text": "Conclude",
+                "sub": "record result",
+                "glyph": "note",
+                "color": "volt"
+               },
+               {
+                "id": "a1",
+                "type": "arrow",
+                "from": "observe",
+                "to": "question",
+                "text": "ask"
+               },
+               {
+                "id": "a2",
+                "type": "arrow",
+                "from": "question",
+                "to": "predict",
+                "text": "predict"
+               },
+               {
+                "id": "a3",
+                "type": "arrow",
+                "from": "predict",
+                "to": "test",
+                "text": "test"
+               },
+               {
+                "id": "a4",
+                "type": "arrow",
+                "from": "test",
+                "to": "conclude",
+                "text": "record"
+               },
+               {
+                "id": "a5",
+                "type": "arrow",
+                "from": "conclude",
+                "to": "observe",
+                "text": "new question"
+               }
+              ]
+             },
+             {
+              "id": "s3",
+              "layout": "row",
+              "els": [
+               {
+                "id": "curd",
+                "type": "title",
+                "text": "Curd example"
+               },
+               {
+                "id": "warm",
+                "type": "node",
+                "text": "Warm bowl",
+                "sub": "same milk",
+                "glyph": "beaker",
+                "color": "amber"
+               },
+               {
+                "id": "cool",
+                "type": "node",
+                "text": "Cool bowl",
+                "sub": "same milk",
+                "glyph": "beaker",
+                "color": "ion"
+               },
+               {
+                "id": "compare",
+                "type": "bars",
+                "values": [
+                 1,
+                 2
+                ],
+                "labels": [
+                 "warm",
+                 "cool"
+                ],
+                "unit": "set"
+               }
+              ]
+             },
+             {
+              "id": "s4",
+              "layout": "split",
+              "els": [
+               {
+                "id": "wrong",
+                "type": "myth",
+                "text": "A wrong prediction wastes the test"
+               },
+               {
+                "id": "result",
+                "type": "node",
+                "text": "Result",
+                "sub": "learn something",
+                "glyph": "note",
+                "color": "mint"
+               },
+               {
+                "id": "next",
+                "type": "node",
+                "text": "New question",
+                "sub": "keep exploring",
+                "glyph": "question",
+                "color": "volt"
+               },
+               {
+                "id": "a6",
+                "type": "arrow",
+                "from": "result",
+                "to": "next",
+                "text": "leads to"
+               }
+              ]
+             },
+             {
+              "id": "s5",
+              "layout": "row",
+              "els": [
+               {
+                "id": "checkTitle",
+                "type": "title",
+                "text": "Your turn"
+               },
+               {
+                "id": "step1",
+                "type": "label",
+                "text": "Observe"
+               },
+               {
+                "id": "step2",
+                "type": "label",
+                "text": "Ask"
+               },
+               {
+                "id": "step3",
+                "type": "label",
+                "text": "Predict"
+               },
+               {
+                "id": "step4",
+                "type": "label",
+                "text": "Test"
+               },
+               {
+                "id": "step5",
+                "type": "label",
+                "text": "Conclude"
+               }
+              ]
+             }
+            ],
+            "text": {
+             "L1": "Science is not just a list of facts to memorise. It is a way of finding out by observing, asking questions and testing ideas.",
+             "L2": "Start by noticing something. Ask a question that you can answer by doing something and observing or measuring what happens.",
+             "L3": "Before the test, make a prediction. It is a guess with a reason, based on what you already know.",
+             "L4": "For example, ask whether curd sets faster in a warm place or a cool place. Predict that the warm bowl will set first because the starter bacteria work faster in warmth.",
+             "L5": "Test fairly with the same milk, the same amount and the same starter. Keep one bowl warm and one bowl cool, then observe and record them after the same time.",
+             "L6": "The result may support the prediction or may not. A wrong prediction is still useful because it teaches us something new and leads to another question.",
+             "L7": "Remember the circle: observe, ask, predict, test and conclude. Then use what you learned to ask a new question."
+            },
+            "narration": {
+             "L1": {
+              "text": "Science is not just a list of facts to memorise. It is a way of finding out by observing, asking questions and testing ideas.",
+              "dur": 6,
+              "lead": 0,
+              "tail": 0,
+              "pauses": []
+             },
+             "L2": {
+              "text": "Start by noticing something. Ask a question that you can answer by doing something and observing or measuring what happens.",
+              "dur": 6,
+              "lead": 0,
+              "tail": 0,
+              "pauses": []
+             },
+             "L3": {
+              "text": "Before the test, make a prediction. It is a guess with a reason, based on what you already know.",
+              "dur": 5,
+              "lead": 0,
+              "tail": 0,
+              "pauses": []
+             },
+             "L4": {
+              "text": "For example, ask whether curd sets faster in a warm place or a cool place. Predict that the warm bowl will set first because the starter bacteria work faster in warmth.",
+              "dur": 8,
+              "lead": 0,
+              "tail": 0,
+              "pauses": []
+             },
+             "L5": {
+              "text": "Test fairly with the same milk, the same amount and the same starter. Keep one bowl warm and one bowl cool, then observe and record them after the same time.",
+              "dur": 8,
+              "lead": 0,
+              "tail": 0,
+              "pauses": []
+             },
+             "L6": {
+              "text": "The result may support the prediction or may not. A wrong prediction is still useful because it teaches us something new and leads to another question.",
+              "dur": 7,
+              "lead": 0,
+              "tail": 0,
+              "pauses": []
+             },
+             "L7": {
+              "text": "Remember the circle: observe, ask, predict, test and conclude. Then use what you learned to ask a new question.",
+              "dur": 6,
+              "lead": 0,
+              "tail": 0,
+              "pauses": []
+             }
+            },
+            "beats": [
+             {
+              "line": "L1",
+              "gap": 0.4,
+              "scene": "s1",
+              "cues": [
+               {
+                "at": 0,
+                "do": "show",
+                "dur": 0.6,
+                "target": "title"
+               },
+               {
+                "at": 0.8,
+                "do": "show",
+                "dur": 0.6,
+                "target": "myth"
+               },
+               {
+                "at": 2,
+                "do": "bust",
+                "dur": 1,
+                "target": "myth"
+               }
+              ]
+             },
+             {
+              "line": "L2",
+              "gap": 0.4,
+              "scene": "s2",
+              "cues": [
+               {
+                "at": 0,
+                "do": "show",
+                "dur": 0.5,
+                "target": "observe"
+               },
+               {
+                "at": 0.7,
+                "do": "show",
+                "dur": 0.5,
+                "target": "question"
+               },
+               {
+                "at": 1.4,
+                "do": "flow",
+                "dur": 0.6,
+                "target": "a1",
+                "to": 1
+               }
+              ]
+             },
+             {
+              "line": "L3",
+              "gap": 0.4,
+              "scene": "s2",
+              "cues": [
+               {
+                "at": 0,
+                "do": "show",
+                "dur": 0.5,
+                "target": "predict"
+               },
+               {
+                "at": 0.7,
+                "do": "highlight",
+                "dur": 1,
+                "target": "predict"
+               }
+              ]
+             },
+             {
+              "line": "L4",
+              "gap": 0.4,
+              "scene": "s3",
+              "cues": [
+               {
+                "at": 0,
+                "do": "show",
+                "dur": 0.5,
+                "target": "curd"
+               },
+               {
+                "at": 0.7,
+                "do": "show",
+                "dur": 0.7,
+                "target": [
+                 "warm",
+                 "cool"
+                ]
+               },
+               {
+                "at": 2,
+                "do": "highlight",
+                "dur": 1,
+                "target": "warm"
+               }
+              ]
+             },
+             {
+              "line": "L5",
+              "gap": 0.4,
+              "scene": "s3",
+              "cues": [
+               {
+                "at": 0,
+                "do": "show",
+                "dur": 0.7,
+                "target": "compare"
+               },
+               {
+                "at": 1,
+                "do": "highlight",
+                "dur": 1,
+                "target": "compare"
+               }
+              ]
+             },
+             {
+              "line": "L6",
+              "gap": 0.4,
+              "scene": "s4",
+              "cues": [
+               {
+                "at": 0,
+                "do": "show",
+                "dur": 0.6,
+                "target": "wrong"
+               },
+               {
+                "at": 1,
+                "do": "bust",
+                "dur": 1,
+                "target": "wrong"
+               },
+               {
+                "at": 2,
+                "do": "show",
+                "dur": 0.6,
+                "target": "result"
+               },
+               {
+                "at": 3,
+                "do": "show",
+                "dur": 0.6,
+                "target": "next"
+               }
+              ]
+             },
+             {
+              "line": "L7",
+              "gap": 0,
+              "scene": "s2",
+              "cues": [
+               {
+                "at": 0,
+                "do": "show",
+                "dur": 0.8,
+                "target": [
+                 "a2",
+                 "a3",
+                 "a4",
+                 "a5"
+                ]
+               },
+               {
+                "at": 1,
+                "do": "flow",
+                "dur": 1,
+                "target": [
+                 "a2",
+                 "a3",
+                 "a4",
+                 "a5"
+                ],
+                "to": 1
+               },
+               {
+                "at": "end",
+                "do": "interactive"
+               }
+              ]
+             }
+            ],
+            "task": {
+             "kind": "order",
+             "prompt": "Put the steps of finding out in order, starting with noticing something.",
+             "items": [
+              "step1",
+              "step2",
+              "step3",
+              "step4",
+              "step5"
+             ],
+             "src": "c6-science-ch01-t01-i09"
+            }
+           },
+           "boardTwin": {
+            "scriptRef": "board:c6-science-ch01-t01-s1|explain|-|-",
+            "values": {
+             "title": "Cinematic explainer",
+             "need": "explain"
+            },
+            "board": {
+             "title": "Cinematic explainer",
+             "lines": [
+              "test",
+              "curd",
+              "faster",
+              "science"
+             ],
+             "figure": {
+              "kind": "none"
+             }
+            }
+           },
+           "board": null,
+           "cue": {
+            "clauseIdx": 0,
+            "preRollMs": 400,
+            "crossFadeMs": 420
+           },
+           "buildSha": null,
+           "blobUrl": null
+          }
+         }
+        }
+       },
+       "moduleCommands": [],
+       "studio": {
+        "reveal": "852f7735-363b-452c-9068-e0e32b094137:c1"
+       }
+      }
+     }
+    ]
+   }
+  }
+ ],
+ "boards": [
+  {
+   "topicId": "c6-science-ch01-t01",
+   "real": true,
+   "lateMs": -700,
+   "inResponse": true,
+   "pass": true,
+   "reply": "Observation matlab jo aap dekhte hain. Aapka question kya hoga?"
+  },
+  {
+   "topicId": "c7-science-ch01-t01",
+   "real": true,
+   "lateMs": -700,
+   "inResponse": true,
+   "pass": true,
+   "reply": "Aarav, guess authority hai; replay observation aur evidence hai. Science mein idea test karke measurement se decide hota hai. Aap replay kyun chunenge?"
+  },
+  {
+   "topicId": "c6-science-ch01-t01",
+   "real": true,
+   "lateMs": -700,
+   "inResponse": true,
+   "pass": true,
+   "reply": "Aarav, screen par flow dekhiye: Observe → Question → Predict → Test → Conclude. Plant example mein sabse pehle kya dekhenge?"
+  },
+  {
+   "topicId": "c4-maths-ch05-t01",
+   "real": true,
+   "lateMs": -700,
+   "inResponse": true,
+   "pass": true,
+   "reply": "Aarav, board par 15 balls ko 3 same groups mein dekho: pehle har group mein 1 ball rakho; ab agla step kya hoga?"
+  },
+  {
+   "topicId": "c7-science-ch01-t01",
+   "real": true,
+   "lateMs": -700,
+   "inResponse": true,
+   "pass": true,
+   "reply": "Aarav, screen ke flow ko dekhiye: Idea to test → identical cups → only light change → daily observe → evidence compare. Aap kis step par light badlenge?"
+  },
+  {
+   "topicId": "c5-maths-ch02-t01",
+   "real": true,
+   "lateMs": -700,
+   "inResponse": true,
+   "pass": true,
+   "reply": "Aarav, screen ke board par dekhiye: 0—1/5—2/5—3/5—4/5—1. Har dash ek equal step hai; 2/5 kahan hai?"
+  },
+  {
+   "topicId": "c6-maths-ch07-t01",
+   "real": true,
+   "lateMs": 1438,
+   "inResponse": false,
+   "pass": true,
+   "reply": "Aarav, sochiye ek roti ko 3 equal pieces mein baanta: har piece whole ka one-third hota hai. Aise kitne pieces milenge?"
+  },
+  {
+   "topicId": "c5-evs-ch01-t01",
+   "real": true,
+   "lateMs": -700,
+   "inResponse": true,
+   "pass": true,
+   "reply": "Aarav, screen ke water-cycle picture mein dekhiye: sun paani ko vapour banata hai; clouds mein vapour condenses hota hai. Neeche barf kahan dikh rahi hai?"
+  },
+  {
+   "topicId": "c6-maths-ch07-t01",
+   "real": true,
+   "lateMs": 3796,
+   "inResponse": false,
+   "pass": true,
+   "reply": "Aarav, screen par 3 equal groups hain, har group mein 5. Ek group, total 15 ka kitna hissa hai?"
+  }
+ ],
+ "mounts": [
+  {
+   "topicId": "c6-maths-ch07-t01",
+   "bound": [],
+   "mounts": [],
+   "posed": "hook:- explain:- worked_example:- practice:fade:3 hint:fade:3 hint:fade:3 probe:rl-h1 explain:- probe:rl-o2"
+  },
+  {
+   "topicId": "c4-maths-ch05-t01",
+   "bound": [],
+   "mounts": [
+    "fractions@1",
+    "fractions@1"
+   ],
+   "posed": "hook:- explain:- worked_example:- practice:fade:0 break:- practice:fade:0 hint:fade:0 probe:rl-h1 explain:-"
+  },
+  {
+   "topicId": "c7-maths-ch08-t01",
+   "bound": [
+    {
+     "engine": "scene@1",
+     "goal": "g1:diag:c7-maths-ch08-t01-m-mult-bigger"
+    }
+   ],
+   "mounts": [
+    "explainer@1",
+    "scene@1"
+   ],
+   "posed": "hook:- explain:- probe:rl-h1 probe:- explain:- practice:rl-o2 probe:- practice:- probe:diag:c7-maths-ch08-t01-m-mult-bigger"
+  }
+ ],
+ "coverage": {
+  "root": "/home/user/Taxila/",
+  "boardFirst": true,
+  "total": 385,
+  "counts": {
+   "game": 368,
+   "explainer": 369,
+   "board": 346,
+   "key": 385,
+   "all4": 331
+  },
+  "keyItems": {
+   "verifiedAgree": 6658,
+   "items": 6658
+  },
+  "mathsBinding": {
+   "topics": 141,
+   "topicsWithABoundItem": 35,
+   "boundItems": 83,
+   "items": 2497
+  },
+  "perSubject": {
+   "maths": {
+    "topics": 141,
+    "game": 131,
+    "explainer": 131,
+    "board": 106,
+    "key": 141,
+    "all4": 97
+   },
+   "science": {
+    "topics": 69,
+    "game": 64,
+    "explainer": 64,
+    "board": 67,
+    "key": 69,
+    "all4": 63
+   },
+   "evs": {
+    "topics": 40,
+    "game": 39,
+    "explainer": 39,
+    "board": 40,
+    "key": 40,
+    "all4": 39
+   },
+   "sst": {
+    "topics": 34,
+    "game": 34,
+    "explainer": 34,
+    "board": 34,
+    "key": 34,
+    "all4": 34
+   },
+   "english": {
+    "topics": 53,
+    "game": 52,
+    "explainer": 53,
+    "board": 53,
+    "key": 53,
+    "all4": 52
+   },
+   "hindi": {
+    "topics": 48,
+    "game": 48,
+    "explainer": 48,
+    "board": 46,
+    "key": 48,
+    "all4": 46
+   }
+  }
+ },
+ "skipped": {
+  "R": 0,
+  "B": 0,
+  "M": 0
+ },
+ "summary": {
+  "pieceMs": {
+   "n": 6,
+   "p50": 2608,
+   "p90": 2997
+  },
+  "boardLate": {
+   "n": 15,
+   "p50": -700,
+   "p90": 3796
+  },
+  "realRequests": "12/12",
+  "boardSlotsFilled": "9/9",
+  "gateFails": 0,
+  "pointedEmpty": 0,
+  "wallMs": 158095
+ }
+}

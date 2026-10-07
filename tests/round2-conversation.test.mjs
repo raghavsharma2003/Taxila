@@ -122,6 +122,12 @@ describe("round2 conversation", () => {
     assert.equal(r.state.lastMove.request, "unclear");
     assert.match(r.state.lastMove.shape, /say it again or finish/);
     assert.match(r.state.lastMove.shape, /no verdict/);
+    // integration (w1a-battery): typed input never gets "say it again" (audit G4): no repair, no unclear move
+    const p = toPractice();
+    const t2 = step(p.state, { event: "turn", kit: K, cls: req("unclear"), typed: true, now: (p.state.turn + 1) * 20_000 });
+    assert.notEqual(t2.state.lastMove.kind, "repair");
+    assert.notEqual(t2.state.lastMove.request, "unclear");
+    assert.match(t2.state.lastMove.shape ?? "", /typed reply/);
   });
 
   test("insistence with nothing parked is a short real engagement now, never a second 'later'", () => {

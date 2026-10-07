@@ -14617,6 +14617,587 @@
    "title": "server/conductor/migrations.js unappliedMigrations() maps ANY query error to 'every migration missing', so an auth failure (28P01) printed 'REFUSING TO START: migrations not applied: 001..022' and sent diagnosis toward schema instead of credentials. The check should distinguish 'schema_migrations missing' (42P01) from a connection/auth error and print the error code. Not yet fixed in code.",
    "at": "2026-10-07",
    "source": "inbox/prod-cred-rotation-stale-replicas.json"
+  },
+  {
+   "id": "truth-d1-pace-park-hands-to-ladder",
+   "kind": "decision",
+   "at": "2026-10-06",
+   "title": "A miss that V1.4's pace park would leave, on a skill with a re-teach arm in flight, IS the re-check's verdict: cooldown cleared, engineReteach decides at once (another arm → prerequisite descent → engine park). Bounded: max 9 tries in the sim (V1.4 line 10). Reverse if V1.4 overload (10 tries without 3 right) exceeds 5% of skill-sessions in the mastery-calibration sim with it on.",
+   "source": "inbox/truth.json"
+  },
+  {
+   "id": "truth-d2-options-item-never-its-own-recheck",
+   "kind": "decision",
+   "at": "2026-10-06",
+   "title": "A re-teach on an options item (diagnostic / tap) retires it with no further verdict; the re-check is isomorphicFor (a fresh produce item on the skill). Re-asking 2-3 options after feedback is elimination and the fold grades try 1 only. Engine path and afterMiss kit remediation. Reverse if a kit skill has no isomorphic produce item (then measure the fallback).",
+   "source": "inbox/truth.json"
+  },
+  {
+   "id": "truth-d3-lesson-end-closes-open-episode",
+   "kind": "decision",
+   "at": "2026-10-06",
+   "title": "The lesson end closes an open item episode with wrong tries exactly as a leave does (live.js endEvents: P15 / C4, misconception and via carried), in flushHeld's transaction; the state marks the episode closed. Reverse if the ledger gets an 'abandoned' outcome class distinct from C4.",
+   "source": "inbox/truth.json"
+  },
+  {
+   "id": "truth-d4-teachback-credits-every-covered-skill",
+   "kind": "decision",
+   "at": "2026-10-06",
+   "title": "A probe.teachback event advances the display of every skill in its skill_ids (derived from stored cls + skill_ids: replay-stable). learned_today still needs each skill's own unaided correct, 2 of 3 recent right and pL ≥ 0.95. Reverse if, on the pilot, skills that reached learned_today only via a shared teach-back fail their certifying check > 10 points more often than skills whose (b) came from a skill-specific why.",
+   "source": "inbox/truth.json"
+  },
+  {
+   "id": "truth-d4b-performance-only-scheduling-not-adopted",
+   "kind": "decision",
+   "at": "2026-10-06",
+   "title": "Considered, not adopted: scheduling the delayed check from performance alone (ASSISTments ARRS 7/14/30/60 days after 3-in-a-row; Khan Mastery Challenges; Duolingo HLR) without the generative pass. Revisit if practice-purpose lessons leave > 20% of skills with ≥ 3 unaided right answers and no check within 7 days (kt_skill_state on the pilot).",
+   "source": "inbox/truth.json"
+  },
+  {
+   "id": "truth-d5-model-label-must-be-corroborated",
+   "kind": "decision",
+   "at": "2026-10-06",
+   "title": "server/grading/corroborate.js: a model 'correct' on a keyed item stands only if one complete form (key, unlabelled/complete acceptable, correct option) is carried by the reply's words (no foreign number; the form's numbers in order; no opposite decisive word, swapped counted-thing/era/unit word or negated key; > half the content words for a word-only form); a fail/partial on words that ARE the key (or only its numbers) → no evidence. Reverse if uncredited correct answers exceed 25% of model-leg cases on a held-out seed, or the pilot re-asks more than once per 10 answered items.",
+   "source": "inbox/truth.json"
+  },
+  {
+   "id": "ms-truth-reteach-sim-2026-10-06",
+   "kind": "measurement",
+   "at": "2026-10-06",
+   "title": "Director sim, c5-maths-ch02-t01, always-wrong child, 40 seeds x 3 skills (deterministic, no model): skill-runs left pace-parked with a re-teach arm in flight and no decision HEAD 80/120 → patched 0/120; max tries on a skill 7 → 9.",
+   "source": "inbox/truth.json"
+  },
+  {
+   "id": "ms-truth-local-batteries-2026-10-06",
+   "kind": "measurement",
+   "at": "2026-10-06",
+   "title": "Local server (Neon TEST branch, real Azure models, scripted children, n = 1-2 per file): w1c-reteach HEAD 13/13 (n=1; prod failure is model-dependent) / 01-05 13/13 (n=2); w1c-three-day HEAD 16/23 / 01-05 20/23 x2 / 01-07 22/23 and 21/23 (the remaining fails are the comprehension U threshold on scripted reasons, flaky run to run); round2-truth acceptance A+B+C HEAD 6 FAIL / 01-07 19/19; w1b-mounts 01-05: forged G1 graded right in both directions in 2 lessons each.",
+   "source": "inbox/truth.json"
+  },
+  {
+   "id": "ms-truth-grading-det-noparts-2026-10-06",
+   "kind": "measurement",
+   "at": "2026-10-06",
+   "title": "grading-truth deterministic paths on HEAD in the PRODUCTION configuration (no kits-parts file), classes 1-9, seed 7, n = 78,810: 870 wrong (838 = exact match on a kit acceptable entry two raters call partial, over 326 items). The earlier '0 in 35,088' was measured with TAXILA_PARTS_FILE set.",
+   "source": "inbox/truth.json"
+  },
+  {
+   "id": "ms-truth-grading-model-leg-2026-10-06",
+   "kind": "measurement",
+   "at": "2026-10-06",
+   "title": "grading-truth model leg (taxila-fast, classes 1-9, stratified over 7 buckets incl. new hint-as-answer), paired before/after corroborate on the same labels: seed 7 n=1,878 wrong 385 → 242, uncredited 45 → 56; seed 11 n=1,889 wrong 382 → ~249; proven-truth classes 62 → 7 (s7) and 57 → 11 (s11, before the last two rule refinements); the remainder is two-rater partial truth (kit acceptables that are partial). Held-out seed 13: see APPLY.md.",
+   "source": "inbox/truth.json"
+  },
+  {
+   "id": "rj-truth-pace-park-preempts-ladder",
+   "kind": "rejection",
+   "at": "2026-10-06",
+   "title": "V1.4 pace park (7 tries, no run of 3) leaving the item and skipping the skill while W1-C's re-teach re-check was pending: the ladder never reached 'two arms → descent' and the arm in flight never resolved (prod w1c-reteach 10/13; sim 80/120 skill-runs stuck).",
+   "source": "inbox/truth.json"
+  },
+  {
+   "id": "rj-truth-options-item-own-recheck",
+   "kind": "rejection",
+   "at": "2026-10-06",
+   "title": "Re-asking the same diagnostic / options item after its re-teach: elimination (2 options, one already wrong), and answerEvents grades the first try only, so the re-check carried no evidence and the attempt could not resolve.",
+   "source": "inbox/truth.json"
+  },
+  {
+   "id": "rj-truth-end-drops-open-episode",
+   "kind": "rejection",
+   "at": "2026-10-06",
+   "title": "Lesson end without closing an open item episode: a wrong answer on an open item followed by End wrote no kt_evidence row at all (closeEvents runs only inside a turn), against integration-episode-close-carries-misconception.",
+   "source": "inbox/truth.json"
+  },
+  {
+   "id": "rj-truth-w1b-test-reads-debug-on-prod",
+   "kind": "rejection",
+   "at": "2026-10-06",
+   "title": "w1b-mounts' open-class G1 check read ans.debug.classification; production never sends debug (rows.js debugFor), so on taxila.dev it always fell through to 'no module row' and the right commit was never sent (0 lessons graded). The server's turn verdict is ui.verdict.",
+   "source": "inbox/truth.json"
+  },
+  {
+   "id": "rj-truth-teachback-credits-first-skill-only",
+   "kind": "rejection",
+   "at": "2026-10-06",
+   "title": "Ledger advancing only target = skillIds[0] on the conjunctive teach-back: the generative pass went to the first taught skill (s1, recent [0,1]) and never to the skill done unaided (s2, recent [1,1], pL .987): 3/3 local day-0 traces, no learned_today, no check due (prod w1c-three-day 16/23).",
+   "source": "inbox/truth.json"
+  },
+  {
+   "id": "rj-truth-model-credit-uncorroborated",
+   "kind": "rejection",
+   "at": "2026-10-06",
+   "title": "Taking the classifier model's 'key' label as the grade: 'tens first' credited for '25, 38, 52', '10/15 and 9/15' for 'Ali is wrong: 4/9 < 3/4' (prod owner-1); hint-as-answer credited 49/300 (seed 7).",
+   "source": "inbox/truth.json"
+  },
+  {
+   "id": "rj-truth-handover-park-on-first-arm",
+   "kind": "rejection",
+   "at": "2026-10-06",
+   "title": "First cut of the pace-park handover: parked the skill (engine park) whenever the pace park fired, even with only 1 failed arm. Sim: 0 descents, every skill parked after one arm; W1-C's second arm and descent never ran. Replaced by handing the decision to engineReteach.",
+   "source": "inbox/truth.json"
+  },
+  {
+   "id": "rj-truth-guard-half-cover",
+   "kind": "rejection",
+   "at": "2026-10-06",
+   "title": "corroborate minCover 0.5: a 2-word form was 'carried' by one shared word ('Think of the star used to find north' for 'Pole Star'; 'tissue' for 'phloem tissue'). Now > half (0.6).",
+   "source": "inbox/truth.json"
+  },
+  {
+   "id": "rj-truth-guard-list-split",
+   "kind": "rejection",
+   "at": "2026-10-06",
+   "title": "Reading a reply's numbers per comma / 'and' segment always: broke Indian grouping ('1,00,000') and 'one hundred and forty-six' (uncredited 51 → 69 on seed 7). Now the whole reply first, segments only when the shared reader cannot read it (spoken lists).",
+   "source": "inbox/truth.json"
+  },
+  {
+   "id": "rj-truth-guard-scale-words-decisive",
+   "kind": "rejection",
+   "at": "2026-10-06",
+   "title": "Counting lakh / crore / million as decisive words in corroborate: 'two lakh thirty-six thousand…' for '2,36,408' read as a swapped word. Scale words are part of the number; the value check decides them.",
+   "source": "inbox/truth.json"
+  },
+  {
+   "id": "truth-d6-delayed-check-first-slot",
+   "kind": "decision",
+   "at": "2026-10-06",
+   "title": "Session open (learner/live.js dueForChecks, comprehension/weave.js planChecks, learner/checks.js warmupItemsFor): a due delayed check (learned_today+, no delayed pass, >= 20 h past the anchor; tagged check:true) takes the first opener slot before any FSRS review or expired weave entry, oldest anchor first; an opener with no item passes its slot to the next due check; a skill >= 2 learning days with no unseen check item (cannot be certified, V1.3) is passed over and only fills a spare slot as a review tagged uncertifiable (never counted). Ask starts still answer first (trigger stays pending); practice starts unchanged. Reverse if: on the pilot, lessons whose first item is a delayed check end early or get boredom flags >= 5 points more often than other lessons (then the check moves to the second slot).",
+   "source": "inbox/truth.json"
+  },
+  {
+   "id": "truth-d7-callback-is-a-card-reason",
+   "kind": "decision",
+   "at": "2026-10-06",
+   "title": "comprehension/fuse.js: the first item answer on a learned (learned_today+) skill in a session >= 20 h after its anchor (the session-open delayed check / review, C31) writes a reason (recheck:true, shapeId C31) once per skill per session, so the parent card shows 'used it again days later' (or '… still working on it') even when only K moved; read from held state (replay-stable). VALUES-100 V1.5. Reverse if: the claims audit or a parent study reads the chip as a mastery claim.",
+   "source": "inbox/truth.json"
+  },
+  {
+   "id": "rj-truth-retention-order-starves-check",
+   "kind": "rejection",
+   "at": "2026-10-06",
+   "title": "Ordering session openers by lowest retention alone: a skill learned yesterday has the HIGHEST retention of anything due, so it sorted behind every mastered skill's FSRS review and lost its opener slot (evals/next-day-check/sim.mjs, 2,000 starts x 2 seeds: the opening move was the due check in 722/1,289 and 711/1,304 lessons on HEAD). Also: an opener with no item left its slot empty.",
+   "source": "inbox/truth.json"
+  },
+  {
+   "id": "rj-truth-card-ignores-review",
+   "kind": "rejection",
+   "at": "2026-10-06",
+   "title": "Comprehension reasons only when a facet other than K moved (or via weave/callback): the C31 +1 day review answered right moved only K, so the parent card did not change (w1c-three-day 'the parent card changes after the delayed check alone': none, local and prod).",
+   "source": "inbox/truth.json"
+  },
+  {
+   "id": "ms-truth-nextday-sim-2026-10-06",
+   "kind": "measurement",
+   "at": "2026-10-06",
+   "title": "evals/next-day-check/sim.mjs (real kits c1-c9 maths, real ledger fold, real Director start; deterministic; 2,000 starts per seed; children with 1-4 skills learned 1-5 days ago and 0-8 mastered skills with FSRS reviews due). Opening move = the due check: seed 7 722/1,289 -> 1,289/1,289; seed 11 711/1,304 -> 1,304/1,304; 'exhaust' (day 0 answered every non-reserved check item) seed 7 999/1,949 -> 1,949/1,949, seed 11 982/1,937 -> 1,937/1,937 (HEAD -> patches 01-07). Results: evals/next-day-check/results/2026-10-06/.",
+   "source": "inbox/truth.json"
+  },
+  {
+   "id": "ms-truth-no-reserve-skills-2026-10-06",
+   "kind": "measurement",
+   "at": "2026-10-06",
+   "title": "Kit coverage of the V1.3 'new form' check (director/items.js checkReserveIds over every kit c1-c9, 2026-10-06): 1,467 of 2,991 skills (49.0%) have no reserve item (fewer than 2 practice/retrieval/near-transfer items); English 287/510, Hindi 352/612, maths 321/933, EVS 93/201, science 251/463, SST 163/272. In the 'exhaust' sim ~36% of due skills (2,045-2,083 of ~5,700) could not be certified at all: a content gap (one unseen check item per skill), not a scheduling one.",
+   "source": "inbox/truth.json"
+  },
+  {
+   "id": "ms-truth-grading-heldout-2026-10-06",
+   "kind": "measurement",
+   "at": "2026-10-06",
+   "title": "grading-truth model leg (taxila-fast, classes 1-9, run.mjs --dump-model, paired before/after corroborate on the same labels): held-out seed 13 (guard frozen before the run, sha1 d33a436) n=1,890: proven-truth wrong 69 -> 2, weak 16 -> 3, two-rater 303 -> 241, correct answers uncredited 51 -> 68 (14.3% of 476). Seeds 7 / 11: proven 62 -> 5 / 57 -> 3. Deterministic paths seed 13 (production config, no parts file): classifyFast 879 / 78,810 wrong (838 exact match on a kit acceptable entry two raters call partial), Studio W2-H 2/773 (no-item-id, known V1-04), every other path 0.",
+   "source": "inbox/truth.json"
+  },
+  {
+   "id": "ms-truth-third-rater-audit-2026-10-06",
+   "kind": "measurement",
+   "at": "2026-10-06",
+   "title": "Third-family audit of the two-rater agreed-partial labels on kit acceptable entries: 40 drawn uniformly of 947 (LCG seed 11), read by Claude against the question: 37 agree partial, 3 ambiguous, 0 disagree (docs/design/round2/truth/data/third-rater-audit.json). Not a human adjudication.",
+   "source": "inbox/truth.json"
+  },
+  {
+   "id": "ms-truth-owner1-local-2026-10-06",
+   "kind": "measurement",
+   "at": "2026-10-06",
+   "title": "owner-1 typed answers on a local server (Neon TEST, taxila-fast), n=1 run per seed: HEAD default 0/61, seed 8 3/62 (1 partial->correct); patched 01-05 default 2/58, seed 7 0/40, seed 8 2/68: 0 false credits in 166 typed answers; all 4 patched 'wrong' are one contested item (c2-maths-ch03-t02-i05 'Which is bigger, and why?' answered '85': kit acceptable says complete, V1.1 + both raters say partial; the guard re-asks).",
+   "source": "inbox/truth.json"
+  },
+  {
+   "id": "truth-open-parts-data-unshipped",
+   "kind": "open",
+   "at": "2026-10-06",
+   "title": "The designed fix for partial answers listed as acceptable (server/content/parts.js reading data/kits-parts.json: agreed two-rater labels + a human pass on disagreements) was never shipped; production credits partial acceptables as complete on both the deterministic and the model path. It is the root cause of 838/879 deterministic and ~240/246 post-guard model-leg wrong grades on the grading-truth battery.",
+   "source": "inbox/truth.json"
+  },
+  {
+   "id": "rj-truth-card-reason-keyed-on-shapeid",
+   "kind": "rejection",
+   "at": "2026-10-06",
+   "title": "First cut of patch 07 keyed the card reason on ev.shapeId === 'C31': item events carry no shapeId on the live path (learner/live.js attaches one to why events only), so it never fired on a real server (w1c-three-day '+1 day card changes' still FAILED); the unit test had passed only because its synthetic events carried a shapeId. Keyed on held state instead.",
+   "source": "inbox/truth.json"
+  },
+  {
+   "id": "ms-truth-parts-labels-c1-9-2026-10-06",
+   "kind": "measurement",
+   "at": "2026-10-06",
+   "title": "label-parts.mjs --classes 1-9 (gpt-5.6-terra + DeepSeek-V4-Pro, 2026-10-06, $13.04): all 5,579 list-shaped kit items rated; agreed acceptable labels 6,111 complete / 4,638 partial / 71 wrong, 4,290 disagreements; kappa acceptable 0.51-0.63, multi/single 0.48-0.54 by class band. grading-truth deterministic battery with these labels as truth (seed 13, n=89,560 classifyFast cases): HEAD production config 4,330 wrong (4.8%; 4,091 exact matches on agreed-partial acceptable entries); HEAD + candidate parts file (agreed only) 9 wrong (circular for the agreed labels).",
+   "source": "inbox/truth.json"
+  },
+  {
+   "id": "d-conv-lead-slot",
+   "kind": "decision",
+   "at": "2026-10-07",
+   "title": "Lead slot: on a turn with a pinned card question that answers a child's request or re-poses the question, the reply model writes ONLY what comes before the question (one-job, last-positioned note); code strips its questions, refuses a lead under 4 words, a lead that names the item's key (even a key the question names: odd/even), or a lead that drops/defers the question, and appends the card question byte for byte; every truth guard runs on the joined turn. Same deployment, same single call on the common path. Rationale: the battery's commonest failure was one generation doing two jobs (respond + re-pose verbatim) and dropping the first (Bridge NAACL 2024: decision given -> +76% preferred; Laban et al. 2025: -39% multi-turn). Kill switch TAXILA_P5_LEADSLOT=off. Reverse if: the judges' or the owner's ear find joined turns stitched/incoherent, or leaks/answer-gives rise on the battery (measure ask_for_answer and every 'reveals' check).",
+   "source": "inbox/conversation.json"
+  },
+  {
+   "id": "d-conv-prefs-every-move",
+   "kind": "decision",
+   "at": "2026-10-07",
+   "title": "How the child asked to be taught (s.prefs, last two) rides on every later move and is rendered droppable in MOVE; a child who ASKED for Hindi gets 'everyday words in Hindi, English only for a maths/science term'. Rationale: s.prefs was written by state.js and never read (a method request lasted one turn); preference slots are forgotten over turns unless code re-sends them. Reverse if: the prefs line is recited, or owner-4 Hindi/method checks regress.",
+   "source": "inbox/conversation.json"
+  },
+  {
+   "id": "d-conv-unclear-reading",
+   "kind": "decision",
+   "at": "2026-10-07",
+   "title": "A broken-off line (a stuttered function word or a filler, >= 1 content word, ending on a word that cannot end a thought; 3-9 words, no '?') and the note's 'noise' become request 'unclear': no verdict, a no-blame 'say it again or finish it' (never 'slowly': rj-ot-shape-slowly-recited). Reduplication and article-drill answers excluded; the kit-answer scan stays <= 40/44,103. Reverse if: a real answer is read as unclear on any kit scan or owner run.",
+   "source": "inbox/conversation.json"
+  },
+  {
+   "id": "d-conv-fallback-lead",
+   "kind": "decision",
+   "at": "2026-10-07",
+   "title": "fallbackReply with a card question (429 / timeout / every repair failed) is no longer the bare question: a fixed code lead chosen by the move's request (identity -> 'AI teacher' so the floor holds with every model down; unclear -> say it again; help requests and re-poses -> the kit hint's statements when safe, else a generic lead; first pose with no request -> the question alone as before). Reverse if: a fixed lead is judged confusing or repeats across turns.",
+   "source": "inbox/conversation.json"
+  },
+  {
+   "id": "m-conv-battery-2026-10-07",
+   "kind": "measurement",
+   "at": "2026-10-07",
+   "title": "Conversation-v2 battery, same harness/judges (J1 gpt-6-sol, J2 mistral-m35), local servers on Neon TEST, HEAD 617df2b vs HEAD+patches, arms run at the same time, concurrency 2, 0 reply 429s; three paired runs as the code changed (A: 01,02,04,05; B: +key and drop refusals; C final: +content requests kept out of the slot; C compared on the 296 cases both arms answered after a Neon TEST NeonDbError burst at the end). Strict HEAD->patched: A 56.1->59.7, B 54.1->58.3, C 51.0->56.8 (n=355/355/296); pooled 1,006 pairs lost 107 / gained 152, McNemar 7.47 (p<0.01); J1 pooled 90/152 (15.4); lenient pooled 79/144 (18.4). Same HEAD code 56.1/54.1/51.0 on three runs: run-to-run noise ~+-3 pts. Run C families strict patched: A 55.6 B 69.7 C 59.8 D 47.6 E 66.7 F 73.3 G 47.4. Code metrics: bare card-question replies to a child's case line 18->6, 15->8, 14->11; J>=0.8 repeats 21->9, 30->12, 24->7. Both-judge answer reveals: A 1->2, B 1->4, C 1->1 (after the key refusal and content-request exclusion). Raw: docs/design/round2/conversation/battery/.",
+   "source": "inbox/conversation.json"
+  },
+  {
+   "id": "m-conv-heldout-2026-10-07",
+   "kind": "measurement",
+   "at": "2026-10-07",
+   "title": "Held-out battery (evals/conversation-r2/heldout-cases.mjs, 78 new utterances weighted to the weakest families, written by the same agent after the code but before any run; no code change was made after seeing a held-out result; the later key/drop/content-request changes came from the main battery), same harness and judges, same servers/time as runA: strict 27/77 (35.1%) -> 44/77 (57.1%) (paired 6 lost / 23 gained, McNemar 8.83, p~0.003); J1 53.2% -> 70.1%.",
+   "source": "inbox/conversation.json"
+  },
+  {
+   "id": "m-conv-owner-local-2026-10-07",
+   "kind": "measurement",
+   "at": "2026-10-07",
+   "title": "Owner scripts on local servers (Neon TEST), both arms at the same time, n=1 per arm per run, runs A and B: owner-2 seed 157001 (90 turns) HEAD 9 defects/7 turns and 5/4 vs patched 7/7 and 8/6 (no improvement shown: remaining R3 after a wrong answer / 'pata nahi' where the move carries no request); owner-4 steering 14/16 -> 15/16 and 16/16 -> 16/16; p5-interaction-acceptance 41/42 -> 42/42 and 41/42 -> 41/42 (card-question-only 3/37 -> 0, 4/37 -> 2/37); round2-conversation (held-out phrases) HEAD 26/31 and 28/31, patched 31/31 (run B); on taxila.dev (prod = HEAD) 28/30, one of the two fails a checker false negative since fixed. Checker fix: owner-4 childSlow matched 'main dheere bolungi'.",
+   "source": "inbox/conversation.json"
+  },
+  {
+   "id": "m-conv-429-storm-2026-10-07",
+   "kind": "measurement",
+   "at": "2026-10-07",
+   "title": "A first battery attempt at concurrency 4 per arm plus owner scripts in parallel (and other agents on the same quota) hit taxila-fast 429 on ~90% of reply calls (967 'reply unavailable' in one arm's ~1070 turns); the reply lane has no failover deployment in code, so every such turn shipped a fixed fallback line. Those runs were discarded. Under that storm the owner-2 arm with the fallback lead had R3 bare x5 vs x14 without it (n=90 each, not a controlled comparison).",
+   "source": "inbox/conversation.json"
+  },
+  {
+   "id": "rj-conv-fixed-lead-without-key-check",
+   "kind": "rejection",
+   "at": "2026-10-07",
+   "title": "Tried: the lead slot with only the joined-turn leak guard as the truth check. Broke: ask_for_answer-05 shipped '36 even hai, kyunki ... 36 odd hai ya even?' — revealsAnswer cannot see a key the question itself names, and a lead written before the question gave it. Instead: any mention of the item's key/acceptable in the lead refuses the slot (falls through to the HEAD one-call path) and the note says 'never its answer'.",
+   "source": "inbox/conversation.json"
+  },
+  {
+   "id": "rj-conv-lead-drops-question",
+   "kind": "rejection",
+   "at": "2026-10-07",
+   "title": "Tried: accepting any >= 4-word lead. Broke: 'Isse abhi chhod dete hain ... <the same question>?' and 'let's stop here ... Why ...?' — a lead that agrees to drop or defer the question contradicts the question code appends after it (a confusing reply by construction). Instead: such leads are refused (compose.js leadDropsQuestion).",
+   "source": "inbox/conversation.json"
+  },
+  {
+   "id": "rj-conv-lead-repair-after-floor",
+   "kind": "rejection",
+   "at": "2026-10-07",
+   "title": "Tried: the last-resort lead-only repair on any turn still bare after the other repairs. Broke: tests/lesson-safety 'ai_denial draft' — after a floor catch replaced the turn, the lead repair made one more model call on the same words (rejected, but it called). Instead: never after a floor or leak catch (a truth repair stands).",
+   "source": "inbox/conversation.json"
+  },
+  {
+   "id": "o-conv-r3-after-wrong-answer",
+   "kind": "open",
+   "at": "2026-10-07",
+   "title": "owner-2 R3 bare question after a wrong answer, 'pata nahi', 'i don't know', 'nahi samjha' persists with the patches (4-5 per 90 turns, both local runs): the move carries no request; the bare guard evidently does not catch these turns (or its repairs fail), and the owner transcript has no guard field to tell which. Next: log guard.caught/leadSlot in the owner-2 rows, then route a hint move's re-pose through the lead slot with the kit hint as its note.",
+   "source": "inbox/conversation.json"
+  },
+  {
+   "id": "o-conv-r2-no-429",
+   "kind": "open",
+   "at": "2026-10-07",
+   "title": "'bhai kuch samajh nahi aaya haha' (owner-2 s4 t5, Kabir spoken c7 maths ch08) ships the fixed 'meri baat atak gayi, phir se bata' line on prod (2026-10-06) and locally (2026-10-07) with 0 reply 429s: a floor/stage/units replacement on an item-less explain turn falls back to FALLBACK.other. Cause not isolated.",
+   "source": "inbox/conversation.json"
+  },
+  {
+   "id": "o-conv-reply-lane-failover",
+   "kind": "open",
+   "at": "2026-10-07",
+   "title": "The teacher-reply lane (taxila-fast) has no failover deployment in code; at concurrency 4x2 plus parallel scripts ~90% of reply calls returned 429 and shipped fixed lines. Patch 05 covers card-question turns only. A failover (MODEL-STACK lists taxila-mistral-m35 'routed, no code path') belongs in server/azure.js.",
+   "source": "inbox/conversation.json"
+  },
+  {
+   "id": "lat-turn-prefetch-adopt-identical",
+   "kind": "decision",
+   "at": "2026-10-06",
+   "title": "Turn prefetch: the device sends the stable partial transcript (energy-VAD quiet + deltas still 250 ms, <=3 per item) to POST /api/lesson/turn-prefetch; the server runs the turn's own perceive() (classify incl. the model distress read, the note, speculative replies) behind the turn's own gates (auth, guardian, core_tutoring consent, ended, lane, 30/lesson/min) and the /turn ADOPTS it only on an identical fingerprint (lesson, stored-state hash, words byte for byte, every classify input, barge-in) and an identical classifyFast on the real ASR confidence. Nothing commits, grades or speaks before the turn. Reverse if adopted turns ever grade differently from the same words without a prefetch, or if the wasted-send cost causes 429s on real turns.",
+   "source": "inbox/latency.json"
+  },
+  {
+   "id": "m-lat-prefetch-2026-10-06",
+   "kind": "measurement",
+   "at": "2026-10-06",
+   "title": "turn-e2e.mjs, local in-process (US sandbox, Neon TEST, prod routing, synthetic child speech gpt-4o-mini-tts x1.2, 20-turn cascade lessons c4-maths-ch01-t01): speech end -> sound p50/p90 pooled no-prefetch 5742/7597 (n=37) vs prefetch 4670/6052 (n=40). Best run (prefetch + speech eastus2) 4506/5754 n=20. Prefetch adopted 58/60, ahead of the turn ~450 ms p50; deltas == completed transcript 77/77. Brain p50 -485 / -574 ms in two before/after pairs, confounded by rewrite counts (16/20 vs 11/20) and STT drift; attributable gain ~0.4-0.5 s (the head start). Local acceptance 12/12.",
+   "source": "inbox/latency.json"
+  },
+  {
+   "id": "m-lat-prod-baseline-2026-10-06",
+   "kind": "measurement",
+   "at": "2026-10-06",
+   "title": "Prod ee97e9c from the US sandbox via agent proxy to eastus2 ACA, same harness: speech end -> sound p50/p90 5999/7012 (n=12; /turn + /tts-stream), 5323/6800 with /turn-audio (n=12, different run, Brain varied). Text-only turn -> first audio on taxila.dev 2773/3582 (n=10, tests/prod/round2-latency.mjs arm A). V4.3 bar (first sound p50 <= 900 ms) not met anywhere.",
+   "source": "inbox/latency.json"
+  },
+  {
+   "id": "m-lat-speech-region-2026-10-06",
+   "kind": "measurement",
+   "at": "2026-10-06",
+   "title": "Diya DragonHD first byte from the US sandbox, warm, n=12 each: India resource 431/467 ms, eastus2 AIServices 230/496 ms; cold 1731 vs 891. In the end-to-end harness TTS stage p50 633 -> 396 ms. Not yet measured from the eastus2 container.",
+   "source": "inbox/latency.json"
+  },
+  {
+   "id": "lat-speech-region-follows-app",
+   "kind": "decision",
+   "at": "2026-10-06",
+   "title": "Proposed ops change: AZURE_SPEECH_REGION = the app's region (eastus2 now, key = the eastus2 AIServices key; India resource once the app moves). Reverse if a tts-region run from the container itself shows no gain, or Diya quality/visemes differ by region.",
+   "source": "inbox/latency.json"
+  },
+  {
+   "id": "rj-lat-note-parallel-default-on",
+   "kind": "rejection",
+   "at": "2026-10-06",
+   "title": "Tried: writing the no-note reply in parallel with the UNDERSTAND note on every non-answer (note-parallel). Broke: 8 extra reply calls in 40 turns, 1 used; the note changed the plan in the other 7 and the speculative fan-out already covered the no-note key 29 times. Now default OFF behind TAXILA_NOTE_PARALLEL=on.",
+   "source": "inbox/latency.json"
+  },
+  {
+   "id": "m-lat-prefetch-waste-2026-10-06",
+   "kind": "measurement",
+   "at": "2026-10-06",
+   "title": "Prefetch cost: 39-41 sends per 20 turns. Offline replay of 64 recorded delta timelines (gpt-live-transcribe emits deltas in blocks ~450 ms apart): debounce 250 ms -> 0.98 superseded sends per turn, lead p50 512 ms; 400 -> 0.53, 362; 600 -> 0.23, 162. Each superseded send costs one classify + one note + up to 3 speculative replies [estimate ~$0.004]. Default 250.",
+   "source": "inbox/latency.json"
+  },
+  {
+   "id": "m-lat-rewrite-share-2026-10-06",
+   "kind": "measurement",
+   "at": "2026-10-06",
+   "title": "Guard rewrites are the largest remaining turn cost: 46/77 measured turns rewrote (60 %, MODEL-STACK A3 assumes 10 %). Rewritten Brain ~3.3 s vs clean 1.4-1.7 s p50. Guards on rewritten turns: ask 22, drift 10, noconfirm 9, long 7, praise 6, script 5, leak 4. Owned by the interaction stream (prompt/guards); a parallel second draft is already rejected.",
+   "source": "inbox/latency.json"
+  },
+  {
+   "id": "lat-900ms-unreachable-on-graded-cascade",
+   "kind": "decision",
+   "at": "2026-10-06",
+   "title": "Stated limit: V4.3 first sound <= 900 ms is not reachable for a content reply on a cascade that must finish the grade and the distress read first: end of turn (~1.1 s server VAD + 0.5 s completed transcript) + classify/note + reply + TTS ~0.4 s. Even with all model work hidden, end-of-turn + TTS + network ~1.0-1.1 s. The SHADOW ack (after the distress read) was ready 1.5-1.8 s after speech end. Reverse if a word-aware end of turn (duplex TaxilaFDB) lands at <= 0.4 s and rewrites fall to ~10 %, then re-measure.",
+   "source": "inbox/latency.json"
+  },
+  {
+   "id": "m-content-prod-board-log-2026-10-06",
+   "kind": "measurement",
+   "at": "2026-10-06",
+   "title": "Production whiteboard outcomes from container logs (taxila-env Log Analytics, revision taxila-web--see97e9c-6v0v, 15:10-19:08 UTC, n=189 asks, server-side): 158 drawn (code 78 at the 1.9 s deadline p50 1900/p90 1913 ms; line 45 p50 2448/p90 4866; spec 35 p50 22/p90 4118), 31 not drawn (16.4%: W4.numbers_from_truth on 19, W9 6, W6 7, W8 3, W2/W3 7, W0 4). Ask->board all drawn p50 1900 / p90 3211 ms. Raw: evals/content/results/2026-10-06-prod-log-whiteboard-lines.jsonl",
+   "source": "inbox/content.json"
+  },
+  {
+   "id": "m-content-owner5-rootcause-2026-10-06",
+   "kind": "measurement",
+   "at": "2026-10-06",
+   "title": "owner-5 'show me a diagram' 2/2 on prod is NOT a prod-only infra fault: log lines 'whiteboard not drawn W8.counts_match_line 4991ms' and 'W6.timing,W8.counts_match_line 7001ms' at the two Meher request times (16:39:51, 16:40:10 UTC). Her line '3 equal groups, each with 5 dots'; the kit's equal-groups@1 code board (15 dots) was refused because W8 read only '3'. Reproduced locally on HEAD (round2-content R, slot:failed on 'har group mein 5 dots'). Reproduced offline in tests/round2-content.test.mjs.",
+   "source": "inbox/content.json"
+  },
+  {
+   "id": "m-content-catalogue-w1-2026-10-06",
+   "kind": "measurement",
+   "at": "2026-10-06",
+   "title": "Authored catalogue boards (data/studio-catalogue, 3011 boards, all 800x500) at the live gate: 2886/3011 (95.8%) fail W1.fits_stage (phone tray 312x274 -> 0.39 scale, 18-unit label = 7 px < 11). Geometry checks (W0-W3) pass 111/3011 as authored, 1904/3011 after the legibility fit (server/stagecraft/board-legible.js; text sizes untouched). Method: gateWhiteboard with empty line, offline, tests/round2-content.test.mjs.",
+   "source": "inbox/content.json"
+  },
+  {
+   "id": "m-content-coverage-385-2026-10-06",
+   "kind": "measurement",
+   "at": "2026-10-06",
+   "title": "Honest coverage of the 385 class 4-7 topics (evals/content/coverage.mjs, offline, the shipped files): game/sim 368, explainer 369, validated key 385 (every item blind-solver agrees), live board on BOTH explain and worked-example beats HEAD 276 -> board-first 346; ALL FOUR HEAD 262 -> 331. Maths items an engine can bind 72/2497 -> 83/2497 (32 -> 35 of 141 topics). The ship-five report's 'board plan 379/385' counted boards by shape+lint only.",
+   "source": "inbox/content.json"
+  },
+  {
+   "id": "m-content-battery-local-2026-10-06",
+   "kind": "measurement",
+   "at": "2026-10-06",
+   "title": "tests/prod/round2-content.mjs, local server (Neon TEST, real Azure models, US sandbox), parts R (6 asks x typed/spoken) + B (6 topics x 6 lines), n=3 reps each, same file before/after. HEAD: real 35/36, board slots filled 24/27, slots failed while she pointed at the screen 4, board lateness after audio start p50 -101 / p90 1516 ms (n=41, 0 in the turn response), piece p90 3205 ms (n=18). Patched: real 36/36, filled 27/27, pointed-at-empty 0, lateness p50 -700 / p90 -73 ms (n=45, 22 in the turn response), piece p90 2913 (n=18; reply time, not this stream). Harness re-gate from the patched tree: B 30/30, lateness p90 1153 (n=27). Raw: evals/content/results/2026-10-06-*-local-*.",
+   "source": "inbox/content.json"
+  },
+  {
+   "id": "m-content-battery-prod-2026-10-06",
+   "kind": "measurement",
+   "at": "2026-10-06",
+   "title": "tests/prod/round2-content.mjs against taxila.dev (HEAD ee97e9c, before), n=2 reps, 179 s wall (p4 timed out before): real 24/24, board slots filled 14/18, 4 failed while her line pointed at the screen (all science 'flow' continue boards), board lateness p50 -88 / p90 1731 ms (n=26), piece p50 1673 / p90 1974 ms (n=12, sandbox API time), item-bound maths mounts 0/3. Server side in the window: 7/47 asks not drawn.",
+   "source": "inbox/content.json"
+  },
+  {
+   "id": "dec-content-board-first",
+   "kind": "decision",
+   "at": "2026-10-06",
+   "title": "Board-first: pick the kit's board at kernel time (code/library/legible catalogue, full gate vs the predicted line, W9 as if no number is said, only W6 deferred), put its values + drawn counts in her content as one 'board' row, re-gate on her real line and draw synchronously in the turn response; a fail runs the old ladder. Continued boards keep the board on screen at once when it passes against her new line. Reverse if: a blind child-facing comparison shows board-first boards teach worse than line-planned boards, or her lines degrade (reciting the row) on the persona invariants.",
+   "source": "inbox/content.json"
+  },
+  {
+   "id": "dec-content-w8-groups",
+   "kind": "decision",
+   "at": "2026-10-06",
+   "title": "W8 counts_match_line accepts a family count equal to a partition count she said times another number she said ('3 equal groups, each with 5' = 15). Reverse if a board passes W8 this way while its groups are not her groups (a W8 false accept in the board corpus).",
+   "source": "inbox/content.json"
+  },
+  {
+   "id": "dec-content-fraction-name-of",
+   "kind": "decision",
+   "at": "2026-10-06",
+   "title": "fractions@1 gains 'name' (fixed shaded shape, child builds n/d) and 'of' (N objects, child gives a/b of N); bound only when the key states exactly that fraction / whole number; server re-grades fr.name / fr.of from the raw act. 11 newly bound items, all blind-verified, engine key = kit key. Reverse if a bound name/of item grades a right answer wrong in the field.",
+   "source": "inbox/content.json"
+  },
+  {
+   "id": "rj-content-defer-w5-w8-preselect",
+   "kind": "rejection",
+   "at": "2026-10-06",
+   "title": "Board-first preselect deferring W5/W8 (and W9 under the predicted line's withhold set) to her real line: 96.8% offline coverage, but live the preselected maths boards did not match her line: refused 6/6 (W8) and 19/27 (W9: a key the predicted line freed was never said), then fell to the slow line planner (lateness p90 2569 ms). Now the full gate runs at preselect with W9 line-proof and only W6 deferred.",
+   "source": "inbox/content.json"
+  },
+  {
+   "id": "rj-content-labels-only-row",
+   "kind": "rejection",
+   "at": "2026-10-06",
+   "title": "A board-first row with the board's labels only: her line named its own counts and W8 refused the board (8/8 c6-maths explain). The row now carries the drawn counts (equal parts / boxes / dots) the gate checks.",
+   "source": "inbox/content.json"
+  },
+  {
+   "id": "rj-content-continue-plan-empty-stage",
+   "kind": "rejection",
+   "at": "2026-10-06",
+   "title": "A continued whiteboard slot that waits for the continuation planner: the stage is empty while it plans (StudioStage phase 'empty' without an artifact) and 'nothing_to_draw' failed the slot while her line pointed at the board still meant to be there (prod 4/18, local HEAD 4/27). Now the board on screen is kept at once when it passes the full gate against her new line.",
+   "source": "inbox/content.json"
+  },
+  {
+   "id": "m-content-mounts-posing-2026-10-06",
+   "kind": "measurement",
+   "at": "2026-10-06",
+   "title": "Item-bound maths mounts per lesson (round2-content M, 3 topics x 2 runs each side, local): HEAD 1/6, patched 2/6 (both c4 via fractions@1 name on i01). Short of the bar because the Director poses the real-life probe rl-h1 early in all 12 lessons and a diagnostic, which no engine binds; 513 unbound maths items have plain numeric keys but a 'type the number' frame would add no evidence beyond the chat answer.",
+   "source": "inbox/content.json"
+  },
+  {
+   "id": "m-dxr-eot-hindi-real-stt-2026-10-07",
+   "kind": "measurement",
+   "at": "2026-10-07",
+   "title": "REAL RECORDED ADULT HINDI SPEECH + REAL STT (LiveKit eot-bench Hindi, CC BY 4.0: 400 turns, 147 holds >= 500 ms, 674 >= 100 ms), streamed 1x real time from the US sandbox to the production sockets with DuplexLive in the loop (probes live), context from her previous line (275 free, 100 closed yes/no, 25 open). HEAD -> this tree, live runs: D4 thinking-pause cut-offs 33/147 22.4% [16.5-29.8] -> 12/147 8.2% [4.7-13.7], all holds 39/674 -> 12/674, in-speech commits 12 -> 4, decision gap p50/p90 774/1677 -> 923/2060 ms; MAI 37/147 25.2% -> 19/147 12.9% [8.4-19.3], 49/674 -> 22/674, in-speech 28 -> 7, gap p50 2474 -> 910 ms. Baselines on the same holds: silence-640 41/147 27.9%, silence-900 7/147 4.8%. TEST half only (70 holds, wait chosen on TRAIN): D4 12/70 -> 5/70, MAI 20/70 -> 7/70, gap 768 -> 931 / 2522 -> 906; silence-900 3/70. Replays of the recorded socket events reproduce each live run exactly. evals/duplex-real/results/eot-{D4,MAI}-{before,after}.json.",
+   "source": "inbox/duplex-real.json"
+  },
+  {
+   "id": "m-dxr-ami-real-stt-2026-10-07",
+   "kind": "measurement",
+   "at": "2026-10-07",
+   "title": "REAL RECORDED ADULT ENGLISH SPEECH (AMI CC BY 4.0, 4 meetings, 16 headset channels, 48 pairs, incl. Indian-L1 adults) + REAL gpt-live-transcribe events recorded live, replayed open loop (her = another participant). HEAD / this tree: continuers kept 138/195 70.8% [64.0-76.7] / 139/195; barge-ins stopped within 200 ms 18/51 / 17/51 (p50 among stopped 180 / 310 ms: one item); room-talk false yields 38/239 15.9% / 37/239; self-yield on headset bleed 116/730 15.9% both. Same meetings with SIMULATED STT (p1-duplex): continuers 75.8%, room 7.7% - the real transcriber makes both worse. Continuer failures: barge_in (acoustic sustain on 330-1000 ms 'yeah') 26, G7 revoke 26, repair_request 4.",
+   "source": "inbox/duplex-real.json"
+  },
+  {
+   "id": "m-dxr-shadow-records-nothing-2026-10-06",
+   "kind": "measurement",
+   "at": "2026-10-07",
+   "title": "Prod shadow (TAXILA_DUPLEX=shadow, web ee97e9c) records NOTHING: CascadeLink passes no log sink to CascadeDuplex and there was no route or table, so 0 prod lessons have engine-vs-shipped evidence. tests/prod/round2-duplex-real.mjs on taxila.dev 2026-10-07: POST /api/duplex/shadow 404, bundle without telemetry (1/7); local server with this stream: 10/10.",
+   "source": "inbox/duplex-real.json"
+  },
+  {
+   "id": "m-dxr-semantic-arm-2026-10-07",
+   "kind": "measurement",
+   "at": "2026-10-07",
+   "title": "Semantic estimate on real Hindi transcripts (server/duplex/semantic.js, grok-4-1-fast-non-reasoning on Azure, real calls p50 570 / p90 714 ms, delivered after their own latency in the replay; open_explanation context): MAI cut-offs 50/147 with and without, gap 2357 -> 2343 ms; D4 15/147 both. 212-319 asks per 400 turns; estimates are stale (text hash moved) by the pause. No effect as wired.",
+   "source": "inbox/duplex-real.json"
+  },
+  {
+   "id": "m-dxr-taxilafdb-regression-check-2026-10-07",
+   "kind": "measurement",
+   "at": "2026-10-07",
+   "title": "TaxilaFDB TEST (SIMULATED, 960 streams x D4/FAST/MAI_HOME, herAct) HEAD -> this tree: thinking-pause cut-offs 2.7/2.7/3.4% unchanged; gap p50 1150/360/320 -> 1160/480/370 ms (the open-turn wait); missed, continuers, barge stop 140 ms, TV/sibling false yields unchanged; MAI_HOME safety 82/84 -> 83/84, non-safety speech after distress 2 -> 1. Also: HEAD's own cut-offs 20-25/732 vs 0/732 at p1-duplex final (fdb-r2-test-final.json) - a regression from ship-five integration, not chased.",
+   "source": "inbox/duplex-real.json"
+  },
+  {
+   "id": "dxr-open-turn-wait-1100",
+   "kind": "decision",
+   "at": "2026-10-07",
+   "title": "Outside closed answers a turn_end SPEAK waits 1,100 ms of child silence (config.ts OPEN_TURN_WAIT; questions to her and 'pata nahi' exempt), and a yes/no answer longer than 3 words is read as a free turn (exchangeOf). Chosen on the TRAIN half of eot-bench Hindi (fewest cut-offs with gap p50 <= ~920 ms on both lanes), reported on TEST. Reverse if ET-1 actors or the prod shadow telemetry show open-context cut-offs <= 3% at a shorter wait, or children's 'missed reply' (silence >= 2.5 s after a reply-worthy end) rises above 8%.",
+   "source": "inbox/duplex-real.json"
+  },
+  {
+   "id": "dxr-shadow-telemetry",
+   "kind": "decision",
+   "at": "2026-10-07",
+   "title": "Shadow evidence is a content-blind summary per lesson (src/duplex/shadowTelemetry.ts: engine vs shipped gap, would-cut-off, shipped cut-off, overlap yield vs stop, safety rows) beaconed to POST /api/duplex/shadow and written as one stdout line (Log Analytics), lesson id salted-hashed; no migration. Reverse if Log Analytics retention is too short for the S gate (then a table behind a migration on the TEST branch first).",
+   "source": "inbox/duplex-real.json"
+  },
+  {
+   "id": "dxr-switch-criteria",
+   "kind": "decision",
+   "at": "2026-10-07",
+   "title": "Shadow -> live needs Gate R (real speech through the real STT on the India lane: cut-offs <= 3% and <= silence-900, gap p50 <= 350 ms measured from India, continuers >= 90%, >= 50% of barge-ins stopped within 200 ms, other-voice false yields <= 10%, echo self-yield <= 2%, safety floor unchanged) then Gate S (prod shadow: >= 300 turns / 30 lessons, would-cut-off <= 3% and <= shipped, undecided <= 8%, 0 unexplained safety disagreements), then ET-1 adults, then the ET-2 child pilot. Met today: R2b and R7 only. docs/design/round2/duplex-real/CRITERIA.md; scorer evals/duplex-real/criteria.mjs.",
+   "source": "inbox/duplex-real.json"
+  },
+  {
+   "id": "rj-dxr-revoke-epoch-previous-turn",
+   "kind": "rejection",
+   "at": "2026-10-07",
+   "title": "Tried (shipped in ship five): a G7 revoke re-opens the fan-in epoch saved at HER LAST LINE. Broke on real speech (eot-bench hi__4015 -> hi__4016): a revoke before her reply sounded re-opened the previous exchange, so the merged commit carried an already-answered turn's words. Now a SPEAK / CUT_IN pins the epoch (host.ts); tests/duplex-real-replay.test.mjs fails on the old code.",
+   "source": "inbox/duplex-real.json"
+  },
+  {
+   "id": "rj-dxr-fifo-commit-by-arrival",
+   "kind": "rejection",
+   "at": "2026-10-07",
+   "title": "Tried: matching a final to the oldest commit at or after its item's start, with arrival time standing in for an unknown start. Broke on MAI (no speech_started): the item 'starts' after the probe that produced it, the commit was dropped as stale and coverage fell to arrival - lag; 233/400 eot-bench ends waited for the silence backstop (gap p50 2,474 ms). Now a start-less final answers the oldest commit sent before it arrived.",
+   "source": "inbox/duplex-real.json"
+  },
+  {
+   "id": "rj-dxr-commit-empty-as-child-silent",
+   "kind": "rejection",
+   "at": "2026-10-07",
+   "title": "Tried (ship five): every input_audio_buffer_commit_empty on the call is a push-to-talk press with no audio (child_silent). Broke under duplex: the engine's own probes produce it (AMI 165-483 per 30-40 min channel, eot-bench 7/400 turns), flipping the floor to your_turn mid-turn and resuming a reply the engine had paused for a barge-in. Now consumed by CascadeDuplex while the engine decides.",
+   "source": "inbox/duplex-real.json"
+  },
+  {
+   "id": "rj-dxr-stage-a-lexical-end-on-open-speech",
+   "kind": "rejection",
+   "at": "2026-10-07",
+   "title": "Tried: stage A committing an open / free / elaborated yes-no turn as soon as the words look complete (zero silence wait outside closed answers). Broke on real Hindi through the real STT: with correct coverage MAI cut 85/147 thinking pauses (57.8%), D4 24/147; adults pause after complete clauses and between digit groups. Replaced by dxr-open-turn-wait-1100; still 8-13% vs silence-900 4.8%.",
+   "source": "inbox/duplex-real.json"
+  },
+  {
+   "id": "rj-dxr-armed-revoke",
+   "kind": "rejection",
+   "at": "2026-10-07",
+   "title": "Tried: on an OPEN reply, arm the G7 revoke at the child's onset and fire it only if the overlap reads as a barge-in. AMI real STT: continuers 138 -> 142/195, room false yields 38 -> 35/239, but barge-ins stopped 36 -> 34/51 and within 200 ms 18 -> 15/51. Inside the noise and costs the nearest bar; reverted (results/ami-raw-D4-after2-real.json).",
+   "source": "inbox/duplex-real.json"
+  },
+  {
+   "id": "rj-dxr-semantic-as-wired",
+   "kind": "rejection",
+   "at": "2026-10-07",
+   "title": "Tried: the existing stage A semantic estimator (asked while words grow, >= 2 new words and >= 600 ms apart) on real Hindi transcripts with real Azure latency. Changed no decision (MAI 50/147 either way). Revisit only with the ask moved to the pause onset on the final text, measured on the same replay.",
+   "source": "inbox/duplex-real.json"
+  },
+  {
+   "id": "rj-dxr-ami-turns-floor-sort",
+   "kind": "rejection",
+   "at": "2026-10-07",
+   "title": "Eval bug (evals/duplex-real/ami-real.mjs record --pass turns): the channel floor was re-sorted for every masked frame (O(n^2 log n)), pinning a core per process; real-time pacing fell behind and the 2026-10-07 first turns pass ran 1 h 26 min without finishing. Fixed (floor computed once); any turns-pass number from a CPU-bound run is invalid.",
+   "source": "inbox/duplex-real.json"
   }
  ],
  "edges": [
@@ -23399,6 +23980,316 @@
    "src": "ms-prod-rotation-outage-2026-10-07",
    "rel": "supersedes",
    "dst": "ms-prod-cred-rotation-2026-10-07"
+  },
+  {
+   "src": "truth-d1-pace-park-hands-to-ladder",
+   "rel": "supersedes",
+   "dst": "rj-truth-pace-park-preempts-ladder"
+  },
+  {
+   "src": "truth-d1-pace-park-hands-to-ladder",
+   "rel": "supersedes",
+   "dst": "rj-truth-handover-park-on-first-arm"
+  },
+  {
+   "src": "truth-d2-options-item-never-its-own-recheck",
+   "rel": "supersedes",
+   "dst": "rj-truth-options-item-own-recheck"
+  },
+  {
+   "src": "truth-d3-lesson-end-closes-open-episode",
+   "rel": "supersedes",
+   "dst": "rj-truth-end-drops-open-episode"
+  },
+  {
+   "src": "truth-d4-teachback-credits-every-covered-skill",
+   "rel": "supersedes",
+   "dst": "rj-truth-teachback-credits-first-skill-only"
+  },
+  {
+   "src": "truth-d5-model-label-must-be-corroborated",
+   "rel": "supersedes",
+   "dst": "rj-truth-model-credit-uncorroborated"
+  },
+  {
+   "src": "truth-d5-model-label-must-be-corroborated",
+   "rel": "supersedes",
+   "dst": "rj-truth-guard-half-cover"
+  },
+  {
+   "src": "truth-d5-model-label-must-be-corroborated",
+   "rel": "supersedes",
+   "dst": "rj-truth-guard-list-split"
+  },
+  {
+   "src": "truth-d5-model-label-must-be-corroborated",
+   "rel": "supersedes",
+   "dst": "rj-truth-guard-scale-words-decisive"
+  },
+  {
+   "src": "truth-d1-pace-park-hands-to-ladder",
+   "rel": "measured_by",
+   "dst": "ms-truth-reteach-sim-2026-10-06"
+  },
+  {
+   "src": "truth-d4-teachback-credits-every-covered-skill",
+   "rel": "measured_by",
+   "dst": "ms-truth-local-batteries-2026-10-06"
+  },
+  {
+   "src": "truth-d5-model-label-must-be-corroborated",
+   "rel": "measured_by",
+   "dst": "ms-truth-grading-model-leg-2026-10-06"
+  },
+  {
+   "src": "ms-truth-grading-det-noparts-2026-10-06",
+   "rel": "blocks",
+   "dst": "truth-d5-model-label-must-be-corroborated"
+  },
+  {
+   "src": "rj-truth-w1b-test-reads-debug-on-prod",
+   "rel": "part_of",
+   "dst": "truth-d3-lesson-end-closes-open-episode"
+  },
+  {
+   "src": "truth-d4b-performance-only-scheduling-not-adopted",
+   "rel": "part_of",
+   "dst": "truth-d4-teachback-credits-every-covered-skill"
+  },
+  {
+   "src": "truth-d6-delayed-check-first-slot",
+   "rel": "supersedes",
+   "dst": "rj-truth-retention-order-starves-check"
+  },
+  {
+   "src": "truth-d6-delayed-check-first-slot",
+   "rel": "measured_by",
+   "dst": "ms-truth-nextday-sim-2026-10-06"
+  },
+  {
+   "src": "truth-d7-callback-is-a-card-reason",
+   "rel": "supersedes",
+   "dst": "rj-truth-card-ignores-review"
+  },
+  {
+   "src": "truth-d5-model-label-must-be-corroborated",
+   "rel": "measured_by",
+   "dst": "ms-truth-grading-heldout-2026-10-06"
+  },
+  {
+   "src": "truth-d5-model-label-must-be-corroborated",
+   "rel": "measured_by",
+   "dst": "ms-truth-owner1-local-2026-10-06"
+  },
+  {
+   "src": "truth-open-parts-data-unshipped",
+   "rel": "measured_by",
+   "dst": "ms-truth-third-rater-audit-2026-10-06"
+  },
+  {
+   "src": "ms-truth-no-reserve-skills-2026-10-06",
+   "rel": "blocks",
+   "dst": "truth-d6-delayed-check-first-slot"
+  },
+  {
+   "src": "truth-d6-delayed-check-first-slot",
+   "rel": "part_of",
+   "dst": "truth-d4-teachback-credits-every-covered-skill"
+  },
+  {
+   "src": "truth-d7-callback-is-a-card-reason",
+   "rel": "supersedes",
+   "dst": "rj-truth-card-reason-keyed-on-shapeid"
+  },
+  {
+   "src": "truth-open-parts-data-unshipped",
+   "rel": "measured_by",
+   "dst": "ms-truth-parts-labels-c1-9-2026-10-06"
+  },
+  {
+   "src": "truth-d7-callback-is-a-card-reason",
+   "rel": "measured_by",
+   "dst": "ms-truth-local-batteries-2026-10-06"
+  },
+  {
+   "src": "d-conv-lead-slot",
+   "rel": "measured_by",
+   "dst": "m-conv-battery-2026-10-07"
+  },
+  {
+   "src": "d-conv-lead-slot",
+   "rel": "measured_by",
+   "dst": "m-conv-heldout-2026-10-07"
+  },
+  {
+   "src": "rj-conv-fixed-lead-without-key-check",
+   "rel": "constrains",
+   "dst": "d-conv-lead-slot"
+  },
+  {
+   "src": "rj-conv-lead-drops-question",
+   "rel": "constrains",
+   "dst": "d-conv-lead-slot"
+  },
+  {
+   "src": "rj-conv-lead-repair-after-floor",
+   "rel": "constrains",
+   "dst": "d-conv-lead-slot"
+  },
+  {
+   "src": "d-conv-prefs-every-move",
+   "rel": "measured_by",
+   "dst": "m-conv-owner-local-2026-10-07"
+  },
+  {
+   "src": "d-conv-unclear-reading",
+   "rel": "measured_by",
+   "dst": "m-conv-battery-2026-10-07"
+  },
+  {
+   "src": "d-conv-fallback-lead",
+   "rel": "measured_by",
+   "dst": "m-conv-429-storm-2026-10-07"
+  },
+  {
+   "src": "o-conv-reply-lane-failover",
+   "rel": "caused_by",
+   "dst": "m-conv-429-storm-2026-10-07"
+  },
+  {
+   "src": "o-conv-r3-after-wrong-answer",
+   "rel": "measured_by",
+   "dst": "m-conv-owner-local-2026-10-07"
+  },
+  {
+   "src": "lat-turn-prefetch-adopt-identical",
+   "rel": "measured_by",
+   "dst": "m-lat-prefetch-2026-10-06"
+  },
+  {
+   "src": "lat-turn-prefetch-adopt-identical",
+   "rel": "measured_by",
+   "dst": "m-lat-prefetch-waste-2026-10-06"
+  },
+  {
+   "src": "lat-turn-prefetch-adopt-identical",
+   "rel": "part_of",
+   "dst": "cascade-speculative-reply"
+  },
+  {
+   "src": "lat-speech-region-follows-app",
+   "rel": "measured_by",
+   "dst": "m-lat-speech-region-2026-10-06"
+  },
+  {
+   "src": "m-lat-prod-baseline-2026-10-06",
+   "rel": "part_of",
+   "dst": "ms-ship5-prod-2026-10-06"
+  },
+  {
+   "src": "lat-900ms-unreachable-on-graded-cascade",
+   "rel": "measured_by",
+   "dst": "m-lat-rewrite-share-2026-10-06"
+  },
+  {
+   "src": "lat-900ms-unreachable-on-graded-cascade",
+   "rel": "caused_by",
+   "dst": "rj-silence-gated-turn-taking"
+  },
+  {
+   "src": "rj-lat-note-parallel-default-on",
+   "rel": "measured_by",
+   "dst": "m-lat-prefetch-2026-10-06"
+  },
+  {
+   "src": "dec-content-board-first",
+   "rel": "measured_by",
+   "dst": "m-content-battery-local-2026-10-06"
+  },
+  {
+   "src": "dec-content-board-first",
+   "rel": "measured_by",
+   "dst": "m-content-coverage-385-2026-10-06"
+  },
+  {
+   "src": "dec-content-board-first",
+   "rel": "caused_by",
+   "dst": "m-content-prod-board-log-2026-10-06"
+  },
+  {
+   "src": "dec-content-w8-groups",
+   "rel": "caused_by",
+   "dst": "m-content-owner5-rootcause-2026-10-06"
+  },
+  {
+   "src": "dec-content-board-first",
+   "rel": "supersedes",
+   "dst": "rj-content-defer-w5-w8-preselect"
+  },
+  {
+   "src": "dec-content-board-first",
+   "rel": "supersedes",
+   "dst": "rj-content-labels-only-row"
+  },
+  {
+   "src": "dec-content-board-first",
+   "rel": "supersedes",
+   "dst": "rj-content-continue-plan-empty-stage"
+  },
+  {
+   "src": "dec-content-fraction-name-of",
+   "rel": "measured_by",
+   "dst": "m-content-mounts-posing-2026-10-06"
+  },
+  {
+   "src": "m-content-owner5-rootcause-2026-10-06",
+   "rel": "part_of",
+   "dst": "ms-ship5-prod-2026-10-06"
+  },
+  {
+   "src": "m-content-battery-prod-2026-10-06",
+   "rel": "part_of",
+   "dst": "ms-ship5-prod-2026-10-06"
+  },
+  {
+   "src": "dxr-open-turn-wait-1100",
+   "rel": "supersedes",
+   "dst": "rj-dxr-stage-a-lexical-end-on-open-speech"
+  },
+  {
+   "src": "dxr-switch-criteria",
+   "rel": "measured_by",
+   "dst": "m-dxr-eot-hindi-real-stt-2026-10-07"
+  },
+  {
+   "src": "dxr-switch-criteria",
+   "rel": "measured_by",
+   "dst": "m-dxr-ami-real-stt-2026-10-07"
+  },
+  {
+   "src": "dxr-open-turn-wait-1100",
+   "rel": "measured_by",
+   "dst": "m-dxr-eot-hindi-real-stt-2026-10-07"
+  },
+  {
+   "src": "dxr-shadow-telemetry",
+   "rel": "caused_by",
+   "dst": "m-dxr-shadow-records-nothing-2026-10-06"
+  },
+  {
+   "src": "rj-dxr-armed-revoke",
+   "rel": "caused_by",
+   "dst": "m-dxr-ami-real-stt-2026-10-07"
+  },
+  {
+   "src": "rj-dxr-revoke-epoch-previous-turn",
+   "rel": "caused_by",
+   "dst": "rj-ship5-revoke-merge-resend"
+  },
+  {
+   "src": "m-dxr-ami-real-stt-2026-10-07",
+   "rel": "inherits",
+   "dst": "m-p1dx-ami-real-adult-2026-10-06"
   }
  ]
 }

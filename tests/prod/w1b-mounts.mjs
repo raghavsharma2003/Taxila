@@ -97,8 +97,13 @@ for (const [ti, topicId] of TOPICS.entries()) {
       if (m && !bound) {
         bound = m;
         const since = await maxSeq(child.id);
+        // round 2 integration: fractions@1 mode "of" (content patch 05) answers with a whole number, a/b of count (the frame's
+        // fr.of act, sent as the act object), not the target fraction; the server re-grades the raw act, so "1/4" there is
+        // ungradeable (no row)
+        const ofM = m.engine === "fractions@1" && m.params?.mode === "of" && /^(\d+)\/(\d+)$/.exec(String(m.params.target ?? ""));
+        const value = ofM ? (Number(ofM[1]) * Number(m.params.count)) / Number(ofM[2]) : m.params.target ?? "x";
         const ans = await api("POST", "/api/lesson/turn", { lessonId: start.lessonId, childText: "", typed: true, turnSeq: ++seq,
-          moduleEvents: [{ moduleId: m.moduleId, engine: m.engine, type: "answer", name: "answer", data: { value: m.params.target ?? "x", correct: true }, at: Date.now() }] });
+          moduleEvents: [{ moduleId: m.moduleId, engine: m.engine, type: "answer", name: "answer", data: { value: ofM ? { kind: "fr.of", value, count: Number(m.params.count), of: m.params.target } : value, correct: true }, at: Date.now() }] });
         cmds.push(...(ans.moduleCommands ?? []));
         for (const c of ans.moduleCommands ?? []) track(c);
         asked = ans.ui?.ask?.itemId ?? asked;
