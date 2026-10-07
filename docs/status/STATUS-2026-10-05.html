@@ -53,9 +53,9 @@ a{color:var(--brand)}
 
 <main>
   <header style="display:grid;gap:10px">
-    <span class="eyebrow">Taxila · status as of 6 Oct 2026, 21:45 IST · live version ee97e9c</span>
+    <span class="eyebrow">Taxila · status as of 8 Oct 2026, 01:30 IST · live version 73a83de (round 2)</span>
     <h1>Where Taxila stands</h1>
-    <p class="lede">All five priorities are now built and deployed. Three act live in lessons. The two-way teacher and voice signals run in shadow: they listen and log but do not steer the lesson yet, because neither is proven on real children's speech. None of the ten items below is at 100%. Each row says what its bar is and how far it is, measured on production where we could.</p>
+    <p class="lede">Round 2 is live. The stop bug is fixed and proven on taxila.dev, and so is a horror-film answer found after release. Three items act live; the two-way teacher and voice signals still run in shadow. None of the ten items is at 100%. Every number below was measured on taxila.dev today with scripted adult turns, unless it says otherwise.</p>
     <div class="legend">
       <span><span class="chip LIVE">LIVE</span> acting in lessons on taxila.dev</span>
       <span><span class="chip BUILT">SHADOW</span> deployed, logging only, not steering</span>
@@ -68,11 +68,11 @@ a{color:var(--brand)}
     <div class="tablewrap"><table>
       <thead><tr><th>Priority</th><th>State</th><th>What is live</th><th>Measured</th><th>Gap to the bar</th></tr></thead>
       <tbody>
-        <tr><td>1. Two-way teacher</td><td><span class="chip BUILT">SHADOW</span></td><td>Hands-free engine deployed, logging beside click-to-speak.</td><td class="num">Synthetic speech only. Continuers kept talking (sim) met; barge-in, thinking-pause and TV bars not proven on real speech.</td><td>Real-speech measurement (adult actors, then children). The about 5 s silence after an answer is still there.</td></tr>
-        <tr><td>2. 2D teacher face</td><td><span class="chip LIVE">LIVE</span> <span class="chip NONE">BELOW BAR</span></td><td>Asha's lesson face, lip-synced to Diya's own viseme timing.</td><td class="num">Lip-sync median −5 ms, 89% within ±50 ms (n=46, headless browser, not a phone). Blind judges 3.75/5.</td><td>Arjun (classes 5–9 default) has no 2D face. Not measured on a phone. 4.5 polish target.</td></tr>
-        <tr><td>3. Voice signals</td><td><span class="chip BUILT">SHADOW</span></td><td>On-device knowledge-state pipeline, baselines, parent toggle. Prod acceptance 39/39.</td><td class="num">No precision on children yet. Your rule: a state acts only at ≥ 0.80 on children.</td><td>The real-child pilot.</td></tr>
-        <tr><td>4. Live-built content</td><td><span class="chip LIVE">LIVE</span> <span class="chip NONE">BELOW BAR</span></td><td>Asked-for pictures and boards on stage; false boards and model-written keys are blocked.</td><td class="num">Prod: request to stage p90 3.3 s (bar 3 s); board lateness p90 2.3 s (bar 1.5 s); "show me a diagram" failed 2/2 in the owner test on prod (14/14 locally).</td><td>Timing, the prod diagram failure, coverage of all 385 topics, phone fps.</td></tr>
-        <tr><td>5. Natural conversation</td><td><span class="chip LIVE">LIVE</span> <span class="chip NONE">BELOW BAR</span></td><td>New conversation layer, steering, "something else" as steering, stop check-in.</td><td class="num">Battery 44% → 56–59% (bar 85%). Prod: confusing replies 11 in 90 turns (was 38); steering 14/16 (was 11/16); ending 40/40.</td><td>Battery to 85% with every family ≥ 70%; 0 confusing replies.</td></tr>
+        <tr><td>1. Two-way teacher</td><td><span class="chip BUILT">SHADOW</span></td><td>Hands-free engine deployed, logging beside click-to-speak.</td><td class="num">Real adult Hindi speech: cut-offs 8.2–12.9% (bar 3%), gap p50 about 910 ms (bar 350). Continuers 71% (bar 90%). 2 of 9 switch criteria pass.</td><td>Not ready on real speech. The answer gap is still about 6 s on prod.</td></tr>
+        <tr><td>2. 2D teacher face</td><td><span class="chip LIVE">LIVE</span> <span class="chip NONE">BELOW BAR</span></td><td>Asha's lesson face, lip-synced to Diya's own viseme timing.</td><td class="num">Lip-sync median −5 ms, 89% within ±50 ms (headless browser, not a phone). Blind judges 3.75/5.</td><td>Not rated in the live product or on a phone. Arjun's face is out of scope (your call).</td></tr>
+        <tr><td>3. Voice signals</td><td><span class="chip BUILT">SHADOW</span></td><td>On-device knowledge-state pipeline, baselines, parent toggle.</td><td class="num">Filler detector precision 0.753 on adults (1,241 events). No child data.</td><td>The real-child pilot (your rule: act only at ≥ 0.80 on children).</td></tr>
+        <tr><td>4. Live-built content</td><td><span class="chip LIVE">LIVE</span> <span class="chip NONE">BELOW BAR</span></td><td>Board-first pictures; asked-for diagrams now draw.</td><td class="num">"Show me a diagram" 14/14 on prod (was 0/2). Board lateness p90 1.57 s (bar 1.5 s). Request to stage p90 3.3 s (bar 3 s). 365 of 385 topics covered.</td><td>Timing, 20 topics, phone frame rate.</td></tr>
+        <tr><td>5. Natural conversation</td><td><span class="chip LIVE">LIVE</span> <span class="chip NONE">BELOW BAR</span></td><td>Stop check-in, steering, out-of-bounds declines in code.</td><td class="num">Stop phrases 10/10 with one warm check-in (48/48 checks). Steering 17/17. Confusing replies 9 in 90 turns (was 11; bar 0). Battery 57% (bar 85%).</td><td>Battery to 85%; 0 confusing replies.</td></tr>
       </tbody>
     </table></div>
   </section>
@@ -81,30 +81,30 @@ a{color:var(--brand)}
     <h2>The five values, against their bars</h2>
     <p class="muted">No percentages: each line names the bar and what was measured. "Unproven on children" means only a real-child pilot can close it.</p>
     <div class="cols">
-      <div class="card"><h3>Knowing whether the child learnt it</h3><p>Prod: 3 wrong grades in 60 typed answers (bar 0 in 2,000). The next-day check still does not open the next lesson (16/23). Re-teaching regressed in today's prod run (10/13, was 13/13). Unproven on children.</p></div>
+      <div class="card"><h3>Knowing whether the child learnt it</h3><p>Prod: 0 wrong grades in 175 checked game answers; one engine (place value) not yet checkable. Model-graded answers: 2–5 wrong per ~1,890 locally (bar 0 in 2,000). A kit-answer fix for about 838 errors waits on your review. Next-day check 21/23 (was 16/23). New problem: re-teach attempts stopped being recorded on prod (0 rows). Unproven on children.</p></div>
       <div class="card"><h3>Understanding learning behaviour</h3><p>Text and behaviour signals live; voice states in shadow by your 0.80-on-children rule. Unproven on children.</p></div>
-      <div class="card"><h3>Content on the go, asked or not</h3><p>Requests now reach the stage, but timing bars are missed on prod and the diagram request failed on prod. Coverage and phone frame rate not measured.</p></div>
-      <div class="card"><h3>Human-like teacher</h3><p>Diya at the voted speed (was 60–64% slower). 2D face live for Asha. First sound after an answer about 5 s (bar 0.9 s): the biggest gap.</p></div>
-      <div class="card"><h3>Natural conversation</h3><p>Click-to-speak still drives the lesson; two-way in shadow. Battery 56–59% (bar 85%).</p></div>
+      <div class="card"><h3>Content on the go, asked or not</h3><p>Diagrams on request now draw on prod. Both timing bars still missed by a little. Phone frame rate not measured.</p></div>
+      <div class="card"><h3>Human-like teacher</h3><p>Diya at the voted speed. First sound after an answer about 6.0 s on prod (bar 0.9 s): the biggest gap. A prefetch cuts about 0.5 s and is built but switched off until its rate-limit cost is measured. 0.9 s is not reachable on this design; it needs the word-aware end-of-turn from the two-way teacher.</p></div>
+      <div class="card"><h3>Natural conversation</h3><p>Click-to-speak still drives the lesson; two-way in shadow. Battery 57% (bar 85%). Child-safety checks: stop 10/10, romance and out-of-bounds declined in code.</p></div>
     </div>
-    <p class="muted">Production browser checks from our test machine were blocked by its network today, so face rendering on prod was verified by the live bundle and assets, not by a prod screenshot. Your phone test is the real check.</p>
+    <p class="muted">Two problems were found and fixed on prod today: a child who said "bas, aaj ke liye itna hi" was kept in the lesson, and a child who asked for a scary movie in Hinglish was given a horror film's name. Both now have tests that run before every deploy.</p>
   </section>
 
 
   <section>
     <h2>What happens next</h2>
     <ol>
-      <li><strong>The 5-second silence after an answer:</strong> deep research and a rebuild of the turn path (end-of-turn, server, first audio).</li>
-      <li><strong>Regressions from today's prod run:</strong> re-teaching, the prod diagram failure, grading checks.</li>
-      <li><strong>Every bar still short:</strong> conversation to 85%, grading to 0 wrong, the next-day check, content timing, Arjun's 2D face, real-speech proof for the two-way teacher.</li>
+      <li><strong>The 6-second wait after an answer:</strong> word-aware end of turn, fewer reply rewrites (60% of turns are rewritten today), then turn the prefetch on.</li>
+      <li><strong>Re-teach records on prod:</strong> find why attempts are no longer written.</li>
+      <li><strong>Every bar still short:</strong> conversation to 85%, grading to 0 wrong, content timing, two-way teacher on real speech.</li>
     </ol>
     <div class="card">
       <h3>What I need from you</h3>
       <ul>
-                <li><strong>Your test findings,</strong> in any form. They decide the plan.</li>
-        <li><strong>Azure:</strong> the South India database ticket is filed and open. The model quota form, one submission per model (gpt-5.6-luna, grok-4-1-fast-non-reasoning, MAI-Transcribe-2-Streaming first), is still to send.</li>
+        <li><strong>Kit answer fix:</strong> about 838 answer-key corrections, labelled by a model, not a person. Ship them, or have someone check a sample first?</li>
+        <li><strong>Azure:</strong> reply to the database ticket (South India, not UAE Central) and send the model quota forms.</li>
+        <li><strong>Neon:</strong> rotate the credentials you pasted for the Singapore project.</li>
         <li><strong>The real-child pilot and a ₹10k test phone:</strong> two-way talk, voice signals and the face can only be proven there.</li>
-        <li><strong>Security:</strong> may I rotate the test-database password a builder printed into a log? (Test only; production was not exposed.)</li>
       </ul>
     </div>
   </section>
