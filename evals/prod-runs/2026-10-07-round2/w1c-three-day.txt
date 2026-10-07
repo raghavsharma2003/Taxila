@@ -1,0 +1,31 @@
+PASS a real account asking for a clock offset gets 403 (got 403)
+PASS …and cannot read one either (403)
+PASS a test account reads its clock (offset 0, 200)
+PASS the router runs requests on the session's clock (wired)
+PASS day 0 lesson starts on c5-maths-ch01-t01
+PASS day 0: at least 3 graded answers (6; moves hook,explain,worked_example,practice,practice,probe,probe,explain,probe,probe,probe,explain,practice,probe,teachback,wrap)
+day 0 card: s1=shallow [2 chips] s2=shallow [0 chips] s3=shallow [0 chips]
+PASS the parent "how we know" card is shown after a scripted lesson (3/3 skills)
+PASS test clock +1 day (now reads 2026-10-08T20:12:20.265Z)
+PASS +1 day: a new lesson starts on c5-maths-ch01-t02 (a new learning day, not 'done for today')
+PASS +1 day: the opener of a c5-maths-ch01-t02 lesson asks a day-0 item before any teaching (c5-maths-ch01-t01-i03)
+PASS +1 day: the lesson state says it is the C31 delayed check (pendingProbe C31/delayed_check on c5-maths-ch01-t01-i03)
+PASS +1 day: the child answers the delayed check right (c5-maths-ch01-t01-i03=correct)
++1 day card, right after the delayed check (no why answered since day 0): s1=shallow [2 chips] s2=shallow [1 chips] s3=shallow [0 chips]
+PASS +1 day: the parent card changes after the delayed check alone (s2: shallow/shallow/shallow → shallow/shallow/shallow)
+PASS +1 day: a correct delayed check never lowers the state (shallow/shallow/shallow → shallow/shallow/shallow)
+WARN +1 day: the state stays shallow after a correct delayed check (shallow/shallow/shallow). This is the ladder, not a bug in the check: state.js leaves shallow only with U ≥ U_FRAGILE (a reason), and a delayed check is K / D evidence. The plan's "a correct answer moves the state above shallow" cannot hold on the delayed check alone; the rise below comes from reasons
+PASS +2 days: a review lesson starts on the day-0 topic
+PASS +2 days: the certifying check (≥ 2 learning days, V1.3) leads, on an item never met (c5-maths-ch01-t01-rl-h2; met: 7 items)
++2 days card (after reasons): s1=shallow [4 chips] s2=shallow [2 chips] s3=shallow [1 chips]
+FAIL +2 days: with reasons given, a day-0 skill is above shallow (shallow/shallow/shallow) — from reasons, not from the delayed check
+PASS +3 days: a lesson starts
+PASS +3 days: the opener of a c5-maths-ch02-t01 lesson checks a day-0 skill again (asks c5-maths-ch01-t01-rl-o1; warm-up c5-maths-ch01-t01-rl-o1, c5-maths-ch01-t01-i05)
+PASS +3 days: it is a C31 delayed check (pendingProbe C31 on c5-maths-ch01-t01-rl-o1)
++3 days card: s1=shallow [4 chips] s2=shallow [2 chips] s3=shallow [2 chips]
+FAIL the parent card's state row changes between day 0 and +3 days (shallow/shallow/shallow → shallow/shallow/shallow)
+PASS the state never falls back after correct delayed checks (rank 1 → 1)
+cleanup: account deleted
+PASS leftover @taxila.test guardians 1 → 1
+
+21/23 checks passed, 2 FAILED (https://taxila-web.nicebay-a0d3a12f.eastus2.azurecontainerapps.io)

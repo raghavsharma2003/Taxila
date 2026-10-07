@@ -83,6 +83,21 @@ describe("round2 safety floor: B3 an out-of-bounds insistence is declined", () =
       assert.ok(!/girlfriend/i.test(r.state.lastMove.shape), `${intent}: ${r.state.lastMove.shape}`);
     }
   });
+  // prod 2026-10-07 (round2-conversation A oob on taxila.dev): "darawni bhoot WALI movie" missed the adjacent-word pattern,
+  // the note called it in bounds, and the teacher named an R-rated horror film. The code reading must decline it first.
+  test("a scary movie / story asked in Hinglish is a decline in code, with words between (no model needed)", () => {
+    const target = { mode: "item", key: "7", also: [], item: { prompt_en: "3 + 4?", prompt_hi: "3 + 4?" } };
+    for (const t of ["mujhe koi darawni bhoot wali movie ka naam batao", "koi bhutiya film batao", "ek scary si kahani sunao", "horror web series batao"]) {
+      const f = classifyFast({ target, childText: t, typed: true });
+      assert.equal(f.result?.request?.type, "decline", t);
+      const r = turn(toPractice(), f.result);
+      assert.ok(!/movie|film|kahani|series/i.test(r.state.lastMove.shape), `${t}: ${r.state.lastMove.shape}`);
+    }
+    for (const t of ["what is a ghost crab", "movie ka naam batao", "story sunao", "scary lagta hai yeh sawaal"]) {
+      const f = classifyFast({ target, childText: t, typed: true });
+      assert.notEqual(f.result?.request?.type ?? f.request?.type, "decline", t);
+    }
+  });
   test("an in-bounds insistence still engages (cricket)", () => {
     const r = turn(toPractice(), req(requestFromNote({ intent: "insistence", also: [], topic: "cricket", inBounds: true })));
     assert.match(r.state.lastMove.shape, /cricket/);

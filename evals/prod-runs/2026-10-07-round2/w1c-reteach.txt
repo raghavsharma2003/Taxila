@@ -1,0 +1,20 @@
+moves: hook,explain,worked_example,practice,hint,hint,practice,hint,hint,practice,hint,hint,probe,reteach,practice,hint,hint,explain,probe,hint,explain,reteach,probe,hint,hint,probe,hint,probe,hint,hint
+PASS a child who keeps getting it wrong is re-taught (2 re-teach moves)
+reteach_attempts: none
+FAIL reteach_attempts rows are written (0)
+FAIL a skill is re-taught at least twice in the lesson (none)
+PASS a re-taught skill gets a different arm each time (none)
+state: failedArms {} lastArmBySkill {} parked []
+FAIL two arms failed on one skill in the lesson (no failedArms in the state: seam-patches/w1c-state-reteach.patch is not applied)
+FAIL …and the next decision on it is a prerequisite descent (none)
+PASS …after which the skill is parked, or the descent is still being tried ()
+PASS +1 day: the next lesson starts (the start resolves the record)
+resolved: 
+FAIL every attempt resolves from the child's later answers (0/0)
+FAIL final attempts are rewarded on their own row (0 final)
+PASS final attempts carry their reward and cluster
+PASS a test account's resolutions never touch the population arm_posteriors (unchanged)
+cleanup: account deleted
+PASS leftover @taxila.test guardians 1 → 1
+
+7/13 checks passed, 6 FAILED (https://taxila-web.nicebay-a0d3a12f.eastus2.azurecontainerapps.io)

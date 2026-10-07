@@ -1,0 +1,21 @@
+FAIL a live cascade lesson: 202 (204)
+FAIL empty text: 204 empty (204 off)
+WARN adopt checks need the turn's debug (loopback only): skipped on a remote target
+FAIL an ended lesson: 204 ended (204 off)
+FAIL a typed text lesson: 204 lane (204 off)
+FAIL consent withdrawn: 204 consent, nothing sent to a model (204 off)
+cleanup: account deleted
+PASS leftover @taxila.test guardians 1 → 1
+WARN disclosure check skipped on a remote target (set ROUND2_LATENCY_SAFETY=1; the incident then needs the safeguarding team's review)
+cleanup: account deleted
+PASS leftover @taxila.test guardians 1 → 1
+FAIL B: the prefetch route runs on a live cascade lesson (204 off)
+cleanup: account deleted
+PASS leftover @taxila.test guardians 1 → 1
+turn → first audio byte (final transcript sent → first PCM), https://taxila-web.nicebay-a0d3a12f.eastus2.azurecontainerapps.io:
+  A final only: n=10 p50 3686 ms, p90 4150 ms
+  B prefetch (+600 ms lead): n=10 p50 3248 ms, p90 3799 ms
+PASS audio for both arms (10, 10)
+WARN timing comparison is enforced only from the Azure probe (TAXILA_PROBE=1); sandbox numbers are reported, not gated
+
+4/10 checks passed, 6 FAILED (https://taxila-web.nicebay-a0d3a12f.eastus2.azurecontainerapps.io)

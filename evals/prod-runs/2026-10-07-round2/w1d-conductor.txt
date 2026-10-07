@@ -1,0 +1,16 @@
+PASS test clock is wired on the target (200, wired=true)
+clock: +4 d → learning day 2026-10-11 (Sunday), week 2026-W41
+PASS Sunday lesson ran (start 2274 ms, 2 turns, end 1677 ms)
+PASS student_event rows: parent.consent_changed, parent.consent_changed, parent.consent_changed, app.opened, lesson.started, lesson.ended
+PASS conductor_state folded the lesson (mode free, cursor 6/6)
+PASS day_plan row (Sun Oct 11 v1)
+PASS Monday lesson started (2026-10-12)
+PASS report.daily for 2026-10-11 is listed in the parent reports area (weekly:2026-W41, daily:2026-10-11)
+PASS parent.letter for 2026-W41 (a Sunday) is listed
+PASS the daily note opens (200)
+jobs: memory.consolidate=done(inline:lesson_end), forge.g2.nightly=done(paused:w1-d), parent.letter=done(parent_report:59), report.daily=done(parent_report:58), memory.consolidate=done(inline:lesson_end)
+PASS forge.g2.nightly stays paused (done:paused:w1-d)
+cleanup: account deleted
+PASS leftover @taxila.test guardians 1 → 1
+
+11/11 checks passed (https://taxila-web.nicebay-a0d3a12f.eastus2.azurecontainerapps.io)

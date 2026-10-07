@@ -1,0 +1,33 @@
+owner-2 against https://taxila.dev: 6 sessions × 14 turns, seed 179695
+s1-aarav-typed-c5-maths-ch02-t01: 14 turns, 0 defects [none]
+s2-meher-spoken-c6-maths-ch07-t01: 14 turns, 1 defects [R3.bare_question ×1]
+s3-golu-typed-c4-maths-ch05-t01: 14 turns, 4 defects [R3.bare_question ×2, R4.repeat ×1, R7.same_again ×1]
+s4-kabir-spoken-c7-maths-ch08-t01: 14 turns, 3 defects [R3.bare_question ×1, R7.same_again ×1, R6.gutted ×1]
+s5-zoya-typed-c5-evs-ch01-t01: 14 turns, 1 defects [R7.defer ×1]
+s6-ishaan-spoken-c6-science-ch01-t01: 14 turns, 0 defects [none]
+cleanup: account deleted
+
+90 teacher turns judged (incl. openings), 6 with a defect; by code: R3.bare_question ×4, R7.same_again ×2, R4.repeat ×1, R6.gutted ×1, R7.defer ×1  → /home/user/Taxila/evals/owner-truth/results/acceptance-2026-10-07T19-26-19/owner-2.json
+  R3.bare_question s2-meher-spoken-c6-maths-ch07-t01 t12 | child: asha | teacher: A chocolate bar is broken into 3 pieces: one big and two small. Is each piece 1/3 of the bar? | the reply is only the pinned question: what the child said got no answer (F17/F19)
+  R3.bare_question s3-golu-typed-c4-maths-ch05-t01 t4 | child: haan | teacher: Khaali jagah bharo: 1/3 means 1 of ___ equal groups. | the reply is only the pinned question: what the child said got no answer (F17/F19)
+  R3.bare_question s3-golu-typed-c4-maths-ch05-t01 t5 | child: nahi samjha | teacher: Khaali jagah bharo: 1/3 means 1 of ___ equal groups. | the reply is only the pinned question: what the child said got no answer (F17/F19)
+  R4.repeat s3-golu-typed-c4-maths-ch05-t01 t5 | child: nahi samjha | teacher: Khaali jagah bharo: 1/3 means 1 of ___ equal groups. | repeats an earlier teacher line (similarity 1.00)
+  R7.same_again s3-golu-typed-c4-maths-ch05-t01 t5 | child: nahi samjha | teacher: Khaali jagah bharo: 1/3 means 1 of ___ equal groups. | 'samajh nahi aaya' got the same words again (or only the question), not a new explanation
+  R3.bare_question s4-kabir-spoken-c7-maths-ch08-t01 t5 | child: bhai kuch samajh nahi aaya haha | teacher: Khaali jagah bhariye: 'Of' means ___: 3/5 × 2/3. | the reply is only the pinned question: what the child said got no answer (F17/F19)
+  R7.same_again s4-kabir-spoken-c7-maths-ch08-t01 t5 | child: bhai kuch samajh nahi aaya haha | teacher: Khaali jagah bhariye: 'Of' means ___: 3/5 × 2/3. | 'samajh nahi aaya' got the same words again (or only the question), not a new explanation
+  R6.gutted s4-kabir-spoken-c7-maths-ch08-t01 t9 | child: 60 | teacher: Pehla step kaise likhenge? | a explain turn with almost no content: "Pehla step kaise likhenge?" (F18)
+  R7.defer s5-zoya-typed-c5-evs-ch01-t01 t8 | child: kya time hua hai? | teacher: Zoya, main AI hoon, isliye mere paas ghadi ya apna time nahi hota. Ab hum lesson par wapas aate hain. Paani ke teen roop | deferred what the child said ('baad mein', 'later') instead of answering it (F11)
+PASS all 6 sessions ran (6)
+FAIL zero confused / error / fallback / loop / repeat / ignored replies over 6 sessions (90 turns): 9 defects on 6 turns
+PASS R1: 0 defects
+PASS R2: 0 defects
+FAIL R3: 4 defects (R3.bare_question ×4)
+FAIL R4: 1 defects (R4.repeat ×1)
+PASS R5: 0 defects
+FAIL R6: 1 defects (R6.gutted ×1)
+FAIL R7: 3 defects (R7.same_again ×2, R7.defer ×1)
+PASS R8: 0 defects
+PASS R9: 0 defects
+PASS J: 0 defects
+
+7/12 checks passed, 5 FAILED (https://taxila.dev)
