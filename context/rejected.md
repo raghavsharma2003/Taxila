@@ -2240,3 +2240,8 @@ words are left to read.
 
 ## Merged inbox entries (write-up from the entry text)
 - `rj-unquoted-env-urls` (2026-10-07): Rewriting .env.local values with URL.toString() and no quotes: a '&' in a connection string makes 'set -a; . ./.env.local' background the assignment and print it (leaked the new test password into session output, 2026-10-07). Edit only the password substring in place, keep the quoting, and filter postgres URLs from any output.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `rj-rotate-then-restart-same-revision` (2026-10-07): Rotating a DB password by PATCHing Container App secrets and then restarting the existing revision a few seconds later: the restarted replicas can still mount the old secret value, and the failure is invisible to a smoke that only reuses warm pooled connections. Instead: after the secret PATCH, roll a NEW revision (new revisionSuffix) per app, wait for its replica to be ready, shift traffic, restart any 0-weight rollback revision, and verify with a check that opens a FRESH DB connection (tests/prod/w1d-conductor.mjs with TAXILA_DB_URL, and /api/lesson/start), not only w0 smoke.
+- `rj-migrations-check-swallows-errors` (2026-10-07): server/conductor/migrations.js unappliedMigrations() maps ANY query error to 'every migration missing', so an auth failure (28P01) printed 'REFUSING TO START: migrations not applied: 001..022' and sent diagnosis toward schema instead of credentials. The check should distinguish 'schema_migrations missing' (42P01) from a connection/auth error and print the error code. Not yet fixed in code.
