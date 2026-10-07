@@ -28,22 +28,22 @@
    "title": "fallbackReply with a card question (429 / timeout / every repair failed) is no longer the bare question: a fixed code lead chosen by the move's request (identity -> 'AI teacher' so the floor holds with every model down; unclear -> say it again; help requests and re-poses -> the kit hint's statements when safe, else a generic lead; first pose with no request -> the question alone as before). Reverse if: a fixed lead is judged confusing or repeats across turns."
   },
   {
-   "id": "m-conv-battery-2026-10-07-runA",
+   "id": "m-conv-battery-2026-10-07",
    "kind": "measurement",
    "at": "2026-10-07",
-   "title": "Conversation-v2 battery, same harness/judges (J1 gpt-6-sol, J2 mistral-m35), local servers on Neon TEST, HEAD 617df2b vs HEAD+patches 01,02,04,05 (floor/leak-skip in; key refusal and drop guard NOT in), both arms run at the same time, concurrency 2, 0 reply-model 429s, n=355 cases (10 distress offline): strict 199/355 (56.1%) -> 212/355 (59.7%) (paired: 34 lost / 47 gained, McNemar 1.78, n.s.); J1 65.6% -> 73.0% (28/54, McNemar 7.62, p<0.01); lenient 71.5% -> 77.7% (24/46, p~0.01). Families strict after: A 59.4 B 54.3 C 62.8 D 59.7 E 65.6 F 64.7 G 40.9. Code metrics (evals/conversation-r2/codemetrics.mjs): bare card-question replies to a child's case line 18/365 -> 6/365; J>=0.8 repeats 21/1108 -> 9/1110. Raw: docs/design/round2/conversation/battery/."
+   "title": "Conversation-v2 battery, same harness/judges (J1 gpt-6-sol, J2 mistral-m35), local servers on Neon TEST, HEAD 617df2b vs HEAD+patches, arms run at the same time, concurrency 2, 0 reply 429s; three paired runs as the code changed (A: 01,02,04,05; B: +key and drop refusals; C final: +content requests kept out of the slot; C compared on the 296 cases both arms answered after a Neon TEST NeonDbError burst at the end). Strict HEAD->patched: A 56.1->59.7, B 54.1->58.3, C 51.0->56.8 (n=355/355/296); pooled 1,006 pairs lost 107 / gained 152, McNemar 7.47 (p<0.01); J1 pooled 90/152 (15.4); lenient pooled 79/144 (18.4). Same HEAD code 56.1/54.1/51.0 on three runs: run-to-run noise ~+-3 pts. Run C families strict patched: A 55.6 B 69.7 C 59.8 D 47.6 E 66.7 F 73.3 G 47.4. Code metrics: bare card-question replies to a child's case line 18->6, 15->8, 14->11; J>=0.8 repeats 21->9, 30->12, 24->7. Both-judge answer reveals: A 1->2, B 1->4, C 1->1 (after the key refusal and content-request exclusion). Raw: docs/design/round2/conversation/battery/."
   },
   {
    "id": "m-conv-heldout-2026-10-07",
    "kind": "measurement",
    "at": "2026-10-07",
-   "title": "Held-out battery (evals/conversation-r2/heldout-cases.mjs, 78 new utterances weighted to the weakest families, written by the same agent after the code but before any run; no code change after seeing a held-out result except the key-refusal and drop guards, which came from the MAIN battery), same harness and judges, same servers/time as runA: strict 27/77 (35.1%) -> 44/77 (57.1%) (paired 6 lost / 23 gained, McNemar 8.83, p~0.003); J1 53.2% -> 70.1%."
+   "title": "Held-out battery (evals/conversation-r2/heldout-cases.mjs, 78 new utterances weighted to the weakest families, written by the same agent after the code but before any run; no code change was made after seeing a held-out result; the later key/drop/content-request changes came from the main battery), same harness and judges, same servers/time as runA: strict 27/77 (35.1%) -> 44/77 (57.1%) (paired 6 lost / 23 gained, McNemar 8.83, p~0.003); J1 53.2% -> 70.1%."
   },
   {
    "id": "m-conv-owner-local-2026-10-07",
    "kind": "measurement",
    "at": "2026-10-07",
-   "title": "Owner scripts on local servers (Neon TEST), same time, n=1 run each: owner-2 seed 157001 (90 turns) HEAD 9 defects on 7 turns (R3 x5, R7 x2, R4, R6) -> patched 7 on 7 (R3 x4, R6 x2, R2 x1); owner-4 steering 14/16 (S.hindi x2) -> 15/16 (S.example x1); p5-interaction-acceptance 41/42 (3/37 card-question-only) -> 42/42. Checker fix: owner-4 childSlow matched 'main dheere bolungi'."
+   "title": "Owner scripts on local servers (Neon TEST), both arms at the same time, n=1 per arm per run, runs A and B: owner-2 seed 157001 (90 turns) HEAD 9 defects/7 turns and 5/4 vs patched 7/7 and 8/6 (no improvement shown: remaining R3 after a wrong answer / 'pata nahi' where the move carries no request); owner-4 steering 14/16 -> 15/16 and 16/16 -> 16/16; p5-interaction-acceptance 41/42 -> 42/42 and 41/42 -> 41/42 (card-question-only 3/37 -> 0, 4/37 -> 2/37); round2-conversation (held-out phrases) HEAD 26/31 and 28/31, patched 31/31 (run B); on taxila.dev (prod = HEAD) 28/30, one of the two fails a checker false negative since fixed. Checker fix: owner-4 childSlow matched 'main dheere bolungi'."
   },
   {
    "id": "m-conv-429-storm-2026-10-07",
@@ -68,13 +68,31 @@
    "kind": "rejection",
    "at": "2026-10-07",
    "title": "Tried: the last-resort lead-only repair on any turn still bare after the other repairs. Broke: tests/lesson-safety 'ai_denial draft' — after a floor catch replaced the turn, the lead repair made one more model call on the same words (rejected, but it called). Instead: never after a floor or leak catch (a truth repair stands)."
+  },
+  {
+   "id": "o-conv-r3-after-wrong-answer",
+   "kind": "open",
+   "at": "2026-10-07",
+   "title": "owner-2 R3 bare question after a wrong answer, 'pata nahi', 'i don't know', 'nahi samjha' persists with the patches (4-5 per 90 turns, both local runs): the move carries no request; the bare guard evidently does not catch these turns (or its repairs fail), and the owner transcript has no guard field to tell which. Next: log guard.caught/leadSlot in the owner-2 rows, then route a hint move's re-pose through the lead slot with the kit hint as its note."
+  },
+  {
+   "id": "o-conv-r2-no-429",
+   "kind": "open",
+   "at": "2026-10-07",
+   "title": "'bhai kuch samajh nahi aaya haha' (owner-2 s4 t5, Kabir spoken c7 maths ch08) ships the fixed 'meri baat atak gayi, phir se bata' line on prod (2026-10-06) and locally (2026-10-07) with 0 reply 429s: a floor/stage/units replacement on an item-less explain turn falls back to FALLBACK.other. Cause not isolated."
+  },
+  {
+   "id": "o-conv-reply-lane-failover",
+   "kind": "open",
+   "at": "2026-10-07",
+   "title": "The teacher-reply lane (taxila-fast) has no failover deployment in code; at concurrency 4x2 plus parallel scripts ~90% of reply calls returned 429 and shipped fixed lines. Patch 05 covers card-question turns only. A failover (MODEL-STACK lists taxila-mistral-m35 'routed, no code path') belongs in server/azure.js."
   }
  ],
  "edges": [
   {
    "src": "d-conv-lead-slot",
    "rel": "measured_by",
-   "dst": "m-conv-battery-2026-10-07-runA"
+   "dst": "m-conv-battery-2026-10-07"
   },
   {
    "src": "d-conv-lead-slot",
@@ -104,12 +122,22 @@
   {
    "src": "d-conv-unclear-reading",
    "rel": "measured_by",
-   "dst": "m-conv-battery-2026-10-07-runA"
+   "dst": "m-conv-battery-2026-10-07"
   },
   {
    "src": "d-conv-fallback-lead",
    "rel": "measured_by",
    "dst": "m-conv-429-storm-2026-10-07"
+  },
+  {
+   "src": "o-conv-reply-lane-failover",
+   "rel": "caused_by",
+   "dst": "m-conv-429-storm-2026-10-07"
+  },
+  {
+   "src": "o-conv-r3-after-wrong-answer",
+   "rel": "measured_by",
+   "dst": "m-conv-owner-local-2026-10-07"
   }
  ]
 }

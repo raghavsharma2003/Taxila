@@ -5389,3 +5389,7 @@ text predicate (`rj-sr-raw-recall-98-target`).
 
 ## Merged inbox entries (write-up from the entry text)
 - `owner-features-over-cosmetics-2026-10-06` (2026-10-06): Owner 2026-10-06: 'Arjun face idc, just finish the other features; cosmetic changes are not important right now.' The Arjun 2D face stream was dropped from round 2 (restarted with 5 streams: latency, truth, conversation, content, duplex-real). Cosmetic work waits until the features meet their bars. Reverse if: the owner asks for a cosmetic item.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `dc-owner-other-neon-project-not-used` (2026-10-07): 2026-10-07 the owner pasted credentials for a different Neon project (Singapore, ap-southeast-1, incl. a Neon AI Gateway token). Not stored anywhere, not used: prod is royal-fire (us-east-1) and the Azure-only rule forbids non-Azure AI gateways. Owner advised to rotate those pasted credentials. Reverse if: the owner decides to move the database to that project.

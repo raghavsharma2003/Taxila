@@ -14575,6 +14575,27 @@
    "title": "2026-10-07: the Neon TEST branch role (taxila_owner) had the SAME password as production main (compared by sha256 prefix, never printed): Neon child branches inherit the parent's role passwords. So the test URL a round-1 builder printed into a scratch log and session output also exposed the production password (sandbox-only; not public). The test branch password was rotated by owner approval (ALTER ROLE over the Neon HTTPS driver; new works, old rejected, prod unaffected; .env.local updated, nothing printed). Production rotation is pending owner approval because it needs a coordinated update of DATABASE_URL on taxila-web, taxila-worker and the conductor jobs. Note: direct TCP to Neon (pg on 5432) times out from this sandbox; the HTTPS driver works.",
    "at": "2026-10-07",
    "source": "inbox/test-cred-rotation.json"
+  },
+  {
+   "id": "ms-prod-cred-rotation-2026-10-07",
+   "kind": "measurement",
+   "title": "2026-10-07 ~08:05 UTC: production Neon role password rotated (ALTER ROLE over the HTTPS driver) and every carrier updated by a script that searched all Container Apps and Jobs secrets for the old value (never printed): taxila-web database-url, taxila-worker database-url-direct, jobs taxila-conductor-canary and taxila-conductor-nightly database-url-direct, plus .env.local DATABASE_URL. Apps restarted within ~4 s of the change; new password works, old rejected; prod smoke w0 5/5 and /?ready=1 200 afterwards. The test branch was rotated twice: the first rewrite wrote .env.local lines unquoted, and the '&' in the URL made the shell print the new test password when the file was sourced; lines re-quoted and the password rotated again.",
+   "at": "2026-10-07",
+   "source": "inbox/prod-cred-rotation.json"
+  },
+  {
+   "id": "rj-unquoted-env-urls",
+   "kind": "rejection",
+   "title": "Rewriting .env.local values with URL.toString() and no quotes: a '&' in a connection string makes 'set -a; . ./.env.local' background the assignment and print it (leaked the new test password into session output, 2026-10-07). Edit only the password substring in place, keep the quoting, and filter postgres URLs from any output.",
+   "at": "2026-10-07",
+   "source": "inbox/prod-cred-rotation.json"
+  },
+  {
+   "id": "dc-owner-other-neon-project-not-used",
+   "kind": "decision",
+   "title": "2026-10-07 the owner pasted credentials for a different Neon project (Singapore, ap-southeast-1, incl. a Neon AI Gateway token). Not stored anywhere, not used: prod is royal-fire (us-east-1) and the Azure-only rule forbids non-Azure AI gateways. Owner advised to rotate those pasted credentials. Reverse if: the owner decides to move the database to that project.",
+   "at": "2026-10-07",
+   "source": "inbox/prod-cred-rotation.json"
   }
  ],
  "edges": [
@@ -23347,6 +23368,11 @@
    "src": "rj-w2int-three-day-c31-plus1",
    "rel": "part_of",
    "dst": "m-w2int-prod-battery-local-2026-10-05"
+  },
+  {
+   "src": "ms-prod-cred-rotation-2026-10-07",
+   "rel": "supersedes",
+   "dst": "ms-test-cred-shared-with-prod-2026-10-07"
   }
  ]
 }

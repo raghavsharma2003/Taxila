@@ -2236,3 +2236,7 @@ words are left to read.
 
 ## Merged inbox entries (write-up from the entry text)
 - `rj-server-imports-outside-runtime-image-2026-10-06` (2026-10-06): Ship-five deploy 678fe40: the canary went Failed/Unhealthy because server/director/recheck.js (and server/duplex/*) import pure-logic .ts from src/, and the Dockerfile runtime stage copied only server, shared, data, dist. Every local gate passed because src/ is always present locally. Reproduced in a scratch copy of the image layout (ERR_MODULE_NOT_FOUND), fixed by COPY src ./src (node 22 strips types), and guarded by tests/runtime-image-imports.test.mjs, which fails on exactly this bug when the line is removed.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `rj-unquoted-env-urls` (2026-10-07): Rewriting .env.local values with URL.toString() and no quotes: a '&' in a connection string makes 'set -a; . ./.env.local' background the assignment and print it (leaked the new test password into session output, 2026-10-07). Edit only the password substring in place, keep the quoting, and filter postgres URLs from any output.
