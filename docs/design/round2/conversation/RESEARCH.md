@@ -101,6 +101,19 @@ kit question left 10 words for the response.
    and never promises a video that does not exist.
 5. **Checker fix**: owner-4's childSlow regex matches imperatives only.
 
+6. **Fallback lead** (`server/conversation/fallback-lead.js`, patch 05). Quotas are maxed and the reply lane has no
+   failover, so a 429 is the common degradation: an outage turn with a card question gets a fixed code lead for what the
+   move is doing (identity keeps "AI teacher" with every model down) instead of the bare question.
+
+Added after measuring (2026-10-07, each from a battery row, each with a unit test; see RESULTS.md):
+- a lead that names the item's key (or an accepted form) is refused — the leak guard cannot see a key the question
+  itself names (odd/even), and a lead written before the question gave it once;
+- a lead that drops, pauses or defers the question is refused — it contradicts the question code appends;
+- content requests (answer their question, clarify, example, story, another way, why, how) keep the one-call path — their
+  leads sat next to the key and showed no gain; the note lost "fully" and "what they asked for" (a child who asked for
+  the answer was given it), and says "never its answer";
+- the last lead-only repair never runs after a floor or leak catch.
+
 What would reverse the lead slot: a measured drop in turn coherence (the judges' "flows naturally" or the owner's ear
 saying the joined turn sounds stitched), or a rise in leaks (the lead is generated without seeing the question at the
 end of its own words). Both are measured in RESULTS.md.

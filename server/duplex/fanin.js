@@ -83,6 +83,20 @@ export class TurnTranscript {
     return c === undefined ? null : c;
   }
 
+  /**
+   * duplex-real (2026-10-07, real STT): an item whose audio start the source never reported (MAI-Transcribe-2-Streaming has
+   * no server VAD, so no speech_started; D4 items opened by a client commit have none either) is keyed by its first
+   * ARRIVAL, which is AFTER the commit that produced it, so `takeCommit(start)` dropped that very commit as stale and the
+   * final's coverage fell back to arrival − lag: on eot-bench Hindi through MAI, 233/400 turn ends then waited for the
+   * silence backstop (decision gap p50 2,474 ms) with the whole answer on screen. Such a final answers the OLDEST pending
+   * commit sent before it arrived (FIFO, as the socket answers them). A commit that produced no item (commit_empty) can
+   * only make a later coverage EARLIER, i.e. more unseen voice and a later decision, never a premature one.
+   */
+  /** The socket refused the newest commit (input_audio_buffer_commit_empty): no final will ever answer it. */
+  commitEmpty() { this.commits.pop(); }
+  takeOldest(t) { return this.commits.length && this.commits[0] <= t ? this.commits.shift() : null; }
+  peekOldest(t) { return this.commits.length && this.commits[0] <= t ? this.commits[0] : null; }
+
   /** The pending commit that answers a final of an item whose audio started at `start` (stale ones are dropped). */
   takeCommit(start) {
     while (this.commits.length && this.commits[0] < start - 40) this.commits.shift();
@@ -132,7 +146,7 @@ export class TurnTranscript {
       let toMs;
       if (ev.words && ev.words.length) toMs = ev.words[ev.words.length - 1].endMs;
       else if (ev.type === "final") {
-        const c = this.peekCommit(fromMs);
+        const c = it.audioStartMs !== null ? this.peekCommit(fromMs) : this.peekOldest(ev.t);
         toMs = c !== null ? (ev.audioEndMs !== undefined ? Math.min(c, ev.audioEndMs) : c) : (ev.audioEndMs ?? ev.t - this.lag.p50);
       } else toMs = ev.t - this.lag.p50;
       const nTok = text ? text.split(/\s+/).length : 0;
@@ -159,7 +173,7 @@ export class TurnTranscript {
     if (ev.type === "final") {
       it.final = true;
       if (!it.words) {
-        const c = this.takeCommit(it.audioStartMs ?? it.firstAt);
+        const c = it.audioStartMs !== null ? this.takeCommit(it.audioStartMs) : this.takeOldest(ev.t);
         // the conservative (earlier) of the commit time and the source's own audio end, when both exist
         if (c !== null && ev.audioEndMs !== undefined) it.coverEndMs = Math.min(c, ev.audioEndMs);
         else if (c !== null) it.coverEndMs = c;

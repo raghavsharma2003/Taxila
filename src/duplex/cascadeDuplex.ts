@@ -23,6 +23,7 @@ import { DuplexLive, isQuotaError, type DuplexFallbackReason, type DuplexLiveOpt
 import type { HostCommand, ShadowRow } from "./host.ts";
 import type { FloorPhase } from "./engine.ts";
 import type { DuplexMode } from "./flags.ts";
+import { ShadowTelemetry, type ShadowSummary } from "./shadowTelemetry.ts";
 
 /** What the link exposes to the duplex (CascadeLink builds one; tests fake it). */
 export interface CascadeSurface {
@@ -71,6 +72,21 @@ export interface CascadeDuplexOptions {
   setInterval?: DuplexLiveOptions["setInterval"];
   clearInterval?: DuplexLiveOptions["clearInterval"];
   band?: DuplexLiveOptions["band"];
+  /**
+   * duplex-real (round 2): where the lesson's content-blind shadow summary goes on close (src/duplex/shadowTelemetry.ts).
+   * Omitted = a beacon to POST /api/duplex/shadow when a browser is present; null = off (tests, a device override).
+   */
+  shadowSink?: ((summary: ShadowSummary, lessonId: string) => void) | null;
+}
+
+/** The default shadow sink: one beacon per lesson (text/plain, like /api/lesson/end; never throws, never awaited). */
+export function beaconShadowSummary(summary: ShadowSummary, lessonId: string): void {
+  try {
+    const body = JSON.stringify({ lessonId, summary });
+    const nav = (globalThis as { navigator?: { sendBeacon?: (u: string, b: Blob) => boolean } }).navigator;
+    if (nav?.sendBeacon && typeof Blob !== "undefined" && nav.sendBeacon("/api/duplex/shadow", new Blob([body], { type: "text/plain;charset=UTF-8" }))) return;
+    if (typeof fetch === "function" && typeof (globalThis as { location?: unknown }).location !== "undefined") void fetch("/api/duplex/shadow", { method: "POST", body, keepalive: true, headers: { "content-type": "application/json" } }).catch(() => {});
+  } catch { /* telemetry never breaks a lesson */ }
 }
 
 /** The server VAD silence while the engine decides: a backstop only (INTEGRATION.md §3, 1,500 ms). */
@@ -97,6 +113,8 @@ export class CascadeDuplex {
   private phase: FloorPhase = "idle";
   /** The 1,500 ms backstop VAD was sent (a fallback restores the token's own turn detection). */
   private vadSet = false;
+  /** duplex-real: what the engine would have done vs what the shipped path did (content-blind; flushed on close). */
+  private readonly tel: ShadowTelemetry;
 
   constructor(surface: CascadeSurface, o: CascadeDuplexOptions) {
     this.s = surface;
@@ -104,6 +122,7 @@ export class CascadeDuplex {
     this.mode = o.mode;
     this.now = o.now ?? (() => Date.now());
     this.later = o.setTimeout ?? ((fn, ms) => setTimeout(fn, ms));
+    this.tel = new ShadowTelemetry({ mode: o.mode, band: o.band ?? null, lane: "live_transcribe" });
     const port = {
       duck: (level: number) => this.s.duck(level),
       pause: () => {
@@ -126,8 +145,15 @@ export class CascadeDuplex {
     this.live = new DuplexLive({
       lessonId: surface.lessonId, port, mode: o.mode, source: "live_transcribe", supportsCommit: true,
       wrapEmit: o.face?.wrapEmit, onDetach: o.face?.detach, now: this.now, setInterval: o.setInterval, clearInterval: o.clearInterval,
-      band: o.band, log: o.log,
+      band: o.band,
+      log: (row: ShadowRow) => { try { this.tel.row(row); } catch { /* telemetry never breaks the floor */ } o.log?.(row); },
     });
+    // the telemetry's own voicing ruler sees every frame the engine sees (the shared tap calls live.frame)
+    const frame = this.live.frame.bind(this.live);
+    this.live.frame = (t: number, rms: number, f0: number | null, herOutDb: number | null) => {
+      try { this.tel.frame(t, rms, herOutDb !== null || this.s.herSounding()); } catch { /* never breaks the floor */ }
+      frame(t, rms, f0, herOutDb);
+    };
   }
 
   /** The engine decides the floor now (shadow never does). */
@@ -167,6 +193,8 @@ export class CascadeDuplex {
   onSttEvent(raw: unknown): boolean {
     if (this.closed || this.fallbackReason) return false;
     this.live.stt(raw);
+    const ev = (raw && typeof raw === "object" ? raw : {}) as { type?: unknown; transcript?: unknown };
+    if (typeof ev.type === "string") this.tel.stt(this.now(), ev.type, typeof ev.transcript === "string" && ev.transcript.trim().length > 0);
     if (!this.deciding) return false;
     const e = (raw && typeof raw === "object" ? raw : {}) as Record<string, unknown>;
     const itemId = typeof e.item_id === "string" ? e.item_id : "";
@@ -186,6 +214,10 @@ export class CascadeDuplex {
 
   /** A server error on the transcription call: true when it is a quota / capacity refusal (the duplex stepped aside). */
   onServerError(code: string | undefined, message?: string): boolean {
+    // duplex-real (AMI real STT: 374-483 per 40-min channel; eot-bench: 7 per 400 turns): the engine's own micro-commit probe
+    // found nothing new in the buffer. It is not the child: before, the link read it as a push-to-talk press with no audio
+    // (child_silent), which flipped the floor to your_turn mid-turn and RESUMED a reply the engine had paused for a barge-in.
+    if (code === "input_audio_buffer_commit_empty" && this.deciding) { this.live.commitEmpty(); return true; }
     if (this.closed || this.fallbackReason || !isQuotaError(code, message)) return false;
     this.live.degrade("stt_rate_limited");
     return true;
@@ -195,6 +227,7 @@ export class CascadeDuplex {
   replyAudible(text: string): void {
     if (this.closed || this.fallbackReason) return;
     this.dropUntil = 0;
+    this.tel.herStart(this.now());
     this.live.herStart(text);
   }
 
@@ -205,8 +238,8 @@ export class CascadeDuplex {
     return false;
   }
 
-  replyEnded(): void { if (!this.closed) this.live.herEnd(); }
-  replyStopped(): void { if (!this.closed) this.live.herStopped(); }
+  replyEnded(): void { if (!this.closed) { this.tel.herEnd(this.now(), false); this.live.herEnd(); } }
+  replyStopped(): void { if (!this.closed) { this.tel.herEnd(this.now(), true); this.live.herStopped(); } }
   /** The child typed or tapped. */
   screen(kind: "submit" | "choice_pick" | "type"): void { if (!this.closed) this.live.screen(kind); }
   /** The Director's turn ui (answer form, beat, hand-over), for the engine context of the next line. */
@@ -219,6 +252,7 @@ export class CascadeDuplex {
     if (this.closed) return;
     this.closed = true;
     this.live.stop();
+    this.flushShadow();
     try { this.stopTap?.(); } catch { /* already gone */ }
     this.stopTap = null;
   }
@@ -260,6 +294,16 @@ export class CascadeDuplex {
     if (this.vadSet) { this.s.setServerVad(null); this.vadSet = false; }
     console.warn(`duplex: stepped aside for the shipped path (${reason})`);
     this.push();
+  }
+
+  /** One summary per lesson, only when the engine saw frames (a lesson that fell back at once sends nothing). */
+  private flushShadow(): void {
+    const sink = this.o.shadowSink === undefined ? beaconShadowSummary : this.o.shadowSink;
+    if (!sink) return;
+    try {
+      const s = this.tel.summary();
+      if (s.frames > 0) sink(s, this.s.lessonId);
+    } catch { /* telemetry never breaks a lesson */ }
   }
 
   private push(): void {

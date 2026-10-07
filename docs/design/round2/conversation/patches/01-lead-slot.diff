@@ -1,8 +1,7 @@
 diff --git a/server/brain/say.js b/server/brain/say.js
-index c7217c4..5668102 100644
 --- a/server/brain/say.js
 +++ b/server/brain/say.js
-@@ -15,6 +15,7 @@ import { mixedUnitComparison, withoutMixedUnits } from "../director/units.js";
+@@ -15,6 +15,7 @@
  import { screenContradiction, stripStrayParts } from "../director/modules.js";
  import { isBare, repeatsEarlier, tidy, leadWithoutQuestion, sentences } from "../conversation/guards.js";
  import { p5Flag } from "../conversation/flags.js";
@@ -10,7 +9,7 @@ index c7217c4..5668102 100644
  
  /** p5-interaction: problems a gutted teaching turn's one retry may still carry, because code repairs them (never truth). */
  const SOFT_FIX = new Set(["long", "twoq", "wrap", "script", "register", "stage", "cantshow"]);
-@@ -208,6 +209,11 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
+@@ -208,6 +209,11 @@
    // a re-pose ends on the card's form of it (UiDirectives.ask.text, ≤ 120 characters: the question sentence itself)
    const rePose = !!item && state.pinItem === item.id && (state.pinRun ?? 0) > 1;
    const askEnd = item ? (G && pinned && rePose ? pinned : promptFor(item, lang)) : null;
@@ -22,7 +21,7 @@ index c7217c4..5668102 100644
    // G-PRAISE-2: after a right answer the acknowledgement never states a wrong option as the result (say.js correctsRight).
    const right = verdict === "correct" && state.lastRight?.wrong?.length ? { ...state.lastRight, nextPrompt: item ? promptFor(item, lang) : ahead ? promptFor(ahead, lang) : "" } : null;
    const problems = (t) => [
-@@ -229,7 +235,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
+@@ -229,7 +235,7 @@
      whyProbe && !asksWhy(t) && "nowhy",
      mustHandBack && !handsBack(t) && "flat",
      !scriptOk(t, lang) && "script",
@@ -31,7 +30,7 @@ index c7217c4..5668102 100644
      pinned && !parityOf(t).endsOnAsk && "ask",
      mustHandBack && parityOf(t).questions > 1 && "twoq",
      wrapping && wrapsUp(t) && "wrap",
-@@ -263,18 +269,33 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
+@@ -263,18 +269,33 @@
    // Replies take ~1-2 s (measured in evals/director-sim.mjs); a stuck call is cut at 6 s and retried once.
    const ask = (msgs) => replyDeps.chat(DEPLOY.reply, msgs, { maxTokens: 220, effort: "none", timeoutMs: 6000, trace }).then((r) => r.text.trim());
    let reply;
@@ -49,7 +48,7 @@ index c7217c4..5668102 100644
 +    const extra = [...(draft ? [{ role: "assistant", content: draft }] : []), { role: "system", content: leadSlotNote({ lead: state.lastMove?.lead ?? null, why, ageBand: state.ctx.ageBand }) }];
 +    const raw = await ask([...messages, ...extra]);
 +    const lead = cleanLead(raw, askEnd, leadMax);
-+    return leadOk(lead) ? composeTurn(lead, askEnd) : null;
++    return leadOk(lead, [item?.answer, ...(item?.acceptable ?? [])]) ? composeTurn(lead, askEnd) : null;
 +  };
    try {
 -    reply = await ask(messages);
@@ -67,14 +66,14 @@ index c7217c4..5668102 100644
    // Drift (a posing turn that asked some other question) is repaired without a model call when it is the
    // only problem besides the hand-back the posed question supplies: what the draft said BEFORE its first
    // question (the acknowledgement), then the verified question itself — what the rewrite produced in 9/9
-@@ -421,6 +442,25 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
+@@ -421,6 +442,25 @@
        const h = hintStatements(item, state.lastMove?.hintLevel);
        if (h) { reply = joinAsk(h, askEnd); guard.repaired = true; }
      }
 +    // round 2 (conversation): a turn still only the question, or a line she already said, after every repair above: one
 +    // lead-slot call (the model writes only the response to what they said; code adds the question). Used only when the
-+    // joined turn has no problem the old one did not have (every truth check runs on it).
-+    if (p5Flag("LEADSLOT") && item && pinned && !whyProbe && !item.diagnostic && !CLOSING_MOVES.has(kindNow)) {
++    // joined turn has no problem the old one did not have; never after a floor or leak catch (a truth repair stands).
++    if (p5Flag("LEADSLOT") && item && pinned && !whyProbe && !item.diagnostic && !CLOSING_MOVES.has(kindNow) && !guard.caught.some((c) => c === "floor" || c === "leak")) {
 +      const left = problems(reply);
 +      if (left.includes("bare") || left.includes("same")) {
 +        try {
@@ -94,10 +93,9 @@ index c7217c4..5668102 100644
      const tidied = tidyAround(reply, pinned ? askEnd : null);
      if (tidied && tidied !== reply) { reply = tidied; guard.tidied = true; }
 diff --git a/tests/p5-interaction-reply.test.mjs b/tests/p5-interaction-reply.test.mjs
-index 1c7e5ab..38fbcf7 100644
 --- a/tests/p5-interaction-reply.test.mjs
 +++ b/tests/p5-interaction-reply.test.mjs
-@@ -19,13 +19,15 @@ function toPractice() {
+@@ -19,13 +19,15 @@
  }
  // File-scoped: a top-level hook wraps EVERY file's tests in the shared npm-test process (rj: shared-process hook leak).
  describe('p5-interaction reply', () => {
@@ -114,3 +112,13 @@ index 1c7e5ab..38fbcf7 100644
    const seen = scripted(q, `Socho, dono tukde barabar hain kya? ${q}`);
    const out = await textReply({ instructions: "x", state: r.state, kit: K, childText: "1/3", history: [], ui: r.ui, module: r.state.module, verdict: "not_yet" });
    assert.ok(out.guard.caught.includes("bare"), JSON.stringify(out.guard));
+@@ -104,6 +106,9 @@
+   const r = turn(r0, { ...cls("no_evidence"), source: "chip", request: { type: "story", whole: true } });
+   assert.equal(r.state.lastMove?.request, "story");
+   const item = r.item, q = r.ui.ask.text, key = String(item.answer);
++  // round 2: the one-call path's re-ask (with the lead slot on, a lead naming the key is refused before it is written:
++  // tests/round2-conversation.test.mjs)
++  process.env.TAXILA_P5_LEADSLOT = "off";
+   const leaky = `Ek din Riya ne socha, jawab ${key} hai, haan ${key}. ${q}`;
+   const clean = `Ek din Riya ne ek roti ke barabar tukde kiye aur sabko ek-ek diya. ${q}`;
+   const seen = scripted(leaky, leaky, clean);

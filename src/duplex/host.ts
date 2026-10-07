@@ -250,6 +250,9 @@ export class EngineHost {
   private attribution: { at: Ms; lowVoice: boolean } | null = null;
 
   /** One STT event of the always-on stream. */
+  /** duplex-real: the transcriber refused the newest micro-commit (nothing new to commit): forget it (fanin FIFO). */
+  commitEmpty(): void { this.fanin.commitEmpty(); }
+
   stt(ev: HostSttEvent): void {
     this.t = ev.t;
     if (ev.type === "speech_started" || ev.type === "speech_stopped") return; // the device's own frames time speech
@@ -596,6 +599,11 @@ export class EngineHost {
   /** The governed decision → actuator commands (changes only; one-shot acts always). */
   private actuate(tick: EngineTick, d: ReturnType<Governor["decide"]>["decision"], cause: TickCause): void {
     const t = tick.t, live = !this.flags.shadow, det = d.detail;
+    // duplex-real (2026-10-07, eot-bench Hindi real STT): a commit pins the epoch a revoke restores. Before, only her NEXT
+    // line saved it, so a revoke that came before her reply sounded (the child went on right after the commit) re-opened
+    // the PREVIOUS exchange's epoch and the merged commit carried an already-answered turn's words
+    // (tests/duplex-real-replay.test.mjs, hi__4015 → hi__4016).
+    if (d.action === "SPEAK" || d.action === "CUT_IN") this.prevTurnStart = this.fanin.turnStart;
     const key = `${this.governor.phase}|${d.action}|${det ? JSON.stringify(det) : ""}`;
     if (key !== this.lastLog || d.action === "SPEAK" || d.action === "CUT_IN" || d.action === "YIELD") {
       this.lastLog = key;

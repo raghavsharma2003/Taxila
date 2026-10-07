@@ -1,0 +1,30 @@
+diff --git a/server/brain/say.js b/server/brain/say.js
+--- a/server/brain/say.js
++++ b/server/brain/say.js
+@@ -16,6 +16,7 @@
+ import { isBare, repeatsEarlier, tidy, leadWithoutQuestion, sentences } from "../conversation/guards.js";
+ import { p5Flag } from "../conversation/flags.js";
+ import { leadSlotWanted, leadSlotNote, cleanLead, leadOk, composeTurn, LEAD_MAX_WORDS } from "../conversation/compose.js";
++import { fallbackLead } from "../conversation/fallback-lead.js";
+ 
+ /** p5-interaction: problems a gutted teaching turn's one retry may still carry, because code repairs them (never truth). */
+ const SOFT_FIX = new Set(["long", "twoq", "wrap", "script", "register", "stage", "cantshow"]);
+@@ -124,7 +125,17 @@
+   if (state.lastMove?.kind === "safeguard") return safeguardLine(state.ctx, { kind: state.safeguard?.kind ?? null });
+   const lang = state.ctx.lang;
+   const kind = state.lastMove?.kind;
+-  if (item && !CLOSING_MOVES.has(kind)) return promptFor(item, lang);
++  if (item && !CLOSING_MOVES.has(kind)) {
++    const q = promptFor(item, lang);
++    // round 2 (conversation): a model outage (429 / timeout / every repair failed) on a turn that answers a request or puts
++    // the question again is no longer a bare re-ask: a fixed code lead for what the move is doing, then the question
++    // (conversation/fallback-lead.js; owner-2 prod R3 x4 + R2). Same kill switch as the lead slot.
++    if (!p5Flag("LEADSLOT")) return q;
++    const lead = fallbackLead({ request: state.lastMove?.request ?? null, hint: hintStatements(item, state.lastMove?.hintLevel),
++      rePose: state.pinItem === item.id && (state.pinRun ?? 0) > 1, lang });
++    if (!lead) return q;
++    return composeTurn(state.ctx.address === "aap" && lang !== "english" ? toAap(lead) : lead, q);
++  }
+   const lines = FALLBACK[lang === "english" ? "english" : "hinglish"];
+   const line = lines[kind] ?? lines.other;
+   // The fixed lines are written in tum forms; an "aap" child hears them in aap forms (G-REG-1).

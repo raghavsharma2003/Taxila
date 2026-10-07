@@ -20,3 +20,4 @@ export interface UnderstandNote {
   tailText: string;
 }
 export declare function understand(text: string, ctx?: { answerForm?: string; beat?: string | null; misconceptionValues?: string[] }): UnderstandNote;
+export declare const LEX_OPTS: { copulaProjection: boolean };

@@ -150,7 +150,7 @@ export async function openStt(lane, onEvent, { retries = 4 } = {}) {
  *   stt:    { lane } live, or { replay: events[] } (each { t, raw })
  * Returns { acts: [t, kind, extra][], phases, sttLog: [{t, raw}], stats, logs }.
  */
-export async function runSession({ id, x, frames, her = [], stt, band = "B4", mask = null, floorDb = null, log = false, DuplexLive, realtime = true }) {
+export async function runSession({ id, x, frames, her = [], stt, band = "B4", mask = null, floorDb = null, log = false, DuplexLive, realtime = true, semantic = null }) {
   const acts = [], phases = [], logs = [], sttLog = [];
   const nFrames = frames.db.length;
   let clock = 0; // ms on the session clock
@@ -168,10 +168,22 @@ export async function runSession({ id, x, frames, her = [], stt, band = "B4", ma
     fallback: (why) => acts.push([clock, "fallback", why]),
     state: (st) => { if (phases.at(-1)?.[1] !== st.phase) phases.push([clock, st.phase]); },
   };
-  const live = new DuplexLive({ lessonId: `real-${id}`, port, now: () => clock, setInterval: (fn) => { interval = fn; return 1; }, clearInterval: () => { interval = null; }, band,
+  // the semantic estimator on the session clock: a cached Azure answer delivered after its own measured latency
+  const semPending = [];
+  const semFn = semantic ? (req) => new Promise((resolve) => {
+    const hit = semantic.lookup(req);
+    if (!hit) { semantic.miss?.(req); resolve(null); return; }
+    semPending.push({ due: req.t + hit.latMs, resolve, val: { forTextHash: req.textHash, pComplete: hit.pComplete, pHoldWanted: hit.pHoldWanted ?? undefined, asksHer: hit.asksHer ?? undefined, offTask: hit.offTask ?? undefined, deployment: hit.deployment, issuedAt: req.t, arrivedAt: req.t + hit.latMs } });
+  }) : undefined;
+  const live = new DuplexLive({ lessonId: `real-${id}`, port, ...(semFn ? { semantic: semFn } : {}), now: () => clock, setInterval: (fn) => { interval = fn; return 1; }, clearInterval: () => { interval = null; }, band,
     log: (row) => { if (log || row.action === "YIELD" || row.action === "HUSH" || row.action === "SPEAK") logs.push([row.t, row.action, (row.reasons ?? []).join("+"), row.phase]); } });
   live.start();
-  const deliver = (raw) => { sttLog.push({ t: clock, raw: slim(raw) }); live.stt(raw); };
+  // errors go where CascadeDuplex.onServerError sends them: an empty micro-commit tells the fan-in (when the engine has it)
+  const deliver = (raw) => {
+    sttLog.push({ t: clock, raw: slim(raw) });
+    if (raw.type === "error") { if ((raw.error?.code ?? raw.error) === "input_audio_buffer_commit_empty") live.commitEmpty?.(); return; }
+    live.stt(raw);
+  };
   let replayIdx = 0;
   const replay = stt.replay ?? (sim ? [] : null);
   const pending = [];
@@ -203,6 +215,11 @@ export async function runSession({ id, x, frames, her = [], stt, band = "B4", ma
       if (wait > 2) await new Promise((r) => setTimeout(r, wait));
     }
     clock = tf;
+    if (semPending.length) {
+      let fired = false;
+      for (let k = semPending.length - 1; k >= 0; k--) if (semPending[k].due <= tf) { semPending[k].resolve(semPending[k].val); semPending.splice(k, 1); fired = true; }
+      if (fired) for (let k = 0; k < 4; k++) await null; // let the host's .then apply the estimate on this frame
+    }
     if (!replay) {
       socket.append(x.subarray(i * HOP, (i + 1) * HOP));
       while (pending.length) deliver(pending.shift());

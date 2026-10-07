@@ -83,6 +83,14 @@ const OPEN_TAIL_EXTRA = /(?:^|\s)(?:को|ने|तक|लिए|साथ|ब
 const PROJECTOR = /(?:^|\s)(?:जब|अगर|यदि|jab|agar|if|when)(?=\s)/u;
 const PROJ_CLOSE = /(?:^|\s)(?:तो|तब|to|toh|tab|then)(?=\s|$)/u;
 
+/**
+ * duplex-real (2026-10-07, eot-bench Hindi through the real STT): a head noun + copula with no complement yet PROJECTS the
+ * complement: "मेरा फोन नंबर है … सात शून्य", "answer है … बारह", "बात ये है … कि". Hindi puts the complement before है
+ * ("मेरा नाम रिया है" is complete and does not match: रिया is not a head noun here). Shapes, not lines; sweepable.
+ */
+const COPULA_PROJ = /(?:^|\s)(?:नाम|नंबर|नम्बर|number|naam|पता|address|answer|उत्तर|जवाब|jawab|uttar|मतलब|matlab|बात|baat|सवाल|sawal|question|result|नतीजा|problem|प्रॉब्लम|समस्या|reason|कारण|karan|फॉर्मूला|formula|तरीका|tarika)\s+(?:(?:यह|ये|वो|ye|yeh|ya|wo|woh)\s+)?(?:है|हैं|था|थी|hai|hain|tha|thi|is|was)$/u;
+export const LEX_OPTS = { copulaProjection: true };
+
 /** Address / politeness tokens that may trail a request without adding content (TaxilaFDB F5: "एक मिनट दीदी"). */
 export const VOCATIVE = /^(?:दीदी|दी|didi|di|मैम|मैडम|ma'?am|mam|madam|miss|teacher|टीचर|sir|सर|please|plz|प्लीज़|प्लीज|जी|ji|भैया|bhaiya)$/u;
 
@@ -136,6 +144,7 @@ export function understand(text, ctx = {}) {
     const st = normText(scored);
     const pm = PROJECTOR.exec(st);
     if (OPEN_TAIL_EXTRA.test(st)) lex = { p: Math.min(lex.p, 0.12), cue: "open" };
+    else if (LEX_OPTS.copulaProjection && COPULA_PROJ.test(st) && !/[?？]\s*$/.test(String(scored).trim())) lex = { p: Math.min(lex.p, 0.2), cue: "projection" };
     else if (pm && !PROJ_CLOSE.test(st.slice(pm.index + pm[0].length))) lex = { p: Math.min(lex.p, 0.3), cue: "projection" };
   }
   const asks = /[?？]\s*$/.test(raw.trim()) || (QWORD.test(t) && YIELD_Q_TAIL.test(t) && toks.length <= 12) || /(?:^|\s)(?:matlab|मतलब)\s*[?？]\s*$/u.test(raw);

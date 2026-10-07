@@ -20,6 +20,8 @@ export declare class TurnTranscript {
   readonly updatedAt: number | null;
   begin(t: number, o?: { carryFrom?: number | null }): void;
   commitSent(t: number): void;
+  /** duplex-real: the socket refused the newest commit (commit_empty). */
+  commitEmpty(): void;
   push(ev: SttEvent): boolean;
   lagEstimate(): number;
   view(t: number, voicedAfter?: (fromMs: number) => number): TranscriptView;

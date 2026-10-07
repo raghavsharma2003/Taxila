@@ -130,7 +130,14 @@ export interface DuplexLiveOptions {
   band?: "B1" | "B2" | "B3" | "B4";
   /** Telemetry rows (numbers and codes only). */
   log?: (row: ShadowRow) => void;
+  /**
+   * duplex-real: the stage A semantic estimator for OPEN contexts (server/duplex/semantic.js behind a route, or a replay
+   * cache in evals/duplex-real). Absent = off (today). Closed answers never call it.
+   */
+  semantic?: EngineHostSemantic;
 }
+
+export type EngineHostSemantic = NonNullable<ConstructorParameters<typeof EngineHost>[0]["semantic"]>;
 
 const MS_PER_CHAR = 70;
 const EXPLAINING_BEATS = new Set(["teachback", "explain", "worked_example", "contrast", "explore_question", "reflect"]);
@@ -303,10 +310,11 @@ export class DuplexLive {
     this.now = o.now ?? (() => Date.now());
     const emit = (c: HostCommand) => this.onCommand(c);
     this.host = new EngineHost({
-      session: { lessonId: o.lessonId, band: o.band ?? "B3", startedAt: this.now(), flags: { shadow: this.mode === "shadow", semantic: false, trained: false, cutIn: false, audioBackchannel: false, lexicalBackchannel: false } },
+      session: { lessonId: o.lessonId, band: o.band ?? "B3", startedAt: this.now(), flags: { shadow: this.mode === "shadow", semantic: !!o.semantic, trained: false, cutIn: false, audioBackchannel: false, lexicalBackchannel: false } },
       source: o.source ?? "live_transcribe",
       supportsCommit: o.supportsCommit ?? true,
       emit: o.wrapEmit ? o.wrapEmit(emit) : emit,
+      ...(o.semantic ? { semantic: o.semantic } : {}),
     });
   }
 
@@ -372,6 +380,9 @@ export class DuplexLive {
     if (ev.type === "final" || ev.type === "partial") this.lastItemId = ev.itemId;
     this.guard(() => this.host.stt(ev));
   }
+
+  /** duplex-real: the transcriber answered a probe with input_audio_buffer_commit_empty (see CascadeDuplex.onServerError). */
+  commitEmpty(): void { if (this.live) this.guard(() => this.host.commitEmpty()); }
 
   /** The Director's turn ui (turnModel.ts setTurnContext carries the same fields): used at her next line. */
   setUi(ui: TurnUi): void { this.ui = { ...ui }; }

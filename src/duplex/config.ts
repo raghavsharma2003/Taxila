@@ -80,6 +80,17 @@ export const SEMANTIC_DECAY_MS: Ms = 1500;
 export const VERDICT = { delayMs: 2000 as Ms };
 /** @deprecated read VERDICT.delayMs (kept for older imports; the v2-draft value). */
 export const VERDICT_DELAY_MS: Ms = 1200;
+/**
+ * duplex-real (2026-10-07): the least child silence before a turn_end SPEAK OUTSIDE a closed answer, by the prosody of the
+ * pause (stage A has no semantic estimate in production, and on real adult Hindi through the real STT the lexical "this
+ * clause is complete" read committed inside 22-58 % of >= 500 ms thinking pauses: evals/duplex-real). One mutable row so
+ * the sweep (evals/duplex-real/eot-sweep.mjs, TRAIN half of eot-bench Hindi) can set it; the values below were chosen on
+ * TRAIN and reported on TEST (docs/design/round2/duplex-real/REPORT.md). Closed answers keep their own waits (extraWait).
+ */
+// Chosen on TRAIN (even row ids, 77 holds >= 500 ms, both lanes; evals/duplex-real/eot-sweep.mjs 2026-10-07): uniform 1,100 ms
+// gave the fewest cut-offs (D4 18.2 -> 9.1 %, MAI 68.8 -> 15.6 %) at gap p50 922 / 911 ms; prosody-split rows cut more for
+// ~70 ms less gap. It is Rowe's wait time II, not a latency target: closed answers, questions to her and "pata nahi" keep 0.
+export const OPEN_TURN_WAIT = { prosodyFinal: 1100 as Ms, neutral: 1100 as Ms, prosodyContinue: 1100 as Ms };
 /** A hesitant first value (pausesThisTurn >= 1 or a filler before it) waits for this much silence too (§2.5.1; M-B1 21/21). */
 export const HESITANT_VALUE_SILENCE_MS: Ms = 300;
 /** word / phrase forms: complete only with prosodic finality or this much silence (§2.5.1). */

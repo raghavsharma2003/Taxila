@@ -24,8 +24,14 @@ export const LEAD_MAX_WORDS = { "6-9": 24, "10-15": 30 };
  * @param {{ request?: string|null, kind?: string, rePose?: boolean, pinned?: string|null, diagnostic?: boolean,
  *   whyProbe?: boolean, closing?: boolean }} t
  */
+// Requests whose answer is teaching content that sits next to the card question's key (answer their question, clarify a
+// word, an example, a story, another way, why / how): battery run B 2026-10-07 found leads that gave the key in these
+// ("expression hoga 5 guna 4 plus 2" for an example; a clarification naming the result). They keep the one-call path,
+// whose own guards and rewrite are HEAD's. Measured: excluding them cost nothing on those intents (no gain was seen there).
+export const CONTENT_REQUESTS = new Set(["answer_q", "clarify", "example", "story", "another", "why", "how"]);
 export function leadSlotWanted(t) {
   if (!t.pinned || t.diagnostic || t.whyProbe || t.closing) return false;
+  if (t.request && CONTENT_REQUESTS.has(String(t.request))) return false;
   // a child's request answered before the question, or the same question put again after a nudge / repair
   return !!t.request || !!t.rePose;
 }
@@ -38,9 +44,9 @@ export function leadSlotNote({ lead = null, why = null, ageBand = "10-15" } = {}
   const n = LEAD_MAX_WORDS[ageBand] ?? LEAD_MAX_WORDS["10-15"];
   return [
     "THIS TURN, PART ONE ONLY: the app says the question on the card right after your words, so write only what comes before it.",
-    lead ? `Do this first, fully, exactly as the note says: ${String(lead).replace(/[.\s]+$/, "")}.` : "Do what this move asks before the question, fully (the nudge, the step, or what they asked for), as the move's shape says.",
+    lead ? `Do this first, as the note says: ${String(lead).replace(/[.\s]+$/, "")}.` : "Do what this move's shape asks before the question (the nudge or the step), never more than it.",
     why ? `Also: ${why}.` : null,
-    `One to three short spoken sentences, at most ${n} words, in their language. No question of any kind, and never the card question or its words.`,
+    `One to three short spoken sentences, at most ${n} words, in their language. No question of any kind, never the card question or its words, and never its answer or anything that gives it away (no option named as right, no example whose result is the answer).`,
   ].filter(Boolean).join(" ");
 }
 
@@ -59,8 +65,26 @@ export function cleanLead(text, askFull, max = 30) {
   return out.replace(/\s{2,}/g, " ").trim();
 }
 
-/** Is a cleaned lead a response of its own (enough words, not empty punctuation)? PURE. */
-export const leadOk = (lead) => words(lead) >= LEAD_MIN_WORDS && /[\p{L}]/u.test(String(lead));
+/**
+ * A lead that says the question is being dropped, paused or left for later contradicts the question code puts right after
+ * it ("Isse abhi chhod dete hain ... <the same question>?", battery 2026-10-07 frustration; "let's stop here ... Why ...?").
+ * Such a lead is refused and the turn falls through to the one-call path, which writes the whole turn itself.
+ */
+const DROPS_IT = /\b(?:chhod\s+(?:dete|denge|do|dijiye|diya)|skip\s+kar|break\s+le|baad\s+mein\s+(?:karenge|karte|dekhenge)|rukte\s+hain|yahin\s+ruk|let['’]?s\s+stop|stop\s+here|leave\s+(?:it|this)|skip\s+(?:it|this)|come\s+back\s+to\s+(?:it|this)\s+later)\b/i;
+export const leadDropsQuestion = (lead) => DROPS_IT.test(String(lead ?? ""));
+/** Is a cleaned lead a response of its own (enough words, not empty punctuation, not dropping the question)? PURE. */
+/**
+ * Does the lead name the card question's key (or an accepted form)? The truth guard's leak check cannot see a key the
+ * question itself names ("36 odd hai ya even?" → key "even"), and a lead written BEFORE that question said "36 even hai,
+ * kyunki ..." on the 2026-10-07 battery (ask_for_answer-05). Any mention of a key in the lead refuses it: the turn falls
+ * through to the one-call path (HEAD behaviour), so a false refusal costs nothing but the slot. PURE.
+ */
+const norm = (t) => String(t ?? "").toLowerCase().normalize("NFKC").replace(/[^\p{L}\p{N}/.,]+/gu, " ").replace(/\s+/g, " ").trim();
+export function leadNamesKey(lead, keys = []) {
+  const l = ` ${norm(lead)} `;
+  return keys.filter((k) => k != null && norm(k)).some((k) => l.includes(` ${norm(k)} `));
+}
+export const leadOk = (lead, keys = []) => words(lead) >= LEAD_MIN_WORDS && /[\p{L}]/u.test(String(lead)) && !leadDropsQuestion(lead) && !leadNamesKey(lead, keys);
 
 /** The turn: the lead, then the card question byte for byte. PURE. */
 export function composeTurn(lead, askEnd) {

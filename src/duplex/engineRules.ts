@@ -21,7 +21,7 @@ import type {
   ExchangeContext, FirstSound, PrepareHint, Prob, ReactKind, ReasonCode, SpeakReason,
 } from "./engine.ts";
 import {
-  ACOUSTIC_FRESH_MS, BAND_PACE, BOP, CONTEXT, CUT_IN, HESITANT_VALUE_SILENCE_MS, HOLD, HORIZON_MS, PHRASE_SILENCE_MS, PREPARE,
+  ACOUSTIC_FRESH_MS, BAND_PACE, BOP, CONTEXT, OPEN_TURN_WAIT, CUT_IN, HESITANT_VALUE_SILENCE_MS, HOLD, HORIZON_MS, PHRASE_SILENCE_MS, PREPARE,
   RATE, SAFETY, SEMANTIC_DECAY_MS, VERDICT, WEAKER_LANGUAGE_STRETCH, WT1_DEFAULT,
 } from "./config.ts";
 import { classifyOverlap } from "./overlap.ts";
@@ -64,6 +64,10 @@ export function holdProfile(tick: EngineTick): { p50: number; p90: number } {
 export function exchangeOf(tick: EngineTick): ExchangeContext {
   const m = tick.markers;
   if (m.asks && m.questionComplete) return "question_to_her";
+  // duplex-real (eot-bench Hindi, real STT): after a yes/no question, "हाँ जी, …" that runs past a short yes/no is an
+  // ELABORATION, read as a free turn (its waits and backstop), not the closed answer: 40/53 of those >= 500 ms thinking
+  // pauses were cut on the India lane. A bare "हाँ" / "नहीं दीदी" / "हाँ समझ आया" (<= 3 words) stays a closed answer.
+  if (tick.context.exchange === "closed_answer" && tick.context.expected?.form === "yes_no" && wordCount(tick.transcript.text) > YES_NO_MAX_WORDS) return "free";
   return tick.context.exchange;
 }
 
@@ -328,13 +332,24 @@ export function decide(tick: EngineTick, est: Estimate, mem: RulesMemory, id: En
 export function extraWait(tick: EngineTick, est: Estimate): number {
   const m = tick.markers, c = tick.child;
   const closed = est.exchange === "closed_answer" && !!tick.context.expected;
-  if (!closed) return 0;
+  if (!closed) {
+    // duplex-real: outside a closed answer a finished-looking clause still waits for this much silence (OPEN_TURN_WAIT)
+    if (est.exchange === "closed_answer") return 0;
+    // a finished question to her and "I don't know" are answered at once (a wait there is dead air, not patience)
+    if (m.questionComplete || m.idk) return 0;
+    if (est.reasons.includes("prosody_continue")) return OPEN_TURN_WAIT.prosodyContinue;
+    return est.reasons.includes("prosody_final") ? OPEN_TURN_WAIT.prosodyFinal : OPEN_TURN_WAIT.neutral;
+  }
   const form = tick.context.expected?.form;
   const finalProsody = est.reasons.includes("prosody_final");
   if ((form === "word" || form === "phrase") && !finalProsody) return PHRASE_SILENCE_MS;
   if (m.values.length === 1 && c.pausesThisTurn >= 1) return finalProsody ? HESITANT_VALUE_SILENCE_MS : HESITANT_VALUE_SILENCE_MS + 300;
   return 0;
 }
+
+/** A yes/no answer longer than this many words is an elaboration (exchangeOf). */
+export const YES_NO_MAX_WORDS = 3;
+const wordCount = (t: string): number => String(t ?? "").split(/\s+/).filter((w) => /[\p{L}\p{N}]/u.test(w)).length;
 
 /**
  * The verdict clock's anchor: the LATER of the last value's end and the child's last voiced frame. Anchoring on the value
