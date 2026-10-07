@@ -176,7 +176,11 @@ test("a gate-passed build mounts from re-hashed bytes in an opaque-origin frame,
     // item 1 (3/4): a wrong check first, then the right one; the host's grade drives the build
     const item = GOLD.shade_fraction.params.items[0];
     await fl.locator('[data-action="check"]').click();
-    for (let i = 0; i < item.n; i++) await fl.locator(`[data-part="${i}"]`).click();
+    // wait for each tap to land before the next: under full-suite load a fast second click was dropped (n 2 for 3)
+    for (let i = 0; i < item.n; i++) {
+      await fl.locator(`[data-part="${i}"]`).click();
+      await fl.locator(`[data-part="${i}"][data-shaded="true"]`).waitFor({ timeout: 5000 });
+    }
     await fl.locator('[data-action="check"]').click();
     await page.waitForTimeout(1500);
     const answers = calls.filter((c) => c.p === "/api/studio/answer");
