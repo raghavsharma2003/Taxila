@@ -177,9 +177,15 @@ test("a gate-passed build mounts from re-hashed bytes in an opaque-origin frame,
     const item = GOLD.shade_fraction.params.items[0];
     await fl.locator('[data-action="check"]').click();
     // wait for each tap to land before the next: under full-suite load a fast second click was dropped (n 2 for 3)
+    // under load the frame's tap handlers can attach after the parts are visible, so a first tap may be lost: re-tap only
+    // while the part is still unshaded (checked before each try, so a late tap never toggles it back off)
     for (let i = 0; i < item.n; i++) {
-      await fl.locator(`[data-part="${i}"]`).click();
-      await fl.locator(`[data-part="${i}"][data-shaded="true"]`).waitFor({ timeout: 5000 });
+      const part = fl.locator(`[data-part="${i}"]`), shaded = fl.locator(`[data-part="${i}"][data-shaded="true"]`);
+      for (let tries = 0; tries < 5 && !(await shaded.count()); tries++) {
+        await part.click();
+        await shaded.waitFor({ timeout: 3000 }).catch(() => {});
+      }
+      assert.equal(await shaded.count(), 1, `part ${i} shaded after taps`);
     }
     await fl.locator('[data-action="check"]').click();
     await page.waitForTimeout(1500);
