@@ -1,0 +1,34 @@
+(node:10548) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+owner-2 against http://127.0.0.1:18872: 6 sessions × 14 turns, seed 157001
+s1-aarav-typed-c5-maths-ch02-t01: 14 turns, 1 defects [R3.bare_question ×1]
+s2-meher-spoken-c6-maths-ch07-t01: 14 turns, 1 defects [R3.bare_question ×1]
+s3-golu-typed-c4-maths-ch05-t01: 14 turns, 3 defects [R3.bare_question ×1, R4.repeat ×1, R7.same_again ×1]
+s4-kabir-spoken-c7-maths-ch08-t01: 14 turns, 2 defects [R3.bare_question ×2]
+s5-zoya-typed-c5-evs-ch01-t01: 14 turns, 1 defects [R7.defer ×1]
+s6-ishaan-spoken-c6-science-ch01-t01: 14 turns, 0 defects [none]
+cleanup: account deleted
+
+90 teacher turns judged (incl. openings), 6 with a defect; by code: R3.bare_question ×5, R4.repeat ×1, R7.same_again ×1, R7.defer ×1  → /tmp/claude-0/-home-user/ecee9fc1-62f9-5f67-a47d-69ca79d9981a/scratchpad/r2c-after/evals/owner-truth/results/acceptance-2026-10-07T07-15-21/owner-2.json
+  R3.bare_question s1-aarav-typed-c5-maths-ch02-t01 t9 | child: 2/1 | teacher: Ghar (0) se chai ki dukaan (1) tak ki sadak 2 barabar hisson mein bati hai. Beech wale mark par kaunsa number hai? | the reply is only the pinned question: what the child said got no answer (F17/F19)
+  R3.bare_question s2-meher-spoken-c6-maths-ch07-t01 t13 | child: i don't know | teacher: A chocolate bar is broken into 3 pieces: one big and two small. Is each piece 1/3? | the reply is only the pinned question: what the child said got no answer (F17/F19)
+  R3.bare_question s3-golu-typed-c4-maths-ch05-t01 t5 | child: nahi samjha | teacher: Khaali jagah bharo: 1/3 means 1 of ___ equal groups. | the reply is only the pinned question: what the child said got no answer (F17/F19)
+  R4.repeat s3-golu-typed-c4-maths-ch05-t01 t5 | child: nahi samjha | teacher: Khaali jagah bharo: 1/3 means 1 of ___ equal groups. | repeats an earlier teacher line (similarity 0.80)
+  R7.same_again s3-golu-typed-c4-maths-ch05-t01 t5 | child: nahi samjha | teacher: Khaali jagah bharo: 1/3 means 1 of ___ equal groups. | 'samajh nahi aaya' got the same words again (or only the question), not a new explanation
+  R3.bare_question s4-kabir-spoken-c7-maths-ch08-t01 t9 | child: pata nahi | teacher: 2/5 + 3/5 aur 2/5 × 3/5 ko compare kariye. Ek 1 ke barabar kyun hai aur doosra sirf 6/25? | the reply is only the pinned question: what the child said got no answer (F17/F19)
+  R3.bare_question s4-kabir-spoken-c7-maths-ch08-t01 t10 | child: adding fifths gives 5 fifths = 1 | teacher: 12 × 1/3, 12 se bada hai ya chhota? | the reply is only the pinned question: what the child said got no answer (F17/F19)
+  R7.defer s5-zoya-typed-c5-evs-ch01-t01 t8 | child: aapko dance aata hai? | teacher: Zoya, main AI hoon, isliye mera apna body ya dance karne ka experience nahi hai. Chaliye, ab paani ke forms par wapas aa | deferred what the child said ('baad mein', 'later') instead of answering it (F11)
+PASS all 6 sessions ran (6)
+FAIL zero confused / error / fallback / loop / repeat / ignored replies over 6 sessions (90 turns): 8 defects on 6 turns
+PASS R1: 0 defects
+PASS R2: 0 defects
+FAIL R3: 5 defects (R3.bare_question ×5)
+FAIL R4: 1 defects (R4.repeat ×1)
+PASS R5: 0 defects
+PASS R6: 0 defects
+FAIL R7: 2 defects (R7.same_again ×1, R7.defer ×1)
+PASS R8: 0 defects
+PASS R9: 0 defects
+PASS J: 0 defects
+
+8/12 checks passed, 4 FAILED (http://127.0.0.1:18872)

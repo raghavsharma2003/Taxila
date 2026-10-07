@@ -176,7 +176,7 @@ export async function runSession({ id, x, frames, her = [], stt, band = "B4", ma
     semPending.push({ due: req.t + hit.latMs, resolve, val: { forTextHash: req.textHash, pComplete: hit.pComplete, pHoldWanted: hit.pHoldWanted ?? undefined, asksHer: hit.asksHer ?? undefined, offTask: hit.offTask ?? undefined, deployment: hit.deployment, issuedAt: req.t, arrivedAt: req.t + hit.latMs } });
   }) : undefined;
   const live = new DuplexLive({ lessonId: `real-${id}`, port, ...(semFn ? { semantic: semFn } : {}), now: () => clock, setInterval: (fn) => { interval = fn; return 1; }, clearInterval: () => { interval = null; }, band,
-    log: (row) => { if (log || row.action === "YIELD" || row.action === "HUSH" || row.action === "SPEAK") logs.push([row.t, row.action, (row.reasons ?? []).join("+"), row.phase]); } });
+    log: (row) => { if (log || row.action === "YIELD" || row.action === "HUSH" || row.action === "SPEAK") logs.push([row.t, row.action, (row.reasons ?? []).join("+"), row.phase, row.detail]); } });
   live.start();
   // errors go where CascadeDuplex.onServerError sends them: an empty micro-commit tells the fan-in (when the engine has it)
   const deliver = (raw) => {

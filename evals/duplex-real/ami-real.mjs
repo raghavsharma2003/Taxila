@@ -90,7 +90,7 @@ export function scoreOverlap(M, X, Y, acts, logs) {
       if (listening && b.end - b.start <= 1200 && y.end - b.end >= 1000) {
         const ys = yieldsIn(b.start - 20, b.end + 1000);
         res.cont.push({ ok: ys.length === 0, hushed: !!duckOf(b.start - 20, b.end + 300), words: toks.join(" "), ms: b.end - b.start,
-          why: logs.filter(([t, a]) => a === "YIELD" && t >= b.start - 20 && t <= b.end + 1000).map((x) => x[2]).join(",") });
+          why: logs.filter(([t, a]) => a === "YIELD" && t >= b.start - 20 && t <= b.end + 1000).map((x) => `${x[4] ?? ""}|${x[2]}`).join(",") });
       } else if (!listening && toks.filter((w) => !LISTEN.has(w)).length >= 2 && y.end - b.start <= 2000 && y.end > b.start) {
         const xEnd = spurts(xw.filter(([s]) => s >= b.start), 500)[0]?.end ?? b.end;
         if (xEnd - y.end < 1000) continue;
@@ -103,7 +103,8 @@ export function scoreOverlap(M, X, Y, acts, logs) {
       for (const s of spurts(M.chans[z].words, 300)) {
         if (s.end - s.start < 800 || s.start < y.start + 300 || s.end > y.end) continue;
         if (anyTalk(xw, s.start - 500, s.end + 500)) continue;
-        res.room.push({ yielded: yieldsIn(s.start - 20, s.end + 500).length > 0, hushed: !!duckOf(s.start - 20, s.end) });
+        res.room.push({ yielded: yieldsIn(s.start - 20, s.end + 500).length > 0, hushed: !!duckOf(s.start - 20, s.end),
+          why: logs.filter(([t, a]) => a === "YIELD" && t >= s.start - 20 && t <= s.end + 500).map((x) => `${x[4] ?? ""}|${x[2]}`).join(",") });
       }
     }
     if (!anyTalk(xw, y.start - 500, y.end + 500) && !others.some((z) => anyTalk(M.chans[z].words, y.start, y.end))) {
@@ -213,7 +214,9 @@ if (import.meta.url === `file://${process.argv[1]}`) {
         ? "REAL RECORDED ADULT SPEECH (AMI, CC BY 4.0, English incl. Indian-L1 adults) + REAL STT (production gpt-live-transcribe socket, real time, US sandbox → eastus2). Overlap rows: recorded real-STT events replayed per her = Y (her = another participant, open loop). Turn rows: live in the loop, probes honoured. Not children, not Hindi."
         : "REAL RECORDED ADULT SPEECH (AMI) + SIMULATED STT (SttSim D4, calibrated), on the identical replay harness: the reference arm for what the real STT changes.",
       continuer_keepTalking: rate(all.cont.filter((c) => c.ok).length, all.cont.length),
-      continuer_failures: all.cont.filter((c) => !c.ok).slice(0, 30),
+      continuer_failures: all.cont.filter((c) => !c.ok).slice(0, 80),
+      continuer_failure_reasons: Object.entries(all.cont.filter((c) => !c.ok).reduce((a, c) => { const k = (c.why.split(",")[0] || "none").split("|")[0]; a[k] = (a[k] ?? 0) + 1; return a; }, {})),
+      roomTalk_yield_reasons: Object.entries(all.room.filter((r) => r.yielded).reduce((a, r) => { const k = (r.why.split(",")[0] || "none").split("|")[0]; a[k] = (a[k] ?? 0) + 1; return a; }, {})),
       bargeIn_stop: { n: all.barge.length, stopped: stops.length, early: all.barge.filter((b) => b.early).length, p50: q(stops, 0.5), p90: q(stops, 0.9), within200: stops.filter((x) => x <= 200).length },
       bargeIn_yield: { n: all.barge.length, yielded: yl.length, p50: q(yl, 0.5), p90: q(yl, 0.9), within1000: yl.filter((x) => x <= 1000).length },
       roomTalk_falseYield: rate(all.room.filter((r) => r.yielded).length, all.room.length),

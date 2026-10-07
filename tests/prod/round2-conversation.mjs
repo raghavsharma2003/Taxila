@@ -73,7 +73,7 @@ await withTestAccount(async ({ api }) => {
     const r = (await L.turn(text, { kind: "noise", raw: true })).r;
     const rep = String(r.teacherReply ?? "");
     ok(!r.end && !["correct", "incorrect", "not_yet"].includes(r.ui?.verdict ?? ""), `B "${text}": no verdict (${r.ui?.verdict ?? "none"})`);
-    ok(/\b(phir se|dobara|again|repeat|poora|poori|finish|complete|baaki|aage bolo|clear nahi|sun nahi|catch)\b/i.test(rep), `B "${text}": a no-blame ask to say it again or finish — "${rep.slice(0, 120)}"`);
+    ok(/\b(phir se|ek baar phir|phir (?:kahiye|kaho|boliye|bolo|bataiye|batao)|dobara|again|repeat|poora|poori|finish|complete|baaki|aage bolo|clear nahi|sun nahi|catch)\b/i.test(rep), `B "${text}": a no-blame ask to say it again or finish — "${rep.slice(0, 120)}"`);
     await L.end();
   }
 

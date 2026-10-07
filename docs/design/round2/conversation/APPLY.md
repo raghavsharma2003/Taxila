@@ -1,6 +1,6 @@
 # Round 2 · stream conversation: apply order and proof
 
-2026-10-07 · base **HEAD 617df2b** (identical to ee97e9c for every file these patches touch).
+2026-10-07 · built on HEAD 617df2b, re-verified on **HEAD 38c22ed** (01→06 apply in order).
 
 - Every patch passes `git apply --check` on HEAD. Applied in order 01..05 they also apply on top of every other round-2
   patch (truth 01-07, latency 01-03, content 01-06, applied first), checked on a scratch copy 2026-10-07.

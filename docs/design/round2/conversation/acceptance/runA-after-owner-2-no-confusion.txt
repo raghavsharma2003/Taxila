@@ -1,0 +1,33 @@
+(node:7399) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+owner-2 against http://127.0.0.1:18872: 6 sessions × 14 turns, seed 157001
+s1-aarav-typed-c5-maths-ch02-t01: 14 turns, 0 defects [none]
+s2-meher-spoken-c6-maths-ch07-t01: 14 turns, 1 defects [R3.bare_question ×1]
+s3-golu-typed-c4-maths-ch05-t01: 14 turns, 3 defects [R3.bare_question ×2, R6.gutted ×1]
+s4-kabir-spoken-c7-maths-ch08-t01: 14 turns, 3 defects [R2.fallback ×1, R3.bare_question ×1, R6.gutted ×1]
+s5-zoya-typed-c5-evs-ch01-t01: 14 turns, 0 defects [none]
+s6-ishaan-spoken-c6-science-ch01-t01: 14 turns, 0 defects [none]
+cleanup: account deleted
+
+90 teacher turns judged (incl. openings), 7 with a defect; by code: R3.bare_question ×4, R6.gutted ×2, R2.fallback ×1  → /tmp/claude-0/-home-user/ecee9fc1-62f9-5f67-a47d-69ca79d9981a/scratchpad/r2c-after/evals/owner-truth/results/acceptance-2026-10-07T06-32-04/owner-2.json
+  R3.bare_question s2-meher-spoken-c6-maths-ch07-t01 t11 | child: 2/1 | teacher: Half of a big pizza and half of a small pizza. Are they the same amount? Are they both 1/2? | the reply is only the pinned question: what the child said got no answer (F17/F19)
+  R6.gutted s3-golu-typed-c4-maths-ch05-t01 t10 | child: A | teacher: Ab 15 ka one-third batao. | a explain turn with almost no content: "Ab 15 ka one-third batao." (F18)
+  R3.bare_question s3-golu-typed-c4-maths-ch05-t01 t11 | child: hmm | teacher: Music club ke paas 9 drumsticks hain. Unka ek-tihaai hissa spare rakha hai. Kitni drumsticks spare hain? | the reply is only the pinned question: what the child said got no answer (F17/F19)
+  R3.bare_question s3-golu-typed-c4-maths-ch05-t01 t13 | child: ok | teacher: Kaun bada hai: ek roti ka 1/3 ya usi roti ka 1/2? | the reply is only the pinned question: what the child said got no answer (F17/F19)
+  R2.fallback s4-kabir-spoken-c7-maths-ch08-t01 t5 | child: bhai kuch samajh nahi aaya haha | teacher: Ek second, meri baat atak gayi. Kya aap phir se bata sakte hain? | the fixed model-failure line was shipped
+  R3.bare_question s4-kabir-spoken-c7-maths-ch08-t01 t9 | child: pata nahi | teacher: 2/5 + 3/5 aur 2/5 × 3/5 ko compare kariye. Ek 1 ke barabar kyun hai aur doosra sirf 6/25? | the reply is only the pinned question: what the child said got no answer (F17/F19)
+  R6.gutted s4-kabir-spoken-c7-maths-ch08-t01 t13 | child: smaller (it is 4) | teacher: 3/5 × 2/5, 1 se bada ya chhota? | a explain turn with almost no content: "3/5 × 2/5, 1 se bada ya chhota?" (F18)
+PASS all 6 sessions ran (6)
+FAIL zero confused / error / fallback / loop / repeat / ignored replies over 6 sessions (90 turns): 7 defects on 7 turns
+PASS R1: 0 defects
+FAIL R2: 1 defects (R2.fallback ×1)
+FAIL R3: 4 defects (R3.bare_question ×4)
+PASS R4: 0 defects
+PASS R5: 0 defects
+FAIL R6: 2 defects (R6.gutted ×2)
+PASS R7: 0 defects
+PASS R8: 0 defects
+PASS R9: 0 defects
+PASS J: 0 defects
+
+8/12 checks passed, 4 FAILED (http://127.0.0.1:18872)

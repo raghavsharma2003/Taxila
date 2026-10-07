@@ -1,0 +1,1091 @@
+{
+ "dir": "/tmp/claude-0/-home-user/ecee9fc1-62f9-5f67-a47d-69ca79d9981a/scratchpad/bat-head",
+ "at": "2026-10-07T07:58:41.553Z",
+ "judges": [
+  "taxila-gpt6",
+  "taxila-mistral-m35"
+ ],
+ "cases": 315,
+ "scored": 313,
+ "skipped": 2,
+ "decided": 261,
+ "disputedOpen": 52,
+ "adjudicated": 0,
+ "overall": {
+  "pass": 167,
+  "n": 261,
+  "ci80": [
+   0.6009998805829847,
+   0.6769444749582543
+  ]
+ },
+ "kappa": 0.718,
+ "checkAgreement": 0.859,
+ "checkN": 683,
+ "caseAgreement": 0.794,
+ "caseN": 252,
+ "byFamily": {
+  "C steering": {
+   "n": 78,
+   "pass": 60
+  },
+  "A work": {
+   "n": 49,
+   "pass": 27
+  },
+  "D attention": {
+   "n": 54,
+   "pass": 29
+  },
+  "G low-signal": {
+   "n": 12,
+   "pass": 5
+  },
+  "F session": {
+   "n": 13,
+   "pass": 9
+  },
+  "B questions": {
+   "n": 27,
+   "pass": 17
+  },
+  "E energy": {
+   "n": 28,
+   "pass": 20
+  }
+ },
+ "byIntent": [
+  {
+   "intent": "animation_request",
+   "family": "C steering",
+   "n": 5,
+   "pass": 2,
+   "disputed": 0,
+   "lenient": 1,
+   "lenientN": 5,
+   "failed": {
+    "refers": 3,
+    "ignores": 3
+   },
+   "moves": {
+    "reteach": 5
+   },
+   "ended": 0,
+   "ci80": [
+    0.1798669199255772,
+    0.6695873191732716
+   ]
+  },
+  {
+   "intent": "joke",
+   "family": "D attention",
+   "n": 8,
+   "pass": 4,
+   "disputed": 2,
+   "lenient": 0,
+   "lenientN": 0,
+   "failed": {
+    "humour": 2
+   },
+   "moves": {
+    "explain": 4,
+    "repair": 1,
+    "worked_example": 1,
+    "probe": 2
+   },
+   "ended": 0,
+   "ci80": [
+    0.40939243876754305,
+    0.8523020822452289
+   ]
+  },
+  {
+   "intent": "visual_request",
+   "family": "C steering",
+   "n": 10,
+   "pass": 8,
+   "disputed": 1,
+   "lenient": 6,
+   "lenientN": 10,
+   "failed": {
+    "refers": 1,
+    "cant": 1
+   },
+   "moves": {
+    "reteach": 10
+   },
+   "ended": 0,
+   "ci80": [
+    0.6915926598608073,
+    0.966147621759677
+   ]
+  },
+  {
+   "intent": "explain_differently",
+   "family": "C steering",
+   "n": 8,
+   "pass": 6,
+   "disputed": 1,
+   "lenient": 0,
+   "lenientN": 0,
+   "failed": {
+    "just_question": 2,
+    "different": 1
+   },
+   "moves": {
+    "reteach": 8
+   },
+   "ended": 0,
+   "ci80": [
+    0.6223002980357052,
+    0.9562361015121588
+   ]
+  },
+  {
+   "intent": "skip_item",
+   "family": "C steering",
+   "n": 5,
+   "pass": 5,
+   "disputed": 0,
+   "lenient": 0,
+   "lenientN": 0,
+   "failed": {},
+   "moves": {
+    "explain": 4,
+    "probe": 1
+   },
+   "ended": 0,
+   "ci80": [
+    0.7527288045057551,
+    1
+   ]
+  },
+  {
+   "intent": "answer_partial",
+   "family": "A work",
+   "n": 5,
+   "pass": 1,
+   "disputed": 0,
+   "lenient": 0,
+   "lenientN": 0,
+   "failed": {
+    "asks_rest": 4,
+    "full_correct": 3,
+    "code": 4,
+    "names_part": 1
+   },
+   "moves": {
+    "probe": 4,
+    "hint": 1
+   },
+   "ended": 0,
+   "ci80": [
+    0.061893193057294384,
+    0.4864695242392525
+   ]
+  },
+  {
+   "intent": "insistence",
+   "family": "D attention",
+   "n": 9,
+   "pass": 2,
+   "disputed": 0,
+   "lenient": 0,
+   "lenientN": 0,
+   "failed": {
+    "engages_brief": 7,
+    "refuses": 7
+   },
+   "moves": {
+    "probe": 4,
+    "practice": 2,
+    "hint": 3
+   },
+   "ended": 0,
+   "ci80": [
+    0.09623517793400087,
+    0.4339503351942245
+   ]
+  },
+  {
+   "intent": "check_my_work",
+   "family": "A work",
+   "n": 5,
+   "pass": 3,
+   "disputed": 0,
+   "lenient": 0,
+   "lenientN": 0,
+   "failed": {
+    "answers_check": 1,
+    "consistent": 1
+   },
+   "moves": {
+    "probe": 4,
+    "hint": 1
+   },
+   "ended": 0,
+   "ci80": [
+    0.3304126808267282,
+    0.8201330800744225
+   ]
+  },
+  {
+   "intent": "insist_wrong",
+   "family": "A work",
+   "n": 5,
+   "pass": 1,
+   "disputed": 2,
+   "lenient": 0,
+   "lenientN": 0,
+   "failed": {
+    "checks_together": 2
+   },
+   "moves": {
+    "hint": 4,
+    "reteach": 1
+   },
+   "ended": 0,
+   "ci80": [
+    0.1057712222965627,
+    0.6788275261842552
+   ]
+  },
+  {
+   "intent": "multi_intent",
+   "family": "G low-signal",
+   "n": 7,
+   "pass": 1,
+   "disputed": 1,
+   "lenient": 0,
+   "lenientN": 0,
+   "failed": {
+    "need_slower": 1,
+    "need_language": 1,
+    "need_clarify": 2,
+    "need_boredom": 1,
+    "need_curiosity": 1
+   },
+   "moves": {
+    "break": 1,
+    "practice": 2,
+    "reteach": 3,
+    "hint": 1
+   },
+   "ended": 0,
+   "ci80": [
+    0.05127172651386335,
+    0.4253392314605926
+   ]
+  },
+  {
+   "intent": "harder",
+   "family": "C steering",
+   "n": 5,
+   "pass": 5,
+   "disputed": 0,
+   "lenient": 0,
+   "lenientN": 0,
+   "failed": {},
+   "moves": {
+    "probe": 5
+   },
+   "ended": 0,
+   "ci80": [
+    0.7527288045057551,
+    1
+   ]
+  },
+  {
+   "intent": "diversion",
+   "family": "D attention",
+   "n": 13,
+   "pass": 8,
+   "disputed": 0,
+   "lenient": 0,
+   "lenientN": 0,
+   "failed": {
+    "notices": 1,
+    "parks": 5,
+    "cold": 2
+   },
+   "moves": {
+    "probe": 5,
+    "retrieval": 1,
+    "practice": 5,
+    "worked_example": 1,
+    "hint": 1
+   },
+   "ended": 0,
+   "ci80": [
+    0.4389868424189257,
+    0.7658962236580158
+   ]
+  },
+  {
+   "intent": "leaving",
+   "family": "F session",
+   "n": 5,
+   "pass": 5,
+   "disputed": 0,
+   "lenient": 0,
+   "lenientN": 0,
+   "failed": {},
+   "moves": {
+    "wrap": 5
+   },
+   "ended": 5,
+   "ci80": [
+    0.7527288045057551,
+    1
+   ]
+  },
+  {
+   "intent": "method_instruction",
+   "family": "C steering",
+   "n": 10,
+   "pass": 5,
+   "disputed": 2,
+   "lenient": 0,
+   "lenientN": 0,
+   "failed": {
+    "follows": 3,
+    "ignores": 2
+   },
+   "moves": {
+    "explain": 1,
+    "reteach": 4,
+    "probe": 4,
+    "practice": 1
+   },
+   "ended": 0,
+   "ci80": [
+    0.4027680354889976,
+    0.8046470849338984
+   ]
+  },
+  {
+   "intent": "small_talk",
+   "family": "D attention",
+   "n": 7,
+   "pass": 5,
+   "disputed": 1,
+   "lenient": 0,
+   "lenientN": 0,
+   "failed": {
+    "answers": 1
+   },
+   "moves": {
+    "probe": 2,
+    "worked_example": 2,
+    "practice": 1,
+    "explain": 2
+   },
+   "ended": 0,
+   "ci80": [
+    0.5746607685394075,
+    0.9487282734861366
+   ]
+  },
+  {
+   "intent": "skip_ahead",
+   "family": "C steering",
+   "n": 5,
+   "pass": 3,
+   "disputed": 1,
+   "lenient": 0,
+   "lenientN": 0,
+   "failed": {
+    "honours": 1,
+    "same": 1
+   },
+   "moves": {
+    "probe": 4,
+    "practice": 1
+   },
+   "ended": 0,
+   "ci80": [
+    0.4325304153779138,
+    0.92192248854981
+   ]
+  },
+  {
+   "intent": "noise",
+   "family": "G low-signal",
+   "n": 5,
+   "pass": 2,
+   "disputed": 2,
+   "lenient": 0,
+   "lenientN": 0,
+   "failed": {
+    "repair": 1
+   },
+   "moves": {
+    "explain": 1,
+    "repair": 3,
+    "hint": 1
+   },
+   "ended": 0,
+   "ci80": [
+    0.3211724738157446,
+    0.8942287777034372
+   ]
+  },
+  {
+   "intent": "language_switch",
+   "family": "C steering",
+   "n": 9,
+   "pass": 8,
+   "disputed": 1,
+   "lenient": 0,
+   "lenientN": 0,
+   "failed": {
+    "switches": 1
+   },
+   "moves": {
+    "reteach": 9
+   },
+   "ended": 0,
+   "ci80": [
+    0.8296604816915835,
+    1
+   ]
+  },
+  {
+   "intent": "slower",
+   "family": "C steering",
+   "n": 4,
+   "pass": 1,
+   "disputed": 3,
+   "lenient": 0,
+   "lenientN": 0,
+   "failed": {
+    "slows": 1
+   },
+   "moves": {
+    "reteach": 2,
+    "probe": 2
+   },
+   "ended": 0,
+   "ci80": [
+    0.37842972372329314,
+    1
+   ]
+  },
+  {
+   "intent": "easier",
+   "family": "C steering",
+   "n": 3,
+   "pass": 1,
+   "disputed": 1,
+   "lenient": 0,
+   "lenientN": 0,
+   "failed": {
+    "easier": 1
+   },
+   "moves": {
+    "probe": 3
+   },
+   "ended": 0,
+   "ci80": [
+    0.16424475269896238,
+    0.8357552473010377
+   ]
+  },
+  {
+   "intent": "clarify",
+   "family": "B questions",
+   "n": 9,
+   "pass": 4,
+   "disputed": 3,
+   "lenient": 0,
+   "lenientN": 0,
+   "failed": {
+    "clarifies": 1,
+    "verbatim": 1,
+    "reveals": 1
+   },
+   "moves": {
+    "repair": 4,
+    "hint": 1,
+    "explain": 1,
+    "reteach": 3
+   },
+   "ended": 0,
+   "ci80": [
+    0.40939243876754305,
+    0.8523020822452289
+   ]
+  },
+  {
+   "intent": "game_request",
+   "family": "C steering",
+   "n": 8,
+   "pass": 3,
+   "disputed": 3,
+   "lenient": 2,
+   "lenientN": 8,
+   "failed": {
+    "game": 4,
+    "ignores": 3
+   },
+   "moves": {
+    "reteach": 8
+   },
+   "ended": 0,
+   "ci80": [
+    0.3304126808267282,
+    0.8201330800744225
+   ]
+  },
+  {
+   "intent": "adult_voice",
+   "family": "G low-signal",
+   "n": 4,
+   "pass": 0,
+   "disputed": 3,
+   "lenient": 0,
+   "lenientN": 0,
+   "failed": {
+    "adult": 1,
+    "honours": 1
+   },
+   "moves": {
+    "practice": 1,
+    "probe": 3
+   },
+   "ended": 0,
+   "ci80": [
+    0,
+    0.6215702762767069
+   ]
+  },
+  {
+   "intent": "answer_correct",
+   "family": "A work",
+   "n": 8,
+   "pass": 5,
+   "disputed": 0,
+   "lenient": 0,
+   "lenientN": 0,
+   "failed": {
+    "asks_same": 2,
+    "confirms": 2,
+    "code": 1
+   },
+   "moves": {
+    "probe": 3,
+    "explain": 3,
+    "hint": 1,
+    "retrieval": 1
+   },
+   "ended": 0,
+   "ci80": [
+    0.4027680354889976,
+    0.8046470849338984
+   ]
+  },
+  {
+   "intent": "end_request",
+   "family": "F session",
+   "n": 10,
+   "pass": 4,
+   "disputed": 2,
+   "lenient": 0,
+   "lenientN": 0,
+   "failed": {
+    "checks_in": 4,
+    "guilt": 1,
+    "acknowledges": 2
+   },
+   "moves": {
+    "break": 10
+   },
+   "ended": 0,
+   "ci80": [
+    0.2936389581895261,
+    0.7063610418104739
+   ]
+  },
+  {
+   "intent": "example",
+   "family": "C steering",
+   "n": 6,
+   "pass": 3,
+   "disputed": 1,
+   "lenient": 0,
+   "lenientN": 0,
+   "failed": {
+    "reveals": 2,
+    "example": 1
+   },
+   "moves": {
+    "reteach": 6
+   },
+   "ended": 0,
+   "ci80": [
+    0.3304126808267282,
+    0.8201330800744225
+   ]
+  },
+  {
+   "intent": "answer_wrong",
+   "family": "A work",
+   "n": 6,
+   "pass": 5,
+   "disputed": 0,
+   "lenient": 0,
+   "lenientN": 0,
+   "failed": {
+    "agrees": 1
+   },
+   "moves": {
+    "repair": 1,
+    "hint": 5
+   },
+   "ended": 0,
+   "ci80": [
+    0.5746607685394075,
+    0.9487282734861366
+   ]
+  },
+  {
+   "intent": "curiosity_offlesson",
+   "family": "B questions",
+   "n": 10,
+   "pass": 8,
+   "disputed": 1,
+   "lenient": 0,
+   "lenientN": 0,
+   "failed": {
+    "long_detour": 1
+   },
+   "moves": {
+    "worked_example": 1,
+    "probe": 4,
+    "repair": 1,
+    "practice": 3,
+    "explain": 1
+   },
+   "ended": 0,
+   "ci80": [
+    0.6915926598608073,
+    0.966147621759677
+   ]
+  },
+  {
+   "intent": "dont_know",
+   "family": "A work",
+   "n": 6,
+   "pass": 1,
+   "disputed": 4,
+   "lenient": 0,
+   "lenientN": 0,
+   "failed": {
+    "helps": 2,
+    "reveals": 1,
+    "just_repeats": 1
+   },
+   "moves": {
+    "hint": 6
+   },
+   "ended": 0,
+   "ci80": [
+    0.16424475269896238,
+    0.8357552473010377
+   ]
+  },
+  {
+   "intent": "out_of_bounds",
+   "family": "D attention",
+   "n": 12,
+   "pass": 3,
+   "disputed": 6,
+   "lenient": 0,
+   "lenientN": 0,
+   "failed": {
+    "reengages": 9,
+    "declines_warm": 6
+   },
+   "moves": {
+    "probe": 10,
+    "practice": 2
+   },
+   "ended": 0,
+   "ci80": [
+    0.26820459616200115,
+    0.7317954038379989
+   ]
+  },
+  {
+   "intent": "change_topic",
+   "family": "C steering",
+   "n": 6,
+   "pass": 5,
+   "disputed": 0,
+   "lenient": 0,
+   "lenientN": 0,
+   "failed": {
+    "acknowledges": 1,
+    "offers": 1,
+    "ignores": 1
+   },
+   "moves": {
+    "repair": 5,
+    "hint": 1
+   },
+   "ended": 0,
+   "ci80": [
+    0.5746607685394075,
+    0.9487282734861366
+   ]
+  },
+  {
+   "intent": "question_on_topic",
+   "family": "B questions",
+   "n": 14,
+   "pass": 5,
+   "disputed": 2,
+   "lenient": 0,
+   "lenientN": 0,
+   "failed": {
+    "engages": 7,
+    "ignores": 4,
+    "accurate": 6
+   },
+   "moves": {
+    "explain": 11,
+    "practice": 2,
+    "probe": 1
+   },
+   "ended": 0,
+   "ci80": [
+    0.25534179791871614,
+    0.5980574902539044
+   ]
+  },
+  {
+   "intent": "thinking_aloud",
+   "family": "A work",
+   "n": 8,
+   "pass": 3,
+   "disputed": 2,
+   "lenient": 0,
+   "lenientN": 0,
+   "failed": {
+    "verdict": 2,
+    "lets_continue": 4,
+    "new_question": 1
+   },
+   "moves": {
+    "repair": 7,
+    "wrap": 1
+   },
+   "ended": 1,
+   "ci80": [
+    0.26820459616200115,
+    0.7317954038379989
+   ]
+  },
+  {
+   "intent": "personal_share",
+   "family": "D attention",
+   "n": 3,
+   "pass": 0,
+   "disputed": 0,
+   "lenient": 0,
+   "lenientN": 0,
+   "failed": {
+    "acknowledges": 3
+   },
+   "moves": {
+    "probe": 1,
+    "hint": 1,
+    "practice": 1
+   },
+   "ended": 0,
+   "ci80": [
+    0,
+    0.35379624544245414
+   ]
+  },
+  {
+   "intent": "break_request",
+   "family": "E energy",
+   "n": 6,
+   "pass": 6,
+   "disputed": 0,
+   "lenient": 0,
+   "lenientN": 0,
+   "failed": {},
+   "moves": {
+    "break": 6
+   },
+   "ended": 0,
+   "ci80": [
+    0.785083563038316,
+    0.9999999999999998
+   ]
+  },
+  {
+   "intent": "answer_hedged",
+   "family": "A work",
+   "n": 4,
+   "pass": 3,
+   "disputed": 0,
+   "lenient": 0,
+   "lenientN": 0,
+   "failed": {
+    "treats_as_answer": 1
+   },
+   "moves": {
+    "probe": 2,
+    "explain": 1,
+    "hint": 1
+   },
+   "ended": 0,
+   "ci80": [
+    0.4325304153779138,
+    0.92192248854981
+   ]
+  },
+  {
+   "intent": "boredom",
+   "family": "E energy",
+   "n": 7,
+   "pass": 3,
+   "disputed": 2,
+   "lenient": 0,
+   "lenientN": 0,
+   "failed": {
+    "changes": 1,
+    "acknowledges": 1
+   },
+   "moves": {
+    "repair": 7
+   },
+   "ended": 0,
+   "ci80": [
+    0.3304126808267282,
+    0.8201330800744225
+   ]
+  },
+  {
+   "intent": "ask_for_answer",
+   "family": "A work",
+   "n": 5,
+   "pass": 3,
+   "disputed": 0,
+   "lenient": 0,
+   "lenientN": 0,
+   "failed": {
+    "nudge": 2,
+    "gives": 1
+   },
+   "moves": {
+    "hint": 5
+   },
+   "ended": 0,
+   "ci80": [
+    0.3304126808267282,
+    0.8201330800744225
+   ]
+  },
+  {
+   "intent": "meta_feedback",
+   "family": "D attention",
+   "n": 6,
+   "pass": 2,
+   "disputed": 1,
+   "lenient": 0,
+   "lenientN": 0,
+   "failed": {
+    "takes_on": 3,
+    "ignores": 3
+   },
+   "moves": {
+    "probe": 1,
+    "worked_example": 1,
+    "reteach": 2,
+    "practice": 1,
+    "repair": 1
+   },
+   "ended": 0,
+   "ci80": [
+    0.1798669199255772,
+    0.6695873191732716
+   ]
+  },
+  {
+   "intent": "frustration",
+   "family": "E energy",
+   "n": 7,
+   "pass": 1,
+   "disputed": 0,
+   "lenient": 0,
+   "lenientN": 0,
+   "failed": {
+    "smaller_step": 4,
+    "empathy": 3
+   },
+   "moves": {
+    "hint": 5,
+    "reteach": 2
+   },
+   "ended": 0,
+   "ci80": [
+    0.04376389848784115,
+    0.3776997019642947
+   ]
+  },
+  {
+   "intent": "identity",
+   "family": "D attention",
+   "n": 4,
+   "pass": 4,
+   "disputed": 0,
+   "lenient": 0,
+   "lenientN": 0,
+   "failed": {},
+   "moves": {
+    "practice": 2,
+    "probe": 1,
+    "repair": 1
+   },
+   "ended": 0,
+   "ci80": [
+    0.7089058078554477,
+    1
+   ]
+  },
+  {
+   "intent": "repeat",
+   "family": "C steering",
+   "n": 6,
+   "pass": 4,
+   "disputed": 1,
+   "lenient": 0,
+   "lenientN": 0,
+   "failed": {
+    "new": 1
+   },
+   "moves": {
+    "explain": 1,
+    "probe": 4,
+    "practice": 1
+   },
+   "ended": 0,
+   "ci80": [
+    0.5135304757607475,
+    0.9381068069427055
+   ]
+  },
+  {
+   "intent": "backchannel",
+   "family": "G low-signal",
+   "n": 3,
+   "pass": 2,
+   "disputed": 1,
+   "lenient": 0,
+   "lenientN": 0,
+   "failed": {},
+   "moves": {
+    "repair": 1,
+    "hint": 2
+   },
+   "ended": 0,
+   "ci80": [
+    0.5490736556392763,
+    1
+   ]
+  },
+  {
+   "intent": "self_correction",
+   "family": "A work",
+   "n": 5,
+   "pass": 2,
+   "disputed": 0,
+   "lenient": 0,
+   "lenientN": 0,
+   "failed": {
+    "final": 3,
+    "consistent": 3
+   },
+   "moves": {
+    "probe": 3,
+    "explain": 1,
+    "hint": 1
+   },
+   "ended": 0,
+   "ci80": [
+    0.1798669199255772,
+    0.6695873191732716
+   ]
+  },
+  {
+   "intent": "story",
+   "family": "C steering",
+   "n": 4,
+   "pass": 1,
+   "disputed": 1,
+   "lenient": 0,
+   "lenientN": 0,
+   "failed": {
+    "story": 2,
+    "same_idea": 2
+   },
+   "moves": {
+    "reteach": 4
+   },
+   "ended": 0,
+   "ci80": [
+    0.1057712222965627,
+    0.6788275261842552
+   ]
+  },
+  {
+   "intent": "insistence_oob",
+   "family": "D attention",
+   "n": 3,
+   "pass": 1,
+   "disputed": 1,
+   "lenient": 0,
+   "lenientN": 0,
+   "failed": {
+    "declines_warm": 1,
+    "reengages": 2
+   },
+   "moves": {
+    "probe": 2,
+    "hint": 1
+   },
+   "ended": 0,
+   "ci80": [
+    0.16424475269896238,
+    0.8357552473010377
+   ]
+  },
+  {
+   "intent": "distress",
+   "family": "E energy",
+   "n": 10,
+   "pass": 10,
+   "disputed": 0,
+   "lenient": 0,
+   "lenientN": 0,
+   "failed": {},
+   "moves": {},
+   "ended": 0,
+   "ci80": [
+    0.8589221590593007,
+    1
+   ]
+  }
+ ],
+ "parkedReturned": {
+  "yes": 2,
+  "n": 23
+ },
+ "endedOnNonTerminal": [
+  "thinking_aloud-05"
+ ]
+}
