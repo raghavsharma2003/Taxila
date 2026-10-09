@@ -12,11 +12,16 @@ export const DESK_VIEWPORTS = Object.freeze([
 ]);
 export const TIGHT_PHONE = Object.freeze({ vp: "p360-tight", viewport: { width: 360, height: 800 }, tray: { w: 328, h: 202 }, phone: true });
 
-/** Play mode world boxes (play DESIGN §7): the world gets the screen minus the top bar, teacher strip, rail and controls. */
+/**
+ * Play mode boxes: what the Desk's play mode (play patch 04: the card folds, the tray takes its height) actually gives a
+ * play piece's Studio box, measured live in the lesson (tests/prod/round3-forge.mjs, forge measurement copy with play
+ * patches 01-05, 2026-10-09 13:2x UTC): 324 x 528 on 360 x 800, 376 x 643 on 412 x 915, 736 x 536 on 1366 x 768. (The first
+ * certification used play DESIGN §7's planned worlds, 360 x 576 / 412 x 691 / 1006 x 768, which the shipped Desk does not give.)
+ */
 export const PLAY_VIEWPORTS = Object.freeze([
-  { vp: "p360", viewport: { width: 360, height: 800 }, tray: { w: 360, h: 576 }, phone: true },
-  { vp: "p412", viewport: { width: 412, height: 915 }, tray: { w: 412, h: 691 }, phone: true },
-  { vp: "l1366", viewport: { width: 1366, height: 768 }, tray: { w: 1006, h: 768 }, phone: false },
+  { vp: "p360", viewport: { width: 360, height: 800 }, tray: { w: 324, h: 528 }, phone: true },
+  { vp: "p412", viewport: { width: 412, height: 915 }, tray: { w: 376, h: 643 }, phone: true },
+  { vp: "l1366", viewport: { width: 1366, height: 768 }, tray: { w: 736, h: 536 }, phone: false },
 ]);
 
 /** The two sizes every build is judged at before it can reach a child (phone and laptop), plus the 412 phone. */

@@ -9,7 +9,7 @@
     {
       "id": "ms-r3f-acceptance-2026-10-09",
       "kind": "measurement",
-      "title": "tests/prod/round3-forge.mjs, the same file before and after (12 visual asks, one fresh adult-scripted child each, practice route, typed lane, views measured at 360x800 / 412x915 / 1366x768 with the forge3 checks; Q3 overlaps of a word with a prefix of itself (the handwriting reveal mid-write) re-judged as not overlaps in runs made before measure.js skipped them). taxila.dev HEAD 145996f 11:3x UTC: real 11/12, asks answered with something to do 0/6, nonsense boards 2/17, broken views 7/36, grounds 1 (chalk), board lateness p90 2374 ms (n=11). Local production build of HEAD (Neon TEST, US sandbox, load avg 15-24 on 4 cores): real 11/12, do 0/6, nonsense 3/16, broken 10/36, grounds 1. Local forge (HEAD + forge owned + play files + play patches 01-05 + forge patches 01-07): real 12/12, do 3/6, playable at the child's size 9/18 interactive views, nonsense 0/16, broken 3/36 (a module engine 13.1 px at 360 and blank at 1366; one board 14% of its box), grounds 3. Two earlier forge-only runs without play mode: do 3/6 both, broken 1/36 and 13/36 (11 of them empty Studio boxes after a refused board, fixed by patch 07). Timing (local, contended): request->piece p90 3560-6687 ms (n=2-3 per run; the piece rides the ask turn, turn p90 4.5-4.8 s before and after), board lateness p90 -700 to 2618 ms (n=5-10). Raw: docs/design/round3/forge/audit/before-prod-harness, after-local; RESULTS.md.",
+      "title": "tests/prod/round3-forge.mjs, the same file before and after (12 visual asks: 6 picture-type, 6 game / animation / simulation; one fresh adult-scripted child each, practice route, typed lane; every view measured at 360x800 / 412x915 / 1366x768 with the forge3 checks; before-run Q3 overlaps of a word with a prefix of itself, the handwriting reveal mid-write, re-judged as not overlaps). taxila.dev HEAD 145996f 11:28-11:43 UTC: real 11/12, interactive asks answered with something to do 0/6, playable interactive views 0/18, nonsense boards 2/17, broken views 7/36, grounds 1 (chalk), board lateness p90 2374 ms (n=11). Local production build of cadf527 (Neon TEST, US sandbox, load avg 15-24 on 4 cores): real 11/12, do 0/6, playable 0/18, nonsense 3/16, broken 10/36, grounds 1. Local forge (cadf527 + forge owned + forge patches 01-07 + play files + play patches 01-05, canvas text measured) 13:00-13:17: real 12/12, do 2/6, playable 6/18, nonsense 0/13, broken 4/36 (a module engine 13.1 px at 360; one board not yet drawn at the 360 view; the c5 play number line's labels overlapping at 360 and 412), grounds 3, request->piece p50 352 / p90 3161 ms (n=4), board lateness p90 -700 ms (n=8). With patch 08 the c7 'simulation dikhao' ask got its play piece 2/2 (playable 3/3, R4 3/3 both), against 4/7 without it. Raw: docs/design/round3/forge/audit/before-prod-harness, after-local; RESULTS.md.",
       "at": "2026-10-09"
     },
     {
@@ -33,7 +33,7 @@
     {
       "id": "ms-r3f-canvas-probe",
       "kind": "measurement",
-      "title": "Round 3 forge, 2026-10-09 12:40 UTC: the forge3 QA measured only DOM and SVG text, so text a play piece (or a Studio v2 engine) draws on its canvas was invisible to it: an after-run screenshot of a nishana compare level (0..1,00,000, class 5) at 360 x 800 showed every tick label drawn over its neighbours while R4 passed. With measure.js canvasTextProbe (fillText recorded with its rendered box per canvas frame) the same level fails Q3 with 11 overlaps at 360, 10 at 412 and 1 at 1366, and a kyun-lab fair-test level fails Q3 at 360 (2 overlaps). Re-certification numbers: RESULTS.md.",
+      "title": "Round 3 forge, 2026-10-09 12:40-13:40 UTC: the forge3 QA measured only DOM and SVG text, so text a play piece (or a Studio v2 engine) draws on its canvas was invisible to it: a c5 nishana compare level (0..1,00,000) showed every tick label drawn over its neighbours at 360x800 while R4 passed. With measure.js canvasTextProbe (every fillText recorded with its rendered box, clipped to the canvas, per canvas frame) the same lesson view fails Q3 with 18 overlaps at 360 and 11 at 412, live and in the harness alike; judged through the real Studio stage in the Desk play-mode boxes measured live (324x528, 376x643, 736x536), harness and live agree on 6/6 views of 2 levels. A first probe version that kept every run crashed the judge page ('Target crashed', 580/760 rows): runs are now kept per canvas frame and bounded.",
       "at": "2026-10-09"
     },
     {
@@ -142,6 +142,18 @@
       "id": "o-r3f-play-piece-holds-tray",
       "kind": "open",
       "title": "A play piece on the Studio slot has no 'complete' in the studio seam (its level end reaches the lesson as a play module event, not a Studio grade), so requestIntent declines every whiteboard and composeAsk declines another game until the seam retires the piece (8 conversation turns). Needs a studio-seam hook for play's level_end (turn.js, where play's patch 03 already reads verified play events).",
+      "at": "2026-10-09"
+    },
+    {
+      "id": "dec-r3f-simulation-ask",
+      "kind": "decision",
+      "title": "'simulation dikhao' / 'simulate karo' / 'show me a simulation' are interactive visual requests in code (patch 08, server/director/requests.js ANIMATION pattern). Rationale: no request pattern matched 'simulation', so only the model classifier's flag sometimes made it one (3 of 7 forge runs read the c7 ask as a plain worked example and drew a board); with the patch 2/2 got the play piece. Reverse if: the pattern catches non-requests in real child transcripts (e.g. 'simulation' as an answer word) at more than 1 in 200 turns.",
+      "at": "2026-10-09"
+    },
+    {
+      "id": "rj-r3f-cert-in-planned-worlds",
+      "kind": "rejection",
+      "title": "Certifying play pieces by rendering PlayStage directly in play DESIGN §7's planned play-mode worlds (360x576, 412x691, 1006x768): the shipped Desk play mode gives 324x528, 376x643, 736x536 and the lesson renders PlayStudioRenderer -> PlaySession without PlayStage's header and teacher strip, so the harness cut the fair-test world (2 of its 4 factor rows hidden) and failed a level the child saw whole. Replaced by judging the PlayArtifact on the real Studio stage in the measured boxes (6/6 views agree with live).",
       "at": "2026-10-09"
     }
   ],
@@ -270,6 +282,16 @@
       "src": "o-r3f-play-piece-holds-tray",
       "rel": "caused_by",
       "dst": "dec-r3f-live-play-piece"
+    },
+    {
+      "src": "dec-r3f-simulation-ask",
+      "rel": "measured_by",
+      "dst": "ms-r3f-acceptance-2026-10-09"
+    },
+    {
+      "src": "dec-r3f-qa-deterministic-measured",
+      "rel": "supersedes",
+      "dst": "rj-r3f-cert-in-planned-worlds"
     }
   ]
 }

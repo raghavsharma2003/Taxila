@@ -44,14 +44,27 @@ export function playCoverage({ fresh = false, file = COVERAGE } = {}) {
 export const _setCoverage = (c) => { coverageMemo = c; };
 
 let playCertMemo;
+/** Test seam: the play certificate table (null = none written: every art allowed, reported "not yet judged"; undefined = re-read the file). */
+export const _setPlayCertificates = (t) => { playCertMemo = t; };
 /** The play visual-QA table (server/forge3/play-cert.js), or null while none was written. */
 export function playCertificates({ fresh = false, file = PLAY_CERTS } = {}) {
   if (playCertMemo !== undefined && !fresh) return playCertMemo;
   try { playCertMemo = JSON.parse(fs.readFileSync(file, "utf8")); } catch { playCertMemo = null; }
   return playCertMemo;
 }
-/** Did (family, mode, art) pass the visual QA at viewport class `vp` for this class band? null = never judged. */
-export function playPassed(table, family, mode, art, vp, classLevel = 6) {
+/**
+ * Did (family, mode, art) pass the visual QA at viewport class `vp` for this class band? null = never judged. With a
+ * `topicId` whose own levels were sampled (table.samples), THEIR serving verdicts decide (a family cell fails when any
+ * topic's level failed; one topic's clean level should not be refused for another topic's defect, nor the reverse).
+ */
+export function playPassed(table, family, mode, art, vp, classLevel = 6, topicId = null) {
+  if (topicId && Array.isArray(table?.samples)) {
+    const own = table.samples.filter((x) => x.topicId === topicId && x.key === `${family}/${mode}` && x.art === art && !x.noLevel);
+    if (own.length) {
+      const serves = (x, v) => !!x.byViewport?.[v] || ((x.fails ?? []).filter((f) => f.startsWith(`${v}:`)).every((f) => f === `${v}:Q1.legible`) && Number(x.minPx?.[v]) >= 14);
+      return vp ? own.every((x) => serves(x, vp)) : own.every((x) => Object.keys(x.byViewport ?? {}).some((v) => serves(x, v)));
+    }
+  }
   const row = table?.pieces?.[`${family}/${mode}`];
   if (!row) return null;
   const cell = row[`${art}@c${classLevel <= 5 ? 4 : 7}`];

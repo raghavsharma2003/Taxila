@@ -1,5 +1,5 @@
 diff --git a/server/conversation/lexicon.js b/server/conversation/lexicon.js
-index 85a0080..a4fbbdc 100644
+index 85a0080..88c0c8a 100644
 --- a/server/conversation/lexicon.js
 +++ b/server/conversation/lexicon.js
 @@ -30,6 +30,8 @@
@@ -11,12 +11,25 @@ index 85a0080..a4fbbdc 100644
  const T = (s) => String(s ?? "").toLowerCase().normalize("NFKC").replace(/[’`]/g, "'").replace(/\s+/g, " ").trim();
  const words = (t) => t.split(/\s+/).filter(Boolean).length;
  
-@@ -72,6 +74,42 @@ export function fragmentLike(t) {
+@@ -72,6 +74,55 @@ export function fragmentLike(t) {
    return (stutter || filler) && content && DANGLING.test(w.at(-1));
  }
  
 +/** Round 3: the whole turn is "I'm back" in the forms the battery's break follow-ups use ("aa gaya, chalo", "back, let's go",
 + *  "आ गया"): the welcome-back move, never a re-pose with a generic "no problem" lead (smoke on the round-3 tree). */
++// round 3 (conversation; battery skip_item 2/5 after, 1/5 HEAD: "ye wala skip karo", "isko chhodo dusra do", "next question
++// please" had no code reading, so the classifier's stop flag turned a skip into the stop check-in "you want to stop"): a skip
++// with a demonstrative ("ye wala", "is question ko"), a "give me the next one" tail, or a polite word. A bare "chhodo" stays
++// giving up (GIVE_UP), "dusra wala" alone stays an answer to a two-way choice, "skip the explanation" stays KNOW.
++const SK_DEM = String.raw`(?:(?:ye|yeh|is|iss|isko|isse|ise|this|that|wo|woh|usko)(?:\s+(?:wala|wali|waala|waali|one|question|sawaal|sawal))?|(?:is|iss|us)\s+(?:question|sawaal|sawal)\s+ko)`;
++const SK_NEXT = String.raw`(?:agla|agli|dusra|doosra|dusri|doosri|next|another|koi\s+aur|ek\s+aur)`;
++const SK_GIVE = String.raw`(?:do|dijiye|dena|de\s+do|please|plz|karo|chalo|pe\s+chalo|par\s+chalo|pucho|poocho|puchiye)`;
++const SK_TAILQ = String.raw`(?:[\s,]+${SK_NEXT}(?:\s+(?:wala|wali|waala|one|question|sawaal|sawal))?(?:\s+${SK_GIVE})?)`;
++const SK_VERB = String.raw`(?:skip(?:\s+(?:karo|kar\s+do|kardo|karte\s+hain|kar\s+dete\s+hain|kar\s+sakte\s+hain|kijiye|it|this(?:\s+one)?))?|chhodo|chodo|chhod\s+do|chod\s+do|chhod\s+dete\s+hain|chhod\s+ke|chod\s+ke|chhodke|chodke|rehne\s+do)`;
++const SK_LEAD = String.raw`(?:(?:can\s+we|can\s+i|let'?s|please|plz|didi|ma'?am|ok|okay|achha)[\s,]+)?`;
++const SK_END = String.raw`(?:[\s,]+(?:please|plz|na|yaar|ji))?[\s.!?]*`;
++const SKIP_R3 = new RegExp(String.raw`^${SK_LEAD}(?:${SK_DEM}\s+${SK_VERB}|${SK_VERB}\s+${SK_DEM}|skip(?:\s+(?:karo|kar\s+do|it|this(?:\s+one)?))?)${SK_TAILQ}?${SK_END}$`
++  + String.raw`|^${SK_LEAD}${SK_NEXT}\s+(?:(?:question|sawaal|sawal|q)(?:\s+${SK_GIVE})?|(?:wala|wali)\s+${SK_GIVE}|${SK_GIVE})${SK_END}$|^${SK_LEAD}next\s+one${SK_END}$|^pass${SK_END}$`, "i");
 +const BACK_WHOLE = /^(?:(?:ok|okay|haan|ha|achha|accha|didi)[\s,]+)?(?:aa\s*(?:gaya|gayi|gya|gyi)|आ\s*गय[ाी]|(?:i'?m\s+)?back)(?:[\s,!.]+(?:chalo|chaliye|let'?s\s+go|lets\s+go|ready|didi|now|हूँ|चलो))*[\s!.]*$/i;
 +/** Round 3: words that ask HER to do something (show, draw, explain, tell): a turn with one is a request, not a mid-thought. */
 +const ASKS_HER = /\b(?:dikhao|dikhaiye|dikha\s+do|dikha\s+dijiye|samjhao|samjhaiye|banao|banaiye|sunao|sunaiye|batao|bataiye|draw|show|explain|tell)\b/i;
@@ -54,7 +67,7 @@ index 85a0080..a4fbbdc 100644
  /** Words of an attempt (a number), or more words than a request carries: never read as one of these. */
  const attemptLike = (t) => /\d/.test(t);
  
-@@ -97,14 +135,18 @@ export function readIntent(text) {
+@@ -97,15 +148,19 @@ export function readIntent(text) {
    // or finish it) serves a child who was also thinking
    if (fragmentLike(t)) return hit("unclear");
    if (BREAK.test(t)) return hit("break");
@@ -71,12 +84,14 @@ index 85a0080..a4fbbdc 100644
    if (n >= 4 && !/[?？]/.test(t) && THINK_TRAIL.test(t) && !GO_ON.test(t)) return hit("thinking");
    // ... or a turn that opens on a hold marker and goes on reasoning ("रुको, सोच रहा हूँ... पहले गिनना पड़ेगा")
 -  if (n >= 3 && !/[?？]/.test(t) && THINK_START.test(t) && !GO_ON.test(t)) return hit("thinking");
+-  if (SKIP.test(t)) return hit("skip");
 +  // round 3: "ruko, pehle diagram dikhao phir question" is a request after a hold word, never a thought in progress
 +  if (n >= 3 && !/[?？]/.test(t) && THINK_START.test(t) && !GO_ON.test(t) && !(p5Flag("R3CONV") && ASKS_HER.test(t))) return hit("thinking");
-   if (SKIP.test(t)) return hit("skip");
++  if (SKIP.test(t) || (p5Flag("R3CONV") && SKIP_R3.test(t))) return hit("skip");
    if (KNOW.test(t)) return hit("know");
    if (HARDER.test(t)) return hit("harder");
-@@ -114,7 +156,7 @@ export function readIntent(text) {
+   if (EASIER.test(t)) return hit("easier");
+@@ -114,7 +169,7 @@ export function readIntent(text) {
    if (REPEAT.test(t)) return hit("repeat");
    if (ASK_INVITE.test(t)) return hit("ask_invite");
    if (IDENTITY.test(t)) return hit("identity");
@@ -226,7 +241,7 @@ index c0470f1..efd2cb2 100644
 +  ? "first, in your own words, a short line of empathy about how tough THIS question is and that getting stuck on it is normal (about the work, never about them, no ability words); then a smaller first step on the same question"
 +  : "first: one short line that this one is hard work and that is okay (about the work, never about them, no ability words); then a smaller first step on the same question");
 diff --git a/server/director/state.js b/server/director/state.js
-index f912980..ea4df35 100644
+index f912980..79741b5 100644
 --- a/server/director/state.js
 +++ b/server/director/state.js
 @@ -39,6 +39,7 @@ import { directorProposal } from "./proposal.js";
@@ -302,13 +317,29 @@ index f912980..ea4df35 100644
    }
    s.phase = "teachback"; s.teachbackAsked = true; s.activeItemId = undefined; s.hintLevel = 0;
    // The lesson's teach-back IS shape C01 (announced protégé teach-back): its answer is a probe turn in the budget.
-@@ -1191,10 +1211,26 @@ export function step(prev, input) {
+@@ -1090,10 +1110,14 @@ function moduleReaction(s, input, item) {
+  * safeguarding hold. The plan's `lead` (an uptake of what the child just said) is kept. Evidence is unchanged: this turn's
+  * answer was graded before step(); the item left gets none after it.
+  */
++const RE_PRESENT = new Set(["repeat", "slower", "another", "clarify", "example", "story", "language"]);
+ function capPlan(s, input, p) {
+   // ship5 fixer (experience B1): the child's own ask to SEE it is honoured, never capped away (the cap turned "picture
+   // dikhao" into the next practice question, 2/2 in the request probe); their next answer turn caps as before
+-  if (s.safeguard || !p.item || p.capped || p.request === "visual") return p;
++  // round 3 (conversation; battery repeat-03, explain_differently-04, clarify-07: "can you repeat the question?" was capped into
++  // "leave it for later; then the next question", the request unanswered): an ask to have THIS question again, in another
++  // form, is honoured the same way; their next answer turn caps as before
++  if (s.safeguard || !p.item || p.capped || p.request === "visual" || (p5Flag("R3CONV") && RE_PRESENT.has(p.request))) return p;
+   const kit = input.kit;
+   const item = findItem(s, kit, p.item.id) ?? p.item;
+   const pins = s.pendingWhy !== item.id && !["safeguard", "wrap", "break", "teachback"].includes(p.kind);
+@@ -1191,10 +1215,26 @@ export function step(prev, input) {
    const item = p.item ? (findItem(s, input.kit, p.item.id) ?? p.item) : null;
    // Notes on the real move only: a voice branch (branchesFor, input.branch) is rendered into the appended-last
    // section, whose budget the kit load gate measured without them (compile.js checkFits).
 +  // round 3 (conversation): the move right after a stop check-in that the child did not answer with a stop (s.lastMove is
 +  // still the check-in here) carries on as normal; a chosen "keep going" already says so (resume's prefix)
-+  const goOn = p5Flag("STEER") && !input.branch && s.lastMove?.checkin === "stop" && !p.checkin && !["wrap", "break", "safeguard"].includes(p.kind)
++  const goOn = p5Flag("R3CONV") && !input.branch && s.lastMove?.checkin === "stop" && !p.checkin && !["wrap", "break", "safeguard"].includes(p.kind)
 +    && !/keep going/.test(String(p.shape ?? ""));
 +  // round 3 (conversation): the second need of a two-needs turn, honoured in the same move's words (lexicon.js alsoReading)
 +  const also = p5Flag("R3CONV") && !input.branch && input.event === "turn" && !NO_VERDICT_MOVES.has(p.kind)
@@ -330,7 +361,7 @@ index f912980..ea4df35 100644
    // round 2 (conversation): how the child asked to be taught ("step by step", "picture first") rides on every later move
    // (compile.js renders it, droppable): before this, s.prefs was written and never read, so a method request lasted one turn
    if (p5Flag("STEER") && s.prefs?.length && !["safeguard", "wrap"].includes(p.kind)) move.prefs = s.prefs.slice(-2);
-@@ -1239,6 +1275,9 @@ export function step(prev, input) {
+@@ -1239,6 +1279,9 @@ export function step(prev, input) {
    return { state: s, move, moduleCommands, ui, end: s.phase === "done", proposal, ...describe(s, input.kit) };
  }
  

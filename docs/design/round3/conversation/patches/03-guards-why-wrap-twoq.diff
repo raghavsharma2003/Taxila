@@ -16,22 +16,29 @@ index 1bd3808..e84e228 100644
  // ── answer-leak predicate ──
  const CUT = "\u0000";
 diff --git a/server/director/say.js b/server/director/say.js
-index 038a68d..32f87f0 100644
+index 038a68d..cb93ae1 100644
 --- a/server/director/say.js
 +++ b/server/director/say.js
-@@ -31,6 +31,11 @@ const PRAISE_ANY = new RegExp([
-   `you\\s+got\\s+it`, `that(?:'?s|\\s+is)\\s+(?:right|correct)`, `sahi\\s+jawab(?!\\s+(?:kya|kaun|kaunsa|hoga))`,
-   // F5 (evals/owner-truth s17 t17: "sahi likhi" on a pasted, irrelevant reply): the written / picked / joined forms
-   `(?:aapne|tumne|you)\\s+(?:\\p{L}+\\s+){0,3}?(?:bilkul\\s+|ekdam\\s+)?(?:sahi|correct(?:ly)?|right)\\s+(?:likha|likhi|likhe|chuna|chuni|joda|jodi|pehchana|pehchaana|wrote|picked|chose|matched)`,
-+  // round 3 (conversation; prod owner-1 2026-10-09 c5-maths-ch07-t02-i06, no verdict: "Aapne Pattern A ka niyam sahi
-+  // pehchaana"; and two module answers graded not_yet: "Aapne pattern ka agla number sahi nikala"): the object may run to
-+  // a clause before the verdict word (the owner checker allows 60 characters, tests/prod/_owner.mjs RX.praiseAny), and the
-+  // verbs of finding / working out / doing count too. A superset of the checker's pattern, within one sentence.
-+  `(?:aapne|tumne|you)(?![\\p{L}])[^.!?।]{0,60}?(?<![\\p{L}])(?:bilkul\\s+|ekdam\\s+)?(?:sahi|correct(?:ly)?|right)\\s+(?:kaha|bataya|batayi|socha|sochi|pakda|pakdi|pakde|nikala|nikaala|nikali|nikale|likha|likhi|likhe|chuna|chuni|chune|joda|jodi|jode|pehchana|pehchaana|pehchani|pehchaani|pehchane|gina|gini|gine|kiya|kiye|samjha|samjhi|lagaya|lagayi|wrote|picked|chose|matched|got|said|found|identified|figured|worked|did|spotted)(?![\\p{L}])`,
- ].join("|"), "iu");
- /**
-  * A "you made a mistake" statement anywhere in a turn after a RIGHT answer (F2, evals/owner-truth: "yahan galti hui",
-@@ -278,7 +283,7 @@ export function lastQuestionOnly(reply) {
+@@ -271,14 +271,23 @@ export function joinAsk(lead, askFull) {
+ }
+ 
+ /** Keep only the LAST question of a turn with no pinned item (one question per turn). */
+-export function lastQuestionOnly(reply) {
++export function lastQuestionOnly(reply, { keepContent = false } = {}) {
+   const ss = sentencesOf(reply);
+-  const lastQ = ss.map(isQuestion).lastIndexOf(true);
+-  return ss.filter((x, i) => !isQuestion(x) || i === lastQ).join(" ").trim();
++  const qs = ss.map(isQuestion);
++  let keep = qs.lastIndexOf(true);
++  // round 3 (conversation; battery boredom-02, boredom-05: "…chalo tareeka badlein: game, picture, ya quick challenge? Kaunsa
++  // chunogi?" was cut to "Kaunsa chunogi?", the offer gone): when the last question is a short tag after a question that
++  // carries the turn, the tag goes and the carrying question stays
++  if (keepContent && keep > 0) {
++    const prev = qs.lastIndexOf(true, keep - 1);
++    const n = (x) => x.split(/\s+/).filter(Boolean).length;
++    if (prev >= 0 && n(ss[keep]) <= 4 && n(ss[prev]) >= 2 * n(ss[keep])) keep = prev;
++  }
++  return ss.filter((x, i) => !qs[i] || i === keep).join(" ").trim();
  }
  
  // ── wrap language only on a wrap move (personalisation 13: "Aaj ke liye bas itna." in a probe turn, mid-lesson) ──

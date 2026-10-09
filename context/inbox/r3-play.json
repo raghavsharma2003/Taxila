@@ -75,7 +75,7 @@
   {
    "id": "rj-r3p-gap-label-exact",
    "kind": "rejection",
-   "title": "Labelling every number-line gap as an exact fraction of the step: a 0.18 gap was drawn as '1/3 ka farak' (nearest simple fraction printed as if exact) and the reaction bank echoed it; replaced by gapInfo {g, exact} with 'lagbhag' shapes when not exact.",
+   "title": "Labelling number-line gaps wrongly, twice: (1) every gap printed as an exact fraction of the step ('1/3 ka farak' for a 0.18 gap) -> gapInfo {g, exact} with 'lagbhag' shapes; (2) the first 'lagbhag' picked the COARSEST denominator that merely rounded to >= 1, so a 0.18 gap on a thirds line still read 'lagbhag 1/3' (should be about 1/6). The second was caught by a cross-family model judge (taxila-brain, B8 'factually wrong', pass 1) on a still; fixed to the coarsest step fraction within a third of its own step (0.18 -> 1/6, 0.45 -> 1/2, never 11/24) with unit tests.",
    "at": "2026-10-09"
   },
   {
@@ -100,6 +100,24 @@
    "id": "r3p-open-not-on-children",
    "kind": "open",
    "title": "Play is engineering-complete and unproven on children: no child has played a family; fps measured only as a contended headless proxy (no real mid-range phone); latency only local (not India); coverage 47/250 topics; patches 01-05 unapplied so taxila.dev serves none of it; the model judges are advisory (rj-holistic-model-judge-gate); micro-reaction TTS pre-synthesis not built (captions only).",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "rj-r3p-unconditioned-reaction-shapes",
+   "kind": "rejection",
+   "title": "Reaction shapes keyed only by family x moment: a family bank spans several modes and refusals, so context-free lines were spoken where they were false - 'Yeh tukde alag size ke hain' (strips: unlike pieces) to a child taking 5 hundreds from 0 in the place-value game, 'Barabar nahi bant-ta' (shares unequally) on a one-sided removal in the balance, '1 se kuch nahi badla' (factor-tree include-one) available for a place-value misconception, 'Saare atoms. Wapas {n}!' on an HCF solve. Found by reading the captions on mistake-state screenshots. Replaced by shape conditions {?why=..}/{?mal=..}/{?mode=..}/{?goal=..}/{?key} filled from the moment, the level and the mal-rule; every law_refused shape must name its refusal and every condition value must exist in that family's law (tests/play-react.test.mjs).",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "r3p-judge-stills-need-a-mistake",
+   "kind": "constraint",
+   "title": "A still-screenshot judge of a learning game must be shown a state right after a typical mistake (the family's own mal-rule played as a child holding the belief would play it, or the move the belief makes when the law refuses it): in pass 1, with mid-play screens only, both judges marked feedback-that-teaches (D2) 'cannot tell' (means 1.92 and 2.50 of 5) and B4 (visible consequence) failed on 6/16 and 8/16 games for lack of any wrong-action state.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "r3p-reaction-shape-conditions",
+   "kind": "decision",
+   "title": "The teacher's in-play micro-lines stay an authored, code-filled bank (no model writes or picks them) and every line that is true only in one context carries a code condition on the moment's refusal, mal-rule, mode or goal; a line whose condition does not hold is never said (silence is the fallback). Why: a fluent line that is false in context costs her credibility with the child more than silence. Reverse if: a measured child-facing study shows the conditioned bank is silent so often that children read the silence as absence (then author more conditioned lines, still no free generation).",
    "at": "2026-10-09"
   }
  ],
@@ -187,6 +205,21 @@
   {
    "src": "r3p-open-not-on-children",
    "rel": "blocks",
+   "dst": "r3p-play-grammar-v1"
+  },
+  {
+   "src": "r3p-judge-stills-need-a-mistake",
+   "rel": "inherits",
+   "dst": "rj-holistic-model-judge-gate"
+  },
+  {
+   "src": "r3p-reaction-shape-conditions",
+   "rel": "caused_by",
+   "dst": "rj-r3p-unconditioned-reaction-shapes"
+  },
+  {
+   "src": "r3p-reaction-shape-conditions",
+   "rel": "part_of",
    "dst": "r3p-play-grammar-v1"
   }
  ]

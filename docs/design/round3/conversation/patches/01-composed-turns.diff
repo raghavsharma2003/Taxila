@@ -1,5 +1,5 @@
 diff --git a/server/brain/say.js b/server/brain/say.js
-index 9b1ba8f..b5b975c 100644
+index 9b1ba8f..c1a8735 100644
 --- a/server/brain/say.js
 +++ b/server/brain/say.js
 @@ -15,7 +15,7 @@ import { mixedUnitComparison, withoutMixedUnits } from "../director/units.js";
@@ -111,6 +111,15 @@ index 9b1ba8f..b5b975c 100644
      G && repeatsEarlier(t, earlier) && "same",
      // a mid-thought gets no question (conversation-v2 thinking_aloud 1/8: "new_question"); a right answer is confirmed
      // before anything else (answer_correct 4/8: a covert probe with no uptake)
+@@ -301,7 +334,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
+     let out = f.includes("wrap") ? stripWrap(t) : t;
+     if (pinned) out = endOnAsk(out, askEnd);
+     else if (f.includes("drift")) out = repairDrift(out, item, lang);
+-    else if (f.includes("twoq")) out = lastQuestionOnly(out);
++    else if (f.includes("twoq")) out = lastQuestionOnly(out, { keepContent: R3 });
+     return out;
+   };
+   const SHAPE = new Set(["drift", "flat", "ask", "twoq", "wrap"]);
 @@ -325,18 +358,29 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
    // question again, is written as two parts: the model writes only what comes before the question, code adds the question
    // byte for byte (conversation/compose.js). A lead that comes back unusable falls through to the one-call path.
@@ -125,7 +134,7 @@ index 9b1ba8f..b5b975c 100644
    const leadCall = async (why = null, draft = null) => {
 -    const extra = [...(draft ? [{ role: "assistant", content: draft }] : []), { role: "system", content: leadSlotNote({ lead: state.lastMove?.lead ?? null, why, ageBand: state.ctx.ageBand }) }];
 +    const extra = [...(draft ? [{ role: "assistant", content: draft }] : []), { role: "system", content: leadSlotNote({ lead: state.lastMove?.lead ?? null, why, ageBand: state.ctx.ageBand,
-+      first: bridge, confirm: R3 && verdict === "correct" && !checkin }) }];
++      first: bridge, confirm: R3 && verdict === "correct" && !checkin, noAnswer: R3 && bridge && (wordsVerdict === "unverified" || wordsVerdict === "attempt") }) }];
      const raw = await ask([...messages, ...extra]);
      const lead = cleanLead(raw, askEnd, leadMax);
 -    return leadOk(lead, [item?.answer, ...(item?.acceptable ?? [])]) ? composeTurn(lead, askEnd) : null;
@@ -146,12 +155,16 @@ index 9b1ba8f..b5b975c 100644
    } catch (e) {
      if (isContentFilter(e)) { console.warn("[lesson] reply blocked by the content filter"); return blocked(); }
      console.warn("[lesson] reply unavailable, falling back:", e.message);
-@@ -371,11 +415,11 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
+@@ -371,11 +415,15 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
        found.includes("long") && `it is too long — at most ${TURN_WORDS[state.ctx.ageBand]} words`,
        found.includes("units") && "it asks which is bigger between two different kinds of quantity — compare like with like (two counts, or two lengths in one unit)",
        found.includes("floor") && `it breaks the safety floor — ${floorOf(reply).map((k) => FLOOR_FIX[k]).filter(Boolean).join("; ")}`,
 -      found.includes("praise") && "it agrees with or praises their answer, but their answer was not marked right — no agreement or praise word for it; name what is sensible in it, then the next step",
-+      found.includes("praise") && `it agrees with or praises their answer, but their answer was not marked right — no agreement or praise word for it; ${R3 ? "start from what they actually did" : "name what is sensible in it"}, then the next step`,
++      // round 3: on a turn with no answer to judge (a filler, an unverified reply) "start from what they actually did" made the
++      // rewrite echo the filler ("Tumne bas “haan” kaha", 4 of ~500 turns on the paired battery): there it says go straight on
++      found.includes("praise") && (R3 && (wordsVerdict === "unverified" || wordsVerdict === "attempt")
++        ? "it praises or agrees as if they answered, but there is no answer of theirs to judge this turn — no praise or agreement word; go straight on with the move, without commenting on what they said"
++        : `it agrees with or praises their answer, but their answer was not marked right — no agreement or praise word for it; ${R3 ? "start from what they actually did" : "name what is sensible in it"}, then the next step`),
        found.includes("deny") && "it says their answer is wrong, but it was right — confirm it plainly",
        found.includes("corrects") && `it implies their answer was wrong or that the answer is something else, but their answer ${JSON.stringify(String(right.key))} was right — confirm it plainly and do not name any other answer as the result`,
        found.includes("screen") && "it tells them to tap or pick something on the screen, but nothing is on the screen to tap this turn — ask them to say it",
@@ -160,7 +173,7 @@ index 9b1ba8f..b5b975c 100644
        found.includes("cantshow") && "it says you cannot show or draw — never say that; the board draws for you: talk about the idea itself",
        found.includes("stage") && "it reads out a field name, markup or a text picture (like 'Whiteboard:', brackets or rows of symbols like ●●●) — plain spoken words only; the board draws pictures, never your words",
        found.includes("register") && (address === "aap" ? "it uses tum forms — address the child with aap forms only (aap, aapka; verbs ending -iye)" : "it uses aap — address the child with tum forms (tum, tumhara)"),
-@@ -390,6 +434,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
+@@ -390,6 +438,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
        found.includes("noconfirm") && "their answer was right — open by confirming it in a few words, naming what they got right, before anything else",
        found.includes("hold") && "they asked to stop: it asks a lesson question or holds them for one more — this turn asks nothing about the lesson; only offer the choices",
        found.includes("nostop") && (checkin === "rel" ? "it must say plainly that stopping now is fine" : "it leaves out stopping — name all three choices: keep going, a short break, or stop for today"),
@@ -168,7 +181,7 @@ index 9b1ba8f..b5b975c 100644
      ].filter(Boolean).join("; and ");
      try {
        reply = await ask([...messages, { role: "assistant", content: reply }, { role: "system", content: checkin
-@@ -402,7 +447,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
+@@ -402,7 +451,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
        console.warn("[lesson] rewrite unavailable, guarding the draft:", e.message); // the draft's problems stand
      }
      guard.afterRewrite = found;
@@ -177,7 +190,7 @@ index 9b1ba8f..b5b975c 100644
        // a check-in that still asks a lesson question, holds them, or drops the stop option is never sent: the fixed line
        reply = fallbackReply(state, null);
        guard.replaced = true;
-@@ -445,7 +490,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
+@@ -445,7 +494,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
        if (found.includes("corrects")) { reply = keepOr(stripCorrection(reply, right)); guard.replaced = true; }
        if (found.includes("screen")) { reply = keepOr(stripScreenRefs(reply)); guard.replaced = true; }
        // W2-B fixer: a rewrite that still names part counts the screen does not show loses those sentences
@@ -186,7 +199,7 @@ index 9b1ba8f..b5b975c 100644
        if (found.includes("register") && address === "aap") { reply = toAap(reply); guard.repaired = true; }
        if (found.includes("stage")) { reply = stripStage(reply) || fallbackReply(state, item); guard.replaced = true; }
        if (found.includes("cantshow")) { reply = keepOr(stripCantShow(reply)); guard.replaced = true; }
-@@ -502,7 +547,11 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
+@@ -502,7 +551,11 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
      // round 2 (conversation): a turn still only the question, or a line she already said, after every repair above: one
      // lead-slot call (the model writes only the response to what they said; code adds the question). Used only when the
      // joined turn has no problem the old one did not have; never after a floor or leak catch (a truth repair stands).
@@ -199,7 +212,7 @@ index 9b1ba8f..b5b975c 100644
        const left = problems(reply);
        if (left.includes("bare") || left.includes("same")) {
          try {
-@@ -513,11 +562,25 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
+@@ -513,11 +566,25 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
              const was = new Set(left), prevOn = slotState.on;
              slotState.on = true;
              const now = problems(again);
@@ -226,7 +239,7 @@ index 9b1ba8f..b5b975c 100644
      // the cut marks the repairs leave (an orphan quote, an empty fragment) and a lead sentence that re-poses the question
      const tidied = tidyAround(reply, pinned ? askEnd : null);
      if (tidied && tidied !== reply) { reply = tidied; guard.tidied = true; }
-@@ -554,7 +617,8 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
+@@ -554,7 +621,8 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
  export function hintStatements(item, hintLevel) {
    const h = stripRungLabel(String(item?.hints?.[(hintLevel ?? 1) - 1] ?? "")).replace(/\s+/g, " ").trim();
    if (!h || revealsAnswer(h, item) || hintShapeWords(h)) return "";
@@ -236,7 +249,7 @@ index 9b1ba8f..b5b975c 100644
  }
  
  export function keepLastLeadQuestion(reply, ask) {
-@@ -575,9 +639,15 @@ export function tidyAround(reply, ask) {
+@@ -575,9 +643,15 @@ export function tidyAround(reply, ask) {
  }
  
  /** p5-interaction: does a reply to a RIGHT answer confirm it in its first two sentences (agreement / praise of the answer)? */
@@ -254,7 +267,7 @@ index 9b1ba8f..b5b975c 100644
  
  /** Imperatives to write / type → the spoken form (her own words only; the pinned question at the end is kept). Exported for tests. */
 diff --git a/server/conversation/compose.js b/server/conversation/compose.js
-index 1ab8704..34157d3 100644
+index 1ab8704..c686cbf 100644
 --- a/server/conversation/compose.js
 +++ b/server/conversation/compose.js
 @@ -18,6 +18,14 @@ const isQ = (s) => /[?？]/.test(String(s));
@@ -272,7 +285,7 @@ index 1ab8704..34157d3 100644
  
  /**
   * Should this turn be written as lead + card question? PURE.
-@@ -32,24 +40,57 @@ export const CONTENT_REQUESTS = new Set(["answer_q", "clarify", "example", "stor
+@@ -32,24 +40,61 @@ export const CONTENT_REQUESTS = new Set(["answer_q", "clarify", "example", "stor
  export function leadSlotWanted(t) {
    if (!t.pinned || t.diagnostic || t.whyProbe || t.closing) return false;
    if (t.request && CONTENT_REQUESTS.has(String(t.request))) return false;
@@ -289,7 +302,7 @@ index 1ab8704..34157d3 100644
   */
 -export function leadSlotNote({ lead = null, why = null, ageBand = "10-15" } = {}) {
 -  const n = LEAD_MAX_WORDS[ageBand] ?? LEAD_MAX_WORDS["10-15"];
-+export function leadSlotNote({ lead = null, why = null, ageBand = "10-15", first = false, confirm = false } = {}) {
++export function leadSlotNote({ lead = null, why = null, ageBand = "10-15", first = false, confirm = false, noAnswer = false } = {}) {
 +  const n = (first ? LEAD_MAX_FIRST : LEAD_MAX_WORDS)[ageBand] ?? (first ? LEAD_MAX_FIRST : LEAD_MAX_WORDS)["10-15"];
    return [
 -    "THIS TURN, PART ONE ONLY: the app says the question on the card right after your words, so write only what comes before it.",
@@ -300,6 +313,10 @@ index 1ab8704..34157d3 100644
 +      : "THIS TURN, PART ONE ONLY: the app says the question on the card right after your words, so write only what comes before it.",
 +    // a right answer is confirmed before anything else (the noconfirm guard), in the slot's own last note: position is mechanism
 +    confirm ? "First confirm that their last answer was right, naming the exact thing they got right (no ability words)." : null,
++    // round 3 (paired battery 2026-10-09): after a filler ("ok samajh gaya", "got it") the bridge opened "Bilkul" / "Nice" /
++    // "Shabaash" and was caught as praise on an unverified reply (praise was the commonest first-draft code left on the
++    // patched arm, 44 of 1,032 turns). Their last line was not an answer: the note says so, last.
++    noAnswer ? "Their last line was not an answer: no praise or agreement word." : null,
 +    lead ? `Do this first, as the note says: ${String(lead).replace(/[.\s]+$/, "")}.` : first
 +      ? "Then a short bridge into the new question, as this move's shape asks, never more than it; open differently from your last turn."
 +      : "Do what this move's shape asks before the question (the nudge or the step), never more than it.",
@@ -337,7 +354,7 @@ index 1ab8704..34157d3 100644
  /**
   * The lead a model wrote, cleaned: question sentences out (the card question is the turn's only question), any copy or
   * re-wording of the card question out, cut marks tidied, at most `max` words of whole sentences. PURE.
-@@ -84,7 +125,7 @@ export function leadNamesKey(lead, keys = []) {
+@@ -84,7 +129,7 @@ export function leadNamesKey(lead, keys = []) {
    const l = ` ${norm(lead)} `;
    return keys.filter((k) => k != null && norm(k)).some((k) => l.includes(` ${norm(k)} `));
  }

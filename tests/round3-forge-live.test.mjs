@@ -134,12 +134,15 @@ describe("round3 forge: the serving rule of the certificates (the device's 14 px
 });
 
 describe("round3 forge: the play piece reaches the Studio slot (seam)", () => {
-  let studioSeam, _reset, _setDeps, _lesson;
+  let studioSeam, _reset, _setDeps, _lesson, setCerts;
   before(async () => {
     ({ studioSeam, _reset, _setDeps, _lesson } = await import("../server/studio/seam.js"));
     _setDeps({ q: null });
+    // the seam's wiring is under test here, not the certificate file's current verdicts
+    ({ _setPlayCertificates: setCerts } = await import("../server/forge3/compose.js"));
+    setCerts(null);
   });
-  after(() => _reset());
+  after(() => { _reset(); setCerts(undefined); });
   const kid = { id: "kid-seam", first_name: "Aarav", class_level: 4, language_pref: "hinglish" };
   it("composeAsk then slotFor on the same turn shows the piece; it stays on later turns; a second ask does not replace it", async () => {
     _reset();

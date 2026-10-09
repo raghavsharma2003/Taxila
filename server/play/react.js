@@ -41,6 +41,6 @@ export function floorOk(text) {
 export function reactionFor(moments, o) {
   const h = newHistory();
   if (o.history) { for (const u of o.history.used ?? []) h.used.add(u); h.lastAt = o.history.lastAt ?? -1e9; h.count = o.history.count ?? 0; }
-  const reaction = pickReaction(bank(), moments, { lang: o.lang, family: o.level.family, seed: o.level.levelId, hist: h, nowS: o.nowS, hidden: o.solved ? [] : hiddenOf(o.level), extraCheck: floorOk });
+  const reaction = pickReaction(bank(), moments, { lang: o.lang, family: o.level.family, mode: o.level.mode, goal: o.level.goal, seed: o.level.levelId, hist: h, nowS: o.nowS, hidden: o.solved ? [] : hiddenOf(o.level), extraCheck: floorOk });
   return { reaction, history: { used: [...h.used].slice(-40), lastAt: h.lastAt, count: h.count } };
 }

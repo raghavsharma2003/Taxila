@@ -63,7 +63,7 @@ function App() {
   const next = makeLevel(seed + 101);
   const doors: PlayDoor[] = next ? [{ door: "garam", level: next.garam, hint: "" }, ...(next.teekha ? [{ door: "teekha" as const, level: next.teekha, hint: "" }] : [])] : [];
   const onMoments = (ms: Moment[]) => {
-    const r = pickReaction(bank, ms, { lang, family, seed: level.levelId, hist: hist.current, nowS: (performance.now() - t0.current) / 1000 });
+    const r = pickReaction(bank, ms, { lang, family, mode: level.mode, goal: level.goal, seed: level.levelId, hist: hist.current, nowS: (performance.now() - t0.current) / 1000 });
     if (r) setCaption(r.text);
   };
   (window as unknown as { __playLevel: PlayLevel; __playNext: unknown }).__playLevel = level;

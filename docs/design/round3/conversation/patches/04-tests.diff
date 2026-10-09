@@ -17,10 +17,10 @@ index dfa5a8b..9a98fae 100644
  
 diff --git a/tests/round3-conversation.test.mjs b/tests/round3-conversation.test.mjs
 new file mode 100644
-index 0000000..5e65bb2
+index 0000000..a733521
 --- /dev/null
 +++ b/tests/round3-conversation.test.mjs
-@@ -0,0 +1,311 @@
+@@ -0,0 +1,355 @@
 +// Round 3 (conversation stream, 2026-10-09): replies right the first time. The first pose of a question is a lead-slot turn
 +// (the model writes only the bridge, code adds the verified question), a re-pose that ends on the card's form is not
 +// "drift", a re-pose still bare after every repair gets a fixed code lead (never the bare question), the praise guard reads
@@ -36,7 +36,7 @@ index 0000000..5e65bb2
 +import { chat } from "../server/azure.js";
 +import { initLessonState, step } from "../server/director/state.js";
 +import { promptFor, asksWhy } from "../server/director/items.js";
-+import { praiseProblem, wrapsUp } from "../server/director/say.js";
++import { praiseProblem, wrapsUp, lastQuestionOnly } from "../server/director/say.js";
 +import * as SH from "../server/director/shapes.js";
 +import { compileWithReport, SECTION_CAPS } from "../server/compiler/compile.js";
 +import { CHARACTERS } from "../server/compiler/characters/index.js";
@@ -71,6 +71,7 @@ index 0000000..5e65bb2
 +    assert.match(note, new RegExp(`at most ${LEAD_MAX_FIRST["10-15"]} words`));
 +    assert.ok(!/"[^"]{20,}"/.test(note), "a shape, never a quoted line she could recite");
 +    assert.ok(!/First confirm/.test(leadSlotNote({ first: true })), "no confirmation asked when the last answer was not right");
++    assert.match(leadSlotNote({ first: true, noAnswer: true }), /not an answer: no praise or agreement word/);
 +  });
 +
 +  test("first pose: the model writes the bridge, code adds the question byte for byte, one model call, no rewrite", async () => {
@@ -151,10 +152,10 @@ index 0000000..5e65bb2
 +    assert.equal(fallbackLead({ rePose: true, hint: "Pehle tukde gino.", avoid: ["Pehle tukde gino. Kitne?"] }), LEAD_VARIANTS.hinglish.help[0], "a hint already said is not said again");
 +  });
 +
-+  test("praise guard: the owner's prod case and the module case are caught; a plain account of what they did is not", () => {
-+    assert.equal(praiseProblem("Aapne Pattern A ka niyam sahi pehchaana: har baar number ko 2 se multiply karna, yani double karna.", "unverified"), "praise");
-+    assert.equal(praiseProblem("Aapne pattern ka agla number sahi nikala. Ab rangoli mein har baar bada square ban raha hai.", "not_yet"), "praise");
-+    assert.equal(praiseProblem("Aapne Pattern A ka niyam sahi pehchaana.", "partial"), "praise");
++  // The owner's prod case ("Aapne Pattern A ka niyam sahi pehchaana" on an ungraded turn) is DETECTED by round3 truth patch 04
++  // (PRAISE_ANY_WIDE; its tests carry the case). This stream owns what happens around it: the bridge note that asks for no
++  // praise word when their last line was not an answer, and the rewrite reason (tests below). No false catch here:
++  test("praise guard: a plain account of what they did, or of why it is not right yet, is not praise", () => {
 +    assert.equal(praiseProblem("Aapne Pattern A ka niyam sahi pehchaana.", "correct"), null);
 +    assert.equal(praiseProblem("Aapne 10 mein 4 joda, lekin judti hui row har baar ek flag lambi hoti hai.", "not_yet"), null);
 +    assert.equal(praiseProblem("Aapka jawab abhi sahi nahi hai; har baar 4 badh raha hai.", "not_yet"), null);
@@ -330,5 +331,48 @@ index 0000000..5e65bb2
 +    assert.ok(!/^THIS TURN/.test(seen3[0]), "a granted break keeps its own shape");
 +    assert.equal(turnNote({ handBack: false }), null);
 +    assert.ok(!/"[^"]{20,}"/.test(turnNote({})), "the hand-back note quotes nothing she could recite");
++  });
++
++  test("praise caught on a turn with no answer to judge: the rewrite goes straight on (no echo of the filler), a wrong answer keeps 'start from what they did'", async () => {
++    const r = turn(toPractice(), cls("no_evidence"));
++    const q = promptFor(itemOf(r), CTX.lang);
++    const seen = scripted(`Badhiya Riya, bilkul sahi socha tumne. ${q}`, `Badhiya Riya, bilkul sahi socha tumne. ${q}`, `Chalo, isse dhyaan se dekho. ${q}`);
++    await textReply({ instructions: "x", state: r.state, kit: K, childText: "haan theek hai", history: [], ui: r.ui, module: r.state.module, verdict: "unverified" });
++    assert.ok(seen.some((m) => /no answer of theirs to judge this turn/.test(m)), seen.join(" | "));
++    const w = turn(toPractice(), cls("incorrect"));
++    const qw = w.ui.ask.text;
++    const seen2 = scripted(`Bilkul sahi Riya, ekdam theek kaha. ${qw}`, `Bilkul sahi Riya, ekdam theek kaha. ${qw}`, `Tumne 1/3 socha. ${qw}`);
++    await textReply({ instructions: "x", state: w.state, kit: K, childText: "1/3", history: [], ui: w.ui, module: w.state.module, verdict: "not_yet" });
++    assert.ok(seen2.some((m) => /start from what they actually did/.test(m)), seen2.join(" | "));
++  });
++
++  test("skip in the child's own words is a skip in code (never the classifier's stop): demonstratives, 'next one' tails, polite words", () => {
++    for (const t of ["ye wala skip karo", "isko chhodo dusra do", "next question please", "yeh wala chhod ke agla do", "is question ko chhodo", "dusra sawaal do", "skip it please"])
++      assert.equal(readIntent(t)?.type, "skip", t);
++    for (const t of ["chhodo", "dusra wala", "another one", "next time", "ek aur example do", "skip the explanation i get it", "mujhe skip nahi karna"])
++      assert.notEqual(readIntent(t)?.type, "skip", t);
++    process.env.TAXILA_P5_R3CONV = "off";
++    assert.equal(readIntent("ye wala skip karo"), null);
++  });
++
++  test("card cap: an ask to hear THIS question again is honoured on the capped turn; their next answer turn leaves it", () => {
++    const capped = (m) => /on the table long enough/.test(m.shape ?? "");
++    let r = toPractice();
++    while (!capped(r.state.lastMove) && (r.state.pinRun ?? 0) < 3) r = turn(r, cls("no_evidence"));
++    assert.ok(!capped(r.state.lastMove), "the cap fired before the request turn");
++    const asked = turn(r, req("repeat"));
++    assert.ok(!capped(asked.state.lastMove), asked.state.lastMove.shape);
++    assert.equal(asked.state.lastMove.request, "repeat");
++    const after = turn(asked, cls("no_evidence")).state.lastMove;
++    assert.ok(capped(after) || /for later/.test(after.shape ?? ""), after.shape);
++    process.env.TAXILA_P5_R3CONV = "off";
++    assert.ok(capped(turn(r, req("repeat")).state.lastMove), "kill switch: the cap applies as before");
++  });
++
++  test("two questions: a short tag after the question that carries the turn goes, the carrying question stays", () => {
++    const t = "Riya, tumhe yeh hissa boring lag raha hai: game, picture, ya quick challenge? Kaunsa chunogi?";
++    assert.equal(lastQuestionOnly(t), "Kaunsa chunogi?");
++    assert.equal(lastQuestionOnly(t, { keepContent: true }), "Riya, tumhe yeh hissa boring lag raha hai: game, picture, ya quick challenge?");
++    assert.equal(lastQuestionOnly("Kya tum ready ho? Batao, 3 aur 4 milkar kitne hote hain?", { keepContent: true }), "Batao, 3 aur 4 milkar kitne hote hain?");
 +  });
 +});

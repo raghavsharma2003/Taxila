@@ -95,10 +95,12 @@ export async function buildLive(m, deps = {}) {
   // passed; when none passed, no play piece (the caller's next rung shows). Never judged = allowed (reported in why).
   const table = deps.playCerts !== undefined ? deps.playCerts : playCertificates();
   const band = (m.child.class_level ?? classLevel ?? 6) <= 5 ? 4 : 7;
-  const okArt = (a) => playPassed(table, s.level.family, s.level.mode, a, m.vp ?? null, band);
+  // the client does not report its box: an unknown size is judged as the 360 phone (the commonest and the hardest box)
+  const vpEff = m.vp ?? "p360";
+  const okArt = (a) => playPassed(table, s.level.family, s.level.mode, a, vpEff, band, s.level.topicId);
   if (s.art?.art && okArt(s.art.art) === false) {
     const alt = Object.keys(table?.pieces?.[`${s.level.family}/${s.level.mode}`] ?? {}).map((k) => k.split("@")[0]).find((a) => a !== s.art.art && okArt(a) === true);
-    if (!alt) { plan.why.push(`play ${s.level.family}/${s.level.mode}: no art passed the visual QA${m.vp ? ` at ${m.vp}` : ""}`); return null; }
+    if (!alt) { plan.why.push(`play ${s.level.family}/${s.level.mode}: no art passed the visual QA at ${vpEff}`); return null; }
     try { const r2 = await P.startSession(m.child, { skillId: m.skillId ?? null, topicId: m.topicId ?? null, goal: rung.goal ?? null, lessonId: m.lessonId, art: alt, lastArt: m.lesson?.lastArt ?? null }, undefined); if (r2?.level) s = r2; } catch { /* keep s */ }
     if (s.art?.art !== alt) return null;
     plan.why.push(`play art ${alt}: the picked art failed the visual QA`);

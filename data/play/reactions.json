@@ -1,6 +1,6 @@
 {
   "v": 1,
-  "_note": "The teacher's micro-reactions in play (docs/design/round3/play/DESIGN.md §5). SHAPES filled with the moment's on-screen facts by code ({slot} = a fact key; a missing fact skips the shape). Noticing the world, never judging the child: no verdict words, no praise of the person, no pressure (shared/play.ts REACTION_BANNED; tests/play-react.test.mjs). Rotation is deterministic and a line is never repeated in one session. first_act and progress lines are rare on purpose: she watches more than she talks.",
+  "_note": "The teacher's micro-reactions in play (docs/design/round3/play/DESIGN.md §5). SHAPES filled with the moment's on-screen facts by code ({slot} = a fact key; a missing fact skips the shape; a leading {?key=a|b} makes a shape usable only when that fact is one of the values: every law_refused shape names the refusal it describes). Noticing the world, never judging the child: no verdict words, no praise of the person, no pressure (shared/play.ts REACTION_BANNED; tests/play-react.test.mjs). Rotation is deterministic and a line is never repeated in one session. first_act and progress lines are rare on purpose: she watches more than she talks.",
   "moments": {
     "impasse": {
       "hinglish": ["Kahan se shuru karein?", "Ek chhota kadam le ke dekho.", "Socho, phir ek cheez badlo.", "Koi jaldi nahi."],
@@ -46,19 +46,19 @@
         "hi": ["{v} से {a} और {b}।", "{a} और {b} बने।", "{a} × {b}... आगे देखो।"]
       },
       "law_refused": {
-        "hinglish": ["{v} toot-ta hi nahi.", "{by} se poora nahi jaata, {r} bacha.", "{v} ko dekho, kuch bacha.", "Yeh tukde alag size ke hain.", "Pehle socho: same ya alag?"],
-        "en": ["{v} won't split.", "{by} doesn't go evenly: {r} left.", "Look at {v}: something's left over.", "These pieces are different sizes.", "Think first: same or different?"],
-        "hi": ["{v} टूटता ही नहीं।", "{by} से पूरा नहीं जाता, {r} बचा।", "{v} को देखो, कुछ बचा।", "ये टुकड़े अलग आकार के हैं।", "पहले सोचो: एक जैसे या अलग?"]
+        "hinglish": ["{?why=atom}{v} toot-ta hi nahi.", "{?why=remainder}{by} se poora nahi jaata, {r} bacha.", "{?why=remainder}{v} ko dekho, kuch bacha.", "{?why=unlike_pieces}Yeh tukde alag size ke hain.", "{?why=predict_first}Pehle socho: same ya alag?", "{?why=not_enough}{place} mein sirf {have} hain.", "{?why=empty_place}{place} khaali hai.", "{?why=more_than_asked}Utne hi hatao jitne chahiye.", "{?why=take_all}Abhi kuch hatana baaki hai.", "{?why=check_columns}Har khaane ko phir dekho.", "{?why=too_thin}Itne patle tukde nahi kat-te.", "{?why=mixed_group}Ek jhund mein sab rangin ya sab khaali."],
+        "en": ["{?why=atom}{v} won't split.", "{?why=remainder}{by} doesn't go evenly: {r} left.", "{?why=remainder}Look at {v}: something's left over.", "{?why=unlike_pieces}These pieces are different sizes.", "{?why=predict_first}Think first: same or different?", "{?why=not_enough}Only {have} in {place}.", "{?why=empty_place}{place} is empty.", "{?why=more_than_asked}Take away only what's asked.", "{?why=take_all}Something still has to be taken away.", "{?why=check_columns}Check each place again.", "{?why=too_thin}Pieces that thin won't cut.", "{?why=mixed_group}A group is all shaded or all empty."],
+        "hi": ["{?why=atom}{v} टूटता ही नहीं।", "{?why=remainder}{by} से पूरा नहीं जाता, {r} बचा।", "{?why=remainder}{v} को देखो, कुछ बचा।", "{?why=unlike_pieces}ये टुकड़े अलग आकार के हैं।", "{?why=predict_first}पहले सोचो: एक जैसे या अलग?", "{?why=not_enough}{place} में सिर्फ़ {have} हैं।", "{?why=empty_place}{place} खाली है।", "{?why=more_than_asked}उतने ही हटाओ जितने चाहिए।", "{?why=take_all}अभी कुछ हटाना बाकी है।", "{?why=check_columns}हर खाने को फिर देखो।", "{?why=too_thin}इतने पतले टुकड़े नहीं कटते।", "{?why=mixed_group}एक झुंड में सब रंगीन या सब खाली।"]
       },
       "misconception_consequence": {
-        "hinglish": ["1 se kuch nahi badla.", "Ek block abhi bhi hil raha hai.", "{composite} ko dekho.", "Dekho, dono pattiyan kaisi dikhti hain."],
-        "en": ["Splitting by 1 changed nothing.", "One block is still humming.", "Look at {composite}.", "Look at both strips now."],
-        "hi": ["1 से कुछ नहीं बदला।", "एक ब्लॉक अभी भी हिल रहा है।", "{composite} को देखो।", "देखो, दोनों पट्टियाँ कैसी दिखती हैं।"]
+        "hinglish": ["{?mal=include-one}1 se kuch nahi badla.", "{?mal=stop-composite}Ek block abhi bhi hil raha hai.", "{?mal=stop-composite}{composite} ko dekho.", "{?mode=strips}Dekho, dono pattiyan kaisi dikhti hain.", "{?mode=bundles}Likha hua aur bacha hua, dono dekho."],
+        "en": ["{?mal=include-one}Splitting by 1 changed nothing.", "{?mal=stop-composite}One block is still humming.", "{?mal=stop-composite}Look at {composite}.", "{?mode=strips}Look at both strips now.", "{?mode=bundles}Look at what's written and what's left."],
+        "hi": ["{?mal=include-one}1 से कुछ नहीं बदला।", "{?mal=stop-composite}एक ब्लॉक अभी भी हिल रहा है।", "{?mal=stop-composite}{composite} को देखो।", "{?mode=strips}देखो, दोनों पट्टियाँ कैसी दिखती हैं।", "{?mode=bundles}लिखा हुआ और बचा हुआ, दोनों देखो।"]
       },
       "solved": {
-        "hinglish": ["Saare atoms. Wapas {n}!", "{strip}. Wapas {n}.", "Utni hi roti, naye tukde."],
-        "en": ["All atoms. Back to {n}!", "{strip}. Back to {n}.", "Same amount, new pieces."],
-        "hi": ["सारे एटम। वापस {n}!", "{strip}। वापस {n}।", "उतनी ही रोटी, नए टुकड़े।"]
+        "hinglish": ["{?goal=atoms}Saare atoms. Wapas {n}!", "{?goal=atoms}{strip}. Wapas {n}.", "{?goal=equal}Utni hi roti, naye tukde."],
+        "en": ["{?goal=atoms}All atoms. Back to {n}!", "{?goal=atoms}{strip}. Back to {n}.", "{?goal=equal}Same amount, new pieces."],
+        "hi": ["{?goal=atoms}सारे एटम। वापस {n}!", "{?goal=atoms}{strip}। वापस {n}।", "{?goal=equal}उतनी ही रोटी, नए टुकड़े।"]
       }
     },
     "taraazu": {
@@ -68,9 +68,9 @@
         "hi": ["{left} और {right}। सीधा।", "अब {left} = {right}।"]
       },
       "law_refused": {
-        "hinglish": ["Taraazu jhuk gaya.", "Ek taraf halki ho gayi.", "Bag akela nahi hai abhi.", "Barabar nahi bant-ta."],
-        "en": ["The scale tipped.", "One side got lighter.", "The bag isn't alone yet.", "That doesn't share equally."],
-        "hi": ["तराज़ू झुक गया।", "एक तरफ़ हल्की हो गई।", "थैला अभी अकेला नहीं है।", "बराबर नहीं बँटता।"]
+        "hinglish": ["{?why=tipped}Taraazu jhuk gaya.", "{?why=tipped}Ek taraf halki ho gayi.", "{?why=not_alone}Bag akela nahi hai abhi.", "{?why=not_equal_groups}Barabar nahi bant-ta."],
+        "en": ["{?why=tipped}The scale tipped.", "{?why=tipped}One side got lighter.", "{?why=not_alone}The bag isn't alone yet.", "{?why=not_equal_groups}That doesn't share equally."],
+        "hi": ["{?why=tipped}तराज़ू झुक गया।", "{?why=tipped}एक तरफ़ हल्की हो गई।", "{?why=not_alone}थैला अभी अकेला नहीं है।", "{?why=not_equal_groups}बराबर नहीं बँटता।"]
       },
       "misconception_consequence": {
         "hinglish": ["Taraazu abhi jhuka hua hai.", "Dekho, dono taraf barabar hai kya?"],
@@ -85,9 +85,9 @@
     },
     "nishana": {
       "law_refused": {
-        "hinglish": ["{value} kahan gira, dekho.", "{gap} ka farak.", "Lagbhag {gap_about} ka farak."],
-        "en": ["See where {value} landed.", "Off by {gap}.", "Off by about {gap_about}."],
-        "hi": ["{value} कहाँ गिरा, देखो।", "{gap} का अंतर।", "लगभग {gap_about} का अंतर।"]
+        "hinglish": ["{?why=landed_off|look_again}{value} kahan gira, dekho.", "{?why=landed_off}{gap} ka farak.", "{?why=landed_off}Lagbhag {gap_about} ka farak."],
+        "en": ["{?why=landed_off|look_again}See where {value} landed.", "{?why=landed_off}Off by {gap}.", "{?why=landed_off}Off by about {gap_about}."],
+        "hi": ["{?why=landed_off|look_again}{value} कहाँ गिरा, देखो।", "{?why=landed_off}{gap} का अंतर।", "{?why=landed_off}लगभग {gap_about} का अंतर।"]
       },
       "misconception_consequence": {
         "hinglish": ["{value} asal mein kahan rehta hai?", "Dekho, {value} ka jhanda kahan utha."],
@@ -95,9 +95,9 @@
         "hi": ["{value} असल में कहाँ रहता है?", "देखो, {value} का झंडा कहाँ उठा।"]
       },
       "solved": {
-        "hinglish": ["{value} yahin rehta hai.", "Jhanda wahin utha."],
-        "en": ["That's where {value} lives.", "The flag went up there."],
-        "hi": ["{value} यहीं रहता है।", "झंडा वहीं उठा।"]
+        "hinglish": ["{?goal=place}{value} yahin rehta hai.", "{?goal=place|compare}Jhanda wahin utha."],
+        "en": ["{?goal=place}That's where {value} lives.", "{?goal=place|compare}The flag went up there."],
+        "hi": ["{?goal=place}{value} यहीं रहता है।", "{?goal=place|compare}झंडा वहीं उठा।"]
       }
     },
     "kyun-lab": {
@@ -107,9 +107,9 @@
         "hi": ["अब {differences} चीज़ अलग।"]
       },
       "law_refused": {
-        "hinglish": ["Do cheezein alag thi: {which}.", "Kuch bhi alag nahi, toh kya pata chalega?"],
-        "en": ["Two things differed: {which}.", "Nothing differs, so what would we learn?"],
-        "hi": ["दो चीज़ें अलग थीं: {which}।", "कुछ भी अलग नहीं, तो क्या पता चलेगा?"]
+        "hinglish": ["{?why=several_differ}Ek se zyada cheez alag thi. Kis wajah se hua?", "{?why=nothing_differs}Kuch bhi alag nahi, toh kya pata chalega?"],
+        "en": ["{?why=several_differ}More than one thing was different. Which one did it?", "{?why=nothing_differs}Nothing differs, so what would we learn?"],
+        "hi": ["{?why=several_differ}एक से ज़्यादा चीज़ अलग थी। किस वजह से हुआ?", "{?why=nothing_differs}कुछ भी अलग नहीं, तो क्या पता चलेगा?"]
       },
       "prediction_violated": {
         "hinglish": ["Arre! {a} aur {b}.", "Dekho: {a} aur {b}."],
@@ -117,9 +117,9 @@
         "hi": ["अरे! {a} और {b}।", "देखो: {a} और {b}।"]
       },
       "misconception_consequence": {
-        "hinglish": ["Chalao aur dekho.", "Kitni cheezein alag thi?"],
-        "en": ["Run it and see.", "How many things were different?"],
-        "hi": ["चलाओ और देखो।", "कितनी चीज़ें अलग थीं?"]
+        "hinglish": ["{?predicted}Chalao aur dekho.", "{?mal=many-at-once}Kitni cheezein alag thi?"],
+        "en": ["{?predicted}Run it and see.", "{?mal=many-at-once}How many things were different?"],
+        "hi": ["{?predicted}चलाओ और देखो।", "{?mal=many-at-once}कितनी चीज़ें अलग थीं?"]
       }
     }
   }

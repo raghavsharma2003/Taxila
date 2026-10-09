@@ -15,8 +15,21 @@ export const MIN_GAP_S = 4;
 export interface ReactHistory { used: Set<string>; lastAt: number; count: number }
 export const newHistory = (): ReactHistory => ({ used: new Set(), lastAt: -1e9, count: 0 });
 
-/** Fill {slot}s from facts; a missing slot makes the shape unusable (never "{n}" on screen or in her mouth). */
+/**
+ * Fill {slot}s from facts; a missing slot makes the shape unusable (never "{n}" on screen or in her mouth). A shape may
+ * start with a condition `{?key=a|b}` (usable only when facts[key] is one of the values) or `{?key}` (only when the fact
+ * exists). pickReaction adds the level's `mode` and `goal` and the moment's mal-rule as `mal` for conditions. Refusal shapes carry the
+ * refusal they describe (`{?why=not_enough}`): an unconditioned "these pieces are different sizes" was said to a child
+ * taking 5 hundreds from 0 in the place-value game (found in a mistake-state screenshot, 2026-10-09).
+ */
 export function fill(shape: string, facts: Facts): string | null {
+  const cond = /^\{\?(\w+)(?:=([^}]*))?\}/.exec(shape);
+  if (cond) {
+    const v = facts[cond[1]];
+    if (v === undefined || v === null || v === "") return null;
+    if (cond[2] !== undefined && !cond[2].split("|").includes(String(v))) return null;
+    shape = shape.slice(cond[0].length);
+  }
   let ok = true;
   const out = shape.replace(/\{(\w+)\}/g, (_, k: string) => { const v = facts[k]; if (v === undefined || v === null || v === "") { ok = false; return ""; } return String(v); });
   return ok ? out : null;
@@ -26,7 +39,7 @@ export function fill(shape: string, facts: Facts): string | null {
  * The line for the most important moment of one act, or null. `hidden` = values the child must still produce (the key);
  * a filled line carrying one is refused (reactionProblems "reveals_hidden"). `nowS` drives the gap rule.
  */
-export function pickReaction(bank: ReactionBank, moments: Moment[], o: { lang: Lang; family?: string; seed: string; hist: ReactHistory; nowS: number; hidden?: (string | number)[]; extraCheck?: (text: string) => boolean }): Reaction | null {
+export function pickReaction(bank: ReactionBank, moments: Moment[], o: { lang: Lang; family?: string; mode?: string; goal?: string; seed: string; hist: ReactHistory; nowS: number; hidden?: (string | number)[]; extraCheck?: (text: string) => boolean }): Reaction | null {
   if (o.nowS - o.hist.lastAt < MIN_GAP_S && !moments.some((m) => m.kind === "solved")) return null;
   const sorted = [...moments].sort((a, b) => REACT_ORDER.indexOf(a.kind) - REACT_ORDER.indexOf(b.kind));
   for (const m of sorted) {
@@ -34,7 +47,7 @@ export function pickReaction(bank: ReactionBank, moments: Moment[], o: { lang: L
     const fam = o.family ? bank.family?.[o.family]?.[m.kind]?.[o.lang] : undefined;
     const shapes = [...(fam ?? []), ...(bank.moments[m.kind]?.[o.lang] ?? [])];
     if (!shapes.length) continue;
-    const facts: Facts = { ...m.facts };
+    const facts: Facts = { ...(o.mode ? { mode: o.mode } : {}), ...(o.goal ? { goal: o.goal } : {}), ...(m.misconceptionId ? { mal: m.misconceptionId } : {}), ...m.facts };
     const start = hash32(`${o.seed}:${m.kind}:${o.hist.count}`) % shapes.length;
     for (let k = 0; k < shapes.length; k++) {
       const i = (start + k) % shapes.length;

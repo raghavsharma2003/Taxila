@@ -227,6 +227,9 @@ export function measureStage() {
       for (const q of e.recs) {
         if ((q.alpha ?? 1) < 0.5 || !String(q.t).trim()) continue;
         const rr = { x: Math.round(r.left + q.x * sx), y: Math.round(r.top + q.y * sy), w: Math.round(q.w * sx), h: Math.round(q.h * sy) };
+        // a run painted outside the canvas bitmap is clipped by the canvas: not on the screen
+        const ix = Math.max(0, Math.min(rr.x + rr.w, r.right) - Math.max(rr.x, r.left)), iy = Math.max(0, Math.min(rr.y + rr.h, r.bottom) - Math.max(rr.y, r.top));
+        if (ix * iy < 0.5 * Math.max(1, rr.w * rr.h)) continue;
         out.texts.push({ t: q.t, px: Math.round(q.fs * sx * 10) / 10, ...rr, outside: !inside(rr, region), ellipsis: false, chrome: false, svg: false, canvas: true });
         grow({ left: rr.x, top: rr.y, right: rr.x + rr.w, bottom: rr.y + rr.h, width: rr.w, height: rr.h });
       }
