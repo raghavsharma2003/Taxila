@@ -1,7 +1,9 @@
 # Round 4 · world · SPEC: Prakash, the system
 
 **Direction:** Prakash, a game-native world ("prakash" means light; the class 6 maths book is *Ganita Prakash*).
-**Prototype:** `index.html` (one file, 650 KB, six screens, live). **Proof:** `shots/`. **Research:** `RESEARCH.md`.
+**Prototype:** `index.html` (one file, 654 KB, six screens, live). **Proof:** `shots/` (`screens/` = the six screens
+plus the teacher-pick step at 360 × 800, 412 × 915 and 1366 × 768; `flow/` = every interaction state; `motion/` = the
+lesson as webm, frames and a contact sheet). **Research:** `RESEARCH.md`. **Sources and harness:** `source/`.
 **Contrast:** `contrast.py` → `contrast.json` (24 pairs, 0 fails). **Status:** a design direction. No child has seen it.
 Nothing below is measured on a Rs 10k phone. The one performance number is a headless proxy, labelled as such (§8).
 
@@ -227,8 +229,8 @@ round 3's four unrelated looks (kagaz, chalk, blueprint, raat).
   squash, a hit-stop, a crack, dust and two blocks springing to their places. A non-divisor gives a wobble, a tock and
   a floating "72 ÷ 5 = 14, 2 left" (the law answers). Primes crystallise into brass-inlaid octagon medallions with a
   bell. "Done" with a composite leaf left makes that block hum (the `m-stop-composite` consequence). Solved: the atoms
-  gather in a row and multiply back up to the number, a four-note close plays, and the scaffold appears on the
-  terrace "in pencil". Asha's lines come from the authored bank (`data/play/reactions.json`), only at turn points.
+  gather in a row and multiply back up to the number, and a four-note close plays. On the world map, the pavilion for
+  prime factorisation becomes a lit scaffold ("in pencil": game evidence alone never carves it into stone). Asha's lines come from the authored bank (`data/play/reactions.json`), only at turn points.
   Two doors, both reward-free: In band (72) and Harder (360, the chapter's own hook).
 - **Taraazu: the bazaar balance under a chhatri.** A brass taraazu on a sandstone plinth, sandstone cubes, a cloth
   bag for x tied with a red-brown thread (never red as a verdict). The beam angle is the law. A level beam glints once
@@ -289,7 +291,8 @@ and the game.
 ## 9. Accessibility
 
 - **Targets ≥ 44 px, text ≥ 14 px, no horizontal scroll at 360.** Checked by the harness on every screen and state
-  at 360 × 800, 412 × 915 and 1366 × 768 (`shots/report.json`, `shots/flow/`). Map labels are SVG and scale with the
+  at 360 × 800, 412 × 915 and 1366 × 768 (`shots/screens/checks.json`, `shots/flow/checks.txt`: 0 overflows, 0 text under
+  14 px and 0 targets under 44 px in the final pass). Map labels are SVG and scale with the
   map, so the List view is the accessible source of truth.
 - **Contrast AA:** §1.3.
 - **State never by colour alone:** every floor state is carried by a word ("Talking", "Your turn", "Listening…",

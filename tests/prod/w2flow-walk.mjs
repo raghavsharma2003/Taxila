@@ -43,6 +43,17 @@ page.on("pageerror", (e) => errors.push(String(e.message).slice(0, 160)));
 const btn = (re) => page.locator("button", { hasText: re }).first();
 const pause = (ms) => page.waitForTimeout(ms);
 
+/**
+ * An API call made BY THE PAGE (same-origin fetch with the page's cookies). Round 3 integration: Playwright's
+ * page.request does not send the session cookie's `Secure` flag over a LOCAL http://127.0.0.1 server (NODE_ENV=production
+ * sets Secure), so cleanup answered 401 and leaked the account on the TEST branch; the page itself sends it (localhost is a
+ * secure context). Same result against taxila.dev (https).
+ */
+const inPage = (method, path, data) => page.evaluate(async ([m, u, d]) => {
+  const r = await fetch(u, { method: m, credentials: "same-origin", headers: { "content-type": "application/json" }, ...(d ? { body: JSON.stringify(d) } : {}) });
+  return { status: r.status, ...(await r.json().catch(() => ({}))) };
+}, [method, path, data ?? null]);
+
 /** Overflow and containment facts for the current screen. */
 const layout = () => page.evaluate(() => {
   const r = (el) => el?.getBoundingClientRect() ?? null;
@@ -54,10 +65,19 @@ const layout = () => page.evaluate(() => {
   // paints) before the controller's own canvases, and a 0-width rect is never "inside"
   const drawing = [...(stage?.querySelectorAll("svg, iframe, img, canvas") ?? [])].map((e) => r(e)).find((x) => x && x.width > 0) ?? null;
   const frame = r(document.querySelector('[data-testid="tray"] iframe'));
+  // round 3 forge camera (src/studio/boardView.ts, StudioStage.tsx st-frame): a FRAMED board draws the whole board at the
+  // frame's scale, shifted so the frame fills the box, and the box clips (overflow hidden). Its <svg> is larger than the box
+  // by design, so "drawn inside the box" means: the box clips, and every drawn label sits inside it (the camera never crops
+  // a drawn op). Unframed boards and other pieces keep the old whole-drawing check.
+  const boxEl = document.querySelector('[data-testid="studio-box"]');
+  const framed = stage?.getAttribute("data-framed") === "1";
+  const clips = !!boxEl && ["hidden", "clip"].includes(getComputedStyle(boxEl).overflowX) && ["hidden", "clip"].includes(getComputedStyle(boxEl).overflowY);
+  const labels = framed ? [...stage.querySelectorAll("svg text")].map((e) => r(e)).filter((x) => x && x.width > 0) : [];
+  const drawingInBox = !box || !drawing ? null : framed ? clips && labels.every((t) => inside(t, box)) : inside(drawing, box);
   return {
     overflowX: document.documentElement.scrollWidth > window.innerWidth + 1,
     stageKind: stage?.getAttribute("data-kind") ?? null, stageState: stage?.getAttribute("data-state") ?? null,
-    boxInTray: box ? inside(box, tray) : null, drawingInBox: box && drawing ? inside(drawing, box) : null,
+    boxInTray: box ? inside(box, tray) : null, drawingInBox, framed,
     frameInTray: frame ? inside(frame, tray) : null,
   };
 });
@@ -284,7 +304,7 @@ try {
   // numbers lesson, so a sibling (class 5) runs the fractions topic W2-H's battery uses, with the @taxila.test clock moved
   // past that moment (POST /api/test/clock: test accounts only), until the stage shows a non-whiteboard piece.
   if (process.env.W2FLOW_STUDIO !== "0") {
-    const api = async (method, path, data) => { const r = await page.request.fetch(`${BASE}${path}`, { method, data }); return { status: r.status(), ...(await r.json().catch(() => ({}))) }; };
+    const api = (method, path, data) => inPage(method, path, data);
     await api("POST", "/api/parent/unlock", { pin: PIN });
     const kid = (await api("POST", "/api/children", { firstName: "Aarav", classLevel: 5, languagePref: "hinglish", interests: ["cricket"] })).child;
     if (kid?.id) {
@@ -355,9 +375,9 @@ try {
   await page.screenshot({ path: `${SHOTS}zz-error.png` }).catch(() => {});
 } finally {
   if (created) {
-    await page.request.post(`${BASE}/api/parent/unlock`, { data: { pin: PIN } }).catch(() => {});
-    const del = await page.request.delete(`${BASE}/api/account`, { data: { password, confirm: true } }).catch(() => null);
-    ok(del?.status() === 200, `cleanup: the walk's account is deleted (${del?.status() ?? "no response"})`);
+    await inPage("POST", "/api/parent/unlock", { pin: PIN }).catch(() => {});
+    const del = await inPage("DELETE", "/api/account", { password, confirm: true }).catch(() => null);
+    ok(del?.status === 200, `cleanup: the walk's account is deleted (${del?.status ?? "no response"})`);
   }
   await browser.close();
   const after = await countTestGuardians().catch(() => null);

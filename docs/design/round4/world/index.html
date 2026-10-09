@@ -542,7 +542,7 @@ svg { display: block; }
   .mp-sheet { left: auto; right: 20px; top: 76px; bottom: 20px; width: 420px; max-height: none; transform: translateX(110%); }
   .mp-sheet.open { transform: none; }
   .mp-here { right: 480px; bottom: 20px; }
-  .mp-list { padding: 80px 10% 40px; columns: 2; column-gap: 20px; }
+  .mp-list.on { display: grid; grid-template-columns: 1fr 1fr; gap: 0 20px; align-content: start; padding: 80px 10% 40px; }
   .mp-list section { break-inside: avoid; }
 
   .pr-top { padding: 14px 32px; }
@@ -655,6 +655,10 @@ i.op { font-family: var(--f-ui); font-style: normal; font-weight: 600; color: va
 .h-title h1 .lt { display: inline-block; animation: letterUp 900ms var(--e-out) both; }
 @keyframes letterUp { from { opacity: 0; transform: translateY(18px); filter: blur(3px); } to { opacity: 1; transform: none; filter: none; } }
 @media (prefers-reduced-motion: reduce) { .h-title h1 .lt { animation: none; } }
+
+.mp::before, .mp::after { content: ""; position: absolute; left: 0; right: 0; z-index: 5; pointer-events: none; }
+.mp::before { top: 0; height: 120px; background: linear-gradient(180deg, rgba(9,11,36,.92), rgba(9,11,36,.55) 55%, rgba(9,11,36,0)); }
+.mp::after { bottom: 0; height: 150px; background: linear-gradient(0deg, rgba(9,11,36,.85), rgba(9,11,36,0)); }
 
 </style>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -1125,8 +1129,9 @@ function go(id, o = {}) {
   try { history.replaceState(null, "", "#" + id + (document.getElementById("shell").classList.contains("phone") ? "&phone" : "")); } catch {}
 }
 const centerOf = (el) => { if (!el) return null; const r = el.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; };
-function placeName(el, kicker, title) {
+function placeName(el, kicker, title, top) {
   const p = el.querySelector(".placename"); if (!p) return;
+  p.style.top = top || "";
   p.innerHTML = `<div class="pn-k">${kicker}</div><div class="pn-t">${title}</div>`;
   p.classList.remove("show"); void p.offsetWidth; p.classList.add("show");
 }
@@ -1614,7 +1619,7 @@ Screens.home = {
   },
   enter() {
     requestAnimationFrame(() => { this.place(); Face.attach($(".asha-win", this.el), [170, 50, 690]); });
-    placeName(this.el, "Riya · Class 6", "The Terrace");
+    placeName(this.el, "Riya · Class 6", "The Terrace", "12%");
     settleLayers($(".home-scene", this.el));
     setTimeout(() => { if (CUR === "home") this.speak("Kal tumne common factors pakke kiye. Aaj ek number ko uske primes tak todenge."); }, 1200);
   },
@@ -1879,8 +1884,8 @@ Screens.lesson = {
     if (step === 5) {
       const fade = RM ? Promise.resolve() : g.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 380, fill: "forwards" }).finished.catch(() => {});
       fade.then(() => { g.getAnimations().forEach((a) => a.cancel()); g.innerHTML = "";
-        this.text(g, 4, 6, "Example", 14, "#F4E7C9", 0, "start").setAttribute("opacity", ".6");
-        this.text(g, 4, 28, "12 = 2 × 2 × 3", 17, "#FFE2A1", 80, "start");
+        this.text(g, 4, 17, "Example", 14, "#F4E7C9", 0, "start").setAttribute("opacity", ".6");
+        this.text(g, 4, 39, "12 = 2 × 2 × 3", 17, "#FFE2A1", 80, "start");
         this.main.innerHTML = ""; this.n36 = this.node(this.main, 172, 54, 36, "comp", 0, true); });
     }
   },
@@ -2378,7 +2383,7 @@ Screens.map = {
       const anc = this.wide ? "middle" : ch.X > 0 ? "end" : "start", lx = this.wide ? top[0] : top[0] + (ch.X > 0 ? 64 : -64);
       g += `<text x="${lx}" y="${top[1] - 24}" text-anchor="${anc}" font-family="Eczar, Georgia, serif" font-weight="700" font-size="16" fill="#F7F0E6" stroke="#0B0D27" stroke-width="4" paint-order="stroke" letter-spacing=".02em">${ch.n} · ${ch.t}</text>`;
       if (ch.n === 5) { const pole = P(cx + h - 0.15, cy - h + 0.15, zt); g += `<path d="M${pole[0]},${pole[1]} L${pole[0]},${pole[1] - 2.4 * s}" stroke="#E9C27A" stroke-width="2"/><path d="M${pole[0]},${pole[1] - 2.4 * s} l${0.9 * s},${0.3 * s} l${-0.9 * s},${0.3 * s} z" fill="#FFC24D"/>
-        <g transform="translate(${this.wide ? pole[0] + 0.9 * s + 10 : pole[0] - 136} ${this.wide ? pole[1] - 2.1 * s : pole[1] - 1.6 * s})"><rect x="0" y="-13" width="128" height="24" fill="#FFC24D"/>${this.wide ? "" : '<path d="M128,-6 l6,5 l-6,5z" fill="#FFC24D"/>'}<text x="8" y="4" font-family="Mukta, sans-serif" font-weight="700" font-size="14" fill="#2A1607">Your class is here</text></g>`; }
+        <g transform="translate(${this.wide ? top[0] - 64 : lx + (ch.X > 0 ? -128 : 0)} ${top[1] - 60})"><rect x="0" y="-13" width="128" height="24" fill="#FFC24D"/><text x="8" y="4" font-family="Mukta, sans-serif" font-weight="700" font-size="14" fill="#2A1607">Your class is here</text></g>`; }
       const hit = [P(cx - h, cy - h, zt + 2), R, P(cx + h, cy + h, zb + 4), P(cx - h, cy + h, zb + 4), L];
       w += `<g class="mesa" data-ch="${ch.n}">${g}<path class="hit" d="M${[top, R, B, P(cx + h, cy + h, zt - 3), P(cx - h, cy + h, zt - 3), L].map((p) => p[0].toFixed(1) + "," + p[1].toFixed(1)).join(" L")} Z" transform="translate(0 -14)" fill="transparent" role="button" tabindex="0" aria-label="Chapter ${ch.n}, ${ch.t}: ${lit} of ${ch.topics.length} ideas lit"/></g>`;
       const mb = P(cx, cy, zt - 6.2);
