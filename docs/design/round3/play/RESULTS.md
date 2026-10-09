@@ -246,3 +246,12 @@ craft (4 / 5). Brain prefers the play families on every criterion in both varian
     still running). Both wrote to the same screenshot folders and inbox file for about ten minutes. Every number above was
     re-measured after that window on the final build: screens 14:02, judges pass 3, local acceptance 14:21. The pass-2
     judge screens were overwritten.
+
+## 7. Gates on the final tree (2026-10-09, about 14:30 UTC)
+
+`npx tsc -b` clean. `node --test tests/play-*.test.mjs` 84 / 84. `tests/runtime-image-imports.test.mjs` 1 / 1. A production
+`vite build` to a scratch directory succeeds and emits the `PlayStudioRenderer` chunk (through forge's renderer glob in
+the working tree). `npm test` (every file in one process): 2426 pass, 3 fail. All 3 failures are in other streams' files,
+none imports `src/play` or `server/play`: `duplex-runtime` barge-in, `round2-content` board-first preselect,
+`studio-stage-geometry`. The five patches pass `git apply --check` against the working tree and the index at HEAD
+`6aeda52`.
