@@ -105,7 +105,7 @@
   {
    "id": "rj-r3p-unconditioned-reaction-shapes",
    "kind": "rejection",
-   "title": "Reaction shapes keyed only by family x moment: a family bank spans several modes and refusals, so context-free lines were spoken where they were false - 'Yeh tukde alag size ke hain' (strips: unlike pieces) to a child taking 5 hundreds from 0 in the place-value game, 'Barabar nahi bant-ta' (shares unequally) on a one-sided removal in the balance, '1 se kuch nahi badla' (factor-tree include-one) available for a place-value misconception, 'Saare atoms. Wapas {n}!' on an HCF solve. Found by reading the captions on mistake-state screenshots. Replaced by shape conditions {?why=..}/{?mal=..}/{?mode=..}/{?goal=..}/{?key} filled from the moment, the level and the mal-rule; every law_refused shape must name its refusal and every condition value must exist in that family's law (tests/play-react.test.mjs).",
+   "title": "A per-FAMILY reaction bank whose shapes carry no condition: a family with several modes (Todo-Jodo: atoms, strips, bundles) said strips lines in other modes. Seen on mistake-state stills 2026-10-09: taking 5 hundreds from 0 in the place-value game drew 'Yeh tukde alag size ke hain' (these pieces are different sizes); a one-sided removal on the balance drew 'Barabar nahi bant-ta' (does not share equally); a bundles misconception could draw '1 se kuch nahi badla' and a strips solve 'Wapas {n}'. Fixed by shape conditions ({?why=}, {?mal=}, {?mode=}, {?goal=}, {?predicted}) checked in fill(), and a test that every law_refused shape names its why and every condition names a refusal / mal-rule / mode / goal that exists in that family.",
    "at": "2026-10-09"
   },
   {
@@ -118,18 +118,6 @@
    "id": "r3p-reaction-shape-conditions",
    "kind": "decision",
    "title": "The teacher's in-play micro-lines stay an authored, code-filled bank (no model writes or picks them) and every line that is true only in one context carries a code condition on the moment's refusal, mal-rule, mode or goal; a line whose condition does not hold is never said (silence is the fallback). Why: a fluent line that is false in context costs her credibility with the child more than silence. Reverse if: a measured child-facing study shows the conditioned bank is silent so often that children read the silence as absence (then author more conditioned lines, still no free generation).",
-   "at": "2026-10-09"
-  },
-  {
-   "id": "rj-r3p-unconditioned-reaction-shapes",
-   "kind": "rejection",
-   "title": "A per-FAMILY reaction bank whose shapes carry no condition: a family with several modes (Todo-Jodo: atoms, strips, bundles) said strips lines in other modes. Seen on mistake-state stills 2026-10-09: taking 5 hundreds from 0 in the place-value game drew 'Yeh tukde alag size ke hain' (these pieces are different sizes); a one-sided removal on the balance drew 'Barabar nahi bant-ta' (does not share equally); a bundles misconception could draw '1 se kuch nahi badla' and a strips solve 'Wapas {n}'. Fixed by shape conditions ({?why=}, {?mal=}, {?mode=}, {?goal=}, {?predicted}) checked in fill(), and a test that every law_refused shape names its why and every condition names a refusal / mal-rule / mode / goal that exists in that family.",
-   "at": "2026-10-09"
-  },
-  {
-   "id": "r3p-judge-stills-need-mistake-state",
-   "kind": "constraint",
-   "title": "A model judge of a game from stills must be shown a state right after a typical mistake (the level's own mal-rule played as a child holding it would, or the refused move the belief makes): with mid-play stills only, both judges scored 'feedback that teaches' 1.9 / 2.5 of 5 and said 'cannot tell' (pass 1, 2026-10-09). harness/shots.mjs --mistakes; judge.mjs --mistakes.",
    "at": "2026-10-09"
   }
  ],
@@ -233,16 +221,6 @@
    "src": "r3p-reaction-shape-conditions",
    "rel": "part_of",
    "dst": "r3p-play-grammar-v1"
-  },
-  {
-   "src": "r3p-honest-approx-labels",
-   "rel": "caused_by",
-   "dst": "rj-r3p-unconditioned-reaction-shapes"
-  },
-  {
-   "src": "r3p-judge-stills-need-mistake-state",
-   "rel": "inherits",
-   "dst": "rj-holistic-model-judge-gate"
   }
  ]
 }

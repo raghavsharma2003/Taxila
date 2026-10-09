@@ -55,13 +55,23 @@ function answerFor(itemId, right) {
   const other = (it.options ?? []).map((o) => String(o.text ?? o)).find((o) => o.trim().toLowerCase() !== short.toLowerCase());
   return other ? `${said(other)}.` : null;
 }
-/** Walk a cascade lesson to its first kit item with a short key; returns { s, itemId, seq } (itemId null if none in 6 turns). */
+/** A faded worked-example step (W2-C "fade:N"): the words the faded line lacks are its blanks (the first-sound harness's rule). */
+function fadeFill(itemId) {
+  const i = Number(String(itemId).slice(5));
+  const step = KIT?.workedExample?.steps?.[i], faded = KIT?.workedExample?.fadedVersion?.[i];
+  if (!step || !faded) return null;
+  const have = new Set(faded.toLowerCase().split(/[^a-z0-9]+/));
+  const blanks = step.toLowerCase().split(/[^a-z0-9]+/).filter((w) => w && !have.has(w));
+  return blanks.length ? `${blanks.join(", ").replace(/\d+/g, (d) => NUM_HL[Number(d)] ?? d)}.` : null;
+}
+/** Walk a cascade lesson to its first kit item with a short key; returns { s, itemId, seq } (itemId null if none in 14 turns). */
 async function toItem(api, childId) {
   const s = await api("POST", "/api/lesson/start", { childId, mode: "cascade", topicId: TOPIC });
   let move = s.debug?.move ?? s.move ?? null, seq = 0;
-  for (let i = 0; i < 6; i++) {
-    if (move?.itemId && answerFor(move.itemId, true)) return { s, itemId: move.itemId, seq };
-    const r = await api("POST", "/api/lesson/turn", { lessonId: s.lessonId, childText: "Haan didi, samajh gaya.", typed: false, asrConfidence: 0.95, turnSeq: ++seq });
+  for (let i = 0; i < 14; i++) {
+    if (move?.itemId && !/^fade:/.test(move.itemId) && answerFor(move.itemId, true)) return { s, itemId: move.itemId, seq };
+    const line = /^fade:\d+$/.test(move?.itemId ?? "") ? fadeFill(move.itemId) ?? "Haan didi, samajh gaya." : move?.itemId ? "Mujhe nahi pata, ek baar aur batao na." : "Haan didi, samajh gaya.";
+    const r = await api("POST", "/api/lesson/turn", { lessonId: s.lessonId, childText: line, typed: false, asrConfidence: 0.95, turnSeq: ++seq });
     move = r.move;
     if (r.end) break;
   }
