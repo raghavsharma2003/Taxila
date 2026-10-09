@@ -130,12 +130,14 @@ test("G-PRAISE-1: an exact key match to a DIFFERENT question the teacher asked g
   const s = { phase: "practice", hintLevel: 0, activeItemId: item.id, pendingWhy: undefined, ctx: { lang: "hinglish" }, warmup: [], seed: 1 };
   const target = targetFor(s, SQ, item);
   const base = { target, childText: "36", typed: true };
-  assert.equal(classifyFast(base).result?.outcome, "correct", "no teacher turn known: the bytes decide, as before");
-  assert.equal(classifyFast({ ...base, heard: promptFor(item, "hinglish"), lang: "hinglish" }).result?.outcome, "correct", "the item was posed");
+  // data/kits-parts.json (shipped 2026-10-09): the question asks two things, so a bare "36" is partial under V1.1
+  const graded = "partial";
+  assert.equal(classifyFast(base).result?.outcome, graded, "no teacher turn known: the bytes decide, as before");
+  assert.equal(classifyFast({ ...base, heard: promptFor(item, "hinglish"), lang: "hinglish" }).result?.outcome, graded, "the item was posed");
   assert.equal(askedOther("Achha, ek chhota sawaal: 5 ka square kitna hota hai?", item, "hinglish"), true);
   assert.equal(classifyFast({ ...base, heard: "Achha, ek chhota sawaal: 5 ka square kitna hota hai?", lang: "hinglish" }).result, null,
     "the model decides (its rule: a reply to another question is no_attempt)");
-  assert.equal(classifyFast({ ...base, heard: "Socho dhyaan se. Dono 6 pe khatam hote hain.", lang: "hinglish" }).result?.outcome, "correct", "a nudge without a question");
+  assert.equal(classifyFast({ ...base, heard: "Socho dhyaan se. Dono 6 pe khatam hote hain.", lang: "hinglish" }).result?.outcome, graded, "a nudge without a question");
 });
 
 test("G-PRAISE-1: warmth about a question, a try or thinking is not a verdict; 'Right,' is a discourse marker", () => {
