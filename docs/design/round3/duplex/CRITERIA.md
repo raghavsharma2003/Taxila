@@ -15,14 +15,14 @@ E2 = AMI (CC BY 4.0, evaluation only): 4 meetings, 16 headset channels, 48 her/c
 | id | criterion (bar) | BEFORE | AFTER | met? |
 |---|---|---|---|---|
 | R1 | thinking-pause cut-offs <= 3 % AND <= silence-900 on the same pauses (India lane, MAI) | 19/147 = 12.9 % [8.4-19.3] | **6/147 = 4.1 %** [1.9-8.6] (silence-900 on the annotation 7/147 = 4.8 %; on the device's own silence clock 19/147) | **no** (<= silence-900 yes; <= 3 % no) |
-| R1-D4 | the same on the production lane (D4, eastus2) <= 3 % | 12/147 = 8.2 % [4.7-13.7] | **7/147 = 4.8 %** [2.3-9.5] | **no** |
+| R1-D4 | the same on the production lane (D4, eastus2) <= 3 % | 12/147 = 8.2 % [4.7-13.7] | **7/147 = 4.8 %** [2.3-9.5] on the 2026-10-07 events; **4/147 = 2.7 %** [1.1-6.8] on a fresh LIVE run 2026-10-09 (old engine on those same events: 6/147 = 4.1 %) | **no** as a gate (met on one live run, not on the replay; the CIs overlap 3 %) |
 | R1b | commits while the speaker is still voicing <= 1 % of turns (MAI) | 7/400 = 1.8 % | **4/400 = 1.0 %** | **yes** (at the bar) |
 | R2 | decision gap p50 <= 350 ms on the India lane | 910 ms | 1,011 ms (free exchange 1,021; question to her 811; closed answers 451, n = 9) | **no** |
 | R2b | turns never decided within 5 s <= 2 % | 1/400 | 1/400 | **yes** |
-| R3 | keeps talking through continuers >= 90 % (E2) | 139/195 = 71.3 % [64.6-77.2] | see §3 | see §3 |
-| R4 | her audio stops (hush or yield) within 200 ms in >= 50 % of real barge-ins (E2) | 17/51 = 33.3 % | see §3 | see §3 |
-| R5 | false yields to other voices in the room <= 10 % (E2; adults, not a TV or a sibling) | 37/239 = 15.5 % [11.4-20.6] | see §3 | see §3 |
-| R6 | self-yields on her own bleed <= 2 % (E2; headset bleed, harsher than a phone's AEC) | 116/730 = 15.9 % [13.4-18.7] | see §3 | see §3 |
+| R3 | keeps talking through continuers >= 90 % (E2) | 139/195 = 71.3 % [64.6-77.2] | **146/195 = 74.9 %** [68.3-80.4] | **no** |
+| R4 | her audio stops (hush or yield) within 200 ms in >= 50 % of real barge-ins (E2) | 17/51 = 33.3 % (p50 among stopped 310 ms) | **25/51 = 49.0 %** [35.9-62.3] (p50 among stopped 170 ms; stopped 35 → 39) | **no** (one barge-in short) |
+| R5 | false yields to other voices in the room <= 10 % (E2; adults, not a TV or a sibling) | 37/239 = 15.5 % [11.4-20.6] | **32/239 = 13.4 %** [9.6-18.3] (room bursts hushed 5.9 → 15.5 %) | **no** |
+| R6 | self-yields on her own bleed <= 2 % (E2; headset bleed, harsher than a phone's AEC) | 116/730 = 15.9 % [13.4-18.7] | **97/730 = 13.3 %** [11.0-15.9] | **no** |
 | R7 | child-safety floor never weaker (unit + replay suites) | green | green (§4) | **yes** |
 
 ## 2. E1 in detail (end of turn), TRAIN (chosen on) vs TEST (held out)
@@ -51,9 +51,20 @@ By the engine's exchange context at the turn end (ALL, MAI / D4):
 - India lane from India is ESTIMATE only: MAI commit→final is 68 ms from Chennai vs 320 ms from the US, so the covered-words
   moment (and every gap that waits on it) is ~250 ms earlier there: closed answers ≈ 200 ms p50, the free exchange is wait-bound (1.1 s).
 
-## 3. E2 in detail (overlap)
+## 3. E2 in detail (overlap), `evals/duplex-real/results/r3-ami-after.json`
 
-(filled from `evals/duplex-real/results/r3-ami-after.json` and the ablations; see the report)
+- **Continuers** 139 → 146/195. Revokes on a continuer 26 → 19 (the armed revoke); acoustic barge-in yields on a continuer
+  26 → 26: they are bursts the hush never met (the mic within 3 dB of her bleed: echo-like, so no hush, yet sustained), i.e.
+  the AMI bleed rig, where her voice reaches his headset at −10 to −22 dB. Continuers hushed (her dip, then back) 38 %.
+- **Barge-ins** 17 → 25/51 stopped within 200 ms; 18 hushed (hush latency p50 160 ms, 16 of 18 <= 200 ms); 33 never hushed
+  for the same echo-like reason or because the open-loop rig had already yielded on that line (phase child_turn while her line
+  continues: an artefact of open-loop replay; on a device she stops). Pauses within 1 s 26 → 19: the hush stands in for them.
+- **Room voices** 37 → 32/239 false yields, but hushed 14 → 37: she dips under another adult's voice more often (an audible
+  cost, not a criterion). No speaker model: TV / sibling rejection beyond pitch attribution is not solved (§5).
+- **Her own bleed** 116 → 97/730: reasons sustained voice 35, G11 forced yield 30, lexical "open tail" 9 (her words through
+  the bleed): a speakerphone with AEC leaks far less; this rig over-states echo (round 2 says the same).
+- **SIMULATED TaxilaFDB TEST** (child-like TTS, 960 streams x 3 lanes): continuers 0.944 → 0.986 (D4), stop <= 200 ms
+  unchanged 105/108, safety unchanged; pauses within 1 s fall with the 1,000 ms hushed sustain (§6).
 
 ## 4. R7: the safety floor
 

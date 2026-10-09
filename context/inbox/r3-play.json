@@ -75,7 +75,7 @@
   {
    "id": "rj-r3p-gap-label-exact",
    "kind": "rejection",
-   "title": "Labelling number-line gaps wrongly, twice: (1) every gap printed as an exact fraction of the step ('1/3 ka farak' for a 0.18 gap) -> gapInfo {g, exact} with 'lagbhag' shapes; (2) the first 'lagbhag' picked the COARSEST denominator that merely rounded to >= 1, so a 0.18 gap on a thirds line still read 'lagbhag 1/3' (should be about 1/6). The second was caught by a cross-family model judge (taxila-brain, B8 'factually wrong', pass 1) on a still; fixed to the coarsest step fraction within a third of its own step (0.18 -> 1/6, 0.45 -> 1/2, never 11/24) with unit tests.",
+   "title": "Labelling a number-line gap as an exact fraction of the step when it is not: a 0.18 gap was drawn as '1/3 ka farak' (first build) and the reaction bank echoed it; the first fix (gapInfo {g, exact} + 'lagbhag') still took the COARSEST denominator that rounded to >= 1 and printed 'lagbhag 1/3' for the same 0.18 gap on a thirds line (caught by a model judge, taxila-brain, on a still, 2026-10-09). Now: the coarsest step fraction within a third of its own step of the gap (0.18 -> about 1/6, 0.45 -> about 1/2, never 11/24); unit-tested.",
    "at": "2026-10-09"
   },
   {
@@ -118,6 +118,18 @@
    "id": "r3p-reaction-shape-conditions",
    "kind": "decision",
    "title": "The teacher's in-play micro-lines stay an authored, code-filled bank (no model writes or picks them) and every line that is true only in one context carries a code condition on the moment's refusal, mal-rule, mode or goal; a line whose condition does not hold is never said (silence is the fallback). Why: a fluent line that is false in context costs her credibility with the child more than silence. Reverse if: a measured child-facing study shows the conditioned bank is silent so often that children read the silence as absence (then author more conditioned lines, still no free generation).",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "rj-r3p-unconditioned-reaction-shapes",
+   "kind": "rejection",
+   "title": "A per-FAMILY reaction bank whose shapes carry no condition: a family with several modes (Todo-Jodo: atoms, strips, bundles) said strips lines in other modes. Seen on mistake-state stills 2026-10-09: taking 5 hundreds from 0 in the place-value game drew 'Yeh tukde alag size ke hain' (these pieces are different sizes); a one-sided removal on the balance drew 'Barabar nahi bant-ta' (does not share equally); a bundles misconception could draw '1 se kuch nahi badla' and a strips solve 'Wapas {n}'. Fixed by shape conditions ({?why=}, {?mal=}, {?mode=}, {?goal=}, {?predicted}) checked in fill(), and a test that every law_refused shape names its why and every condition names a refusal / mal-rule / mode / goal that exists in that family.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "r3p-judge-stills-need-mistake-state",
+   "kind": "constraint",
+   "title": "A model judge of a game from stills must be shown a state right after a typical mistake (the level's own mal-rule played as a child holding it would, or the refused move the belief makes): with mid-play stills only, both judges scored 'feedback that teaches' 1.9 / 2.5 of 5 and said 'cannot tell' (pass 1, 2026-10-09). harness/shots.mjs --mistakes; judge.mjs --mistakes.",
    "at": "2026-10-09"
   }
  ],
@@ -221,6 +233,16 @@
    "src": "r3p-reaction-shape-conditions",
    "rel": "part_of",
    "dst": "r3p-play-grammar-v1"
+  },
+  {
+   "src": "r3p-honest-approx-labels",
+   "rel": "caused_by",
+   "dst": "rj-r3p-unconditioned-reaction-shapes"
+  },
+  {
+   "src": "r3p-judge-stills-need-mistake-state",
+   "rel": "inherits",
+   "dst": "rj-holistic-model-judge-gate"
   }
  ]
 }

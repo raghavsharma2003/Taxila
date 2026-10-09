@@ -224,6 +224,11 @@ export const OVERLAP = {
    * after the burst instead of at the lane's first-text delay (D4 p90 2.0 s, MAI 3.2 s). Live only (shadow never probes).
    */
   overlapProbe: true,
+  /**
+   * Round 3 (experiment, OFF): an acoustics-only yield (the sustain rule, G11's forced yield) requires the same "not her echo"
+   * evidence as the hush (echoLikelihood < 0.5): a burst too close to her own echo to be hushed is left to its words.
+   */
+  acousticYieldNeedsNonEcho: false,
 };
 
 /**

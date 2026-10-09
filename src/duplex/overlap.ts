@@ -60,6 +60,8 @@ export function classifyOverlap(f: OverlapFeatures, s: { voicing: boolean; f0Slo
     }
   }
 
+  // round 3 (OVERLAP.acousticYieldNeedsNonEcho): a burst as close to her echo as this is never stopped for on acoustics alone
+  if (OVERLAP.acousticYieldNeedsNonEcho && f.echoLikelihood >= 0.5) { codes.push("echo_match"); return out(null, 0.3, false, false, null, "too_short"); }
   // 4. acoustics only (the first 150-250 ms)
   if (f.durMs < OVERLAP.decideMs && s.voicing) { codes.push("short_burst"); return out(null, 0.5, false, false, null, "too_short"); }
   // p1-duplex (2026-10-05, TaxilaFDB TRAIN, FAST): with the burst-local echo fix the acoustic path runs, and >= 6 st/s read
