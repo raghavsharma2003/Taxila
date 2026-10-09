@@ -77,6 +77,10 @@ export interface TurnAcoustics {
   finalRelDb?: number;
   /** Shipped flat-voiced-run proxy (dsp.ts flatVoicedRuns), kept as the floor when the detector is absent. */
   flatVoicedRuns: number;
+  /** Round 3: pauses the thinking-pause cue read since the previous child turn (holdCue.ts; duplex telemetry only). */
+  pausesRead?: number;
+  /** Round 3: of those, pauses it called a thinking pause (a filled pause just before the silence). */
+  thinkPauses?: number;
 }
 
 /** What rides on TurnRequest.voiceFeatures.kv (SPEC §1.5; adapter proposal A3 must admit it first). */

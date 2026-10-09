@@ -17,7 +17,11 @@ export type PuppetEvent =
   | { kind: "cut"; at: number }
   | { kind: "duplex"; cue: DuplexCue; at: number }
   /** The duplex host was torn down (duplexBridge.puppetDuplexDetach): floor faces and nods go back to the floor state. */
-  | { kind: "duplex-detach"; at: number };
+  | { kind: "duplex-detach"; at: number }
+  /** Round 3 (relational-human): her acknowledgement (the child's answer said back while she thinks: src/latency/ack.ts) starts
+   *  / ends sounding. The face stays in its THINKING floor face while her mouth says it (knowledge.ts K2): it is not her turn
+   *  starting, and no armed affect may fire on it (the affect belongs to the reply's words). */
+  | { kind: "ack"; phase: "start" | "end"; at: number };
 
 type Fn = (e: PuppetEvent) => void;
 const subs = new Set<Fn>();

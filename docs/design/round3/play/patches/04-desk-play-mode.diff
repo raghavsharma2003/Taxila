@@ -1,0 +1,130 @@
+--- a/src/child/lesson/deskLayout.ts
++++ b/src/child/lesson/deskLayout.ts
+@@ -35,6 +35,9 @@
+   stripNeed?: number;
+   /** The tray's measured content height (the NumberPad at full target size), dp: Work only. */
+   trayNeed?: number;
++  /** round 3 play mode (docs/design/round3/play/DESIGN.md §7): a play piece is in the tray. Its goal rail replaces the
++   *  question card (card 0) and the caption line folds into the speech row, so the game gets the Desk (Work only). */
++  play?: boolean;
+ }
+ 
+ export interface PhoneZones {
+@@ -142,6 +145,9 @@
+   }
+   // Content: the card holds what it holds (never clipped).
+   z.card = Math.max(z.card, need(i.cardNeed));
++  // Play mode: the game's goal rail is the card; her speech row keeps its minimum (face + caption line); the tray
++  // (elastic) takes the rest.
++  if (i.play && geometry === "work") { z.card = 0; z.caption = 0; z.teacher = Math.min(z.teacher, FACE_MIN[family] + 8); }
+   // Elastic zone takes the remainder (positive or negative).
+   const elastic: keyof PhoneZones = geometry === "work" ? "tray" : "teacher";
+   z[elastic] += h - sum(z);
+@@ -198,12 +204,12 @@
+   let right: WideZones["right"];
+   let overflow = false;
+   if (geometry === "work") {
+-    const card = Math.max(Math.round(128 * fs), need(i.cardNeed));
++    const card = i.play ? 0 : Math.max(Math.round(128 * fs), need(i.cardNeed));
+     const dock = Math.round(128 + 44 * (fs - 1));
+     const strip = stripOf(i);
+     const tray = H - card - 16 - 16 - strip - dock - 16;
+     overflow = tray < Math.max(TRAY_MIN[i.family], need(i.trayNeed));
+-    right = { padTop: 0, card, gapA: 16, tray: Math.max(0, tray), gapB: 16, strip, dock, pad: 16 };
++    right = { padTop: 0, card, gapA: i.play ? 0 : 16, tray: Math.max(0, tray + (i.play ? 16 : 0)), gapB: 16, strip, dock, pad: 16 };
+   } else {
+     const card = Math.max(Math.round(240 * fs), need(i.cardNeed));
+     const dock = Math.round(144 + 44 * (fs - 1));
+--- a/src/child/lesson/useDesk.ts
++++ b/src/child/lesson/useDesk.ts
+@@ -591,10 +591,12 @@
+   // The Keyboard layout only when an on-screen keyboard really covers the Desk (visualViewport), never from focus
+   // alone: a laptop, a hardware keyboard or a text-mode lesson with the field focused keeps the full layout.
+   const keyboardUp = typingFocus && !young && size.w < 600 && (size.keyboardInset ?? 0) > 0;
++  // round 3 play mode: a play piece in the Studio slot gets the Desk (docs/design/round3/play/patches/04)
++  const playMode = trayKind === "studio" && (ui.studioSlot?.artifact?.kind as string | undefined) === "play";
+   const layout: DeskLayout = solveDesk({
+     width: size.w, height: keyboardUp ? size.h - (size.keyboardInset ?? 0) : size.h, family: ctx.family, geometry: effectiveGeometry,
+     keyboard: keyboardUp, fontScale: size.fontScale,
+-    captionsOn: ctx.captionsAlways || ctx.band !== "b1", strip: stripH, cardNeed: size.cardNeed, stripNeed: size.stripNeed, trayNeed: size.trayNeed,
++    captionsOn: ctx.captionsAlways || ctx.band !== "b1", strip: stripH, cardNeed: playMode ? 0 : size.cardNeed, stripNeed: size.stripNeed, trayNeed: size.trayNeed, play: playMode,
+   });
+ 
+   // ───────── thinking beats ─────────
+@@ -623,7 +625,7 @@
+         ? { kind: "tiles", tiles: [], overlay: "help_menu" }
+         : null;
+   const geometryOut = tray && (trayOverlay || tray.overlay) ? "work" : effectiveGeometry;
+-  const finalLayout = geometryOut === effectiveGeometry ? layout : solveDesk({ width: size.w, height: size.h, family: ctx.family, geometry: geometryOut, fontScale: size.fontScale, captionsOn: ctx.captionsAlways || ctx.band !== "b1", strip: stripH, cardNeed: size.cardNeed, stripNeed: size.stripNeed, trayNeed: size.trayNeed });
++  const finalLayout = geometryOut === effectiveGeometry ? layout : solveDesk({ width: size.w, height: size.h, family: ctx.family, geometry: geometryOut, fontScale: size.fontScale, captionsOn: ctx.captionsAlways || ctx.band !== "b1", strip: stripH, cardNeed: playMode ? 0 : size.cardNeed, stripNeed: size.stripNeed, trayNeed: size.trayNeed, play: playMode });
+ 
+   // A "tap_in_tray" item whose activity failed (or never mounted) carries on by tiles or by words: Type comes back.
+   const formNow = ui.answerForm === "tap_in_tray" && trayKind !== "module" ? (chips.length ? "choice" : "words") : ui.answerForm;
+--- a/src/child/lesson/Desk.tsx
++++ b/src/child/lesson/Desk.tsx
+@@ -188,7 +188,9 @@
+   }
+ 
+   const topBar = <TopBar m={m} a={a} notMeWindow={!!(notMeWindow ?? m.notMeWindow)} phaseLine={phaseLine} wide={L.kind === "wide"} />;
+-  const card = <QuestionCard ask={m.ask} answer={m.answer} young={young} onHear={a.hearQuestion} onFix={a.fixAnswer} goal={m.ask ? null : m.shortTitle ? t("card.goal", { topic: m.shortTitle }) : null} />;
++  // round 3 play mode (docs/design/round3/play/patches/04): the game's own goal rail is the card while a play piece is up
++  const playMode = m.tray?.kind === "studio" && (m.tray.studio?.artifact?.kind as string | undefined) === "play";
++  const card = playMode ? null : <QuestionCard ask={m.ask} answer={m.answer} young={young} onHear={a.hearQuestion} onFix={a.fixAnswer} goal={m.ask ? null : m.shortTitle ? t("card.goal", { topic: m.shortTitle }) : null} />;
+   // The answer surfaces (tiles, the NumberPad, the Help menu over them) are AnswerTray's; the activity and the board
+   // stay WorkTray's (W1-B). BUILD-PLAN W1-A items 3 and 11.
+   const answerTray = m.tray && (m.tray.kind === "tiles" || m.tray.kind === "pad" || !!m.tray.overlay);
+--- a/src/child/lesson/WorkTray.tsx
++++ b/src/child/lesson/WorkTray.tsx
+@@ -14,6 +14,8 @@
+ import { Board } from "./Board.tsx";
+ import { StudioStage } from "../../studio/StudioStage.tsx";
+ import type { StudioStageEvent } from "../../studio/renderers.ts";
++// round 3 play (docs/design/round3/play/patches/04): a play piece's signed tokens → module events (src/play/lessonBridge.ts)
++import { playToLesson } from "../../play/lessonBridge.ts";
+ import type { DeskActions, TrayModel } from "./model.ts";
+ 
+ export function WorkTray({ tray, floor, young, modules, lang, ageBand, actions, onModuleFailed }:
+@@ -30,7 +32,7 @@
+           <ModuleTray modules={modules} lang={lang} ageBand={ageBand} onEvent={actions.moduleEvent} onFailed={onModuleFailed} />
+         ) : tray.kind === "studio" && tray.studio ? (
+           // W2 seam: the Studio stage (W2-H) reserves a fixed, aspect-fitted box in the tray for every Studio piece.
+-          <StudioStage slot={tray.studio} young={young} lang={lang} onEvent={(e) => studioToLesson(e, tray.studio?.intentId, actions.moduleEvent)} />
++          <StudioStage slot={tray.studio} young={young} lang={lang} onEvent={(e) => { studioToLesson(e, tray.studio?.intentId, actions.moduleEvent); playToLesson(e, tray.studio?.intentId, actions.moduleEvent); }} />
+         ) : tray.kind === "board" && tray.board ? (
+           <Board board={tray.board} young={young} />
+         ) : tray.kind === "tiles" && tray.tiles?.length ? (
+--- /dev/null
++++ b/tests/play-desk-seam.test.mjs
+@@ -0,0 +1,32 @@
++// Patch 04 (docs/design/round3/play/patches/04-desk-play-mode.diff): play mode gives the game the Desk. With a play piece
++// in the Studio slot the question card folds (the game's goal rail is the card) and the tray takes its height, so the play
++// renderer's minimum box (src/play/PlayStudioRenderer.tsx MIN_BOX 300 × 440) is met on common phones.
++import { describe, it } from "node:test";
++import assert from "node:assert/strict";
++import { solveDesk } from "../src/child/lesson/deskLayout.ts";
++import { MIN_BOX } from "../src/play/core/box.ts";
++
++describe("Desk play mode", () => {
++  for (const [w, h] of [[360, 690], [360, 800], [412, 915], [393, 760]]) for (const family of ["older", "young"]) {
++    it(`${w}×${h} ${family}: card folds, the tray grows by it, the play box fits`, () => {
++      const base = solveDesk({ width: w, height: h, family, geometry: "work", captionsOn: true });
++      const play = solveDesk({ width: w, height: h, family, geometry: "work", captionsOn: true, play: true });
++      assert.equal(play.phone.card, 0);
++      assert.ok(play.phone.tray >= base.phone.tray + base.phone.card, `${play.phone.tray} vs ${base.phone.tray}+${base.phone.card}`);
++      assert.ok(play.phone.dock === base.phone.dock && play.phone.top === base.phone.top, "the dock (her mic) and the top bar never shrink");
++      if (h >= 690 && family === "older") assert.ok(play.phone.tray >= MIN_BOX.h, `tray ${play.phone.tray} < ${MIN_BOX.h}`);
++      assert.equal(play.total, h);
++    });
++  }
++  it("wide: the card folds and the tray takes it", () => {
++    const base = solveDesk({ width: 1366, height: 768, family: "older", geometry: "work", captionsOn: true });
++    const play = solveDesk({ width: 1366, height: 768, family: "older", geometry: "work", captionsOn: true, play: true });
++    assert.equal(play.wide.right.card, 0);
++    assert.equal(play.wide.right.tray, base.wide.right.tray + base.wide.right.card + 16);
++  });
++  it("face geometry is untouched (play only ever rides in the Work tray)", () => {
++    const a = solveDesk({ width: 360, height: 800, family: "older", geometry: "face", captionsOn: true });
++    const b = solveDesk({ width: 360, height: 800, family: "older", geometry: "face", captionsOn: true, play: true });
++    assert.deepEqual(a, b);
++  });
++});

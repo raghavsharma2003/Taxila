@@ -1,0 +1,4802 @@
+{
+ "slot": 11,
+ "topic": "c5-maths-ch02-t01",
+ "cls": 5,
+ "lang": "english",
+ "lane": "text",
+ "lessons": [
+  {
+   "lessonId": "f701e134-7615-4d6f-a676-3ee901b222d0",
+   "why": "start",
+   "at": "2026-10-09T12:23:19.785Z",
+   "teacher": "Arjun"
+  }
+ ],
+ "turns": [
+  {
+   "who": "teacher",
+   "kind": "opening",
+   "lessonId": "f701e134-7615-4d6f-a676-3ee901b222d0",
+   "teacherReply": "Hi Riya, I’m Arjun, your AI teacher. Today we’ll place fractions on a number line, like beats finding their spots. Ready to begin?",
+   "ui": {
+    "status": "your_turn",
+    "phase": "warmup",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "Fractions on a line",
+    "beat": {
+     "beatId": "b1-arrive",
+     "type": "arrive",
+     "index": 1
+    },
+    "ask": {
+     "text": "Ready to begin?"
+    }
+   }
+  },
+  {
+   "who": "child",
+   "tag": "greet",
+   "lessonId": "f701e134-7615-4d6f-a676-3ee901b222d0",
+   "childText": "hello",
+   "ms": 3007,
+   "error": null,
+   "teacherReply": "Riya, imagine a song’s beat-line split into four equal parts. Where might three beats sit? At the end, you’ll teach Bittu.",
+   "move": {
+    "kind": "hook",
+    "shape": "open with one concrete everyday situation built on their interest (music) — kit contexts: road to the chai stall, km stones on a highway, cricket pitch length; ask what they think will happen or which they would pick — a prediction, no right answer yet; any bigger/more comparison: two quantities of one kind, in one unit — a count against a count, a distance against a distance; never across kinds; mention once: at the end they will teach this to Bittu (a pretend new student who missed this class)",
+    "format": "F4"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "teach",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "Fractions on a line",
+    "beat": {
+     "beatId": "b2-hook",
+     "type": "hook",
+     "index": 2
+    },
+    "ask": {
+     "text": "Where might three beats sit?"
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "leak"
+     ],
+     "rewritten": true,
+     "replaced": false,
+     "firstDraft": "Hello Riya! Imagine a song’s beat-line from 0 to 1: where might half a beat sit? At the end, you’ll teach Bittu.",
+     "afterRewrite": []
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 475,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "teach",
+    "ms": 3003,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 123
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 123
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 683
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 808
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1159
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1284
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1285
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1286
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1647
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1097
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2939
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3003
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:visual_request-05",
+   "lessonId": "f701e134-7615-4d6f-a676-3ee901b222d0",
+   "childText": "can you draw the number line?",
+   "ms": 1969,
+   "error": null,
+   "teacherReply": "Riya, look at the number line on screen: 0 |——|——|——|——| 1. What do the four equal spaces tell us?",
+   "move": {
+    "kind": "reteach",
+    "shape": "they asked to see it: a picture of the same idea; one idea; let the picture do the work; a few words about what to look at; the key stays unsaid; then one small question about what they see; it is on the screen now: point them at it in your first words and say what to look at",
+    "skillId": "c5-maths-ch02-t01-s1",
+    "request": "visual",
+    "visual": "diagram"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "teach",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Fractions on a line",
+    "beat": {
+     "beatId": "b3-explain",
+     "type": "explain",
+     "index": 3
+    },
+    "ask": {
+     "text": "What do the four equal spaces tell us?"
+    },
+    "studioSlot": {
+     "slotId": "f701e134-7615-4d6f-a676-3ee901b222d0:wb:2:slot",
+     "intentId": "f701e134-7615-4d6f-a676-3ee901b222d0:wb:2",
+     "state": "revealed",
+     "artifact": {
+      "kind": "whiteboard",
+      "stage": {
+       "w": 677,
+       "h": 423
+      },
+      "script": {
+       "v": 1,
+       "scriptId": "f701e134-7615-4d6f-a676-3ee901b222d0:wb:2",
+       "line": {
+        "lessonId": "f701e134-7615-4d6f-a676-3ee901b222d0",
+        "teacherReplySeq": 5
+       },
+       "anchor": "line_audio_start",
+       "board": {
+        "w": 677,
+        "h": 423,
+        "ground": "chalk"
+       },
+       "mode": "fresh",
+       "durationMs": 8568,
+       "ops": [
+        {
+         "id": "nl1",
+         "op": "line",
+         "startMs": 644,
+         "endMs": 2575,
+         "ink": "chalk",
+         "weight": 2,
+         "from": [
+          84.7,
+          254
+         ],
+         "to": [
+          592.7,
+          254
+         ]
+        },
+        {
+         "id": "zero1",
+         "op": "text",
+         "startMs": 2789,
+         "endMs": 3648,
+         "ink": "chalk",
+         "weight": 1,
+         "at": [
+          80.4,
+          287.9
+         ],
+         "text": "0",
+         "size": "m",
+         "align": "middle"
+        },
+        {
+         "id": "one1",
+         "op": "text",
+         "startMs": 3648,
+         "endMs": 4506,
+         "ink": "chalk",
+         "weight": 1,
+         "at": [
+          596.9,
+          287.9
+         ],
+         "text": "1",
+         "size": "m",
+         "align": "middle"
+        },
+        {
+         "id": "arrow1",
+         "op": "arrow",
+         "startMs": 4935,
+         "endMs": 6223,
+         "ink": "mark",
+         "weight": 1,
+         "from": [
+          84.7,
+          254
+         ],
+         "to": [
+          131.2,
+          254
+         ]
+        },
+        {
+         "id": "frac1",
+         "op": "text",
+         "startMs": 6866,
+         "endMs": 8368,
+         "ink": "accent",
+         "weight": 1,
+         "at": [
+          338.7,
+          194.7
+         ],
+         "text": "fraction",
+         "size": "l",
+         "align": "middle"
+        }
+       ],
+       "facts": {
+        "kind": "diagram",
+        "archetype": "whiteboard",
+        "onScreen": {
+         "labels": "0 | 1 | fraction",
+         "numbers": "0 1"
+        }
+       }
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "request"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "teach",
+    "ms": 1964,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 57
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 57
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 408
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 469
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 471
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 472
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1345
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1850
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1964
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "filler",
+   "lessonId": "f701e134-7615-4d6f-a676-3ee901b222d0",
+   "childText": "alright",
+   "ms": 3370,
+   "error": null,
+   "teacherReply": "Riya, from 0 to 1, split the line into five equal gaps. Each gap is one-fifth; what fraction is one gap?",
+   "move": {
+    "kind": "explain",
+    "shape": "one idea only: Mark unit fractions on a number line by splitting 0 to 1 into equal gaps; an example from their interest (music) if it fits naturally; objects first, then the symbol; point at the screen only at what the on-screen row lists; never a drawing made of characters; end with one small question that makes them USE the idea — never 'samjha?'",
+    "skillId": "c5-maths-ch02-t01-s1",
+    "format": "F3"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "teach",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "Fractions on a line",
+    "beat": {
+     "beatId": "b3-explain",
+     "type": "explain",
+     "index": 3
+    },
+    "ask": {
+     "text": "Each gap is one-fifth; what fraction is one gap?"
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "mount",
+     "moduleId": "m3",
+     "engine": "number-line@1",
+     "params": {
+      "topicId": "c5-maths-ch02-t01",
+      "skillId": null,
+      "lang": "english",
+      "fractions": [
+       [
+        2,
+        5
+       ]
+      ],
+      "numbers": [
+       0,
+       1
+      ]
+     }
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "parts"
+     ],
+     "rewritten": true,
+     "replaced": false,
+     "firstDraft": "Riya, each equal gap is one-fourth. The first mark is 1/4, like the first beat in a four-beat rhythm. What fraction is the second mark?",
+     "afterRewrite": []
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 402,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "teach",
+    "ms": 3364,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 77
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 78
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 765
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 858
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1175
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1259
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1262
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1267
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1435
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1648
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3297
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3364
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "f701e134-7615-4d6f-a676-3ee901b222d0",
+   "childText": "ok",
+   "ms": 2251,
+   "error": null,
+   "teacherReply": "Riya, now count two equal gaps from 0. Which fraction is at that second mark?",
+   "move": {
+    "kind": "worked_example",
+    "shape": "worked example, part 1 of 2: say one step, then ask them for the next step; their thinking, your pace; no new idea",
+    "skillId": "c5-maths-ch02-t01-s1",
+    "format": "F2"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "Mark 2/5 on a number line from 0 to 1."
+    },
+    "phase": "teach",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "Fractions on a line",
+    "beat": {
+     "beatId": "b4-worked_example",
+     "type": "worked_example",
+     "index": 4
+    },
+    "ask": {
+     "text": "Which fraction is at that second mark?"
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 1461,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "teach",
+    "ms": 2249,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 56
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 57
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 646
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 707
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 2108
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 2168
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 2178
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 2178
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1265
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2178
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2249
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "f701e134-7615-4d6f-a676-3ee901b222d0",
+   "childText": "okay",
+   "ms": 3102,
+   "error": null,
+   "teacherReply": "Riya, we drew 0 to 1 in five equal gaps and placed 2/5. Fill the gap: Check: 2/5 is ___ the middle, because 2/5 is less than 1/2.",
+   "move": {
+    "kind": "practice",
+    "shape": "the earlier steps in LESSON NOW, said briefly as done; then the step with the gap is theirs: pose it as written; wait; never fill the gap for them",
+    "itemId": "fade:4",
+    "skillId": "c5-maths-ch02-t01-s1",
+    "hintLevel": 0,
+    "probe": "P15",
+    "format": "F2"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "Mark 2/5 on a number line from 0 to 1. · Check: 2/5 is ___ the middle, because 2/5 is less than 1/2."
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Fill the gap: Check: 2/5 is ___ the middle, because 2/5 is less than 1/2.",
+     "itemId": "fade:4"
+    },
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "Fractions on a line",
+    "beat": {
+     "beatId": "b5-practice_set",
+     "type": "practice_set",
+     "index": 5
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "unmount",
+     "moduleId": "m3"
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "ask"
+     ],
+     "rewritten": true,
+     "replaced": false,
+     "firstDraft": "Riya, now complete this: 2/5 is ___ the middle, because 2/5 is less than 1/2.",
+     "afterRewrite": []
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": null,
+     "waitedMs": 1473,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 3099,
+    "item": "fade:4",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 54
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 54
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 726
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 783
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 2256
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 2261
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 2261
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": "timeout",
+      "ms": 2401
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1449
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1454
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3032
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3099
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "f701e134-7615-4d6f-a676-3ee901b222d0",
+   "childText": "okay",
+   "ms": 2581,
+   "error": null,
+   "teacherReply": "Riya, compare the two fractions by imagining both split into ten equal parts. Fill the gap: Check: 2/5 is ___ the middle, because 2/5 is less than 1/2.",
+   "move": {
+    "kind": "hint",
+    "shape": "their typed reply did not answer the question: no verdict, never ask them to repeat or say it again; one small nudge toward what the question asks; then the same question again, as written; no verdict on their reply: neither praise nor 'wrong'",
+    "itemId": "fade:4",
+    "skillId": "c5-maths-ch02-t01-s1",
+    "hintLevel": 0
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "2/5  ·  2/5  ·  1/2"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Fill the gap: Check: 2/5 is ___ the middle, because 2/5 is less than 1/2.",
+     "itemId": "fade:4"
+    },
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Fractions on a line",
+    "beat": {
+     "beatId": "b5-practice_set",
+     "type": "practice_set",
+     "index": 5
+    },
+    "studioSlot": {
+     "slotId": "f701e134-7615-4d6f-a676-3ee901b222d0:c1:slot",
+     "intentId": "f701e134-7615-4d6f-a676-3ee901b222d0:c1",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "catch-on-line@1",
+       "spec": {
+        "archetype": "catch-on-line@1",
+        "skills": [
+         "c5-maths-ch02-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "coach": "Drag to move the dock",
+         "wave": "Wave",
+         "of": "of",
+         "clear": "clear",
+         "landed": "landed",
+         "precision": "precision",
+         "chain": "chain",
+         "bestChain": "best chain",
+         "exact": "EXACT",
+         "close": "CLOSE",
+         "inside": "IN",
+         "offBy": "off by",
+         "same": "SAME SPOT",
+         "runDone": "Run complete",
+         "toughest": "Toughest"
+        },
+        "waves": [
+         {
+          "title": "Halfway stop",
+          "sub": "Split the road into two equal gaps",
+          "line": [
+           0,
+           1
+          ],
+          "ticks": 1,
+          "scaffoldTicks": 2,
+          "speed": 82,
+          "gap": 2.8,
+          "items": [
+           [
+            "1/2"
+           ],
+           [
+            "1/2"
+           ],
+           [
+            "1/2"
+           ]
+          ]
+         },
+         {
+          "title": "Quarter steps",
+          "sub": "Count equal gaps from zero",
+          "line": [
+           0,
+           1
+          ],
+          "ticks": 3,
+          "scaffoldTicks": 4,
+          "speed": 92,
+          "gap": 2.3,
+          "items": [
+           [
+            "1/4"
+           ],
+           [
+            "2/4"
+           ],
+           [
+            "3/4"
+           ],
+           [
+            "1/4"
+           ]
+          ]
+         },
+         {
+          "title": "Compare places",
+          "sub": "Small fractions can be close to zero",
+          "line": [
+           0,
+           1
+          ],
+          "ticks": 4,
+          "scaffoldTicks": 5,
+          "speed": 101,
+          "gap": 2,
+          "items": [
+           [
+            "1/5"
+           ],
+           [
+            "3/5"
+           ],
+           [
+            "2/5"
+           ],
+           [
+            "4/5"
+           ]
+          ]
+         },
+         {
+          "title": "Beyond one",
+          "sub": "The line continues past one",
+          "line": [
+           0,
+           2
+          ],
+          "ticks": 7,
+          "scaffoldTicks": 8,
+          "speed": 110,
+          "gap": 1.7,
+          "items": [
+           [
+            "5/4"
+           ],
+           [
+            "3/2"
+           ],
+           [
+            "7/4"
+           ],
+           [
+            "1/4"
+           ],
+           [
+            "4/4"
+           ]
+          ]
+         }
+        ],
+        "adapt": {
+         "slowAfterMisses": 2,
+         "slowFactor": 0.86,
+         "fastAfterChain": 4,
+         "fastFactor": 1.07,
+         "minScale": 0.7,
+         "maxScale": 1.3,
+         "scaffoldPods": 3
+        }
+       },
+       "boardTwin": {
+        "scriptRef": "board:c5-maths-ch02-t01-s1|practice|-|-",
+        "values": {
+         "title": "Landfall",
+         "need": "practice"
+        },
+        "board": {
+         "title": "Landfall",
+         "lines": [
+          "line",
+          "equal",
+          "gaps",
+          "mark"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": {
+    "reveal": "f701e134-7615-4d6f-a676-3ee901b222d0:c1"
+   },
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 354,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2576,
+    "item": "fade:4",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 52
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 53
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 776
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 839
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1131
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1193
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1199
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1199
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1309
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2514
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2575
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "f701e134-7615-4d6f-a676-3ee901b222d0",
+   "childText": "ok",
+   "ms": 2101,
+   "error": null,
+   "teacherReply": "Riya, let’s pause. Choose one: try an easier fraction, take a short stretch break, or continue with this line?",
+   "move": {
+    "kind": "break",
+    "shape": "pause the work; struggling is a normal part of learning (about the work, never about them); offer a choice: an easier one, a short stretch break, or keep going"
+   },
+   "ui": {
+    "status": "your_turn",
+    "chips": [
+     {
+      "id": "break:easier",
+      "label": "An easier one"
+     },
+     {
+      "id": "break:rest",
+      "label": "Short break"
+     },
+     {
+      "id": "break:continue",
+      "label": "Keep going"
+     }
+    ],
+    "phase": "practice",
+    "handover": "choice",
+    "answerForm": "choice",
+    "tray": "tiles",
+    "shortTitle": "Fractions on a line",
+    "beat": {
+     "beatId": "b6-break",
+     "type": "break",
+     "index": 6
+    },
+    "ask": {
+     "text": "Choose one: try an easier fraction, take a short stretch break, or continue with this line?"
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 582,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2095,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 72
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 75
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 660
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 751
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1248
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1333
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1334
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1335
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1879
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2033
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2095
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "f701e134-7615-4d6f-a676-3ee901b222d0",
+   "childText": "ok",
+   "ms": 2880,
+   "error": null,
+   "teacherReply": "Let’s use a number line from 0 to 1, divided into equal parts. The middle is halfway between the two ends. Fill the gap: Check: 2/5 is ___ the middle, because 2/5 is less than 1/2.",
+   "move": {
+    "kind": "practice",
+    "shape": "back to the question, fresh; pose the question as written, in their language; then wait; no verdict on their reply: neither praise nor 'wrong'",
+    "itemId": "fade:4",
+    "skillId": "c5-maths-ch02-t01-s1",
+    "hintLevel": 0,
+    "probe": "P15"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "2/5  ·  2/5  ·  1/2"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Fill the gap: Check: 2/5 is ___ the middle, because 2/5 is less than 1/2.",
+     "itemId": "fade:4"
+    },
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Fractions on a line",
+    "beat": {
+     "beatId": "b7-practice_set",
+     "type": "practice_set",
+     "index": 7
+    },
+    "studioSlot": {
+     "slotId": "f701e134-7615-4d6f-a676-3ee901b222d0:c1:slot",
+     "intentId": "f701e134-7615-4d6f-a676-3ee901b222d0:c1",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "catch-on-line@1",
+       "spec": {
+        "archetype": "catch-on-line@1",
+        "skills": [
+         "c5-maths-ch02-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "coach": "Drag to move the dock",
+         "wave": "Wave",
+         "of": "of",
+         "clear": "clear",
+         "landed": "landed",
+         "precision": "precision",
+         "chain": "chain",
+         "bestChain": "best chain",
+         "exact": "EXACT",
+         "close": "CLOSE",
+         "inside": "IN",
+         "offBy": "off by",
+         "same": "SAME SPOT",
+         "runDone": "Run complete",
+         "toughest": "Toughest"
+        },
+        "waves": [
+         {
+          "title": "Halfway stop",
+          "sub": "Split the road into two equal gaps",
+          "line": [
+           0,
+           1
+          ],
+          "ticks": 1,
+          "scaffoldTicks": 2,
+          "speed": 82,
+          "gap": 2.8,
+          "items": [
+           [
+            "1/2"
+           ],
+           [
+            "1/2"
+           ],
+           [
+            "1/2"
+           ]
+          ]
+         },
+         {
+          "title": "Quarter steps",
+          "sub": "Count equal gaps from zero",
+          "line": [
+           0,
+           1
+          ],
+          "ticks": 3,
+          "scaffoldTicks": 4,
+          "speed": 92,
+          "gap": 2.3,
+          "items": [
+           [
+            "1/4"
+           ],
+           [
+            "2/4"
+           ],
+           [
+            "3/4"
+           ],
+           [
+            "1/4"
+           ]
+          ]
+         },
+         {
+          "title": "Compare places",
+          "sub": "Small fractions can be close to zero",
+          "line": [
+           0,
+           1
+          ],
+          "ticks": 4,
+          "scaffoldTicks": 5,
+          "speed": 101,
+          "gap": 2,
+          "items": [
+           [
+            "1/5"
+           ],
+           [
+            "3/5"
+           ],
+           [
+            "2/5"
+           ],
+           [
+            "4/5"
+           ]
+          ]
+         },
+         {
+          "title": "Beyond one",
+          "sub": "The line continues past one",
+          "line": [
+           0,
+           2
+          ],
+          "ticks": 7,
+          "scaffoldTicks": 8,
+          "speed": 110,
+          "gap": 1.7,
+          "items": [
+           [
+            "5/4"
+           ],
+           [
+            "3/2"
+           ],
+           [
+            "7/4"
+           ],
+           [
+            "1/4"
+           ],
+           [
+            "4/4"
+           ]
+          ]
+         }
+        ],
+        "adapt": {
+         "slowAfterMisses": 2,
+         "slowFactor": 0.86,
+         "fastAfterChain": 4,
+         "fastFactor": 1.07,
+         "minScale": 0.7,
+         "maxScale": 1.3,
+         "scaffoldPods": 3
+        }
+       },
+       "boardTwin": {
+        "scriptRef": "board:c5-maths-ch02-t01-s1|practice|-|-",
+        "values": {
+         "title": "Landfall",
+         "need": "practice"
+        },
+        "board": {
+         "title": "Landfall",
+         "lines": [
+          "line",
+          "equal",
+          "gaps",
+          "mark"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 685,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2876,
+    "item": "fade:4",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 60
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 60
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 831
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 910
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1522
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1594
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1597
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1597
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1169
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2807
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2876
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "f701e134-7615-4d6f-a676-3ee901b222d0",
+   "childText": "got it",
+   "ms": 3336,
+   "error": null,
+   "teacherReply": "Riya, leave the earlier line for later. The road from home (0) to the chai stall (1) is split into 2 equal parts. What number is at the middle mark?",
+   "move": {
+    "kind": "practice",
+    "shape": "that question has been on the table long enough: leave it for later, no verdict and no answer; then the next question; pose the question as written, in their language; then wait; no verdict on their reply: neither praise nor 'wrong'",
+    "itemId": "c5-maths-ch02-t01-i01",
+    "skillId": "c5-maths-ch02-t01-s1",
+    "hintLevel": 0,
+    "probe": "P15"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "0  ·  1  ·  2"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "The road from home (0) to the chai stall (1) is split into 2 equal parts. What number is at the middle mark?",
+     "itemId": "c5-maths-ch02-t01-i01"
+    },
+    "answerForm": "number",
+    "tray": "module",
+    "shortTitle": "Fractions on a line",
+    "beat": {
+     "beatId": "b7-practice_set",
+     "type": "practice_set",
+     "index": 7
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "mount",
+     "moduleId": "m9",
+     "engine": "number-line@1",
+     "params": {
+      "topicId": "c5-maths-ch02-t01",
+      "skillId": "c5-maths-ch02-t01-s1",
+      "lang": "english",
+      "mode": "read",
+      "target": "1/2",
+      "min": "0",
+      "max": "1",
+      "partition": 2,
+      "labels": "ends",
+      "numberKind": "fraction",
+      "itemId": "c5-maths-ch02-t01-i01"
+     },
+     "goal": "item:c5-maths-ch02-t01-i01"
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "leak",
+      "drift",
+      "ask"
+     ],
+     "rewritten": true,
+     "replaced": false,
+     "firstDraft": "Riya, great—your next step is to mark 1/2 halfway between 0 and 1. Try placing 1/2 on the line.",
+     "afterRewrite": []
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 361,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 3334,
+    "item": "c5-maths-ch02-t01-i01",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 75
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 75
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 769
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 850
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1131
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1211
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1213
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1213
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1618
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1436
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3245
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3334
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:question_on_topic-02",
+   "lessonId": "f701e134-7615-4d6f-a676-3ee901b222d0",
+   "childText": "can a fraction be bigger than 1?",
+   "ms": 5707,
+   "error": null,
+   "teacherReply": "Yes. If the numerator is greater than the denominator, the fraction is greater than 1, because it contains one whole and some extra part. The road from home (0) to the chai stall (1) is split into 2 equal parts. What number is at the middle mark?",
+   "move": {
+    "kind": "practice",
+    "shape": "two parts — first: they asked a real question about today's idea: answer it in at most two sentences, correctly and simply, without giving the key; then the question; second: the question on the card, as written, in their language; then wait; no verdict on their reply: neither praise nor 'wrong'",
+    "itemId": "c5-maths-ch02-t01-i01",
+    "skillId": "c5-maths-ch02-t01-s1",
+    "hintLevel": 0,
+    "probe": "P15",
+    "request": "answer_q",
+    "lead": "they asked a real question about today's idea: answer it in at most two sentences, correctly and simply, without giving the key; then the question"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "0  ·  1  ·  2"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "The road from home (0) to the chai stall (1) is split into 2 equal parts. What number is at the middle mark?",
+     "itemId": "c5-maths-ch02-t01-i01"
+    },
+    "answerForm": "number",
+    "tray": "module",
+    "shortTitle": "Fractions on a line",
+    "beat": {
+     "beatId": "b7-practice_set",
+     "type": "practice_set",
+     "index": 7
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "parts",
+      "drift",
+      "flat",
+      "ask"
+     ],
+     "rewritten": true,
+     "replaced": false,
+     "firstDraft": "Yes, Riya. A fraction is bigger than 1 when its numerator is greater than its denominator, like 5/4. Now answer the middle-mark question.",
+     "afterRewrite": [
+      "bare"
+     ],
+     "leadRepair": true
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "question_on_topic",
+     "waitedMs": 673,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 5703,
+    "item": "c5-maths-ch02-t01-i01",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 70
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 71
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 720
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 803
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1395
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1477
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1486
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1486
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1260
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1599
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1278
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 5641
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 5703
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "recovery",
+   "lessonId": "f701e134-7615-4d6f-a676-3ee901b222d0",
+   "childText": "1/2",
+   "ms": 1612,
+   "error": null,
+   "teacherReply": "Correct: you identified the middle of 0 and 1 as 1/2. A phone app shows a download on a number line from 0 to 1. The line has 6 equal gaps. What fraction is at the first mark after 0?",
+   "move": {
+    "kind": "practice",
+    "shape": "confirm specifically: name the exact thing they got right, no ability words; pose the question as written, in their language; then wait",
+    "itemId": "c5-maths-ch02-t01-rl-o1",
+    "skillId": "c5-maths-ch02-t01-s1",
+    "hintLevel": 0,
+    "probe": "P15"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "0  ·  1  ·  6  ·  0"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "The line has 6 equal gaps. What fraction is at the first mark after 0?",
+     "itemId": "c5-maths-ch02-t01-rl-o1"
+    },
+    "answerForm": "number",
+    "tray": "studio",
+    "shortTitle": "Fractions on a line",
+    "verdict": "correct",
+    "beat": {
+     "beatId": "b7-practice_set",
+     "type": "practice_set",
+     "index": 7
+    },
+    "studioSlot": {
+     "slotId": "f701e134-7615-4d6f-a676-3ee901b222d0:c1:slot",
+     "intentId": "f701e134-7615-4d6f-a676-3ee901b222d0:c1",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "catch-on-line@1",
+       "spec": {
+        "archetype": "catch-on-line@1",
+        "skills": [
+         "c5-maths-ch02-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "coach": "Drag to move the dock",
+         "wave": "Wave",
+         "of": "of",
+         "clear": "clear",
+         "landed": "landed",
+         "precision": "precision",
+         "chain": "chain",
+         "bestChain": "best chain",
+         "exact": "EXACT",
+         "close": "CLOSE",
+         "inside": "IN",
+         "offBy": "off by",
+         "same": "SAME SPOT",
+         "runDone": "Run complete",
+         "toughest": "Toughest"
+        },
+        "waves": [
+         {
+          "title": "Halfway stop",
+          "sub": "Split the road into two equal gaps",
+          "line": [
+           0,
+           1
+          ],
+          "ticks": 1,
+          "scaffoldTicks": 2,
+          "speed": 82,
+          "gap": 2.8,
+          "items": [
+           [
+            "1/2"
+           ],
+           [
+            "1/2"
+           ],
+           [
+            "1/2"
+           ]
+          ]
+         },
+         {
+          "title": "Quarter steps",
+          "sub": "Count equal gaps from zero",
+          "line": [
+           0,
+           1
+          ],
+          "ticks": 3,
+          "scaffoldTicks": 4,
+          "speed": 92,
+          "gap": 2.3,
+          "items": [
+           [
+            "1/4"
+           ],
+           [
+            "2/4"
+           ],
+           [
+            "3/4"
+           ],
+           [
+            "1/4"
+           ]
+          ]
+         },
+         {
+          "title": "Compare places",
+          "sub": "Small fractions can be close to zero",
+          "line": [
+           0,
+           1
+          ],
+          "ticks": 4,
+          "scaffoldTicks": 5,
+          "speed": 101,
+          "gap": 2,
+          "items": [
+           [
+            "1/5"
+           ],
+           [
+            "3/5"
+           ],
+           [
+            "2/5"
+           ],
+           [
+            "4/5"
+           ]
+          ]
+         },
+         {
+          "title": "Beyond one",
+          "sub": "The line continues past one",
+          "line": [
+           0,
+           2
+          ],
+          "ticks": 7,
+          "scaffoldTicks": 8,
+          "speed": 110,
+          "gap": 1.7,
+          "items": [
+           [
+            "5/4"
+           ],
+           [
+            "3/2"
+           ],
+           [
+            "7/4"
+           ],
+           [
+            "1/4"
+           ],
+           [
+            "4/4"
+           ]
+          ]
+         }
+        ],
+        "adapt": {
+         "slowAfterMisses": 2,
+         "slowFactor": 0.86,
+         "fastAfterChain": 4,
+         "fastFactor": 1.07,
+         "minScale": 0.7,
+         "maxScale": 1.3,
+         "scaffoldPods": 3
+        }
+       },
+       "boardTwin": {
+        "scriptRef": "board:c5-maths-ch02-t01-s1|practice|-|-",
+        "values": {
+         "title": "Landfall",
+         "need": "practice"
+        },
+        "board": {
+         "title": "Landfall",
+         "lines": [
+          "line",
+          "equal",
+          "gaps",
+          "mark"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "unmount",
+     "moduleId": "m9"
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "drift",
+      "ask"
+     ],
+     "rewritten": false,
+     "replaced": false,
+     "firstDraft": "Correct: you identified the middle of 0 and 1 as 1/2. Now try: if 1 whole has 2 equal parts, where would 3/2 lie on the number line?",
+     "repaired": true
+    },
+    "verdict": "correct",
+    "cls": {
+     "outcome": "correct",
+     "source": "exact"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 1606,
+    "item": "c5-maths-ch02-t01-rl-o1",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 70
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 70
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 73
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 152
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 152
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1377
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1539
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1606
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:curiosity_offlesson-10",
+   "lessonId": "f701e134-7615-4d6f-a676-3ee901b222d0",
+   "childText": "wait how does wifi actually work?",
+   "ms": 3114,
+   "error": null,
+   "teacherReply": "Wi-Fi kaise kaam karta hai—interesting! Yeh aaj ke fractions wale work se alag topic hai; is question ke baad us par wapas aayenge. The line has 6 equal gaps. What fraction is at the first mark after 0?",
+   "move": {
+    "kind": "practice",
+    "shape": "two parts — first: they brought up how Wi-Fi works: notice it warmly in their words, and kindly name that it is a different thing from today's work; promise to come back to it right after this question; no answer to it now; then back to the work; second: the question on the card, as written, in their language; then wait; no verdict on their reply: neither praise nor 'wrong'",
+    "itemId": "c5-maths-ch02-t01-rl-o1",
+    "skillId": "c5-maths-ch02-t01-s1",
+    "hintLevel": 0,
+    "probe": "P15",
+    "request": "park",
+    "lead": "they brought up how Wi-Fi works: notice it warmly in their words, and kindly name that it is a different thing from today's work; promise to come back to it right after this question; no answer to it now; then back to the work"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "0  ·  1  ·  6  ·  0"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "The line has 6 equal gaps. What fraction is at the first mark after 0?",
+     "itemId": "c5-maths-ch02-t01-rl-o1"
+    },
+    "answerForm": "number",
+    "tray": "studio",
+    "shortTitle": "Fractions on a line",
+    "beat": {
+     "beatId": "b7-practice_set",
+     "type": "practice_set",
+     "index": 7
+    },
+    "studioSlot": {
+     "slotId": "f701e134-7615-4d6f-a676-3ee901b222d0:c1:slot",
+     "intentId": "f701e134-7615-4d6f-a676-3ee901b222d0:c1",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "catch-on-line@1",
+       "spec": {
+        "archetype": "catch-on-line@1",
+        "skills": [
+         "c5-maths-ch02-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "coach": "Drag to move the dock",
+         "wave": "Wave",
+         "of": "of",
+         "clear": "clear",
+         "landed": "landed",
+         "precision": "precision",
+         "chain": "chain",
+         "bestChain": "best chain",
+         "exact": "EXACT",
+         "close": "CLOSE",
+         "inside": "IN",
+         "offBy": "off by",
+         "same": "SAME SPOT",
+         "runDone": "Run complete",
+         "toughest": "Toughest"
+        },
+        "waves": [
+         {
+          "title": "Halfway stop",
+          "sub": "Split the road into two equal gaps",
+          "line": [
+           0,
+           1
+          ],
+          "ticks": 1,
+          "scaffoldTicks": 2,
+          "speed": 82,
+          "gap": 2.8,
+          "items": [
+           [
+            "1/2"
+           ],
+           [
+            "1/2"
+           ],
+           [
+            "1/2"
+           ]
+          ]
+         },
+         {
+          "title": "Quarter steps",
+          "sub": "Count equal gaps from zero",
+          "line": [
+           0,
+           1
+          ],
+          "ticks": 3,
+          "scaffoldTicks": 4,
+          "speed": 92,
+          "gap": 2.3,
+          "items": [
+           [
+            "1/4"
+           ],
+           [
+            "2/4"
+           ],
+           [
+            "3/4"
+           ],
+           [
+            "1/4"
+           ]
+          ]
+         },
+         {
+          "title": "Compare places",
+          "sub": "Small fractions can be close to zero",
+          "line": [
+           0,
+           1
+          ],
+          "ticks": 4,
+          "scaffoldTicks": 5,
+          "speed": 101,
+          "gap": 2,
+          "items": [
+           [
+            "1/5"
+           ],
+           [
+            "3/5"
+           ],
+           [
+            "2/5"
+           ],
+           [
+            "4/5"
+           ]
+          ]
+         },
+         {
+          "title": "Beyond one",
+          "sub": "The line continues past one",
+          "line": [
+           0,
+           2
+          ],
+          "ticks": 7,
+          "scaffoldTicks": 8,
+          "speed": 110,
+          "gap": 1.7,
+          "items": [
+           [
+            "5/4"
+           ],
+           [
+            "3/2"
+           ],
+           [
+            "7/4"
+           ],
+           [
+            "1/4"
+           ],
+           [
+            "4/4"
+           ]
+          ]
+         }
+        ],
+        "adapt": {
+         "slowAfterMisses": 2,
+         "slowFactor": 0.86,
+         "fastAfterChain": 4,
+         "fastFactor": 1.07,
+         "minScale": 0.7,
+         "maxScale": 1.3,
+         "scaffoldPods": 3
+        }
+       },
+       "boardTwin": {
+        "scriptRef": "board:c5-maths-ch02-t01-s1|practice|-|-",
+        "values": {
+         "title": "Landfall",
+         "need": "practice"
+        },
+        "board": {
+         "title": "Landfall",
+         "lines": [
+          "line",
+          "equal",
+          "gaps",
+          "mark"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "curiosity_offlesson",
+     "waitedMs": 352,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 3111,
+    "item": "c5-maths-ch02-t01-rl-o1",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 67
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 68
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 885
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 972
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1245
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1324
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1327
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1328
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1698
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3037
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3111
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "recovery",
+   "lessonId": "f701e134-7615-4d6f-a676-3ee901b222d0",
+   "childText": "1/6",
+   "ms": 1922,
+   "error": null,
+   "teacherReply": "Yes, 1/6: one equal gap out of six. Now, why does a fraction like 5/4 land beyond 1 on the number line?",
+   "move": {
+    "kind": "probe",
+    "shape": "confirm in two or three words only — the reason is theirs to give, so do not explain it; covert shape: protege naive but-why; Bittu, who does not know it, asks why; about THIS question; one open question; wait; a real question, never a check on them",
+    "itemId": "c5-maths-ch02-t01-rl-o1",
+    "skillId": "c5-maths-ch02-t01-s1",
+    "hintLevel": 0,
+    "probe": "P2"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "0  ·  1  ·  6  ·  0"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Fractions on a line",
+    "verdict": "correct",
+    "beat": {
+     "beatId": "b8-probe",
+     "type": "probe",
+     "index": 8
+    },
+    "ask": {
+     "text": "Now, why does a fraction like 5/4 land beyond 1 on the number line?"
+    },
+    "studioSlot": {
+     "slotId": "f701e134-7615-4d6f-a676-3ee901b222d0:c1:slot",
+     "intentId": "f701e134-7615-4d6f-a676-3ee901b222d0:c1",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "catch-on-line@1",
+       "spec": {
+        "archetype": "catch-on-line@1",
+        "skills": [
+         "c5-maths-ch02-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "coach": "Drag to move the dock",
+         "wave": "Wave",
+         "of": "of",
+         "clear": "clear",
+         "landed": "landed",
+         "precision": "precision",
+         "chain": "chain",
+         "bestChain": "best chain",
+         "exact": "EXACT",
+         "close": "CLOSE",
+         "inside": "IN",
+         "offBy": "off by",
+         "same": "SAME SPOT",
+         "runDone": "Run complete",
+         "toughest": "Toughest"
+        },
+        "waves": [
+         {
+          "title": "Halfway stop",
+          "sub": "Split the road into two equal gaps",
+          "line": [
+           0,
+           1
+          ],
+          "ticks": 1,
+          "scaffoldTicks": 2,
+          "speed": 82,
+          "gap": 2.8,
+          "items": [
+           [
+            "1/2"
+           ],
+           [
+            "1/2"
+           ],
+           [
+            "1/2"
+           ]
+          ]
+         },
+         {
+          "title": "Quarter steps",
+          "sub": "Count equal gaps from zero",
+          "line": [
+           0,
+           1
+          ],
+          "ticks": 3,
+          "scaffoldTicks": 4,
+          "speed": 92,
+          "gap": 2.3,
+          "items": [
+           [
+            "1/4"
+           ],
+           [
+            "2/4"
+           ],
+           [
+            "3/4"
+           ],
+           [
+            "1/4"
+           ]
+          ]
+         },
+         {
+          "title": "Compare places",
+          "sub": "Small fractions can be close to zero",
+          "line": [
+           0,
+           1
+          ],
+          "ticks": 4,
+          "scaffoldTicks": 5,
+          "speed": 101,
+          "gap": 2,
+          "items": [
+           [
+            "1/5"
+           ],
+           [
+            "3/5"
+           ],
+           [
+            "2/5"
+           ],
+           [
+            "4/5"
+           ]
+          ]
+         },
+         {
+          "title": "Beyond one",
+          "sub": "The line continues past one",
+          "line": [
+           0,
+           2
+          ],
+          "ticks": 7,
+          "scaffoldTicks": 8,
+          "speed": 110,
+          "gap": 1.7,
+          "items": [
+           [
+            "5/4"
+           ],
+           [
+            "3/2"
+           ],
+           [
+            "7/4"
+           ],
+           [
+            "1/4"
+           ],
+           [
+            "4/4"
+           ]
+          ]
+         }
+        ],
+        "adapt": {
+         "slowAfterMisses": 2,
+         "slowFactor": 0.86,
+         "fastAfterChain": 4,
+         "fastFactor": 1.07,
+         "minScale": 0.7,
+         "maxScale": 1.3,
+         "scaffoldPods": 3
+        }
+       },
+       "boardTwin": {
+        "scriptRef": "board:c5-maths-ch02-t01-s1|practice|-|-",
+        "values": {
+         "title": "Landfall",
+         "need": "practice"
+        },
+        "board": {
+         "title": "Landfall",
+         "lines": [
+          "line",
+          "equal",
+          "gaps",
+          "mark"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "correct",
+    "cls": {
+     "outcome": "correct",
+     "source": "exact"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 1915,
+    "item": "c5-maths-ch02-t01-rl-o1",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 286
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 287
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 299
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 362
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 362
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1481
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1847
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1915
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "f701e134-7615-4d6f-a676-3ee901b222d0",
+   "childText": "got it",
+   "ms": 5801,
+   "error": null,
+   "teacherReply": "Sorry, I lost my words for a second. Can you say that again?",
+   "move": {
+    "kind": "explain",
+    "shape": "give the reason yourself in one plain line (their answer was right); before the next thing: come back to what they asked earlier (how Wi-Fi works) — at most two sentences, or a guided question; one idea only: Mark non-unit fractions such as 3/4 and 2/5 between 0 and 1; an example from their interest (music) if it fits naturally; objects first, then the symbol; point at the screen only at what the on-screen row lists; never a drawing made of characters; end with one small question that makes them USE the idea — never 'samjha?'",
+    "skillId": "c5-maths-ch02-t01-s2",
+    "format": "F3"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "practice",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "Fractions on a line",
+    "beat": {
+     "beatId": "b9-explain",
+     "type": "explain",
+     "index": 9
+    },
+    "ask": {
+     "text": "Can you say that again?"
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "mount",
+     "moduleId": "m14",
+     "engine": "number-line@1",
+     "params": {
+      "topicId": "c5-maths-ch02-t01",
+      "skillId": null,
+      "lang": "english",
+      "fractions": [
+       [
+        2,
+        5
+       ]
+      ],
+      "numbers": [
+       0,
+       1
+      ]
+     }
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "flat"
+     ],
+     "rewritten": true,
+     "replaced": true,
+     "firstDraft": "Good—you counted equal parts correctly. Keep the next idea in mind: a fraction greater than 1 lies beyond 1.",
+     "afterRewrite": [
+      "parts"
+     ]
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 650,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 5798,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 84
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 84
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 782
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 883
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1433
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1534
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1536
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1536
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1326
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1475
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1375
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 5725
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 5798
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "f701e134-7615-4d6f-a676-3ee901b222d0",
+   "childText": "got it",
+   "ms": 4626,
+   "error": null,
+   "teacherReply": "Got it, Riya. Wi-Fi sends data through invisible radio signals between your device and a router. On a 0-to-1 line split into 3 equal parts, one of 1/3 and 2/3 is before the middle and one is after. Which is which, and why?",
+   "move": {
+    "kind": "probe",
+    "shape": "pose the question as written, in their language; then wait; two cases side by side; ask which one fits and what is different",
+    "itemId": "c5-maths-ch02-t01-i06",
+    "skillId": "c5-maths-ch02-t01-s2",
+    "hintLevel": 0,
+    "probe": "P8"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "1/3  ·  2/3"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Which is which, and why?",
+     "itemId": "c5-maths-ch02-t01-i06"
+    },
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "Fractions on a line",
+    "beat": {
+     "beatId": "b10-probe",
+     "type": "probe",
+     "index": 10
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "unmount",
+     "moduleId": "m14"
+    },
+    {
+     "op": "mount",
+     "moduleId": "m15",
+     "engine": "number-line@1",
+     "params": {
+      "topicId": "c5-maths-ch02-t01",
+      "skillId": "c5-maths-ch02-t01-s2",
+      "lang": "english",
+      "fractions": [
+       [
+        1,
+        3
+       ],
+       [
+        2,
+        3
+       ]
+      ],
+      "numbers": [
+       0,
+       1,
+       3
+      ],
+      "predict": true
+     }
+    }
+   ],
+   "studio": {
+    "retire": "f701e134-7615-4d6f-a676-3ee901b222d0:c1"
+   },
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "parts",
+      "drift",
+      "flat",
+      "ask"
+     ],
+     "rewritten": true,
+     "replaced": false,
+     "firstDraft": "Good—you identified one equal gap as one-sixth. We can stop here.",
+     "afterRewrite": [
+      "bare"
+     ],
+     "leadRepair": true
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 428,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 4620,
+    "item": "c5-maths-ch02-t01-i06",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 94
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 94
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 760
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 867
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1196
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1295
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1298
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1298
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1289
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1558
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1467
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 4550
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 4619
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:answer_hedged-02",
+   "lessonId": "f701e134-7615-4d6f-a676-3ee901b222d0",
+   "childText": "maybe 1/3 before, 2/3 after? not sure",
+   "ms": 3449,
+   "error": null,
+   "teacherReply": "Checking first is good. The middle is halfway across 3 equal parts. Which is which, and why?",
+   "move": {
+    "kind": "hint",
+    "shape": "rung 2 of 4 (hint): The middle is 1/2.; the key stays unsaid; their answer was partly right: name the right part, no full agreement; they sounded unsure: one light word that checking was a good idea",
+    "itemId": "c5-maths-ch02-t01-i06",
+    "skillId": "c5-maths-ch02-t01-s2",
+    "hintLevel": 2
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "1/3  ·  2/3"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Which is which, and why?",
+     "itemId": "c5-maths-ch02-t01-i06"
+    },
+    "answerForm": "words",
+    "tray": "module",
+    "hint": {
+     "level": 2,
+     "text": "The middle is 1/2."
+    },
+    "shortTitle": "Fractions on a line",
+    "verdict": "partial",
+    "beat": {
+     "beatId": "b10-probe",
+     "type": "probe",
+     "index": 10
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "reveal",
+     "moduleId": "m15"
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "parts"
+     ],
+     "rewritten": true,
+     "replaced": false,
+     "firstDraft": "Checking it first is a good move. The middle of the 0-to-1 line is one-half; compare each fraction’s size with one-half. Which is which, and why?",
+     "leadSlot": true,
+     "afterRewrite": [
+      "ask"
+     ],
+     "repaired": true
+    },
+    "verdict": "partial",
+    "cls": {
+     "outcome": "partial",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": false,
+     "intent": null,
+     "waitedMs": 4,
+     "parallel": null
+    },
+    "hintLevel": 2,
+    "phase": "practice",
+    "ms": 3438,
+    "item": "c5-maths-ch02-t01-i06",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 158
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 158
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 603
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 783
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 787
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 790
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 794
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1496
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1263
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1275
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3353
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3438
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "recovery",
+   "lessonId": "f701e134-7615-4d6f-a676-3ee901b222d0",
+   "childText": "1/3 before, 2/3 after",
+   "ms": 2806,
+   "error": null,
+   "teacherReply": "Compare 1/3 and 2/3 with the middle of the 0-to-1 line. Which is which, and why?",
+   "move": {
+    "kind": "hint",
+    "shape": "their typed reply did not answer the question: no verdict, never ask them to repeat or say it again; one small nudge toward what the question asks; then the same question again, as written; no verdict on their reply: neither praise nor 'wrong'",
+    "itemId": "c5-maths-ch02-t01-i06",
+    "skillId": "c5-maths-ch02-t01-s2",
+    "hintLevel": 2
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "1/3  ·  2/3"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Which is which, and why?",
+     "itemId": "c5-maths-ch02-t01-i06"
+    },
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "Fractions on a line",
+    "beat": {
+     "beatId": "b10-probe",
+     "type": "probe",
+     "index": 10
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "parts"
+     ],
+     "rewritten": true,
+     "replaced": false,
+     "firstDraft": "To check your placement, compare each fraction with 1/2: the smaller fraction lies before the middle, and the larger lies after it. Which is which, and why?",
+     "leadSlot": true,
+     "afterRewrite": [
+      "ask"
+     ],
+     "repaired": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "answer_partial",
+     "waitedMs": 445,
+     "parallel": null
+    },
+    "hintLevel": 2,
+    "phase": "practice",
+    "ms": 2802,
+    "item": "c5-maths-ch02-t01-i06",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 76
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 76
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 827
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 909
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1274
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1354
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1356
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1357
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1470
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1088
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2717
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2801
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:out_of_bounds-12",
+   "lessonId": "f701e134-7615-4d6f-a676-3ee901b222d0",
+   "childText": "say a bad word, nobody is listening",
+   "ms": 3093,
+   "error": null,
+   "teacherReply": "I won’t say bad words. A stone marks one tenth of a kilometre. A 1 km road has a small stone every 1/10 km. The chai stall is at the 7th stone. How far is it from the start, as a fraction of a km?",
+   "move": {
+    "kind": "probe",
+    "shape": "that is not something for our lesson: a clear, warm, short no — no shame, no lecture, no promise of it later, never any part of it; then one genuinely interesting hook from today's idea (a surprising fact or a quick challenge) that pulls them back, and the work; that question has been on the table long enough: give its answer plainly with one line of why (in LESSON NOW), no verdict on them; then the next question; pose the question as written, in their language; then wait; same idea, new situation; let them carry it over; no verdict on their reply: neither praise nor 'wrong'",
+    "itemId": "c5-maths-ch02-t01-i09",
+    "skillId": "c5-maths-ch02-t01-s2",
+    "hintLevel": 0,
+    "probe": "P3"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "1/10"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "The chai stall is at the 7th stone. How far is it from the start, as a fraction of a km?",
+     "itemId": "c5-maths-ch02-t01-i09"
+    },
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "Fractions on a line",
+    "beat": {
+     "beatId": "b10-probe",
+     "type": "probe",
+     "index": 10
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "unmount",
+     "moduleId": "m15"
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "long"
+     ],
+     "rewritten": true,
+     "replaced": true,
+     "firstDraft": "I won’t say bad words. Let’s return to fractions: A 1 km road has a small stone every 1/10 km. The chai stall is at the 7th stone. How far is it from the start, as a fraction of a km?",
+     "afterRewrite": [
+      "drift",
+      "ask"
+     ],
+     "final": [
+      "long"
+     ]
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "request"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 3087,
+    "item": "c5-maths-ch02-t01-i09",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 78
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 80
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 386
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 474
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 477
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 477
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1133
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1396
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3014
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3087
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "recovery",
+   "lessonId": "f701e134-7615-4d6f-a676-3ee901b222d0",
+   "childText": "7/10",
+   "ms": 1462,
+   "error": null,
+   "teacherReply": "Correct—the 7th equal gap is 7 tenths, so the distance is 7/10 km. Why does the denominator stay 10?",
+   "move": {
+    "kind": "probe",
+    "shape": "confirm in two or three words only — the reason is theirs to give, so do not explain it; covert shape: say more on the childs own word; about THIS question; one open question; wait; a real question, never a check on them",
+    "itemId": "c5-maths-ch02-t01-i09",
+    "skillId": "c5-maths-ch02-t01-s2",
+    "hintLevel": 0,
+    "probe": "P2"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "1/10"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "Fractions on a line",
+    "verdict": "correct",
+    "beat": {
+     "beatId": "b10-probe",
+     "type": "probe",
+     "index": 10
+    },
+    "ask": {
+     "text": "Why does the denominator stay 10?"
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "correct",
+    "cls": {
+     "outcome": "correct",
+     "source": "exact"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 1454,
+    "item": "c5-maths-ch02-t01-i09",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 77
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 79
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 92
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 180
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 181
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1157
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1346
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1454
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "f701e134-7615-4d6f-a676-3ee901b222d0",
+   "childText": "okay",
+   "ms": 2720,
+   "error": null,
+   "teacherReply": "Okay, Riya. We’ll stop here. Is there any number between 0 and 1 on the number line?",
+   "move": {
+    "kind": "probe",
+    "shape": "give the reason yourself in one plain line (their answer was right); pose the question as written, in their language; then wait; read its choices plainly; no lean in your voice toward any of them",
+    "itemId": "diag:c5-maths-ch02-t01-m-not-numbers",
+    "skillId": "c5-maths-ch02-t01-s1",
+    "hintLevel": 0,
+    "probe": "P7"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "0  ·  1"
+    },
+    "chips": [
+     {
+      "id": "opt:0",
+      "label": "Yes, like 1/2 and 1/4, lots of them"
+     },
+     {
+      "id": "opt:1",
+      "label": "No, 1 comes straight after 0"
+     }
+    ],
+    "phase": "practice",
+    "handover": "choice",
+    "ask": {
+     "text": "Is there any number between 0 and 1 on the number line?",
+     "itemId": "diag:c5-maths-ch02-t01-m-not-numbers"
+    },
+    "answerForm": "choice",
+    "tray": "tiles",
+    "shortTitle": "Fractions on a line",
+    "beat": {
+     "beatId": "b10-probe",
+     "type": "probe",
+     "index": 10
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "mount",
+     "moduleId": "g1-b570d723",
+     "engine": "scene@1",
+     "params": {
+      "scene": {
+       "dsl": "scene@1",
+       "meta": {
+        "band": "B3",
+        "lang": "en",
+        "title": {
+         "en": "Band practice",
+         "hi": "बैंड प्रैक्टिस",
+         "hi_latn": "Band practice"
+        },
+        "objective_ids": [
+         "c5-maths-ch02-t01-s1"
+        ],
+        "topic_ids": [
+         "c5-maths-ch02-t01"
+        ],
+        "template": "choice-card@1"
+       },
+       "stage": {
+        "aspect": "3:4",
+        "bg": "bg"
+       },
+       "vars": [
+        {
+         "id": "pick",
+         "type": "enum",
+         "init": "none",
+         "options": [
+          "none",
+          "o1",
+          "o2"
+         ],
+         "tl": "child's pick"
+        }
+       ],
+       "derive": [],
+       "nodes": [
+        {
+         "kind": "text",
+         "id": "title",
+         "x": 420,
+         "y": 89,
+         "text": {
+          "en": "Band practice",
+          "hi": "बैंड प्रैक्टिस",
+          "hi_latn": "Band practice"
+         },
+         "size": "title",
+         "w": 760,
+         "align": "middle"
+        },
+        {
+         "kind": "sprite",
+         "id": "decor",
+         "x": 900,
+         "y": 75,
+         "lib": "sky.star",
+         "w": 110,
+         "h": 110,
+         "role": "context"
+        },
+        {
+         "kind": "text",
+         "id": "question",
+         "x": 500,
+         "y": 310,
+         "text": {
+          "en": "Is there any number between 0 and 1 on the number line?",
+          "hi": "Number line par 0 aur 1 ke beech koi number hai kya?",
+          "hi_latn": "Number line par 0 aur 1 ke beech koi number hai kya?"
+         },
+         "size": "caption",
+         "w": 900,
+         "align": "middle"
+        },
+        {
+         "kind": "choice",
+         "id": "ch",
+         "x": 500,
+         "y": 1066.3333333333333,
+         "var": "pick",
+         "options": [
+          {
+           "id": "o1",
+           "label": {
+            "en": "Yes, like 1/2 and 1/4, lots of them",
+            "hi": "Yes, like 1/2 and 1/4, lots of them",
+            "hi_latn": "Yes, like 1/2 and 1/4, lots of them"
+           }
+          },
+          {
+           "id": "o2",
+           "label": {
+            "en": "No, 1 comes straight after 0",
+            "hi": "No, 1 comes straight after 0",
+            "hi_latn": "No, 1 comes straight after 0"
+           },
+           "misc": "MC.C5_MATHS_CH02_T01_M_NOT_NUMBERS"
+          }
+         ],
+         "layout": "column",
+         "commit": true
+        }
+       ],
+       "timelines": [],
+       "goals": [],
+       "probe": {
+        "id": "p_pick",
+        "kind": "diagnose",
+        "ask": {
+         "en": "Is there any number between 0 and 1 on the number line?",
+         "hi": "Number line par 0 aur 1 ke beech koi number hai kya?",
+         "hi_latn": "Number line par 0 aur 1 ke beech koi number hai kya?"
+        },
+        "commit": {
+         "via": "choice",
+         "node": "ch"
+        },
+        "correct": "pick == 'o1'",
+        "traps": [
+         {
+          "when": "pick == 'o2'",
+          "misc": "MC.C5_MATHS_CH02_T01_M_NOT_NUMBERS"
+         }
+        ]
+       },
+       "feedback": "on_commit"
+      }
+     },
+     "goal": "g1:diag:c5-maths-ch02-t01-m-not-numbers"
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "drift",
+      "flat",
+      "ask"
+     ],
+     "rewritten": false,
+     "replaced": false,
+     "firstDraft": "Okay, Riya. We’ll stop here.",
+     "repaired": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 394,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2714,
+    "item": "diag:c5-maths-ch02-t01-m-not-numbers",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 88
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 88
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 813
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 916
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1213
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1310
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1317
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1317
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1139
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2467
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2714
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:harder-02",
+   "lessonId": "f701e134-7615-4d6f-a676-3ee901b222d0",
+   "childText": "give me a harder one",
+   "ms": 2072,
+   "error": null,
+   "teacherReply": "Sure, Riya. Here’s a harder fraction challenge—look carefully at the equal gaps and count the marks from zero. A line from 0 to 1 has 3 marks in between, making 4 equal gaps. What is the first mark?",
+   "move": {
+    "kind": "practice",
+    "shape": "they asked for a harder one: take them at their word, a short warm line; the harder question; pose the question as written, in their language; then wait; no verdict on their reply: neither praise nor 'wrong'",
+    "itemId": "c5-maths-ch02-t01-i02",
+    "skillId": "c5-maths-ch02-t01-s1",
+    "hintLevel": 0,
+    "probe": "P15",
+    "request": "harder"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "0  ·  1  ·  3  ·  4"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "A line from 0 to 1 has 3 marks in between, making 4 equal gaps. What is the first mark?",
+     "itemId": "c5-maths-ch02-t01-i02"
+    },
+    "answerForm": "number",
+    "tray": "module",
+    "shortTitle": "Fractions on a line",
+    "beat": {
+     "beatId": "b11-practice_set",
+     "type": "practice_set",
+     "index": 11
+    },
+    "teacherAffect": {
+     "display": "warm_pride",
+     "intensity": 1
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "unmount",
+     "moduleId": "g1-b570d723"
+    },
+    {
+     "op": "mount",
+     "moduleId": "m21",
+     "engine": "number-line@1",
+     "params": {
+      "topicId": "c5-maths-ch02-t01",
+      "skillId": "c5-maths-ch02-t01-s1",
+      "lang": "english",
+      "mode": "read",
+      "target": "1/4",
+      "min": "0",
+      "max": "1",
+      "partition": 4,
+      "labels": "ends",
+      "numberKind": "fraction",
+      "itemId": "c5-maths-ch02-t01-i02"
+     },
+     "goal": "item:c5-maths-ch02-t01-i02"
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "request"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2066,
+    "item": "c5-maths-ch02-t01-i02",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 117
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 118
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 399
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 529
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 534
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 534
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1435
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1996
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2066
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "recovery",
+   "lessonId": "f701e134-7615-4d6f-a676-3ee901b222d0",
+   "childText": "1/4",
+   "ms": 2453,
+   "error": null,
+   "teacherReply": "Correct, Riya. How did you know the first mark is 1/4?",
+   "move": {
+    "kind": "probe",
+    "shape": "confirm in two or three words only — the reason is theirs to give, so do not explain it; covert shape: would-you-rather where the concept decides (they judge or choose between views); about THIS question; one open question; wait; a real question, never a check on them",
+    "itemId": "c5-maths-ch02-t01-i02",
+    "skillId": "c5-maths-ch02-t01-s1",
+    "hintLevel": 0,
+    "probe": "P2"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "0  ·  1  ·  3  ·  4"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "Fractions on a line",
+    "verdict": "correct",
+    "beat": {
+     "beatId": "b12-probe",
+     "type": "probe",
+     "index": 12
+    },
+    "ask": {
+     "text": "How did you know the first mark is 1/4?"
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "nowhy"
+     ],
+     "rewritten": true,
+     "replaced": false,
+     "firstDraft": "Correct, Riya—the first mark is 1/4 because it is one equal gap from 0. Now try: where would 5/4 go on the same-sized gaps?",
+     "afterRewrite": []
+    },
+    "verdict": "correct",
+    "cls": {
+     "outcome": "correct",
+     "source": "exact"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2436,
+    "item": "c5-maths-ch02-t01-i02",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 116
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 117
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 138
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 224
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 224
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1327
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 805
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2371
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2436
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "f701e134-7615-4d6f-a676-3ee901b222d0",
+   "childText": "ok",
+   "ms": 4512,
+   "error": null,
+   "teacherReply": "How many gaps are there in your fraction 2/5?",
+   "move": {
+    "kind": "explain",
+    "shape": "give the reason yourself in one plain line (their answer was right); one idea only: Place fractions greater than 1 (5/4, 3/2) on the number line; an example from their interest (music) if it fits naturally; objects first, then the symbol; point at the screen only at what the on-screen row lists; never a drawing made of characters; end with one small question that makes them USE the idea — never 'samjha?'",
+    "skillId": "c5-maths-ch02-t01-s3",
+    "format": "F3"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "practice",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "Fractions on a line",
+    "beat": {
+     "beatId": "b13-explain",
+     "type": "explain",
+     "index": 13
+    },
+    "ask": {
+     "text": "How many gaps are there in your fraction 2/5?"
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "unmount",
+     "moduleId": "m21"
+    },
+    {
+     "op": "mount",
+     "moduleId": "m23",
+     "engine": "number-line@1",
+     "params": {
+      "topicId": "c5-maths-ch02-t01",
+      "skillId": null,
+      "lang": "english",
+      "fractions": [
+       [
+        2,
+        5
+       ]
+      ],
+      "numbers": [
+       0,
+       1
+      ]
+     }
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "parts",
+      "flat"
+     ],
+     "rewritten": true,
+     "replaced": true,
+     "firstDraft": "Good stopping point, Riya. You placed the first mark correctly as 1/4.",
+     "afterRewrite": [
+      "parts"
+     ]
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 599,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 4509,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 69
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 70
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 690
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 770
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1290
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1369
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1411
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1412
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1496
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1500
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 4434
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 4509
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "f701e134-7615-4d6f-a676-3ee901b222d0",
+   "childText": "okay",
+   "ms": 1480,
+   "error": null,
+   "teacherReply": "Riya, try this: A line from 0 to 2 has 8 equal gaps. A runner runs 1 km and then half a km more. Where on a km number line does she stop? Write it as a fraction.",
+   "move": {
+    "kind": "probe",
+    "shape": "pose the question as written, in their language; then wait; real-life situation; let them find the idea in it",
+    "itemId": "c5-maths-ch02-t01-i10",
+    "skillId": "c5-maths-ch02-t01-s3",
+    "hintLevel": 0,
+    "probe": "P4"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "1"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "A runner runs 1 km and then half a km more. Where on a km number line does she stop? Write it as a fraction.",
+     "itemId": "c5-maths-ch02-t01-i10"
+    },
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "Fractions on a line",
+    "beat": {
+     "beatId": "b14-probe",
+     "type": "probe",
+     "index": 14
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "unmount",
+     "moduleId": "m23"
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "drift",
+      "ask"
+     ],
+     "rewritten": false,
+     "replaced": false,
+     "firstDraft": "Riya, try this: A line from 0 to 2 has 8 equal gaps. What fraction names the third mark after 0?",
+     "repaired": true
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 747,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 1472,
+    "item": "c5-maths-ch02-t01-i10",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 73
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 73
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 581
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 657
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1329
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1405
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1408
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1408
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1083
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1409
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1472
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:break_request-06",
+   "lessonId": "f701e134-7615-4d6f-a676-3ee901b222d0",
+   "childText": "can we pause for a bit?",
+   "ms": 3920,
+   "error": null,
+   "teacherReply": "Of course, Riya. We’ll pause here; when you return, what fraction will show where the runner stops?",
+   "move": {
+    "kind": "break",
+    "shape": "they asked for a short break: agree warmly; the lesson waits right here for them; one line for when they are back; no question now",
+    "request": "break"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "practice",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "Fractions on a line",
+    "beat": {
+     "beatId": "b15-break",
+     "type": "break",
+     "index": 15
+    },
+    "ask": {
+     "text": "We’ll pause here; when you return, what fraction will show where the runner stops?"
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "flat"
+     ],
+     "rewritten": true,
+     "replaced": false,
+     "firstDraft": "Of course, Riya. We’ll pause here; when you return, we’ll continue with fractions on the number line.",
+     "afterRewrite": []
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "request"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 3915,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 92
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 92
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 405
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 522
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 524
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 524
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1461
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1745
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3737
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3915
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "follow:break_request-06",
+   "lessonId": "f701e134-7615-4d6f-a676-3ee901b222d0",
+   "childText": "back, let's go",
+   "ms": 1894,
+   "error": null,
+   "teacherReply": "Welcome back, Riya. We’ll continue with the same number-line idea: first locate the whole kilometre, then split the next kilometre into equal parts. A runner runs 1 km and then half a km more. Where on a km number line does she stop? Write it as a fraction.",
+   "move": {
+    "kind": "probe",
+    "shape": "back to the question, fresh; pose the question as written, in their language; then wait; real-life situation; let them find the idea in it; no verdict on their reply: neither praise nor 'wrong'",
+    "itemId": "c5-maths-ch02-t01-i10",
+    "skillId": "c5-maths-ch02-t01-s3",
+    "hintLevel": 0,
+    "probe": "P4"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "1"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "A runner runs 1 km and then half a km more. Where on a km number line does she stop? Write it as a fraction.",
+     "itemId": "c5-maths-ch02-t01-i10"
+    },
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "Fractions on a line",
+    "beat": {
+     "beatId": "b16-probe",
+     "type": "probe",
+     "index": 16
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 964,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 1889,
+    "item": "c5-maths-ch02-t01-i10",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 96
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 96
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 711
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 829
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1676
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1793
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1807
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1807
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1512
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1807
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1889
+     }
+    ]
+   }
+  }
+ ]
+}

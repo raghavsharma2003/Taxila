@@ -17,8 +17,12 @@
 // puppetDuplexDetach() hands the floor faces and nods back to the floor state and the mic-level Listener (a host that
 // is torn down mid-lesson must not leave a face that never nods again).
 // Everything else passes through untouched. A failure here never breaks the floor.
+// Round 3 (relational-human): the same sink also hands every command, untouched, to the turn path's duplex end-of-turn
+// hook (src/latency/duplexTurn.ts: the engine's eager end of turn → the turn prefetch; its commit → the acknowledgement).
+// The face itself still reads no words: the latency hook is a separate consumer of the command object.
 import type { HostCommand } from "../duplex/host.ts";
 import { puppetBus } from "./bus.ts";
+import { latencyDuplexSink } from "../latency/duplexTurn.ts";
 
 const now = () => (typeof performance !== "undefined" ? performance.now() : Date.now());
 
@@ -32,6 +36,7 @@ export function puppetDuplexSink(c: HostCommand): HostCommand {
   } catch {
     /* the face never breaks the floor */
   }
+  latencyDuplexSink(c);
   return c;
 }
 

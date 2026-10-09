@@ -18,15 +18,15 @@
  */
 import type {
   ActionDetail, DuplexEngine, EngineAction, EngineContractVersion, EngineDecision, EngineId, EngineSession, EngineTick,
-  ExchangeContext, FirstSound, PrepareHint, Prob, ReactKind, ReasonCode, SpeakReason,
+  ExchangeContext, FirstSound, PauseClass, PrepareHint, Prob, ReactKind, ReasonCode, SpeakReason,
 } from "./engine.ts";
 import {
-  ACOUSTIC_FRESH_MS, BAND_PACE, BOP, CONTEXT, OPEN_TURN_WAIT, CUT_IN, HESITANT_VALUE_SILENCE_MS, HOLD, HORIZON_MS, PHRASE_SILENCE_MS, PREPARE,
+  ACOUSTIC_FRESH_MS, BAND_PACE, BOP, CONTEXT, CUT_IN, HESITANT_VALUE_SILENCE_MS, HOLD, HORIZON_MS, PAUSE_WAIT, PHRASE_SILENCE_MS, PREPARE,
   RATE, SAFETY, SEMANTIC_DECAY_MS, VERDICT, WEAKER_LANGUAGE_STRETCH, WT1_DEFAULT,
 } from "./config.ts";
 import { classifyOverlap } from "./overlap.ts";
 
-export const STAGE_A: EngineId = { id: "rules-a", stage: "A", version: "2026-10-04.1" };
+export const STAGE_A: EngineId = { id: "rules-a", stage: "A", version: "2026-10-09.r3" };
 const CONTRACT: EngineContractVersion = "cce/2026-10-04";
 
 const sig = (z: number): number => 1 / (1 + Math.exp(-z));
@@ -176,10 +176,32 @@ export interface RulesMemory {
   reactedOnset: number | null;
   lastPhase: string | null;
   buildKeys: Set<string>;
+  /** Round 3: the text hash of the live eager end of turn (null = none). */
+  eagerHash: string | null;
 }
 
 export function newMemory(): RulesMemory {
-  return { draftLive: false, draftHash: null, lowSince: null, probedRunAt: null, reactedOnset: null, lastPhase: null, buildKeys: new Set() };
+  return { draftLive: false, draftHash: null, lowSince: null, probedRunAt: null, reactedOnset: null, lastPhase: null, buildKeys: new Set(), eagerHash: null };
+}
+
+/**
+ * Round 3 (duplex): the pause class of the covered words outside a closed answer (docs/design/round3/duplex/RESEARCH.md §4).
+ * Measured on 400 real Hindi turns through both real STT lanes (evals/duplex-r3, the pause table): a comma, a broken word, an
+ * unclosed number and the open-tail shapes ended 0-4 turns against 10-21 thinking pauses each, while "complete-looking"
+ * words (a closed sentence, a verb-final clause, a closed number) are genuinely ambiguous: 63 pauses against 267 ends, and
+ * neither prosody (AUC 0.67-0.70) nor the fast semantic model (AUC 0.58) separates them in time. So the class sets the
+ * WAIT, and only a hold shape buys a long one.
+ */
+export function pauseClass(tick: EngineTick): PauseClass {
+  const m = tick.markers;
+  if (m.holdRequest || m.openTail || m.fillerTail || m.projection || m.wordSearch || m.repairOpen) return "hold";
+  if (m.endShape === "comma" || m.endShape === "broken") return "hold";
+  if (m.idk) return "idk";
+  if (m.enumerating) return "enumerating";
+  if (m.questionComplete || m.repeatRequest) return "question";
+  // a number with no closing mark on a lane that punctuates: the number is still being said ("मेरा नंबर है 700 …")
+  if (m.endShape === "unclosed" && m.cue === "value") return "hold";
+  return "complete";
 }
 
 const decision = (action: EngineAction, est: Estimate, reasons: ReasonCode[], detail: ActionDetail | undefined, id: EngineId, extra: Partial<EngineDecision> = {}): EngineDecision => ({
@@ -227,6 +249,21 @@ export function prepare(tick: EngineTick, est: Estimate, mem: RulesMemory, suppo
     sttProbe = true;
     mem.probedRunAt = runKey;
   }
+  // round 3: the EAGER END OF TURN. The covered words read as a finished turn → start the turn's model work on exactly these
+  // words now (the floor decision still waits for PAUSE_WAIT); the child going on, or the words turning into a hold shape,
+  // cancels it. Outside closed answers only (a complete closed answer commits at once anyway); never under distress.
+  let eager: NonNullable<PrepareHint["eager"]> = "none";
+  const eagerOk = childFloor && !c.voicing && !!tr.text && tr.unseenVoicedMs <= HORIZON_MS && !tick.safety.distress && sil >= PREPARE.probeSilenceMs
+    && est.exchange !== "closed_answer";
+  const pc = eagerOk ? pauseClass(tick) : null;
+  if (pc !== null && pc !== "hold" && pc !== "enumerating") {
+    eager = mem.eagerHash === tr.textHash ? "keep" : "start";
+    mem.eagerHash = tr.textHash;
+  } else if (mem.eagerHash !== null) {
+    if (tick.phase === "committed") mem.eagerHash = null; // the turn took those words: nothing to cancel
+    else if (c.voicing || (childFloor && !!tr.text && tr.textHash !== mem.eagerHash) || tick.safety.distress || tick.phase === "hold_requested") { eager = "cancel"; mem.eagerHash = null; }
+    else eager = "keep";
+  }
   // build intents from the screen (an aid request): prefetch keys only; reveals wait for a turn boundary
   let buildIntent: string | null = null;
   for (const e of tick.screen.events) {
@@ -235,7 +272,7 @@ export function prepare(tick: EngineTick, est: Estimate, mem: RulesMemory, suppo
       if (!mem.buildKeys.has(k)) { mem.buildKeys.add(k); buildIntent = k; }
     }
   }
-  return { draft, warmTts, sttProbe, textHash: tr.textHash, buildIntent };
+  return { draft, warmTts, sttProbe, textHash: tr.textHash, buildIntent, eager };
 }
 
 /** The policy: one proposal per tick given the estimate. The governor disposes. */
@@ -333,12 +370,10 @@ export function extraWait(tick: EngineTick, est: Estimate): number {
   const m = tick.markers, c = tick.child;
   const closed = est.exchange === "closed_answer" && !!tick.context.expected;
   if (!closed) {
-    // duplex-real: outside a closed answer a finished-looking clause still waits for this much silence (OPEN_TURN_WAIT)
     if (est.exchange === "closed_answer") return 0;
-    // a finished question to her and "I don't know" are answered at once (a wait there is dead air, not patience)
-    if (m.questionComplete || m.idk) return 0;
-    if (est.reasons.includes("prosody_continue")) return OPEN_TURN_WAIT.prosodyContinue;
-    return est.reasons.includes("prosody_final") ? OPEN_TURN_WAIT.prosodyFinal : OPEN_TURN_WAIT.neutral;
+    // round 3: the word-aware end of turn: the least silence by the pause class of the covered words (PAUSE_WAIT). Before,
+    // a finished question to her waited 0 ms and cut 4/9 of the >= 500 ms pauses after "…ठीक है?" / "…ना?" on real speech.
+    return PAUSE_WAIT[pauseClass(tick)];
   }
   const form = tick.context.expected?.form;
   const finalProsody = est.reasons.includes("prosody_final");

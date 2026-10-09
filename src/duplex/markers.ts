@@ -10,7 +10,7 @@
  * Verdict-blind: the context carries the answer FORM only. Values are read for STABILITY (the verdict clock), never graded.
  * Erasable TypeScript.
  */
-import { understand, normText } from "../../server/duplex/understand.js";
+import { understand, normText, valuesIn } from "../../server/duplex/understand.js";
 import { readForm, type FormRead } from "./form.ts";
 import type { EngineContext, LexicalMarkers, Ms, SemanticEstimate } from "./engine.ts";
 import type { CueClass } from "./turnPolicy.ts";
@@ -46,6 +46,8 @@ export class MarkerTracker {
   private lastValueKey: string | null = null;
   private lastValueSeenAt: Ms | null = null;
   private offTaskSince: Ms | null = null;
+  /** Round 3: this session's transcriber punctuates (any sentence mark seen yet). Kept across turns. */
+  private punctuates = false;
 
   beginTurn(): void {
     this.lastText = "";
@@ -105,7 +107,18 @@ export class MarkerTracker {
     const closedByQuestion = asks && qMark;
     const codeSwitchAtEdge = last2.length === 2 && ((DEVANAGARI.test(last2[0]) && LATIN.test(last2[1])) || (LATIN.test(last2[0]) && DEVANAGARI.test(last2[1])))
       && n.lex.cue !== "verb_final" && n.lex.cue !== "value" && n.lex.cue !== "yield";
+    // round 3 (duplex): how the transcriber closed the newest words, and whether a number is being read out
+    const tr = String(text ?? "").trim();
+    if (/[।॥.?？!,،]/u.test(tr)) this.punctuates = true;
+    const endShape: LexicalMarkers["endShape"] = !tr ? null
+      : /[।॥.?？!]["'”’)]*$/u.test(tr) ? "terminal"
+      : /[,،]["'”’)]*$/u.test(tr) ? "comma"
+      : /[-–—]$/u.test(tr) ? "broken"
+      : this.punctuates ? "unclosed" : null;
+    const enumerating = endShape !== "terminal" && valuesIn(tr).filter((v: { at: number }) => v.at >= toks.length - 4).length >= 2;
     const markers: LexicalMarkers = {
+      endShape,
+      enumerating,
       cue,
       lexP: formValue ? Math.max(n.lex.p, 0.95) : closedByQuestion ? Math.max(n.lex.p, 0.85) : n.lex.p,
       form: form.state,

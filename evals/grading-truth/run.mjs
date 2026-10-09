@@ -537,7 +537,10 @@ if (MODEL_N > 0) {
   const work = async () => { while (i < chosen.length) { const d = chosen[i++]; try {
     const r = await CL.classify({ ...d.args, trace: [] });
     const o = r.outcome, verdict = vOf(o);
+    // round3 truth: what code did to the model's label (corroborate's tag, classify's override), so a run on a patched tree
+    // also says, on the SAME labels, what the unpatched rules would have output
     const row = { ...d.c, grader: "lesson.classify(model)", source: r.source, fallback: !!r.fallback, modelOutcome: o, verdict, wrong: wrongKind(d.c.truth, verdict),
+      corroboration: r.corroboration ?? null, overridden: r.overridden ?? null,
       ...(r.source === "error" ? { error: "model unavailable (source error)" } : {}) };
     modelRows.push(row);
     if (guard) {
@@ -553,7 +556,7 @@ if (MODEL_N > 0) {
 // ───────────── report ─────────────
 const all = [...cases.filter((c) => c.truth !== "skip"), ...modelRows, ...guardRows];
 if (DUMP) writeFileSync(DUMP, JSON.stringify(modelRows.map((r) => ({ itemId: r.itemId, input: r.input, truth: r.truth, kind: r.kind, bucket: r.bucket, modelOutcome: r.modelOutcome ?? null,
-  source: r.source ?? null, error: r.error ?? null, fallback: !!r.fallback })), null, 0));
+  source: r.source ?? null, error: r.error ?? null, fallback: !!r.fallback, corroboration: r.corroboration ?? null, overridden: r.overridden ?? null })), null, 0));
 const groups = {};
 for (const c of all) {
   const g = (groups[c.grader] ??= { n: 0, wrong: 0, false_credit: 0, false_fail: 0, partial_miss: 0, abstain: 0, uncredited: 0, byTruth: {}, byKindWrong: {}, byKindUncredited: {} });

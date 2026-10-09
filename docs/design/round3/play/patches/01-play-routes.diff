@@ -1,0 +1,13 @@
+--- a/server/index.js
++++ b/server/index.js
+@@ -28,6 +28,9 @@
+ import { routes as voicesig } from "./voicesig/routes.js";
+ // Round 2 latency: POST /api/lesson/turn-prefetch (the device's stable partial starts the turn's perceive stage). One line.
+ import { routes as latency } from "./latency/routes.js";
++// round 3 play: /api/play/* (the game families' sessions, raw-act re-grading, the world). One-line seam; the routes live in
++// server/play (docs/design/round3/play/GRAMMAR.md §6). No model call on any play route.
++import { routes as play } from "./play/routes.js";
+ 
+-register({ ...lesson, ...tts, ...parent, ...modules, ...voice, ...tutor, ...forge, ...child, ...testClock, ...studio, ...voicesig, ...duplex, ...duplexShadow, ...face, ...latency, ...lane });
++register({ ...lesson, ...tts, ...parent, ...modules, ...voice, ...tutor, ...forge, ...child, ...testClock, ...studio, ...voicesig, ...duplex, ...duplexShadow, ...face, ...latency, ...lane, ...play });
+ export { handle, register };

@@ -1,0 +1,56 @@
+--- a/server/brain/turn.js
++++ b/server/brain/turn.js
+@@ -41,6 +41,10 @@
+ import { fallbackReply, floorContentOf, safeguardLine, scrubbed, textReply } from "./say.js";
+ import { arbitrate } from "./kernel.js";
+ import { proposalsOf, turnStudioOf, whiteboardAskOf, whiteboardIntentOf, RUNG_ENGINE } from "./propose.js";
++import { INTERACTIVE_ASKS } from "../forge3/compose.js";
++
++/** round 3 forge: the child asked to play / see it move and an engine (not the template rung) is in the tray: keep it. */
++const keepEngineFor = (r, next) => INTERACTIVE_ASKS.has(String(r?.move?.visual ?? "")) && r?.ui?.tray === "module" && !!next?.module && next.module.engine !== RUNG_ENGINE;
+ import { relationalEffects } from "./relational-adapter.js";
+ import { withSafetyOpening } from "../relational/openings.js";
+ import { signalsOf } from "../relational/signals.js";
+@@ -448,14 +452,26 @@
+   // Today's proposers: the Director (its move; a safeguard is the safety floor), the relational directive (split into its
+   // ranks by relational-adapter.js), Studio's turn view, the whiteboard ask on an explanation beat, the vibe knobs.
+   const lane = laneOf(state.mode);
++  // round 3 forge (server/forge3/live.js via studioSeam.composeAsk): a game / animation / simulation ask with no engine to
++  // keep is answered by a PLAY piece (the play stream's solver-checked level for the skill or topic, its art rotated, its
++  // board twin attached) when the play coverage admits it; then no whiteboard is requested for the ask and this turn's
++  // slotFor shows the piece. A miss (null) leaves the turn exactly as before. Pure code, ≤ 350 ms learner read, no model.
++  const playAsk = !late && !moduleOnly && !keepEngineFor(r, next) && INTERACTIVE_ASKS.has(String(r.move?.visual ?? "")) && typeof studioSeam.composeAsk === "function"
++    ? await seamSafe("studio.composeAsk", () => studioSeam.composeAsk(lesson.id, { visual: String(r.move.visual), skillId: next.lastMove?.skillId ?? r.move?.skillId ?? null,
++      topicId: lesson.topic_id ?? null, child, tray: r.ui?.tray ?? null }), null)
++    : null;
+   const kernelRun = () => {
+     const beat = nextBeat(prev.beat, r.move, next);
+     // the Director's only new thing on screen is its template whiteboard rung (W2-B): the live board replaces it (owner
+     // priority 6), the rung stays the fallback when Studio declines
+     // ship5 fixer (experience B1): on the child's visual request the Director's tray holds its "show" of the item; the
+     // board the child asked for replaces it exactly as it replaces the template rung (one thing in the tray)
+-    const rungMounted = r.ui?.tray === "module" && (next.module?.engine === RUNG_ENGINE || (!!r.move?.visual && !!next.module));
+-    const wb = whiteboardAskOf({ beat, lane, late, strained: frustrationLoop(next.affect ?? initialAffect()), move: r.move, studioView: late ? null : studioView, rungMounted, requested: !!r.move?.visual });
++    // round 3 forge (server/forge3/compose.js): a game / animation / simulation ask is answered by something the child can
++    // DO. An engine already in the tray IS that (taxila.dev 2026-10-09: 2/2 such asks unmounted the engine for a static
++    // board), so it stays and no board replaces it; a picture / diagram ask still gets the board.
++    const keepEngine = keepEngineFor(r, next);
++    const rungMounted = r.ui?.tray === "module" && (next.module?.engine === RUNG_ENGINE || (!!r.move?.visual && !!next.module && !keepEngine));
++    const wb = whiteboardAskOf({ beat, lane, late, strained: frustrationLoop(next.affect ?? initialAffect()), move: r.move, studioView: late ? null : studioView, rungMounted, requested: !!r.move?.visual && !keepEngine && !playAsk });
+     const t1 = performance.now();
+     const proposals = proposalsOf({ r, relational, studioView: late ? null : studioView, whiteboard: wb.proposals, vibe: next.vibe });
+     const arb = arbitrate(proposals);
+@@ -539,11 +555,11 @@
+         // ship5 p4-content: the Director's tray holds only its template explain rung (W2-B): a Stagecraft piece may take it
+         rungTray: r.ui?.tray === "module" && next.module?.engine === RUNG_ENGINE,
+         // ship5 fixer: the child asked to see it (requests.js visual): a piece they asked for may take the Director's show
+-        visualRequest: !!r.move?.visual }) : null), null);
++        visualRequest: !!r.move?.visual && !keepEngineFor(r, next) }) : null), null);
+   // ship5 p4-content: a Stagecraft piece took the tray from the Director's template rung (the same rule as the live board
+   // below: the rung is the floor, a real piece replaces it): its mount / param commands go, a rung already on screen is
+   // unmounted, and its facts row leaves the move's content, so her line names only what the child sees.
+-  if (!late && studioSlot?.artifact?.kind === "stagecraft" && next.module && (next.module.engine === RUNG_ENGINE || (r.move?.visual && r.ui?.tray === "module"))) {
++  if (!late && ["stagecraft", "play"].includes(studioSlot?.artifact?.kind) && next.module && (next.module.engine === RUNG_ENGINE || (r.move?.visual && r.ui?.tray === "module"))) {
+     const id = next.module.id;
+     const mountedNow = r.moduleCommands.some((c) => c.op === "mount" && c.moduleId === id);
+     r = { ...r, moduleCommands: [...r.moduleCommands.filter((c) => c.moduleId !== id || c.op === "unmount"), ...(mountedNow ? [] : [{ op: "unmount", moduleId: id }])] };

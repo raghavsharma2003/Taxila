@@ -1,0 +1,57 @@
+--- a/server/director/state.js
++++ b/server/director/state.js
+@@ -29,7 +29,7 @@
+ import {
+   newProbeSession, openSession, recordTurn, nextProbe, markAsked, fits, bandOf, shapeById, testWeight,
+   reteachTrigger, reteachPlan, armsFromKit, newPersonaState, personaStep, personaKnobs, turnSignals,
+-  reteachSessionInputs, noteReteach,
++  reteachSessionInputs, noteReteach, directorReteachDecision, bookDirectorReteach, reteachLogOn, directorMayReteach,
+ } from "../comprehension/index.js";
+ import { skillSess } from "../comprehension/budget.js";
+ import { equityProfile, lessonGuidance, teachPlanFor, fadeItem, fadedContent, workedLeadContent, fadeBoard, startedFirstStep, FADE_PREFIX, clip } from "./fading.js";
+@@ -429,11 +429,25 @@
+ function trap(s, kit, item, misconceptionId) {
+   const m = kit.misconceptions.find((x) => x.id === misconceptionId);
+   if (m) s.flagged[m.id] = (s.flagged[m.id] ?? 0) + 1;
+-  if (!m || s.retaught.includes(m.id)) return null;
++  if (!m || s.retaught.includes(m.id) || !directorMayReteach(s, "kit", item.skillId, m)) return null;
+   s.retaught.push(m.id); s.activeItemId = undefined;
++  logReteach(s, "kit", item.skillId, m);
+   return plan("reteach", SH.reteach({ ...m.remediation, again: false }), { skillId: item.skillId, representation: m.remediation.representation });
+ }
+ 
++/**
++ * round3 truth (prod w1c-reteach 7/13, reteach_attempts 0 rows): a re-teach the Director takes on its own path (the kit's
++ * remediation for a misconception the answer showed; the P21 change of approach) is a logged decision exactly like
++ * engineReteach's: a reteach_attempts row (brain/turn.js, via lastReteach), resolved at the next start, its arm never
++ * chosen again this lesson, a re-check cooldown after it (comprehension/reteach.js bookDirectorReteach). And the rules the
++ * engine's own arms obey hold for these too (directorMayReteach): never the same arm twice in a lesson, and the change of
++ * approach never inside a running re-check. TAXILA_RETEACH_LOG=off restores HEAD.
++ */
++function logReteach(s, kind, skillId, mis) {
++  if (!reteachLogOn()) return;
++  bookDirectorReteach(s, directorReteachDecision({ kind, skillId, mis }), RETEACH_COOLDOWN);
++}
++
+ /** V1.4 pace bookkeeping for one graded answer on a practice item (never a warm-up check, a faded step or a diagnostic). */
+ export const PACE = Object.freeze({ fastP: 0.85, settleP: 0.9, settleRun: 2, parkTries: 7 });
+ function notePace(s, item, right) {
+@@ -506,14 +520,16 @@
+   const m = cls?.outcome === "misconception" ? (item.misconceptions ?? kit.misconceptions).find((x) => x.id === cls.misconceptionId) : null;
+   if (m) s.flagged[m.id] = (s.flagged[m.id] ?? 0) + 1;
+   // P21: no 3-in-a-row in ~10 opportunities — a different approach, not more of the same.
+-  if (wheelSpinning(s.history[item.skillId]) && !s.changedApproach.includes(item.skillId)) {
++  if (wheelSpinning(s.history[item.skillId]) && !s.changedApproach.includes(item.skillId) && directorMayReteach(s, "change_approach", item.skillId)) {
+     s.changedApproach.push(item.skillId);
+     s.hintLevel = Math.min(3, s.hintLevel + 1);
+     const we = kit.workedExample;
++    logReteach(s, "change_approach", item.skillId, null);
+     return plan("reteach", SH.changeApproach(), { item, content: we ? workedContent(we, 1, 1) : [] });
+   }
+-  if (m?.remediation && !s.retaught.includes(m.id)) {
++  if (m?.remediation && !s.retaught.includes(m.id) && directorMayReteach(s, "kit", item.skillId, m)) {
+     s.retaught.push(m.id);
++    logReteach(s, "kit", item.skillId, m);
+     // round2 truth: an options item is never re-asked after its re-teach (elimination; see engineReteach): retired, and
+     // the re-check is a fresh item on the skill
+     if ((item.options?.length ?? 0) >= 2) {

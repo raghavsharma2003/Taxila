@@ -17,6 +17,8 @@
 // no guilt, and never repeats.
 import { appraise, neutral, uiOf } from "./affect.js";
 import { nextRelSession, persisted, withdrawing } from "./session.js";
+// round 3 (relational-human): the memory she uses (callbacks from the record, gated in code) and the truth about it
+import { pickCallback } from "./memory.js";
 
 /**
  * Move-overlay shapes the compile renders as ONE note in the MOVE section (W2-C compile patch; server/relational/
@@ -43,6 +45,12 @@ export const SHAPES = Object.freeze({
   share_uptake_gentle: "they shared something sad: one gentle specific line about what they said, no naming of their feeling, then a soft bridge back",
   laugh_with: "they made a joke: play along once in a few words, then back to the work",
   name_step: "they put themselves down: name one real step they did right, specifically; never argue with the label; then a small next step",
+  // round 3 (relational-human): what she keeps, truthfully, from the consent state (memory.js keepsOf); a forget request
+  memory_keeps_learning_and_likes: "they asked what she remembers about them: plain and short; between lessons she keeps their learning (what was hard, what came good) and the interests their grown-up chose; their grown-up can see all of it; she lets go of anything they ask her to; no promise of forever; then the work",
+  memory_keeps_learning: "they asked what she remembers about them: plain and short; between lessons she keeps only their learning (what was hard, what came good), nothing personal; their grown-up can see it; no promise of forever; then the work",
+  memory_keeps_nothing: "they asked what she remembers about them: honest; she keeps nothing between lessons, only today; no promise; then the work",
+  memory_keeps_allowed: "they asked what she remembers about them: honest and short; she keeps only what their grown-up allowed, and their grown-up can see it; no promise of forever; then the work",
+  forget_ok: "they asked her not to keep what they said: agree plainly that she will not keep it, no fuss, no question about why; then the work",
 });
 
 /** The overlay each signal maps to (F2/F4 first). */
@@ -65,7 +73,7 @@ const PRAISE_GAP = 5, PLAYFUL_MAX = 2, PLAYFUL_AFTER_ERROR = 2;
  * @param {import("../../shared/relational").RelSession} session the session BEFORE this turn
  * @param {import("../../shared/relational").RelSignal[]} signals this turn's signals
  * @param {{ turn: number, move?: string, safety?: boolean, lane?: string, outcome?: string|null, words?: number,
- *   verdictReversed?: boolean, band?: "B1"|"B2"|"B3"|"B4", classLevel?: number }} ctx
+ *   verdictReversed?: boolean, band?: "B1"|"B2"|"B3"|"B4", classLevel?: number, skillId?: string | null }} ctx
  * @returns {{ directive: import("../../shared/relational").RelationalDirective | null, session: import("../../shared/relational").RelSession }}
  */
 export function decide(snapshot, session, signals, ctx) {
@@ -109,7 +117,11 @@ export function decide(snapshot, session, signals, ctx) {
   }
   // ── F1 identity: the floor answers identity first (VT §1.4 P5); the parent sees that it was asked.
   if (k.has("identity_q")) { note("identity_asked", {}); reasons.push("f1.identity_q"); }
-  if (k.has("forget_ask")) { note("memory_forgotten", {}); reasons.push("mem.forget_ask"); }
+  if (k.has("forget_ask")) {
+    // round 3: honoured, not only noted: this lesson's memories are not kept (seam.js onLessonEnd), the parent sees it
+    note("memory_forgotten", {}); reasons.push("mem.forget_ask");
+    next.forgetAsked = true;
+  }
 
   // ── The child's goodbye (RELEASE) and the I-7 check-in. Nothing affective touches a goodbye (TA3): neutral_warm.
   const leaving = k.has("goodbye");
@@ -160,6 +172,9 @@ export function decide(snapshot, session, signals, ctx) {
     reasons.push(`boundary.${sig}`);
   }
   if (k.has("loneliness")) { overlay("POINT_OUT", "point_out_person"); note("boundary_warmth", { move: "point_out" }); display("share_sad"); reasons.push("boundary.loneliness"); }
+  // round 3: the truth about her memory, AFTER every F2/F4 boundary (a secret or contact ask in the same turn wins the overlay)
+  if (k.has("forget_ask")) overlay("WARM_BOUNDARY", "forget_ok");
+  else if (k.has("memory_q")) { overlay("WARM_BOUNDARY", snapshot?.keeps && SHAPES[snapshot.keeps] ? snapshot.keeps : "memory_keeps_allowed"); reasons.push("mem.memory_q"); }
 
   // ── Teacher-owned repair (RO-11): ownership only from the key or the verifier, never from the child's insistence.
   if (ctx.verdictReversed) {
@@ -193,6 +208,21 @@ export function decide(snapshot, session, signals, ctx) {
   }
   if (k.has("tired")) display("tired");
 
+  // ── Round 3: ONE callback from the record (memory.js pickCallback: ≤ 1 per lesson, never the first meeting, never on a
+  // boundary / repair / release / safety turn or while the dependency overlay has callbacks off; deixis or the opener)
+  const blocked = !!d.floor || (d.moveOverlay && ["WARM_BOUNDARY", "POINT_OUT", "OWN_SLIP", "AFFIRM_RECHECK", "RELEASE", "CHECK_IN"].includes(d.moveOverlay.kind));
+  const cb = pickCallback(snapshot?.callbacks ?? [], { turn, move: ctx.move, skillId: ctx.skillId ?? null, sessions: Number(snapshot?.sessions ?? 0),
+    used: session.callbackUsed ?? null, blocked, callbacksOff: !!next.overlayMoves?.callbacksOff, withdrawn: withdrawing(session, ctx.words ?? 0, ctx.outcome ?? null) });
+  if (cb) { d.callbackId = cb.id; next.callbackUsed = cb.id; reasons.push("rapport.callback"); }
+  // "do you remember what we did?": the honest answer names what she really has (one record item, the same one again if
+  // the opener already used it) — not only the policy of what she keeps, which alone reads as evasive. Only on the memory
+  // shape itself (no secret / contact boundary won the overlay), never on a safety turn, and the claim check still runs.
+  else if (!d.floor && d.moveOverlay?.shapeId === snapshot?.keeps && k.has("memory_q") && !k.has("forget_ask")) {
+    const own = pickCallback(snapshot?.callbacks ?? [], { turn: 1, move: "hook", skillId: null, sessions: Number(snapshot?.sessions ?? 0), used: null, blocked: false,
+      callbacksOff: !!next.overlayMoves?.callbacksOff, withdrawn: false });
+    if (own) { d.callbackId = own.id; next.callbackUsed = next.callbackUsed ?? own.id; reasons.push("mem.memory_q.record"); }
+  }
+
   // ── Affect display from the child's own work (TA7: never the verdict of THIS turn; persistence reads the earlier ones).
   if (!affect) {
     const praiseOk = session.lastPraiseAt == null || turn - session.lastPraiseAt >= PRAISE_GAP;
@@ -205,11 +235,12 @@ export function decide(snapshot, session, signals, ctx) {
   function finish() {
     const a = affect ?? neutral(turn);
     next.affectTrail = [...next.affectTrail, a].slice(-3);
-    const quiet = !d.moveOverlay && !d.floor && a.display === "neutral_warm" && !notes.length && !events.length;
+    const quiet = !d.moveOverlay && !d.floor && !d.callbackId && a.display === "neutral_warm" && !notes.length && !events.length;
     if (quiet) return { directive: null, session: next };
     /** @type {import("../../shared/relational").RelationalDirective} */
     const directive = {
       ...(d.moveOverlay ? { moveOverlay: d.moveOverlay } : {}),
+      ...(d.callbackId ? { callbackId: d.callbackId } : {}),
       affect: a, canRemember: false,
       ...(d.floor ? { floor: d.floor } : {}),
       ui: { teacherAffect: uiOf(a) },

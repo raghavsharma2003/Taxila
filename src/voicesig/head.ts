@@ -23,6 +23,10 @@ export interface FillerModel {
   ort: OrtLike;
   thr: number;
   ver: string;
+  /** Round 3: the thinking-pause cue's measured settings from the model card (holdCue.ts HoldCueConfig subset). */
+  holdCue?: { pComplete?: number; tailGapMs?: number; readAfterMs?: number; minFillerMs?: number };
+  /** Round 3: the operating point's minimum run length (ms); absent → FILLER_MIN_MS (200). */
+  minRunMs?: number;
 }
 
 /** Load the detector (tiny graph, < 100 KB). Null on any failure: the head then runs at stage 0 with the flat-run proxy. */
@@ -70,8 +74,14 @@ export class VoicesigHead {
   setFiller(m: FillerModel | null): void { this.filler = m; }
   dispose(): void { this.off(); }
 
+  /** Round 3: per-hop listeners of the GRU input the head already builds (the thinking-pause cue reuses it, no 2nd build). */
+  private readonly xFns = new Set<(f: AudioFrame, x: Float32Array) => void>();
+  onInput(cb: (f: AudioFrame, x: Float32Array) => void): () => void { this.xFns.add(cb); return () => { this.xFns.delete(cb); }; }
+
   private onFrame(f: AudioFrame): void {
-    this.xs.push({ t: f.t, x: this.gi.next(f, this.fe.melNear(f.t)) });
+    const x = this.gi.next(f, this.fe.melNear(f.t));
+    this.xs.push({ t: f.t, x });
+    for (const fn of this.xFns) fn(f, x);
     if (this.xs.length > 4500) this.xs.splice(0, this.xs.length - 4500);
   }
 
@@ -134,7 +144,7 @@ export class VoicesigHead {
           if (p && p.length === rows.length) {
             const full = new Float32Array(frames.length);
             full.set(p, frames.length - p.length);
-            filler = { p: full, thr: this.filler.thr };
+            filler = { p: full, thr: this.filler.thr, ...(this.filler.minRunMs ? { minMs: this.filler.minRunMs } : {}) };
             det = 1;
           }
         } catch {

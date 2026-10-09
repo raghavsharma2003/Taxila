@@ -1,0 +1,432 @@
+diff --git a/server/brain/say.js b/server/brain/say.js
+index 9b1ba8f..b5b975c 100644
+--- a/server/brain/say.js
++++ b/server/brain/say.js
+@@ -15,7 +15,7 @@ import { mixedUnitComparison, withoutMixedUnits } from "../director/units.js";
+ import { screenContradiction, stripStrayParts } from "../director/modules.js";
+ import { isBare, repeatsEarlier, tidy, leadWithoutQuestion, sentences } from "../conversation/guards.js";
+ import { p5Flag } from "../conversation/flags.js";
+-import { leadSlotWanted, leadSlotNote, cleanLead, leadOk, composeTurn, LEAD_MAX_WORDS } from "../conversation/compose.js";
++import { leadSlotWanted, leadSlotNote, cleanLead, leadOk, composeTurn, requestNote, turnNote, LEAD_MAX_WORDS, LEAD_MIN_FIRST, LEAD_MAX_FIRST } from "../conversation/compose.js";
+ import { fallbackLead } from "../conversation/fallback-lead.js";
+ 
+ /** p5-interaction: problems a gutted teaching turn's one retry may still carry, because code repairs them (never truth). */
+@@ -118,8 +118,14 @@ export function checkInProblems(t, { kind = "stop", active = null, lang = "hingl
+     || (String(text).match(/[^.!?।]*[?？]/g) ?? []).some((q) => /\d/.test(q)) || HOLD_WORDS.test(text);
+   if (asksLesson) out.push("hold");
+   if (!STOP_OFFER.test(text)) out.push("nostop");
++  // round 3 (conversation; local battery base-head-1, "end the lesson"): "Okay, Meher. We'll stop the lesson here." named
++  // the stop and offered nothing else, and the child's "yes" then got "Lesson ended … <a question>". A stop check-in is a
++  // CHOICE: going on (or a break) is offered as well. (The relational check-in "rel" only has to say stopping is fine.)
++  if (kind === "stop" && p5Flag("R3CONV") && !GO_ON_OFFER.test(text)) out.push("nochoice");
+   return out;
+ }
++/** The child's options include going on or a short break (Roman Hinglish / English / Devanagari). */
++const GO_ON_OFFER = /(?<![\p{L}])(?:continue|keep\s+going|carry\s+on|go\s+on|aage|chalte\s+rah|jaari|padhte\s+rah|karte\s+rah|break|pause|aaram|thoda\s+ruk)|आगे|जारी|ब्रेक/iu;
+ /**
+  * The fixed safeguarding line (both helplines) in the child's language mode and address form: W2-I's vetted opening
+  * (server/relational/openings.js, identical to the client's src/lesson/safetyStrings.ts) and then one check-in question.
+@@ -223,13 +229,16 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
+   // A diagnostic's options are content read aloud, so they do not count against the turn length.
+   const max = REPLY_MAX_WORDS[state.ctx.ageBand] + (item?.diagnostic ? words(item.options.map((o) => o.text).join(" ")) : 0);
+   const guardable = item && state.hintLevel < 4 && state.pendingWhy !== item.id;
+-  const mustPose = guardable && state.hintLevel === 0 && POSING_MOVES.has(state.lastMove.kind);
++  const posingTurn = guardable && state.hintLevel === 0 && POSING_MOVES.has(state.lastMove.kind);
+   // p5-interaction: a thinking-aloud wait hands back by letting them go on, never by a question (the "thinkq" guard below)
+   const thinkingWait = p5Flag("GUARDS") && state.lastMove?.request === "thinking";
+   // round 2 safety floor: a check-in hands back by the choices it offers (the chips wait), never by a lesson question
+   const checkin = state.lastMove?.checkin ?? null;
+   const activeItem = checkin && state.activeItemId ? findItem(state, kit, state.activeItemId) : null;
+-  const mustHandBack = !CLOSING_MOVES.has(state.lastMove.kind) && !thinkingWait && !checkin;
++  // round 3: a granted break hands back nothing (breakYes: "no question now"); before this the hand-back check made the
++  // rewrite add a lesson question to "brb" / "can we pause for a bit?" (local battery base-head-1: 3 of 3 breaks rewritten)
++  const restBreak = p5Flag("R3CONV") && state.lastMove?.kind === "break" && state.lastMove?.request === "break";
++  const mustHandBack = !CLOSING_MOVES.has(state.lastMove.kind) && !thinkingWait && !checkin && !restBreak;
+   const whyProbe = !!item && state.pendingWhy === item.id;
+   // A comparison across kinds of quantity (45,000 fans vs 4,500 km) in the teacher's OWN words; the kit's posed
+   // question is verified content and is not judged here.
+@@ -248,7 +257,13 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
+   // (owner-3: the lesson goes on after it); it is still caught, but its repair is the check-in's own (below), never
+   // stripWrap — which cut the stop option out and left "the lesson goes on" (adversarial B2)
+   const wrapping = !CLOSING_MOVES.has(kindNow);
+-  const praiseOf = (t) => praiseProblem(t, verdict);
++  // round 3: a turn whose move answers a request that is not an answer ("thoda break chahiye", "can we play a game") has no
++  // answer to praise: "Bilkul, aap break lijiye" agrees to the request (base-head-1: caught as praise, rewritten, then
++  // shipped flat). Only an UNVERIFIED reading is relaxed; a graded wrong answer keeps every praise check.
++  const NOT_ANSWERS = new Set(["break", "stop", "identity", "uptake", "decline", "park", "detour", "adult", "language", "change_topic", "boredom", "back",
++    "visual", "story", "example", "another", "slower", "repeat", "clarify", "answer_q", "adapt", "adopt", "harder", "easier", "skip", "know", "frustration"]);
++  const wordsVerdict = p5Flag("R3CONV") && verdict === "unverified" && NOT_ANSWERS.has(String(state.lastMove?.request ?? "")) ? "ungraded" : verdict;
++  const praiseOf = (t) => praiseProblem(t, wordsVerdict);
+   // p5-interaction guards (conversation/guards.js): her earlier lines of this lesson (the repeat guard reads the last six)
+   const G = p5Flag("GUARDS");
+   const earlier = G ? history.filter((t) => t.who === "teacher").slice(-6).map((t) => t.text) : [];
+@@ -256,6 +271,21 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
+   // a re-pose ends on the card's form of it (UiDirectives.ask.text, ≤ 120 characters: the question sentence itself)
+   const rePose = !!item && state.pinItem === item.id && (state.pinRun ?? 0) > 1;
+   const askEnd = item ? (G && pinned && rePose ? pinned : promptFor(item, lang)) : null;
++  // Round 3 (conversation stream; kill switch TAXILA_P5_R3CONV=off): the question was posed on the last turn (a re-pose),
++  // so a turn that ends on the card's form of it has posed it; the "drift" check (half the full prompt's content words)
++  // asks only for a FIRST pose. Before this, a re-pose at rung 0 (a request answered, a question of theirs, small talk)
++  // that ended on the card form tripped drift on every turn (the lead slot itself ends on the card form): base-head-1 had
++  // drift on 26 of 90 turns, and the rewrite or the drift repair dropped what the draft had said to the child
++  // ("pehle mera sawaal": the rainbow answer cut, insistence "engages_brief" no).
++  const R3 = G && p5Flag("R3CONV");
++  const mustPose = posingTurn && !(R3 && pinned && rePose);
++  const firstPose = R3 && !!pinned && !rePose && posingTurn;
++  // round 3 (conversation; smoke on the round-3 tree): confirming a RIGHT answer names the parts of the question they just
++  // answered ("Haan — Flag A mein 4 equal sections hain") while the screen already shows the next idea (thirds): the parts
++  // check read that as naming parts the screen does not show, and the repair cut the confirmation (8 of 94 turns, then
++  // "noconfirm" on what shipped). The answered item's own question and key are verified content: their parts may be named.
++  const answered = R3 && verdict === "correct" && state.itemsDone?.length ? findItem(state, kit, state.itemsDone.at(-1)) : null;
++  const partsLines = answered ? [promptFor(answered, lang), String(answered.answer ?? "")] : undefined;
+   // round 2 (conversation): a lead-slot turn's length is its OWN words (the card question after them is verified content,
+   // like a diagnostic's options): within the lead budget it is not "long"
+   const slotState = { on: false };
+@@ -272,7 +302,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
+     // W2-B #1: the line names parts the mounted module does not show (she said quarters over fifths). Her OWN words only:
+     // the kit's posed question is verified content (W2-E: the replay showed the predicate flagging a verified question
+     // that names halves/quarters/eighths beside a 1/2-only predict screen, which cost a rewrite and her lead-in).
+-    screenContradiction(own(t), module) && "parts",
++    screenContradiction(own(t), module, partsLines) && "parts",
+     registerBroken(t, address) && "register",
+     leaksStage(t) && "stage",
+     saysCantShow(t) && "cantshow",
+@@ -280,14 +310,17 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
+     mixedUnitComparison(own(t)) && "units",
+     mustPose && !posesItem(t, item, lang) && "drift",
+     whyProbe && !asksWhy(t) && "nowhy",
+-    mustHandBack && !handsBack(t) && "flat",
++    // round 3: a turn that ends on the pinned kit question has handed the floor back, whatever its verb ("…sabse bade
++    // tukde se sabse chhote tak lagao." has no "?" and no listed verb: every pose of it was "flat" and rewritten)
++    mustHandBack && !handsBack(t) && !(R3 && pinned && parityOf(t).endsOnAsk) && "flat",
+     !scriptOk(t, lang) && "script",
+     words(t) > max && !slotLength(t) && "long",
+     pinned && !parityOf(t).endsOnAsk && "ask",
+     mustHandBack && parityOf(t).questions > 1 && "twoq",
+     wrapping && wrapsUp(t) && "wrap",
+     // p5-interaction: the reply is only the question again (owner-2 R3, 9 / 90), or a line she already said (R4, 8 / 90)
+-    G && pinned && isBare(t, promptFor(item, lang), pinned, rePose ? undefined : 1) && "bare",
++    // round 3: a welcome back is short by nature ("Wapas aa gaye, Riya!"): two own words are a response there
++    G && pinned && isBare(t, promptFor(item, lang), pinned, !rePose ? 1 : R3 && state.lastMove?.request === "back" ? 2 : undefined) && "bare",
+     G && repeatsEarlier(t, earlier) && "same",
+     // a mid-thought gets no question (conversation-v2 thinking_aloud 1/8: "new_question"); a right answer is confirmed
+     // before anything else (answer_correct 4/8: a covert probe with no uptake)
+@@ -325,18 +358,29 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
+   // question again, is written as two parts: the model writes only what comes before the question, code adds the question
+   // byte for byte (conversation/compose.js). A lead that comes back unusable falls through to the one-call path.
+   const slot = G && p5Flag("LEADSLOT") && !!item && leadSlotWanted({ request: state.lastMove?.request ?? null, rePose, pinned, diagnostic: !!item?.diagnostic,
+-    whyProbe, closing: CLOSING_MOVES.has(kindNow) });
+-  const leadMax = LEAD_MAX_WORDS[state.ctx.ageBand] ?? 30;
++    whyProbe, closing: CLOSING_MOVES.has(kindNow), firstPose: firstPose && !checkin });
++  // round 3: a first pose with no request is a bridge into a new question (shorter lead, a right answer confirmed first)
++  const bridge = firstPose && !state.lastMove?.request;
++  const shortLead = bridge || (R3 && state.lastMove?.request === "back");
++  const leadMax = (bridge ? LEAD_MAX_FIRST : LEAD_MAX_WORDS)[state.ctx.ageBand] ?? 30;
+   const leadCall = async (why = null, draft = null) => {
+-    const extra = [...(draft ? [{ role: "assistant", content: draft }] : []), { role: "system", content: leadSlotNote({ lead: state.lastMove?.lead ?? null, why, ageBand: state.ctx.ageBand }) }];
++    const extra = [...(draft ? [{ role: "assistant", content: draft }] : []), { role: "system", content: leadSlotNote({ lead: state.lastMove?.lead ?? null, why, ageBand: state.ctx.ageBand,
++      first: bridge, confirm: R3 && verdict === "correct" && !checkin }) }];
+     const raw = await ask([...messages, ...extra]);
+     const lead = cleanLead(raw, askEnd, leadMax);
+-    return leadOk(lead, [item?.answer, ...(item?.acceptable ?? [])]) ? composeTurn(lead, askEnd) : null;
++    return leadOk(lead, [item?.answer, ...(item?.acceptable ?? [])], shortLead ? { min: LEAD_MIN_FIRST } : undefined) ? composeTurn(lead, askEnd) : null;
+   };
++  // round 3: a one-call turn gets its own shape LAST (compose.js turnNote): a request's note first when the move answers one
++  // with no card question, then the turn shape (end on the card question; or hand the floor back, no goodbye). Not on a
++  // check-in, a granted break, a thinking-aloud wait, a why-probe or a closing move (each has its own shape).
++  const reqNote = R3 && !pinned && !CLOSING_MOVES.has(kindNow) && !checkin && state.lastMove?.lead ? requestNote(state.lastMove.lead) : null;
++  const shapeNote = R3 && !CLOSING_MOVES.has(kindNow) && !checkin && !restBreak && !thinkingWait && !whyProbe && !item?.diagnostic && mustHandBack
++    ? turnNote({ ask: pinned ? askEnd : null, maxWords: TURN_WORDS[state.ctx.ageBand] ?? 25 }) : null;
++  const lastNotes = [reqNote, shapeNote].filter(Boolean).join(" ");
+   try {
+     reply = slot ? (await leadCall()) : null;
+     if (reply) { guardSlot.used = true; slotState.on = true; }
+-    reply ??= await ask(messages);
++    reply ??= await ask(lastNotes ? [...messages, { role: "system", content: lastNotes }] : messages);
+   } catch (e) {
+     if (isContentFilter(e)) { console.warn("[lesson] reply blocked by the content filter"); return blocked(); }
+     console.warn("[lesson] reply unavailable, falling back:", e.message);
+@@ -371,11 +415,11 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
+       found.includes("long") && `it is too long — at most ${TURN_WORDS[state.ctx.ageBand]} words`,
+       found.includes("units") && "it asks which is bigger between two different kinds of quantity — compare like with like (two counts, or two lengths in one unit)",
+       found.includes("floor") && `it breaks the safety floor — ${floorOf(reply).map((k) => FLOOR_FIX[k]).filter(Boolean).join("; ")}`,
+-      found.includes("praise") && "it agrees with or praises their answer, but their answer was not marked right — no agreement or praise word for it; name what is sensible in it, then the next step",
++      found.includes("praise") && `it agrees with or praises their answer, but their answer was not marked right — no agreement or praise word for it; ${R3 ? "start from what they actually did" : "name what is sensible in it"}, then the next step`,
+       found.includes("deny") && "it says their answer is wrong, but it was right — confirm it plainly",
+       found.includes("corrects") && `it implies their answer was wrong or that the answer is something else, but their answer ${JSON.stringify(String(right.key))} was right — confirm it plainly and do not name any other answer as the result`,
+       found.includes("screen") && "it tells them to tap or pick something on the screen, but nothing is on the screen to tap this turn — ask them to say it",
+-      found.includes("parts") && `it names parts the screen does not show — ${screenContradiction(own(reply), module)?.onScreen ?? ""}`,
++      found.includes("parts") && `it names parts the screen does not show — ${screenContradiction(own(reply), module, partsLines)?.onScreen ?? ""}`,
+       found.includes("cantshow") && "it says you cannot show or draw — never say that; the board draws for you: talk about the idea itself",
+       found.includes("stage") && "it reads out a field name, markup or a text picture (like 'Whiteboard:', brackets or rows of symbols like ●●●) — plain spoken words only; the board draws pictures, never your words",
+       found.includes("register") && (address === "aap" ? "it uses tum forms — address the child with aap forms only (aap, aapka; verbs ending -iye)" : "it uses aap — address the child with tum forms (tum, tumhara)"),
+@@ -390,6 +434,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
+       found.includes("noconfirm") && "their answer was right — open by confirming it in a few words, naming what they got right, before anything else",
+       found.includes("hold") && "they asked to stop: it asks a lesson question or holds them for one more — this turn asks nothing about the lesson; only offer the choices",
+       found.includes("nostop") && (checkin === "rel" ? "it must say plainly that stopping now is fine" : "it leaves out stopping — name all three choices: keep going, a short break, or stop for today"),
++      found.includes("nochoice") && !found.includes("nostop") && "it only names stopping — they have not chosen yet: name all three choices, keep going, a short break, or stop for today",
+     ].filter(Boolean).join("; and ");
+     try {
+       reply = await ask([...messages, { role: "assistant", content: reply }, { role: "system", content: checkin
+@@ -402,7 +447,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
+       console.warn("[lesson] rewrite unavailable, guarding the draft:", e.message); // the draft's problems stand
+     }
+     guard.afterRewrite = found;
+-    if (checkin && (found.includes("floor") || found.includes("hold") || found.includes("nostop") || found.includes("wrap"))) {
++    if (checkin && (found.includes("floor") || found.includes("hold") || found.includes("nostop") || found.includes("wrap") || found.includes("nochoice"))) {
+       // a check-in that still asks a lesson question, holds them, or drops the stop option is never sent: the fixed line
+       reply = fallbackReply(state, null);
+       guard.replaced = true;
+@@ -445,7 +490,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
+       if (found.includes("corrects")) { reply = keepOr(stripCorrection(reply, right)); guard.replaced = true; }
+       if (found.includes("screen")) { reply = keepOr(stripScreenRefs(reply)); guard.replaced = true; }
+       // W2-B fixer: a rewrite that still names part counts the screen does not show loses those sentences
+-      if (found.includes("parts")) { reply = keepOr(stripStrayParts(reply, module, undefined, { keep: item ? promptFor(item, lang) : "" })); guard.replaced = true; }
++      if (found.includes("parts")) { reply = keepOr(stripStrayParts(reply, module, partsLines, { keep: item ? promptFor(item, lang) : "" })); guard.replaced = true; }
+       if (found.includes("register") && address === "aap") { reply = toAap(reply); guard.repaired = true; }
+       if (found.includes("stage")) { reply = stripStage(reply) || fallbackReply(state, item); guard.replaced = true; }
+       if (found.includes("cantshow")) { reply = keepOr(stripCantShow(reply)); guard.replaced = true; }
+@@ -502,7 +547,11 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
+     // round 2 (conversation): a turn still only the question, or a line she already said, after every repair above: one
+     // lead-slot call (the model writes only the response to what they said; code adds the question). Used only when the
+     // joined turn has no problem the old one did not have; never after a floor or leak catch (a truth repair stands).
+-    if (p5Flag("LEADSLOT") && item && pinned && !whyProbe && !item.diagnostic && !CLOSING_MOVES.has(kindNow) && !guard.caught.some((c) => c === "floor" || c === "leak")) {
++    // round 3: a leak caught on the first draft no longer bars this repair: the leak repair left only the question (owner-2
++    // R3 "bare question after a wrong answer": a kit hint whose numbers equal the key, cut, then nothing to say), and the new
++    // lead is checked against the key (leadOk) and the joined turn may carry no problem the repaired one did not, a leak
++    // included. A floor catch still bars it (rj-conv-lead-repair-after-floor).
++    if (p5Flag("LEADSLOT") && item && pinned && !whyProbe && !item.diagnostic && !CLOSING_MOVES.has(kindNow) && !guard.caught.some((c) => c === "floor" || (c === "leak" && !R3))) {
+       const left = problems(reply);
+       if (left.includes("bare") || left.includes("same")) {
+         try {
+@@ -513,11 +562,25 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
+             const was = new Set(left), prevOn = slotState.on;
+             slotState.on = true;
+             const now = problems(again);
+-            if (!now.includes("bare") && !now.includes("same") && now.every((p) => was.has(p))) { reply = again; guard.leadRepair = true; } else slotState.on = prevOn;
++            if (!now.includes("bare") && !now.includes("same") && !now.includes("leak") && now.every((p) => was.has(p))) { reply = again; guard.leadRepair = true; } else slotState.on = prevOn;
+           }
+         } catch (e) { if (isContentFilter(e)) return blocked(); }
+       }
+     }
++    // round 3: a re-pose STILL only the question after every model repair gets the fixed code lead (conversation/
++    // fallback-lead.js: the kit hint's statements when safe and not said yet, else a generic nudge she has not said this
++    // lesson), never the bare question: owner-2 R3 on prod 4 of 90 turns. Code lines, never prompt text (nothing to recite).
++    if (R3 && item && pinned && rePose && !whyProbe && !item.diagnostic && !CLOSING_MOVES.has(kindNow) && !checkin && !guard.caught.includes("floor")
++      && problems(reply).includes("bare")) {
++      const fixedLead = fallbackLead({ request: state.lastMove?.request ?? null, hint: hintStatements(item, state.lastMove?.hintLevel), rePose: true, lang, avoid: earlier });
++      if (fixedLead) {
++        const joined = composeTurn(address === "aap" && lang !== "english" ? toAap(fixedLead) : fixedLead, askEnd);
++        const was = new Set(problems(reply)), prevOn = slotState.on;
++        slotState.on = true;
++        const now = problems(joined);
++        if (!now.includes("bare") && now.every((p) => was.has(p))) { reply = joined; guard.codeLead = true; } else slotState.on = prevOn;
++      }
++    }
+     // the cut marks the repairs leave (an orphan quote, an empty fragment) and a lead sentence that re-poses the question
+     const tidied = tidyAround(reply, pinned ? askEnd : null);
+     if (tidied && tidied !== reply) { reply = tidied; guard.tidied = true; }
+@@ -554,7 +617,8 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
+ export function hintStatements(item, hintLevel) {
+   const h = stripRungLabel(String(item?.hints?.[(hintLevel ?? 1) - 1] ?? "")).replace(/\s+/g, " ").trim();
+   if (!h || revealsAnswer(h, item) || hintShapeWords(h)) return "";
+-  return sentences(h).map((x) => x.trim()).filter((x) => x && !/[?？]/.test(x)).join(" ").trim();
++  // round 3: a kit hint with no closing stop ran into the question ("…as places they live What are microbes…?", base-head-1)
++  return sentences(h).map((x) => x.trim()).filter((x) => x && !/[?？]/.test(x)).map((x) => (/[.!।…]$/.test(x) ? x : `${x}.`)).join(" ").trim();
+ }
+ 
+ export function keepLastLeadQuestion(reply, ask) {
+@@ -575,9 +639,15 @@ export function tidyAround(reply, ask) {
+ }
+ 
+ /** p5-interaction: does a reply to a RIGHT answer confirm it in its first two sentences (agreement / praise of the answer)? */
++// round 3 (conversation; base-head-1): "Kabir, haan, 1 player bach jaata hai" and "Aarav, aapne … bilkul sahi groups se
++// banaya" were caught as NOT confirming (the name before "haan"; "sahi" not right before a listed verb) and rewritten
++// (~1-2 s each). A confirmation word in a statement among the first two sentences counts; a negated one never does. This is
++// a quality check on a turn after a RIGHT answer (no truth guard is loosened: praise / deny keep their own predicates).
++const CONFIRM_WORD = /(?<![\p{L}])(?:bilkul|sahi|correct(?:ly)?|right|haan|haa+n?|yes|yep|exactly|ekdam|sha+ba+sh|well\s+done|perfect|great|badhiya|zabardast|theek\s+(?:kaha|bataya|socha|pakda))(?![\p{L}])(?!\s+(?:nahi|nahin|not|hai\s+kya))|सही|बिल्कुल|हाँ|शाबाश/iu;
+ function confirmsFirst(t) {
+   const head = sentences(t).slice(0, 2).join(" ");
+-  return praiseProblem(head, "not_yet") === "praise";
++  if (praiseProblem(head, "not_yet") === "praise") return true;
++  return p5Flag("R3CONV") && sentences(t).slice(0, 2).some((x) => !/[?？]/.test(x) && CONFIRM_WORD.test(x));
+ }
+ 
+ /** Imperatives to write / type → the spoken form (her own words only; the pinned question at the end is kept). Exported for tests. */
+diff --git a/server/conversation/compose.js b/server/conversation/compose.js
+index 1ab8704..34157d3 100644
+--- a/server/conversation/compose.js
++++ b/server/conversation/compose.js
+@@ -18,6 +18,14 @@ const isQ = (s) => /[?？]/.test(String(s));
+ export const LEAD_MIN_WORDS = 4;
+ /** Most words a lead may carry (the turn budget is spent on the question too). */
+ export const LEAD_MAX_WORDS = { "6-9": 24, "10-15": 30 };
++// Round 3 (conversation stream, 2026-10-09): the FIRST pose of a question is a lead-slot turn too. Measured on the local
++// battery on HEAD (evals/conversation-r3, base-head-1): posing moves were rewritten on 28 of 37 turns, the first draft
++// re-worded or replaced the kit question ("drift" 26, "ask" 25 of 90 turns), wrapped up mid-lesson ("Goodbye, Ishaan" on
++// a probe) or asked its own follow-up. A first pose needs a bridge, not a response: a shorter lead is enough (a two-word
++// "Chalo, ab:" is a bridge, as isBare already allows one own word there), and its budget is smaller because the kit
++// question that follows is usually long (short turns: CIMA tutor turns average 7 words, Stasaski et al. 2020).
++export const LEAD_MIN_FIRST = 2;
++export const LEAD_MAX_FIRST = { "6-9": 14, "10-15": 18 };
+ 
+ /**
+  * Should this turn be written as lead + card question? PURE.
+@@ -32,24 +40,57 @@ export const CONTENT_REQUESTS = new Set(["answer_q", "clarify", "example", "stor
+ export function leadSlotWanted(t) {
+   if (!t.pinned || t.diagnostic || t.whyProbe || t.closing) return false;
+   if (t.request && CONTENT_REQUESTS.has(String(t.request))) return false;
+-  // a child's request answered before the question, or the same question put again after a nudge / repair
+-  return !!t.request || !!t.rePose;
++  // a child's request answered before the question, the same question put again after a nudge / repair, or (round 3) the
++  // question posed for the first time (t.firstPose: a posing move at rung 0 whose question goes on the card now)
++  return !!t.request || !!t.rePose || !!t.firstPose;
+ }
+ 
+ /**
+  * The last system note for a lead-slot call: what this turn's words are for, as a shape (never a line she could say).
+  * `why` is an extra reason (a repair after a bare draft); `lead` the request's own note when the move carries one.
+  */
+-export function leadSlotNote({ lead = null, why = null, ageBand = "10-15" } = {}) {
+-  const n = LEAD_MAX_WORDS[ageBand] ?? LEAD_MAX_WORDS["10-15"];
++export function leadSlotNote({ lead = null, why = null, ageBand = "10-15", first = false, confirm = false } = {}) {
++  const n = (first ? LEAD_MAX_FIRST : LEAD_MAX_WORDS)[ageBand] ?? (first ? LEAD_MAX_FIRST : LEAD_MAX_WORDS)["10-15"];
+   return [
+-    "THIS TURN, PART ONE ONLY: the app says the question on the card right after your words, so write only what comes before it.",
+-    lead ? `Do this first, as the note says: ${String(lead).replace(/[.\s]+$/, "")}.` : "Do what this move's shape asks before the question (the nudge or the step), never more than it.",
++    first
++      // round 3: a first pose. The lesson goes on (first drafts said goodbye on a probe move); the question is new to them
++      ? "THIS TURN, PART ONE ONLY: the app puts the next question on the card and says it right after your words, so write only what comes before it; the lesson goes on."
++      : "THIS TURN, PART ONE ONLY: the app says the question on the card right after your words, so write only what comes before it.",
++    // a right answer is confirmed before anything else (the noconfirm guard), in the slot's own last note: position is mechanism
++    confirm ? "First confirm that their last answer was right, naming the exact thing they got right (no ability words)." : null,
++    lead ? `Do this first, as the note says: ${String(lead).replace(/[.\s]+$/, "")}.` : first
++      ? "Then a short bridge into the new question, as this move's shape asks, never more than it; open differently from your last turn."
++      : "Do what this move's shape asks before the question (the nudge or the step), never more than it.",
+     why ? `Also: ${why}.` : null,
+-    `One to three short spoken sentences, at most ${n} words, in their language. No question of any kind, never the card question or its words, and never its answer or anything that gives it away (no option named as right, no example whose result is the answer).`,
++    `${first ? "One or two" : "One to three"} short spoken sentences, at most ${n} words, in their language. No question of any kind, never the card question or its words, and never its answer or anything that gives it away (no option named as right, no example whose result is the answer).`,
+   ].filter(Boolean).join(" ");
+ }
+ 
++/**
++ * Round 3: the last system note of a ONE-CALL turn that answers a request with no question on the card (a joke, a park, a
++ * decline, small talk said over a teaching turn): the request's own note goes last (position is mechanism), the move after
++ * it. Smoke on the round-3 tree: on teaching turns the request note sat mid-prompt in the move shape and the reply taught
++ * on (joke "humour" failed 4 of 8, a park's promise left out). A shape, never a line. PURE.
++ */
++export function requestNote(lead) {
++  const l = String(lead ?? "").replace(/[.\s]+$/, "").trim();
++  return l ? `THIS TURN, FIRST: ${l}. Then the rest of this move as planned, in the same short turn.` : null;
++}
++
++/**
++ * Round 3: the turn shape as the LAST message of a one-call turn. The compiled prompt ends on its TURN SHAPE line, but the
++ * history and the child's words come after it, so it is not last in what the model reads; on the interim paired battery
++ * (2026-10-09) the commonest rewrites left on one-call turns were "ask" (a content request that did not end on the card
++ * question) and "flat" (a teaching turn that only stated things). This note restates the same rules at the end; it adds none.
++ * `ask` is the card question (verified content, quoted because it must be said as written). PURE.
++ */
++export function turnNote({ ask = null, maxWords = 25, handBack = true } = {}) {
++  if (ask) return `THIS TURN: what they asked or the move's step first, in your own words, at most ${maxWords} words; then end with exactly this question and nothing after it: "${String(ask).trim()}". No other question.`;
++  return handBack
++    ? `THIS TURN: one idea, at most ${maxWords} words; the lesson goes on, so no goodbye; end by handing the floor back with one small question or a try-this about it (never "samjha?").`
++    : null;
++}
++
+ /**
+  * The lead a model wrote, cleaned: question sentences out (the card question is the turn's only question), any copy or
+  * re-wording of the card question out, cut marks tidied, at most `max` words of whole sentences. PURE.
+@@ -84,7 +125,7 @@ export function leadNamesKey(lead, keys = []) {
+   const l = ` ${norm(lead)} `;
+   return keys.filter((k) => k != null && norm(k)).some((k) => l.includes(` ${norm(k)} `));
+ }
+-export const leadOk = (lead, keys = []) => words(lead) >= LEAD_MIN_WORDS && /[\p{L}]/u.test(String(lead)) && !leadDropsQuestion(lead) && !leadNamesKey(lead, keys);
++export const leadOk = (lead, keys = [], { min = LEAD_MIN_WORDS } = {}) => words(lead) >= min && /[\p{L}]/u.test(String(lead)) && !leadDropsQuestion(lead) && !leadNamesKey(lead, keys);
+ 
+ /** The turn: the lead, then the card question byte for byte. PURE. */
+ export function composeTurn(lead, askEnd) {
+diff --git a/server/conversation/fallback-lead.js b/server/conversation/fallback-lead.js
+index 18ec975..9dbe1f8 100644
+--- a/server/conversation/fallback-lead.js
++++ b/server/conversation/fallback-lead.js
+@@ -18,6 +18,7 @@ export const FALLBACK_LEADS = {
+     help: "Koi baat nahi, isko ek baar aur aaram se dekhte hain.",
+     oob: "Woh baat hum yahan nahi karenge, chalo apne kaam par wapas chalte hain.",
+     other: "Theek hai, chalo isi sawaal par wapas aate hain.",
++    back: "Wapas aa gaye, chalo wahin se aage badhte hain.",
+   },
+   english: {
+     identity: "I'm an AI teacher, not a person.",
+@@ -26,9 +27,28 @@ export const FALLBACK_LEADS = {
+     help: "No problem, let's look at this once more, slowly.",
+     oob: "That's not something we'll do here, so let's come back to our work.",
+     other: "Okay, let's come back to this question.",
++    back: "Welcome back, let's pick up right where we were.",
+   },
+ };
+ 
++// Round 3 (conversation stream, 2026-10-09): the same fixed lead twice in one lesson is a repeat (owner-2 R4: Jaccard >= 0.8
++// to an earlier line), and round 3 uses these leads as the LAST repair of a re-pose still bare after every model repair
++// (brain/say.js), not only on an outage. So each generic lead has variants, and `avoid` (her earlier lines this lesson)
++// picks one she has not said yet. The first variant is the line above, so a call without `avoid` is unchanged.
++export const LEAD_VARIANTS = {
++  hinglish: {
++    help: [FALLBACK_LEADS.hinglish.help, "Achha, chalo is sawaal ko ek baar phir dhyaan se padhte hain.", "Theek hai, isko aaram se phir se sochte hain."],
++    other: [FALLBACK_LEADS.hinglish.other, "Achha, ab phir isi sawaal ki taraf chalte hain.", "Chalo, ab is sawaal ko phir dekhte hain."],
++  },
++  english: {
++    help: [FALLBACK_LEADS.english.help, "Okay, let's read this one again carefully.", "That's alright, let's think about this one again."],
++    other: [FALLBACK_LEADS.english.other, "Alright, let's go back to this question.", "Okay, let's look at this question again."],
++  },
++};
++const normL = (t) => String(t ?? "").toLowerCase().replace(/[^\p{L}\p{N}]+/gu, " ").trim();
++/** The first of `list` not already said in `avoid` (her earlier lines), else the first. PURE. */
++export const freshOf = (list, avoid = []) => list.find((x) => x && !avoid.some((a) => normL(a).includes(normL(x)))) ?? list[0];
++
+ // requests whose fallback is a nudge (the kit's own hint when it is safe to say, else the generic "help" lead)
+ const HELP = new Set(["confused", "clarify", "repeat", "slower", "easier", "frustration", "stuck", "dont_know", "explain", "example", "another"]);
+ // requests that end or pause the lesson are never fallback-led here (the closing lines own them)
+@@ -40,17 +60,23 @@ const NONE = new Set(["stop", "goodbye", "break"]);
+  *   request: the move's request type (state.lastMove.request); hint: the kit hint's statements at this hint level, already
+  *   checked by say.js hintStatements (never the key); rePose: the same question is being put again.
+  */
+-export function fallbackLead({ request = null, hint = "", rePose = false, lang = "hinglish" } = {}) {
+-  const L = FALLBACK_LEADS[lang === "english" ? "english" : "hinglish"];
++export function fallbackLead({ request = null, hint = "", rePose = false, lang = "hinglish", avoid = [] } = {}) {
++  const key = lang === "english" ? "english" : "hinglish";
++  const L = FALLBACK_LEADS[key], V = LEAD_VARIANTS[key];
+   const r = request ? String(request) : null;
++  // a hint she already said this lesson is not used again (it would be a repeat); the generic nudge is
++  const h = String(hint || "").trim();
++  const hintOr = (k) => (h && !avoid.some((a) => normL(a).includes(normL(h))) ? h : freshOf(V[k], avoid));
+   if (r && NONE.has(r)) return "";
+   if (r === "identity") return L.identity;
+   if (r === "unclear") return L.unclear;
+   if (r === "adult") return L.adult;
++  // round 3: back after a break / a moment away (the generic "no problem, once more" read oddly to a child just back)
++  if (r === "back") return L.back;
+   if (r === "oob" || r === "decline") return L.oob;
+-  if (r && HELP.has(r)) return String(hint || "").trim() || L.help;
+-  if (r) return L.other;
++  if (r && HELP.has(r)) return hintOr("help");
++  if (r) return freshOf(V.other, avoid);
+   // no request: a re-pose after a wrong or unsure answer is a nudge (the hint), a first pose stays the question alone
+-  if (rePose) return String(hint || "").trim() || L.help;
++  if (rePose) return hintOr("help");
+   return "";
+ }
+diff --git a/server/conversation/flags.js b/server/conversation/flags.js
+index 762a3f1..100651a 100644
+--- a/server/conversation/flags.js
++++ b/server/conversation/flags.js
+@@ -10,6 +10,9 @@
+ //   TAXILA_CONV2=off|shadow|on    the UNDERSTAND note (a model reads what the child means; code decides). shadow: the
+ //                                 note is computed and traced but never changes the move. Default on.
+ //   TAXILA_P5_RECHECK=off         module answers: the value re-check and the "say it in words" reaction (V1-01r)
++//   TAXILA_P5_R3CONV=off          round 3 conversation (2026-10-09): the first pose as a lead-slot turn, no drift check on a
++//                                 re-pose that ends on the card's form, the lead repair after a leak, the fixed code lead
++//                                 instead of a bare re-pose (brain/say.js); off = round 2's reply path exactly
+ //
+ // Every switch defaults to ON. "off", "0", "false" (any case) turn one off.
+ const OFF = /^(off|0|false|no)$/i;

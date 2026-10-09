@@ -93,3 +93,41 @@
 .sk .sk-weight rect { fill: var(--surface); stroke: var(--ink); stroke-width: 1.5; }
 .sk .sk-bin rect { fill: var(--tray); stroke: var(--line); stroke-width: 1.5; stroke-dasharray: 6 4; }
 .sk .sk-bin.is-armed rect { stroke: var(--nib); stroke-width: 2.5; }
+
+/* round 3 forge (docs/design/round3/forge/audit): the Studio v2 host's chrome inside the LESSON stage. Measured on the
+   catalogue (1155 views, 2026-10-09): the type label rendered at 8 px and ellipsised ("GAME · STORY…") at every size,
+   the task pill's goal at 11 px on a phone, and in-stage captions overflowed the box (round-2 shot 16). In the lesson the
+   label names nothing a child needs, her voice and the Desk caption carry the narration, and score / streak pills
+   (chain, combo, streak, accuracy, precision: NEVER MANIPULATE, DESIGN-V3 "never a percentage") are not shown; the
+   goal and readouts keep a 14 px floor. Scoped to .st-box so the gallery and dev views are unchanged. */
+.st-box .sv2-label { display: none !important; }
+.st-box .sv2-captions { display: none !important; }
+.st-box .sv2-hud .box[data-key="chain"], .st-box .sv2-hud .box[data-key="combo"], .st-box .sv2-hud .box[data-key="streak"],
+.st-box .sv2-hud .box[data-key="acc"], .st-box .sv2-hud .box[data-key="prec"], .st-box .sv2-hud .box[data-key="time"] { display: none !important; }
+.st-box .sv2-hud .box { font-size: max(14px, 1.15cqw) !important; }
+.st-box .sv2-hud .box b { font-size: max(14px, 2.1cqw) !important; }
+.st-box .sv2-task .goal { font-size: max(14px, 1.85cqw) !important; }
+.st-box .sv2-task .step { font-size: max(14px, 1.15cqw) !important; }
+/* classes 4-5: the play floor's young text size (shared/play.ts FLOORS.textYoung, 16 px) */
+.st-stage[data-young] .st-box .sv2-hud .box, .st-stage[data-young] .st-box .sv2-task .step { font-size: max(16px, 1.15cqw) !important; }
+.st-stage[data-young] .st-box .sv2-hud .box b { font-size: max(16px, 2.1cqw) !important; }
+.st-stage[data-young] .st-box .sv2-task .goal { font-size: max(16px, 1.85cqw) !important; }
+
+/* round 3 forge: the rail band (StudioStage RAIL_PX, phone-width trays). The Studio v2 world sits at the bottom of the box
+   at full width; its HUD readouts and task pill take the band above it at the text floor, never over the world or each
+   other. The band's right 52 px stay free for the stage's corner control (44 px + gap), which sits on the box corner on
+   phones. The task's step label ("Round 1") repeats the HUD's round readout and is dropped here to keep the goal on one or
+   two lines. */
+.st-box[data-rail] .sv2-slot { place-items: end center !important; }
+.st-box[data-rail] .sv2-stage { overflow: visible !important; }
+.st-box[data-rail] .sv2-hud { top: calc(6px - var(--rail)) !important; left: 6px !important; right: 52px !important; gap: 6px !important; justify-content: flex-start !important; }
+.st-box[data-rail] .sv2-task, .st-box[data-rail] .sv2-task.swap,
+.st-box[data-rail] .sv2-hud.on ~ .sv2-task, .st-box[data-rail] .sv2-hud.on ~ .sv2-task.swap {
+  top: calc(6px - var(--rail)) !important; left: 6px !important; right: 52px !important; transform: none !important;
+  max-width: none !important; margin-left: 0 !important; padding: .5em .8em !important; }
+.st-box[data-rail] .sv2-hud.on ~ .sv2-task, .st-box[data-rail] .sv2-hud.on ~ .sv2-task.swap { top: calc(48px - var(--rail)) !important; }
+.st-stage[data-young] .st-box[data-rail] .sv2-hud.on ~ .sv2-task, .st-stage[data-young] .st-box[data-rail] .sv2-hud.on ~ .sv2-task.swap { top: calc(52px - var(--rail)) !important; }
+.st-box[data-rail] .sv2-task .step { display: none !important; }
+.st-box[data-rail] .sv2-hud .box { padding: .5em .7em !important; }
+/* the interim board (drawn before the engine paints) keeps the world's 16:10 at the bottom, not stretched over the band */
+.st-box[data-rail] .st-art canvas[aria-hidden="true"] { top: auto !important; bottom: 0 !important; height: auto !important; aspect-ratio: 16 / 10; }

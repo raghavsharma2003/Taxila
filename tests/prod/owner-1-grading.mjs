@@ -16,6 +16,14 @@
 //    expression). A mount that shows a Check that no tap sequence can commit is an unanswerable activity (F4): a FAIL.
 // Acceptance: 0 wrong grades in A and B; every bound engine yields ≥ 1 verifiable commit; 0 unanswerable activities.
 //
+// round3 truth (the kit answer-part data shipped 2026-10-09, data/kits-parts.json): the typed-answer ORACLE follows V1.1
+// ("multi-part keys are graded partial"). A "correct" answer is the key or an acceptable entry the parts data calls
+// complete (an unlabelled entry only on an item nothing disputes); a "partial" answer is an entry the data calls partial or
+// one of the item's adjudicated parts — never a split on the key's commas (rejected v1-rj-multipartkey-punctuation: 97% of
+// agreed single-part keys looked multi-part). A partial graded not_yet is a wrong grade (partial_miss, as in
+// evals/grading-truth). Items whose parts the two raters disputed are reported, never scored on an unknown truth. In B,
+// place-value@1 compare commits are checked from first principles (a, b and the question), like the fraction compares.
+//
 // Run: NODE_USE_ENV_PROXY=1 node tests/prod/owner-1-grading.mjs [--base URL] [--seed N] [--topics t1,t2] [--turns 18] [--no-browser]
 import { readFileSync } from "fs";
 import { join } from "path";
@@ -32,6 +40,39 @@ const TURNS = Number(arg("turns", 18));
 const { ENGINES, planEngine } = await import("../../shared/engine-catalog.js");
 const TOPIC_MAP = JSON.parse(readFileSync(join(ROOT, "shared", "engine-topic-map.json"), "utf8"));
 const ITEM_KINDS = new Set(["practice", "retrieval", "near_transfer", "far_transfer", "predict", "contrast", "error_spot"]);
+
+// ───────────────────────────── the V1.1 oracle (round3 truth) ─────────────────────────────
+// The answer-part truth is DATA (owner-approved 2026-10-09): agreed two-rater labels; the raters' disagreements have no row.
+const PARTS = (() => { try { return JSON.parse(readFileSync(join(ROOT, "data", "kits-parts.json"), "utf8")).items ?? {}; } catch { return {}; } })();
+const DISPUTED = new Map();   // itemId → { parts: bool, entries: Set<string> } (evals/grading-truth/data/parts-labels-c1-9.json)
+try {
+  for (const d of JSON.parse(readFileSync(join(ROOT, "evals", "grading-truth", "data", "parts-labels-c1-9.json"), "utf8")).disagree ?? []) {
+    const e = DISPUTED.get(d.id) ?? { parts: false, entries: new Set() };
+    if (d.entry != null) e.entries.add(String(d.entry)); else e.parts = true;
+    DISPUTED.set(d.id, e);
+  }
+} catch { /* the dispute list is optional: without it every unlabelled entry is the kit's claim, as before */ }
+/**
+ * Answers by construction for one kit item, V1.1. `truthOf` names where each truth comes from; `disputed` marks an item whose
+ * parts (multi- vs single-part) the raters did not agree on.
+ */
+function answersV11(item, kit, persona) {
+  const base = answersFor(item, kit, persona);          // wrong (a near miss / another item's key) and the filler, as before
+  const row = PARTS[item.id] ?? null, lab = row?.acceptable ?? {}, dis = DISPUTED.get(item.id) ?? null;
+  const multi = Array.isArray(row?.parts) && row.parts.length >= 2;
+  const short = (xs) => [...xs].filter((x) => String(x).length <= 40).sort((a, b) => String(a).length - String(b).length)[0] ?? null;
+  const completeEntries = (item.acceptable ?? []).filter((a) => lab[a] === "complete" || (!lab[a] && !multi && !dis));
+  const correct = String(short(completeEntries) ?? short([item.answer]) ?? item.answer);
+  const partialEntry = short((item.acceptable ?? []).filter((a) => lab[a] === "partial"));
+  const part = !partialEntry && multi ? short(row.parts) : null;
+  const partial = partialEntry ?? part ?? null;
+  return {
+    correct, noisy: base.noisy.replace(base.correct, correct), wrong: base.wrong, partial,
+    truthOf: { correct: correct === String(item.answer) ? "key" : lab[correct] === "complete" ? "parts-data:complete" : "kit:undisputed",
+      partial: partialEntry ? "parts-data:partial" : part ? "parts-data:part" : null },
+    disputed: !!dis,
+  };
+}
 
 // ───────────────────────────── the plans the catalog binds (truth source for coverage) ─────────────────────────────
 const boundPlans = [];   // { engine, topicId, item, plan }
@@ -128,10 +169,11 @@ await withTestAccount(async ({ api }) => {
         continue;
       }
       if (item) {
-        const A = answersFor(item, kit, persona);
+        const A = answersV11(item, kit, persona);
         const roll = rnd();
         const which = roll < 0.3 ? "correct" : roll < 0.55 ? "wrong" : roll < 0.75 ? "noisy" : A.partial ? "partial" : "wrong";
         const truth = which === "noisy" ? "correct" : which;
+        const truthSource = which === "partial" ? A.truthOf.partial : which === "wrong" ? "construction" : A.truthOf.correct;
         const row = await L.turn(A[which], { kind: "answer" }); track(row.r);
         const v = row.r?.ui?.verdict ?? null;
         const reAsked = row.r?.ui?.ask?.itemId === item.id;
@@ -139,11 +181,15 @@ await withTestAccount(async ({ api }) => {
         let wrongGrade = null;
         if (!row.r?.error) {
           if (truth === "correct") wrongGrade = v === "not_yet" || v === "partial" || (!v && reAsked);
+          // V1.1: a half answer to a multi-part question is partial: credited = false credit, not_yet = partial miss
+          else if (truth === "partial") wrongGrade = v === "correct" || v === "not_yet";
           else wrongGrade = v === "correct";
         }
+        const wrongKind = !wrongGrade ? null : truth === "correct" ? "false_fail" : truth === "partial" && v === "not_yet" ? "partial_miss" : "false_credit";
         const words = v === "not_yet" && (RX.praiseOpen.test(rep) || RX.praiseAny.test(rep)) ? "praise_on_not_yet"
+          : v === "partial" && RX.praiseOpen.test(rep) ? "praise_on_partial"
           : v === "correct" && RX.denyAny.test(rep) ? "deny_on_correct" : !v && truth !== "correct" && RX.praiseAny.test(rep) ? "praise_ungraded" : null;
-        gradeRows.push({ topicId, itemId: item.id, kind: item.kind, key: item.answer, gave: A[which], which, truth, verdict: v, reAsked, wrongGrade, words, reply: rep, lane: spoken ? "spoken" : "typed" });
+        gradeRows.push({ topicId, itemId: item.id, kind: item.kind, key: item.answer, gave: A[which], which, truth, truthSource, disputed: A.disputed, verdict: v, reAsked, wrongGrade, wrongKind, words, reply: rep, lane: spoken ? "spoken" : "typed" });
         continue;
       }
       const row = await L.turn(pick(persona.lang === "english" ? ["okay", "yes", "go on"] : ["haan", "ok", "achha, aage"]), { kind: "filler" });
@@ -171,6 +217,10 @@ function committedOf(v) {
   if (!v || typeof v !== "object") return null;
   const p = v.chosen ?? v.choice;
   if (p != null && Array.isArray(v.fractions)) return /^\d+$/.test(String(p)) && v.fractions[Number(p)] != null ? String(v.fractions[Number(p)]) : String(p);
+  // round3 truth (owner-1 local 2026-10-09: 6 "misgrades" that were the harness's): a place-value READ commit carries the
+  // target as `value` and the child's entry as `written` (src/modules/frame/engines/placeValue.tsx checkRead), so `value`
+  // first read the target and called every wrong entry right
+  if (v.kind === "pv.write" && v.written != null && typeof v.written !== "object") return String(v.written);
   for (const k of ["value", "written", "built", "claimed", "made", "given", "product"]) if (v[k] != null && typeof v[k] !== "object") return String(v[k]);
   // patterns@1 pat.term commits the terms typed into the blanks as an array (src/modules/frame/engines/patterns.logic.ts
   // growCorrect): the item's key is the LAST blank's term. Before this the harness could read no patterns@1 commit at all
@@ -244,8 +294,16 @@ if (browserOn()) {
             truth = String(pk) === "same" ? allEq : !allEq && nums[Number(pk)] != null && nums.every((x) => (a.value.question === "bigger" ? nums[Number(pk)] >= x - 1e-9 : nums[Number(pk)] <= x + 1e-9));
             how = "compare from first principles";
           }
+          // round3 truth (owner-1 on taxila.dev 2026-10-09: "not verified: place-value@1", 7/8): a place-value compare commits
+          // the pick ("a" | "b" | "same") and BOTH numbers and the question, so its truth is first principles, not a key
+          if (truth == null && a.value?.kind === "pv.compare" && Number.isFinite(a.value.a) && Number.isFinite(a.value.b) && ["bigger", "smaller"].includes(a.value.question)) {
+            const { a: x, b: y, question: qn, chosen } = a.value;
+            truth = String(chosen) === "same" ? x === y : x !== y && String(chosen) === ((qn === "bigger") === (x > y) ? "a" : "b");
+            how = "compare from first principles";
+          }
           if (truth == null && val != null && p.key != null && numOf(p.key) != null && /^\s*[-\d]/.test(String(p.key))) { truth = sameValue(val, p.key); how = "value vs plan key"; }
-          const c = { label, claim: typeof a.correct === "boolean" ? a.correct : null, committed: val, kind: a.value?.kind ?? null, truth, how, misgrade: truth != null && typeof a.correct === "boolean" && truth !== a.correct };
+          const shown = val ?? (a.value?.kind === "pv.compare" ? `${a.value.chosen} (${a.value.a} vs ${a.value.b}, ${a.value.question})` : null);
+          const c = { label, claim: typeof a.correct === "boolean" ? a.correct : null, committed: shown, kind: a.value?.kind ?? null, truth, how, misgrade: truth != null && typeof a.correct === "boolean" && truth !== a.correct };
           rec.commits.push(c);
           if (c.misgrade) rec.issues.push(`misgrade: ${label}: the frame said correct:${a.correct} for ${JSON.stringify(a.value).slice(0, 120)} (${how}: ${truth}; key ${p.key})`);
           if (a.correct) { await page.evaluate(() => window.send({ type: "reset" })); await page.waitForTimeout(300); }
@@ -323,17 +381,19 @@ const unanswerable = frameRecs.flatMap((r) => r.issues.filter((x) => x.startsWit
 const boundEngines = [...new Set(frameRecs.filter((r) => r.source === "catalog").map((r) => r.engine))];
 const unverifiedEngines = boundEngines.filter((e) => !frameRecs.some((r) => r.engine === e && r.source === "catalog" && r.commits.some((c) => c.truth != null)));
 console.log(`\ntyped answers ${gradeRows.length} (wrong grades ${typedBad.length}, words vs verdict ${wordsBad.length}); module answers ${moduleRows.length} (wrong grades ${moduleBad.length}); frame mounts ${frameRecs.length} (misgrades ${frameMis.length}, unanswerable ${unanswerable.length})  → ${path}`);
-for (const g of typedBad.slice(0, 20)) console.log(`  TYPED ${g.topicId} ${g.itemId} [${g.which}] "${g.gave}" (key "${String(g.key).slice(0, 50)}") → verdict ${g.verdict ?? "none"}${g.reAsked ? ", re-asked" : ""}`);
+for (const g of typedBad.slice(0, 20)) console.log(`  TYPED ${g.wrongKind} ${g.topicId} ${g.itemId} [${g.which}; truth ${g.truthSource}] "${g.gave}" (key "${String(g.key).slice(0, 50)}") → verdict ${g.verdict ?? "none"}${g.reAsked ? ", re-asked" : ""}`);
+const partialRows = gradeRows.filter((g) => g.truth === "partial");
+console.log(`V1.1 partial answers ${partialRows.length}: graded partial ${partialRows.filter((g) => g.verdict === "partial").length}, re-asked (no verdict) ${partialRows.filter((g) => !g.verdict).length}, credited ${partialRows.filter((g) => g.verdict === "correct").length}, not_yet ${partialRows.filter((g) => g.verdict === "not_yet").length}; rows on items whose parts the raters disputed ${gradeRows.filter((g) => g.disputed).length} (truth for those is the key or construction only)`);
 for (const g of wordsBad.slice(0, 10)) console.log(`  WORDS ${g.topicId} ${g.itemId} verdict ${g.verdict}: ${g.words}: "${g.reply.slice(0, 100)}"`);
 for (const g of moduleBad.slice(0, 20)) console.log(`  MODULE ${g.topicId} ${g.engine} ${g.itemId} [${g.step}] value ${g.value} (key ${g.key}) → verdict ${g.verdict ?? "none"}`);
 for (const x of [...frameMis, ...unanswerable].slice(0, 20)) console.log(`  FRAME ${x}`);
 ok(gradeRows.length >= TOPICS.length, `typed answers on kit items were graded (${gradeRows.length} over ${TOPICS.length} lessons)`);
-ok(typedBad.length === 0, `typed answers: 0 wrong grades against the verified key — ${typedBad.length}/${gradeRows.length} (${tally(typedBad.map((g) => ({ code: `${g.which}→${g.verdict ?? (g.reAsked ? "re-asked" : "none")}` })))})`);
+ok(typedBad.length === 0, `typed answers: 0 wrong grades against the verified key (V1.1 oracle) — ${typedBad.length}/${gradeRows.length} (${tally(typedBad.map((g) => ({ code: `${g.wrongKind}:${g.which}→${g.verdict ?? (g.reAsked ? "re-asked" : "none")}` })))})`);
 ok(wordsBad.length === 0, `the teacher's words agree with the verdict — ${wordsBad.length} disagree (${tally(wordsBad.map((g) => ({ code: g.words })))})`);
 if (!moduleRows.length) warn("no item-bound activity was mounted on a posed item in these lessons: the server re-check (F1) was not exercised by the API phase");
 ok(moduleBad.length === 0, `module answers: the server follows the VALUE against the key, never the frame's claim — ${moduleBad.length}/${moduleRows.length} wrong (${tally(moduleBad.map((g) => ({ code: g.step })))})`);
 if (browserOn()) {
-  ok(frameMis.length === 0, `the frame's own grading: 0 misgrades over ${frameRecs.reduce((a, r) => a + r.commits.filter((c) => c.truth != null).length, 0)} verifiable commits`);
+  ok(frameMis.length === 0, `the frame's own grading: ${frameMis.length} misgrades over ${frameRecs.reduce((a, r) => a + r.commits.filter((c) => c.truth != null).length, 0)} verifiable commits`);
   ok(unanswerable.length === 0, `no unanswerable activity (a Check no tap can commit; F4): ${unanswerable.length}`);
   ok(unverifiedEngines.length === 0, `every bindable engine yielded a verifiable commit (${boundEngines.length - unverifiedEngines.length}/${boundEngines.length}${unverifiedEngines.length ? `; not verified: ${unverifiedEngines.join(", ")}` : ""})`);
 }

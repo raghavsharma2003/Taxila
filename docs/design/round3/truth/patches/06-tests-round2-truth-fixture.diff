@@ -1,0 +1,42 @@
+--- a/tests/round2-truth.test.mjs
++++ b/tests/round2-truth.test.mjs
+@@ -55,22 +55,31 @@
+     const CTX = { firstName: "Kabir", teacherName: "Asha", teacherId: "asha", protege: { name: "Golu", what: "a toy" }, ageBand: "10-15", lang: "english",
+       interests: [], firstMeeting: true, hasCallback: false, topicTitle: "t", nextTitle: "n", reteach: { attempts: [], prereqs: {} } };
+     const comp = Object.fromEntries(K.skills.map((s) => [s.id, { belief: { skillId: s.id, pL: 0.2, U: 0.2, T: 0.2, misconception: { mStar: 0.99, mId: M.id, verified: true } } }]));
+-    let seen = 0;
++    let seen = 0, diagState = null;
++    const retired = (prev, r) => {
++      assert.notEqual(r.state.activeItemId, prev.activeItemId, "the diagnostic is not re-asked");
++      assert.ok(r.state.itemsDone.includes(prev.activeItemId));
++      if (r.state.nextItemId) assert.ok(!K.items.find((x) => x.id === r.state.nextItemId)?.options, "the re-check is a produce item");
++    };
+     for (let seed = 1; seed <= 6; seed++) {
+       let r = step(initLessonState({ topicId: K.topicId, kit: K, ctx: CTX, seed, now: 0, comp }), { event: "start", kit: K, now: 0, comp });
+       for (let i = 0; i < 40 && !r.end; i++) {
+         const prev = r.state;
+         const diag = prev.activeItemId?.startsWith("diag:");
++        if (diag) diagState ??= prev;
+         r = step(prev, { event: "turn", kit: K, cls: diag ? cls("misconception", { misconceptionId: prev.activeItemId.slice(5) }) : cls(prev.activeItemId ? "incorrect" : "no_evidence"), now: (prev.turn + 1) * 20_000, comp });
+-        if (diag && r.move?.kind === "reteach") {
+-          seen++;
+-          assert.notEqual(r.state.activeItemId, prev.activeItemId, "the diagnostic is not re-asked");
+-          assert.ok(r.state.itemsDone.includes(prev.activeItemId));
+-          if (r.state.nextItemId) assert.ok(!K.items.find((x) => x.id === r.state.nextItemId)?.options, "the re-check is a produce item");
+-        }
++        if (diag && r.move?.kind === "reteach") { seen++; retired(prev, r); }
+       }
+     }
+-    assert.ok(seen > 0, "a re-teach on a diagnostic happened");
++    // round3 truth (patch 02): with M confirmed, the engine's first re-teach IS the kit's primary arm, and the re-teach this
++    // loop used to see on the diagnostic was the kit path repeating that same arm (6/6 seeds on HEAD), which is no longer
++    // allowed. The options-item rule is checked on the same diagnostic with nothing used yet: its re-teach retires it.
++    assert.ok(diagState, "the fixture posed a diagnostic");
++    const fresh = { ...diagState, armsUsed: [], retaught: [], reteachCool: {}, lastArmBySkill: {}, failedArms: {} };
++    const r = step(fresh, { event: "turn", kit: K, cls: cls("misconception", { misconceptionId: fresh.activeItemId.slice(5) }), now: (fresh.turn + 1) * 20_000, comp });
++    assert.equal(r.move?.kind, "reteach", "a re-teach on a diagnostic happened");
++    retired(fresh, r);
++    void seen;
+   });
+ 
+   // prod w1b-mounts (2026-10-06): a wrong answer on an OPEN item, then the lesson end, wrote no row at all

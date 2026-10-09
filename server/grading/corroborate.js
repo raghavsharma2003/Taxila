@@ -89,7 +89,7 @@ export function completeForms(target) {
 /**
  * How well a reply supports one form. @returns {{ ok: boolean, keyLike: boolean, why: string|null, cover: number }}
  */
-export function supports(form, text, allowedNums, negForms = null, prompt = "") {
+export function supports(form, text, allowedNums, negForms = null, prompt = "", siblingNums = null) {
   const fw = new Set(words(form)), tw = new Set(words(text));
   const fn = nums(form), tn = nums(text);
   if (tn === null) return { ok: false, keyLike: false, why: "unreadable_number", cover: 0 };
@@ -142,7 +142,8 @@ export function supports(form, text, allowedNums, negForms = null, prompt = "") 
   // question asks it ("3/4" answers "which is bigger?", not "are they equal?" nor "Ali says 4/9 > 3/4. Check.")
   // (a number the QUESTION states may come along: "3/4 is bigger than 4/9" for "Ali says 4/9 > 3/4")
   const promptN = [...(nums(prompt) ?? []), ...rawNums(prompt)];
-  const extraNum = fnv.length > 0 && tn.some((v) => !has(fnv, v) && !has(rawF, v) && !has(promptN, v));
+  // (round3 truth: siblingNums, the numbers of the item's OTHER adjudicated parts, are not extra when one part is checked)
+  const extraNum = fnv.length > 0 && tn.some((v) => !has(fnv, v) && !has(rawF, v) && !has(promptN, v) && !(siblingNums && has(siblingNums, v)));
   const missingSide = fnv.length > 0 && SIDES.some((g) => {
     const f = sideOf(fw, g), t = sideOf(tw, g), q = sideOf(promptW, g);
     return f.a !== f.b && !t.a && !t.b && !(f.a ? q.a : q.b);
@@ -159,6 +160,20 @@ export function supports(form, text, allowedNums, negForms = null, prompt = "") 
   const subset = tn2 && ((tc.size > 0 && precision >= CORROBORATE.keyLikeCover) || (tc.size === 0 && tn.length > 0))
     && (inOrder(tn.filter((v) => has(fnv, v)), fnv) || tn.length <= 1);
   return { ok, keyLike, subset, why: ok ? null : !present ? "missing_number" : !numsOk ? "number_order" : missingDecisive ? "missing_decisive" : crossOpposite ? "opposite_word" : extraNum ? "extra_number" : missingSide ? "missing_side" : "low_cover", cover };
+}
+
+/**
+ * Which of the item's ADJUDICATED parts (target.parts, ≥ 2; never read off the key's punctuation) a reply carries, each
+ * checked like a complete form (supports().ok: its numbers in order, no foreign number, no contradiction, enough of its
+ * words). "none" | "some" | "all"; null when the item has no adjudicated parts.
+ */
+export function partsVerdict(target, text, allowedNums) {
+  const parts = Array.isArray(target?.parts) && target.parts.length >= 2 ? target.parts.map(String) : null;
+  if (!parts) return null;
+  const prompt = `${target.item?.prompt_en ?? ""} ${target.item?.prompt_hi ?? ""}`;
+  const allowed = allowedNums ?? [target.key, ...(target.also ?? []), target.item?.prompt_en, target.item?.prompt_hi].flatMap((s) => [...(nums(s) ?? []), ...rawNums(s)]);
+  const got = parts.map((p, i) => supports(p, text, allowed, null, prompt, parts.filter((_, j) => j !== i).flatMap((q) => [...(nums(q) ?? []), ...rawNums(q)])).ok);
+  return got.every(Boolean) ? "all" : got.some(Boolean) ? "some" : "none";
 }
 
 /**
@@ -189,6 +204,18 @@ export function corroborate({ target, text, result }) {
   // a plain "incorrect" or "partial" (never a named misconception, which is evidence about the belief) on a reply made only
   // of the key's own words or numbers: a part of the key the model failed, or the whole of it the model called partial —
   // only the item's adjudicated parts can tell; no evidence rather than a wrong grade
-  if ((o === "incorrect" || o === "partial") && reads.some((r) => r.subset)) return { ...result, outcome: "no_evidence", corroboration: `subset_${o}` };
+  if ((o === "incorrect" || o === "partial") && reads.some((r) => r.subset)) {
+    // round3 truth (owner-1 on taxila.dev 2026-10-09, V1.1 oracle: 3 of 4 half answers re-asked with no verdict, e.g. "A: 6"
+    // for "What comes next in each?"; grading-truth model leg on grok: 133 of 172 two-rater partial answers abstained): when
+    // the item HAS adjudicated parts (data/kits-parts.json, shipped 2026-10-09), code can tell. A reply that carries some of
+    // the parts, by the same check a complete form must pass, and not all of them, is the V1.1 partial — whatever the
+    // model's label of it was. A reply carrying every part stays no evidence (it looks complete; the model disagreed).
+    const parts = partsVerdict(target, text, allowed);
+    if (parts === "some") {
+      const { misconceptionId: _m, ...rest } = result;
+      return { ...rest, outcome: "partial", corroboration: `parts_some_${o}` };
+    }
+    return { ...result, outcome: "no_evidence", corroboration: `subset_${o}` };
+  }
   return { ...result, corroboration: "not_keylike" };
 }

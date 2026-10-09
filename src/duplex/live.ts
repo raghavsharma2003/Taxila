@@ -49,6 +49,12 @@ export interface DuplexPort {
   fallback(reason: DuplexFallbackReason): void;
   /** Floor phase changes, for the status word and the acceptance probes. */
   state?(s: DuplexStatus): void;
+  /**
+   * Round 3: the EAGER END OF TURN (EngineTick prepare.eager): "start" = the covered words read as a finished turn: the
+   * turn's model work may start on exactly `text` now (the commit, if it comes, carries the same words); "cancel" = the
+   * child went on: drop it. Optional: absent = ignored (the floor decision never depends on it).
+   */
+  eager?(e: { op: "start" | "cancel"; text: string; textHash: string; t: number }): void;
 }
 
 export interface DuplexTurn {
@@ -98,6 +104,9 @@ export interface DuplexStats {
   hushes: number;
   resumes: number;
   revokes: number;
+  /** Round 3: eager end-of-turn starts and cancels (the child went on after one). */
+  eagerStarts?: number;
+  eagerCancels?: number;
   dropped: number;
   safety: number;
   errors: number;
@@ -281,7 +290,7 @@ interface Her { id: string; text: string; startedAt: number; heardChars: number;
 
 export class DuplexLive {
   readonly mode: "on" | "shadow";
-  readonly stats: DuplexStats = { frames: 0, sttEvents: 0, commits: 0, gaps: [], yields: 0, yieldLatency: [], hushLatency: [], hushes: 0, resumes: 0, revokes: 0, dropped: 0, safety: 0, errors: 0 };
+  readonly stats: DuplexStats = { frames: 0, sttEvents: 0, commits: 0, gaps: [], yields: 0, yieldLatency: [], hushLatency: [], hushes: 0, resumes: 0, revokes: 0, eagerStarts: 0, eagerCancels: 0, dropped: 0, safety: 0, errors: 0 };
   private readonly o: DuplexLiveOptions;
   private readonly host: EngineHost;
   private readonly tap = new TranscriptionTap();
@@ -462,6 +471,13 @@ export class DuplexLive {
     if (this.mode === "shadow") return;
     if (c.to === "stt") { port.sttCommit(); return; }
     if (c.to === "think") {
+      // round 3: the eager end of turn (the floor decision never waits on it)
+      if (c.op === "prepare" && (c.hint.eager === "start" || c.hint.eager === "cancel")) {
+        if (c.hint.eager === "start") this.stats.eagerStarts = (this.stats.eagerStarts ?? 0) + 1;
+        else this.stats.eagerCancels = (this.stats.eagerCancels ?? 0) + 1;
+        try { port.eager?.({ op: c.hint.eager, text: String(c.text ?? "").trim(), textHash: c.hint.textHash, t: c.t }); } catch { /* never breaks the floor */ }
+        return;
+      }
       // the engine re-opens the revoked turn (fanin.begin(prevTurnStart)): the merged turn that follows carries the
       // revoked commit's words, whether or not her reply to it had started, so the runtime never sends them twice
       if (c.op === "revoke" && this.lastCommit) this.revoked = this.lastCommit;

@@ -195,6 +195,91 @@ export function reteachSessionInputs(s, k, kit) {
   return { failedArmsThisSession, prereqs };
 }
 
+// ───────────── round3 truth: every re-teach the Director takes is ONE logged decision ─────────────
+//
+// Prod 2026-10-07 (w1c-reteach 7/13, round2-truth B 0/0): re-teach MOVES happened but reteach_attempts had no row. The
+// moves came from the Director's own re-teach paths (the kit's once-per-misconception remediation in afterMiss / trap, and
+// the P21 change-of-approach fallback), which never went through selectReteach, so nothing was written, nothing resolved,
+// the kit's arm was never excluded (the engine's first pick for a confirmed misconception is that same kit primary arm:
+// the child got the identical re-teach twice) and no re-check cooldown followed it. The Decision Service's rule (Agarwal
+// et al. 2016, failure F2: "log not the action chosen by the ML algorithm, but the outcome at the end of the pipeline";
+// an override path that acts without being logged corrupts every later estimate) is that the action actually taken is
+// logged, at the point it is taken, by the same code. These helpers make the Director's paths do exactly what
+// engineReteach does after selectReteach: one decision record, booked the same way.
+
+/** Kill switch (owner directive: every user-visible change ships on, behind a switch): TAXILA_RETEACH_LOG=off → HEAD. */
+export const reteachLogOn = (env = process.env) => !/^(off|0|false|no)$/i.test(String(env.TAXILA_RETEACH_LOG ?? ""));
+
+/**
+ * The decision record for a re-teach the Director takes outside selectReteach, in selectReteach's output shape (so
+ * brain/turn.js writes it as a reteach_attempts row, comprehension/resolve.js resolves it and brain/trace.js records it).
+ *   kind "kit": the kit's remediation for the misconception the child's answer just showed (one observation, not the
+ *     belief's confirmed misconception: trigger `misconception_seen`, migration 023), the kit's primary arm (armsFromKit).
+ *   kind "change_approach": the P21 fallback (no belief to run the engine on): the worked example, `gen:worked`, by rule.
+ * Pure. null when there is nothing to record (a kit misconception with no remediation).
+ * @param {{ kind: "kit"|"change_approach", skillId: string, mis?: any }} c
+ */
+export function directorReteachDecision({ kind, skillId, mis = null }) {
+  if (!skillId) return null;
+  if (kind === "kit") {
+    const arms = armsFromKit(mis);
+    const arm = arms.find((a) => a.primary) ?? arms[0];
+    if (!arm) return null;
+    return { move: "reteach", skillId, misId: mis.id, trigger: "misconception_seen", chosenBy: "kit_primary", suppression: true,
+      armId: arm.id, repClass: arm.repClass, representation: arm.representationId ?? null, offerPick: null, source: "kit" };
+  }
+  if (kind === "change_approach") {
+    const arm = GENERIC_ARMS.find((a) => a.id === "gen:worked");
+    return { move: "reteach", skillId, misId: null, trigger: "wheel_spin", chosenBy: "rule", suppression: true,
+      armId: arm.id, repClass: arm.repClass, representation: arm.representationId, offerPick: null, source: "change_approach" };
+  }
+  return null;
+}
+
+/**
+ * May the Director take this re-teach now? The same two rules selectReteach and engineReteach already apply to their own
+ * arms: never the same arm twice in a lesson (an arm in lessonArmsUsed is excluded), and never a new re-teach on a skill
+ * while the last one's re-check is running (reteach-without-cooldown). Found by logging: with the Director's re-teaches
+ * on the record, a local run showed `gen:story → gen:worked → gen:worked` on one skill, the P21 change of approach (the
+ * worked example) firing on the very next turn after the engine's own worked-example re-teach, inside its re-check. The
+ * kit's remediation is exempt from the cooldown (it answers a misconception the child just showed; the arm it pre-empts
+ * counts as failed in bookDirectorReteach) but not from the no-repeat rule (the engine's first re-teach of a confirmed
+ * misconception IS the kit's primary arm). Pure. Always true with the switch off (HEAD).
+ * @param {any} s lesson state @param {"kit"|"change_approach"} kind @param {string} skillId @param {any} [mis]
+ */
+export function directorMayReteach(s, kind, skillId, mis = null) {
+  if (!reteachLogOn()) return true;
+  const d = directorReteachDecision({ kind, skillId, mis });
+  if (!d) return true;
+  if ((s.armsUsed ?? []).includes(d.armId)) return false;
+  if (kind === "change_approach" && (s.reteachCool?.[skillId] ?? 0) > 0) return false;
+  return true;
+}
+
+/**
+ * Book a Director re-teach decision in the lesson state the way engineReteach books selectReteach's: the arm is used this
+ * lesson (selectReteach never picks it again), it is the arm in flight on k (if the engine's trigger still holds after the
+ * re-check, it counts as a failed arm: reteachSessionInputs), the re-check cooldown starts (spec §5.4; rejected
+ * reteach-without-cooldown), and lastReteach carries the row for this turn. An arm still in flight on k (its re-check
+ * not over) that this decision pre-empts is a failed arm: the child just answered wrong again during its re-check.
+ * Mutates s. Returns s.
+ * @param {any} s lesson state @param {ReturnType<typeof directorReteachDecision>} d @param {number} cooldown
+ */
+export function bookDirectorReteach(s, d, cooldown) {
+  if (!d) return s;
+  const k = d.skillId;
+  const inFlight = s.lastArmBySkill?.[k];
+  if (inFlight && inFlight !== d.armId && (s.reteachCool?.[k] ?? 0) > 0) {
+    const failed = s.failedArms?.[k] ?? [];
+    if (!failed.includes(inFlight)) s.failedArms = { ...(s.failedArms ?? {}), [k]: [...failed, inFlight] };
+  }
+  s.lastArmBySkill = { ...(s.lastArmBySkill ?? {}), [k]: d.armId };
+  s.armsUsed = [...new Set([...(s.armsUsed ?? []), d.armId])];
+  s.reteachCool = { ...(s.reteachCool ?? {}), [k]: cooldown };
+  s.lastReteach = { ...d, turn: s.turn };
+  return s;
+}
+
 /** Record the decision in the lesson state: the failed arms on k, and the arm now tried on k. Mutates s (as engineReteach does). */
 export function noteReteach(s, k, d, inputs) {
   s.failedArms = { ...(s.failedArms ?? {}), [k]: inputs?.failedArmsThisSession ?? s.failedArms?.[k] ?? [] };

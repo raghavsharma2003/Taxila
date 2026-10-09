@@ -13,6 +13,8 @@ import { Expressions, Listener } from "./runtime/expr.js";
 import { ActingPolicy, type ActCommand } from "./policy.ts";
 import { VisemeScheduler } from "./track.ts";
 import { applySafetyFloor } from "./safety.ts";
+// round 3 (relational-human): the face reacting to the child's knowledge state, never an emotion (knowledge.ts K1-K3)
+import { KnowledgeFace } from "./knowledge.ts";
 import type { AvatarPose } from "../duplex/face.ts";
 
 export interface RigLike {
@@ -79,6 +81,8 @@ export class PuppetDriver {
   private exprs = new Expressions(21);
   private listener = new Listener(3);
   private nod = new NodSpring();
+  /** Round 3: K1 receipt nod, K2 thinking while her acknowledgement sounds, K3 a look at the work while the child works. */
+  readonly knowledge = new KnowledgeFace();
   private lip: LipDriver | null = null;
   private lipRate = 0;
   private win = new Float32Array(1024);
@@ -157,6 +161,12 @@ export class PuppetDriver {
     if (ok) this.busyUntil = Math.max(this.busyUntil, nowMs / 1000 + 1);
     return ok;
   }
+  /** Round 3 (K2): her acknowledgement (the child's answer said back) starts / ends sounding. */
+  ack(phase: "start" | "end", nowMs: number): void {
+    this.knowledge.echoing = phase === "start";
+    if (phase === "end") this.knowledge.echoTailUntil = nowMs / 1000 + KnowledgeFace.ECHO_TAIL_S;
+    this.busyUntil = Math.max(this.busyUntil, nowMs / 1000 + 1);
+  }
   /** Her audio was cut (barge-in yield): the mouth closes at once. */
   cut(): void {
     this.visemes.cut();
@@ -192,9 +202,17 @@ export class PuppetDriver {
     const lf = this.lip.step(src as Float32Array, t);
     const visOn = this.visemes.at(inp.nowMs, this.vis);
     const speakingNow = lf.speaking || visOn;
-    if (speakingNow) this.spoke = this.spoke || t - this.statusSince > 0.3;
-    const st = floorState({ status: inp.status, tapSpeaking: speakingNow, silenceMs: visOn ? 0 : lf.silenceMs, spokeSinceStatus: this.spoke });
+    // K2: her acknowledgement is not her turn starting: it never counts as "she spoke since the status changed" and the face
+    // stays THINKING while her mouth says it (no armed affect fires on it: the policy never sees a speaking state)
+    const echoing = this.knowledge.echoing || t < this.knowledge.echoTailUntil;
+    if (speakingNow && !echoing) this.spoke = this.spoke || t - this.statusSince > 0.3;
+    const st: FaceState = echoing && inp.status !== "listening" ? "thinking"
+      : floorState({ status: inp.status, tapSpeaking: speakingNow, silenceMs: visOn ? 0 : lf.silenceMs, spokeSinceStatus: this.spoke });
     if (st !== this.state) { this.state = st; this.busyUntil = Math.max(this.busyUntil, t + 0.8); this.run(this.policy.floor(st, t), t); }
+    for (const k of this.knowledge.step(st, t, { calm: this.calm, reduced: this.reduced })) {
+      if (k.op === "nod") { if (this.nod.kick(k.peakDeg, t)) this.busyUntil = Math.max(this.busyUntil, t + 1); }
+      else if (k.op === "look") this.lookAt(k.yaw, k.pitch, k.holdS, k.why);
+    }
     if (speakingNow) this.busyUntil = Math.max(this.busyUntil, t + 0.4);
     this.behaviour.setState(st);
     const b = this.behaviour.update(t, { herRms: lf.rms, herVoiced: lf.voiced || visOn, childLevel: inp.childLevel });
@@ -204,6 +222,9 @@ export class PuppetDriver {
     // nods: the duplex engine's content-blind continuers when it is attached; else the judged mic-level Listener
     if (this.policy.duplexAttached) head[0] += this.nod.step(dt) * (this.reduced ? 0.3 : 1);
     else {
+      // round 3 K1: the receipt nod rides the same judged spring (it is kicked only at a turn boundary, so it never
+      // stacks on the mic-level Listener's nods, which run while the child is speaking)
+      head[0] += this.nod.step(dt) * (this.reduced ? 0.3 : 1);
       // R6: no listening nods or listening smile in a safety turn (a still, attentive face; duplex nods obey the same rule)
       const ls = this.listener.update(t, dt, st === "listening" && !this.calm, inp.childLevel);
       head[0] += ls.pitch * (this.reduced ? 0.3 : 1);

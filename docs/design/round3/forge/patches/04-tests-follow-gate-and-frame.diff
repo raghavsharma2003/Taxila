@@ -1,0 +1,33 @@
+--- a/tests/round2-content.test.mjs
++++ b/tests/round2-content.test.mjs
+@@ -128,7 +128,8 @@
+     BF.preselect(a2, { kit });
+     const bad = { ...a2, line: { ...a2.line, text: BAD } };
+     assert.equal(BF.takePreselected(bad, gateCtxFor(bad, { kit })), null);
+-    assert.equal(BF.pickState(bad), "rejected:W8.counts_match_line");
++    // round 3 forge (wb-gate@3): the contradicting line also names parts the board does not draw (W10)
++    assert.match(BF.pickState(bad), /^rejected:W8\.counts_match_line(,W10\.screen_claims_drawn)?$/);
+     assert.equal(BF.takePreselected(good, gateCtxFor(good, { kit })), null, "a pick is used once");
+   });
+   it("W9 is checked as if her line said no number: the 3 x 5 board waits for a line that says 3 and 5", () => {
+--- a/tests/studio-stage-geometry.test.mjs
++++ b/tests/studio-stage-geometry.test.mjs
+@@ -7,6 +7,7 @@
+ import { test, before, after } from "node:test";
+ import assert from "node:assert/strict";
+ import { existsSync, readdirSync } from "fs";
++import { boardFrame } from "../src/studio/boardView.ts";
+ 
+ const ROOT = new URL("..", import.meta.url).pathname;
+ const browsersDir = process.env.PLAYWRIGHT_BROWSERS_PATH;
+@@ -78,7 +79,9 @@
+       if (!tray || !box) { fails.push(`${tag}: no tray/box`); continue; }
+       if (box.w < 100 || box.h < 75) fails.push(`${tag}: box too small ${box.w}x${box.h}`);
+       if (box.x < tray.x - 0.5 || box.y < tray.y - 0.5 || box.x + box.w > tray.x + tray.w + 0.5 || box.y + box.h > tray.y + tray.h + 0.5) fails.push(`${tag}: box outside tray ${JSON.stringify(m)}`);
+-      if (Math.abs(box.w / box.h - board.w / board.h) > 2 / Math.min(box.w, box.h)) fails.push(`${tag}: aspect ${box.w}x${box.h}`);
++      // round 3 forge: the stage frames the board's drawn content (src/studio/boardView.ts): the box keeps the FRAME's aspect
++      const fr = boardFrame(script(board.w, board.h));
++      if (Math.abs(box.w / box.h - fr.w / fr.h) > 2 / Math.min(box.w, box.h)) fails.push(`${tag}: aspect ${box.w}x${box.h}`);
+       if (m.trayScroll && (m.trayScroll.sh > m.trayScroll.ch + 1 || m.trayScroll.sw > m.trayScroll.cw + 1)) fails.push(`${tag}: tray scrolls ${JSON.stringify(m.trayScroll)}`);
+       if (m.page.sw > m.page.iw + 1) fails.push(`${tag}: horizontal page scroll ${m.page.sw} > ${m.page.iw}`);
+     } finally { await page.close(); }

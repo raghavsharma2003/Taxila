@@ -96,8 +96,11 @@ export const EN = {
     "(?:are|r) (?:you|u) real", "what are you", "is this (?:a )?(?:real person|robot|ai)", "(?:are|r) (?:you|u) (?:chatgpt|chat gpt|gpt|siri|alexa|google|gemini)",
     "do you have a (?:body|face|house|home|family)",
   ],
-  memory_q: ["(?:do|will|would) you remember", "remember (?:me|what i said|last time)", "did you forget"],
-  forget_ask: ["forget (?:it|that|this|what i said|about it)", "please forget", "delete (?:it|that|this)"],
+  // round 3 (relational-human): addressed to HER, about the child (a bare "forget it" is "never mind"; "i forgot" is the child)
+  memory_q: ["(?:do|will|would|did) you remember (?:me|what i|my|that i|last time|our)", "remember me", "remember what i (?:said|told you)",
+    "(?:did|will|would) you forget (?:me|what i|my)", "what do you (?:remember|know) about me"],
+  forget_ask: ["forget (?:what|everything|all) i (?:said|told you)(?: \\S+){0,2}", "forget what i (?:said|told you)", "please forget (?:that|this|it|what i said)", "(?:don'?t|do not) remember (?:that|this|what i said)",
+    "delete (?:that|it|what i said) from your memory", "forget (?:that|this) about me"],
   feelings_q: [
     "do you (?:miss|love|like|hate) me", "do you (?:have|get|feel) (?:feelings|emotions|sad|happy|lonely)", "(?:are|r) you (?:happy|sad|lonely|angry|bored)",
     "will you miss me", "do you feel",

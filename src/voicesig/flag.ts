@@ -5,13 +5,17 @@
 //                               getUserMedia on the same device is unmeasured on Android (VS-M4 / VS-M11)
 //   VITE_VOICESIG=0             build-time off
 //   GET /api/voicesig/config    the server's runtime kill (TAXILA_VOICESIG=off, TAXILA_VOICESIG_FRONTEND=0,
-//                               TAXILA_VOICESIG_DETECTOR=0). Fails OPEN (1.5 s timeout, any error): the old path is the
+//                               TAXILA_VOICESIG_DETECTOR=0, TAXILA_VOICESIG_HOLDCUE=0). Fails OPEN (1.5 s timeout, any error): the old path is the
 //                               fallback inside the feature itself, so a missing route never costs the child anything.
 export const VOICESIG_KEY = "tx.flag.voicesig";
 export const VSRAW_KEY = "tx.flag.voicesig.raw";
 export const CONFIG_TIMEOUT_MS = 1_500;
 
-export interface VoicesigConfig { mode: "off" | "shadow" | "on"; frontend: boolean; detector: boolean }
+/** holdCue (round 3): present (false) only when the server killed the thinking-pause cue alone; see holdCueAllowed(). */
+export interface VoicesigConfig { mode: "off" | "shadow" | "on"; frontend: boolean; detector: boolean; holdCue?: false }
+
+/** The thinking-pause cue for duplex (src/voicesig/holdCue.ts) runs the detector: on when the detector is, unless killed. */
+export const holdCueAllowed = (c: VoicesigConfig): boolean => c.mode !== "off" && c.detector && c.holdCue !== false;
 
 function read(key: string, urlParam: string): string | null {
   try {
@@ -52,7 +56,7 @@ export function voicesigConfig(fetchFn: typeof fetch | undefined = typeof fetch 
       const res = await fetchFn("/api/voicesig/config", { credentials: "same-origin", signal: ctl?.signal });
       if (!res.ok) return OPEN;
       const b = (await res.json()) as Partial<VoicesigConfig>;
-      return { mode: b.mode === "off" || b.mode === "on" ? b.mode : "shadow", frontend: b.frontend !== false, detector: b.detector !== false };
+      return { mode: b.mode === "off" || b.mode === "on" ? b.mode : "shadow", frontend: b.frontend !== false, detector: b.detector !== false, ...(b.holdCue === false ? { holdCue: false as const } : {}) };
     } catch {
       return OPEN;
     } finally {

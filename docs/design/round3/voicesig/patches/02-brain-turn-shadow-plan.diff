@@ -1,0 +1,40 @@
+--- a/server/brain/turn.js
++++ b/server/brain/turn.js
+@@ -435,6 +435,18 @@
+   let plan = await planTurn(state, cls, { ...planCtx, now });
+   let { evidence, writes, skillChanges, incident, r, instructions, skipped } = plan;
+   mark("planned");
++  // round 3 voicesig (server/voicesig/lesson.js shadowDiff): what she WOULD have done. Only when this spoken turn's voice
++  // read is shadow AND would hand the Director a tie-breaker: the same pure plan again (planTurn clones the state; its
++  // staged writes are dropped, as the speculative plan's are) with those tie-breakers, compared on move kinds only.
++  // Never on a safety turn (voicesig returns nothing there); TAXILA_VOICESIG_COUNTERFACTUAL=0 switches it off.
++  let vsShadow = null;
++  if (vsTurn && Object.keys(vsTurn.would ?? {}).length && process.env.TAXILA_VOICESIG_COUNTERFACTUAL !== "0") {
++    const tCf = performance.now();
++    const cfVoice = { signals: { ...(planCtx.voice?.signals ?? {}), ...vsTurn.would }, z: planCtx.voice?.z ?? {} };
++    const cf = await seamSafe("voicesig.counterfactual", () => planTurn(state, cls, { ...planCtx, voice: cfVoice, now }), null);
++    vsShadow = { ...voicesigSeam.shadowDiff(vsTurn, plan, cf), ms: Math.round((performance.now() - tCf) * 10) / 10 };
++    mark("vs_counterfactual");
++  }
+   let next = r.state;
+   // Seam (W2-I, server/relational/seam.js): one RelationalDirective per turn (pure, ≤ 3 ms). null = no relational move, and
+   // nothing below changes. W2-E's BR5 splits it into the kernel's authority ranks; until then only its face display rides
+@@ -763,7 +775,7 @@
+   // from a safety turn (a disclosure's timing is never part of the child's usual pace), and the codes go to the trace only.
+   const vsSafety = r.move.kind === "safeguard" || !!incident;
+   if (vsTurn && !late) next.vsb = vsSafety ? state.vsb : vsTurn.vsb;
+-  const vsReasons = vsTurn && !vsSafety && !late ? vsTurn.reasons ?? [] : [];
++  const vsReasons = vsTurn && !vsSafety && !late ? [...(vsTurn.reasons ?? []), ...(vsTurn.shadowReasons ?? []), ...(vsShadow?.codes ?? [])] : [];
+   // The dedupe record lands in the same transaction as the turn: a resend of this turnSeq replays outCore.
+   if (turnSeq != null) {
+     next.acks = [...(prev.acks ?? []).filter((a) => a.turnSeq !== turnSeq), { turnSeq, ...(edited ? { edited: true } : {}) }].slice(-ACKS_MAX);
+@@ -865,7 +877,8 @@
+       stage: { accepted: kernel.arb.accepted.map((p) => p.kind), rejected: kernel.arb.rejected.map((x) => `${x.p.kind}:${x.why}`), wb: kernel.wb?.declined ?? null, studioPropose: studioView?.propose ?? null,
+         point: stagecraftPoint ? { want: stagecraftPoint.want?.family ?? null, request: stagecraftPoint.request?.kind ?? null } : null, slot: studioSlot?.artifact?.kind ?? null, tray: r.ui?.tray ?? null },
+       ...(voice ? { voice: { reliable: voice.reliable, signals: voice.signals, z: voice.z } } : {}),
+-      ...(vsTurn?.trace && !vsSafety ? { vs: { ...vsTurn.trace, read: vsTurn.read, hints: vsTurn.hints, reasons: vsReasons } } : {}),
++      ...(vsTurn?.trace && !vsSafety ? { vs: { ...vsTurn.trace, read: vsTurn.read, hints: vsTurn.hints, reasons: vsReasons,
++        ...(vsShadow?.record ? { shadow: { ...vsShadow.record, ms: vsShadow.ms } } : {}) } } : {}),
+     };
+   }
+   return out;

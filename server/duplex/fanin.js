@@ -224,7 +224,11 @@ export class TurnTranscript {
     const rate = this.revisions.n >= 3 ? this.revisions.revised / this.revisions.n : 0.3;
     const stability = isFinal ? 1 : Math.max(0.2, Math.min(0.98, 1 - rate));
     let coverageEndMs = null;
-    for (const it of items) if (it.coverEndMs !== null) coverageEndMs = coverageEndMs === null ? it.coverEndMs : Math.max(coverageEndMs, it.coverEndMs);
+    // round 3 (duplex, eot-bench Hindi real D4 events): an EMPTY final covers its audio too (the transcriber heard no words in
+    // it: a breath, a cough, a click, her echo removed whole). Before, only worded items counted, so a wordless blip after the
+    // child's last words stayed "unseen voice" until the hard backstop (backstop + 2 s): hi__4361 waited 3.1 s after "…अभी?".
+    const covering = this.order.map((id) => this.items.get(id)).filter((it) => it && it.inTurn && (it.text || it.final));
+    for (const it of covering) if (it.coverEndMs !== null) coverageEndMs = coverageEndMs === null ? it.coverEndMs : Math.max(coverageEndMs, it.coverEndMs);
     const lastWords = items.length ? items[items.length - 1].words : null;
     const words = items.some((it) => it.words) ? items.flatMap((it) => it.words || []) : null;
     // no words yet: every voiced ms since the turn's first audio is unseen (a carried overlap starts before turnStart)

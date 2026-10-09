@@ -281,7 +281,25 @@ export interface LexicalMarkers {
    * prompt to say it again (critique 2026-10-04). Optional for older constructors.
    */
   unreadable?: boolean;
+  /**
+   * Round 3 (duplex, eot-bench Hindi real STT): how the transcriber CLOSED the newest words. Both production lanes punctuate
+   * (gpt-live-transcribe and MAI-Transcribe-2: 60-61 % of micro-commit finals end in "।" / "." / "?"), and the closing mark
+   * is the recogniser's own read of the audio: "terminal" (। . ? !), "comma" and "broken" (a cut-off word, "हर्ष वि-") never
+   * ended a turn on 400 real turns (0 of 400 turn ends; 17 of 147 thinking pauses); "unclosed" = no mark on a lane that
+   * punctuates. null when this session's transcriber has never punctuated (simulated STT): then no shape is read. Optional
+   * for older constructors.
+   */
+  endShape?: "terminal" | "comma" | "broken" | "unclosed" | null;
+  /** Two or more numbers in the last four words and no closing mark: a number being read out (digits, a list, a table). */
+  enumerating?: boolean;
 }
+
+/**
+ * Round 3 (duplex): the class of a child pause outside a closed answer, from the covered words alone (engineRules.ts
+ * pauseClass). It sets the least silence before she takes the floor (config.ts PAUSE_WAIT) and whether the turn may be
+ * prepared early (the eager end of turn).
+ */
+export type PauseClass = "hold" | "enumerating" | "question" | "idk" | "complete";
 
 /** Expected-answer grammar state. "prefix_ambiguous": complete as is but a longer value is possible ("sixty" → "sixty-two",
  *  "तीन" when the form is a fraction is "pending"). "overfull": more than `slots` values (a list, or a repair). */
@@ -390,6 +408,8 @@ export interface OverlapFeatures {
   /** turnPolicy.ts overlapKind(words, {askedYesNo}) once words exist. */
   lexicalKind: OverlapKind | null;
   herAskedYesNo: boolean;
+  /** Round 3: her voice is already hushed under this burst (she is inaudible; the decision may wait for the words). Optional. */
+  hushed?: boolean;
 }
 export type OverlapClass = "continuer" | "barge_in" | "side_talk" | "background_speech" | "noise" | "echo";
 
@@ -481,6 +501,13 @@ export interface PrepareHint {
   textHash: string;
   /** A Studio prefetch key from partial intent (misconception id, aid request). Prefetch only: reveals wait for a TRP. */
   buildIntent?: string | null;
+  /**
+   * Round 3 (duplex): the EAGER END OF TURN (Deepgram Flux's EagerEndOfTurn / TurnResumed, LiveKit preemptive generation,
+   * Taxila's turn prefetch). "start": the covered words read as a finished turn (pause class complete / question / idk):
+   * start the turn's model work on exactly these words now, before the floor decision; "cancel": the child went on (a voice
+   * onset) or the words now read as a hold: drop that work. The floor decision itself is unchanged by it. Optional.
+   */
+  eager?: "none" | "start" | "keep" | "cancel";
 }
 
 export interface EngineId {

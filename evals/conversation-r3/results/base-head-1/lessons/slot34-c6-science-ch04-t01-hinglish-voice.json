@@ -1,0 +1,5480 @@
+{
+ "slot": 34,
+ "topic": "c6-science-ch04-t01",
+ "cls": 6,
+ "lang": "hinglish",
+ "lane": "voice",
+ "lessons": [
+  {
+   "lessonId": "e03c5a0b-3322-4c90-a716-2e34829ea6ca",
+   "why": "start",
+   "at": "2026-10-09T11:27:54.448Z",
+   "teacher": "Arjun"
+  }
+ ],
+ "turns": [
+  {
+   "who": "teacher",
+   "kind": "opening",
+   "lessonId": "e03c5a0b-3322-4c90-a716-2e34829ea6ca",
+   "teacherReply": "Namaste Ishaan, main Arjun, aapka AI teacher hoon. Aaj magnets aur music speakers mein magnetic materials dekhenge. Aapko kaunsa music pasand hai?",
+   "ui": {
+    "status": "your_turn",
+    "phase": "warmup",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "Magnetic materials",
+    "beat": {
+     "beatId": "b1-arrive",
+     "type": "arrive",
+     "index": 1
+    },
+    "ask": {
+     "text": "Aapko kaunsa music pasand hai?"
+    }
+   }
+  },
+  {
+   "who": "child",
+   "tag": "greet",
+   "lessonId": "e03c5a0b-3322-4c90-a716-2e34829ea6ca",
+   "childText": "hi haan",
+   "ms": 1806,
+   "error": null,
+   "teacherReply": "Ishaan, music speaker ke paas ek paper clip aur wooden pencil rakhi hai—magnet kis cheez ko kheenchne ki prediction karenge? End mein aap Bittu ko sikhaayenge.",
+   "move": {
+    "kind": "hook",
+    "shape": "open with one concrete everyday situation built on their interest (music) — kit contexts: kitchen drawer, fridge door, scrap shop; ask what they think will happen or which they would pick — a prediction, no right answer yet; any bigger/more comparison: two quantities of one kind, in one unit — a count against a count, a distance against a distance; never across kinds; mention once: at the end they will teach this to Bittu (a pretend new student who missed this class); address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "format": "F4"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "teach",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "Magnetic materials",
+    "beat": {
+     "beatId": "b2-hook",
+     "type": "hook",
+     "index": 2
+    },
+    "ask": {
+     "text": "Ishaan, music speaker ke paas ek paper clip aur wooden pencil rakhi hai—magnet kis cheez ko kheenchne ki prediction…"
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 360,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "teach",
+    "ms": 1797,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 70
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 70
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 938
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 1009
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1298
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1369
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1371
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1371
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1575
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1737
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1797
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:question_on_topic-09",
+   "lessonId": "e03c5a0b-3322-4c90-a716-2e34829ea6ca",
+   "childText": "kya magnet aluminium ko kheenchta hai",
+   "ms": 3237,
+   "error": null,
+   "teacherReply": "Nahin, magnet aluminium ko attract nahi karta; screen ke right column mein aluminium Non-magnetic hai. Aap magnet se aluminium test karke record kaise karenge?",
+   "move": {
+    "kind": "explain",
+    "shape": "they asked a real question about today's idea: answer it in at most two sentences, correctly and simply, without giving the key; then the question; one idea only: Test objects with a magnet and record attracted or not attracted; an example from their interest (music) if it fits naturally; objects first, then the symbol; point at the screen only at what the on-screen row lists; never a drawing made of characters; end with one small question that makes them USE the idea — never 'samjha?'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "skillId": "c6-science-ch04-t01-s1",
+    "format": "F3",
+    "request": "answer_q",
+    "lead": "they asked a real question about today's idea: answer it in at most two sentences, correctly and simply, without giving the key; then the question"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "teach",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Magnetic materials",
+    "beat": {
+     "beatId": "b3-explain",
+     "type": "explain",
+     "index": 3
+    },
+    "ask": {
+     "text": "Aap magnet se aluminium test karke record kaise karenge?"
+    },
+    "studioSlot": {
+     "slotId": "e03c5a0b-3322-4c90-a716-2e34829ea6ca:wb:2:slot",
+     "intentId": "e03c5a0b-3322-4c90-a716-2e34829ea6ca:wb:2",
+     "state": "revealed",
+     "artifact": {
+      "kind": "whiteboard",
+      "stage": {
+       "w": 400,
+       "h": 300
+      },
+      "script": {
+       "v": 1,
+       "scriptId": "e03c5a0b-3322-4c90-a716-2e34829ea6ca:wb:2",
+       "line": {
+        "lessonId": "e03c5a0b-3322-4c90-a716-2e34829ea6ca",
+        "teacherReplySeq": 5
+       },
+       "anchor": "line_audio_start",
+       "board": {
+        "w": 400,
+        "h": 300,
+        "ground": "chalk"
+       },
+       "mode": "fresh",
+       "durationMs": 13278,
+       "ops": [
+        {
+         "id": "h0",
+         "op": "text",
+         "startMs": 257,
+         "endMs": 1116,
+         "ink": "accent",
+         "at": [
+          107.5,
+          36
+         ],
+         "text": "Magnetic",
+         "size": "s"
+        },
+        {
+         "id": "o1",
+         "op": "line",
+         "startMs": 1184,
+         "endMs": 1699,
+         "ink": "accent",
+         "weight": 1,
+         "from": [
+          28,
+          62
+         ],
+         "to": [
+          187,
+          62
+         ]
+        },
+        {
+         "id": "h1",
+         "op": "text",
+         "startMs": 1957,
+         "endMs": 2815,
+         "ink": "accent",
+         "at": [
+          297.5,
+          36
+         ],
+         "text": "Non-magnetic",
+         "size": "s"
+        },
+        {
+         "id": "o2",
+         "op": "line",
+         "startMs": 2883,
+         "endMs": 3398,
+         "ink": "accent",
+         "weight": 1,
+         "from": [
+          218,
+          62
+         ],
+         "to": [
+          377,
+          62
+         ]
+        },
+        {
+         "id": "o3",
+         "op": "line",
+         "startMs": 3707,
+         "endMs": 4565,
+         "ink": "soft",
+         "weight": 1,
+         "from": [
+          200,
+          30
+         ],
+         "to": [
+          200,
+          280
+         ]
+        },
+        {
+         "id": "c00",
+         "op": "text",
+         "startMs": 4943,
+         "endMs": 5767,
+         "at": [
+          107.5,
+          100
+         ],
+         "text": "iron",
+         "size": "m"
+        },
+        {
+         "id": "c10",
+         "op": "text",
+         "startMs": 5870,
+         "endMs": 6694,
+         "at": [
+          297.5,
+          100
+         ],
+         "text": "aluminium",
+         "size": "m"
+        },
+        {
+         "id": "c01",
+         "op": "text",
+         "startMs": 7071,
+         "endMs": 7895,
+         "at": [
+          107.5,
+          152
+         ],
+         "text": "nickel",
+         "size": "m"
+        },
+        {
+         "id": "c11",
+         "op": "text",
+         "startMs": 7998,
+         "endMs": 8822,
+         "at": [
+          297.5,
+          152
+         ],
+         "text": "copper",
+         "size": "m"
+        },
+        {
+         "id": "c02",
+         "op": "text",
+         "startMs": 9199,
+         "endMs": 10023,
+         "at": [
+          107.5,
+          204
+         ],
+         "text": "cobalt",
+         "size": "m"
+        },
+        {
+         "id": "c12",
+         "op": "text",
+         "startMs": 10126,
+         "endMs": 10950,
+         "at": [
+          297.5,
+          204
+         ],
+         "text": "brass",
+         "size": "m"
+        },
+        {
+         "id": "c03",
+         "op": "text",
+         "startMs": 11328,
+         "endMs": 12152,
+         "at": [
+          107.5,
+          256
+         ],
+         "text": "steel",
+         "size": "m"
+        },
+        {
+         "id": "c13",
+         "op": "text",
+         "startMs": 12255,
+         "endMs": 13078,
+         "at": [
+          297.5,
+          256
+         ],
+         "text": "plastic",
+         "size": "m"
+        }
+       ],
+       "facts": {
+        "kind": "diagram",
+        "archetype": "whiteboard",
+        "onScreen": {
+         "labels": "Magnetic | Non-magnetic | iron | alumini"
+        }
+       }
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "question_on_topic",
+     "waitedMs": 399,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "teach",
+    "ms": 3220,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 52
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 52
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 1032
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 1088
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1432
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1487
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1489
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1490
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1578
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3111
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3220
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "filler",
+   "lessonId": "e03c5a0b-3322-4c90-a716-2e34829ea6ca",
+   "childText": "ok samajh gaya",
+   "ms": 2747,
+   "error": null,
+   "teacherReply": "Ishaan, pehla step: har object ke liye magnet se test karne se pehle prediction bataiye. Ab next step aap batayiye.",
+   "move": {
+    "kind": "worked_example",
+    "shape": "worked example, part 1 of 2: say one step, then ask them for the next step; their thinking, your pace; no new idea; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "skillId": "c6-science-ch04-t01-s1",
+    "format": "F2"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "Sort these kitchen things with a magnet: a cold iron tawa, aluminium foil, a steel spoon, a plastic lid."
+    },
+    "phase": "teach",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Magnetic materials",
+    "beat": {
+     "beatId": "b4-worked_example",
+     "type": "worked_example",
+     "index": 4
+    },
+    "ask": {
+     "text": "Ab next step aap batayiye."
+    },
+    "studioSlot": {
+     "slotId": "e03c5a0b-3322-4c90-a716-2e34829ea6ca:wb:3:slot",
+     "intentId": "e03c5a0b-3322-4c90-a716-2e34829ea6ca:wb:3",
+     "state": "revealed",
+     "artifact": {
+      "kind": "whiteboard",
+      "stage": {
+       "w": 400,
+       "h": 300
+      },
+      "script": {
+       "v": 1,
+       "scriptId": "e03c5a0b-3322-4c90-a716-2e34829ea6ca:wb:3",
+       "line": {
+        "lessonId": "e03c5a0b-3322-4c90-a716-2e34829ea6ca",
+        "teacherReplySeq": 7
+       },
+       "anchor": "line_audio_start",
+       "board": {
+        "w": 400,
+        "h": 300,
+        "ground": "chalk"
+       },
+       "mode": "fresh",
+       "durationMs": 9659,
+       "ops": [
+        {
+         "id": "h0",
+         "op": "text",
+         "startMs": 186,
+         "endMs": 807,
+         "ink": "accent",
+         "at": [
+          107.5,
+          36
+         ],
+         "text": "Magnetic",
+         "size": "s"
+        },
+        {
+         "id": "o1",
+         "op": "line",
+         "startMs": 857,
+         "endMs": 1229,
+         "ink": "accent",
+         "weight": 1,
+         "from": [
+          28,
+          62
+         ],
+         "to": [
+          187,
+          62
+         ]
+        },
+        {
+         "id": "h1",
+         "op": "text",
+         "startMs": 1415,
+         "endMs": 2036,
+         "ink": "accent",
+         "at": [
+          297.5,
+          36
+         ],
+         "text": "Non-magnetic",
+         "size": "s"
+        },
+        {
+         "id": "o2",
+         "op": "line",
+         "startMs": 2085,
+         "endMs": 2458,
+         "ink": "accent",
+         "weight": 1,
+         "from": [
+          218,
+          62
+         ],
+         "to": [
+          377,
+          62
+         ]
+        },
+        {
+         "id": "o3",
+         "op": "line",
+         "startMs": 2681,
+         "endMs": 3302,
+         "ink": "soft",
+         "weight": 1,
+         "from": [
+          200,
+          30
+         ],
+         "to": [
+          200,
+          280
+         ]
+        },
+        {
+         "id": "c00",
+         "op": "text",
+         "startMs": 3575,
+         "endMs": 4171,
+         "at": [
+          107.5,
+          100
+         ],
+         "text": "iron",
+         "size": "m"
+        },
+        {
+         "id": "c10",
+         "op": "text",
+         "startMs": 4245,
+         "endMs": 4841,
+         "at": [
+          297.5,
+          100
+         ],
+         "text": "aluminium",
+         "size": "m"
+        },
+        {
+         "id": "c01",
+         "op": "text",
+         "startMs": 5114,
+         "endMs": 5710,
+         "at": [
+          107.5,
+          152
+         ],
+         "text": "nickel",
+         "size": "m"
+        },
+        {
+         "id": "c11",
+         "op": "text",
+         "startMs": 5785,
+         "endMs": 6380,
+         "at": [
+          297.5,
+          152
+         ],
+         "text": "copper",
+         "size": "m"
+        },
+        {
+         "id": "c02",
+         "op": "text",
+         "startMs": 6653,
+         "endMs": 7249,
+         "at": [
+          107.5,
+          204
+         ],
+         "text": "cobalt",
+         "size": "m"
+        },
+        {
+         "id": "c12",
+         "op": "text",
+         "startMs": 7324,
+         "endMs": 7920,
+         "at": [
+          297.5,
+          204
+         ],
+         "text": "brass",
+         "size": "m"
+        },
+        {
+         "id": "c03",
+         "op": "text",
+         "startMs": 8193,
+         "endMs": 8789,
+         "at": [
+          107.5,
+          256
+         ],
+         "text": "steel",
+         "size": "m"
+        },
+        {
+         "id": "c13",
+         "op": "text",
+         "startMs": 8863,
+         "endMs": 9459,
+         "at": [
+          297.5,
+          256
+         ],
+         "text": "plastic",
+         "size": "m"
+        }
+       ],
+       "facts": {
+        "kind": "diagram",
+        "archetype": "whiteboard",
+        "onScreen": {
+         "labels": "Magnetic | Non-magnetic | iron | alumini"
+        }
+       }
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "spoken": true
+    },
+    "verdict": "attempt",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 391,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "teach",
+    "ms": 2743,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 79
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 79
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 759
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 841
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1152
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1233
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1235
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1235
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1324
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2613
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2743
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:animation_request-01",
+   "lessonId": "e03c5a0b-3322-4c90-a716-2e34829ea6ca",
+   "childText": "video dikhao",
+   "ms": 2119,
+   "error": null,
+   "teacherReply": "Screen par Magnet ko Iron, Nickel ya Cobalt ke paas drag kijiye; jo chipke, woh magnetic material hai. Aap pehle kis par try karenge?",
+   "move": {
+    "kind": "reteach",
+    "shape": "they asked to see it moving: name the movement in your first words — what on the screen they can move, drag or tap, and what changes as they do (never a video you do not have); one idea; let the picture do the work; a few words about what to look at; the key stays unsaid; then one small question about what they see; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu; it is on the screen now: point them at it in your first words and say what to look at",
+    "skillId": "c6-science-ch04-t01-s1",
+    "request": "visual",
+    "visual": "animation"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "teach",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Magnetic materials",
+    "beat": {
+     "beatId": "b5-explain",
+     "type": "explain",
+     "index": 5
+    },
+    "ask": {
+     "text": "Aap pehle kis par try karenge?"
+    },
+    "studioSlot": {
+     "slotId": "e03c5a0b-3322-4c90-a716-2e34829ea6ca:c1:slot",
+     "intentId": "e03c5a0b-3322-4c90-a716-2e34829ea6ca:c1",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "scene-explainer@1",
+       "spec": {
+        "archetype": "scene-explainer@1",
+        "skills": [
+         "c6-science-ch04-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "again": "Show again",
+         "yourTurn": "Your turn",
+         "check": "Check",
+         "right": "Got it",
+         "look": "Look again",
+         "myth": "MYTH",
+         "busted": "NOT TRUE",
+         "order": "Tap them in order"
+        },
+        "title": "What sticks to a magnet?",
+        "accent": "sci",
+        "targets": "c6-science-ch04-t01-m1",
+        "scenes": [
+         {
+          "id": "s1",
+          "layout": "split",
+          "els": [
+           {
+            "id": "title",
+            "type": "title",
+            "text": "What sticks to a magnet?"
+           },
+           {
+            "id": "myth",
+            "type": "myth",
+            "text": "All metals stick to magnets"
+           }
+          ]
+         },
+         {
+          "id": "s2",
+          "layout": "row",
+          "els": [
+           {
+            "id": "mag",
+            "type": "node",
+            "text": "Magnet",
+            "glyph": "magnet",
+            "color": "sci"
+           },
+           {
+            "id": "iron",
+            "type": "node",
+            "text": "Iron",
+            "glyph": "pick",
+            "color": "amber"
+           },
+           {
+            "id": "nickel",
+            "type": "node",
+            "text": "Nickel",
+            "glyph": "coin",
+            "color": "mint"
+           },
+           {
+            "id": "cobalt",
+            "type": "node",
+            "text": "Cobalt",
+            "glyph": "atom",
+            "color": "ion"
+           },
+           {
+            "id": "pull1",
+            "type": "arrow",
+            "from": "mag",
+            "to": "iron",
+            "text": "attracts"
+           },
+           {
+            "id": "pull2",
+            "type": "arrow",
+            "from": "mag",
+            "to": "nickel",
+            "text": "attracts"
+           },
+           {
+            "id": "pull3",
+            "type": "arrow",
+            "from": "mag",
+            "to": "cobalt",
+            "text": "attracts"
+           }
+          ]
+         },
+         {
+          "id": "s3",
+          "layout": "grid",
+          "els": [
+           {
+            "id": "test",
+            "type": "title",
+            "text": "Test, then sort"
+           },
+           {
+            "id": "nail",
+            "type": "node",
+            "text": "Iron nail",
+            "glyph": "pick",
+            "color": "amber"
+           },
+           {
+            "id": "foil",
+            "type": "node",
+            "text": "Aluminium foil",
+            "glyph": "scroll",
+            "color": "mint"
+           },
+           {
+            "id": "wire",
+            "type": "node",
+            "text": "Copper wire",
+            "glyph": "wave",
+            "color": "volt"
+           },
+           {
+            "id": "clip",
+            "type": "node",
+            "text": "Steel clip",
+            "color": "sci"
+           },
+           {
+            "id": "yes",
+            "type": "label",
+            "text": "Attracted",
+            "color": "amber"
+           },
+           {
+            "id": "no",
+            "type": "label",
+            "text": "Not attracted",
+            "color": "mint"
+           }
+          ]
+         },
+         {
+          "id": "s4",
+          "layout": "cycle",
+          "els": [
+           {
+            "id": "mag2",
+            "type": "node",
+            "text": "Magnet",
+            "glyph": "magnet",
+            "color": "sci"
+           },
+           {
+            "id": "paper",
+            "type": "node",
+            "text": "Paper",
+            "glyph": "scroll",
+            "color": "mint"
+           },
+           {
+            "id": "glass",
+            "type": "node",
+            "text": "Glass",
+            "glyph": "beaker",
+            "color": "ion"
+           },
+           {
+            "id": "water",
+            "type": "node",
+            "text": "Water",
+            "glyph": "drop",
+            "color": "volt"
+           },
+           {
+            "id": "force",
+            "type": "arrow",
+            "from": "mag2",
+            "to": "paper",
+            "text": "force through"
+           },
+           {
+            "id": "force2",
+            "type": "arrow",
+            "from": "paper",
+            "to": "glass",
+            "text": "through"
+           },
+           {
+            "id": "force3",
+            "type": "arrow",
+            "from": "glass",
+            "to": "water",
+            "text": "through"
+           }
+          ]
+         },
+         {
+          "id": "s5",
+          "layout": "split",
+          "els": [
+           {
+            "id": "shiny",
+            "type": "title",
+            "text": "Shiny is not enough"
+           },
+           {
+            "id": "spoon1",
+            "type": "node",
+            "text": "Steel spoon A",
+            "glyph": "plate",
+            "color": "sci"
+           },
+           {
+            "id": "spoon2",
+            "type": "node",
+            "text": "Steel spoon B",
+            "glyph": "plate",
+            "color": "mint"
+           },
+           {
+            "id": "different",
+            "type": "label",
+            "text": "Test each one",
+            "color": "amber"
+           },
+           {
+            "id": "sortmag",
+            "type": "label",
+            "text": "Magnetic tray",
+            "color": "amber"
+           },
+           {
+            "id": "sortnon",
+            "type": "label",
+            "text": "Non-magnetic tray",
+            "color": "mint"
+           },
+           {
+            "id": "ironopt",
+            "type": "label",
+            "text": "Iron",
+            "color": "amber"
+           },
+           {
+            "id": "alumopt",
+            "type": "label",
+            "text": "Aluminium",
+            "color": "mint"
+           },
+           {
+            "id": "copperopt",
+            "type": "label",
+            "text": "Copper",
+            "color": "mint"
+           }
+          ]
+         }
+        ],
+        "text": {
+         "L1": "A magnet does not attract every metal. We must test each material.",
+         "L2": "Magnets attract iron, nickel, cobalt, and steels that contain iron.",
+         "L3": "Aluminium, copper and brass are metals, but they are not attracted. Plastic, wood, paper, rubber and glass are not attracted either.",
+         "L4": "So a shiny or metal-looking object is not automatically magnetic.",
+         "L5": "In our example, test the iron tawa, foil, steel spoon and plastic lid one at a time.",
+         "L6": "Record each result, then group the objects as attracted or not attracted.",
+         "L7": "A magnet can act through paper, cloth, glass and water. It can even pull a paper clip through a glass of water.",
+         "L8": "Two steel spoons can behave differently, so testing is the reliable way to sort materials."
+        },
+        "narration": {
+         "L1": {
+          "text": "A magnet does not attract every metal. We must test each material.",
+          "dur": 6,
+          "lead": 0,
+          "tail": 0,
+          "pauses": []
+         },
+         "L2": {
+          "text": "Magnets attract iron, nickel, cobalt, and steels that contain iron.",
+          "dur": 6,
+          "lead": 0,
+          "tail": 0,
+          "pauses": []
+         },
+         "L3": {
+          "text": "Aluminium, copper and brass are metals, but they are not attracted. Plastic, wood, paper, rubber and glass are not attracted either.",
+          "dur": 9,
+          "lead": 0,
+          "tail": 0,
+          "pauses": []
+         },
+         "L4": {
+          "text": "So a shiny or metal-looking object is not automatically magnetic.",
+          "dur": 5,
+          "lead": 0,
+          "tail": 0,
+          "pauses": []
+         },
+         "L5": {
+          "text": "In our example, test the iron tawa, foil, steel spoon and plastic lid one at a time.",
+          "dur": 7,
+          "lead": 0,
+          "tail": 0,
+          "pauses": []
+         },
+         "L6": {
+          "text": "Record each result, then group the objects as attracted or not attracted.",
+          "dur": 6,
+          "lead": 0,
+          "tail": 0,
+          "pauses": []
+         },
+         "L7": {
+          "text": "A magnet can act through paper, cloth, glass and water. It can even pull a paper clip through a glass of water.",
+          "dur": 8,
+          "lead": 0,
+          "tail": 0,
+          "pauses": []
+         },
+         "L8": {
+          "text": "Two steel spoons can behave differently, so testing is the reliable way to sort materials.",
+          "dur": 6,
+          "lead": 0,
+          "tail": 0,
+          "pauses": []
+         }
+        },
+        "beats": [
+         {
+          "line": "L1",
+          "gap": 0.4,
+          "scene": "s1",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 1,
+            "target": "title"
+           },
+           {
+            "at": 0.8,
+            "do": "show",
+            "dur": 1,
+            "target": "myth"
+           }
+          ]
+         },
+         {
+          "line": "L2",
+          "gap": 0.4,
+          "scene": "s2",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.6,
+            "target": "mag"
+           },
+           {
+            "at": 0.5,
+            "do": "show",
+            "dur": 0.8,
+            "target": [
+             "iron",
+             "nickel",
+             "cobalt"
+            ]
+           },
+           {
+            "at": 1.2,
+            "do": "flow",
+            "dur": 1,
+            "target": [
+             "pull1",
+             "pull2",
+             "pull3"
+            ],
+            "to": 1
+           }
+          ]
+         },
+         {
+          "line": "L3",
+          "gap": 0.4,
+          "scene": "s3",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.7,
+            "target": [
+             "foil",
+             "wire"
+            ]
+           },
+           {
+            "at": 0.5,
+            "do": "show",
+            "dur": 0.6,
+            "target": "no"
+           },
+           {
+            "at": 1.1,
+            "do": "highlight",
+            "dur": 0.8,
+            "target": "foil"
+           }
+          ]
+         },
+         {
+          "line": "L4",
+          "gap": 0.5,
+          "scene": "s1",
+          "cues": [
+           {
+            "at": 0,
+            "do": "bust",
+            "dur": 1.2,
+            "target": "myth"
+           }
+          ]
+         },
+         {
+          "line": "L5",
+          "gap": 0.4,
+          "scene": "s3",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.7,
+            "target": [
+             "nail",
+             "clip"
+            ]
+           },
+           {
+            "at": 0.8,
+            "do": "highlight",
+            "dur": 0.8,
+            "target": "nail"
+           },
+           {
+            "at": 1.6,
+            "do": "highlight",
+            "dur": 0.8,
+            "target": "foil"
+           }
+          ]
+         },
+         {
+          "line": "L6",
+          "gap": 0.4,
+          "scene": "s3",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.6,
+            "target": [
+             "yes",
+             "no"
+            ]
+           },
+           {
+            "at": 0.6,
+            "do": "move",
+            "dur": 1,
+            "target": [
+             "nail",
+             "clip"
+            ],
+            "x": 500,
+            "y": 330
+           },
+           {
+            "at": 1.7,
+            "do": "move",
+            "dur": 1,
+            "target": [
+             "foil",
+             "wire"
+            ],
+            "x": 500,
+            "y": 330
+           }
+          ]
+         },
+         {
+          "line": "L7",
+          "gap": 0.4,
+          "scene": "s4",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.6,
+            "target": "mag2"
+           },
+           {
+            "at": 0.5,
+            "do": "show",
+            "dur": 0.8,
+            "target": [
+             "paper",
+             "glass",
+             "water"
+            ]
+           },
+           {
+            "at": 1.2,
+            "do": "flow",
+            "dur": 1,
+            "target": [
+             "force",
+             "force2",
+             "force3"
+            ],
+            "to": 1
+           }
+          ]
+         },
+         {
+          "line": "L8",
+          "gap": 0,
+          "scene": "s5",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.8,
+            "target": [
+             "spoon1",
+             "spoon2",
+             "different"
+            ]
+           },
+           {
+            "at": 1,
+            "do": "highlight",
+            "dur": 0.8,
+            "target": "different"
+           },
+           {
+            "at": "end",
+            "do": "interactive",
+            "dur": 0
+           }
+          ]
+         }
+        ],
+        "task": {
+         "kind": "tap",
+         "prompt": "Which material belongs in the magnetic-materials tray?",
+         "options": [
+          "ironopt",
+          "alumopt",
+          "copperopt"
+         ],
+         "answer": "ironopt"
+        }
+       },
+       "boardTwin": {
+        "scriptRef": "board:c6-science-ch04-t01-s1|explain|-|-",
+        "values": {
+         "title": "Cinematic explainer",
+         "need": "explain"
+        },
+        "board": {
+         "title": "Cinematic explainer",
+         "lines": [
+          "magnet",
+          "aluminium",
+          "iron",
+          "metal"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": {
+    "reveal": "e03c5a0b-3322-4c90-a716-2e34829ea6ca:c1"
+   },
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "request"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "teach",
+    "ms": 2114,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 70
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 71
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 503
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 582
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 584
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 584
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1370
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1987
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2114
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "filler",
+   "lessonId": "e03c5a0b-3322-4c90-a716-2e34829ea6ca",
+   "childText": "achha",
+   "ms": 2766,
+   "error": null,
+   "teacherReply": "Theek hai, Ishaan. Aaj ka main point: magnet se attract hone wale materials magnetic, baaki non-magnetic. Khaali jagah bhariye: Group them into ___ and non-magnetic",
+   "move": {
+    "kind": "practice",
+    "shape": "the earlier steps in LESSON NOW, said briefly as done; then the step with the gap is theirs: pose it as written; wait; never fill the gap for them; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "fade:3",
+    "skillId": "c6-science-ch04-t01-s1",
+    "hintLevel": 0,
+    "probe": "P15",
+    "format": "F2"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "Sort these kitchen things with a magnet: a cold iron tawa, aluminium foil, a… · Group them into ___ and non-magnetic"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Khaali jagah bhariye: Group them into ___ and non-magnetic",
+     "itemId": "fade:3"
+    },
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Magnetic materials",
+    "beat": {
+     "beatId": "b6-practice_set",
+     "type": "practice_set",
+     "index": 6
+    },
+    "studioSlot": {
+     "slotId": "e03c5a0b-3322-4c90-a716-2e34829ea6ca:c1:slot",
+     "intentId": "e03c5a0b-3322-4c90-a716-2e34829ea6ca:c1",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "scene-explainer@1",
+       "spec": {
+        "archetype": "scene-explainer@1",
+        "skills": [
+         "c6-science-ch04-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "again": "Show again",
+         "yourTurn": "Your turn",
+         "check": "Check",
+         "right": "Got it",
+         "look": "Look again",
+         "myth": "MYTH",
+         "busted": "NOT TRUE",
+         "order": "Tap them in order"
+        },
+        "title": "What sticks to a magnet?",
+        "accent": "sci",
+        "targets": "c6-science-ch04-t01-m1",
+        "scenes": [
+         {
+          "id": "s1",
+          "layout": "split",
+          "els": [
+           {
+            "id": "title",
+            "type": "title",
+            "text": "What sticks to a magnet?"
+           },
+           {
+            "id": "myth",
+            "type": "myth",
+            "text": "All metals stick to magnets"
+           }
+          ]
+         },
+         {
+          "id": "s2",
+          "layout": "row",
+          "els": [
+           {
+            "id": "mag",
+            "type": "node",
+            "text": "Magnet",
+            "glyph": "magnet",
+            "color": "sci"
+           },
+           {
+            "id": "iron",
+            "type": "node",
+            "text": "Iron",
+            "glyph": "pick",
+            "color": "amber"
+           },
+           {
+            "id": "nickel",
+            "type": "node",
+            "text": "Nickel",
+            "glyph": "coin",
+            "color": "mint"
+           },
+           {
+            "id": "cobalt",
+            "type": "node",
+            "text": "Cobalt",
+            "glyph": "atom",
+            "color": "ion"
+           },
+           {
+            "id": "pull1",
+            "type": "arrow",
+            "from": "mag",
+            "to": "iron",
+            "text": "attracts"
+           },
+           {
+            "id": "pull2",
+            "type": "arrow",
+            "from": "mag",
+            "to": "nickel",
+            "text": "attracts"
+           },
+           {
+            "id": "pull3",
+            "type": "arrow",
+            "from": "mag",
+            "to": "cobalt",
+            "text": "attracts"
+           }
+          ]
+         },
+         {
+          "id": "s3",
+          "layout": "grid",
+          "els": [
+           {
+            "id": "test",
+            "type": "title",
+            "text": "Test, then sort"
+           },
+           {
+            "id": "nail",
+            "type": "node",
+            "text": "Iron nail",
+            "glyph": "pick",
+            "color": "amber"
+           },
+           {
+            "id": "foil",
+            "type": "node",
+            "text": "Aluminium foil",
+            "glyph": "scroll",
+            "color": "mint"
+           },
+           {
+            "id": "wire",
+            "type": "node",
+            "text": "Copper wire",
+            "glyph": "wave",
+            "color": "volt"
+           },
+           {
+            "id": "clip",
+            "type": "node",
+            "text": "Steel clip",
+            "color": "sci"
+           },
+           {
+            "id": "yes",
+            "type": "label",
+            "text": "Attracted",
+            "color": "amber"
+           },
+           {
+            "id": "no",
+            "type": "label",
+            "text": "Not attracted",
+            "color": "mint"
+           }
+          ]
+         },
+         {
+          "id": "s4",
+          "layout": "cycle",
+          "els": [
+           {
+            "id": "mag2",
+            "type": "node",
+            "text": "Magnet",
+            "glyph": "magnet",
+            "color": "sci"
+           },
+           {
+            "id": "paper",
+            "type": "node",
+            "text": "Paper",
+            "glyph": "scroll",
+            "color": "mint"
+           },
+           {
+            "id": "glass",
+            "type": "node",
+            "text": "Glass",
+            "glyph": "beaker",
+            "color": "ion"
+           },
+           {
+            "id": "water",
+            "type": "node",
+            "text": "Water",
+            "glyph": "drop",
+            "color": "volt"
+           },
+           {
+            "id": "force",
+            "type": "arrow",
+            "from": "mag2",
+            "to": "paper",
+            "text": "force through"
+           },
+           {
+            "id": "force2",
+            "type": "arrow",
+            "from": "paper",
+            "to": "glass",
+            "text": "through"
+           },
+           {
+            "id": "force3",
+            "type": "arrow",
+            "from": "glass",
+            "to": "water",
+            "text": "through"
+           }
+          ]
+         },
+         {
+          "id": "s5",
+          "layout": "split",
+          "els": [
+           {
+            "id": "shiny",
+            "type": "title",
+            "text": "Shiny is not enough"
+           },
+           {
+            "id": "spoon1",
+            "type": "node",
+            "text": "Steel spoon A",
+            "glyph": "plate",
+            "color": "sci"
+           },
+           {
+            "id": "spoon2",
+            "type": "node",
+            "text": "Steel spoon B",
+            "glyph": "plate",
+            "color": "mint"
+           },
+           {
+            "id": "different",
+            "type": "label",
+            "text": "Test each one",
+            "color": "amber"
+           },
+           {
+            "id": "sortmag",
+            "type": "label",
+            "text": "Magnetic tray",
+            "color": "amber"
+           },
+           {
+            "id": "sortnon",
+            "type": "label",
+            "text": "Non-magnetic tray",
+            "color": "mint"
+           },
+           {
+            "id": "ironopt",
+            "type": "label",
+            "text": "Iron",
+            "color": "amber"
+           },
+           {
+            "id": "alumopt",
+            "type": "label",
+            "text": "Aluminium",
+            "color": "mint"
+           },
+           {
+            "id": "copperopt",
+            "type": "label",
+            "text": "Copper",
+            "color": "mint"
+           }
+          ]
+         }
+        ],
+        "text": {
+         "L1": "A magnet does not attract every metal. We must test each material.",
+         "L2": "Magnets attract iron, nickel, cobalt, and steels that contain iron.",
+         "L3": "Aluminium, copper and brass are metals, but they are not attracted. Plastic, wood, paper, rubber and glass are not attracted either.",
+         "L4": "So a shiny or metal-looking object is not automatically magnetic.",
+         "L5": "In our example, test the iron tawa, foil, steel spoon and plastic lid one at a time.",
+         "L6": "Record each result, then group the objects as attracted or not attracted.",
+         "L7": "A magnet can act through paper, cloth, glass and water. It can even pull a paper clip through a glass of water.",
+         "L8": "Two steel spoons can behave differently, so testing is the reliable way to sort materials."
+        },
+        "narration": {
+         "L1": {
+          "text": "A magnet does not attract every metal. We must test each material.",
+          "dur": 6,
+          "lead": 0,
+          "tail": 0,
+          "pauses": []
+         },
+         "L2": {
+          "text": "Magnets attract iron, nickel, cobalt, and steels that contain iron.",
+          "dur": 6,
+          "lead": 0,
+          "tail": 0,
+          "pauses": []
+         },
+         "L3": {
+          "text": "Aluminium, copper and brass are metals, but they are not attracted. Plastic, wood, paper, rubber and glass are not attracted either.",
+          "dur": 9,
+          "lead": 0,
+          "tail": 0,
+          "pauses": []
+         },
+         "L4": {
+          "text": "So a shiny or metal-looking object is not automatically magnetic.",
+          "dur": 5,
+          "lead": 0,
+          "tail": 0,
+          "pauses": []
+         },
+         "L5": {
+          "text": "In our example, test the iron tawa, foil, steel spoon and plastic lid one at a time.",
+          "dur": 7,
+          "lead": 0,
+          "tail": 0,
+          "pauses": []
+         },
+         "L6": {
+          "text": "Record each result, then group the objects as attracted or not attracted.",
+          "dur": 6,
+          "lead": 0,
+          "tail": 0,
+          "pauses": []
+         },
+         "L7": {
+          "text": "A magnet can act through paper, cloth, glass and water. It can even pull a paper clip through a glass of water.",
+          "dur": 8,
+          "lead": 0,
+          "tail": 0,
+          "pauses": []
+         },
+         "L8": {
+          "text": "Two steel spoons can behave differently, so testing is the reliable way to sort materials.",
+          "dur": 6,
+          "lead": 0,
+          "tail": 0,
+          "pauses": []
+         }
+        },
+        "beats": [
+         {
+          "line": "L1",
+          "gap": 0.4,
+          "scene": "s1",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 1,
+            "target": "title"
+           },
+           {
+            "at": 0.8,
+            "do": "show",
+            "dur": 1,
+            "target": "myth"
+           }
+          ]
+         },
+         {
+          "line": "L2",
+          "gap": 0.4,
+          "scene": "s2",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.6,
+            "target": "mag"
+           },
+           {
+            "at": 0.5,
+            "do": "show",
+            "dur": 0.8,
+            "target": [
+             "iron",
+             "nickel",
+             "cobalt"
+            ]
+           },
+           {
+            "at": 1.2,
+            "do": "flow",
+            "dur": 1,
+            "target": [
+             "pull1",
+             "pull2",
+             "pull3"
+            ],
+            "to": 1
+           }
+          ]
+         },
+         {
+          "line": "L3",
+          "gap": 0.4,
+          "scene": "s3",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.7,
+            "target": [
+             "foil",
+             "wire"
+            ]
+           },
+           {
+            "at": 0.5,
+            "do": "show",
+            "dur": 0.6,
+            "target": "no"
+           },
+           {
+            "at": 1.1,
+            "do": "highlight",
+            "dur": 0.8,
+            "target": "foil"
+           }
+          ]
+         },
+         {
+          "line": "L4",
+          "gap": 0.5,
+          "scene": "s1",
+          "cues": [
+           {
+            "at": 0,
+            "do": "bust",
+            "dur": 1.2,
+            "target": "myth"
+           }
+          ]
+         },
+         {
+          "line": "L5",
+          "gap": 0.4,
+          "scene": "s3",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.7,
+            "target": [
+             "nail",
+             "clip"
+            ]
+           },
+           {
+            "at": 0.8,
+            "do": "highlight",
+            "dur": 0.8,
+            "target": "nail"
+           },
+           {
+            "at": 1.6,
+            "do": "highlight",
+            "dur": 0.8,
+            "target": "foil"
+           }
+          ]
+         },
+         {
+          "line": "L6",
+          "gap": 0.4,
+          "scene": "s3",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.6,
+            "target": [
+             "yes",
+             "no"
+            ]
+           },
+           {
+            "at": 0.6,
+            "do": "move",
+            "dur": 1,
+            "target": [
+             "nail",
+             "clip"
+            ],
+            "x": 500,
+            "y": 330
+           },
+           {
+            "at": 1.7,
+            "do": "move",
+            "dur": 1,
+            "target": [
+             "foil",
+             "wire"
+            ],
+            "x": 500,
+            "y": 330
+           }
+          ]
+         },
+         {
+          "line": "L7",
+          "gap": 0.4,
+          "scene": "s4",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.6,
+            "target": "mag2"
+           },
+           {
+            "at": 0.5,
+            "do": "show",
+            "dur": 0.8,
+            "target": [
+             "paper",
+             "glass",
+             "water"
+            ]
+           },
+           {
+            "at": 1.2,
+            "do": "flow",
+            "dur": 1,
+            "target": [
+             "force",
+             "force2",
+             "force3"
+            ],
+            "to": 1
+           }
+          ]
+         },
+         {
+          "line": "L8",
+          "gap": 0,
+          "scene": "s5",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.8,
+            "target": [
+             "spoon1",
+             "spoon2",
+             "different"
+            ]
+           },
+           {
+            "at": 1,
+            "do": "highlight",
+            "dur": 0.8,
+            "target": "different"
+           },
+           {
+            "at": "end",
+            "do": "interactive",
+            "dur": 0
+           }
+          ]
+         }
+        ],
+        "task": {
+         "kind": "tap",
+         "prompt": "Which material belongs in the magnetic-materials tray?",
+         "options": [
+          "ironopt",
+          "alumopt",
+          "copperopt"
+         ],
+         "answer": "ironopt"
+        }
+       },
+       "boardTwin": {
+        "scriptRef": "board:c6-science-ch04-t01-s1|explain|-|-",
+        "values": {
+         "title": "Cinematic explainer",
+         "need": "explain"
+        },
+        "board": {
+         "title": "Cinematic explainer",
+         "lines": [
+          "magnet",
+          "aluminium",
+          "iron",
+          "metal"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "drift",
+      "flat",
+      "ask"
+     ],
+     "rewritten": false,
+     "replaced": false,
+     "firstDraft": "Theek hai, Ishaan. Aaj ka main point: magnet se attract hone wale materials magnetic, baaki non-magnetic.:",
+     "repaired": true,
+     "tidied": true
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 340,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2748,
+    "item": "fade:3",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 79
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 80
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 802
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 885
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1142
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1225
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1240
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1240
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1413
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2662
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2748
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "e03c5a0b-3322-4c90-a716-2e34829ea6ca",
+   "childText": "haan theek hai",
+   "ms": 3196,
+   "error": null,
+   "teacherReply": "Ishaan, pehle objects ko magnet ke paas laakar dekhiye aur attracted ya not attracted record kijiye. Fir observations ke basis par do groups banaiye. Khaali jagah bhariye: Group them into ___ and non-magnetic",
+   "move": {
+    "kind": "repair",
+    "shape": "you did not catch it clearly: ask them to say it once more; no verdict on their reply: neither praise nor 'wrong'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "fade:3",
+    "skillId": "c6-science-ch04-t01-s1",
+    "hintLevel": 0
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Khaali jagah bhariye: Group them into ___ and non-magnetic"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Khaali jagah bhariye: Group them into ___ and non-magnetic",
+     "itemId": "fade:3"
+    },
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Magnetic materials",
+    "beat": {
+     "beatId": "b6-practice_set",
+     "type": "practice_set",
+     "index": 6
+    },
+    "studioSlot": {
+     "slotId": "e03c5a0b-3322-4c90-a716-2e34829ea6ca:c4:slot",
+     "intentId": "e03c5a0b-3322-4c90-a716-2e34829ea6ca:c4",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "sort-storm@1",
+       "spec": {
+        "archetype": "sort-storm@1",
+        "skills": [
+         "c6-science-ch04-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "round": "Round",
+         "sorted": "sorted",
+         "tests": "tests",
+         "coach": "Test it, then drag it into a bin",
+         "runDone": "Belt cleared",
+         "missed": "missed",
+         "why": "because",
+         "yes": "yes",
+         "no": "no",
+         "magnetic": "magnetic",
+         "light": "light",
+         "floats": "floats",
+         "conducts": "conducts",
+         "burns": "burns",
+         "starch": "starch",
+         "tMagnet": "Magnet",
+         "tTorch": "Torch",
+         "tTank": "Water",
+         "tTester": "Circuit",
+         "tFlame": "Flame",
+         "tIodine": "Iodine",
+         "tPaper": "Paper",
+         "tBiuret": "Copper test",
+         "tTurmeric": "Turmeric",
+         "tLitmus": "Litmus",
+         "tRose": "China rose",
+         "fat": "fat",
+         "protein": "protein",
+         "acidity": "acidity",
+         "acid": "acid",
+         "base": "base",
+         "neutral": "neutral"
+        },
+        "title": "Magnet sorting challenge",
+        "rounds": [
+         {
+          "title": "Try the magnet",
+          "sub": "Test each object before sorting",
+          "byProp": "magnetic",
+          "bins": [
+           {
+            "id": "yes",
+            "label": "Attracted",
+            "glyph": "magnet"
+           },
+           {
+            "id": "no",
+            "label": "Not attracted"
+           }
+          ],
+          "tools": [
+           "magnet"
+          ],
+          "items": [
+           {
+            "id": "iron-nail",
+            "text": "Iron nail",
+            "glyph": "pen",
+            "bin": "yes",
+            "props": {
+             "magnetic": "yes"
+            },
+            "src": "c6-science-ch04-t01-i10"
+           },
+           {
+            "id": "plastic-scale",
+            "text": "Plastic scale",
+            "glyph": "ruler",
+            "bin": "no",
+            "props": {
+             "magnetic": "no"
+            },
+            "src": "c6-science-ch04-t01-i10"
+           },
+           {
+            "id": "steel-clip",
+            "text": "Steel paper clip",
+            "bin": "yes",
+            "props": {
+             "magnetic": "yes"
+            },
+            "src": "c6-science-ch04-t01-i10"
+           },
+           {
+            "id": "copper-wire",
+            "text": "Copper wire",
+            "glyph": "lightning",
+            "bin": "no",
+            "props": {
+             "magnetic": "no"
+            },
+            "src": "c6-science-ch04-t01-i10"
+           },
+           {
+            "id": "rubber-eraser",
+            "text": "Rubber eraser",
+            "glyph": "shield",
+            "bin": "no",
+            "props": {
+             "magnetic": "no"
+            },
+            "src": "c6-science-ch04-t01-i10"
+           },
+           {
+            "id": "nickel-strip",
+            "text": "Nickel strip",
+            "bin": "yes",
+            "props": {
+             "magnetic": "yes"
+            },
+            "src": "c6-science-ch04-t01-i10"
+           }
+          ],
+          "speed": 0.85,
+          "targets": "c6-science-ch04-t01-m1"
+         },
+         {
+          "title": "Test through barriers",
+          "sub": "Can the force pass through?",
+          "byProp": "magnetic",
+          "bins": [
+           {
+            "id": "yes",
+            "label": "Attracted",
+            "glyph": "magnet"
+           },
+           {
+            "id": "no",
+            "label": "Not attracted",
+            "glyph": "cloud"
+           }
+          ],
+          "tools": [
+           "magnet"
+          ],
+          "items": [
+           {
+            "id": "glass-clip",
+            "text": "Glass clip",
+            "glyph": "beaker",
+            "bin": "yes",
+            "props": {
+             "magnetic": "yes"
+            },
+            "src": "c6-science-ch04-t01-i05"
+           },
+           {
+            "id": "water-clip",
+            "text": "Water clip",
+            "glyph": "drop",
+            "bin": "yes",
+            "props": {
+             "magnetic": "yes"
+            },
+            "src": "c6-science-ch04-t01-i05"
+           },
+           {
+            "id": "paper-foil",
+            "text": "Paper foil",
+            "glyph": "scroll",
+            "bin": "no",
+            "props": {
+             "magnetic": "no"
+            },
+            "src": "c6-science-ch04-t01-i03"
+           },
+           {
+            "id": "water-wire",
+            "text": "Water wire",
+            "glyph": "drop",
+            "bin": "no",
+            "props": {
+             "magnetic": "no"
+            },
+            "src": "c6-science-ch04-t01-i03"
+           },
+           {
+            "id": "brass-key",
+            "text": "Brass key",
+            "bin": "no",
+            "props": {
+             "magnetic": "no"
+            },
+            "src": "c6-science-ch04-t01-i04"
+           },
+           {
+            "id": "iron-pin",
+            "text": "Iron pin",
+            "bin": "yes",
+            "props": {
+             "magnetic": "yes"
+            },
+            "src": "c6-science-ch04-t01-i01"
+           }
+          ],
+          "speed": 0.7,
+          "targets": "c6-science-ch04-t01-m2"
+         }
+        ]
+       },
+       "boardTwin": {
+        "scriptRef": "board:c6-science-ch04-t01-s1|practice|-|-",
+        "values": {
+         "title": "Test Bench Sort",
+         "need": "practice"
+        },
+        "board": {
+         "title": "Test Bench Sort",
+         "lines": [
+          "magnet",
+          "aluminium",
+          "iron",
+          "metal"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": {
+    "reveal": "e03c5a0b-3322-4c90-a716-2e34829ea6ca:c4"
+   },
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 585,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 3193,
+    "item": "fade:3",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 84
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 84
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 833
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 942
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1428
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1527
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1538
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1538
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1513
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3056
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3184
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "e03c5a0b-3322-4c90-a716-2e34829ea6ca",
+   "childText": "ok samajh gaya",
+   "ms": 1743,
+   "error": null,
+   "teacherReply": "Aapne observation ko attracted ya not attracted record karna samjha. Ab har object ko magnet ke paas laakar dhyaan se dekhiye. Khaali jagah bhariye: Group them into ___ and non-magnetic",
+   "move": {
+    "kind": "repair",
+    "shape": "no verdict on their reply; the choices are now on screen; the same question again, as written; tell them they can pick one of the choices on screen; do not read the choices with any lean toward one; no verdict on their reply: neither praise nor 'wrong'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "fade:3",
+    "skillId": "c6-science-ch04-t01-s1",
+    "hintLevel": 0
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Khaali jagah bhariye: Group them into ___ and non-magnetic"
+    },
+    "chips": [
+     {
+      "id": "pick:0",
+      "label": "P and R"
+     },
+     {
+      "id": "pick:1",
+      "label": "magnetic"
+     },
+     {
+      "id": "pick:2",
+      "label": "iron"
+     }
+    ],
+    "phase": "practice",
+    "handover": "choice",
+    "ask": {
+     "text": "Khaali jagah bhariye: Group them into ___ and non-magnetic",
+     "itemId": "fade:3"
+    },
+    "answerForm": "choice",
+    "tray": "tiles",
+    "shortTitle": "Magnetic materials",
+    "beat": {
+     "beatId": "b6-practice_set",
+     "type": "practice_set",
+     "index": 6
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 503,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 1733,
+    "item": "fade:3",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 74
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 74
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 809
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 896
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1313
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1398
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1403
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1403
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1496
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1670
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1732
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "e03c5a0b-3322-4c90-a716-2e34829ea6ca",
+   "childText": "achha",
+   "ms": 1622,
+   "error": null,
+   "teacherReply": "Ishaan, magnet sirf kuch metals ko attract karta hai; isliye metals ko magnetic ya non-magnetic groups mein sort karte hain. Aap blank mein kya likhenge?",
+   "move": {
+    "kind": "explain",
+    "shape": "leave this one for later, no verdict and no answer given; the next question; one idea only: Explain that only some metals are magnetic and use magnets to sort or separate; an example from their interest (music) if it fits naturally; objects first, then the symbol; point at the screen only at what the on-screen row lists; never a drawing made of characters; end with one small question that makes them USE the idea — never 'samjha?'; no verdict on their reply: neither praise nor 'wrong'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "skillId": "c6-science-ch04-t01-s3",
+    "format": "F3"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "practice",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "Magnetic materials",
+    "beat": {
+     "beatId": "b7-explain",
+     "type": "explain",
+     "index": 7
+    },
+    "ask": {
+     "text": "Aap blank mein kya likhenge?"
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "mount",
+     "moduleId": "m8",
+     "engine": "explainer@1",
+     "params": {
+      "script": {
+       "v": 1,
+       "scriptId": "ex-1crjf1r",
+       "line": {
+        "lessonId": "e03c5a0b-3322-4c90-a716-2e34829ea6ca"
+       },
+       "anchor": "line_audio_start",
+       "board": {
+        "w": 400,
+        "h": 300,
+        "ground": "chalk"
+       },
+       "mode": "fresh",
+       "durationMs": 8020,
+       "ops": [
+        {
+         "id": "h0",
+         "op": "text",
+         "startMs": 150,
+         "endMs": 650,
+         "ink": "accent",
+         "at": [
+          107.5,
+          36
+         ],
+         "text": "Magnetic",
+         "size": "s"
+        },
+        {
+         "id": "o1",
+         "op": "line",
+         "startMs": 690,
+         "endMs": 990,
+         "ink": "accent",
+         "weight": 1,
+         "from": [
+          28,
+          62
+         ],
+         "to": [
+          187,
+          62
+         ]
+        },
+        {
+         "id": "h1",
+         "op": "text",
+         "startMs": 1140,
+         "endMs": 1640,
+         "ink": "accent",
+         "at": [
+          297.5,
+          36
+         ],
+         "text": "Non-magnetic",
+         "size": "s"
+        },
+        {
+         "id": "o2",
+         "op": "line",
+         "startMs": 1680,
+         "endMs": 1980,
+         "ink": "accent",
+         "weight": 1,
+         "from": [
+          218,
+          62
+         ],
+         "to": [
+          377,
+          62
+         ]
+        },
+        {
+         "id": "o3",
+         "op": "line",
+         "startMs": 2160,
+         "endMs": 2660,
+         "ink": "soft",
+         "weight": 1,
+         "from": [
+          200,
+          30
+         ],
+         "to": [
+          200,
+          280
+         ]
+        },
+        {
+         "id": "c00",
+         "op": "text",
+         "startMs": 2880,
+         "endMs": 3360,
+         "at": [
+          107.5,
+          100
+         ],
+         "text": "iron",
+         "size": "m"
+        },
+        {
+         "id": "c10",
+         "op": "text",
+         "startMs": 3420,
+         "endMs": 3900,
+         "at": [
+          297.5,
+          100
+         ],
+         "text": "aluminium",
+         "size": "m"
+        },
+        {
+         "id": "c01",
+         "op": "text",
+         "startMs": 4120,
+         "endMs": 4600,
+         "at": [
+          107.5,
+          152
+         ],
+         "text": "nickel",
+         "size": "m"
+        },
+        {
+         "id": "c11",
+         "op": "text",
+         "startMs": 4660,
+         "endMs": 5140,
+         "at": [
+          297.5,
+          152
+         ],
+         "text": "copper",
+         "size": "m"
+        },
+        {
+         "id": "c02",
+         "op": "text",
+         "startMs": 5360,
+         "endMs": 5840,
+         "at": [
+          107.5,
+          204
+         ],
+         "text": "cobalt",
+         "size": "m"
+        },
+        {
+         "id": "c12",
+         "op": "text",
+         "startMs": 5900,
+         "endMs": 6380,
+         "at": [
+          297.5,
+          204
+         ],
+         "text": "brass",
+         "size": "m"
+        },
+        {
+         "id": "c03",
+         "op": "text",
+         "startMs": 6600,
+         "endMs": 7080,
+         "at": [
+          107.5,
+          256
+         ],
+         "text": "steel",
+         "size": "m"
+        },
+        {
+         "id": "c13",
+         "op": "text",
+         "startMs": 7140,
+         "endMs": 7620,
+         "at": [
+          297.5,
+          256
+         ],
+         "text": "plastic",
+         "size": "m"
+        }
+       ],
+       "facts": {
+        "kind": "diagram",
+        "archetype": "compare@1",
+        "onScreen": {
+         "left": "Magnetic",
+         "right": "Non-magnetic",
+         "rows": 4,
+         "left1": "iron",
+         "left2": "nickel",
+         "left3": "cobalt",
+         "left4": "steel",
+         "right1": "aluminium",
+         "right2": "copper",
+         "right3": "brass",
+         "right4": "plastic"
+        }
+       }
+      },
+      "template": "compare@1",
+      "mode": "play"
+     }
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 89,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 1617,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 56
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 57
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 1052
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 1129
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1142
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1218
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1229
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1229
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1361
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1542
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1617
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "e03c5a0b-3322-4c90-a716-2e34829ea6ca",
+   "childText": "ok samajh gaya",
+   "ms": 1553,
+   "error": null,
+   "teacherReply": "A copper wire ya an iron nail ya an aluminium pan. Inme se kaunsi cheez magnet se chipkegi?",
+   "move": {
+    "kind": "probe",
+    "shape": "pose the question as written, in their language; then wait; read its choices plainly; no lean in your voice toward any of them; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "diag:c6-science-ch04-t01-m1",
+    "skillId": "c6-science-ch04-t01-s3",
+    "hintLevel": 0,
+    "probe": "P7"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Inme se kaunsi cheez magnet se chipkegi?"
+    },
+    "chips": [
+     {
+      "id": "opt:0",
+      "label": "A copper wire"
+     },
+     {
+      "id": "opt:1",
+      "label": "An iron nail"
+     },
+     {
+      "id": "opt:2",
+      "label": "An aluminium pan"
+     }
+    ],
+    "phase": "practice",
+    "handover": "choice",
+    "ask": {
+     "text": "Inme se kaunsi cheez magnet se chipkegi?",
+     "itemId": "diag:c6-science-ch04-t01-m1"
+    },
+    "answerForm": "choice",
+    "tray": "tiles",
+    "shortTitle": "Magnetic materials",
+    "beat": {
+     "beatId": "b8-probe",
+     "type": "probe",
+     "index": 8
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "unmount",
+     "moduleId": "m8"
+    },
+    {
+     "op": "mount",
+     "moduleId": "g1-3e43e406",
+     "engine": "scene@1",
+     "params": {
+      "scene": {
+       "dsl": "scene@1",
+       "meta": {
+        "band": "B3",
+        "lang": "hi-Latn+en",
+        "title": {
+         "en": "Backstage puzzle",
+         "hi": "मंच के पीछे की पहेली",
+         "hi_latn": "Backstage paheli"
+        },
+        "objective_ids": [
+         "c6-science-ch04-t01-s3"
+        ],
+        "topic_ids": [
+         "c6-science-ch04-t01"
+        ],
+        "template": "choice-card@1"
+       },
+       "stage": {
+        "aspect": "3:4",
+        "bg": "bg"
+       },
+       "vars": [
+        {
+         "id": "pick",
+         "type": "enum",
+         "init": "none",
+         "options": [
+          "none",
+          "o1",
+          "o2",
+          "o3"
+         ],
+         "tl": "child's pick"
+        }
+       ],
+       "derive": [],
+       "nodes": [
+        {
+         "kind": "text",
+         "id": "title",
+         "x": 420,
+         "y": 89,
+         "text": {
+          "en": "Backstage puzzle",
+          "hi": "मंच के पीछे की पहेली",
+          "hi_latn": "Backstage paheli"
+         },
+         "size": "title",
+         "w": 760,
+         "align": "middle"
+        },
+        {
+         "kind": "sprite",
+         "id": "decor",
+         "x": 900,
+         "y": 75,
+         "lib": "sky.star",
+         "w": 110,
+         "h": 110,
+         "role": "context"
+        },
+        {
+         "kind": "text",
+         "id": "question",
+         "x": 500,
+         "y": 270,
+         "text": {
+          "en": "Which of these will stick to a magnet?",
+          "hi": "Inme se kaunsi cheez magnet se chipkegi?",
+          "hi_latn": "Inme se kaunsi cheez magnet se chipkegi?"
+         },
+         "size": "caption",
+         "w": 900,
+         "align": "middle"
+        },
+        {
+         "kind": "choice",
+         "id": "ch",
+         "x": 500,
+         "y": 946.3333333333333,
+         "var": "pick",
+         "options": [
+          {
+           "id": "o1",
+           "label": {
+            "en": "A copper wire",
+            "hi": "A copper wire",
+            "hi_latn": "A copper wire"
+           },
+           "misc": "MC.C6_SCIENCE_CH04_T01_M1"
+          },
+          {
+           "id": "o2",
+           "label": {
+            "en": "An iron nail",
+            "hi": "An iron nail",
+            "hi_latn": "An iron nail"
+           }
+          },
+          {
+           "id": "o3",
+           "label": {
+            "en": "An aluminium pan",
+            "hi": "An aluminium pan",
+            "hi_latn": "An aluminium pan"
+           },
+           "misc": "MC.C6_SCIENCE_CH04_T01_M1"
+          }
+         ],
+         "layout": "column",
+         "commit": true
+        }
+       ],
+       "timelines": [],
+       "goals": [],
+       "probe": {
+        "id": "p_pick",
+        "kind": "diagnose",
+        "ask": {
+         "en": "Which of these will stick to a magnet?",
+         "hi": "Inme se kaunsi cheez magnet se chipkegi?",
+         "hi_latn": "Inme se kaunsi cheez magnet se chipkegi?"
+        },
+        "commit": {
+         "via": "choice",
+         "node": "ch"
+        },
+        "correct": "pick == 'o2'",
+        "traps": [
+         {
+          "when": "pick == 'o1'",
+          "misc": "MC.C6_SCIENCE_CH04_T01_M1"
+         },
+         {
+          "when": "pick == 'o3'",
+          "misc": "MC.C6_SCIENCE_CH04_T01_M1"
+         }
+        ]
+       },
+       "feedback": "on_commit"
+      }
+     },
+     "goal": "g1:diag:c6-science-ch04-t01-m1"
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "ask"
+     ],
+     "rewritten": false,
+     "replaced": false,
+     "firstDraft": "Ishaan, chaliye is question par dhyaan dein: Inme se kaunsi cheez magnet se chipkegi? A copper wire ya an iron nail ya an aluminium pan.",
+     "repaired": true
+    },
+    "verdict": "attempt",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 396,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 1545,
+    "item": "diag:c6-science-ch04-t01-m1",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 92
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 93
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 787
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 892
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1184
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1288
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1290
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1290
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1294
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1476
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1545
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:joke-03",
+   "lessonId": "e03c5a0b-3322-4c90-a716-2e34829ea6ca",
+   "childText": "magnet se main apne bhai ko fridge pe chipka dunga haha",
+   "ms": 3008,
+   "error": null,
+   "teacherReply": "Haha, bhai ko fridge par nahi—sirf suitable objects ko test kijiye. Inme se kaunsi cheez magnet se chipkegi?",
+   "move": {
+    "kind": "probe",
+    "shape": "two parts — first: they joked: one playful line back of your own, not a stock laugh; then back to the work; second: the question on the card, as written, in their language; then wait; read its choices plainly; no lean in your voice toward any of them; no verdict on their reply: neither praise nor 'wrong'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "diag:c6-science-ch04-t01-m1",
+    "skillId": "c6-science-ch04-t01-s3",
+    "hintLevel": 0,
+    "probe": "P7",
+    "request": "uptake",
+    "lead": "they joked: one playful line back of your own, not a stock laugh; then back to the work"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Inme se kaunsi cheez magnet se chipkegi?"
+    },
+    "chips": [
+     {
+      "id": "opt:0",
+      "label": "A copper wire"
+     },
+     {
+      "id": "opt:1",
+      "label": "An iron nail"
+     },
+     {
+      "id": "opt:2",
+      "label": "An aluminium pan"
+     }
+    ],
+    "phase": "practice",
+    "handover": "choice",
+    "ask": {
+     "text": "Inme se kaunsi cheez magnet se chipkegi?",
+     "itemId": "diag:c6-science-ch04-t01-m1"
+    },
+    "answerForm": "choice",
+    "tray": "tiles",
+    "shortTitle": "Magnetic materials",
+    "beat": {
+     "beatId": "b8-probe",
+     "type": "probe",
+     "index": 8
+    },
+    "teacherAffect": {
+     "display": "playful",
+     "intensity": 1
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "joke",
+     "waitedMs": 532,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 3005,
+    "item": "diag:c6-science-ch04-t01-m1",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 72
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 73
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 787
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 889
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1325
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1421
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1433
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1435
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1493
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2944
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3005
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "recovery",
+   "lessonId": "e03c5a0b-3322-4c90-a716-2e34829ea6ca",
+   "childText": "an iron nail",
+   "ms": 1768,
+   "error": null,
+   "teacherReply": "Bilkul, iron nail attract hoga. Ab bataiye, aluminium pan magnet se kyun nahi chipkega?",
+   "move": {
+    "kind": "probe",
+    "shape": "confirm in two or three words only — the reason is theirs to give, so do not explain it; covert shape: protege naive but-why; Bittu, who does not know it, asks why; about THIS question; one open question; wait; a real question, never a check on them; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "diag:c6-science-ch04-t01-m1",
+    "skillId": "c6-science-ch04-t01-s3",
+    "hintLevel": 0,
+    "probe": "P2"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Inme se kaunsi cheez magnet se chipkegi?"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "Magnetic materials",
+    "verdict": "correct",
+    "beat": {
+     "beatId": "b8-probe",
+     "type": "probe",
+     "index": 8
+    },
+    "ask": {
+     "text": "Ab bataiye, aluminium pan magnet se kyun nahi chipkega?"
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "correct",
+    "cls": {
+     "outcome": "correct",
+     "source": "exact"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 1763,
+    "item": "diag:c6-science-ch04-t01-m1",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 65
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 66
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 467
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 561
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 564
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 564
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1098
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1688
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1763
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "e03c5a0b-3322-4c90-a716-2e34829ea6ca",
+   "childText": "achha",
+   "ms": 4383,
+   "error": null,
+   "teacherReply": "Ishaan, magnet sirf kuch metals ko attract karta hai, isliye test karke record kijiye. Fridge magnet se ghar ki paanch cheezein test kariye, jaise steel ki chammach, plastic ka dhakkan, safety pin, chaabi aur pencil. Bataiye kaunsi chipki.",
+   "move": {
+    "kind": "practice",
+    "shape": "give the reason yourself in one plain line (their answer was right); pose the question as written, in their language; then wait; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "c6-science-ch04-t01-i01",
+    "skillId": "c6-science-ch04-t01-s1",
+    "hintLevel": 0,
+    "probe": "P15"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Fridge magnet se ghar ki paanch cheezein test kariye, jai…"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Fridge magnet se ghar ki paanch cheezein test kariye, jaise steel ki chammach, plastic ka dhakkan, safety pin, chaabi…",
+     "itemId": "c6-science-ch04-t01-i01"
+    },
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Magnetic materials",
+    "beat": {
+     "beatId": "b9-practice_set",
+     "type": "practice_set",
+     "index": 9
+    },
+    "studioSlot": {
+     "slotId": "e03c5a0b-3322-4c90-a716-2e34829ea6ca:c4:slot",
+     "intentId": "e03c5a0b-3322-4c90-a716-2e34829ea6ca:c4",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "sort-storm@1",
+       "spec": {
+        "archetype": "sort-storm@1",
+        "skills": [
+         "c6-science-ch04-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "round": "Round",
+         "sorted": "sorted",
+         "tests": "tests",
+         "coach": "Test it, then drag it into a bin",
+         "runDone": "Belt cleared",
+         "missed": "missed",
+         "why": "because",
+         "yes": "yes",
+         "no": "no",
+         "magnetic": "magnetic",
+         "light": "light",
+         "floats": "floats",
+         "conducts": "conducts",
+         "burns": "burns",
+         "starch": "starch",
+         "tMagnet": "Magnet",
+         "tTorch": "Torch",
+         "tTank": "Water",
+         "tTester": "Circuit",
+         "tFlame": "Flame",
+         "tIodine": "Iodine",
+         "tPaper": "Paper",
+         "tBiuret": "Copper test",
+         "tTurmeric": "Turmeric",
+         "tLitmus": "Litmus",
+         "tRose": "China rose",
+         "fat": "fat",
+         "protein": "protein",
+         "acidity": "acidity",
+         "acid": "acid",
+         "base": "base",
+         "neutral": "neutral"
+        },
+        "title": "Magnet sorting challenge",
+        "rounds": [
+         {
+          "title": "Try the magnet",
+          "sub": "Test each object before sorting",
+          "byProp": "magnetic",
+          "bins": [
+           {
+            "id": "yes",
+            "label": "Attracted",
+            "glyph": "magnet"
+           },
+           {
+            "id": "no",
+            "label": "Not attracted"
+           }
+          ],
+          "tools": [
+           "magnet"
+          ],
+          "items": [
+           {
+            "id": "iron-nail",
+            "text": "Iron nail",
+            "glyph": "pen",
+            "bin": "yes",
+            "props": {
+             "magnetic": "yes"
+            },
+            "src": "c6-science-ch04-t01-i10"
+           },
+           {
+            "id": "plastic-scale",
+            "text": "Plastic scale",
+            "glyph": "ruler",
+            "bin": "no",
+            "props": {
+             "magnetic": "no"
+            },
+            "src": "c6-science-ch04-t01-i10"
+           },
+           {
+            "id": "steel-clip",
+            "text": "Steel paper clip",
+            "bin": "yes",
+            "props": {
+             "magnetic": "yes"
+            },
+            "src": "c6-science-ch04-t01-i10"
+           },
+           {
+            "id": "copper-wire",
+            "text": "Copper wire",
+            "glyph": "lightning",
+            "bin": "no",
+            "props": {
+             "magnetic": "no"
+            },
+            "src": "c6-science-ch04-t01-i10"
+           },
+           {
+            "id": "rubber-eraser",
+            "text": "Rubber eraser",
+            "glyph": "shield",
+            "bin": "no",
+            "props": {
+             "magnetic": "no"
+            },
+            "src": "c6-science-ch04-t01-i10"
+           },
+           {
+            "id": "nickel-strip",
+            "text": "Nickel strip",
+            "bin": "yes",
+            "props": {
+             "magnetic": "yes"
+            },
+            "src": "c6-science-ch04-t01-i10"
+           }
+          ],
+          "speed": 0.85,
+          "targets": "c6-science-ch04-t01-m1"
+         },
+         {
+          "title": "Test through barriers",
+          "sub": "Can the force pass through?",
+          "byProp": "magnetic",
+          "bins": [
+           {
+            "id": "yes",
+            "label": "Attracted",
+            "glyph": "magnet"
+           },
+           {
+            "id": "no",
+            "label": "Not attracted",
+            "glyph": "cloud"
+           }
+          ],
+          "tools": [
+           "magnet"
+          ],
+          "items": [
+           {
+            "id": "glass-clip",
+            "text": "Glass clip",
+            "glyph": "beaker",
+            "bin": "yes",
+            "props": {
+             "magnetic": "yes"
+            },
+            "src": "c6-science-ch04-t01-i05"
+           },
+           {
+            "id": "water-clip",
+            "text": "Water clip",
+            "glyph": "drop",
+            "bin": "yes",
+            "props": {
+             "magnetic": "yes"
+            },
+            "src": "c6-science-ch04-t01-i05"
+           },
+           {
+            "id": "paper-foil",
+            "text": "Paper foil",
+            "glyph": "scroll",
+            "bin": "no",
+            "props": {
+             "magnetic": "no"
+            },
+            "src": "c6-science-ch04-t01-i03"
+           },
+           {
+            "id": "water-wire",
+            "text": "Water wire",
+            "glyph": "drop",
+            "bin": "no",
+            "props": {
+             "magnetic": "no"
+            },
+            "src": "c6-science-ch04-t01-i03"
+           },
+           {
+            "id": "brass-key",
+            "text": "Brass key",
+            "bin": "no",
+            "props": {
+             "magnetic": "no"
+            },
+            "src": "c6-science-ch04-t01-i04"
+           },
+           {
+            "id": "iron-pin",
+            "text": "Iron pin",
+            "bin": "yes",
+            "props": {
+             "magnetic": "yes"
+            },
+            "src": "c6-science-ch04-t01-i01"
+           }
+          ],
+          "speed": 0.7,
+          "targets": "c6-science-ch04-t01-m2"
+         }
+        ]
+       },
+       "boardTwin": {
+        "scriptRef": "board:c6-science-ch04-t01-s1|practice|-|-",
+        "values": {
+         "title": "Test Bench Sort",
+         "need": "practice"
+        },
+        "board": {
+         "title": "Test Bench Sort",
+         "lines": [
+          "magnet",
+          "aluminium",
+          "iron",
+          "metal"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "unmount",
+     "moduleId": "g1-3e43e406"
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "drift",
+      "ask"
+     ],
+     "rewritten": true,
+     "replaced": false,
+     "firstDraft": "Ishaan, aluminium magnet se attract nahi hota, isliye pan nahi chipkega. Aaj ka sorting challenge yahin complete.",
+     "afterRewrite": []
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 861,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 4379,
+    "item": "c6-science-ch04-t01-i01",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 79
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 83
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 786
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 881
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1656
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1742
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1745
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1745
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1375
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1174
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 4317
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 4379
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:curiosity_offlesson-08",
+   "lessonId": "e03c5a0b-3322-4c90-a716-2e34829ea6ca",
+   "childText": "how do airplanes stay up in the air",
+   "ms": 2906,
+   "error": null,
+   "teacherReply": "Aapne airplanes ke air mein rehne wali baat notice ki—interesting! Yeh aaj ke magnet work se alag hai; is question ke turant baad uspar aayenge. Fridge magnet se ghar ki paanch cheezein test kariye, jaise steel ki chammach, plastic ka dhakkan, safety pin, chaabi…",
+   "move": {
+    "kind": "practice",
+    "shape": "two parts — first: they brought up how airplanes stay in the air: notice it warmly in their words, and kindly name that it is a different thing from today's work; promise to come back to it right after this question; no answer to it now; then back to the work; second: the question on the card, as written, in their language; then wait; no verdict on their reply: neither praise nor 'wrong'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "c6-science-ch04-t01-i01",
+    "skillId": "c6-science-ch04-t01-s1",
+    "hintLevel": 0,
+    "probe": "P15",
+    "request": "park",
+    "lead": "they brought up how airplanes stay in the air: notice it warmly in their words, and kindly name that it is a different thing from today's work; promise to come back to it right after this question; no answer to it now; then back to the work"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Fridge magnet se ghar ki paanch cheezein test kariye, jai…"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Fridge magnet se ghar ki paanch cheezein test kariye, jaise steel ki chammach, plastic ka dhakkan, safety pin, chaabi…",
+     "itemId": "c6-science-ch04-t01-i01"
+    },
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "Magnetic materials",
+    "beat": {
+     "beatId": "b9-practice_set",
+     "type": "practice_set",
+     "index": 9
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "curiosity_offlesson",
+     "waitedMs": 226,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2902,
+    "item": "c6-science-ch04-t01-i01",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 81
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 81
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 960
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 1063
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1188
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1289
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1292
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1292
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1523
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2836
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2902
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "recovery",
+   "lessonId": "e03c5a0b-3322-4c90-a716-2e34829ea6ca",
+   "childText": "key may not",
+   "ms": 2029,
+   "error": null,
+   "teacherReply": "Haan, chaabi ka result material par depend kar sakta hai. Aapne jo objects test kiye, unka record “chipki” ya “nahi chipki” mein banaiye. Fridge magnet se ghar ki paanch cheezein test kariye, jaise steel ki chammach, plastic ka dhakkan, safety pin, chaabi…",
+   "move": {
+    "kind": "hint",
+    "shape": "rung 1 of 4 (pump): Invite them to predict before each test; the key stays unsaid; their answer was partly right: name the right part, no full agreement; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "c6-science-ch04-t01-i01",
+    "skillId": "c6-science-ch04-t01-s1",
+    "hintLevel": 1
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Fridge magnet se ghar ki paanch cheezein test kariye, jai…"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Fridge magnet se ghar ki paanch cheezein test kariye, jaise steel ki chammach, plastic ka dhakkan, safety pin, chaabi…",
+     "itemId": "c6-science-ch04-t01-i01"
+    },
+    "answerForm": "words",
+    "tray": "studio",
+    "hint": {
+     "level": 1,
+     "text": "Invite them to predict before each test"
+    },
+    "shortTitle": "Magnetic materials",
+    "verdict": "partial",
+    "beat": {
+     "beatId": "b9-practice_set",
+     "type": "practice_set",
+     "index": 9
+    },
+    "studioSlot": {
+     "slotId": "e03c5a0b-3322-4c90-a716-2e34829ea6ca:c4:slot",
+     "intentId": "e03c5a0b-3322-4c90-a716-2e34829ea6ca:c4",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "sort-storm@1",
+       "spec": {
+        "archetype": "sort-storm@1",
+        "skills": [
+         "c6-science-ch04-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "round": "Round",
+         "sorted": "sorted",
+         "tests": "tests",
+         "coach": "Test it, then drag it into a bin",
+         "runDone": "Belt cleared",
+         "missed": "missed",
+         "why": "because",
+         "yes": "yes",
+         "no": "no",
+         "magnetic": "magnetic",
+         "light": "light",
+         "floats": "floats",
+         "conducts": "conducts",
+         "burns": "burns",
+         "starch": "starch",
+         "tMagnet": "Magnet",
+         "tTorch": "Torch",
+         "tTank": "Water",
+         "tTester": "Circuit",
+         "tFlame": "Flame",
+         "tIodine": "Iodine",
+         "tPaper": "Paper",
+         "tBiuret": "Copper test",
+         "tTurmeric": "Turmeric",
+         "tLitmus": "Litmus",
+         "tRose": "China rose",
+         "fat": "fat",
+         "protein": "protein",
+         "acidity": "acidity",
+         "acid": "acid",
+         "base": "base",
+         "neutral": "neutral"
+        },
+        "title": "Magnet sorting challenge",
+        "rounds": [
+         {
+          "title": "Try the magnet",
+          "sub": "Test each object before sorting",
+          "byProp": "magnetic",
+          "bins": [
+           {
+            "id": "yes",
+            "label": "Attracted",
+            "glyph": "magnet"
+           },
+           {
+            "id": "no",
+            "label": "Not attracted"
+           }
+          ],
+          "tools": [
+           "magnet"
+          ],
+          "items": [
+           {
+            "id": "iron-nail",
+            "text": "Iron nail",
+            "glyph": "pen",
+            "bin": "yes",
+            "props": {
+             "magnetic": "yes"
+            },
+            "src": "c6-science-ch04-t01-i10"
+           },
+           {
+            "id": "plastic-scale",
+            "text": "Plastic scale",
+            "glyph": "ruler",
+            "bin": "no",
+            "props": {
+             "magnetic": "no"
+            },
+            "src": "c6-science-ch04-t01-i10"
+           },
+           {
+            "id": "steel-clip",
+            "text": "Steel paper clip",
+            "bin": "yes",
+            "props": {
+             "magnetic": "yes"
+            },
+            "src": "c6-science-ch04-t01-i10"
+           },
+           {
+            "id": "copper-wire",
+            "text": "Copper wire",
+            "glyph": "lightning",
+            "bin": "no",
+            "props": {
+             "magnetic": "no"
+            },
+            "src": "c6-science-ch04-t01-i10"
+           },
+           {
+            "id": "rubber-eraser",
+            "text": "Rubber eraser",
+            "glyph": "shield",
+            "bin": "no",
+            "props": {
+             "magnetic": "no"
+            },
+            "src": "c6-science-ch04-t01-i10"
+           },
+           {
+            "id": "nickel-strip",
+            "text": "Nickel strip",
+            "bin": "yes",
+            "props": {
+             "magnetic": "yes"
+            },
+            "src": "c6-science-ch04-t01-i10"
+           }
+          ],
+          "speed": 0.85,
+          "targets": "c6-science-ch04-t01-m1"
+         },
+         {
+          "title": "Test through barriers",
+          "sub": "Can the force pass through?",
+          "byProp": "magnetic",
+          "bins": [
+           {
+            "id": "yes",
+            "label": "Attracted",
+            "glyph": "magnet"
+           },
+           {
+            "id": "no",
+            "label": "Not attracted",
+            "glyph": "cloud"
+           }
+          ],
+          "tools": [
+           "magnet"
+          ],
+          "items": [
+           {
+            "id": "glass-clip",
+            "text": "Glass clip",
+            "glyph": "beaker",
+            "bin": "yes",
+            "props": {
+             "magnetic": "yes"
+            },
+            "src": "c6-science-ch04-t01-i05"
+           },
+           {
+            "id": "water-clip",
+            "text": "Water clip",
+            "glyph": "drop",
+            "bin": "yes",
+            "props": {
+             "magnetic": "yes"
+            },
+            "src": "c6-science-ch04-t01-i05"
+           },
+           {
+            "id": "paper-foil",
+            "text": "Paper foil",
+            "glyph": "scroll",
+            "bin": "no",
+            "props": {
+             "magnetic": "no"
+            },
+            "src": "c6-science-ch04-t01-i03"
+           },
+           {
+            "id": "water-wire",
+            "text": "Water wire",
+            "glyph": "drop",
+            "bin": "no",
+            "props": {
+             "magnetic": "no"
+            },
+            "src": "c6-science-ch04-t01-i03"
+           },
+           {
+            "id": "brass-key",
+            "text": "Brass key",
+            "bin": "no",
+            "props": {
+             "magnetic": "no"
+            },
+            "src": "c6-science-ch04-t01-i04"
+           },
+           {
+            "id": "iron-pin",
+            "text": "Iron pin",
+            "bin": "yes",
+            "props": {
+             "magnetic": "yes"
+            },
+            "src": "c6-science-ch04-t01-i01"
+           }
+          ],
+          "speed": 0.7,
+          "targets": "c6-science-ch04-t01-m2"
+         }
+        ]
+       },
+       "boardTwin": {
+        "scriptRef": "board:c6-science-ch04-t01-s1|practice|-|-",
+        "values": {
+         "title": "Test Bench Sort",
+         "need": "practice"
+        },
+        "board": {
+         "title": "Test Bench Sort",
+         "lines": [
+          "magnet",
+          "aluminium",
+          "iron",
+          "metal"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": {
+    "reveal": "e03c5a0b-3322-4c90-a716-2e34829ea6ca:c4"
+   },
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "partial",
+    "cls": {
+     "outcome": "partial",
+     "source": "exact"
+    },
+    "note": null,
+    "hintLevel": 1,
+    "phase": "practice",
+    "ms": 2027,
+    "item": "c6-science-ch04-t01-i01",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 67
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 68
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 385
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 461
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 464
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 464
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1456
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1953
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2026
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:out_of_bounds-01",
+   "lessonId": "e03c5a0b-3322-4c90-a716-2e34829ea6ca",
+   "childText": "ghost story sunao darawni wali",
+   "ms": 526,
+   "error": {
+    "status": 500,
+    "message": "POST /api/lesson/turn → 500 {\"error\":\"internal error\"}"
+   },
+   "teacherReply": null,
+   "move": null,
+   "ui": null,
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": null
+  },
+  {
+   "who": "child",
+   "tag": "recovery",
+   "lessonId": "e03c5a0b-3322-4c90-a716-2e34829ea6ca",
+   "childText": "key may not",
+   "ms": 3536,
+   "error": null,
+   "teacherReply": "Ishaan, “key may not” kehna sensible hai—result key ke material par nirbhar hai. Ab token question mein dono baar attract hone wale letters batayiye. Magnet teen ek-jaise dikhne wale game tokens ko attract karta hai. Har token ko palatkar dobara test karne par sirf P aur R attract hote hain. Kin tokens ka magnetic test result dono baar ek jaisa hai?",
+   "move": {
+    "kind": "probe",
+    "shape": "that question has been on the table long enough: give its answer plainly with one line of why (in LESSON NOW), no verdict on them; then the next question; before the next thing: come back to what they asked earlier (how airplanes stay in the air) — at most two sentences, or a guided question; pose the question as written, in their language; then wait; same idea, new situation; let them carry it over; their answer was partly right: name the right part, no full agreement; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "c6-science-ch04-t01-rl-h1",
+    "skillId": "c6-science-ch04-t01-s1",
+    "hintLevel": 0,
+    "probe": "P3"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Magnet teen ek-jaise dikhne wale game tokens ko attract k…"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Kin tokens ka magnetic test result dono baar ek jaisa hai?",
+     "itemId": "c6-science-ch04-t01-rl-h1"
+    },
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Magnetic materials",
+    "verdict": "partial",
+    "beat": {
+     "beatId": "b10-probe",
+     "type": "probe",
+     "index": 10
+    },
+    "studioSlot": {
+     "slotId": "e03c5a0b-3322-4c90-a716-2e34829ea6ca:c4:slot",
+     "intentId": "e03c5a0b-3322-4c90-a716-2e34829ea6ca:c4",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "sort-storm@1",
+       "spec": {
+        "archetype": "sort-storm@1",
+        "skills": [
+         "c6-science-ch04-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "round": "Round",
+         "sorted": "sorted",
+         "tests": "tests",
+         "coach": "Test it, then drag it into a bin",
+         "runDone": "Belt cleared",
+         "missed": "missed",
+         "why": "because",
+         "yes": "yes",
+         "no": "no",
+         "magnetic": "magnetic",
+         "light": "light",
+         "floats": "floats",
+         "conducts": "conducts",
+         "burns": "burns",
+         "starch": "starch",
+         "tMagnet": "Magnet",
+         "tTorch": "Torch",
+         "tTank": "Water",
+         "tTester": "Circuit",
+         "tFlame": "Flame",
+         "tIodine": "Iodine",
+         "tPaper": "Paper",
+         "tBiuret": "Copper test",
+         "tTurmeric": "Turmeric",
+         "tLitmus": "Litmus",
+         "tRose": "China rose",
+         "fat": "fat",
+         "protein": "protein",
+         "acidity": "acidity",
+         "acid": "acid",
+         "base": "base",
+         "neutral": "neutral"
+        },
+        "title": "Magnet sorting challenge",
+        "rounds": [
+         {
+          "title": "Try the magnet",
+          "sub": "Test each object before sorting",
+          "byProp": "magnetic",
+          "bins": [
+           {
+            "id": "yes",
+            "label": "Attracted",
+            "glyph": "magnet"
+           },
+           {
+            "id": "no",
+            "label": "Not attracted"
+           }
+          ],
+          "tools": [
+           "magnet"
+          ],
+          "items": [
+           {
+            "id": "iron-nail",
+            "text": "Iron nail",
+            "glyph": "pen",
+            "bin": "yes",
+            "props": {
+             "magnetic": "yes"
+            },
+            "src": "c6-science-ch04-t01-i10"
+           },
+           {
+            "id": "plastic-scale",
+            "text": "Plastic scale",
+            "glyph": "ruler",
+            "bin": "no",
+            "props": {
+             "magnetic": "no"
+            },
+            "src": "c6-science-ch04-t01-i10"
+           },
+           {
+            "id": "steel-clip",
+            "text": "Steel paper clip",
+            "bin": "yes",
+            "props": {
+             "magnetic": "yes"
+            },
+            "src": "c6-science-ch04-t01-i10"
+           },
+           {
+            "id": "copper-wire",
+            "text": "Copper wire",
+            "glyph": "lightning",
+            "bin": "no",
+            "props": {
+             "magnetic": "no"
+            },
+            "src": "c6-science-ch04-t01-i10"
+           },
+           {
+            "id": "rubber-eraser",
+            "text": "Rubber eraser",
+            "glyph": "shield",
+            "bin": "no",
+            "props": {
+             "magnetic": "no"
+            },
+            "src": "c6-science-ch04-t01-i10"
+           },
+           {
+            "id": "nickel-strip",
+            "text": "Nickel strip",
+            "bin": "yes",
+            "props": {
+             "magnetic": "yes"
+            },
+            "src": "c6-science-ch04-t01-i10"
+           }
+          ],
+          "speed": 0.85,
+          "targets": "c6-science-ch04-t01-m1"
+         },
+         {
+          "title": "Test through barriers",
+          "sub": "Can the force pass through?",
+          "byProp": "magnetic",
+          "bins": [
+           {
+            "id": "yes",
+            "label": "Attracted",
+            "glyph": "magnet"
+           },
+           {
+            "id": "no",
+            "label": "Not attracted",
+            "glyph": "cloud"
+           }
+          ],
+          "tools": [
+           "magnet"
+          ],
+          "items": [
+           {
+            "id": "glass-clip",
+            "text": "Glass clip",
+            "glyph": "beaker",
+            "bin": "yes",
+            "props": {
+             "magnetic": "yes"
+            },
+            "src": "c6-science-ch04-t01-i05"
+           },
+           {
+            "id": "water-clip",
+            "text": "Water clip",
+            "glyph": "drop",
+            "bin": "yes",
+            "props": {
+             "magnetic": "yes"
+            },
+            "src": "c6-science-ch04-t01-i05"
+           },
+           {
+            "id": "paper-foil",
+            "text": "Paper foil",
+            "glyph": "scroll",
+            "bin": "no",
+            "props": {
+             "magnetic": "no"
+            },
+            "src": "c6-science-ch04-t01-i03"
+           },
+           {
+            "id": "water-wire",
+            "text": "Water wire",
+            "glyph": "drop",
+            "bin": "no",
+            "props": {
+             "magnetic": "no"
+            },
+            "src": "c6-science-ch04-t01-i03"
+           },
+           {
+            "id": "brass-key",
+            "text": "Brass key",
+            "bin": "no",
+            "props": {
+             "magnetic": "no"
+            },
+            "src": "c6-science-ch04-t01-i04"
+           },
+           {
+            "id": "iron-pin",
+            "text": "Iron pin",
+            "bin": "yes",
+            "props": {
+             "magnetic": "yes"
+            },
+            "src": "c6-science-ch04-t01-i01"
+           }
+          ],
+          "speed": 0.7,
+          "targets": "c6-science-ch04-t01-m2"
+         }
+        ]
+       },
+       "boardTwin": {
+        "scriptRef": "board:c6-science-ch04-t01-s1|practice|-|-",
+        "values": {
+         "title": "Test Bench Sort",
+         "need": "practice"
+        },
+        "board": {
+         "title": "Test Bench Sort",
+         "lines": [
+          "magnet",
+          "aluminium",
+          "iron",
+          "metal"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "praise",
+      "long"
+     ],
+     "rewritten": true,
+     "replaced": true,
+     "firstDraft": "Ishaan, sahi—brass key magnet se nahi chipakti, steel key chipak sakti hai; material check kijiye. Ab magnet-token question ka jawab dijiye: “Magnet teen ek-jaise dikhne wale game tokens ko attract karta hai. Har token ko palatkar dobara test karne par sirf P aur R attract hote hain. Kin tokens ka magnetic test result dono baar ek jaisa hai?”",
+     "afterRewrite": [
+      "drift",
+      "ask"
+     ],
+     "final": [
+      "long"
+     ]
+    },
+    "verdict": "partial",
+    "cls": {
+     "outcome": "partial",
+     "source": "exact"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 3526,
+    "item": "c6-science-ch04-t01-rl-h1",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 72
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 73
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 424
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 509
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 515
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 515
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1462
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1443
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3465
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3526
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "setup:insist_wrong-01",
+   "lessonId": "e03c5a0b-3322-4c90-a716-2e34829ea6ca",
+   "childText": "aluminium non-magnetic",
+   "ms": 2629,
+   "error": null,
+   "teacherReply": "Haan, aluminium aam taur par non-magnetic hota hai. Iska matlab magnet aluminium ko attract nahi karta. Kin tokens ka magnetic test result dono baar ek jaisa hai?",
+   "move": {
+    "kind": "repair",
+    "shape": "you did not catch it clearly: ask them to say it once more; no verdict on their reply: neither praise nor 'wrong'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "c6-science-ch04-t01-rl-h1",
+    "skillId": "c6-science-ch04-t01-s1",
+    "hintLevel": 0
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "text",
+     "value": "Magnet teen ek-jaise dikhne wale game tokens ko attract k…"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Kin tokens ka magnetic test result dono baar ek jaisa hai?",
+     "itemId": "c6-science-ch04-t01-rl-h1"
+    },
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Magnetic materials",
+    "beat": {
+     "beatId": "b10-probe",
+     "type": "probe",
+     "index": 10
+    },
+    "studioSlot": {
+     "slotId": "e03c5a0b-3322-4c90-a716-2e34829ea6ca:c7:slot",
+     "intentId": "e03c5a0b-3322-4c90-a716-2e34829ea6ca:c7",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "sort-storm@1",
+       "spec": {
+        "archetype": "sort-storm@1",
+        "skills": [
+         "c6-science-ch04-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "round": "Round",
+         "sorted": "sorted",
+         "tests": "tests",
+         "coach": "Test it, then drag it into a bin",
+         "runDone": "Belt cleared",
+         "missed": "missed",
+         "why": "because",
+         "yes": "yes",
+         "no": "no",
+         "magnetic": "magnetic",
+         "light": "light",
+         "floats": "floats",
+         "conducts": "conducts",
+         "burns": "burns",
+         "starch": "starch",
+         "tMagnet": "Magnet",
+         "tTorch": "Torch",
+         "tTank": "Water",
+         "tTester": "Circuit",
+         "tFlame": "Flame",
+         "tIodine": "Iodine",
+         "tPaper": "Paper",
+         "tBiuret": "Copper test",
+         "tTurmeric": "Turmeric",
+         "tLitmus": "Litmus",
+         "tRose": "China rose",
+         "fat": "fat",
+         "protein": "protein",
+         "acidity": "acidity",
+         "acid": "acid",
+         "base": "base",
+         "neutral": "neutral"
+        },
+        "title": "Magnet sorting challenge",
+        "rounds": [
+         {
+          "title": "Try the magnet",
+          "sub": "Test each object before sorting",
+          "byProp": "magnetic",
+          "bins": [
+           {
+            "id": "yes",
+            "label": "Attracted",
+            "glyph": "magnet"
+           },
+           {
+            "id": "no",
+            "label": "Not attracted"
+           }
+          ],
+          "tools": [
+           "magnet"
+          ],
+          "items": [
+           {
+            "id": "iron-nail",
+            "text": "Iron nail",
+            "glyph": "pen",
+            "bin": "yes",
+            "props": {
+             "magnetic": "yes"
+            },
+            "src": "c6-science-ch04-t01-i10"
+           },
+           {
+            "id": "plastic-scale",
+            "text": "Plastic scale",
+            "glyph": "ruler",
+            "bin": "no",
+            "props": {
+             "magnetic": "no"
+            },
+            "src": "c6-science-ch04-t01-i10"
+           },
+           {
+            "id": "steel-clip",
+            "text": "Steel paper clip",
+            "bin": "yes",
+            "props": {
+             "magnetic": "yes"
+            },
+            "src": "c6-science-ch04-t01-i10"
+           },
+           {
+            "id": "copper-wire",
+            "text": "Copper wire",
+            "glyph": "lightning",
+            "bin": "no",
+            "props": {
+             "magnetic": "no"
+            },
+            "src": "c6-science-ch04-t01-i10"
+           },
+           {
+            "id": "rubber-eraser",
+            "text": "Rubber eraser",
+            "glyph": "shield",
+            "bin": "no",
+            "props": {
+             "magnetic": "no"
+            },
+            "src": "c6-science-ch04-t01-i10"
+           },
+           {
+            "id": "nickel-strip",
+            "text": "Nickel strip",
+            "bin": "yes",
+            "props": {
+             "magnetic": "yes"
+            },
+            "src": "c6-science-ch04-t01-i10"
+           }
+          ],
+          "speed": 0.85,
+          "targets": "c6-science-ch04-t01-m1"
+         },
+         {
+          "title": "Test through barriers",
+          "sub": "Can the force pass through?",
+          "byProp": "magnetic",
+          "bins": [
+           {
+            "id": "yes",
+            "label": "Attracted",
+            "glyph": "magnet"
+           },
+           {
+            "id": "no",
+            "label": "Not attracted",
+            "glyph": "cloud"
+           }
+          ],
+          "tools": [
+           "magnet"
+          ],
+          "items": [
+           {
+            "id": "glass-clip",
+            "text": "Glass clip",
+            "glyph": "beaker",
+            "bin": "yes",
+            "props": {
+             "magnetic": "yes"
+            },
+            "src": "c6-science-ch04-t01-i05"
+           },
+           {
+            "id": "water-clip",
+            "text": "Water clip",
+            "glyph": "drop",
+            "bin": "yes",
+            "props": {
+             "magnetic": "yes"
+            },
+            "src": "c6-science-ch04-t01-i05"
+           },
+           {
+            "id": "paper-foil",
+            "text": "Paper foil",
+            "glyph": "scroll",
+            "bin": "no",
+            "props": {
+             "magnetic": "no"
+            },
+            "src": "c6-science-ch04-t01-i03"
+           },
+           {
+            "id": "water-wire",
+            "text": "Water wire",
+            "glyph": "drop",
+            "bin": "no",
+            "props": {
+             "magnetic": "no"
+            },
+            "src": "c6-science-ch04-t01-i03"
+           },
+           {
+            "id": "brass-key",
+            "text": "Brass key",
+            "bin": "no",
+            "props": {
+             "magnetic": "no"
+            },
+            "src": "c6-science-ch04-t01-i04"
+           },
+           {
+            "id": "iron-pin",
+            "text": "Iron pin",
+            "bin": "yes",
+            "props": {
+             "magnetic": "yes"
+            },
+            "src": "c6-science-ch04-t01-i01"
+           }
+          ],
+          "speed": 0.7,
+          "targets": "c6-science-ch04-t01-m2"
+         }
+        ]
+       },
+       "boardTwin": {
+        "scriptRef": "board:c6-science-ch04-t01-s1|probe|-|-",
+        "values": {
+         "title": "Test Bench Sort",
+         "need": "probe"
+        },
+        "board": {
+         "title": "Test Bench Sort",
+         "lines": [
+          "magnet",
+          "aluminium",
+          "iron",
+          "metal"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": {
+    "reveal": "e03c5a0b-3322-4c90-a716-2e34829ea6ca:c7"
+   },
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "answer_wrong",
+     "waitedMs": 515,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2626,
+    "item": "c6-science-ch04-t01-rl-h1",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 94
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 95
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 762
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 883
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1286
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1397
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1399
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1399
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1137
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2562
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2625
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:insist_wrong-01",
+   "lessonId": "e03c5a0b-3322-4c90-a716-2e34829ea6ca",
+   "childText": "nahi mera answer sahi hai iron hi hai",
+   "ms": 2595,
+   "error": {
+    "status": null,
+    "message": "fetch failed"
+   },
+   "teacherReply": null,
+   "move": null,
+   "ui": null,
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": null
+  },
+  {
+   "who": "child",
+   "tag": "recovery",
+   "lessonId": "e03c5a0b-3322-4c90-a716-2e34829ea6ca",
+   "childText": "p r",
+   "ms": 2,
+   "error": {
+    "status": null,
+    "message": "fetch failed"
+   },
+   "teacherReply": null,
+   "move": null,
+   "ui": null,
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": null
+  },
+  {
+   "who": "child",
+   "tag": "probe:story-01",
+   "lessonId": "e03c5a0b-3322-4c90-a716-2e34829ea6ca",
+   "childText": "story ki tarah batao",
+   "ms": 1,
+   "error": {
+    "status": null,
+    "message": "fetch failed"
+   },
+   "teacherReply": null,
+   "move": null,
+   "ui": null,
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": null
+  },
+  {
+   "who": "child",
+   "tag": "recovery",
+   "lessonId": "e03c5a0b-3322-4c90-a716-2e34829ea6ca",
+   "childText": "p r",
+   "ms": 14,
+   "error": {
+    "status": null,
+    "message": "fetch failed"
+   },
+   "teacherReply": null,
+   "move": null,
+   "ui": null,
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": null
+  }
+ ]
+}

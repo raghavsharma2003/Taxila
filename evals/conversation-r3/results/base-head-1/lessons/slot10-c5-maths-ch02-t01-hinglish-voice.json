@@ -1,0 +1,4612 @@
+{
+ "slot": 10,
+ "topic": "c5-maths-ch02-t01",
+ "cls": 5,
+ "lang": "hinglish",
+ "lane": "voice",
+ "lessons": [
+  {
+   "lessonId": "bd796515-89c8-4675-b807-0db9efebf2f8",
+   "why": "start",
+   "at": "2026-10-09T11:13:29.008Z",
+   "teacher": "Arjun"
+  }
+ ],
+ "turns": [
+  {
+   "who": "teacher",
+   "kind": "opening",
+   "lessonId": "bd796515-89c8-4675-b807-0db9efebf2f8",
+   "teacherReply": "Namaste Meher, main Arjun, aapka AI teacher hoon. Aaj fractions ko number line par drawing ki tarah rakhenge. Aap drawing banana pasand karte hain?",
+   "ui": {
+    "status": "your_turn",
+    "phase": "warmup",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "Fractions on a line",
+    "beat": {
+     "beatId": "b1-arrive",
+     "type": "arrive",
+     "index": 1
+    },
+    "ask": {
+     "text": "Aap drawing banana pasand karte hain?"
+    }
+   }
+  },
+  {
+   "who": "child",
+   "tag": "greet",
+   "lessonId": "bd796515-89c8-4675-b807-0db9efebf2f8",
+   "childText": "hello haan shuru karo",
+   "ms": 1669,
+   "error": null,
+   "teacherReply": "Meher, ek road draw kijiye: 0 se 1 km tak. Agar 1 km ko 4 equal parts mein baanten, har part kitna hoga? End mein aap Bittu ko sikhaayenge.",
+   "move": {
+    "kind": "hook",
+    "shape": "open with one concrete everyday situation built on their interest (drawing) — kit contexts: road to the chai stall, km stones on a highway, cricket pitch length; ask what they think will happen or which they would pick — a prediction, no right answer yet; any bigger/more comparison: two quantities of one kind, in one unit — a count against a count, a distance against a distance; never across kinds; mention once: at the end they will teach this to Bittu (a pretend new student who missed this class); address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "format": "F4"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "teach",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "Fractions on a line",
+    "beat": {
+     "beatId": "b2-hook",
+     "type": "hook",
+     "index": 2
+    },
+    "ask": {
+     "text": "Agar 1 km ko 4 equal parts mein baanten, har part kitna hoga?"
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "attempt",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 599,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "teach",
+    "ms": 1659,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 55
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 55
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 698
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 760
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1302
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1359
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1360
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1361
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1431
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1572
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1659
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:question_on_topic-01",
+   "lessonId": "bd796515-89c8-4675-b807-0db9efebf2f8",
+   "childText": "agar line 0 se 2 tak ho toh 1/2 kahan aayega",
+   "ms": 4248,
+   "error": null,
+   "teacherReply": "Meher, 0 se 1 ko 5 equal gaps mein baantiye; 1/5 pehla gap hoga. Ab 0 se 2 ki line par 1/2 sochiye—kahan mark karenge?",
+   "move": {
+    "kind": "explain",
+    "shape": "they asked a real question about today's idea: answer it in at most two sentences, correctly and simply, without giving the key; then the question; one idea only: Mark unit fractions on a number line by splitting 0 to 1 into equal gaps; an example from their interest (drawing) if it fits naturally; objects first, then the symbol; point at the screen only at what the on-screen row lists; never a drawing made of characters; end with one small question that makes them USE the idea — never 'samjha?'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "skillId": "c5-maths-ch02-t01-s1",
+    "format": "F3",
+    "request": "answer_q",
+    "lead": "they asked a real question about today's idea: answer it in at most two sentences, correctly and simply, without giving the key; then the question"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "teach",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "Fractions on a line",
+    "beat": {
+     "beatId": "b3-explain",
+     "type": "explain",
+     "index": 3
+    },
+    "ask": {
+     "text": "Ab 0 se 2 ki line par 1/2 sochiye—kahan mark karenge?"
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "mount",
+     "moduleId": "m2",
+     "engine": "number-line@1",
+     "params": {
+      "topicId": "c5-maths-ch02-t01",
+      "skillId": null,
+      "lang": "hinglish",
+      "fractions": [
+       [
+        2,
+        5
+       ]
+      ],
+      "numbers": [
+       0,
+       1
+      ]
+     }
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "parts",
+      "leak"
+     ],
+     "rewritten": true,
+     "replaced": false,
+     "firstDraft": "Meher, 0 se 2 ko do equal gaps mein baantiye; 1/2, 0 aur 1 ke beech aadhe gap par hoga—number line par point kahan?",
+     "afterRewrite": [
+      "parts",
+      "leak"
+     ],
+     "spoilsAhead": "c5-maths-ch02-t01-i01",
+     "final": [
+      "parts",
+      "leak"
+     ]
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "question_on_topic",
+     "waitedMs": 753,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "teach",
+    "ms": 4221,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 55
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 56
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 661
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 720
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1414
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1473
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1475
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1475
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1153
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1493
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 4135
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 4221
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "filler",
+   "lessonId": "bd796515-89c8-4675-b807-0db9efebf2f8",
+   "childText": "haan theek hai",
+   "ms": 1672,
+   "error": null,
+   "teacherReply": "Meher, pehle 0 aur 1 ko line ke ends par rakhiye; ab 0 se 1 ko 5 equal gaps mein baantne ka agla step aap batayiye.",
+   "move": {
+    "kind": "worked_example",
+    "shape": "worked example, part 1 of 2: say one step, then ask them for the next step; their thinking, your pace; no new idea; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "skillId": "c5-maths-ch02-t01-s1",
+    "format": "F2"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "Mark 2/5 on a number line from 0 to 1."
+    },
+    "phase": "teach",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "Fractions on a line",
+    "beat": {
+     "beatId": "b4-worked_example",
+     "type": "worked_example",
+     "index": 4
+    },
+    "ask": {
+     "text": "Meher, pehle 0 aur 1 ko line ke ends par rakhiye; ab 0 se 1 ko 5 equal gaps mein baantne ka agla step aap batayiye."
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false
+    },
+    "verdict": "attempt",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 751,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "teach",
+    "ms": 1667,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 53
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 53
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 572
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 633
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1324
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1384
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1386
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1386
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1431
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1603
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1667
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:diversion-12",
+   "lessonId": "bd796515-89c8-4675-b807-0db9efebf2f8",
+   "childText": "who's better virat or rohit",
+   "ms": 3547,
+   "error": null,
+   "teacherReply": "Virat aur Rohit ka comparison alag topic hai, Meher; use end mein dekhenge. Ab wapas fractions ke number line work par aaiye. Khaali jagah bhariye: Check: 2/5 is ___ the middle, because 2/5 is less than 1/2.",
+   "move": {
+    "kind": "practice",
+    "shape": "they brought up Virat or Rohit: notice it warmly in their words, and kindly name that it is a different thing from today's work; promise to come back to it at the end; no answer to it now; then back to the work; the earlier steps in LESSON NOW, said briefly as done; then the step with the gap is theirs: pose it as written; wait; never fill the gap for them; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "fade:4",
+    "skillId": "c5-maths-ch02-t01-s1",
+    "hintLevel": 0,
+    "probe": "P15",
+    "format": "F2",
+    "request": "park",
+    "lead": "they brought up Virat or Rohit: notice it warmly in their words, and kindly name that it is a different thing from today's work; promise to come back to it at the end; no answer to it now; then back to the work"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "Mark 2/5 on a number line from 0 to 1. · Check: 2/5 is ___ the middle, because 2/5 is less than 1/2."
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Khaali jagah bhariye: Check: 2/5 is ___ the middle, because 2/5 is less than 1/2.",
+     "itemId": "fade:4"
+    },
+    "answerForm": "words",
+    "tray": "none",
+    "shortTitle": "Fractions on a line",
+    "beat": {
+     "beatId": "b5-practice_set",
+     "type": "practice_set",
+     "index": 5
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "unmount",
+     "moduleId": "m2"
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "diversion",
+     "waitedMs": 989,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 3539,
+    "item": "fade:4",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 138
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 138
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 664
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 806
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1654
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1796
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1804
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1804
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1609
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3418
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3539
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "filler",
+   "lessonId": "bd796515-89c8-4675-b807-0db9efebf2f8",
+   "childText": "haan theek hai",
+   "ms": 2698,
+   "error": null,
+   "teacherReply": "Theek hai, Meher. Pehle number line par middle point dhoondhiye: 0 aur 1 ke beech ka bilkul centre. Khaali jagah bhariye: Check: 2/5 is ___ the middle, because 2/5 is less than 1/2.",
+   "move": {
+    "kind": "repair",
+    "shape": "you did not catch it clearly: ask them to say it once more; no verdict on their reply: neither praise nor 'wrong'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "fade:4",
+    "skillId": "c5-maths-ch02-t01-s1",
+    "hintLevel": 0
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "2/5  ·  2/5  ·  1/2"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Khaali jagah bhariye: Check: 2/5 is ___ the middle, because 2/5 is less than 1/2.",
+     "itemId": "fade:4"
+    },
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Fractions on a line",
+    "beat": {
+     "beatId": "b5-practice_set",
+     "type": "practice_set",
+     "index": 5
+    },
+    "studioSlot": {
+     "slotId": "bd796515-89c8-4675-b807-0db9efebf2f8:c1:slot",
+     "intentId": "bd796515-89c8-4675-b807-0db9efebf2f8:c1",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "catch-on-line@1",
+       "spec": {
+        "archetype": "catch-on-line@1",
+        "skills": [
+         "c5-maths-ch02-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "coach": "Drag to move the dock",
+         "wave": "Wave",
+         "of": "of",
+         "clear": "clear",
+         "landed": "landed",
+         "precision": "precision",
+         "chain": "chain",
+         "bestChain": "best chain",
+         "exact": "EXACT",
+         "close": "CLOSE",
+         "inside": "IN",
+         "offBy": "off by",
+         "same": "SAME SPOT",
+         "runDone": "Run complete",
+         "toughest": "Toughest"
+        },
+        "waves": [
+         {
+          "title": "Halfway stop",
+          "sub": "Split the road into two equal gaps",
+          "line": [
+           0,
+           1
+          ],
+          "ticks": 1,
+          "scaffoldTicks": 2,
+          "speed": 82,
+          "gap": 2.8,
+          "items": [
+           [
+            "1/2"
+           ],
+           [
+            "1/2"
+           ],
+           [
+            "1/2"
+           ]
+          ]
+         },
+         {
+          "title": "Quarter steps",
+          "sub": "Count equal gaps from zero",
+          "line": [
+           0,
+           1
+          ],
+          "ticks": 3,
+          "scaffoldTicks": 4,
+          "speed": 92,
+          "gap": 2.3,
+          "items": [
+           [
+            "1/4"
+           ],
+           [
+            "2/4"
+           ],
+           [
+            "3/4"
+           ],
+           [
+            "1/4"
+           ]
+          ]
+         },
+         {
+          "title": "Compare places",
+          "sub": "Small fractions can be close to zero",
+          "line": [
+           0,
+           1
+          ],
+          "ticks": 4,
+          "scaffoldTicks": 5,
+          "speed": 101,
+          "gap": 2,
+          "items": [
+           [
+            "1/5"
+           ],
+           [
+            "3/5"
+           ],
+           [
+            "2/5"
+           ],
+           [
+            "4/5"
+           ]
+          ]
+         },
+         {
+          "title": "Beyond one",
+          "sub": "The line continues past one",
+          "line": [
+           0,
+           2
+          ],
+          "ticks": 7,
+          "scaffoldTicks": 8,
+          "speed": 110,
+          "gap": 1.7,
+          "items": [
+           [
+            "5/4"
+           ],
+           [
+            "3/2"
+           ],
+           [
+            "7/4"
+           ],
+           [
+            "1/4"
+           ],
+           [
+            "4/4"
+           ]
+          ]
+         }
+        ],
+        "adapt": {
+         "slowAfterMisses": 2,
+         "slowFactor": 0.86,
+         "fastAfterChain": 4,
+         "fastFactor": 1.07,
+         "minScale": 0.7,
+         "maxScale": 1.3,
+         "scaffoldPods": 3
+        }
+       },
+       "boardTwin": {
+        "scriptRef": "board:c5-maths-ch02-t01-s1|practice|-|-",
+        "values": {
+         "title": "Landfall",
+         "need": "practice"
+        },
+        "board": {
+         "title": "Landfall",
+         "lines": [
+          "line",
+          "equal",
+          "gaps",
+          "mark"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": {
+    "reveal": "bd796515-89c8-4675-b807-0db9efebf2f8:c1"
+   },
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 309,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 2695,
+    "item": "fade:4",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 71
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 72
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 817
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 904
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1131
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1214
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1216
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1216
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1395
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2619
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2694
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "bd796515-89c8-4675-b807-0db9efebf2f8",
+   "childText": "haan theek hai",
+   "ms": 1795,
+   "error": null,
+   "teacherReply": "Meher, 0 aur 1 ke beech middle ko centre mark samajhiye. Ab 2/5 ka mark centre se kis taraf aata hai, bas us taraf dhyaan dijiye. Khaali jagah bhariye: Check: 2/5 is ___ the middle, because 2/5 is less than 1/2.",
+   "move": {
+    "kind": "repair",
+    "shape": "no verdict on their reply; the choices are now on screen; the same question again, as written; tell them they can pick one of the choices on screen; do not read the choices with any lean toward one; no verdict on their reply: neither praise nor 'wrong'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "fade:4",
+    "skillId": "c5-maths-ch02-t01-s1",
+    "hintLevel": 0
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "2/5  ·  2/5  ·  1/2"
+    },
+    "chips": [
+     {
+      "id": "pick:0",
+      "label": "before"
+     },
+     {
+      "id": "pick:1",
+      "label": "1/2"
+     },
+     {
+      "id": "pick:2",
+      "label": "1/4"
+     }
+    ],
+    "phase": "practice",
+    "handover": "choice",
+    "ask": {
+     "text": "Khaali jagah bhariye: Check: 2/5 is ___ the middle, because 2/5 is less than 1/2.",
+     "itemId": "fade:4"
+    },
+    "answerForm": "choice",
+    "tray": "tiles",
+    "shortTitle": "Fractions on a line",
+    "beat": {
+     "beatId": "b5-practice_set",
+     "type": "practice_set",
+     "index": 5
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 558,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 1785,
+    "item": "fade:4",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 69
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 70
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 687
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 765
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1246
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1323
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1325
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1325
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1534
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1700
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1785
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "bd796515-89c8-4675-b807-0db9efebf2f8",
+   "childText": "ok samajh gaya",
+   "ms": 3851,
+   "error": null,
+   "teacherReply": "Theek hai, Meher. Ab 0 aur 1 ke beech wali sadak ko do barabar hisson mein sochiye; beech ka mark dhoondhne ke liye dono parts giniye. Ghar (0) se chai ki dukaan (1) tak ki sadak 2 barabar hisson mein bati hai. Beech wale mark par kaunsa number hai?",
+   "move": {
+    "kind": "practice",
+    "shape": "leave this one for later, no verdict and no answer given; the next question; pose the question as written, in their language; then wait; no verdict on their reply: neither praise nor 'wrong'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "c5-maths-ch02-t01-i01",
+    "skillId": "c5-maths-ch02-t01-s1",
+    "hintLevel": 0,
+    "probe": "P15"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "0  ·  1  ·  2"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Ghar (0) se chai ki dukaan (1) tak ki sadak 2 barabar hisson mein bati hai. Beech wale mark par kaunsa number hai?",
+     "itemId": "c5-maths-ch02-t01-i01"
+    },
+    "answerForm": "number",
+    "tray": "module",
+    "shortTitle": "Fractions on a line",
+    "beat": {
+     "beatId": "b5-practice_set",
+     "type": "practice_set",
+     "index": 5
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "mount",
+     "moduleId": "m7",
+     "engine": "number-line@1",
+     "params": {
+      "topicId": "c5-maths-ch02-t01",
+      "skillId": "c5-maths-ch02-t01-s1",
+      "lang": "hinglish",
+      "mode": "read",
+      "target": "1/2",
+      "min": "0",
+      "max": "1",
+      "partition": 2,
+      "labels": "ends",
+      "numberKind": "fraction",
+      "itemId": "c5-maths-ch02-t01-i01"
+     },
+     "goal": "item:c5-maths-ch02-t01-i01"
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "drift",
+      "script",
+      "ask"
+     ],
+     "rewritten": true,
+     "replaced": false,
+     "firstDraft": "ठीक है, Meher. Ab agla fraction number line par place kijiye: 3/2 ko 0 aur 2 ke beech kaise mark karenge?",
+     "afterRewrite": [
+      "bare"
+     ],
+     "leadRepair": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 518,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 3849,
+    "item": "c5-maths-ch02-t01-i01",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 67
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 68
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 760
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 836
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1283
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1354
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1356
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1356
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1122
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1186
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1284
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3777
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3849
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:clarify-01",
+   "lessonId": "bd796515-89c8-4675-b807-0db9efebf2f8",
+   "childText": "matlab kaunsa mark",
+   "ms": 3071,
+   "error": null,
+   "teacherReply": "Meher, “mark” matlab number line par bani chhoti nishaani ya point. Ghar (0) se chai ki dukaan (1) tak ki sadak 2 barabar hisson mein bati hai. Beech wale mark par kaunsa number hai?",
+   "move": {
+    "kind": "repair",
+    "shape": "they asked what the question means: say what it asks in simpler words, and what a hard word in it means; one tiny example of the word if it helps, never of the answer; the key stays unsaid; then the same question again; no verdict on their reply: neither praise nor 'wrong'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "c5-maths-ch02-t01-i01",
+    "skillId": "c5-maths-ch02-t01-s1",
+    "hintLevel": 0,
+    "request": "clarify",
+    "lead": "they asked what the question means"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "0  ·  1  ·  2"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Ghar (0) se chai ki dukaan (1) tak ki sadak 2 barabar hisson mein bati hai. Beech wale mark par kaunsa number hai?",
+     "itemId": "c5-maths-ch02-t01-i01"
+    },
+    "answerForm": "number",
+    "tray": "module",
+    "shortTitle": "Fractions on a line",
+    "beat": {
+     "beatId": "b5-practice_set",
+     "type": "practice_set",
+     "index": 5
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "ask"
+     ],
+     "rewritten": false,
+     "replaced": false,
+     "firstDraft": "Meher, “mark” matlab number line par bani chhoti nishaani ya point. Ghar 0 aur dukaan 1 ke beech ek hi mark hai—us par kaunsa number hai?",
+     "repaired": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "clarify",
+     "waitedMs": 472,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 3068,
+    "item": "c5-maths-ch02-t01-i01",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 130
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 130
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 788
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 932
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1265
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1405
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1406
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1407
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1584
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3007
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3068
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "recovery",
+   "lessonId": "bd796515-89c8-4675-b807-0db9efebf2f8",
+   "childText": "1/2",
+   "ms": 1577,
+   "error": null,
+   "teacherReply": "Bilkul, Meher— aapne beech wale mark ko 1/2 pehchana. Phone app mein download 0 se 1 ki number line par dikh raha hai. Line mein 6 barabar gaps hain. 0 ke baad pehle mark par kaunsa fraction hai?",
+   "move": {
+    "kind": "practice",
+    "shape": "confirm specifically: name the exact thing they got right, no ability words; pose the question as written, in their language; then wait; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "c5-maths-ch02-t01-rl-o1",
+    "skillId": "c5-maths-ch02-t01-s1",
+    "hintLevel": 0,
+    "probe": "P15"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "0  ·  1  ·  6  ·  0"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Line mein 6 barabar gaps hain. 0 ke baad pehle mark par kaunsa fraction hai?",
+     "itemId": "c5-maths-ch02-t01-rl-o1"
+    },
+    "answerForm": "number",
+    "tray": "studio",
+    "shortTitle": "Fractions on a line",
+    "verdict": "correct",
+    "beat": {
+     "beatId": "b5-practice_set",
+     "type": "practice_set",
+     "index": 5
+    },
+    "studioSlot": {
+     "slotId": "bd796515-89c8-4675-b807-0db9efebf2f8:c1:slot",
+     "intentId": "bd796515-89c8-4675-b807-0db9efebf2f8:c1",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "catch-on-line@1",
+       "spec": {
+        "archetype": "catch-on-line@1",
+        "skills": [
+         "c5-maths-ch02-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "coach": "Drag to move the dock",
+         "wave": "Wave",
+         "of": "of",
+         "clear": "clear",
+         "landed": "landed",
+         "precision": "precision",
+         "chain": "chain",
+         "bestChain": "best chain",
+         "exact": "EXACT",
+         "close": "CLOSE",
+         "inside": "IN",
+         "offBy": "off by",
+         "same": "SAME SPOT",
+         "runDone": "Run complete",
+         "toughest": "Toughest"
+        },
+        "waves": [
+         {
+          "title": "Halfway stop",
+          "sub": "Split the road into two equal gaps",
+          "line": [
+           0,
+           1
+          ],
+          "ticks": 1,
+          "scaffoldTicks": 2,
+          "speed": 82,
+          "gap": 2.8,
+          "items": [
+           [
+            "1/2"
+           ],
+           [
+            "1/2"
+           ],
+           [
+            "1/2"
+           ]
+          ]
+         },
+         {
+          "title": "Quarter steps",
+          "sub": "Count equal gaps from zero",
+          "line": [
+           0,
+           1
+          ],
+          "ticks": 3,
+          "scaffoldTicks": 4,
+          "speed": 92,
+          "gap": 2.3,
+          "items": [
+           [
+            "1/4"
+           ],
+           [
+            "2/4"
+           ],
+           [
+            "3/4"
+           ],
+           [
+            "1/4"
+           ]
+          ]
+         },
+         {
+          "title": "Compare places",
+          "sub": "Small fractions can be close to zero",
+          "line": [
+           0,
+           1
+          ],
+          "ticks": 4,
+          "scaffoldTicks": 5,
+          "speed": 101,
+          "gap": 2,
+          "items": [
+           [
+            "1/5"
+           ],
+           [
+            "3/5"
+           ],
+           [
+            "2/5"
+           ],
+           [
+            "4/5"
+           ]
+          ]
+         },
+         {
+          "title": "Beyond one",
+          "sub": "The line continues past one",
+          "line": [
+           0,
+           2
+          ],
+          "ticks": 7,
+          "scaffoldTicks": 8,
+          "speed": 110,
+          "gap": 1.7,
+          "items": [
+           [
+            "5/4"
+           ],
+           [
+            "3/2"
+           ],
+           [
+            "7/4"
+           ],
+           [
+            "1/4"
+           ],
+           [
+            "4/4"
+           ]
+          ]
+         }
+        ],
+        "adapt": {
+         "slowAfterMisses": 2,
+         "slowFactor": 0.86,
+         "fastAfterChain": 4,
+         "fastFactor": 1.07,
+         "minScale": 0.7,
+         "maxScale": 1.3,
+         "scaffoldPods": 3
+        }
+       },
+       "boardTwin": {
+        "scriptRef": "board:c5-maths-ch02-t01-s1|practice|-|-",
+        "values": {
+         "title": "Landfall",
+         "need": "practice"
+        },
+        "board": {
+         "title": "Landfall",
+         "lines": [
+          "line",
+          "equal",
+          "gaps",
+          "mark"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "unmount",
+     "moduleId": "m7"
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "drift",
+      "ask"
+     ],
+     "rewritten": false,
+     "replaced": false,
+     "firstDraft": "Bilkul, Meher— aapne beech wale mark ko 1/2 pehchana. Ab 0 aur 1 ke beech 6 barabar gaps hain; pehle mark par kaunsa fraction hai?",
+     "repaired": true
+    },
+    "verdict": "correct",
+    "cls": {
+     "outcome": "correct",
+     "source": "exact"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 1574,
+    "item": "c5-maths-ch02-t01-rl-o1",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 72
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 72
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 80
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 142
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 142
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1346
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1506
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1574
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:small_talk-01",
+   "lessonId": "bd796515-89c8-4675-b807-0db9efebf2f8",
+   "childText": "aap kaise ho",
+   "ms": 1661,
+   "error": null,
+   "teacherReply": "Main AI teacher hoon, Meher, isliye mera body ya ghar nahi hota. Ab chaliye, number line wali practice par wapas aate hain. Line mein 6 barabar gaps hain. 0 ke baad pehle mark par kaunsa fraction hai?",
+   "move": {
+    "kind": "practice",
+    "shape": "two parts — first: a friendly question about you: one honest line as an AI (no body, home, food or favourite things of your own); then back to the work; second: the question on the card, as written, in their language; then wait; no verdict on their reply: neither praise nor 'wrong'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "c5-maths-ch02-t01-rl-o1",
+    "skillId": "c5-maths-ch02-t01-s1",
+    "hintLevel": 0,
+    "probe": "P15",
+    "request": "uptake",
+    "lead": "a friendly question about you: one honest line as an AI (no body, home, food or favourite things of your own); then back to the work"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "0  ·  1  ·  6  ·  0"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Line mein 6 barabar gaps hain. 0 ke baad pehle mark par kaunsa fraction hai?",
+     "itemId": "c5-maths-ch02-t01-rl-o1"
+    },
+    "answerForm": "number",
+    "tray": "studio",
+    "shortTitle": "Fractions on a line",
+    "beat": {
+     "beatId": "b5-practice_set",
+     "type": "practice_set",
+     "index": 5
+    },
+    "studioSlot": {
+     "slotId": "bd796515-89c8-4675-b807-0db9efebf2f8:c1:slot",
+     "intentId": "bd796515-89c8-4675-b807-0db9efebf2f8:c1",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "catch-on-line@1",
+       "spec": {
+        "archetype": "catch-on-line@1",
+        "skills": [
+         "c5-maths-ch02-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "coach": "Drag to move the dock",
+         "wave": "Wave",
+         "of": "of",
+         "clear": "clear",
+         "landed": "landed",
+         "precision": "precision",
+         "chain": "chain",
+         "bestChain": "best chain",
+         "exact": "EXACT",
+         "close": "CLOSE",
+         "inside": "IN",
+         "offBy": "off by",
+         "same": "SAME SPOT",
+         "runDone": "Run complete",
+         "toughest": "Toughest"
+        },
+        "waves": [
+         {
+          "title": "Halfway stop",
+          "sub": "Split the road into two equal gaps",
+          "line": [
+           0,
+           1
+          ],
+          "ticks": 1,
+          "scaffoldTicks": 2,
+          "speed": 82,
+          "gap": 2.8,
+          "items": [
+           [
+            "1/2"
+           ],
+           [
+            "1/2"
+           ],
+           [
+            "1/2"
+           ]
+          ]
+         },
+         {
+          "title": "Quarter steps",
+          "sub": "Count equal gaps from zero",
+          "line": [
+           0,
+           1
+          ],
+          "ticks": 3,
+          "scaffoldTicks": 4,
+          "speed": 92,
+          "gap": 2.3,
+          "items": [
+           [
+            "1/4"
+           ],
+           [
+            "2/4"
+           ],
+           [
+            "3/4"
+           ],
+           [
+            "1/4"
+           ]
+          ]
+         },
+         {
+          "title": "Compare places",
+          "sub": "Small fractions can be close to zero",
+          "line": [
+           0,
+           1
+          ],
+          "ticks": 4,
+          "scaffoldTicks": 5,
+          "speed": 101,
+          "gap": 2,
+          "items": [
+           [
+            "1/5"
+           ],
+           [
+            "3/5"
+           ],
+           [
+            "2/5"
+           ],
+           [
+            "4/5"
+           ]
+          ]
+         },
+         {
+          "title": "Beyond one",
+          "sub": "The line continues past one",
+          "line": [
+           0,
+           2
+          ],
+          "ticks": 7,
+          "scaffoldTicks": 8,
+          "speed": 110,
+          "gap": 1.7,
+          "items": [
+           [
+            "5/4"
+           ],
+           [
+            "3/2"
+           ],
+           [
+            "7/4"
+           ],
+           [
+            "1/4"
+           ],
+           [
+            "4/4"
+           ]
+          ]
+         }
+        ],
+        "adapt": {
+         "slowAfterMisses": 2,
+         "slowFactor": 0.86,
+         "fastAfterChain": 4,
+         "fastFactor": 1.07,
+         "minScale": 0.7,
+         "maxScale": 1.3,
+         "scaffoldPods": 3
+        }
+       },
+       "boardTwin": {
+        "scriptRef": "board:c5-maths-ch02-t01-s1|practice|-|-",
+        "values": {
+         "title": "Landfall",
+         "need": "practice"
+        },
+        "board": {
+         "title": "Landfall",
+         "lines": [
+          "line",
+          "equal",
+          "gaps",
+          "mark"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "request"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 1658,
+    "item": "c5-maths-ch02-t01-rl-o1",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 79
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 80
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 439
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 528
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 530
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 531
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1035
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1588
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1658
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "recovery",
+   "lessonId": "bd796515-89c8-4675-b807-0db9efebf2f8",
+   "childText": "1/6",
+   "ms": 3078,
+   "error": null,
+   "teacherReply": "Sahi, Meher— aapne pehla gap 1/6 bataya. Aapne kaise jaana ki pehle mark par 1/6 hoga?",
+   "move": {
+    "kind": "probe",
+    "shape": "confirm in two or three words only — the reason is theirs to give, so do not explain it; covert shape: protege naive but-why; Bittu, who does not know it, asks why; about THIS question; one open question; wait; a real question, never a check on them; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "c5-maths-ch02-t01-rl-o1",
+    "skillId": "c5-maths-ch02-t01-s1",
+    "hintLevel": 0,
+    "probe": "P2"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "0  ·  1  ·  6  ·  0"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Fractions on a line",
+    "verdict": "correct",
+    "beat": {
+     "beatId": "b6-probe",
+     "type": "probe",
+     "index": 6
+    },
+    "ask": {
+     "text": "Aapne kaise jaana ki pehle mark par 1/6 hoga?"
+    },
+    "studioSlot": {
+     "slotId": "bd796515-89c8-4675-b807-0db9efebf2f8:c1:slot",
+     "intentId": "bd796515-89c8-4675-b807-0db9efebf2f8:c1",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "catch-on-line@1",
+       "spec": {
+        "archetype": "catch-on-line@1",
+        "skills": [
+         "c5-maths-ch02-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "coach": "Drag to move the dock",
+         "wave": "Wave",
+         "of": "of",
+         "clear": "clear",
+         "landed": "landed",
+         "precision": "precision",
+         "chain": "chain",
+         "bestChain": "best chain",
+         "exact": "EXACT",
+         "close": "CLOSE",
+         "inside": "IN",
+         "offBy": "off by",
+         "same": "SAME SPOT",
+         "runDone": "Run complete",
+         "toughest": "Toughest"
+        },
+        "waves": [
+         {
+          "title": "Halfway stop",
+          "sub": "Split the road into two equal gaps",
+          "line": [
+           0,
+           1
+          ],
+          "ticks": 1,
+          "scaffoldTicks": 2,
+          "speed": 82,
+          "gap": 2.8,
+          "items": [
+           [
+            "1/2"
+           ],
+           [
+            "1/2"
+           ],
+           [
+            "1/2"
+           ]
+          ]
+         },
+         {
+          "title": "Quarter steps",
+          "sub": "Count equal gaps from zero",
+          "line": [
+           0,
+           1
+          ],
+          "ticks": 3,
+          "scaffoldTicks": 4,
+          "speed": 92,
+          "gap": 2.3,
+          "items": [
+           [
+            "1/4"
+           ],
+           [
+            "2/4"
+           ],
+           [
+            "3/4"
+           ],
+           [
+            "1/4"
+           ]
+          ]
+         },
+         {
+          "title": "Compare places",
+          "sub": "Small fractions can be close to zero",
+          "line": [
+           0,
+           1
+          ],
+          "ticks": 4,
+          "scaffoldTicks": 5,
+          "speed": 101,
+          "gap": 2,
+          "items": [
+           [
+            "1/5"
+           ],
+           [
+            "3/5"
+           ],
+           [
+            "2/5"
+           ],
+           [
+            "4/5"
+           ]
+          ]
+         },
+         {
+          "title": "Beyond one",
+          "sub": "The line continues past one",
+          "line": [
+           0,
+           2
+          ],
+          "ticks": 7,
+          "scaffoldTicks": 8,
+          "speed": 110,
+          "gap": 1.7,
+          "items": [
+           [
+            "5/4"
+           ],
+           [
+            "3/2"
+           ],
+           [
+            "7/4"
+           ],
+           [
+            "1/4"
+           ],
+           [
+            "4/4"
+           ]
+          ]
+         }
+        ],
+        "adapt": {
+         "slowAfterMisses": 2,
+         "slowFactor": 0.86,
+         "fastAfterChain": 4,
+         "fastFactor": 1.07,
+         "minScale": 0.7,
+         "maxScale": 1.3,
+         "scaffoldPods": 3
+        }
+       },
+       "boardTwin": {
+        "scriptRef": "board:c5-maths-ch02-t01-s1|practice|-|-",
+        "values": {
+         "title": "Landfall",
+         "need": "practice"
+        },
+        "board": {
+         "title": "Landfall",
+         "lines": [
+          "line",
+          "equal",
+          "gaps",
+          "mark"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "nowhy"
+     ],
+     "rewritten": true,
+     "replaced": false,
+     "firstDraft": "Sahi, Meher— aapne 6 equal gaps mein pehla gap 1/6 pehchana. Ab 0 se 1 tak 4 equal gaps hon, toh pehle mark par kaunsa fraction hoga?",
+     "afterRewrite": []
+    },
+    "verdict": "correct",
+    "cls": {
+     "outcome": "correct",
+     "source": "exact"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 3075,
+    "item": "c5-maths-ch02-t01-rl-o1",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 69
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 69
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 77
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 146
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 146
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1334
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1469
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2964
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3075
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "bd796515-89c8-4675-b807-0db9efebf2f8",
+   "childText": "achha",
+   "ms": 5028,
+   "error": null,
+   "teacherReply": "Haan, Meher—0 se 1 tak distance 5 barabar gaps mein baanti hai, isliye har gap 1/5. 2/5 ke liye kitne gaps aage jaiye?",
+   "move": {
+    "kind": "explain",
+    "shape": "give the reason yourself in one plain line (their answer was right); one idea only: Mark non-unit fractions such as 3/4 and 2/5 between 0 and 1; an example from their interest (drawing) if it fits naturally; objects first, then the symbol; point at the screen only at what the on-screen row lists; never a drawing made of characters; end with one small question that makes them USE the idea — never 'samjha?'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "skillId": "c5-maths-ch02-t01-s2",
+    "format": "F3"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "practice",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "Fractions on a line",
+    "beat": {
+     "beatId": "b7-explain",
+     "type": "explain",
+     "index": 7
+    },
+    "ask": {
+     "text": "2/5 ke liye kitne gaps aage jaiye?"
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "mount",
+     "moduleId": "m12",
+     "engine": "number-line@1",
+     "params": {
+      "topicId": "c5-maths-ch02-t01",
+      "skillId": null,
+      "lang": "hinglish",
+      "fractions": [
+       [
+        2,
+        5
+       ]
+      ],
+      "numbers": [
+       0,
+       1
+      ]
+     }
+    }
+   ],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "parts"
+     ],
+     "rewritten": true,
+     "replaced": false,
+     "firstDraft": "Haan, Meher—6 barabar gaps mein poori distance 1 hoti hai, isliye har gap 1/6. Aap 2/5 ko number line par kahan mark karenge?",
+     "afterRewrite": []
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 522,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 5024,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 176
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 176
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 923
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 1117
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1446
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1639
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1642
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1642
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1591
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1704
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 4952
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 5024
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "advance",
+   "lessonId": "bd796515-89c8-4675-b807-0db9efebf2f8",
+   "childText": "hmm achha",
+   "ms": 4654,
+   "error": null,
+   "teacherReply": "Theek hai, Meher—thoda pause lete hain. Screen par 0 se 1 tak ke parts ko dhyaan se dekhiye; har part ki length same hai. 0 se 1 ki line 3 barabar parts mein bati hai. 1/3 aur 2/3 mein se ek beech se pehle hai aur ek baad mein. Kaun kahaan, aur kyun?",
+   "move": {
+    "kind": "probe",
+    "shape": "pose the question as written, in their language; then wait; two cases side by side; ask which one fits and what is different; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "c5-maths-ch02-t01-i06",
+    "skillId": "c5-maths-ch02-t01-s2",
+    "hintLevel": 0,
+    "probe": "P8"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "1/3  ·  2/3"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "1/3 aur 2/3 mein se ek beech se pehle hai aur ek baad mein. Kaun kahaan, aur kyun?",
+     "itemId": "c5-maths-ch02-t01-i06"
+    },
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "Fractions on a line",
+    "beat": {
+     "beatId": "b8-probe",
+     "type": "probe",
+     "index": 8
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "unmount",
+     "moduleId": "m12"
+    },
+    {
+     "op": "mount",
+     "moduleId": "m13",
+     "engine": "number-line@1",
+     "params": {
+      "topicId": "c5-maths-ch02-t01",
+      "skillId": "c5-maths-ch02-t01-s2",
+      "lang": "hinglish",
+      "fractions": [
+       [
+        1,
+        3
+       ],
+       [
+        2,
+        3
+       ]
+      ],
+      "numbers": [
+       0,
+       1,
+       3
+      ],
+      "predict": true
+     }
+    }
+   ],
+   "studio": {
+    "retire": "bd796515-89c8-4675-b807-0db9efebf2f8:c1"
+   },
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "ask"
+     ],
+     "rewritten": true,
+     "replaced": false,
+     "firstDraft": "Meher, screen par 0 se 1 ke beech 3 barabar parts hain. 1/3 aur 2/3 mein se kaunsa middle se pehle hai, aur kyun?",
+     "afterRewrite": [
+      "bare"
+     ],
+     "leadRepair": true
+    },
+    "verdict": "ungraded",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 658,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 4641,
+    "item": "c5-maths-ch02-t01-i06",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 69
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 69
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 641
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 717
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1299
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1375
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1377
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1378
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1453
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1442
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1510
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 4578
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 4640
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:skip_ahead-07",
+   "lessonId": "bd796515-89c8-4675-b807-0db9efebf2f8",
+   "childText": "fast forward karo yaar",
+   "ms": 4358,
+   "error": null,
+   "teacherReply": "Meher, 0 se 1 ko 3 barabar parts mein dekhiye. Batayiye. 1/3 aur 2/3 mein se ek beech se pehle hai aur ek baad mein. Kaun kahaan, aur kyun?",
+   "move": {
+    "kind": "probe",
+    "shape": "they say they know this: no teaching; let them show it; pose the question as written, in their language; then wait; two cases side by side; ask which one fits and what is different; no verdict on their reply: neither praise nor 'wrong'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "c5-maths-ch02-t01-i06",
+    "skillId": "c5-maths-ch02-t01-s2",
+    "hintLevel": 0,
+    "probe": "P8",
+    "request": "know"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "1/3  ·  2/3"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "1/3 aur 2/3 mein se ek beech se pehle hai aur ek baad mein. Kaun kahaan, aur kyun?",
+     "itemId": "c5-maths-ch02-t01-i06"
+    },
+    "answerForm": "words",
+    "tray": "module",
+    "shortTitle": "Fractions on a line",
+    "beat": {
+     "beatId": "b8-probe",
+     "type": "probe",
+     "index": 8
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "parts"
+     ],
+     "rewritten": true,
+     "replaced": false,
+     "firstDraft": "Meher, fast-forward: 0 se 1 ke beech ka exact middle 1/2 hota hai. Ab dono fractions ko 1/2 se compare karke dekhiye. 1/3 aur 2/3 mein se ek beech se pehle hai aur ek baad mein. Kaun kahaan, aur kyun?",
+     "leadSlot": true,
+     "afterRewrite": [
+      "ask"
+     ],
+     "repaired": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "skip_ahead",
+     "waitedMs": 599,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 4355,
+    "item": "c5-maths-ch02-t01-i06",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 70
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 70
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 761
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 857
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 1366
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 1455
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 1458
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 1458
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1289
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1362
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 4201
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 4355
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "recovery",
+   "lessonId": "bd796515-89c8-4675-b807-0db9efebf2f8",
+   "childText": "1/3 before 2/3 after",
+   "ms": 1647,
+   "error": null,
+   "teacherReply": "Meher, aapne dono fractions ko sahi order mein rakha. Aapka reason bhi sahi direction mein hai: middle point ko reference banaiye. 1/3 aur 2/3 mein se ek beech se pehle hai aur ek baad mein. Kaun kahaan, aur kyun?",
+   "move": {
+    "kind": "hint",
+    "shape": "rung 1 of 4 (pump): What number is in the middle of 0 and 1?; the key stays unsaid; their answer was partly right: name the right part, no full agreement; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "c5-maths-ch02-t01-i06",
+    "skillId": "c5-maths-ch02-t01-s2",
+    "hintLevel": 1
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "1/3  ·  2/3"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "1/3 aur 2/3 mein se ek beech se pehle hai aur ek baad mein. Kaun kahaan, aur kyun?",
+     "itemId": "c5-maths-ch02-t01-i06"
+    },
+    "answerForm": "words",
+    "tray": "module",
+    "hint": {
+     "level": 1,
+     "text": "What number is in the middle of 0 and 1?"
+    },
+    "shortTitle": "Fractions on a line",
+    "verdict": "partial",
+    "beat": {
+     "beatId": "b8-probe",
+     "type": "probe",
+     "index": 8
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "partial",
+    "cls": {
+     "outcome": "partial",
+     "source": "exact"
+    },
+    "note": null,
+    "hintLevel": 1,
+    "phase": "practice",
+    "ms": 1638,
+    "item": "c5-maths-ch02-t01-i06",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 71
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 71
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 85
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 151
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 151
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1390
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 1558
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 1638
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:animation_request-03",
+   "lessonId": "bd796515-89c8-4675-b807-0db9efebf2f8",
+   "childText": "animation se samjhao",
+   "ms": 2561,
+   "error": null,
+   "teacherReply": "Screen par dots ko tap karke 0 se 1 ke beech teen equal spaces banaiye; marker ko har space par drag karke distance dekhiye. 1/3 aur 2/3 mein se ek beech se pehle hai aur ek baad mein. Kaun kahaan, aur kyun?",
+   "move": {
+    "kind": "reteach",
+    "shape": "they asked to see it moving: name the movement in your first words — what on the screen they can move, drag or tap, and what changes as they do (never a video you do not have); one idea; let the picture do the work; a few words about what to look at; the key stays unsaid; then one small question about what they see; no verdict on their reply: neither praise nor 'wrong'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu; it is on the screen now: point them at it in your first words and say what to look at",
+    "itemId": "c5-maths-ch02-t01-i06",
+    "skillId": "c5-maths-ch02-t01-s2",
+    "hintLevel": 2,
+    "request": "visual",
+    "visual": "animation"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "1/3  ·  2/3"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "1/3 aur 2/3 mein se ek beech se pehle hai aur ek baad mein. Kaun kahaan, aur kyun?",
+     "itemId": "c5-maths-ch02-t01-i06"
+    },
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Fractions on a line",
+    "beat": {
+     "beatId": "b9-explain",
+     "type": "explain",
+     "index": 9
+    },
+    "studioSlot": {
+     "slotId": "bd796515-89c8-4675-b807-0db9efebf2f8:c11:slot",
+     "intentId": "bd796515-89c8-4675-b807-0db9efebf2f8:c11",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "scene-explainer@1",
+       "spec": {
+        "archetype": "scene-explainer@1",
+        "skills": [
+         "c5-maths-ch02-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "again": "Show again",
+         "yourTurn": "Your turn",
+         "check": "Check",
+         "right": "Got it",
+         "look": "Look again",
+         "myth": "MYTH",
+         "busted": "NOT TRUE",
+         "order": "Tap them in order"
+        },
+        "title": "Fractions on the number line",
+        "accent": "ion",
+        "targets": "c5-maths-ch02-t01-m-all-less-than-one",
+        "scenes": [
+         {
+          "id": "s1",
+          "layout": "split",
+          "els": [
+           {
+            "id": "title",
+            "type": "title",
+            "text": "Fractions on a line"
+           },
+           {
+            "id": "myth",
+            "type": "myth",
+            "text": "Every fraction is less than 1"
+           }
+          ]
+         },
+         {
+          "id": "s2",
+          "layout": "row",
+          "els": [
+           {
+            "id": "ax",
+            "type": "axis",
+            "min": 0,
+            "max": 1,
+            "step": 0.2,
+            "scale": "linear",
+            "y": 420
+           },
+           {
+            "id": "zero",
+            "type": "label",
+            "text": "0",
+            "x": 100,
+            "y": 455
+           },
+           {
+            "id": "one",
+            "type": "label",
+            "text": "1",
+            "x": 800,
+            "y": 455
+           },
+           {
+            "id": "m1",
+            "type": "mark",
+            "axis": "ax",
+            "value": 0.2,
+            "text": "1/5",
+            "color": "ion"
+           },
+           {
+            "id": "m2",
+            "type": "mark",
+            "axis": "ax",
+            "value": 0.4,
+            "text": "2/5",
+            "color": "mint"
+           },
+           {
+            "id": "m3",
+            "type": "mark",
+            "axis": "ax",
+            "value": 0.6,
+            "text": "3/5",
+            "color": "amber"
+           },
+           {
+            "id": "m4",
+            "type": "mark",
+            "axis": "ax",
+            "value": 0.8,
+            "text": "4/5",
+            "color": "sun"
+           },
+           {
+            "id": "den",
+            "type": "node",
+            "text": "Bottom: 5",
+            "sub": "equal gaps",
+            "glyph": "ruler",
+            "color": "ion"
+           },
+           {
+            "id": "num",
+            "type": "node",
+            "text": "Top: 2",
+            "sub": "gaps from 0",
+            "glyph": "compass",
+            "color": "mint"
+           }
+          ]
+         },
+         {
+          "id": "s3",
+          "layout": "row",
+          "els": [
+           {
+            "id": "ax2",
+            "type": "axis",
+            "min": 0,
+            "max": 2,
+            "step": 0.25,
+            "scale": "linear",
+            "y": 420
+           },
+           {
+            "id": "p0",
+            "type": "label",
+            "text": "0",
+            "x": 80,
+            "y": 455
+           },
+           {
+            "id": "p1",
+            "type": "label",
+            "text": "1",
+            "x": 430,
+            "y": 455
+           },
+           {
+            "id": "p2",
+            "type": "label",
+            "text": "2",
+            "x": 800,
+            "y": 455
+           },
+           {
+            "id": "past",
+            "type": "node",
+            "text": "5/4",
+            "sub": "one quarter past 1",
+            "glyph": "spark",
+            "color": "amber"
+           },
+           {
+            "id": "before",
+            "type": "node",
+            "text": "before 1",
+            "sub": "less than 1",
+            "glyph": "question",
+            "color": "ion"
+           },
+           {
+            "id": "beyond",
+            "type": "node",
+            "text": "after 1",
+            "sub": "greater than 1",
+            "color": "amber"
+           }
+          ]
+         }
+        ],
+        "text": {
+         "L1": "Fractions are numbers, so they have places on a number line.",
+         "L2": "The bottom number tells how many equal gaps to make from 0 to 1.",
+         "L3": "Count gaps, not marks. Four marks between 0 and 1 make five equal gaps.",
+         "L4": "So each gap is one fifth. The top number tells how many gaps to count from 0.",
+         "L5": "To mark two fifths, count two gaps from 0. That mark is 2/5.",
+         "L6": "A fraction can also go beyond 1. If the top number is bigger than the bottom number, it lies past 1.",
+         "L7": "For example, 5/4 is one quarter past 1, so it is after 1.",
+         "L8": "Now use these ideas to choose where 5/4 belongs."
+        },
+        "narration": {
+         "L1": {
+          "text": "Fractions are numbers, so they have places on a number line.",
+          "dur": 3,
+          "lead": 0,
+          "tail": 0,
+          "pauses": []
+         },
+         "L2": {
+          "text": "The bottom number tells how many equal gaps to make from 0 to 1.",
+          "dur": 4,
+          "lead": 0,
+          "tail": 0,
+          "pauses": []
+         },
+         "L3": {
+          "text": "Count gaps, not marks. Four marks between 0 and 1 make five equal gaps.",
+          "dur": 4,
+          "lead": 0,
+          "tail": 0,
+          "pauses": []
+         },
+         "L4": {
+          "text": "So each gap is one fifth. The top number tells how many gaps to count from 0.",
+          "dur": 4,
+          "lead": 0,
+          "tail": 0,
+          "pauses": []
+         },
+         "L5": {
+          "text": "To mark two fifths, count two gaps from 0. That mark is 2/5.",
+          "dur": 3.5,
+          "lead": 0,
+          "tail": 0,
+          "pauses": []
+         },
+         "L6": {
+          "text": "A fraction can also go beyond 1. If the top number is bigger than the bottom number, it lies past 1.",
+          "dur": 4,
+          "lead": 0,
+          "tail": 0,
+          "pauses": []
+         },
+         "L7": {
+          "text": "For example, 5/4 is one quarter past 1, so it is after 1.",
+          "dur": 3,
+          "lead": 0,
+          "tail": 0,
+          "pauses": []
+         },
+         "L8": {
+          "text": "Now use these ideas to choose where 5/4 belongs.",
+          "dur": 2.5,
+          "lead": 0,
+          "tail": 0,
+          "pauses": []
+         }
+        },
+        "beats": [
+         {
+          "line": "L1",
+          "gap": 0.3,
+          "scene": "s1",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.8,
+            "target": "title"
+           }
+          ]
+         },
+         {
+          "line": "L2",
+          "gap": 0.3,
+          "scene": "s2",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.8,
+            "target": "ax"
+           },
+           {
+            "at": 0.5,
+            "do": "show",
+            "dur": 0.8,
+            "target": "den"
+           }
+          ]
+         },
+         {
+          "line": "L3",
+          "gap": 0.3,
+          "scene": "s2",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 1,
+            "target": [
+             "m1",
+             "m2",
+             "m3",
+             "m4"
+            ]
+           },
+           {
+            "at": 0.8,
+            "do": "highlight",
+            "dur": 1,
+            "target": "den"
+           }
+          ]
+         },
+         {
+          "line": "L4",
+          "gap": 0.3,
+          "scene": "s2",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.8,
+            "target": "num"
+           },
+           {
+            "at": 0.7,
+            "do": "flow",
+            "dur": 0.6,
+            "target": "m1",
+            "to": 1
+           }
+          ]
+         },
+         {
+          "line": "L5",
+          "gap": 0.3,
+          "scene": "s2",
+          "cues": [
+           {
+            "at": 0,
+            "do": "highlight",
+            "dur": 1.2,
+            "target": "m2"
+           }
+          ]
+         },
+         {
+          "line": "L6",
+          "gap": 0.4,
+          "scene": "s1",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.8,
+            "target": "myth"
+           },
+           {
+            "at": 0.8,
+            "do": "bust",
+            "dur": 1,
+            "target": "myth"
+           }
+          ]
+         },
+         {
+          "line": "L7",
+          "gap": 0.3,
+          "scene": "s3",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.8,
+            "target": "ax2"
+           },
+           {
+            "at": 0.5,
+            "do": "show",
+            "dur": 0.8,
+            "target": "past"
+           },
+           {
+            "at": 1.2,
+            "do": "highlight",
+            "dur": 1,
+            "target": "beyond"
+           }
+          ]
+         },
+         {
+          "line": "L8",
+          "gap": 0,
+          "scene": "s3",
+          "cues": [
+           {
+            "at": 0,
+            "do": "interactive",
+            "dur": 1
+           }
+          ]
+         }
+        ],
+        "task": {
+         "kind": "tap",
+         "prompt": "Where does 5/4 belong on the number line?",
+         "options": [
+          "before",
+          "beyond"
+         ],
+         "answer": "beyond",
+         "src": "c5-maths-ch02-t01-i04"
+        }
+       },
+       "boardTwin": {
+        "scriptRef": "board:c5-maths-ch02-t01-s1|explain|-|-",
+        "values": {
+         "title": "Cinematic explainer",
+         "need": "explain"
+        },
+        "board": {
+         "title": "Cinematic explainer",
+         "lines": [
+          "line",
+          "equal",
+          "gaps",
+          "mark"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [
+    {
+     "op": "unmount",
+     "moduleId": "m13"
+    }
+   ],
+   "studio": {
+    "reveal": "bd796515-89c8-4675-b807-0db9efebf2f8:c11"
+   },
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "request"
+    },
+    "note": null,
+    "hintLevel": 2,
+    "phase": "practice",
+    "ms": 2557,
+    "item": "c5-maths-ch02-t01-i06",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 70
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 70
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 588
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 675
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 680
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 680
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1722
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 2417
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 2556
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "recovery",
+   "lessonId": "bd796515-89c8-4675-b807-0db9efebf2f8",
+   "childText": "1/3 before 2/3 after",
+   "ms": 4936,
+   "error": null,
+   "teacherReply": "Aapne fraction order sahi bataya: 1/3 middle se pehle, 2/3 middle ke baad. Animation ko pause karke teen equal parts clearly dekhiye. 1 km ki sadak par har 1/10 km par ek patthar hai. Chai ki dukaan 7ve patthar par hai. Shuru se kitni door hai, km ke fraction mein?",
+   "move": {
+    "kind": "probe",
+    "shape": "that question has been on the table long enough: give its answer plainly with one line of why (in LESSON NOW), no verdict on them; then the next question; pose the question as written, in their language; then wait; same idea, new situation; let them carry it over; their answer was partly right: name the right part, no full agreement; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "c5-maths-ch02-t01-i09",
+    "skillId": "c5-maths-ch02-t01-s2",
+    "hintLevel": 0,
+    "probe": "P3"
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "1/10"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Chai ki dukaan 7ve patthar par hai. Shuru se kitni door hai, km ke fraction mein?",
+     "itemId": "c5-maths-ch02-t01-i09"
+    },
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Fractions on a line",
+    "verdict": "partial",
+    "beat": {
+     "beatId": "b10-probe",
+     "type": "probe",
+     "index": 10
+    },
+    "studioSlot": {
+     "slotId": "bd796515-89c8-4675-b807-0db9efebf2f8:c11:slot",
+     "intentId": "bd796515-89c8-4675-b807-0db9efebf2f8:c11",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "scene-explainer@1",
+       "spec": {
+        "archetype": "scene-explainer@1",
+        "skills": [
+         "c5-maths-ch02-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "again": "Show again",
+         "yourTurn": "Your turn",
+         "check": "Check",
+         "right": "Got it",
+         "look": "Look again",
+         "myth": "MYTH",
+         "busted": "NOT TRUE",
+         "order": "Tap them in order"
+        },
+        "title": "Fractions on the number line",
+        "accent": "ion",
+        "targets": "c5-maths-ch02-t01-m-all-less-than-one",
+        "scenes": [
+         {
+          "id": "s1",
+          "layout": "split",
+          "els": [
+           {
+            "id": "title",
+            "type": "title",
+            "text": "Fractions on a line"
+           },
+           {
+            "id": "myth",
+            "type": "myth",
+            "text": "Every fraction is less than 1"
+           }
+          ]
+         },
+         {
+          "id": "s2",
+          "layout": "row",
+          "els": [
+           {
+            "id": "ax",
+            "type": "axis",
+            "min": 0,
+            "max": 1,
+            "step": 0.2,
+            "scale": "linear",
+            "y": 420
+           },
+           {
+            "id": "zero",
+            "type": "label",
+            "text": "0",
+            "x": 100,
+            "y": 455
+           },
+           {
+            "id": "one",
+            "type": "label",
+            "text": "1",
+            "x": 800,
+            "y": 455
+           },
+           {
+            "id": "m1",
+            "type": "mark",
+            "axis": "ax",
+            "value": 0.2,
+            "text": "1/5",
+            "color": "ion"
+           },
+           {
+            "id": "m2",
+            "type": "mark",
+            "axis": "ax",
+            "value": 0.4,
+            "text": "2/5",
+            "color": "mint"
+           },
+           {
+            "id": "m3",
+            "type": "mark",
+            "axis": "ax",
+            "value": 0.6,
+            "text": "3/5",
+            "color": "amber"
+           },
+           {
+            "id": "m4",
+            "type": "mark",
+            "axis": "ax",
+            "value": 0.8,
+            "text": "4/5",
+            "color": "sun"
+           },
+           {
+            "id": "den",
+            "type": "node",
+            "text": "Bottom: 5",
+            "sub": "equal gaps",
+            "glyph": "ruler",
+            "color": "ion"
+           },
+           {
+            "id": "num",
+            "type": "node",
+            "text": "Top: 2",
+            "sub": "gaps from 0",
+            "glyph": "compass",
+            "color": "mint"
+           }
+          ]
+         },
+         {
+          "id": "s3",
+          "layout": "row",
+          "els": [
+           {
+            "id": "ax2",
+            "type": "axis",
+            "min": 0,
+            "max": 2,
+            "step": 0.25,
+            "scale": "linear",
+            "y": 420
+           },
+           {
+            "id": "p0",
+            "type": "label",
+            "text": "0",
+            "x": 80,
+            "y": 455
+           },
+           {
+            "id": "p1",
+            "type": "label",
+            "text": "1",
+            "x": 430,
+            "y": 455
+           },
+           {
+            "id": "p2",
+            "type": "label",
+            "text": "2",
+            "x": 800,
+            "y": 455
+           },
+           {
+            "id": "past",
+            "type": "node",
+            "text": "5/4",
+            "sub": "one quarter past 1",
+            "glyph": "spark",
+            "color": "amber"
+           },
+           {
+            "id": "before",
+            "type": "node",
+            "text": "before 1",
+            "sub": "less than 1",
+            "glyph": "question",
+            "color": "ion"
+           },
+           {
+            "id": "beyond",
+            "type": "node",
+            "text": "after 1",
+            "sub": "greater than 1",
+            "color": "amber"
+           }
+          ]
+         }
+        ],
+        "text": {
+         "L1": "Fractions are numbers, so they have places on a number line.",
+         "L2": "The bottom number tells how many equal gaps to make from 0 to 1.",
+         "L3": "Count gaps, not marks. Four marks between 0 and 1 make five equal gaps.",
+         "L4": "So each gap is one fifth. The top number tells how many gaps to count from 0.",
+         "L5": "To mark two fifths, count two gaps from 0. That mark is 2/5.",
+         "L6": "A fraction can also go beyond 1. If the top number is bigger than the bottom number, it lies past 1.",
+         "L7": "For example, 5/4 is one quarter past 1, so it is after 1.",
+         "L8": "Now use these ideas to choose where 5/4 belongs."
+        },
+        "narration": {
+         "L1": {
+          "text": "Fractions are numbers, so they have places on a number line.",
+          "dur": 3,
+          "lead": 0,
+          "tail": 0,
+          "pauses": []
+         },
+         "L2": {
+          "text": "The bottom number tells how many equal gaps to make from 0 to 1.",
+          "dur": 4,
+          "lead": 0,
+          "tail": 0,
+          "pauses": []
+         },
+         "L3": {
+          "text": "Count gaps, not marks. Four marks between 0 and 1 make five equal gaps.",
+          "dur": 4,
+          "lead": 0,
+          "tail": 0,
+          "pauses": []
+         },
+         "L4": {
+          "text": "So each gap is one fifth. The top number tells how many gaps to count from 0.",
+          "dur": 4,
+          "lead": 0,
+          "tail": 0,
+          "pauses": []
+         },
+         "L5": {
+          "text": "To mark two fifths, count two gaps from 0. That mark is 2/5.",
+          "dur": 3.5,
+          "lead": 0,
+          "tail": 0,
+          "pauses": []
+         },
+         "L6": {
+          "text": "A fraction can also go beyond 1. If the top number is bigger than the bottom number, it lies past 1.",
+          "dur": 4,
+          "lead": 0,
+          "tail": 0,
+          "pauses": []
+         },
+         "L7": {
+          "text": "For example, 5/4 is one quarter past 1, so it is after 1.",
+          "dur": 3,
+          "lead": 0,
+          "tail": 0,
+          "pauses": []
+         },
+         "L8": {
+          "text": "Now use these ideas to choose where 5/4 belongs.",
+          "dur": 2.5,
+          "lead": 0,
+          "tail": 0,
+          "pauses": []
+         }
+        },
+        "beats": [
+         {
+          "line": "L1",
+          "gap": 0.3,
+          "scene": "s1",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.8,
+            "target": "title"
+           }
+          ]
+         },
+         {
+          "line": "L2",
+          "gap": 0.3,
+          "scene": "s2",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.8,
+            "target": "ax"
+           },
+           {
+            "at": 0.5,
+            "do": "show",
+            "dur": 0.8,
+            "target": "den"
+           }
+          ]
+         },
+         {
+          "line": "L3",
+          "gap": 0.3,
+          "scene": "s2",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 1,
+            "target": [
+             "m1",
+             "m2",
+             "m3",
+             "m4"
+            ]
+           },
+           {
+            "at": 0.8,
+            "do": "highlight",
+            "dur": 1,
+            "target": "den"
+           }
+          ]
+         },
+         {
+          "line": "L4",
+          "gap": 0.3,
+          "scene": "s2",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.8,
+            "target": "num"
+           },
+           {
+            "at": 0.7,
+            "do": "flow",
+            "dur": 0.6,
+            "target": "m1",
+            "to": 1
+           }
+          ]
+         },
+         {
+          "line": "L5",
+          "gap": 0.3,
+          "scene": "s2",
+          "cues": [
+           {
+            "at": 0,
+            "do": "highlight",
+            "dur": 1.2,
+            "target": "m2"
+           }
+          ]
+         },
+         {
+          "line": "L6",
+          "gap": 0.4,
+          "scene": "s1",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.8,
+            "target": "myth"
+           },
+           {
+            "at": 0.8,
+            "do": "bust",
+            "dur": 1,
+            "target": "myth"
+           }
+          ]
+         },
+         {
+          "line": "L7",
+          "gap": 0.3,
+          "scene": "s3",
+          "cues": [
+           {
+            "at": 0,
+            "do": "show",
+            "dur": 0.8,
+            "target": "ax2"
+           },
+           {
+            "at": 0.5,
+            "do": "show",
+            "dur": 0.8,
+            "target": "past"
+           },
+           {
+            "at": 1.2,
+            "do": "highlight",
+            "dur": 1,
+            "target": "beyond"
+           }
+          ]
+         },
+         {
+          "line": "L8",
+          "gap": 0,
+          "scene": "s3",
+          "cues": [
+           {
+            "at": 0,
+            "do": "interactive",
+            "dur": 1
+           }
+          ]
+         }
+        ],
+        "task": {
+         "kind": "tap",
+         "prompt": "Where does 5/4 belong on the number line?",
+         "options": [
+          "before",
+          "beyond"
+         ],
+         "answer": "beyond",
+         "src": "c5-maths-ch02-t01-i04"
+        }
+       },
+       "boardTwin": {
+        "scriptRef": "board:c5-maths-ch02-t01-s1|explain|-|-",
+        "values": {
+         "title": "Cinematic explainer",
+         "need": "explain"
+        },
+        "board": {
+         "title": "Cinematic explainer",
+         "lines": [
+          "line",
+          "equal",
+          "gaps",
+          "mark"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "praise",
+      "drift",
+      "ask"
+     ],
+     "rewritten": true,
+     "replaced": true,
+     "firstDraft": "Sahi: 1/3 middle se pehle, 2/3 middle ke baad. Ab animation mein 1 km ko 10 equal parts mein baantiye. 7ve stone tak fraction kya hoga?",
+     "afterRewrite": [
+      "praise",
+      "long"
+     ],
+     "leadRepair": true
+    },
+    "verdict": "partial",
+    "cls": {
+     "outcome": "partial",
+     "source": "exact"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 4931,
+    "item": "c5-maths-ch02-t01-i09",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 65
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 66
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 71
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 162
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 163
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1551
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1418
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1683
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 4828
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 4931
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "probe:thinking_aloud-06",
+   "lessonId": "bd796515-89c8-4675-b807-0db9efebf2f8",
+   "childText": "matlab agar main isko do mein todu toh nahi ruko",
+   "ms": 3365,
+   "error": null,
+   "teacherReply": "Haan, do equal parts mein bhi tod sakte hain—ab apni baat poori kijiye.",
+   "move": {
+    "kind": "repair",
+    "shape": "they are thinking aloud: no verdict and no answer; a two-to-four word go-on so they finish the thought; never a new question or the question again; no verdict on their reply: neither praise nor 'wrong'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "request": "thinking"
+   },
+   "ui": {
+    "status": "your_turn",
+    "phase": "practice",
+    "handover": "answer",
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Fractions on a line",
+    "beat": {
+     "beatId": "b10-probe",
+     "type": "probe",
+     "index": 10
+    },
+    "ask": {
+     "text": "Haan, do equal parts mein bhi tod sakte hain—ab apni baat poori kijiye."
+    },
+    "studioSlot": {
+     "slotId": "bd796515-89c8-4675-b807-0db9efebf2f8:c5:slot",
+     "intentId": "bd796515-89c8-4675-b807-0db9efebf2f8:c5",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "catch-on-line@1",
+       "spec": {
+        "archetype": "catch-on-line@1",
+        "skills": [
+         "c5-maths-ch02-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "coach": "Drag to move the dock",
+         "wave": "Wave",
+         "of": "of",
+         "clear": "clear",
+         "landed": "landed",
+         "precision": "precision",
+         "chain": "chain",
+         "bestChain": "best chain",
+         "exact": "EXACT",
+         "close": "CLOSE",
+         "inside": "IN",
+         "offBy": "off by",
+         "same": "SAME SPOT",
+         "runDone": "Run complete",
+         "toughest": "Toughest"
+        },
+        "waves": [
+         {
+          "title": "Halfway stop",
+          "sub": "Split the road into two equal gaps",
+          "line": [
+           0,
+           1
+          ],
+          "ticks": 1,
+          "scaffoldTicks": 2,
+          "speed": 82,
+          "gap": 2.8,
+          "items": [
+           [
+            "1/2"
+           ],
+           [
+            "1/2"
+           ],
+           [
+            "1/2"
+           ]
+          ]
+         },
+         {
+          "title": "Quarter steps",
+          "sub": "Count equal gaps from zero",
+          "line": [
+           0,
+           1
+          ],
+          "ticks": 3,
+          "scaffoldTicks": 4,
+          "speed": 92,
+          "gap": 2.3,
+          "items": [
+           [
+            "1/4"
+           ],
+           [
+            "2/4"
+           ],
+           [
+            "3/4"
+           ],
+           [
+            "1/4"
+           ]
+          ]
+         },
+         {
+          "title": "Compare places",
+          "sub": "Small fractions can be close to zero",
+          "line": [
+           0,
+           1
+          ],
+          "ticks": 4,
+          "scaffoldTicks": 5,
+          "speed": 101,
+          "gap": 2,
+          "items": [
+           [
+            "1/5"
+           ],
+           [
+            "3/5"
+           ],
+           [
+            "2/5"
+           ],
+           [
+            "4/5"
+           ]
+          ]
+         },
+         {
+          "title": "Beyond one",
+          "sub": "The line continues past one",
+          "line": [
+           0,
+           2
+          ],
+          "ticks": 7,
+          "scaffoldTicks": 8,
+          "speed": 110,
+          "gap": 1.7,
+          "items": [
+           [
+            "5/4"
+           ],
+           [
+            "3/2"
+           ],
+           [
+            "7/4"
+           ],
+           [
+            "1/4"
+           ],
+           [
+            "4/4"
+           ]
+          ]
+         }
+        ],
+        "adapt": {
+         "slowAfterMisses": 2,
+         "slowFactor": 0.86,
+         "fastAfterChain": 4,
+         "fastFactor": 1.07,
+         "minScale": 0.7,
+         "maxScale": 1.3,
+         "scaffoldPods": 3
+        }
+       },
+       "boardTwin": {
+        "scriptRef": "board:c5-maths-ch02-t01-s1|probe|-|-",
+        "values": {
+         "title": "Landfall",
+         "need": "probe"
+        },
+        "board": {
+         "title": "Landfall",
+         "lines": [
+          "line",
+          "equal",
+          "gaps",
+          "mark"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": {
+    "reveal": "bd796515-89c8-4675-b807-0db9efebf2f8:c5"
+   },
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [
+      "thinkq"
+     ],
+     "rewritten": true,
+     "replaced": false,
+     "firstDraft": "Meher, haan, aap number line ko equal parts mein tod sakte hain; bas denominator batayega kitne parts chahiye. Aap ise kitne equal parts mein todenge?",
+     "afterRewrite": []
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "request"
+    },
+    "note": null,
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 3360,
+    "item": null,
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 98
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 99
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 441
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 550
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 552
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 553
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1425
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1312
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3295
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3359
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "tag": "filler",
+   "lessonId": "bd796515-89c8-4675-b807-0db9efebf2f8",
+   "childText": "hmm achha",
+   "ms": 3671,
+   "error": null,
+   "teacherReply": "Haan, line ko equal parts mein todna helpful hota hai. Bas har part ki length same rakhiye, phir marker ko ek-ek step aage badhaiye. Chai ki dukaan 7ve patthar par hai. Shuru se kitni door hai, km ke fraction mein?",
+   "move": {
+    "kind": "repair",
+    "shape": "you did not catch it clearly: ask them to say it once more; no verdict on their reply: neither praise nor 'wrong'; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+    "itemId": "c5-maths-ch02-t01-i09",
+    "skillId": "c5-maths-ch02-t01-s2",
+    "hintLevel": 0
+   },
+   "ui": {
+    "status": "your_turn",
+    "whiteboard": {
+     "kind": "math",
+     "value": "1/10"
+    },
+    "phase": "practice",
+    "handover": "answer",
+    "ask": {
+     "text": "Chai ki dukaan 7ve patthar par hai. Shuru se kitni door hai, km ke fraction mein?",
+     "itemId": "c5-maths-ch02-t01-i09"
+    },
+    "answerForm": "words",
+    "tray": "studio",
+    "shortTitle": "Fractions on a line",
+    "beat": {
+     "beatId": "b10-probe",
+     "type": "probe",
+     "index": 10
+    },
+    "studioSlot": {
+     "slotId": "bd796515-89c8-4675-b807-0db9efebf2f8:c5:slot",
+     "intentId": "bd796515-89c8-4675-b807-0db9efebf2f8:c5",
+     "state": "revealed",
+     "artifact": {
+      "kind": "stagecraft",
+      "stage": {
+       "w": 1000,
+       "h": 625
+      },
+      "stagecraft": {
+       "rung": "engine_default",
+       "archetype": "catch-on-line@1",
+       "spec": {
+        "archetype": "catch-on-line@1",
+        "skills": [
+         "c5-maths-ch02-t01"
+        ],
+        "lang": "en",
+        "strings": {
+         "coach": "Drag to move the dock",
+         "wave": "Wave",
+         "of": "of",
+         "clear": "clear",
+         "landed": "landed",
+         "precision": "precision",
+         "chain": "chain",
+         "bestChain": "best chain",
+         "exact": "EXACT",
+         "close": "CLOSE",
+         "inside": "IN",
+         "offBy": "off by",
+         "same": "SAME SPOT",
+         "runDone": "Run complete",
+         "toughest": "Toughest"
+        },
+        "waves": [
+         {
+          "title": "Halfway stop",
+          "sub": "Split the road into two equal gaps",
+          "line": [
+           0,
+           1
+          ],
+          "ticks": 1,
+          "scaffoldTicks": 2,
+          "speed": 82,
+          "gap": 2.8,
+          "items": [
+           [
+            "1/2"
+           ],
+           [
+            "1/2"
+           ],
+           [
+            "1/2"
+           ]
+          ]
+         },
+         {
+          "title": "Quarter steps",
+          "sub": "Count equal gaps from zero",
+          "line": [
+           0,
+           1
+          ],
+          "ticks": 3,
+          "scaffoldTicks": 4,
+          "speed": 92,
+          "gap": 2.3,
+          "items": [
+           [
+            "1/4"
+           ],
+           [
+            "2/4"
+           ],
+           [
+            "3/4"
+           ],
+           [
+            "1/4"
+           ]
+          ]
+         },
+         {
+          "title": "Compare places",
+          "sub": "Small fractions can be close to zero",
+          "line": [
+           0,
+           1
+          ],
+          "ticks": 4,
+          "scaffoldTicks": 5,
+          "speed": 101,
+          "gap": 2,
+          "items": [
+           [
+            "1/5"
+           ],
+           [
+            "3/5"
+           ],
+           [
+            "2/5"
+           ],
+           [
+            "4/5"
+           ]
+          ]
+         },
+         {
+          "title": "Beyond one",
+          "sub": "The line continues past one",
+          "line": [
+           0,
+           2
+          ],
+          "ticks": 7,
+          "scaffoldTicks": 8,
+          "speed": 110,
+          "gap": 1.7,
+          "items": [
+           [
+            "5/4"
+           ],
+           [
+            "3/2"
+           ],
+           [
+            "7/4"
+           ],
+           [
+            "1/4"
+           ],
+           [
+            "4/4"
+           ]
+          ]
+         }
+        ],
+        "adapt": {
+         "slowAfterMisses": 2,
+         "slowFactor": 0.86,
+         "fastAfterChain": 4,
+         "fastFactor": 1.07,
+         "minScale": 0.7,
+         "maxScale": 1.3,
+         "scaffoldPods": 3
+        }
+       },
+       "boardTwin": {
+        "scriptRef": "board:c5-maths-ch02-t01-s1|probe|-|-",
+        "values": {
+         "title": "Landfall",
+         "need": "probe"
+        },
+        "board": {
+         "title": "Landfall",
+         "lines": [
+          "line",
+          "equal",
+          "gaps",
+          "mark"
+         ],
+         "figure": {
+          "kind": "none"
+         }
+        }
+       },
+       "board": null,
+       "cue": {
+        "clauseIdx": 0,
+        "preRollMs": 400,
+        "crossFadeMs": 420
+       },
+       "buildSha": null,
+       "blobUrl": null
+      }
+     }
+    }
+   },
+   "moduleCommands": [],
+   "studio": null,
+   "end": false,
+   "dbg": {
+    "guard": {
+     "caught": [],
+     "rewritten": false,
+     "replaced": false,
+     "leadSlot": true
+    },
+    "verdict": "unverified",
+    "cls": {
+     "outcome": "no_evidence",
+     "source": "model"
+    },
+    "note": {
+     "nonAnswer": true,
+     "intent": "backchannel",
+     "waitedMs": 1268,
+     "parallel": null
+    },
+    "hintLevel": 0,
+    "phase": "practice",
+    "ms": 3668,
+    "item": "c5-maths-ch02-t01-i09",
+    "calls": [
+     {
+      "k": "@ctx",
+      "dep": null,
+      "st": null,
+      "ms": 70
+     },
+     {
+      "k": "@kit",
+      "dep": null,
+      "st": null,
+      "ms": 71
+     },
+     {
+      "k": "chat",
+      "dep": "grok-4-1-fast-non-reasoning",
+      "st": 200,
+      "ms": 897
+     },
+     {
+      "k": "@classified",
+      "dep": null,
+      "st": null,
+      "ms": 973
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-gpt6",
+      "st": 200,
+      "ms": 2166
+     },
+     {
+      "k": "@noted",
+      "dep": null,
+      "st": null,
+      "ms": 2241
+     },
+     {
+      "k": "@planned",
+      "dep": null,
+      "st": null,
+      "ms": 2244
+     },
+     {
+      "k": "@kernel",
+      "dep": null,
+      "st": null,
+      "ms": 2245
+     },
+     {
+      "k": "chat",
+      "dep": "taxila-fast",
+      "st": 200,
+      "ms": 1348
+     },
+     {
+      "k": "@replied",
+      "dep": null,
+      "st": null,
+      "ms": 3601
+     },
+     {
+      "k": "@stored",
+      "dep": null,
+      "st": null,
+      "ms": 3668
+     }
+    ]
+   }
+  }
+ ]
+}

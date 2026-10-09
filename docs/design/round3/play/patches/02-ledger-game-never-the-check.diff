@@ -1,0 +1,86 @@
+--- a/server/learner/kt/ledger.js
++++ b/server/learner/kt/ledger.js
+@@ -17,7 +17,7 @@
+ // order the cached fold applied them and a replay of kt_evidence reproduces kt_skill_state byte for byte.
+ // There is deliberately no id tiebreak: ids are opaque strings ("e10" < "e9"), not an order.
+ import { formOf, fsrsGrade, isDelayedMiss, isDelayedSuccess, isGenerativePass, isUnaidedCorrect, ITEM_CLASSES, outcomeName, recentValue, EMISSIONS } from "./outcomes.js";
+-import { dropReason, logEvidence, logit, sigmoid, spend, teachStep, temper, tEff, transition } from "./bktr.js";
++import { dropReason, logEvidence, logit, sigmoid, sourceOf, spend, teachStep, temper, tEff, transition } from "./bktr.js";
+ import { nextReviewAt, retrievability, review } from "./fsrs.js";
+ import { addObs, currentTheta, defaultItemMeta, initialBase, newEpoch, openEpoch, strandOfSkill, subjectOfSkill, subjectOfStrand, thetaObs } from "./ability.js";
+ import { priorFromTheta } from "./priors.js";
+@@ -258,6 +258,10 @@
+ function advanceDisplay(sk, ev, sess, ss, isTarget, novel = true) {
+   const produce = formOf(ev) === "produce";
+   const clean = !ev.assisted && !ev.preAttemptHelp && !ev.gamingWindowKt && !ev.controllerEasy;
++  // round 3 play (docs/design/round3/play/DESIGN.md §8, in-game-success-as-mastery): a game act moves pL at the game
++  // weight but is never the delayed check, never spends it, and never sets "unaided": only a bare item outside the game
++  // can make a skill learned or secure (DragonBox 3.5 h: no paper gain; Nuraydin 2022: trained task only)
++  const game = sourceOf(ev) === "game";
+   ss.attempted = true;
+   if (rank(sk.display) < rank("practising")) sk.display = "practising";
+ 
+@@ -279,7 +283,7 @@
+   // session start to session start (no intra-session clock, §13.1): decision learner-delayed-check-session-clock.
+   // V1.3: the check is >= 2 learning days after the anchor and on an item this skill was never answered on (a repeat is a
+   // recall of that item, not proof the skill holds in a new form: it neither counts nor spends the check)
+-  const due = CHECK_CLASSES.has(ev.cls) && rank(sk.display) >= rank("learned_today") && !ss.checkDone && !ss.taught
++  const due = !game && CHECK_CLASSES.has(ev.cls) && rank(sk.display) >= rank("learned_today") && !ss.checkDone && !ss.taught
+     && sk.anchorAt && sk.anchorSession !== sess.sessionId && checkDayOk(sk.anchorAt, sess.startAt) && novel;
+   // A recognition item (a tap on shown options) at the check's moment SPENDS the check without counting:
+   // the options cue the answer, so a produce attempt after it is no longer an unprompted retrieval.
+@@ -312,7 +316,7 @@
+     }                        // anything else (an error-spot caught but not fixed, NA): not a check at all
+   }
+ 
+-  if (produce && clean && isUnaidedCorrect(ev.cls, ev.outcome)) { sk.aDay = sess.day; sk.flags.unaided = true; }
++  if (produce && clean && !game && isUnaidedCorrect(ev.cls, ev.outcome)) { sk.aDay = sess.day; sk.flags.unaided = true; }
+   if (produce && clean && isGenerativePass(ev.cls, ev.outcome)) { sk.bDay = sess.day; sk.flags.generative = true; }
+   if (rank(sk.display) <= rank("practising") && sk.aDay === sess.day && sk.bDay === sess.day && sk.pL >= LEARNED_P
+     && sk.recent.filter((r) => r === 1).length >= 2) {
+--- /dev/null
++++ b/tests/play-ledger-seam.test.mjs
+@@ -0,0 +1,43 @@
++// Patch 02 (docs/design/round3/play/patches/02-ledger-game-never-the-check.diff): a game act moves pL at the game weight
++// but is never the delayed check, never spends it and never sets "unaided" (DESIGN.md §8; in-game-success-as-mastery).
++// On HEAD without the patch the first case fails: a correct play level 2 days later became the delayed check.
++import { describe, it } from "node:test";
++import assert from "node:assert/strict";
++import { fold, newLedger } from "../server/learner/kt/ledger.js";
++
++const SK = "c6-maths-ch05-t04-s1";
++const H = 3600_000, DAY = 24 * H, D2 = 2 * DAY;
++const T0 = Date.UTC(2026, 9, 1, 4, 30);   // 10:00 IST
++let n = 0;
++function session(sid, t, specs) {
++  const startAt = new Date(t).toISOString();
++  return specs.map((o) => ({ id: `${sid}-${++n}`, seq: n, sessionId: sid, sessionStartAt: startAt, at: startAt, episodeId: o.episodeId ?? `${sid}-ep${n}`,
++    skillIds: [SK], itemKey: "k", cls: "item.open", outcome: 0, grader: "code", graderVersion: "g", topicType: "T1", ...o }));
++}
++const C0 = {}, WHY = { cls: "probe.why", outcome: 0, grader: "llm" };
++const L0 = () => newLedger({ childId: "c", classLevel: 6 });
++const at = (L) => L.skills[SK];
++const GAME = (key) => ({ via: "game", itemKey: `play:${key}`, episodeId: `play:${key}` });
++
++describe("ledger: a game act is never the delayed check", () => {
++  const L1 = fold(L0(), session("A", T0, [C0, C0, C0, C0, WHY, C0]));
++  it("setup: learned today, anchored (sanity)", () => assert.equal(at(L1).display, "learned_today"));
++  it("a correct play level 2 days later neither counts as the check nor spends it; the bare item after it counts", () => {
++    const afterGame = fold(L1, session("B", T0 + D2, [GAME("L1")]));
++    assert.equal(at(afterGame).flags.delayed, false, "a game act became the delayed check");
++    assert.equal(at(afterGame).display, "learned_today");
++    const afterItem = fold(afterGame, session("B", T0 + D2, [{ itemKey: "k-new" }]));
++    assert.equal(at(afterItem).display, "mastered", "the bare item after the game act must still be the check");
++    assert.equal(at(afterItem).flags.delayed, true);
++  });
++  it("a wrong play level 2 days later is not a delayed miss", () => {
++    const g = fold(L1, session("C", T0 + D2, [{ ...GAME("L2"), outcome: 4 }]));
++    assert.equal(at(g).delayedMisses, 0);
++    assert.equal(at(g).refresh, false);
++  });
++  it("game acts alone never set unaided, so never reach learned_today", () => {
++    const L = fold(L0(), session("G", T0, [GAME("a"), GAME("b"), GAME("c"), GAME("d"), WHY, GAME("e")]));
++    assert.equal(at(L).flags.unaided, false);
++    assert.equal(at(L).display, "practising");
++  });
++});

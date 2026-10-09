@@ -1,0 +1,126 @@
+{
+  "v": 1,
+  "_note": "The teacher's micro-reactions in play (docs/design/round3/play/DESIGN.md §5). SHAPES filled with the moment's on-screen facts by code ({slot} = a fact key; a missing fact skips the shape). Noticing the world, never judging the child: no verdict words, no praise of the person, no pressure (shared/play.ts REACTION_BANNED; tests/play-react.test.mjs). Rotation is deterministic and a line is never repeated in one session. first_act and progress lines are rare on purpose: she watches more than she talks.",
+  "moments": {
+    "impasse": {
+      "hinglish": ["Kahan se shuru karein?", "Ek chhota kadam le ke dekho.", "Socho, phir ek cheez badlo.", "Koi jaldi nahi."],
+      "en": ["Where shall we start?", "Try one small step.", "Think, then change one thing.", "Take your time."],
+      "hi": ["कहाँ से शुरू करें?", "एक छोटा कदम लेकर देखो।", "सोचो, फिर एक चीज़ बदलो।", "कोई जल्दी नहीं।"]
+    },
+    "prediction_committed": {
+      "hinglish": ["Theek hai, dekhte hain.", "Socha hua pakka. Ab chalao.", "Dekhte hain kya hota hai."],
+      "en": ["Okay, let's see.", "Locked in. Now run it.", "Let's see what happens."],
+      "hi": ["ठीक है, देखते हैं।", "सोचा हुआ पक्का। अब चलाओ।", "देखते हैं क्या होता है।"]
+    },
+    "prediction_confirmed": {
+      "hinglish": ["Jaisa socha, waisa hua.", "Dekha? Waisa hi hua."],
+      "en": ["Just as you thought.", "See? That's what happened."],
+      "hi": ["जैसा सोचा, वैसा हुआ।", "देखा? वैसा ही हुआ।"]
+    },
+    "prediction_violated": {
+      "hinglish": ["Arre! Yeh dekho.", "Hmm, kuch aur hua.", "Socha kuch, hua kuch aur."],
+      "en": ["Oh! Look at that.", "Hmm, something else happened.", "Not what we expected."],
+      "hi": ["अरे! यह देखो।", "हम्म, कुछ और हुआ।", "सोचा कुछ, हुआ कुछ और।"]
+    },
+    "near_miss": {
+      "hinglish": ["Bas {gap} ka farak.", "Bahut paas. {gap} ka farak.", "Bas lagbhag {gap_about} ka farak.", "Bahut paas, lagbhag {gap_about}."],
+      "en": ["Only {gap} away.", "So close: {gap} off.", "Only about {gap_about} away.", "Very close, about {gap_about} off."],
+      "hi": ["बस {gap} का अंतर।", "बहुत पास, {gap} का अंतर।", "बस लगभग {gap_about} का अंतर।", "बहुत पास, लगभग {gap_about}।"]
+    },
+    "slip_found": {
+      "hinglish": ["Tumne turant pakda.", "Haan, yahi gadbad thi."],
+      "en": ["You spotted it straight away.", "Yes, that was the mix-up."],
+      "hi": ["तुमने तुरंत पकड़ा।", "हाँ, यही गड़बड़ थी।"]
+    },
+    "solved": {
+      "hinglish": ["Dekho, ho gaya.", "Yeh dekho!", "Ban gaya."],
+      "en": ["Look, there it is.", "Look at that!", "There it is."],
+      "hi": ["देखो, हो गया।", "यह देखो!", "बन गया।"]
+    }
+  },
+  "family": {
+    "todo-jodo": {
+      "progress": {
+        "hinglish": ["{v} se {a} aur {b}.", "{a} aur {b} bane.", "{a} × {b}... aage dekho."],
+        "en": ["{v} into {a} and {b}.", "{a} and {b}.", "{a} × {b}... keep going."],
+        "hi": ["{v} से {a} और {b}।", "{a} और {b} बने।", "{a} × {b}... आगे देखो।"]
+      },
+      "law_refused": {
+        "hinglish": ["{v} toot-ta hi nahi.", "{by} se poora nahi jaata, {r} bacha.", "{v} ko dekho, kuch bacha.", "Yeh tukde alag size ke hain.", "Pehle socho: same ya alag?"],
+        "en": ["{v} won't split.", "{by} doesn't go evenly: {r} left.", "Look at {v}: something's left over.", "These pieces are different sizes.", "Think first: same or different?"],
+        "hi": ["{v} टूटता ही नहीं।", "{by} से पूरा नहीं जाता, {r} बचा।", "{v} को देखो, कुछ बचा।", "ये टुकड़े अलग आकार के हैं।", "पहले सोचो: एक जैसे या अलग?"]
+      },
+      "misconception_consequence": {
+        "hinglish": ["1 se kuch nahi badla.", "Ek block abhi bhi hil raha hai.", "{composite} ko dekho.", "Dekho, dono pattiyan kaisi dikhti hain."],
+        "en": ["Splitting by 1 changed nothing.", "One block is still humming.", "Look at {composite}.", "Look at both strips now."],
+        "hi": ["1 से कुछ नहीं बदला।", "एक ब्लॉक अभी भी हिल रहा है।", "{composite} को देखो।", "देखो, दोनों पट्टियाँ कैसी दिखती हैं।"]
+      },
+      "solved": {
+        "hinglish": ["Saare atoms. Wapas {n}!", "{strip}. Wapas {n}.", "Utni hi roti, naye tukde."],
+        "en": ["All atoms. Back to {n}!", "{strip}. Back to {n}.", "Same amount, new pieces."],
+        "hi": ["सारे एटम। वापस {n}!", "{strip}। वापस {n}।", "उतनी ही रोटी, नए टुकड़े।"]
+      }
+    },
+    "taraazu": {
+      "progress": {
+        "hinglish": ["{left} aur {right}. Seedha.", "Ab {left} = {right}."],
+        "en": ["{left} and {right}. Level.", "Now {left} = {right}."],
+        "hi": ["{left} और {right}। सीधा।", "अब {left} = {right}।"]
+      },
+      "law_refused": {
+        "hinglish": ["Taraazu jhuk gaya.", "Ek taraf halki ho gayi.", "Bag akela nahi hai abhi.", "Barabar nahi bant-ta."],
+        "en": ["The scale tipped.", "One side got lighter.", "The bag isn't alone yet.", "That doesn't share equally."],
+        "hi": ["तराज़ू झुक गया।", "एक तरफ़ हल्की हो गई।", "थैला अभी अकेला नहीं है।", "बराबर नहीं बँटता।"]
+      },
+      "misconception_consequence": {
+        "hinglish": ["Taraazu abhi jhuka hua hai.", "Dekho, dono taraf barabar hai kya?"],
+        "en": ["The scale is still tipped.", "Look: are both sides equal?"],
+        "hi": ["तराज़ू अभी झुका हुआ है।", "देखो, दोनों तरफ़ बराबर है क्या?"]
+      },
+      "solved": {
+        "hinglish": ["Seedha! {x} wala bag.", "Bag mein {x}."],
+        "en": ["Level! The bag holds {x}.", "{x} in the bag."],
+        "hi": ["सीधा! थैले में {x}।", "थैले में {x}।"]
+      }
+    },
+    "nishana": {
+      "law_refused": {
+        "hinglish": ["{value} kahan gira, dekho.", "{gap} ka farak.", "Lagbhag {gap_about} ka farak."],
+        "en": ["See where {value} landed.", "Off by {gap}.", "Off by about {gap_about}."],
+        "hi": ["{value} कहाँ गिरा, देखो।", "{gap} का अंतर।", "लगभग {gap_about} का अंतर।"]
+      },
+      "misconception_consequence": {
+        "hinglish": ["{value} asal mein kahan rehta hai?", "Dekho, {value} ka jhanda kahan utha."],
+        "en": ["Where does {value} really live?", "Look where the {value} flag went up."],
+        "hi": ["{value} असल में कहाँ रहता है?", "देखो, {value} का झंडा कहाँ उठा।"]
+      },
+      "solved": {
+        "hinglish": ["{value} yahin rehta hai.", "Jhanda wahin utha."],
+        "en": ["That's where {value} lives.", "The flag went up there."],
+        "hi": ["{value} यहीं रहता है।", "झंडा वहीं उठा।"]
+      }
+    },
+    "kyun-lab": {
+      "progress": {
+        "hinglish": ["Ab {differences} cheez alag."],
+        "en": ["Now {differences} thing differs."],
+        "hi": ["अब {differences} चीज़ अलग।"]
+      },
+      "law_refused": {
+        "hinglish": ["Do cheezein alag thi: {which}.", "Kuch bhi alag nahi, toh kya pata chalega?"],
+        "en": ["Two things differed: {which}.", "Nothing differs, so what would we learn?"],
+        "hi": ["दो चीज़ें अलग थीं: {which}।", "कुछ भी अलग नहीं, तो क्या पता चलेगा?"]
+      },
+      "prediction_violated": {
+        "hinglish": ["Arre! {a} aur {b}.", "Dekho: {a} aur {b}."],
+        "en": ["Oh! {a} and {b}.", "Look: {a} and {b}."],
+        "hi": ["अरे! {a} और {b}।", "देखो: {a} और {b}।"]
+      },
+      "misconception_consequence": {
+        "hinglish": ["Chalao aur dekho.", "Kitni cheezein alag thi?"],
+        "en": ["Run it and see.", "How many things were different?"],
+        "hi": ["चलाओ और देखो।", "कितनी चीज़ें अलग थीं?"]
+      }
+    }
+  }
+}

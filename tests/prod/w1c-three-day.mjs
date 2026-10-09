@@ -104,7 +104,13 @@ await withTestAccount(async ({ api, child, password }) => {
 
   // ── +2 days: review on the day-0 topic WITH reasons (the rise above shallow, labelled as coming from reasons) ──
   await advanceClock(api, 1);
-  const d2 = await driveLesson(api, child.id, { topicId: DAY0, maxTurns: 16, explain: true });
+  // round3 truth (prod 21/23 on 2026-10-07): the +2-day child gives reasons AND teaches the protégé, as the day-0 child did.
+  // Before, its teach-back answer was the topic's first expectation alone (replyFor without `teach`), which the teach-back
+  // grader rightly failed: on a local trace that fail took s1 from U 0.69 (after its passing why) back to 0.548, below
+  // U_FRAGILE 0.6, so "with reasons, a day-0 skill is above shallow" and "the card's state row changes" failed because the
+  // scripted child failed its own teach-back, not because reasons do not count (offline fold of the same events: why pass
+  // → 0.693 fragile; why pass + teach-back pass → 0.868 fragile; why pass + the fragment teach-back → 0.548 shallow).
+  const d2 = await driveLesson(api, child.id, { topicId: DAY0, maxTurns: 16, explain: true, teach: true });
   ok(d2.start.status === 201, "+2 days: a review lesson starts on the day-0 topic");
   const open2 = d2.start.ui?.ask?.itemId ?? null;
   ok(!!open2 && !d0.asked.includes(open2) && !warmTurns.some((t) => t.item === open2),

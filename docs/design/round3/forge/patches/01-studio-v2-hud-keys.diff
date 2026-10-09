@@ -1,0 +1,11 @@
+--- a/src/studio-v2/core/host.ts
++++ b/src/studio-v2/core/host.ts
+@@ -155,6 +155,8 @@
+     const boxes: Record<string, HTMLDivElement> = {};
+     for (const d of defs.slice(0, 4)) {
+       const b = document.createElement("div"); b.className = "box";
++      // round 3 forge: the key on the DOM, so the lesson stage can leave out score / streak pills (src/studio/studio.css)
++      b.dataset.key = d.key;
+       b.innerHTML = `<span></span><b></b>${d.meter ? '<span class="meter"><i></i></span>' : ""}`;
+       (b.children[0] as HTMLElement).textContent = d.label;
+       hudEl.appendChild(b); boxes[d.key] = b;

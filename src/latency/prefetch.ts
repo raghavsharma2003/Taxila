@@ -25,6 +25,8 @@ export interface TurnPrefetcherOptions {
   clearTimer?: (t: unknown) => void;
   /** TAXILA kill switch: false = never send (the link then behaves exactly as before). */
   enabled?: boolean;
+  /** Round 3 (relational-human): told the words each time a prefetch is sent (the AckClient asks on the same words). */
+  onSend?: (body: PrefetchBody) => void;
 }
 
 export const DEBOUNCE_MS = 250;
@@ -52,7 +54,7 @@ const defaultPost = (body: PrefetchBody): Promise<unknown> =>
     .then((r) => r.arrayBuffer());
 
 export class TurnPrefetcher {
-  private readonly o: Required<Omit<TurnPrefetcherOptions, "post">> & { post: (b: PrefetchBody) => Promise<unknown> };
+  private readonly o: Required<Omit<TurnPrefetcherOptions, "post" | "onSend">> & { post: (b: PrefetchBody) => Promise<unknown>; onSend?: (b: PrefetchBody) => void };
   private item = "";
   private text = "";
   private quiet = false;
@@ -72,7 +74,29 @@ export class TurnPrefetcher {
       setTimer: opts.setTimer ?? ((fn, ms) => setTimeout(fn, ms)),
       clearTimer: opts.clearTimer ?? ((t) => clearTimeout(t as ReturnType<typeof setTimeout>)),
       enabled: opts.enabled ?? true,
+      onSend: opts.onSend,
     };
+  }
+
+  /**
+   * Round 3 (relational-human), the duplex end-of-turn hook: the engine's own words at its eager end-of-turn (a
+   * `think/prepare` command, src/latency/duplexTurn.ts). Sent at once (no quiet / debounce wait: the engine already judged
+   * the words), within the same per-item cap and never the same text twice, so the turn the engine then commits with the
+   * SAME words adopts this work (server/latency/perceive.js fingerprint).
+   */
+  sendNow(itemId: string, text: string): boolean {
+    const t = text.trim();
+    if (itemId !== this.item) this.reset(itemId);
+    this.text = t;
+    if (!this.o.enabled || !t || t === this.sentText || this.sentCount >= this.o.maxPerItem) return false;
+    this.cancel();
+    this.sentText = t;
+    this.sentCount++;
+    const body: PrefetchBody = { lessonId: this.o.lessonId, text: t, ...(this.interrupted ? { teacherInterrupted: true } : {}) };
+    this.sent.push(body);
+    try { this.o.onSend?.(body); } catch { /* never breaks the link */ }
+    void this.o.post(body).catch(() => {});
+    return true;
   }
 
   /** A transcription delta: `text` is the item's words so far. */
@@ -133,6 +157,7 @@ export class TurnPrefetcher {
       this.sentCount++;
       const body: PrefetchBody = { lessonId: this.o.lessonId, text: this.text, ...(this.interrupted ? { teacherInterrupted: true } : {}) };
       this.sent.push(body);
+      try { this.o.onSend?.(body); } catch { /* never breaks the link */ }
       void this.o.post(body).catch(() => {});
     }, this.o.debounceMs);
   }

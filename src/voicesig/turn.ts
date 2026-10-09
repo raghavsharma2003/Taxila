@@ -17,7 +17,8 @@ export interface TurnInput {
   /** ASR words of the turn (count only; the text never reaches this module). */
   words?: number;
   /** Filler-detector per-frame probabilities aligned with `frames` (stage 2 detector), and its operating threshold. */
-  filler?: { p: ArrayLike<number>; thr: number };
+  /** minMs: the model card's minimum run (round 3: the operating point is a threshold AND a run length). */
+  filler?: { p: ArrayLike<number>; thr: number; minMs?: number };
 }
 
 export function turnAcoustics(t: TurnInput): TurnAcoustics | null {
@@ -36,7 +37,7 @@ export function turnAcoustics(t: TurnInput): TurnAcoustics | null {
     if (onset >= 0 && onset <= MAX_ONSET_MS) out.onsetMs = Math.round(onset);
   }
   if (t.filler) {
-    const fr2 = fillerRuns(t.frames, t.filler.p, t.filler.thr, HOP_MS);
+    const fr2 = fillerRuns(t.frames, t.filler.p, t.filler.thr, HOP_MS, t.filler.minMs);
     out.fillerRuns = fr2.runs.length;
     if (fr2.leadMs != null) out.fillerLeadMs = fr2.leadMs;
     if (out.onsetMs != null && fr2.leadMs != null) out.contentOnsetMs = Math.round(Math.min(out.onsetMs + fr2.leadMs, out.onsetMs + ac.durationMs));

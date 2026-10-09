@@ -42,3 +42,18 @@ flywheel data.
   - smart-turn-v3: BSD-2;
   - wavlm-base-plus: its HF card has no licence tag, though the upstream microsoft/unilm repo is MIT. Confirm the licence before any wavlm weights ship.
 - **Never downloaded.** The NC / "other" models (mms, audeering SER, emotion2vec) were only metadata-checked.
+
+## Round 3 (2026-10-09)
+
+| corpus | what was used | licence (read at source 2026-10-09) | use here | attribution |
+|---|---|---|---|---|
+| **AMI Meeting Corpus** | test: the same 8 Indian-L1 series' "b" meetings (32 channels) as 2026-10-04; val: 6 series (24 channels); train: 21 series × up to 2 meetings (160 channels, 84 speakers) | CC BY 4.0 (groups.inf.ed.ac.uk/ami/corpus/license.shtml) | train / val / test of `models/voicesig/filler-gru-r3.onnx`; the thinking-pause gold-filler check (`evals/voicesig/r3/ami_pauses.py`) | as above |
+| **FLEURS** `hi_in`, `en_us` | TRAIN split, 120 min hi + 60 min en (speakers disjoint from dev/test per the card), as hard negatives (every speech frame = non-filler); DEV split for false alarms (the 2026-10-04 15-min harness + all of dev) | CC BY 4.0 (HF dataset card; not gated) | **train** (negatives) and false-alarm evaluation | "FLEURS, Google, CC BY 4.0" |
+| **LiveKit EOT-Bench, Hindi** (`livekit/eot-bench-data`, the duplex-real copy in the shared scratch) | 400 real adult turns, annotated silences (holds) and turn ends | CC BY 4.0 (read by the duplex-real stream, 2026-10-07) | **evaluation only** here: the thinking-pause cue, pause level (`pauses.mjs`) and through the duplex replay (`duplex_replay.mjs`) | "LiveKit EOT-Bench, CC BY 4.0" |
+| **HiACC** (Singh, Singh & Kadyan 2025, *Data in Brief*; zenodo.org/records/15551669) | all 1,861 child + 3,321 adult utterances (20 children aged 10-14, 20 adults; Hinglish; Samsung Galaxy M34, 16 kHz) | **conflicting**: the Zenodo record says CC BY 4.0; the article's specifications table says "academic/research use under a CC BY-NC 4.0 license". The stricter reading applies | **evaluation only**: fire rates children vs adults under identical conditions (`hiacc_eval.py`); never trained on; every wav deleted after the front-end; the zip deleted after the run | "HiACC, Singh, Singh & Kadyan, 2025" |
+| MyST | — | CC BY-NC-SA 4.0 free tier (evaluation only) | not obtained: myst.cemantix.org did not resolve from this sandbox; the HF mirrors are gated | — |
+
+**Consent note (HiACC).** Ethics approval UPES REF-1002; the article says all participants were informed and gave consent;
+it does not describe parental consent for the children. Used for evaluation only, numbers only; flagged to the owner.
+**Still no corpus** has children's filler marks with a usable licence; HiACC transcripts do not mark fillers, so it gives
+fire rates, not precision. Precision on children comes only from the consented pilot (`docs/design/round3/voicesig/PILOT-PROTOCOL.md`).

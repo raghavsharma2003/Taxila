@@ -63,9 +63,9 @@ export const FILLER_MIN_MS = 200;
  * Runs of p ≥ thr over speech frames; leadMs = the filled time before the first non-filler speech frame (null when the
  * turn has no speech). `hopMs` is 20 for AudioFrames.
  */
-export function fillerRuns(frames: AudioFrame[], p: ArrayLike<number>, thr: number, hopMs = 20): FillerRuns {
+export function fillerRuns(frames: AudioFrame[], p: ArrayLike<number>, thr: number, hopMs = 20, minMs = FILLER_MIN_MS): FillerRuns {
   const runs: Array<[number, number]> = [];
-  const need = Math.ceil(FILLER_MIN_MS / hopMs);
+  const need = Math.ceil(minMs / hopMs);
   let s = -1;
   for (let i = 0; i <= frames.length; i++) {
     const on = i < frames.length && frames[i].speech && p[i] >= thr;

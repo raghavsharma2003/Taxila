@@ -25,6 +25,8 @@ export class FrontEndCore implements AudioFrontEnd {
   /** Recent mel frames for melNear() (the GRU input pairs each 20 ms hop with the mel frame at its centre). */
   private recentMel: MelFrame[] = [];
   private readonly frameFns = new Set<(f: AudioFrame) => void>();
+  /** Round 3: P chunk listeners (the consented pilot recorder only, src/voicesig/pilotRecorder.ts; never a network path). */
+  private readonly chunkFns = new Set<(t: number, p: Float32Array) => void>();
   private readonly passFns = new Set<(p: EncoderPass) => void>();
   private readonly passes = new Map<number, Promise<EncoderPass | null>>();
   private readonly pRing = new Float32Array((16_000 * P_RING_MS) / 1000);
@@ -44,6 +46,7 @@ export class FrontEndCore implements AudioFrontEnd {
     this.lastT = t + (p.length / 16_000) * 1000;
     for (let i = 0; i < p.length; i++) this.pRing[(this.pWritten + i) % this.pRing.length] = p[i];
     this.pWritten += p.length;
+    for (const fn of this.chunkFns) { try { fn(t, p); } catch { /* a listener never breaks the tap */ } }
     for (const m of this.mel.push(p, t)) this.recentMel.push(m);
     if (this.recentMel.length > 32) this.recentMel.splice(0, this.recentMel.length - 32);
     const out = this.frameCore.push({ t, p, r });
@@ -61,6 +64,8 @@ export class FrontEndCore implements AudioFrontEnd {
   setMicClass(c: MicClass): void { this.micClass = c; }
 
   onFrame(cb: (f: AudioFrame) => void): () => void { this.frameFns.add(cb); return () => this.frameFns.delete(cb); }
+  /** The 16 kHz P chunks as they arrive (round 3: the consented pilot recorder; see pilotRecorder.ts for the rules). */
+  onChunk(cb: (t: number, p: Float32Array) => void): () => void { this.chunkFns.add(cb); return () => { this.chunkFns.delete(cb); }; }
   onEncoderPass(cb: (p: EncoderPass) => void): () => void { this.passFns.add(cb); return () => this.passFns.delete(cb); }
 
   /** Idempotent per turnSeq: duplex's candidate end and voicesig's commit for the same turn share ONE pass. */

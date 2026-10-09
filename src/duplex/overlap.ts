@@ -83,7 +83,13 @@ export function classifyOverlap(f: OverlapFeatures, s: { voicing: boolean; f0Slo
   // raised onset (z = -0.5 + 0.6 + 1.2 → p 0.79 at 150 ms), 6 of 8 continuer yields. The hush (OVERLAP.hushMs) already takes
   // her voice down at ~120 ms, so waiting for the burst to end or sustain costs no audible overlap. Her yes/no question is
   // the exception: a "haan" there is the answer, and she takes it at once.
-  if (pB >= OVERLAP.yieldP && s.voicing && f.durMs < OVERLAP.sustainedMs && !f.herAskedYesNo && OVERLAP.waitForSustain) {
+  const sustainNeeded = f.hushed ? Math.max(OVERLAP.sustainedMs, OVERLAP.hushedSustainMs) : OVERLAP.sustainedMs;
+  if (pB >= OVERLAP.yieldP && s.voicing && f.durMs < sustainNeeded && !f.herAskedYesNo && OVERLAP.waitForSustain) {
+    codes.push("short_burst");
+    return out(null, pB, false, false, null, "too_short");
+  }
+  // round 3 (AMI real speech): an ended short burst with no words is a continuer more often than a barge-in; its words decide
+  if (pB >= OVERLAP.yieldP && ended && f.durMs <= OVERLAP.shortBurstMs && !(rising && f.durMs <= 600) && !f.herAskedYesNo && OVERLAP.endedShortWaitsForWords) {
     codes.push("short_burst");
     return out(null, pB, false, false, null, "too_short");
   }

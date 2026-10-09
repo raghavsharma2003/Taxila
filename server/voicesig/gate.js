@@ -16,6 +16,13 @@ export const MIN_PRECISION = 0.8;
 export const MIN_FIRED = 100;
 /** The only population whose numbers may open the gate. */
 export const LIVE_POPULATION = "children";
+/**
+ * Round 3 (docs/design/round3/voicesig/PILOT-PROTOCOL.md §6.3): a children's row that carries its child-clustered 95%
+ * interval must also clear this lower bound, and must come from at least MIN_CHILDREN children when it says how many.
+ * (The pilot scorer always writes both; the checks are skipped only for a row that has neither, e.g. a test fixture.)
+ */
+export const MIN_PRECISION_LO = 0.7;
+export const MIN_CHILDREN = 20;
 
 /**
  * The measured evidence per state, as shipped. Each row names its population, n, method and date (CLAUDE.md: a number
@@ -58,7 +65,9 @@ export function gateReason(state, { mode, evidence = EVIDENCE, ladder = LADDER }
   const e = evidence[state];
   if (!e || e.population !== LIVE_POPULATION) return "not_measured_on_children";
   if (!(typeof e.precision === "number" && e.precision >= MIN_PRECISION)) return "precision_below_bar";
+  if (Array.isArray(e.precisionCi95) && !(e.precisionCi95[0] >= MIN_PRECISION_LO)) return "precision_below_bar";
   if (!(e.fired >= MIN_FIRED)) return "too_few_firings";
+  if (typeof e.children === "number" && e.children < MIN_CHILDREN) return "too_few_firings";
   if (levelOf(state, ladder) < 1) return "ladder_l0";
   if (mode !== "on") return "mode_shadow";
   return null;

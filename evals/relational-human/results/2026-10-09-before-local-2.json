@@ -1,0 +1,96 @@
+{
+ "method": {
+  "date": "2026-10-09T11:37:21.322Z",
+  "label": "before: HEAD cadf527 (=prod 145996f runtime), prefetch off (prod config), no ack; STT taxila-live-transcribe (prod)",
+  "turns": 0,
+  "lessons": 1,
+  "classLevel": 4,
+  "base": "in-process",
+  "root": "/tmp/claude-0/-home-user/ecee9fc1-62f9-5f67-a47d-69ca79d9981a/scratchpad/r3-relational-human/head/",
+  "host": "vm",
+  "loadAvg": [
+   15.23,
+   17.81
+  ],
+  "wallS": 198,
+  "prefetch": false,
+  "ack": false,
+  "script": "items",
+  "stt": "taxila-live-transcribe",
+  "env": {
+   "TAXILA_TURN_PREFETCH": "off",
+   "TAXILA_ACK": "(default on)",
+   "AZURE_SPEECH_REGION": "centralindia",
+   "TAXILA_DB": "test"
+  },
+  "note": "synthetic child speech (gpt-4o-mini-tts ×1.2 pitch); WebSocket transcription from this US sandbox to eastus2; sound = first byte (or the ack's play time) + 60 ms lead + 50 ms NOMINAL output latency; device rules simulated"
+ },
+ "summary": {
+  "endpoint": null,
+  "stt": null,
+  "lastDeltaAfterEnd": null,
+  "finalAfterEnd": null,
+  "turnAfterEnd": null,
+  "prefetchAfterEnd": null,
+  "director": null,
+  "tts": null,
+  "replyFirstByte": null,
+  "replySound": null,
+  "ackSoundAfterEnd": null,
+  "ackReadyAfterEnd": null,
+  "firstSound": null,
+  "serverMs": null,
+  "firstSoundGraded": null,
+  "firstSoundNonAnswer": null,
+  "ackReadyRight": null,
+  "ackReadyWrong": null,
+  "ack": {
+   "played": 0,
+   "graded": 0,
+   "of": 0,
+   "reasons": {}
+  },
+  "speculation": {
+   "hit": 0,
+   "of": 0
+  },
+  "prefetchAdopted": {
+   "yes": 0,
+   "of": 0,
+   "sent": 0,
+   "accepted": 0,
+   "missingRoute": 0,
+   "failed": 0
+  },
+  "rewrites": 0,
+  "azure": {
+   "calls": 65,
+   "byDep": {
+    "taxila-fast": {
+     "calls": 51,
+     "s429": 0,
+     "other": 0
+    },
+    "/openai/v1/realtime/client_secrets": {
+     "calls": 1,
+     "s429": 0,
+     "other": 0
+    },
+    "taxila-gpt6": {
+     "calls": 10,
+     "s429": 0,
+     "other": 0
+    },
+    "taxila-gpt6-luna": {
+     "calls": 3,
+     "s429": 0,
+     "other": 0
+    }
+   },
+   "status": {
+    "200": 65
+   }
+  }
+ },
+ "rows": []
+}

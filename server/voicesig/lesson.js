@@ -84,7 +84,54 @@ export function hintsOf(read) {
   }
 }
 
-const NONE = Object.freeze({ read: null, hints: {}, reasons: [], vsb: undefined, trace: null });
+/**
+ * What a read WOULD hand the Director if its state were live (the shadow log's counterfactual input). The licence is the
+ * adapter's, so a voice-only read still buys only a cheap move and a costly one still needs Tier-T agreement; a read with
+ * no licensed move ("none", null) would hand nothing.
+ */
+export function wouldHintsOf(read) {
+  if (!read?.state) return {};
+  return hintsOf({ ...read, live: true });
+}
+
+/** The device's thinking-pause cue counters for this turn (src/voicesig/holdCue.ts via kv.f), or null when absent. */
+export function holdOf(kv) {
+  const f = kv?.f ?? {};
+  if (typeof f.pausesRead !== "number" && typeof f.thinkPauses !== "number") return null;
+  return { read: f.pausesRead ?? 0, fired: f.thinkPauses ?? 0 };
+}
+
+/** The decision fields the shadow comparison reads off a plan (planTurn's r): the move and the rung / probe it set. */
+export function decisionOf(plan) {
+  const r = plan?.r ?? plan;
+  if (!r?.move) return null;
+  const pp = r.state?.pendingProbe;
+  return { move: String(r.move.kind ?? "none"), hintLevel: r.state?.hintLevel ?? null, probe: pp ? String(pp.cls ?? pp.shapeId ?? "probe") : null };
+}
+
+/**
+ * The shadow record for one turn: what she did, and what she would have done had this turn's voicesig state been live
+ * (the counterfactual plan run with `vsTurn.would`). Codes only for the trace (vs_diff.same / vs_diff.changed /
+ * vs_diff.not_run); the record keeps move kinds, never words. Pure; never throws.
+ * @param {{ would?: Record<string, true> } | null} vsTurn
+ * @param {any} actualPlan  the plan the lesson used
+ * @param {any} shadowPlan  the counterfactual plan (null when it was not run: no would-hints, a safety turn, a budget miss)
+ */
+export function shadowDiff(vsTurn, actualPlan, shadowPlan) {
+  try {
+    const wouldKeys = Object.keys(vsTurn?.would ?? {});
+    if (!wouldKeys.length) return { codes: [], record: null };
+    const a = decisionOf(actualPlan);
+    const s = decisionOf(shadowPlan);
+    if (!a || !s) return { codes: ["vs_diff.not_run"], record: { would: wouldKeys, actual: a, shadow: null, changed: null } };
+    const changed = a.move !== s.move || a.hintLevel !== s.hintLevel || a.probe !== s.probe;
+    return { codes: [changed ? "vs_diff.changed" : "vs_diff.same"], record: { would: wouldKeys, actual: a, shadow: s, changed } };
+  } catch {
+    return { codes: [], record: null };
+  }
+}
+
+const NONE = Object.freeze({ read: null, hints: {}, would: {}, reasons: [], shadowReasons: [], vsb: undefined, trace: null });
 
 /** Keep the session baseline small: most-used rows first. */
 function trimRows(rows) {
@@ -147,15 +194,24 @@ export function turn(t) {
     const live = !!vs.state && !vs.shadow && gate === null;
     const read = { state: vs.state, proposed: vs.proposed ?? null, licence: vs.licence, live, why: live ? null : gate === null ? "adapter_shadow" : gate, tAgree: !!vs.tAgree, baselineN: vs.baselineN };
     const hints = hintsOf(read);
+    // Round 3 (shadow log of what she WOULD have done): the tie-breakers this read would hand the Director if its state
+    // were live. Never handed to anything here; brain/turn.js (patch 05) runs the counterfactual plan with them and
+    // shadowDiff() records whether her move would have changed.
+    const would = live ? {} : wouldHintsOf(read);
+    const hold = holdOf(kv);
     const codes = [
       vs.state ? `vs.${vs.state}` : vs.disagree ? "vs.disagree" : "vs.none",
       ...(vs.state ? [live ? "vs_gate.live" : `vs_gate.${read.why}`] : []),
       ...Object.keys(hints).map((h) => `vs_act.${h}`),
     ];
     const { kept } = cleanCodes(codes);
+    // The round-3 shadow codes ride separately (shadowReasons): the ship5 `reasons` contract is unchanged, and they reach
+    // the trace only once patch 04 (reasons.js: vs_would / vs_hold / vs_diff) is in, through patch 05 (brain/turn.js).
+    const shadow = cleanCodes([...Object.keys(would).map((h) => `vs_would.${h}`), ...(hold && hold.fired > 0 ? ["vs_hold.fired"] : [])]).kept;
     return {
-      read, hints, reasons: kept, vsb,
-      trace: { ver: SEAM_VER, gate: GATE_VER, state: vs.state, licence: vs.licence, live, h: vs.h, g: vs.g, lrV: vs.lrV, n: vs.baselineN, computeMs: kv.computeMs, stage: kv.stage, det: kv.q.det },
+      read, hints, would, reasons: kept, shadowReasons: shadow, vsb,
+      trace: { ver: SEAM_VER, gate: GATE_VER, state: vs.state, licence: vs.licence, live, h: vs.h, g: vs.g, lrV: vs.lrV, n: vs.baselineN, computeMs: kv.computeMs, stage: kv.stage, det: kv.q.det,
+        ...(Object.keys(would).length ? { would: Object.keys(would) } : {}), ...(hold ? { hold } : {}) },
     };
   } catch (e) {
     return { ...NONE, vsb: t.vsb, reasons: ["component_error.voicesig"], error: String(e?.message ?? e) };
@@ -237,7 +293,11 @@ export async function sweep(q) {
 /** GET /api/voicesig/config: what the client may run. No child data; short cache so a kill reaches new loads quickly. */
 export function config(env = process.env) {
   const mode = seamMode(env);
-  return { mode, frontend: mode !== "off" && env.TAXILA_VOICESIG_FRONTEND !== "0", detector: mode !== "off" && env.TAXILA_VOICESIG_DETECTOR !== "0", ver: SEAM_VER };
+  // holdCue (round 3): the on-device thinking-pause cue duplex reads (src/voicesig/holdCue.ts) runs the detector, so it is
+  // off whenever the detector is; TAXILA_VOICESIG_HOLDCUE=0 kills it alone (the field is sent only then: the shape the
+  // ship5 clients and tests read is unchanged)
+  return { mode, frontend: mode !== "off" && env.TAXILA_VOICESIG_FRONTEND !== "0", detector: mode !== "off" && env.TAXILA_VOICESIG_DETECTOR !== "0", ver: SEAM_VER,
+    ...(env.TAXILA_VOICESIG_HOLDCUE === "0" ? { holdCue: false } : {}) };
 }
 
 /** GET /api/voicesig/status: the per-state table for the status page (VALUES-100 V2 item 3). */
@@ -253,4 +313,4 @@ export function status(env = process.env) {
   };
 }
 
-export const voicesigSeam = { turn, startRows, endSave, withdraw, sweep, config, status, mode: seamMode };
+export const voicesigSeam = { turn, startRows, endSave, withdraw, sweep, config, status, mode: seamMode, shadowDiff };

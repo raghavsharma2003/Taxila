@@ -1,0 +1,38 @@
+{
+ "built": "2026-10-09T11:31:20.826Z",
+ "from": [
+  "evals/grading-truth/data/parts-labels-c1-9.json",
+  "data/kits-parts.json",
+  "data/kits/*.json"
+ ],
+ "raters": [
+  "gpt-5.6-terra",
+  "DeepSeek-V4-Pro"
+ ],
+ "disagreements": {
+  "total": 4290,
+  "entryLabels": 3029,
+  "partsCounts": 1261,
+  "items": 2074,
+  "itemsWithNoRow": 667
+ },
+ "rows": 3783,
+ "byPriority": {
+  "P1": 336,
+  "P2": 2527,
+  "P3": 166,
+  "P4": 570,
+  "P5": 113,
+  "P6": 71
+ },
+ "byReasonP5": {
+  "agreed partial, but the entry carries a number of every part": 66,
+  "agreed complete, but the entry carries none of a part's numbers": 47
+ },
+ "creditedCompleteTodayWhileDisputed": 3029,
+ "example": [
+  "P1 \"1\": acceptable entry disputed (partial/wrong)",
+  "P2 \"7 by 7, 1 left\": acceptable entry disputed (complete/partial)",
+  "P5 \"49, 1 left out\": agreed partial, but the entry carries a number of every part"
+ ]
+}

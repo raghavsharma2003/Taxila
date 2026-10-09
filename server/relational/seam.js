@@ -24,7 +24,10 @@ import { STAGES, stageFor, stageRank } from "./bond.js";
 import { decide as policyDecide } from "./policy.js";
 import { initRelSession } from "./session.js";
 import { signalsOf, wordCount } from "./signals.js";
-import { relLessonEndStmts } from "./writers.js";
+import { relLessonEndStmts, memoryForgetStmt } from "./writers.js";
+// round 3 (relational-human): the memory she uses (callbacks), its claim check and the truth about what she keeps
+import { callbackCandidates, claimProblem, keepsOf } from "./memory.js";
+import { getKit, getTopic } from "../content/index.js";
 
 /** @typedef {{ text: string, params?: unknown[] }} Stmt */
 
@@ -82,6 +85,48 @@ const COUNTS_SQL = `with ev as (
 // replica or after a restart still writes its bond rows. Never awaited, never throws; no database configured = no probe.
 if ((process.env.DATABASE_URL || process.env.TAXILA_DB) && !process.env.NODE_TEST_CONTEXT) probeTables().catch(() => {});
 
+/**
+ * Round 3: the record the callbacks are built from (memory.js callbackCandidates), read at lesson start under the parent's
+ * choices: the LEARNING record of the last lesson (the learning_profile consent: what took a few tries and came good, what
+ * they explained, what is still being learnt) and, under the memory consent, the child's cited memory rows and the
+ * interests the parent chose. Never the transcript, never a third party, never time since the last lesson.
+ */
+async function memoryRecord(child, last) {
+  const consent = await q(`select distinct on (purpose) purpose, granted from consent where guardian_id = $1 and (child_id = $2 or child_id is null)
+      and purpose in ('learning_profile', 'memory') order by purpose, created_at desc`, [child.guardian_id, child.id]).catch(() => []);
+  const granted = (p) => !!consent.find((r) => r.purpose === p)?.granted;
+  const allow = { learning: granted("learning_profile"), memory: granted("memory") };
+  let lastLesson = null;
+  if (allow.learning && last?.id) {
+    const rows = await q(`with ev as (select seq, skill_ids[1] as skill, cls, outcome, pre_attempt_help, entry_rung from kt_evidence
+        where child_id = $1 and session_id = $2 and not contaminated),
+      g as (select skill,
+        count(*) filter (where (cls = 'item.open' or cls like 'item.mcq%') and outcome <> 0 and not (cls = 'item.open' and outcome = 6))::int as wrong,
+        count(*) filter (where (cls = 'item.open' or cls like 'item.mcq%') and outcome = 0 and not pre_attempt_help and entry_rung = 0)::int as unaided,
+        min(seq) filter (where (cls = 'item.open' or cls like 'item.mcq%') and outcome <> 0 and not (cls = 'item.open' and outcome = 6)) as first_wrong,
+        max(seq) filter (where (cls = 'item.open' or cls like 'item.mcq%') and outcome = 0 and not pre_attempt_help and entry_rung = 0) as last_unaided,
+        bool_or(cls = 'probe.teachback' and outcome = 0) as explained
+        from ev group by skill)
+      select * from g order by skill`, [child.id, String(last.id)]);
+    const kit = last.topic_id ? await getKit(last.topic_id, { generate: false }).catch(() => null) : null;
+    const titleOf = (id) => kit?.skills?.find((k) => k.id === id)?.title ?? null;
+    lastLesson = {
+      lessonId: String(last.id), topicId: String(last.topic_id ?? ""), topicTitle: getTopic(last.topic_id)?.title ?? kit?.title ?? "",
+      skills: rows.map((r) => ({ skillId: r.skill, title: titleOf(r.skill), wrong: r.wrong, unaided: r.unaided, explained: !!r.explained,
+        unaidedAfterWrong: r.wrong > 0 && r.last_unaided != null && Number(r.last_unaided) > Number(r.first_wrong) })).filter((x) => x.title),
+    };
+  }
+  const memories = allow.memory
+    ? await q(`select m.id, m.kind, m.text, t.lesson_id from memory m left join turn t on t.id = m.source_turn
+        where m.child_id = $1 and m.superseded_by is null order by m.created_at desc limit 3`, [child.id]).catch(() => [])
+    : [];
+  const interests = allow.memory && Array.isArray(child.interests) ? child.interests.map(String) : [];
+  return { allow, callbacks: callbackCandidates({ last: lastLesson, memories: memories.map((m) => ({ id: m.id, kind: m.kind, text: m.text, lessonId: m.lesson_id })), interests, allow }) };
+}
+
+/** A question about her memory ("yaad hai maine … bataya tha?", "do you remember …?"): it presupposes, it is not a fact. */
+const memoryQuestion = (t) => /(?<![\p{L}\p{M}])(?:yaad|remember|याद)(?![\p{L}\p{M}])/iu.test(t) && /[?？]\s*$|^(?:kya|do you|did you|yaad hai|क्या|याद है)/iu.test(String(t).trim());
+
 export const relationalSeam = {
   /**
    * @param {string} childId
@@ -98,17 +143,19 @@ export const relationalSeam = {
       pending.set(String(childId), { snapshot: null, classLevel, lang, at: Date.now() });
       return null;
     }
-    const child = await one("select c.id, c.legal_mode, c.teacher_id, c.teacher_name, c.first_name, cc.address from child c left join child_controls cc on cc.child_id = c.id where c.id = $1", [childId]);
+    const child = await one("select c.id, c.guardian_id, c.legal_mode, c.teacher_id, c.teacher_name, c.first_name, c.interests, cc.address from child c left join child_controls cc on cc.child_id = c.id where c.id = $1", [childId]);
     if (!child) return null;
     const legalMode = legalModeOf(child.legal_mode);
     const agentId = String(child.teacher_id ?? "asha");
     const [row, counts, last] = legalMode === "M0" ? [null, null, null] : await Promise.all([
       one("select * from rel_bond where child_id = $1 and agent_id = $2", [childId, agentId]),
       one(COUNTS_SQL, [childId]).catch(() => null),
-      one(`select l.state->>'endedBy' as ended_by, l.state->'lastMove'->>'kind' as last_move,
+      one(`select l.id, l.topic_id, l.state->>'endedBy' as ended_by, l.state->'lastMove'->>'kind' as last_move,
              exists (select 1 from incident i where i.lesson_id = l.id and i.kind = 'safeguarding') as safeguard
            from lesson l where l.child_id = $1 and l.ended_at is not null order by l.ended_at desc limit 1`, [childId]).catch(() => null),
     ]);
+    // round 3: the record she may call back to (memory.js), read under the parent's choices; nothing in M0
+    const mem = legalMode === "M0" ? null : await memoryRecord(child, last).catch((e) => { console.warn("[relational] memory record unavailable:", e?.message); return null; });
     const stage = STAGES.includes(row?.stage) ? row.stage : "meeting";
     const span = row?.first_day ? Math.floor((Date.now() - new Date(row.first_day).getTime()) / 86_400_000) : 0;
     const earned = stageFor({ sessions: Number(row?.sessions ?? 0), distinctDays: Number(row?.distinct_days ?? 0), spanDays: span,
@@ -121,7 +168,8 @@ export const relationalSeam = {
       address: { teacherCallsChild: { name: row?.address?.teacherCallsChild ?? String(child.first_name ?? ""), source: row?.address?.teacherCallsChild ? "child_said" : "guardian" },
         childCallsTeacher: child.teacher_name ?? null, pronoun: child.address === "aap" ? "aap" : "tum" },
       teacherOpen: row?.teacher_open ? { eventId: String(row.teacher_open.eventId), kind: row.teacher_open.kind, ackedAtOpen: false } : null,
-      christened: [], milestonesFired: [...(row?.milestones ?? [])], rituals: { ...(row?.rituals ?? {}) }, callbacks: [],
+      christened: [], milestonesFired: [...(row?.milestones ?? [])], rituals: { ...(row?.rituals ?? {}) }, callbacks: mem?.callbacks ?? [],
+      keeps: keepsOf(mem?.allow ?? { learning: legalMode !== "M0", memory: false }), allow: mem?.allow ?? null,
       lastEnd: !last ? null : last.safeguard ? "safeguard" : last.ended_by === "pagehide" ? "disconnect" : last.last_move === "wrap" ? "completed" : "child_exit",
       overlayOn: false, stageUp: stageRank(earned) > stageRank(stage) ? { from: stage, to: earned } : null, classLevel, lang,
     };
@@ -141,13 +189,17 @@ export const relationalSeam = {
       const p = pending.get(String(input.childId));
       pending.delete(String(input.childId));
       entry = { childId: String(input.childId), snapshot: p?.snapshot ?? null, classLevel: p?.snapshot?.classLevel ?? p?.classLevel ?? 5,
-        session: initRelSession(), lastTurn: -1, before: null, directives: new Map(), at: Date.now() };
+        session: initRelSession(), lastTurn: -1, before: null, directives: new Map(), at: Date.now(), childTexts: [] };
       lessons.set(input.lessonId, entry);
     }
     // The same turn again (a retry, a replay): the same directive, folded from the same session.
     if (turn === entry.lastTurn && entry.directives.has(turn)) return entry.directives.get(turn);
     if (turn < entry.lastTurn) return entry.directives.get(turn) ?? null;
     const childText = String(input.childText ?? "");
+    // round 3: this lesson's own child words (in memory only, die with the lesson): the claim check's in-session facts
+    // (a memory QUESTION is not a fact: "yaad hai maine apne kutte ke baare mein bataya tha?" never backs "haan, tumne
+    // kutte ke baare mein bataya tha" — memory-2day 2026-10-09, before arm, P4)
+    if (childText && !memoryQuestion(childText)) entry.childTexts = [...(entry.childTexts ?? []), childText.slice(0, 400)].slice(-40);
     // harm: false — the turn already ran the safety gate on these words; its verdict arrives as input.safety
     // harm: on a safeguarding turn the predicate runs here too (and a classifier-only disclosure counts), so a disclosure
     // said with pleading ("mat jao didi, papa mujhe roz maarte hain") is new distress whose goodbye still gets its own
@@ -160,7 +212,7 @@ export const relationalSeam = {
     const outcome = flags.dontKnow ? "dont_know" : input.cls?.outcome ?? null;
     const { directive, session } = policyDecide(entry.snapshot, entry.session, signals, {
       turn, move: input.move, safety: !!input.safety, lane: input.lane, outcome, words: wordCount(childText),
-      verdictReversed: !!input.verdictReversed, band: bandOf(entry.classLevel), classLevel: entry.classLevel,
+      verdictReversed: !!input.verdictReversed, band: bandOf(entry.classLevel), classLevel: entry.classLevel, skillId: input.skillId ?? null,
     });
     entry.before = entry.session;
     entry.session = session;
@@ -169,6 +221,33 @@ export const relationalSeam = {
     entry.directives.set(turn, directive);
     if (entry.directives.size > 4) entry.directives.delete(entry.directives.keys().next().value);
     return directive;
+  },
+
+  /**
+   * Round 3: the callback the kernel accepted, as the compile needs it ({ id, kind, fragment }: a closed note), or null.
+   * @param {string} lessonId @param {string} id
+   */
+  callbackOf(lessonId, id) {
+    const c = (lessons.get(lessonId)?.snapshot?.callbacks ?? []).find((x) => x.id === id);
+    // lead: a memory about the CHILD (their learning, a win) is said first, in a few words (the compile puts it in the last
+    // section: position is mechanism — mid-brief it was voiced 0/3 in the opener, memory-2day 2026-10-09); an interest the
+    // parent chose (P) is the setting of an example, not something to announce
+    return c ? { id: c.id, kind: c.kind, fragment: c.fragment, lead: c.kind !== "P" } : null;
+  },
+
+  /**
+   * Round 3, the post-hoc claim check (F9, RELATIONAL-OS §8.5): a sentence of her reply that refers to the child's past
+   * with nothing in the record behind it (not the callback this turn carried, not this lesson's own words; in a first
+   * meeting any "last time"). Pure over in-memory state; null = clean. The turn turns a hit into next turn's correction.
+   * @param {string} lessonId @param {string} reply @param {{ turn?: number }} [o]
+   */
+  claimCheck(lessonId, reply, o = {}) {
+    const entry = lessons.get(lessonId);
+    const turn = Number(o.turn ?? entry?.lastTurn);
+    const cbId = entry?.directives.get(turn)?.callbackId ?? null;
+    const callback = cbId ? (entry?.snapshot?.callbacks ?? []).find((x) => x.id === cbId) ?? null : null;
+    const sessions = entry?.snapshot?.sessions;
+    return claimProblem(reply, { callback, sessionText: (entry?.childTexts ?? []).join(" "), ...(sessions != null ? { hasPast: Number(sessions) >= 1 } : {}) });
   },
 
   /**
@@ -183,9 +262,15 @@ export const relationalSeam = {
       missedEnds += 1;
       console.warn(`[relational] lesson end with no session in this process (${missedEnds} so far): restart or another replica; session-only notes for ${end?.lessonId} are lost`);
     }
-    if (!child?.id || child.legal_mode == null || tablesReady !== true) return [];
-    if (legalModeOf(child.legal_mode) === "M0") return [];
-    if (!(Number(end?.turns) >= 1)) return [];     // nothing happened in this lesson: no session is counted
+    // round 3: the child asked her not to keep what they said: this lesson's memories go (after the end's own inserts, in
+    // the same transaction). Independent of the relational tables' probe and the mode: deleting is always allowed.
+    let forget = [];
+    if (entry?.session?.forgetAsked && child?.id && child.legal_mode != null) {
+      try { forget = [memoryForgetStmt(child, end.lessonId)]; } catch (e) { console.warn("[relational] forget request not applied:", e?.message); }
+    }
+    if (!child?.id || child.legal_mode == null || tablesReady !== true) return forget;
+    if (legalModeOf(child.legal_mode) === "M0") return forget;
+    if (!(Number(end?.turns) >= 1)) return forget;     // nothing happened in this lesson: no session is counted
     const snap = entry?.snapshot ?? null;
     const s = entry?.session ?? initRelSession();
     const agentId = String(child.teacher_id ?? snap?.agentId ?? "asha");
@@ -194,13 +279,14 @@ export const relationalSeam = {
       warmth: s.climate.warmthOffers, permanence: s.climate.permanenceAsks, secret: s.climate.secretAsks, night: s.climate.nightAsks,
       goodbyeDistress: s.notes.filter((n) => n.kind === "boundary_goodbye").length, loneliness: s.climate.lonelySays,
     } : null;
-    return relLessonEndStmts(child, {
+    // the parent's note (memory_forgotten) is written with the other notes; the forget delete goes last
+    return [...relLessonEndStmts(child, {
       agentId, lessonId: end.lessonId, lastTurn: Number(end.turns) || 0,
       stageFrom: snap?.stage ?? "meeting", stageTo: stageRank(stageTo) < 1 ? "first_sessions" : stageTo,
       teacherEvents: s.teacherEvents.map((e) => ({ kind: e.kind, owned: e.owned, turn: e.turn })),
       notes: s.notes.map((n) => ({ kind: n.kind, slots: n.slots, turn: n.turn })),
       overlay: overlay && Object.values(overlay).some((v) => v > 0) ? overlay : null,
-    });
+    }), ...forget];
   },
 };
 

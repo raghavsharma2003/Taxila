@@ -12,6 +12,8 @@
 // Browser trust: Chromium launched with HOME pointing at a private NSS db that trusts the sandbox proxy's CA
 // (/root/.ccr/agent-proxy-ca.crt) — real TLS verification, no ignoreHTTPSErrors (the shared ~/.pki/nssdb is empty).
 // One context, deviceScaleFactor 2, hasTouch, resized between the three sizes (isMobile cannot change in a context).
+// No microphone is granted: the dock opens its typed row. Young (class <= 4) children have no typed row, so the walk
+// uses class-5+ personas, also on class-4 topics (the Older Desk; the Young Desk is not covered by this walk).
 //
 //   NODE_USE_ENV_PROXY=1 node docs/design/round3/forge/audit/harness/walk.mjs --base https://taxila.dev --out <dir>
 //     [--cases picture,diagram,...] [--nss-home <dir with .pki/nssdb>]
@@ -22,7 +24,7 @@ import { arg, withTestAccount, ok, warn, done, BASE, isLocal, PERSONAS, GREET, f
 const OUT = arg("out", join(process.cwd(), "audit-out"));
 const NSS_HOME = arg("nss-home", process.env.FORGE_NSS_HOME || "");
 const ONLY = arg("cases", "");
-const SETTLE = Number(arg("settle", "3500"));
+const SETTLE = Number(arg("settle", "7000"));
 mkdirSync(OUT, { recursive: true });
 
 export const VIEWPORTS = [
@@ -38,11 +40,11 @@ export const CASES = [
   { id: "diagram", ask: "show me a diagram", persona: "meher", topic: "c6-maths-ch07-t01" },
   { id: "draw", ask: "draw it", persona: "zoya", topic: "c5-evs-ch01-t01" },
   { id: "whiteboard", ask: "whiteboard pe bana ke samjhao", persona: "kabir", topic: "c7-maths-ch08-t01" },
-  { id: "game", ask: "game khelna hai", persona: "golu", topic: "c4-maths-ch05-t01" },
+  { id: "game", ask: "game khelna hai", persona: "aarav", topic: "c4-maths-ch05-t01" },
   { id: "animation", ask: "animation dikhao na", persona: "ishaan", topic: "c6-science-ch01-t01" },
   { id: "game-perimeter", ask: "game khelna hai", persona: "meher", topic: "c6-maths-ch06-t01" },
   { id: "sim-science", ask: "simulation dikhao", persona: "kabir", topic: "c7-science-ch01-t01" },
-  { id: "picture-evs", ask: "picture dikhao", persona: "golu", topic: "c4-evs-ch01-t01" },
+  { id: "picture-evs", ask: "picture dikhao", persona: "zoya", topic: "c4-evs-ch01-t01" },
   { id: "diagram-science", ask: "show me a diagram", persona: "meher", topic: "c6-science-ch02-t01" },
   { id: "game-sst", ask: "can we play a game?", persona: "meher", topic: "c6-sst-ch01-t01" },
   { id: "animation-maths", ask: "animation dikhao na", persona: "aarav", topic: "c5-maths-ch01-t01" },
@@ -226,7 +228,6 @@ await withTestAccount(async ({ api }) => {
       const ctx = await browser.newContext({ viewport: { width: 360, height: 800 }, deviceScaleFactor: 2, hasTouch: true });
       const cookie = api.cookie();
       if (cookie) { const i = cookie.indexOf("="); await ctx.addCookies([{ name: cookie.slice(0, i), value: cookie.slice(i + 1), url: BASE }]); }
-      await ctx.grantPermissions(["microphone"], { origin: BASE }).catch(() => {});
       const page = await ctx.newPage();
       const net = [];
       const errors = [];
@@ -245,7 +246,24 @@ await withTestAccount(async ({ api }) => {
         await page.goto(`${BASE}/c/${child.id}/practice/${c.topic}?mode=text`, { waitUntil: "domcontentloaded", timeout: 60_000 });
         await page.waitForSelector('[data-testid="lesson"]', { timeout: 60_000 });
         const send = async (text) => {
+          // a number answer with the NumberPad open in the tray: the child taps the digits
+          const pad = page.locator('[data-testid="number-pad"]');
+          if (/^\d+$/.test(text) && await pad.isVisible().catch(() => false)) {
+            for (const ch of text) await pad.locator(".dk-key", { hasText: new RegExp(`^${ch}$`) }).first().click().catch(() => {});
+            const t0 = Date.now();
+            await pad.locator(".dk-key--send").click().catch(() => {});
+            rec.turns.push({ child: text, at: t0, via: "pad" });
+            await page.waitForTimeout(2500);
+            return;
+          }
           const input = page.locator('[data-testid="child-input"]');
+          // the typed lane: the keyboard row is open when there is no mic; else open it from the dock's Type button
+          for (let k = 0; k < 30 && !(await input.isVisible().catch(() => false)); k++) {
+            if (/^\d+$/.test(text) && await pad.isVisible().catch(() => false)) return send(text);
+            const typeBtn = page.locator('[data-testid="type"]');
+            if (await typeBtn.isVisible().catch(() => false)) await typeBtn.click().catch(() => {});
+            await page.waitForTimeout(1500);
+          }
           await input.waitFor({ state: "visible", timeout: 45_000 });
           await page.waitForFunction(() => !document.querySelector('[data-testid="child-input"]')?.disabled, null, { timeout: 45_000 }).catch(() => {});
           await input.fill(text);

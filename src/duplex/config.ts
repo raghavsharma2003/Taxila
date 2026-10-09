@@ -91,6 +91,18 @@ export const VERDICT_DELAY_MS: Ms = 1200;
 // gave the fewest cut-offs (D4 18.2 -> 9.1 %, MAI 68.8 -> 15.6 %) at gap p50 922 / 911 ms; prosody-split rows cut more for
 // ~70 ms less gap. It is Rowe's wait time II, not a latency target: closed answers, questions to her and "pata nahi" keep 0.
 export const OPEN_TURN_WAIT = { prosodyFinal: 1100 as Ms, neutral: 1100 as Ms, prosodyContinue: 1100 as Ms };
+/**
+ * Round 3 (duplex, 2026-10-09): THE WORD-AWARE END OF TURN outside closed answers. The least child silence before she takes
+ * the floor, by the pause class of the covered words (engineRules.ts pauseClass): a hold shape (open tail, filler, a
+ * projection, a comma, a broken word, an unclosed number, a hold request) waits `hold`; a number being read out
+ * `enumerating`; a finished question to her `question`; "pata nahi" `idk`; any other covered words `complete`. In the free,
+ * question-to-her and chit-chat exchanges this is ALSO the silence backstop (G10), so the backstop never undercuts the
+ * class (before: free 1,000 ms beat the 1,100 ms turn-end wait on 303/400 real turns). Chosen on the TRAIN half of
+ * eot-bench Hindi (even row ids; 77 thinking pauses >= 500 ms; both real STT lanes; evals/duplex-r3/eot-policy.mjs) as the
+ * fastest setting with <= 3 % cut-offs on both lanes; reported on TEST. Supersedes OPEN_TURN_WAIT (kept for older imports).
+ * Real adult speech, not children: the pilot refits it. Mutable so the sweep can set it.
+ */
+export const PAUSE_WAIT: Record<"hold" | "enumerating" | "question" | "idk" | "complete", Ms> = { hold: 1600, enumerating: 1200, question: 900, idk: 0, complete: 1100 };
 /** A hesitant first value (pausesThisTurn >= 1 or a filler before it) waits for this much silence too (§2.5.1; M-B1 21/21). */
 export const HESITANT_VALUE_SILENCE_MS: Ms = 300;
 /** word / phrase forms: complete only with prosodic finality or this much silence (§2.5.1). */
@@ -179,6 +191,39 @@ export const OVERLAP = {
    * at 8 dB and 15/24 at 6 dB (TV peaks sit within a few dB of the child), so it ships off until a speaker model (X3).
    */
   backgroundBelowChildDb: 0,
+  /**
+   * Round 3 (duplex, AMI real speech + real STT, 2026-10-09): the hush gave up for the WHOLE LESSON after 4 hushes that
+   * ended with no words (`hushGiveUp`), meant for her own echo. On real meetings continuers and other voices used those 4 up
+   * within minutes, and 13 of 22 real barge-ins (2 meetings) then got no hush at all: her audio kept sounding ~0.5-1.3 s
+   * into the child's speech. Now only an ECHO-LIKE burst counts (its level within `echoNearDb` of her echo estimate), and a
+   * hush the child's words confirm resets the count.
+   */
+  hushGiveUpEchoOnly: true,
+  /**
+   * Round 3: while she is HUSHED (inaudible under the child), an acoustics-only barge-in waits for this much voicing (or the
+   * words) before she is paused: the hush already met the child within ~150 ms, so the pause can wait for evidence. Real AMI
+   * continuers ("yeah", "mm-hmm") voiced 330-1,000 ms on the device and the 600 ms sustain paused her on 20 of 103 (2 meetings).
+   */
+  hushedSustainMs: 1000 as Ms,
+  /**
+   * Round 3: an ENDED burst no longer than `shortBurstMs` with no words yet is never an acoustic barge-in (a rising contour, a
+   * repair request, and her yes/no question still decide at once): it waits, hushed, for its words. Before, a 400-650 ms
+   * "yeah" that started mid-clause with a raised onset was a barge-in the moment it ended.
+   */
+  endedShortWaitsForWords: true,
+  /**
+   * Round 3: a child onset while her REPLY plays inside the revoke window ARMS the revoke instead of firing it: the same
+   * overlap classifier decides (a continuer disarms; a barge-in, a turn's words or a sustained burst revokes). Before, any
+   * sound in the first 1.5 s of her reply revoked it: 10 of 103 real continuers (2 meetings) stopped her and dropped the reply.
+   * Before her reply sounds (phase committed) the revoke still fires at once.
+   */
+  armedRevoke: true,
+  /**
+   * Round 3: when a burst over her goes quiet for PREPARE.probeSilenceMs, commit the transcription buffer at once (the
+   * micro-commit probe the child's own turn already uses), so the words that decide continuer vs barge-in arrive ~0.3-0.6 s
+   * after the burst instead of at the lane's first-text delay (D4 p90 2.0 s, MAI 3.2 s). Live only (shadow never probes).
+   */
+  overlapProbe: true,
 };
 
 /**

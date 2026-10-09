@@ -89,8 +89,14 @@ export const HL = {
   identity_q: [
     `(?:kya )?${TUM} (?:real|insaan|insan|robot|ai|asli|sach ke|machine|computer) ${HO}`, `${TUM} (?:asli|real) (?:teacher|insaan|person) ${HO}`,
   ],
-  memory_q: ["yaad (?:hai|rahega|rakhogi|rakhoge|rakhna|rakhiye|hai na)", "bhool (?:jaogi|jaoge|gayi|gaye|toh nahi)"],
-  forget_ask: ["bhool jao", "bhool jaiye", "bhul jao", "mita do", "delete karo"],
+  // round 3 (relational-human): addressed to HER ("mujhe yaad hai" is the child remembering; "bhool jao" alone is "never mind")
+  memory_q: ["(?:aapko|tumhe|tumko) (?:main |meri baat |meri baatein |mera naam |woh |vo )?yaad (?:hai|hoon|hu|rahega|rahegi|rahenge)",
+    "(?:mujhe|meri baat|meri baatein|mera naam) yaad (?:rakhogi|rakhoge|rakhna|rakhiye|rakhengi)", "(?:aap|tum) (?:mujhe )?bhool (?:jaogi|jaoge|gayi|gaye|toh nahi)",
+    "(?:aap|tum)(?: \\S+){0,4} yaad rakh(?:ti|te|ogi|oge|engi|enge)", "(?:meri|mera|mujhe)(?: \\S+){0,3} yaad (?:rakhogi|rakhoge|rakhna|rakhengi|rahegi|rahega)", "(?:aapko|tumhe) (?:mere baare mein )?kya (?:kya )?yaad hai"],
+  // "jo maine AAJ bataya woh bhool jao" (memory-2day 2026-10-09, P5: missed by the strict form): ≤ 2 words in each gap
+  forget_ask: ["jo (?:maine|mai ne|main ne)(?: \\S+){0,2} (?:bataya|batayi|kaha|bola)(?: \\S+){0,2} (?:woh|vo|wo|use|usko|ise|usse) (?:sab )?(?:bhool|bhul) (?:jao|jaiye|jaana|jaayiye|do)",
+    "(?:bhool|bhul) (?:jao|jaiye) jo (?:maine|main ne)(?: \\S+){0,2} (?:bataya|kaha|bola)",
+    "(?:woh|vo|ye|yeh|ise|isse|use) yaad (?:mat|na) rakhna", "yaad mat rakhna", "(?:mita|delete kar) do jo maine (?:bataya|kaha|bola)"],
   feelings_q: [
     "(?:aapko|tumhe|tumko) (?:meri )?yaad (?:aati|aayegi|aaegi|aaogi)", `${TUM} (?:khush|udaas|udas|sad|naraz) ${HO}`, "(?:aapko|tumhe) feel hota",
     "(?:aapko|tumhe) (?:main )?pasand (?:hoon|hu)",

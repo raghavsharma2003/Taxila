@@ -1,0 +1,12 @@
+--- a/server/index.js	2026-10-09 11:36:38.719952559 +0000
++++ b/server/index.js	2026-10-09 11:36:38.766004516 +0000
+@@ -28,6 +28,8 @@
+ import { routes as voicesig } from "./voicesig/routes.js";
+ // Round 2 latency: POST /api/lesson/turn-prefetch (the device's stable partial starts the turn's perceive stage). One line.
+ import { routes as latency } from "./latency/routes.js";
++// Round 3 relational-human: GET / DELETE /api/parent/memory (what the teacher remembers, for the parent). One line.
++import { routes as relational } from "./relational/routes.js";
+ 
+-register({ ...lesson, ...tts, ...parent, ...modules, ...voice, ...tutor, ...forge, ...child, ...testClock, ...studio, ...voicesig, ...duplex, ...duplexShadow, ...face, ...latency, ...lane });
++register({ ...lesson, ...tts, ...parent, ...modules, ...voice, ...tutor, ...forge, ...child, ...testClock, ...studio, ...voicesig, ...duplex, ...duplexShadow, ...face, ...relational, ...latency, ...lane });
+ export { handle, register };

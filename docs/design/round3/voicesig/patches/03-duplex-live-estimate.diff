@@ -1,0 +1,46 @@
+--- a/src/duplex/live.ts
++++ b/src/duplex/live.ts
+@@ -23,7 +23,7 @@
+  * failure to the child. Content-blind telemetry only (numbers and codes; never the child's words).
+  * Erasable TypeScript; pure apart from the injected port and timers (tests drive it in Node with a fake clock).
+  */
+-import type { EngineContext, AnswerForm, ExchangeContext, FloorPhase, HerAct, Ms, ReasonCode } from "./engine.ts";
++import type { EngineContext, AnswerForm, ExchangeContext, FloorPhase, HerAct, Ms, ReasonCode, AcousticEstimate } from "./engine.ts";
+ import type { Floor } from "../lesson/floor.ts";
+ import { EngineHost, NEUTRAL_CONTEXT, type HostCommand, type HostSttEvent, type ShadowRow } from "./host.ts";
+ import type { SttEvent } from "../../server/duplex/fanin.js";
+@@ -371,6 +371,15 @@
+     });
+   }
+ 
++  /**
++   * An acoustic model's estimate for the host's next tick (voicesig round 3: the thinking-pause cue, published on
++   * src/voicesig/holdBus.ts; stamped, and stale after ACOUSTIC_FRESH_MS like any acoustic estimate).
++   */
++  estimate(e: { acoustic?: AcousticEstimate }, t: number): void {
++    if (!this.live) return;
++    this.guard(() => this.host.estimate(e, t));
++  }
++
+   /** One realtime transcription event (the link's data channel). Errors are the link's to read (isQuotaError → degrade). */
+   stt(raw: unknown): void {
+     if (!this.live) return;
+--- a/src/duplex/liveTap.ts
++++ b/src/duplex/liveTap.ts
+@@ -42,8 +42,16 @@
+   };
+   // DuplexLive.frame takes linear RMS (the host's ChildAudioTracker unit); its own 100 ms timer runs from live.start()
+   const off = fe.onFrame((f) => o.live.frame(f.t, Math.pow(10, f.rmsDb / 20), f.f0, herDb()));
++  // voicesig round 3: the thinking-pause cue (a filled pause just before the silence) reaches the engine as an acoustic
++  // estimate on the same epoch clock; numbers only, and absent when the detector or the cue is switched off
++  let offHold: () => void = () => {};
++  try {
++    const { onThinkingPause } = await import("../voicesig/holdBus.ts");
++    offHold = onThinkingPause((e) => o.live.estimate({ acoustic: e }, e.atMs));
++  } catch { /* no cue: the engine decides on its own evidence */ }
+   return () => {
+     off();
++    offHold();
+     release();
+     try { if (analyser && o.herOutput) o.herOutput.disconnect(analyser); } catch { /* already gone */ }
+   };

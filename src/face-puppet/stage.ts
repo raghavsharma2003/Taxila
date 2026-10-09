@@ -172,6 +172,7 @@ export class PuppetStage {
         else if (c.kind === "nod") this.driver.nodCue(c.peakDeg, now);
         // "clip" cues are audio (the mm bank): the face does not invent a mouth for a sound it was not given
       } else if (e.kind === "duplex-detach") this.driver.detachDuplex(now);
+      else if (e.kind === "ack") this.driver.ack(e.phase, now);
     }));
     this.offs.push(faceCues.on((cue: FaceCue) => this.onCue(cue)));
   }

@@ -1,0 +1,2042 @@
+{
+ "id": "voicesig-r3-shadow-battery",
+ "date": "2026-10-09",
+ "base": "http://localhost:8977",
+ "label": "SCRIPTED child turns (not children) on a LOCAL production build (HEAD + this stream + patches 01-04, NODE_ENV=production, Neon TEST branch). Shadow: nothing acts.",
+ "turns": 80,
+ "errors": 0,
+ "stateRead": 22,
+ "states": {
+  "searching": 3,
+  "fragileCorrect": 8,
+  "heldBelief": 1,
+  "effortfulGuess": 10
+ },
+ "liveReads": 0,
+ "wouldHint": 20,
+ "counterfactualRan": 20,
+ "changed": 0,
+ "changes": [],
+ "holdFiredTurns": 46,
+ "counterfactualMs": {
+  "n": 20,
+  "p50": 6.1,
+  "p95": 15.4,
+  "max": 18.1
+ },
+ "r12Hits": 0,
+ "rows": [
+  {
+   "kid": 0,
+   "turn": 1,
+   "right": false,
+   "move": "hook",
+   "err": null,
+   "state": null,
+   "live": false,
+   "would": [],
+   "hold": {
+    "read": 1,
+    "fired": 0
+   },
+   "shadow": null,
+   "codes": [],
+   "wallMs": 1791,
+   "plannedMs": 1255,
+   "cfMs": null
+  },
+  {
+   "kid": 0,
+   "turn": 2,
+   "right": false,
+   "move": "explain",
+   "err": null,
+   "state": null,
+   "live": false,
+   "would": [],
+   "hold": {
+    "read": 2,
+    "fired": 1
+   },
+   "shadow": null,
+   "codes": [
+    "vs_hold.fired"
+   ],
+   "wallMs": 1551,
+   "plannedMs": 1489,
+   "cfMs": null
+  },
+  {
+   "kid": 0,
+   "turn": 3,
+   "right": false,
+   "move": "worked_example",
+   "err": null,
+   "state": null,
+   "live": false,
+   "would": [],
+   "hold": {
+    "read": 1,
+    "fired": 0
+   },
+   "shadow": null,
+   "codes": [],
+   "wallMs": 1744,
+   "plannedMs": 1554,
+   "cfMs": null
+  },
+  {
+   "kid": 0,
+   "turn": 4,
+   "right": false,
+   "move": "practice",
+   "err": null,
+   "state": null,
+   "live": false,
+   "would": [],
+   "hold": {
+    "read": 2,
+    "fired": 1
+   },
+   "shadow": null,
+   "codes": [
+    "vs_hold.fired"
+   ],
+   "wallMs": 2165,
+   "plannedMs": 1596,
+   "cfMs": null
+  },
+  {
+   "kid": 0,
+   "turn": 5,
+   "right": false,
+   "move": "hint",
+   "err": null,
+   "state": null,
+   "live": false,
+   "would": [],
+   "hold": {
+    "read": 2,
+    "fired": 1
+   },
+   "shadow": null,
+   "codes": [
+    "vs_hold.fired"
+   ],
+   "wallMs": 1743,
+   "plannedMs": 165,
+   "cfMs": null
+  },
+  {
+   "kid": 0,
+   "turn": 6,
+   "right": false,
+   "move": "hint",
+   "err": null,
+   "state": "searching",
+   "live": false,
+   "would": [
+    "gentlerHint"
+   ],
+   "hold": {
+    "read": 2,
+    "fired": 1
+   },
+   "shadow": {
+    "would": [
+     "gentlerHint"
+    ],
+    "actual": {
+     "move": "hint",
+     "hintLevel": 3,
+     "probe": null
+    },
+    "shadow": {
+     "move": "hint",
+     "hintLevel": 3,
+     "probe": null
+    },
+    "changed": false,
+    "ms": 18.1
+   },
+   "codes": [
+    "vs_would.gentlerHint",
+    "vs_hold.fired",
+    "vs_diff.same"
+   ],
+   "wallMs": 4138,
+   "plannedMs": 2630,
+   "cfMs": 18
+  },
+  {
+   "kid": 0,
+   "turn": 7,
+   "right": false,
+   "move": "probe",
+   "err": null,
+   "state": null,
+   "live": false,
+   "would": [],
+   "hold": {
+    "read": 1,
+    "fired": 0
+   },
+   "shadow": null,
+   "codes": [],
+   "wallMs": 4388,
+   "plannedMs": 1527,
+   "cfMs": null
+  },
+  {
+   "kid": 0,
+   "turn": 8,
+   "right": true,
+   "move": "explain",
+   "err": null,
+   "state": "fragileCorrect",
+   "live": false,
+   "would": [
+    "followUpProbe"
+   ],
+   "hold": {
+    "read": 2,
+    "fired": 1
+   },
+   "shadow": {
+    "would": [
+     "followUpProbe"
+    ],
+    "actual": {
+     "move": "explain",
+     "hintLevel": 0,
+     "probe": null
+    },
+    "shadow": {
+     "move": "explain",
+     "hintLevel": 0,
+     "probe": null
+    },
+    "changed": false,
+    "ms": 7.6
+   },
+   "codes": [
+    "vs_would.followUpProbe",
+    "vs_hold.fired",
+    "vs_diff.same"
+   ],
+   "wallMs": 4562,
+   "plannedMs": 1557,
+   "cfMs": 7
+  },
+  {
+   "kid": 0,
+   "turn": 9,
+   "right": false,
+   "move": "probe",
+   "err": null,
+   "state": null,
+   "live": false,
+   "would": [],
+   "hold": {
+    "read": 1,
+    "fired": 0
+   },
+   "shadow": null,
+   "codes": [],
+   "wallMs": 5867,
+   "plannedMs": 1502,
+   "cfMs": null
+  },
+  {
+   "kid": 0,
+   "turn": 10,
+   "right": false,
+   "move": "hint",
+   "err": null,
+   "state": null,
+   "live": false,
+   "would": [],
+   "hold": {
+    "read": 2,
+    "fired": 1
+   },
+   "shadow": null,
+   "codes": [
+    "vs_hold.fired"
+   ],
+   "wallMs": 4942,
+   "plannedMs": 2068,
+   "cfMs": null
+  },
+  {
+   "kid": 0,
+   "turn": 11,
+   "right": true,
+   "move": "probe",
+   "err": null,
+   "state": "fragileCorrect",
+   "live": false,
+   "would": [
+    "followUpProbe"
+   ],
+   "hold": {
+    "read": 2,
+    "fired": 1
+   },
+   "shadow": {
+    "would": [
+     "followUpProbe"
+    ],
+    "actual": {
+     "move": "probe",
+     "hintLevel": 0,
+     "probe": null
+    },
+    "shadow": {
+     "move": "probe",
+     "hintLevel": 0,
+     "probe": null
+    },
+    "changed": false,
+    "ms": 15.4
+   },
+   "codes": [
+    "vs_would.followUpProbe",
+    "vs_hold.fired",
+    "vs_diff.same"
+   ],
+   "wallMs": 3548,
+   "plannedMs": 1765,
+   "cfMs": 16
+  },
+  {
+   "kid": 0,
+   "turn": 12,
+   "right": true,
+   "move": "probe",
+   "err": null,
+   "state": null,
+   "live": false,
+   "would": [],
+   "hold": {
+    "read": 1,
+    "fired": 0
+   },
+   "shadow": null,
+   "codes": [],
+   "wallMs": 3460,
+   "plannedMs": 316,
+   "cfMs": null
+  },
+  {
+   "kid": 0,
+   "turn": 13,
+   "right": true,
+   "move": "explain",
+   "err": null,
+   "state": null,
+   "live": false,
+   "would": [],
+   "hold": {
+    "read": 2,
+    "fired": 1
+   },
+   "shadow": null,
+   "codes": [
+    "vs_hold.fired"
+   ],
+   "wallMs": 4869,
+   "plannedMs": 1958,
+   "cfMs": null
+  },
+  {
+   "kid": 0,
+   "turn": 14,
+   "right": false,
+   "move": "probe",
+   "err": null,
+   "state": null,
+   "live": false,
+   "would": [],
+   "hold": {
+    "read": 1,
+    "fired": 0
+   },
+   "shadow": null,
+   "codes": [],
+   "wallMs": 3778,
+   "plannedMs": 1555,
+   "cfMs": null
+  },
+  {
+   "kid": 0,
+   "turn": 15,
+   "right": false,
+   "move": "hint",
+   "err": null,
+   "state": "heldBelief",
+   "live": false,
+   "would": [],
+   "hold": {
+    "read": 1,
+    "fired": 0
+   },
+   "shadow": null,
+   "codes": [],
+   "wallMs": 3185,
+   "plannedMs": 2020,
+   "cfMs": null
+  },
+  {
+   "kid": 0,
+   "turn": 16,
+   "right": true,
+   "move": "practice",
+   "err": null,
+   "state": "fragileCorrect",
+   "live": false,
+   "would": [
+    "followUpProbe"
+   ],
+   "hold": {
+    "read": 2,
+    "fired": 1
+   },
+   "shadow": {
+    "would": [
+     "followUpProbe"
+    ],
+    "actual": {
+     "move": "practice",
+     "hintLevel": 0,
+     "probe": null
+    },
+    "shadow": {
+     "move": "practice",
+     "hintLevel": 0,
+     "probe": null
+    },
+    "changed": false,
+    "ms": 4.5
+   },
+   "codes": [
+    "vs_would.followUpProbe",
+    "vs_hold.fired",
+    "vs_diff.same"
+   ],
+   "wallMs": 4482,
+   "plannedMs": 1800,
+   "cfMs": 5
+  },
+  {
+   "kid": 1,
+   "turn": 1,
+   "right": false,
+   "move": "hook",
+   "err": null,
+   "state": null,
+   "live": false,
+   "would": [],
+   "hold": {
+    "read": 2,
+    "fired": 1
+   },
+   "shadow": null,
+   "codes": [
+    "vs_hold.fired"
+   ],
+   "wallMs": 3066,
+   "plannedMs": 1678,
+   "cfMs": null
+  },
+  {
+   "kid": 1,
+   "turn": 2,
+   "right": false,
+   "move": "explain",
+   "err": null,
+   "state": null,
+   "live": false,
+   "would": [],
+   "hold": {
+    "read": 2,
+    "fired": 1
+   },
+   "shadow": null,
+   "codes": [
+    "vs_hold.fired"
+   ],
+   "wallMs": 1528,
+   "plannedMs": 1369,
+   "cfMs": null
+  },
+  {
+   "kid": 1,
+   "turn": 3,
+   "right": false,
+   "move": "worked_example",
+   "err": null,
+   "state": "searching",
+   "live": false,
+   "would": [
+    "gentlerHint"
+   ],
+   "hold": {
+    "read": 2,
+    "fired": 1
+   },
+   "shadow": {
+    "would": [
+     "gentlerHint"
+    ],
+    "actual": {
+     "move": "worked_example",
+     "hintLevel": 0,
+     "probe": null
+    },
+    "shadow": {
+     "move": "worked_example",
+     "hintLevel": 0,
+     "probe": null
+    },
+    "changed": false,
+    "ms": 6.3
+   },
+   "codes": [
+    "vs_would.gentlerHint",
+    "vs_hold.fired",
+    "vs_diff.same"
+   ],
+   "wallMs": 1448,
+   "plannedMs": 1397,
+   "cfMs": 7
+  },
+  {
+   "kid": 1,
+   "turn": 4,
+   "right": false,
+   "move": "practice",
+   "err": null,
+   "state": null,
+   "live": false,
+   "would": [],
+   "hold": {
+    "read": 1,
+    "fired": 0
+   },
+   "shadow": null,
+   "codes": [],
+   "wallMs": 1748,
+   "plannedMs": 1699,
+   "cfMs": null
+  },
+  {
+   "kid": 1,
+   "turn": 5,
+   "right": false,
+   "move": "hint",
+   "err": null,
+   "state": "effortfulGuess",
+   "live": false,
+   "would": [
+    "gentlerHint"
+   ],
+   "hold": {
+    "read": 2,
+    "fired": 1
+   },
+   "shadow": {
+    "would": [
+     "gentlerHint"
+    ],
+    "actual": {
+     "move": "hint",
+     "hintLevel": 1,
+     "probe": null
+    },
+    "shadow": {
+     "move": "hint",
+     "hintLevel": 1,
+     "probe": null
+    },
+    "changed": false,
+    "ms": 5.7
+   },
+   "codes": [
+    "vs_would.gentlerHint",
+    "vs_hold.fired",
+    "vs_diff.same"
+   ],
+   "wallMs": 3201,
+   "plannedMs": 1423,
+   "cfMs": 6
+  },
+  {
+   "kid": 1,
+   "turn": 6,
+   "right": true,
+   "move": "explain",
+   "err": null,
+   "state": null,
+   "live": false,
+   "would": [],
+   "hold": {
+    "read": 1,
+    "fired": 0
+   },
+   "shadow": null,
+   "codes": [],
+   "wallMs": 1525,
+   "plannedMs": 79,
+   "cfMs": null
+  },
+  {
+   "kid": 1,
+   "turn": 7,
+   "right": false,
+   "move": "probe",
+   "err": null,
+   "state": null,
+   "live": false,
+   "would": [],
+   "hold": {
+    "read": 1,
+    "fired": 0
+   },
+   "shadow": null,
+   "codes": [],
+   "wallMs": 2736,
+   "plannedMs": 1227,
+   "cfMs": null
+  },
+  {
+   "kid": 1,
+   "turn": 8,
+   "right": false,
+   "move": "hint",
+   "err": null,
+   "state": "effortfulGuess",
+   "live": false,
+   "would": [
+    "gentlerHint"
+   ],
+   "hold": {
+    "read": 2,
+    "fired": 1
+   },
+   "shadow": {
+    "would": [
+     "gentlerHint"
+    ],
+    "actual": {
+     "move": "hint",
+     "hintLevel": 1,
+     "probe": null
+    },
+    "shadow": {
+     "move": "hint",
+     "hintLevel": 1,
+     "probe": null
+    },
+    "changed": false,
+    "ms": 1.9
+   },
+   "codes": [
+    "vs_would.gentlerHint",
+    "vs_hold.fired",
+    "vs_diff.same"
+   ],
+   "wallMs": 7756,
+   "plannedMs": 2196,
+   "cfMs": 2
+  },
+  {
+   "kid": 1,
+   "turn": 9,
+   "right": false,
+   "move": "hint",
+   "err": null,
+   "state": "effortfulGuess",
+   "live": false,
+   "would": [
+    "gentlerHint"
+   ],
+   "hold": {
+    "read": 2,
+    "fired": 1
+   },
+   "shadow": {
+    "would": [
+     "gentlerHint"
+    ],
+    "actual": {
+     "move": "hint",
+     "hintLevel": 2,
+     "probe": null
+    },
+    "shadow": {
+     "move": "hint",
+     "hintLevel": 2,
+     "probe": null
+    },
+    "changed": false,
+    "ms": 6.1
+   },
+   "codes": [
+    "vs_would.gentlerHint",
+    "vs_hold.fired",
+    "vs_diff.same"
+   ],
+   "wallMs": 1929,
+   "plannedMs": 1871,
+   "cfMs": 6
+  },
+  {
+   "kid": 1,
+   "turn": 10,
+   "right": true,
+   "move": "retrieval",
+   "err": null,
+   "state": "fragileCorrect",
+   "live": false,
+   "would": [
+    "followUpProbe"
+   ],
+   "hold": {
+    "read": 2,
+    "fired": 1
+   },
+   "shadow": {
+    "would": [
+     "followUpProbe"
+    ],
+    "actual": {
+     "move": "retrieval",
+     "hintLevel": 0,
+     "probe": null
+    },
+    "shadow": {
+     "move": "retrieval",
+     "hintLevel": 0,
+     "probe": null
+    },
+    "changed": false,
+    "ms": 10.9
+   },
+   "codes": [
+    "vs_would.followUpProbe",
+    "vs_hold.fired",
+    "vs_diff.same"
+   ],
+   "wallMs": 3862,
+   "plannedMs": 1561,
+   "cfMs": 11
+  },
+  {
+   "kid": 1,
+   "turn": 11,
+   "right": true,
+   "move": "explain",
+   "err": null,
+   "state": null,
+   "live": false,
+   "would": [],
+   "hold": {
+    "read": 1,
+    "fired": 0
+   },
+   "shadow": null,
+   "codes": [],
+   "wallMs": 4226,
+   "plannedMs": 94,
+   "cfMs": null
+  },
+  {
+   "kid": 1,
+   "turn": 12,
+   "right": false,
+   "move": "probe",
+   "err": null,
+   "state": null,
+   "live": false,
+   "would": [],
+   "hold": {
+    "read": 1,
+    "fired": 0
+   },
+   "shadow": null,
+   "codes": [],
+   "wallMs": 2462,
+   "plannedMs": 1450,
+   "cfMs": null
+  },
+  {
+   "kid": 1,
+   "turn": 13,
+   "right": true,
+   "move": "probe",
+   "err": null,
+   "state": null,
+   "live": false,
+   "would": [],
+   "hold": {
+    "read": 1,
+    "fired": 0
+   },
+   "shadow": null,
+   "codes": [],
+   "wallMs": 1745,
+   "plannedMs": 64,
+   "cfMs": null
+  },
+  {
+   "kid": 1,
+   "turn": 14,
+   "right": false,
+   "move": "hint",
+   "err": null,
+   "state": null,
+   "live": false,
+   "would": [],
+   "hold": {
+    "read": 1,
+    "fired": 0
+   },
+   "shadow": null,
+   "codes": [],
+   "wallMs": 2216,
+   "plannedMs": 2154,
+   "cfMs": null
+  },
+  {
+   "kid": 1,
+   "turn": 15,
+   "right": true,
+   "move": "practice",
+   "err": null,
+   "state": null,
+   "live": false,
+   "would": [],
+   "hold": {
+    "read": 1,
+    "fired": 0
+   },
+   "shadow": null,
+   "codes": [],
+   "wallMs": 1937,
+   "plannedMs": 178,
+   "cfMs": null
+  },
+  {
+   "kid": 1,
+   "turn": 16,
+   "right": false,
+   "move": "hint",
+   "err": null,
+   "state": null,
+   "live": false,
+   "would": [],
+   "hold": {
+    "read": 2,
+    "fired": 1
+   },
+   "shadow": null,
+   "codes": [
+    "vs_hold.fired"
+   ],
+   "wallMs": 1718,
+   "plannedMs": 79,
+   "cfMs": null
+  },
+  {
+   "kid": 2,
+   "turn": 1,
+   "right": false,
+   "move": "hook",
+   "err": null,
+   "state": null,
+   "live": false,
+   "would": [],
+   "hold": {
+    "read": 1,
+    "fired": 0
+   },
+   "shadow": null,
+   "codes": [],
+   "wallMs": 1537,
+   "plannedMs": 1450,
+   "cfMs": null
+  },
+  {
+   "kid": 2,
+   "turn": 2,
+   "right": false,
+   "move": "explain",
+   "err": null,
+   "state": null,
+   "live": false,
+   "would": [],
+   "hold": {
+    "read": 2,
+    "fired": 1
+   },
+   "shadow": null,
+   "codes": [
+    "vs_hold.fired"
+   ],
+   "wallMs": 2927,
+   "plannedMs": 1272,
+   "cfMs": null
+  },
+  {
+   "kid": 2,
+   "turn": 3,
+   "right": false,
+   "move": "worked_example",
+   "err": null,
+   "state": null,
+   "live": false,
+   "would": [],
+   "hold": {
+    "read": 1,
+    "fired": 0
+   },
+   "shadow": null,
+   "codes": [],
+   "wallMs": 3070,
+   "plannedMs": 1546,
+   "cfMs": null
+  },
+  {
+   "kid": 2,
+   "turn": 4,
+   "right": false,
+   "move": "practice",
+   "err": null,
+   "state": null,
+   "live": false,
+   "would": [],
+   "hold": {
+    "read": 1,
+    "fired": 0
+   },
+   "shadow": null,
+   "codes": [],
+   "wallMs": 1678,
+   "plannedMs": 1617,
+   "cfMs": null
+  },
+  {
+   "kid": 2,
+   "turn": 5,
+   "right": false,
+   "move": "hint",
+   "err": null,
+   "state": null,
+   "live": false,
+   "would": [],
+   "hold": {
+    "read": 2,
+    "fired": 1
+   },
+   "shadow": null,
+   "codes": [
+    "vs_hold.fired"
+   ],
+   "wallMs": 3728,
+   "plannedMs": 1923,
+   "cfMs": null
+  },
+  {
+   "kid": 2,
+   "turn": 6,
+   "right": false,
+   "move": "hint",
+   "err": null,
+   "state": "effortfulGuess",
+   "live": false,
+   "would": [
+    "gentlerHint"
+   ],
+   "hold": {
+    "read": 2,
+    "fired": 1
+   },
+   "shadow": {
+    "would": [
+     "gentlerHint"
+    ],
+    "actual": {
+     "move": "hint",
+     "hintLevel": 1,
+     "probe": null
+    },
+    "shadow": {
+     "move": "hint",
+     "hintLevel": 1,
+     "probe": null
+    },
+    "changed": false,
+    "ms": 7.1
+   },
+   "codes": [
+    "vs_would.gentlerHint",
+    "vs_hold.fired",
+    "vs_diff.same"
+   ],
+   "wallMs": 6369,
+   "plannedMs": 1761,
+   "cfMs": 7
+  },
+  {
+   "kid": 2,
+   "turn": 7,
+   "right": true,
+   "move": "probe",
+   "err": null,
+   "state": null,
+   "live": false,
+   "would": [],
+   "hold": {
+    "read": 1,
+    "fired": 0
+   },
+   "shadow": null,
+   "codes": [],
+   "wallMs": 2806,
+   "plannedMs": 74,
+   "cfMs": null
+  },
+  {
+   "kid": 2,
+   "turn": 8,
+   "right": false,
+   "move": "repair",
+   "err": null,
+   "state": null,
+   "live": false,
+   "would": [],
+   "hold": {
+    "read": 1,
+    "fired": 0
+   },
+   "shadow": null,
+   "codes": [],
+   "wallMs": 4141,
+   "plannedMs": 1311,
+   "cfMs": null
+  },
+  {
+   "kid": 2,
+   "turn": 9,
+   "right": false,
+   "move": "hint",
+   "err": null,
+   "state": "effortfulGuess",
+   "live": false,
+   "would": [],
+   "hold": {
+    "read": 2,
+    "fired": 1
+   },
+   "shadow": null,
+   "codes": [
+    "vs_hold.fired"
+   ],
+   "wallMs": 3800,
+   "plannedMs": 2056,
+   "cfMs": null
+  },
+  {
+   "kid": 2,
+   "turn": 10,
+   "right": false,
+   "move": "hint",
+   "err": null,
+   "state": "effortfulGuess",
+   "live": false,
+   "would": [
+    "gentlerHint"
+   ],
+   "hold": {
+    "read": 2,
+    "fired": 1
+   },
+   "shadow": {
+    "would": [
+     "gentlerHint"
+    ],
+    "actual": {
+     "move": "hint",
+     "hintLevel": 2,
+     "probe": null
+    },
+    "shadow": {
+     "move": "hint",
+     "hintLevel": 2,
+     "probe": null
+    },
+    "changed": false,
+    "ms": 5.3
+   },
+   "codes": [
+    "vs_would.gentlerHint",
+    "vs_hold.fired",
+    "vs_diff.same"
+   ],
+   "wallMs": 3555,
+   "plannedMs": 1488,
+   "cfMs": 5
+  },
+  {
+   "kid": 2,
+   "turn": 11,
+   "right": true,
+   "move": "probe",
+   "err": null,
+   "state": null,
+   "live": false,
+   "would": [],
+   "hold": {
+    "read": 2,
+    "fired": 1
+   },
+   "shadow": null,
+   "codes": [
+    "vs_hold.fired"
+   ],
+   "wallMs": 3123,
+   "plannedMs": 76,
+   "cfMs": null
+  },
+  {
+   "kid": 2,
+   "turn": 12,
+   "right": true,
+   "move": "probe",
+   "err": null,
+   "state": null,
+   "live": false,
+   "would": [],
+   "hold": {
+    "read": 2,
+    "fired": 1
+   },
+   "shadow": null,
+   "codes": [
+    "vs_hold.fired"
+   ],
+   "wallMs": 2493,
+   "plannedMs": 1196,
+   "cfMs": null
+  },
+  {
+   "kid": 2,
+   "turn": 13,
+   "right": true,
+   "move": "explain",
+   "err": null,
+   "state": "effortfulGuess",
+   "live": false,
+   "would": [
+    "gentlerHint"
+   ],
+   "hold": {
+    "read": 2,
+    "fired": 1
+   },
+   "shadow": {
+    "would": [
+     "gentlerHint"
+    ],
+    "actual": {
+     "move": "explain",
+     "hintLevel": 0,
+     "probe": null
+    },
+    "shadow": {
+     "move": "explain",
+     "hintLevel": 0,
+     "probe": null
+    },
+    "changed": false,
+    "ms": 11.1
+   },
+   "codes": [
+    "vs_would.gentlerHint",
+    "vs_hold.fired",
+    "vs_diff.same"
+   ],
+   "wallMs": 4524,
+   "plannedMs": 1740,
+   "cfMs": 11
+  },
+  {
+   "kid": 2,
+   "turn": 14,
+   "right": false,
+   "move": "practice",
+   "err": null,
+   "state": "searching",
+   "live": false,
+   "would": [
+    "gentlerHint"
+   ],
+   "hold": {
+    "read": 2,
+    "fired": 1
+   },
+   "shadow": {
+    "would": [
+     "gentlerHint"
+    ],
+    "actual": {
+     "move": "practice",
+     "hintLevel": 0,
+     "probe": null
+    },
+    "shadow": {
+     "move": "practice",
+     "hintLevel": 0,
+     "probe": null
+    },
+    "changed": false,
+    "ms": 12.3
+   },
+   "codes": [
+    "vs_would.gentlerHint",
+    "vs_hold.fired",
+    "vs_diff.same"
+   ],
+   "wallMs": 4144,
+   "plannedMs": 1269,
+   "cfMs": 12
+  },
+  {
+   "kid": 2,
+   "turn": 15,
+   "right": false,
+   "move": "hint",
+   "err": null,
+   "state": null,
+   "live": false,
+   "would": [],
+   "hold": {
+    "read": 2,
+    "fired": 1
+   },
+   "shadow": null,
+   "codes": [
+    "vs_hold.fired"
+   ],
+   "wallMs": 3008,
+   "plannedMs": 1711,
+   "cfMs": null
+  },
+  {
+   "kid": 2,
+   "turn": 16,
+   "right": false,
+   "move": "hint",
+   "err": null,
+   "state": "effortfulGuess",
+   "live": false,
+   "would": [
+    "gentlerHint"
+   ],
+   "hold": {
+    "read": 2,
+    "fired": 1
+   },
+   "shadow": {
+    "would": [
+     "gentlerHint"
+    ],
+    "actual": {
+     "move": "hint",
+     "hintLevel": 2,
+     "probe": null
+    },
+    "shadow": {
+     "move": "hint",
+     "hintLevel": 2,
+     "probe": null
+    },
+    "changed": false,
+    "ms": 5.6
+   },
+   "codes": [
+    "vs_would.gentlerHint",
+    "vs_hold.fired",
+    "vs_diff.same"
+   ],
+   "wallMs": 3079,
+   "plannedMs": 1828,
+   "cfMs": 6
+  },
+  {
+   "kid": 3,
+   "turn": 1,
+   "right": false,
+   "move": "hook",
+   "err": null,
+   "state": null,
+   "live": false,
+   "would": [],
+   "hold": {
+    "read": 1,
+    "fired": 0
+   },
+   "shadow": null,
+   "codes": [],
+   "wallMs": 2249,
+   "plannedMs": 2210,
+   "cfMs": null
+  },
+  {
+   "kid": 3,
+   "turn": 2,
+   "right": false,
+   "move": "explain",
+   "err": null,
+   "state": null,
+   "live": false,
+   "would": [],
+   "hold": {
+    "read": 2,
+    "fired": 1
+   },
+   "shadow": null,
+   "codes": [
+    "vs_hold.fired"
+   ],
+   "wallMs": 1584,
+   "plannedMs": 1527,
+   "cfMs": null
+  },
+  {
+   "kid": 3,
+   "turn": 3,
+   "right": false,
+   "move": "worked_example",
+   "err": null,
+   "state": null,
+   "live": false,
+   "would": [],
+   "hold": {
+    "read": 2,
+    "fired": 1
+   },
+   "shadow": null,
+   "codes": [
+    "vs_hold.fired"
+   ],
+   "wallMs": 1541,
+   "plannedMs": 1468,
+   "cfMs": null
+  },
+  {
+   "kid": 3,
+   "turn": 4,
+   "right": false,
+   "move": "practice",
+   "err": null,
+   "state": null,
+   "live": false,
+   "would": [],
+   "hold": {
+    "read": 1,
+    "fired": 0
+   },
+   "shadow": null,
+   "codes": [],
+   "wallMs": 1545,
+   "plannedMs": 1397,
+   "cfMs": null
+  },
+  {
+   "kid": 3,
+   "turn": 5,
+   "right": false,
+   "move": "hint",
+   "err": null,
+   "state": null,
+   "live": false,
+   "would": [],
+   "hold": {
+    "read": 1,
+    "fired": 0
+   },
+   "shadow": null,
+   "codes": [],
+   "wallMs": 3370,
+   "plannedMs": 1560,
+   "cfMs": null
+  },
+  {
+   "kid": 3,
+   "turn": 6,
+   "right": false,
+   "move": "hint",
+   "err": null,
+   "state": null,
+   "live": false,
+   "would": [],
+   "hold": {
+    "read": 2,
+    "fired": 1
+   },
+   "shadow": null,
+   "codes": [
+    "vs_hold.fired"
+   ],
+   "wallMs": 3023,
+   "plannedMs": 1594,
+   "cfMs": null
+  },
+  {
+   "kid": 3,
+   "turn": 7,
+   "right": true,
+   "move": "probe",
+   "err": null,
+   "state": null,
+   "live": false,
+   "would": [],
+   "hold": {
+    "read": 1,
+    "fired": 0
+   },
+   "shadow": null,
+   "codes": [],
+   "wallMs": 2854,
+   "plannedMs": 68,
+   "cfMs": null
+  },
+  {
+   "kid": 3,
+   "turn": 8,
+   "right": true,
+   "move": "explain",
+   "err": null,
+   "state": null,
+   "live": false,
+   "would": [],
+   "hold": {
+    "read": 1,
+    "fired": 0
+   },
+   "shadow": null,
+   "codes": [],
+   "wallMs": 2961,
+   "plannedMs": 82,
+   "cfMs": null
+  },
+  {
+   "kid": 3,
+   "turn": 9,
+   "right": false,
+   "move": "probe",
+   "err": null,
+   "state": null,
+   "live": false,
+   "would": [],
+   "hold": {
+    "read": 2,
+    "fired": 1
+   },
+   "shadow": null,
+   "codes": [
+    "vs_hold.fired"
+   ],
+   "wallMs": 3066,
+   "plannedMs": 1431,
+   "cfMs": null
+  },
+  {
+   "kid": 3,
+   "turn": 10,
+   "right": false,
+   "move": "hint",
+   "err": null,
+   "state": null,
+   "live": false,
+   "would": [],
+   "hold": {
+    "read": 2,
+    "fired": 1
+   },
+   "shadow": null,
+   "codes": [
+    "vs_hold.fired"
+   ],
+   "wallMs": 1224,
+   "plannedMs": 81,
+   "cfMs": null
+  },
+  {
+   "kid": 3,
+   "turn": 11,
+   "right": true,
+   "move": "probe",
+   "err": null,
+   "state": null,
+   "live": false,
+   "would": [],
+   "hold": {
+    "read": 2,
+    "fired": 1
+   },
+   "shadow": null,
+   "codes": [
+    "vs_hold.fired"
+   ],
+   "wallMs": 3008,
+   "plannedMs": 73,
+   "cfMs": null
+  },
+  {
+   "kid": 3,
+   "turn": 12,
+   "right": true,
+   "move": "probe",
+   "err": null,
+   "state": "fragileCorrect",
+   "live": false,
+   "would": [
+    "followUpProbe"
+   ],
+   "hold": {
+    "read": 2,
+    "fired": 1
+   },
+   "shadow": {
+    "would": [
+     "followUpProbe"
+    ],
+    "actual": {
+     "move": "probe",
+     "hintLevel": 0,
+     "probe": "probe.why"
+    },
+    "shadow": {
+     "move": "probe",
+     "hintLevel": 0,
+     "probe": "probe.why"
+    },
+    "changed": false,
+    "ms": 3.9
+   },
+   "codes": [
+    "vs_would.followUpProbe",
+    "vs_hold.fired",
+    "vs_diff.same"
+   ],
+   "wallMs": 3213,
+   "plannedMs": 1550,
+   "cfMs": 4
+  },
+  {
+   "kid": 3,
+   "turn": 13,
+   "right": true,
+   "move": "explain",
+   "err": null,
+   "state": null,
+   "live": false,
+   "would": [],
+   "hold": {
+    "read": 1,
+    "fired": 0
+   },
+   "shadow": null,
+   "codes": [],
+   "wallMs": 3125,
+   "plannedMs": 1891,
+   "cfMs": null
+  },
+  {
+   "kid": 3,
+   "turn": 14,
+   "right": false,
+   "move": "probe",
+   "err": null,
+   "state": null,
+   "live": false,
+   "would": [],
+   "hold": {
+    "read": 1,
+    "fired": 0
+   },
+   "shadow": null,
+   "codes": [],
+   "wallMs": 1745,
+   "plannedMs": 1690,
+   "cfMs": null
+  },
+  {
+   "kid": 3,
+   "turn": 15,
+   "right": false,
+   "move": "hint",
+   "err": null,
+   "state": null,
+   "live": false,
+   "would": [],
+   "hold": {
+    "read": 2,
+    "fired": 1
+   },
+   "shadow": null,
+   "codes": [
+    "vs_hold.fired"
+   ],
+   "wallMs": 3448,
+   "plannedMs": 1683,
+   "cfMs": null
+  },
+  {
+   "kid": 3,
+   "turn": 16,
+   "right": false,
+   "move": "practice",
+   "err": null,
+   "state": "fragileCorrect",
+   "live": false,
+   "would": [
+    "followUpProbe"
+   ],
+   "hold": {
+    "read": 2,
+    "fired": 1
+   },
+   "shadow": {
+    "would": [
+     "followUpProbe"
+    ],
+    "actual": {
+     "move": "practice",
+     "hintLevel": 0,
+     "probe": null
+    },
+    "shadow": {
+     "move": "practice",
+     "hintLevel": 0,
+     "probe": null
+    },
+    "changed": false,
+    "ms": 13.8
+   },
+   "codes": [
+    "vs_would.followUpProbe",
+    "vs_hold.fired",
+    "vs_diff.same"
+   ],
+   "wallMs": 4866,
+   "plannedMs": 2163,
+   "cfMs": 14
+  },
+  {
+   "kid": 4,
+   "turn": 1,
+   "right": false,
+   "move": "hook",
+   "err": null,
+   "state": null,
+   "live": false,
+   "would": [],
+   "hold": {
+    "read": 1,
+    "fired": 0
+   },
+   "shadow": null,
+   "codes": [],
+   "wallMs": 1591,
+   "plannedMs": 1453,
+   "cfMs": null
+  },
+  {
+   "kid": 4,
+   "turn": 2,
+   "right": false,
+   "move": "explain",
+   "err": null,
+   "state": null,
+   "live": false,
+   "would": [],
+   "hold": {
+    "read": 1,
+    "fired": 0
+   },
+   "shadow": null,
+   "codes": [],
+   "wallMs": 2265,
+   "plannedMs": 1729,
+   "cfMs": null
+  },
+  {
+   "kid": 4,
+   "turn": 3,
+   "right": false,
+   "move": "worked_example",
+   "err": null,
+   "state": null,
+   "live": false,
+   "would": [],
+   "hold": {
+    "read": 1,
+    "fired": 0
+   },
+   "shadow": null,
+   "codes": [],
+   "wallMs": 5261,
+   "plannedMs": 1411,
+   "cfMs": null
+  },
+  {
+   "kid": 4,
+   "turn": 4,
+   "right": false,
+   "move": "practice",
+   "err": null,
+   "state": null,
+   "live": false,
+   "would": [],
+   "hold": {
+    "read": 2,
+    "fired": 1
+   },
+   "shadow": null,
+   "codes": [
+    "vs_hold.fired"
+   ],
+   "wallMs": 1563,
+   "plannedMs": 1496,
+   "cfMs": null
+  },
+  {
+   "kid": 4,
+   "turn": 5,
+   "right": false,
+   "move": "hint",
+   "err": null,
+   "state": null,
+   "live": false,
+   "would": [],
+   "hold": {
+    "read": 2,
+    "fired": 1
+   },
+   "shadow": null,
+   "codes": [
+    "vs_hold.fired"
+   ],
+   "wallMs": 3245,
+   "plannedMs": 1757,
+   "cfMs": null
+  },
+  {
+   "kid": 4,
+   "turn": 6,
+   "right": false,
+   "move": "hint",
+   "err": null,
+   "state": "effortfulGuess",
+   "live": false,
+   "would": [
+    "gentlerHint"
+   ],
+   "hold": {
+    "read": 2,
+    "fired": 1
+   },
+   "shadow": {
+    "would": [
+     "gentlerHint"
+    ],
+    "actual": {
+     "move": "hint",
+     "hintLevel": 2,
+     "probe": null
+    },
+    "shadow": {
+     "move": "hint",
+     "hintLevel": 2,
+     "probe": null
+    },
+    "changed": false,
+    "ms": 1.6
+   },
+   "codes": [
+    "vs_would.gentlerHint",
+    "vs_hold.fired",
+    "vs_diff.same"
+   ],
+   "wallMs": 3258,
+   "plannedMs": 2001,
+   "cfMs": 2
+  },
+  {
+   "kid": 4,
+   "turn": 7,
+   "right": false,
+   "move": "practice",
+   "err": null,
+   "state": null,
+   "live": false,
+   "would": [],
+   "hold": {
+    "read": 2,
+    "fired": 1
+   },
+   "shadow": null,
+   "codes": [
+    "vs_hold.fired"
+   ],
+   "wallMs": 1094,
+   "plannedMs": 69,
+   "cfMs": null
+  },
+  {
+   "kid": 4,
+   "turn": 8,
+   "right": true,
+   "move": "probe",
+   "err": null,
+   "state": null,
+   "live": false,
+   "would": [],
+   "hold": {
+    "read": 1,
+    "fired": 0
+   },
+   "shadow": null,
+   "codes": [],
+   "wallMs": 3140,
+   "plannedMs": 89,
+   "cfMs": null
+  },
+  {
+   "kid": 4,
+   "turn": 9,
+   "right": false,
+   "move": "explain",
+   "err": null,
+   "state": null,
+   "live": false,
+   "would": [],
+   "hold": {
+    "read": 1,
+    "fired": 0
+   },
+   "shadow": null,
+   "codes": [],
+   "wallMs": 1611,
+   "plannedMs": 1553,
+   "cfMs": null
+  },
+  {
+   "kid": 4,
+   "turn": 10,
+   "right": false,
+   "move": "probe",
+   "err": null,
+   "state": null,
+   "live": false,
+   "would": [],
+   "hold": {
+    "read": 2,
+    "fired": 1
+   },
+   "shadow": null,
+   "codes": [
+    "vs_hold.fired"
+   ],
+   "wallMs": 4232,
+   "plannedMs": 1701,
+   "cfMs": null
+  },
+  {
+   "kid": 4,
+   "turn": 11,
+   "right": true,
+   "move": "probe",
+   "err": null,
+   "state": null,
+   "live": false,
+   "would": [],
+   "hold": {
+    "read": 1,
+    "fired": 0
+   },
+   "shadow": null,
+   "codes": [],
+   "wallMs": 3536,
+   "plannedMs": 1158,
+   "cfMs": null
+  },
+  {
+   "kid": 4,
+   "turn": 12,
+   "right": false,
+   "move": "explain",
+   "err": null,
+   "state": null,
+   "live": false,
+   "would": [],
+   "hold": {
+    "read": 1,
+    "fired": 0
+   },
+   "shadow": null,
+   "codes": [],
+   "wallMs": 1601,
+   "plannedMs": 1387,
+   "cfMs": null
+  },
+  {
+   "kid": 4,
+   "turn": 13,
+   "right": false,
+   "move": "probe",
+   "err": null,
+   "state": null,
+   "live": false,
+   "would": [],
+   "hold": {
+    "read": 2,
+    "fired": 1
+   },
+   "shadow": null,
+   "codes": [
+    "vs_hold.fired"
+   ],
+   "wallMs": 1767,
+   "plannedMs": 1471,
+   "cfMs": null
+  },
+  {
+   "kid": 4,
+   "turn": 14,
+   "right": false,
+   "move": "hint",
+   "err": null,
+   "state": "effortfulGuess",
+   "live": false,
+   "would": [
+    "gentlerHint"
+   ],
+   "hold": {
+    "read": 2,
+    "fired": 1
+   },
+   "shadow": {
+    "would": [
+     "gentlerHint"
+    ],
+    "actual": {
+     "move": "hint",
+     "hintLevel": 1,
+     "probe": null
+    },
+    "shadow": {
+     "move": "hint",
+     "hintLevel": 1,
+     "probe": null
+    },
+    "changed": false,
+    "ms": 1.8
+   },
+   "codes": [
+    "vs_would.gentlerHint",
+    "vs_hold.fired",
+    "vs_diff.same"
+   ],
+   "wallMs": 4948,
+   "plannedMs": 2539,
+   "cfMs": 2
+  },
+  {
+   "kid": 4,
+   "turn": 15,
+   "right": true,
+   "move": "probe",
+   "err": null,
+   "state": "fragileCorrect",
+   "live": false,
+   "would": [
+    "followUpProbe"
+   ],
+   "hold": {
+    "read": 2,
+    "fired": 1
+   },
+   "shadow": {
+    "would": [
+     "followUpProbe"
+    ],
+    "actual": {
+     "move": "probe",
+     "hintLevel": 0,
+     "probe": null
+    },
+    "shadow": {
+     "move": "probe",
+     "hintLevel": 0,
+     "probe": null
+    },
+    "changed": false,
+    "ms": 5.4
+   },
+   "codes": [
+    "vs_would.followUpProbe",
+    "vs_hold.fired",
+    "vs_diff.same"
+   ],
+   "wallMs": 5135,
+   "plannedMs": 1062,
+   "cfMs": 5
+  },
+  {
+   "kid": 4,
+   "turn": 16,
+   "right": true,
+   "move": "probe",
+   "err": null,
+   "state": "fragileCorrect",
+   "live": false,
+   "would": [
+    "followUpProbe"
+   ],
+   "hold": {
+    "read": 2,
+    "fired": 1
+   },
+   "shadow": {
+    "would": [
+     "followUpProbe"
+    ],
+    "actual": {
+     "move": "probe",
+     "hintLevel": 0,
+     "probe": "probe.why"
+    },
+    "shadow": {
+     "move": "probe",
+     "hintLevel": 0,
+     "probe": "probe.why"
+    },
+    "changed": false,
+    "ms": 7.8
+   },
+   "codes": [
+    "vs_would.followUpProbe",
+    "vs_hold.fired",
+    "vs_diff.same"
+   ],
+   "wallMs": 2436,
+   "plannedMs": 1224,
+   "cfMs": 7
+  }
+ ]
+}

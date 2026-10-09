@@ -34,6 +34,9 @@ import * as stagecraft from "../stagecraft/seam-bridge.js";
 import { startStagecraft, stopStagecraft, touchStagecraft } from "../stagecraft/lesson.js";
 import * as boardSync from "../stagecraft/board-sync.js";
 import * as boardFirst from "../stagecraft/board-first.js";
+import { boardGroundFor, dressBoard } from "../forge3/art.js";
+import { buildLive } from "../forge3/live.js";
+import { INTERACTIVE_ASKS } from "../forge3/compose.js";
 
 /** Bounds (LIVE-STUDIO §3.1, §3.8; STUDENT-FLOW §5.3). */
 export const STUDIO_LIMITS = Object.freeze({
@@ -187,6 +190,8 @@ function artifactOf(p) {
 /** The Work tray slot of a piece (shared/studio.ts StudioSlot). */
 export function slotOf(p, state = p.state) {
   if (p.source === "stagecraft") return stagecraft.stagecraftSlot(p, state);
+  // round 3 forge: a play piece (server/forge3/live.js) is its PlayArtifact; the play server grades it from raw acts
+  if (p.source === "play") return { slotId: p.slotId, intentId: p.intentId, state: state === "fallback_ready" ? "fallback_shown" : state, ...(p.artifact ? { artifact: p.artifact } : {}) };
   const art = p.artifact?.kind === "whiteboard" ? p.artifact : p.kind === "whiteboard" ? undefined : artifactOf(p);
   const st = state === "fallback_ready" ? "fallback_shown" : state;
   return { slotId: p.slotId, intentId: p.intentId, state: st, ...(art ? { artifact: art } : {}) };
@@ -490,6 +495,44 @@ export const studioSeam = {
   },
 
   /**
+   * round 3 forge: the child asked to PLAY / see it move / simulate ("game khelna hai", "animation dikhao"): compose the
+   * live piece BEFORE the kernel runs (server/forge3/live.js: compose()'s ladder → the play stream's solver-checked level
+   * for the skill or topic, its art rotated against the lesson's last, its board twin attached). On a hit the piece waits
+   * in L.pendingPlay for this turn's slotFor, and the caller does not ask for a whiteboard; on a miss (no play coverage,
+   * an excluded topic, a refused visual-QA certificate, no servable level, the play stream absent) → null and the turn
+   * keeps its own path (the engine in the tray, a library piece, the board, voice). Never throws; no model call.
+   * @param {string} lessonId
+   * @param {{ visual: string, skillId?: string|null, topicId?: string|null, child?: object, tray?: string|null, vp?: string|null }} x
+   * @returns {Promise<{ kind: "play", intentId: string, family: string, mode: string, art: string|null, ms: number } | null>}
+   */
+  async composeAsk(lessonId, x) {
+    try {
+      if (process.env.FORGE3_PLAY === "0") return null;
+      const L = lessonOf(lessonId);
+      if (!L || L.safety || L.studioControl === "off" || !INTERACTIVE_ASKS.has(String(x?.visual ?? ""))) return null;
+      // a game the child is in the middle of is never pulled away for another one
+      const on = L.onScreen ? L.pieces.get(L.onScreen) : null;
+      if (on && VISIBLE.has(on.state) && on.kind !== "whiteboard" && !on.grade?.complete) return null;
+      const child = x.child?.id ? x.child : L.child;
+      if (!child?.id) return null;
+      const r = await buildLive({ ask: x.visual, lessonId, child: { id: child.id, class_level: child.class_level, language_pref: child.language_pref },
+        skillId: x.skillId ?? null, topicId: x.topicId ?? L.topicId ?? null, vp: x.vp ?? null, lesson: L.forge3 ?? null }, { q: deps.q ?? undefined });
+      if (!r) return null;
+      L.forge3 = r.lesson;
+      const n = [...L.pieces.values()].filter((p) => p.source === "play").length + 1;
+      const intentId = `${lessonId}:play:${n}`;
+      const piece = { intentId, slotId: `${intentId}:slot`, kind: "game", archetype: `play:${r.artifact.play.family}/${r.artifact.play.mode}`, source: "play",
+        artifact: r.artifact, facts: r.facts, skillId: r.artifact.play.skillId, need: "practice", requested: true, state: "ready", retired: false, createdAt: Date.now(), composeMs: r.ms };
+      L.pieces.set(intentId, piece);
+      L.pendingPlay = { intentId, turn: L.turn };
+      return { kind: "play", intentId, family: r.artifact.play.family, mode: r.artifact.play.mode, art: r.artifact.play.art ?? null, ms: r.ms };
+    } catch (e) {
+      console.warn("[studio] composeAsk failed:", e?.message);
+      return null;
+    }
+  },
+
+  /**
    * The Work tray slot this turn shows (UiDirectives.studioSlot), or null: the piece the turn reveals, else the piece
    * already on screen (it stays in the tray across turns until it is retired). Synchronous, in memory.
    * Hints (the call site's): `beat`, `tray` (the Director's tray this turn), `safety`, and `asking` (the Director's move
@@ -503,7 +546,22 @@ export const studioSeam = {
     L.shown = null;
     // a safeguarding turn: the Help sheet replaces the Desk; whatever was on screen is frozen and retired, and nothing
     // new is shown for the rest of the lesson (STUDENT-FLOW §5.7)
-    if (hint?.safety) { studioSeam.onSafety(lessonId); return null; }
+    if (hint?.safety) { studioSeam.onSafety(lessonId); L.pendingPlay = null; return null; }
+    // round 3 forge: the play piece composeAsk built for the child's interactive ask this turn is shown now: the child's
+    // own request takes the tray from the Director's show (the same rule as a requested Stagecraft piece), and whatever
+    // Studio had on screen is replaced
+    const pend = L.pendingPlay && L.pendingPlay.turn === L.turn ? L.pieces.get(L.pendingPlay.intentId) : null;
+    L.pendingPlay = null;
+    if (pend && !L.safety && hint?.visualRequest && pend.state === "ready") {
+      if (L.onScreen && L.onScreen !== pend.intentId) retirePiece(L, L.onScreen, "replaced");
+      pend.state = "revealed"; pend.revealedTurn = L.turn; pend.revealedAt = Date.now();
+      L.onScreen = pend.intentId; L.lastRevealTurn = L.turn;
+      L.shown = { intentId: pend.intentId, revealing: true };
+      push(L, { t: "status", status: statusOf(pend) });
+      // (no studio_mount row: its source check admits the Studio sources only, measured 2026-10-09 "violates check
+      // constraint studio_mount_source_check"; the play stream records what was played through its own grade path)
+      return slotOf(pend, "revealed");
+    }
     if (turnStudio?.retire && turnStudio.retire === L.onScreen) return null;
     // the Director's move needs the tray this turn (an item's tiles or pad, its module, the board): Studio yields it
     const trayTaken = typeof hint?.tray === "string" && DIRECTOR_TRAYS.has(hint.tray);
@@ -606,6 +664,10 @@ export const studioSeam = {
     L.onScreen = intentId;
     const prev = ask.mode === "continue" ? L.wbPrev : null;
     if (ask.mode !== "continue") L.wbBeatHead = null;
+    // round 3 forge (server/forge3/art.js): one board ground per lesson, chosen by subject and band and varied across
+    // lessons (12/12 boards on taxila.dev were the same green chalkboard); FORGE3_BOARD_ART=0 keeps the producer's ground
+    if (process.env.FORGE3_BOARD_ART !== "0") L.boardGround ??= boardGroundFor({ topicId: ask?.kit?.topicId ?? L.kit?.topicId ?? null, lessonId });
+    const dress = (script) => (L.boardGround ? dressBoard(script, { ground: L.boardGround, prevGround: L.wbPrev?.board?.ground ?? null }) : script);
     // W2 integration: the template board this live board replaces (explainer@1, open-item guarded by W2-B). A live board
     // that fails the drawing gate or times out shows it instead of leaving an accepted slot empty; no fallback → voice.
     const fb = ask.fallback?.script ? normalizeScript(ask.fallback.script, { strict: false }) : null;
@@ -638,7 +700,8 @@ export const studioSeam = {
     const showFallbackOrFail = () => {
       const kept = keptPrevious();
       if (kept) { drawn({ ok: true, script: kept, source: "kept", syncMs: null }); return; }
-      const shown = fallbackScript && !p.retired && L.onScreen === intentId ? gatedFallback() : null;
+      const shown0 = fallbackScript && !p.retired && L.onScreen === intentId ? gatedFallback() : null;
+      const shown = shown0 ? dress(shown0) : null;
       if (shown) {
         p.artifact = { kind: "whiteboard", stage: { w: shown.board.w, h: shown.board.h }, script: shown };
         // a board, never an interactive piece (brain/propose.js reads kind/archetype "whiteboard" as not holding attention)
@@ -652,7 +715,8 @@ export const studioSeam = {
       push(L, { t: "status", status: { state: "failed", intentId, fallback: "voice" } });
     };
     // a board passed the gate against her line: on the slot, on the wire, in the mount row (shared by board-first and the ladder)
-    const drawn = (r) => {
+    const drawn = (r0) => {
+      const r = r0?.script ? { ...r0, script: dress(r0.script) } : r0;
       p.artifact = { kind: "whiteboard", stage: { w: r.script.board.w, h: r.script.board.h }, script: r.script };
       p.facts = r.script.facts ?? null;
       p.state = "revealed"; p.revealedAt = Date.now(); p.revealedTurn = L.turn; p.boardSource = r.source ?? "line"; p.syncMs = r.syncMs ?? null;

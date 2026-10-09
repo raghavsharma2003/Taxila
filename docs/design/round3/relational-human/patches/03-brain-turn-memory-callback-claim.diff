@@ -1,0 +1,57 @@
+--- a/server/brain/turn.js	2026-10-09 11:06:08.026086581 +0000
++++ b/server/brain/turn.js	2026-10-09 11:35:22.519948030 +0000
+@@ -44,7 +44,7 @@
+ import { relationalEffects } from "./relational-adapter.js";
+ import { withSafetyOpening } from "../relational/openings.js";
+ import { signalsOf } from "../relational/signals.js";
+-import { relationalViolations, repairSelfGender, safetyPreface, stripSafetyPreface } from "../director/safety.js";
++import { relationalViolations, relationalHits, repairSelfGender, safetyPreface, stripSafetyPreface } from "../director/safety.js";
+ import { characterForState } from "../compiler/characters/index.js";
+ import { nextBeat, uiBeatOf } from "./beat.js";
+ import { momentOf } from "./moment.js";
+@@ -451,7 +451,9 @@
+     childText: moduleOnly || help ? "" : childText, cls: cls ? { outcome: cls.outcome, flags: cls.flags } : null, move: r.move.kind,
+     lane: state.mode === "text" || state.mode === "cascade" ? state.mode : "voice", safety: r.move.kind === "safeguard" || !!incident,
+     // W2-I: a verdict reversed on re-check against the key (W1-C held-verdict settle / grade_audit) is the teacher-owned slip
+-    verdictReversed: !!cls?.flags?.verdictReversed }), null);
++    verdictReversed: !!cls?.flags?.verdictReversed,
++    // round 3 (relational-human): the skill on the table, so a callback to last time can be about THIS skill (deixis)
++    skillId: (r.move.itemId ? findItem(next, kit, r.move.itemId)?.skillId : null) ?? r.move.skillId ?? null }), null);
+   // ── The kernel (BR1/BR5; TEACHER-BRAIN TB1, §10): every component's proposals, one arbitration by authority and budget.
+   // Today's proposers: the Director (its move; a safeguard is the safety floor), the relational directive (split into its
+   // ranks by relational-adapter.js), Studio's turn view, the whiteboard ask on an explanation beat, the vibe knobs.
+@@ -482,7 +484,9 @@
+       flags: { ...(cls?.flags ?? fast?.flags ?? {}), distress: true, distressKind: cls?.flags?.distressKind ?? "relational_floor" } }
+       : needRelease ? { ...(cls ?? { outcome: "no_evidence", confidence: 1, source: "relational" }), relRelease: true, flags: { ...(cls?.flags ?? fast?.flags ?? {}), wantsToStop: true } }
+         : cls;
+-    const rel = { turn: next.turn, ...(relFx.overlay ? { overlay: relFx.overlay } : {}), ...(relFx.callbackId ? { callbackId: relFx.callbackId } : {}),
++    // round 3 (relational-human): the accepted callback travels with its closed fragment, so the compile can render it
++    const callback = relFx.callbackId ? seamSafe("relational.callbackOf", () => relationalSeam.callbackOf(lesson.id, relFx.callbackId), null) : null;
++    const rel = { turn: next.turn, ...(relFx.overlay ? { overlay: relFx.overlay } : {}), ...(relFx.callbackId ? { callbackId: relFx.callbackId, ...(callback ? { callback } : {}) } : {}),
+       ...(relFx.noticeId ? { noticeId: relFx.noticeId } : {}) };
+     plan = await planTurn(state, relCls, { ...planCtx, now, rel });
+     ({ evidence, writes, skillChanges, incident, r, instructions, skipped } = plan);
+@@ -648,14 +652,22 @@
+     // teacher hoon" from a male sheet is swapped before it is stored or spoken; deterministic, one word).
+     const selfGender = characterForState(next)?.pronouns?.subject === "he" ? "m" : "f";
+     teacherReply = repairSelfGender(teacherReply, selfGender);
+-    const relFloor = relationalViolations(teacherReply, { content: floorContentOf(next.lastMove?.itemId ? findItem(next, kit, next.lastMove.itemId) : null),
++    // round 3 (relational-human): a past-reference she can back (the callback this turn carried, or this lesson's own words:
++    // server/relational/memory.js claimProblem) is no memory_claim; one she cannot back is, whatever the regexes saw; a
++    // promise to remember always is
++    const relHitsNow = relationalHits(teacherReply, { content: floorContentOf(next.lastMove?.itemId ? findItem(next, kit, next.lastMove.itemId) : null),
+       gender: selfGender });
++    const memUnbacked = seamSafe("relational.claimCheck", () => relationalSeam.claimCheck(lesson.id, teacherReply, { turn: next.turn }), null);
++    const relFloor = [...new Set([...relHitsNow.filter((h) => h.family !== "memory_claim" || h.rule === "memory_claim.promise" || memUnbacked).map((h) => h.family),
++      ...(memUnbacked ? ["memory_claim"] : [])])];
+     if (relFloor.length) next.correction = [...new Set([...(next.correction ?? []), ...relFloor])];
+     const replyItem = next.lastMove?.itemId ? findItem(next, kit, next.lastMove.itemId) : null;
+     const replySpoils = spoiledBy(teacherReply, next, kit, replyItem);
+     if (replySpoils) next.spoiled = [...(next.spoiled ?? []), replySpoils];
+     const [row] = stageTurns(next, [{ speaker: "teacher", text: teacherReply,
+       meta: { move: r.move.kind, ...(guard.caught.length ? { guard: guard.caught } : {}), ...(replySpoils ? { spoils: replySpoils } : {}),
++        // round 3: the callback this line carried (an id from the record; the parent's memory page lists when each was used)
++        ...(relFx.callbackId && next.rel?.callbackId === relFx.callbackId ? { callback: relFx.callbackId } : {}),
+         ...(replyFloor.length ? { floor: replyFloor } : {}) } }]);
+     staged.push(row);
+     teacherReplySeq = row.seq;

@@ -1,0 +1,303 @@
+{
+ "stream": "relational-human",
+ "round": 3,
+ "at": "2026-10-09",
+ "nodes": [
+  {
+   "id": "dec-r3rh-played-uptake-echo",
+   "kind": "decision",
+   "title": "The acknowledgement Taxila PLAYS while she thinks is the child's own answer said back ('chhe faces…'): a closed-class token plus at most a 2-word noun phrase, every word from the item's own vocabulary; only on a graded answer, never two running, at most 4 in 10 turns, never on a goodbye. It is decided only after classify and its model distress read, with the predicate clean and no safeguarding episode, content-filter block or duplex partial-safety hit, and rendered from the words alone (same words, same bytes, right or wrong). Route POST /api/lesson/turn-ack (server/latency/routes.js), device AckClient (src/latency/ack.ts) via patch 02. Rationale: uptake/revoicing is the most verdict-neutral human reaction (O'Connor & Michaels 1993; Demszky et al. 2021/2023); stock fillers become tics (rj-static-filler-list). REVERSE IF: the human blind page (docs/design/round3/relational-human/listening) shows listeners preferring the no-echo version in >= 60 % of echo pairs (>= 2 listeners passing the gap control), or a child pilot shows the echo heard as mockery or parroting.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "dec-r3rh-ack-fixed-instant",
+   "kind": "decision",
+   "title": "The echo is decided at a FIXED instant, TAXILA_ACK_AT_MS = 1200 ms after the perception (classify) started. If classify has not settled by then, there is no echo ('late'). This replaced the round-2 floor (750 ms), which leaked the verdict: exact-key right answers sat at the floor while wrong ones waited for the model. Kendrick & Torreira 2015: a delay is read as a dispreferred answer. REVERSE / RE-TUNE IF: the classify deployment or its hedge changes, which needs a re-run of evals/relational-human/ack-leak.mjs. Raise T if P(echo|right) - P(echo|wrong) > 0.15 or AUC(right decided sooner) > 0.65 at n >= 40 graded.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "dec-r3rh-perception-bus",
+   "kind": "decision",
+   "title": "The ack route never calls a model. It waits on the per-process perception bus (server/latency/bus.js), where the prefetch (owned) and the turn (patch 01) publish their classify promise per (lesson, exact words, turn). The same words on a later turn never reuse an earlier classify. An entry is marked filtered when a speculative reply on those words was blocked by the content filter: the turn will fail closed, so no echo. Zero extra quota on maxed deployments. REVERSE IF: production runs more than one web replica without sticky lessons (an echo would then 204 on the other replica: harmless but useless), which needs a shared store.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "dec-r3rh-prefetch-on",
+   "kind": "decision",
+   "title": "Recommend TAXILA_TURN_PREFETCH on in production (prod: off). The echo can only be ready before the final transcript if the prefetch's classify is already running, and the prefetch moves the Brain stage -680 ms p50 on every turn. Cost: +5.2 Azure calls per turn (+62 %), ~ +$0.005/turn [estimate]. 0 429s at 6 concurrent lessons per arm. REVERSE IF: any hot-lane 429 attributable to the prefetch at production load (the Azure probe fleet, not this sandbox), or the reply-lane cost per turn becomes the binding constraint.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "dec-r3rh-callbacks-from-learning-record",
+   "kind": "decision",
+   "title": "Relational memory she USES comes only from the learning record (learning_profile consent, M1+). That covers: last lesson's crossing (wrong then right unaided), a method explained (teach-back), still being learnt, the topic. The memory consent adds the child's cited win rows and the interests the PARENT chose (only as the setting of an example). Closed note fragments, never sayable lines. At most 1 per lesson. Never in the first meeting, never on a correction/hint/reteach/repair/safeguard/wrap/boundary/withdrawn turn. Verdict-blind (server/relational/memory.js, policy.js, seam.js). A memory question gets the truth from the consent state, plus the one real record item. Ligthart et al. HRI 2022 (n = 46, 8-10 y): memory-based personalisation communicated 'it remembers me' and sustained the relationship; the companion register is the failure mode (De Freitas 2025; Common Sense 2025; APA 2025). REVERSE IF: an M2+/P3 child with a parent-visible tier-B list shows a measured benefit over learning-only callbacks.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "dec-r3rh-callback-lead-last-section",
+   "kind": "decision",
+   "title": "A memory about the child is rendered in the compile's LAST section as 'OPEN THIS TURN WITH what you remember of them, in a few words of your own, before the move (true, from your record; a note, not words to say): <fragment>' (patch 04, droppable, never on safeguard/wrap/floor-fix turns). An interest the parent chose stays in the MOVE section as the setting of an example. Measured: MOVE section 0/3 voiced, bare 'FIRST' note in the last section 0/3, this wording 3/3 (memory-2day v1/v2/v3, 2026-10-09). REVERSE IF: a run (n >= 10 openers) shows the MOVE-section note voiced as often, or the opener callback becomes a tic across consecutive lessons.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "dec-r3rh-claim-check",
+   "kind": "decision",
+   "title": "F9 claim check (memory.js claimProblem via relationalSeam.claimCheck, patch 03): a reply sentence referring to the child's past ('pichhli baar', 'tumne … bataya tha', up to 6 words between) must be backed. Backing is the callback this turn carried or this lesson's own child words, compared on content words with English+Hinglish function words removed. Excluded from backing: the kit's words (a first-lesson 'pichhli baar humne cube ke faces gine the' is all kit words and made up) and the child's own memory QUESTIONS ('yaad hai maine kutte ke baare mein bataya tha?'). In a first meeting any 'last time' is a claim. An honest 'mujhe yaad nahi' is not. A hit becomes the next turn's correction. REVERSE IF: false corrections on backed callbacks are seen in live transcripts (the overlap threshold 0.34 is a guess, not tuned on data).",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "dec-r3rh-forget-honoured",
+   "kind": "decision",
+   "title": "'Forget what I told you' / 'jo maine (aaj) bataya woh bhool jao' is honoured in code. The policy gives the forget_ok shape and marks the session. At lesson end every memory row citing a turn of THIS lesson is deleted, last in the same transaction, independent of the relational-table probe and the mode (writers.js memoryForgetStmt). The parent sees a memory_forgotten note. A bare 'forget it' / 'bhool jao' ('never mind') is not a forget request. GET/DELETE /api/parent/memory (server/relational/routes.js, patch 05) lets the parent see and delete each memory, as the memory consent's copy already promised. REVERSE IF: none for the deletion; widen to earlier lessons only if the child explicitly names them.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "dec-r3rh-face-knowledge-states",
+   "kind": "decision",
+   "title": "The face reacts to the child's place in the WORK, never to an emotion (src/face-puppet/knowledge.ts). K1: a 2.2 degree receipt nod when the child's turn ends (listening -> thinking), the same after any answer. K2: thinking face while her echo sounds and during its lip-release tail; no armed affect fires on the echo. K3: a look at the work after 2.5 s of the child's silent turn, every 5 s, at most 3, never in a safety turn or with reduced motion. Verdict-blind by construction (no verdict in its API; the nod is byte-identical across runs). Rests on Andrist et al. HRI 2014 (n = 30) and Gonzales et al. 2025 (n = 24): adults, robots/VR, not children. REVERSE IF: a child pilot reads the work-look as disapproval, or the nod as 'right'.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "dec-r3rh-duplex-eot-tap",
+   "kind": "decision",
+   "title": "The turn path is ready for duplex end-of-turn without touching src/duplex/**. puppetDuplexSink also hands each HostCommand to src/latency/duplexTurn.ts: think/prepare (draft start) -> TurnPrefetcher.sendNow (no debounce); voice/speak (not a nudge or safeguard) -> AckClient.request. Registered per lesson by cascadeLink (patch 02). Unit-tested only; duplex is SHADOW. REVERSE IF: the duplex engine's eager end-of-turn revokes often enough that the extra prefetches cost more than they save (measure when duplex goes live).",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "ms-r3rh-first-sound-load-2026-10-09",
+   "kind": "measurement",
+   "title": "First sound end to end (evals/relational-human/first-sound.mjs; real STT socket with the server-minted session, real routes, the device's prefetch and echo rules simulated), 2026-10-09. Local in-process API, US sandbox, Neon TEST, prod routing (grok classify + hedge, taxila-live-transcribe, DragonHD Diya centralindia). Synthetic child (gpt-4o-mini-tts x1.2 pitch). 2 runs x 3 parallel lessons x 15 turns per arm, both arms at the same time, machine load ~20-26. 'Sound' = first PCM byte + 60 ms lead + nominal 50 ms output. BEFORE (HEAD cadf527, prefetch off, no echo) n = 90: p50 6,107 / p90 7,856 ms; graded answers 5,868 / 6,705 (n = 17); Brain 3,402 / 4,821. AFTER (patched, prefetch + echo) n = 90: 5,443 / 7,392; graded 4,206 / 6,462 (n = 20); Brain 2,722 / 4,364. The echo itself, when played (12/20 graded): 2,683 / 4,206 ms. Prefetch adopted 84/90, sent ~1.25 s after speech end p50. Guard rewrites 41/90 before, 32/90 after; a rewritten turn's Brain p50 3,747 vs 2,201 ms clean.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "ms-r3rh-ack-leak-2026-10-09",
+   "kind": "measurement",
+   "title": "Verdict timing leak of the echo (evals/relational-human/ack-leak.mjs; typed answers on cascade lessons, right/wrong by a seeded coin on the same items, prefetch + ack at once then the turn, TAXILA_ACK=shadow, local US + Neon TEST), 2026-10-09. A, floor 750 ms, local classify taxila-fast: decided right p50 1,105 vs wrong 1,422 ms, AUC(right sooner) 0.68, p = 0.20, n = 9 vs 9. B, floor 750 ms, prod classify grok + hedge: right 784 / p90 959 vs wrong 890 / p90 2,956, AUC 0.86, Mann-Whitney z = -2.38, p = 0.017, n = 9 vs 7. C, fixed instant 1,200 ms, prod classify: right 1,204 / 1,228 vs wrong 1,198 / 1,321, AUC 0.44, p = 0.65, n = 15 vs 8; P(echo|right) 15/22 = 0.68 [0.47, 0.84] vs P(echo|wrong) 8/12 = 0.67 [0.39, 0.86] (Wilson). Defect found by A and fixed: the same words on a later turn reused the earlier turn's classify (decided in 0 ms).",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "ms-r3rh-prefetch-429-2026-10-09",
+   "kind": "measurement",
+   "title": "Prefetch quota cost (every Azure response the in-process server received, by deployment and status; the load runs of ms-r3rh-first-sound-load-2026-10-09, 6 lessons per arm, both arms concurrent), 2026-10-09. BEFORE 757 calls, 0 x 429, 1 x HTTP 500 (taxila-fast), 8.4 calls/turn (taxila-fast 403, grok classify 84, taxila-gpt6 note 74). AFTER 1,221 calls, 0 x 429, 0 errors, 13.6 calls/turn (taxila-fast 721, grok 178, taxila-gpt6 161). +5.2 calls/turn (+62 %), ~ +$0.005/turn [estimate from MODEL-STACK unit prices]. Not a production-scale quota proof (sandbox concurrency only).",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "ms-r3rh-ack-prosody-2026-10-09",
+   "kind": "measurement",
+   "title": "Terminal pitch of the echo as production renders it (DragonHD Diya; evals/relational-human/ack-prosody.mjs + ack-prosody-analyse.py: normalised-autocorrelation F0, 10 ms hop, last 150 ms of voice vs the rest), 8 phrases x 3 text variants, 2026-10-09. Plain (what ships): falling 3, level 1, rising 4, median +1.22 st, 985 ms. Trailing comma: 2/1/5, +2.98 st. Question mark: 1/1/6, +4.34 st. Punctuation does not give a level 'thinking' contour. The contour is a function of the phrase only (one cached render), never of the verdict.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "ms-r3rh-memory-2day-2026-10-09",
+   "kind": "measurement",
+   "title": "Memory across two lessons (evals/relational-human/memory-2day.mjs; text lane, local, Neon TEST, prod classify; lesson 1 c4-maths-ch01-t01, test clock +1 day, lesson 2 ch01-t02 with 5 probes), 3 children per arm, 2026-10-09. Judges grok-4-20-reasoning + Kimi K2.6, out of family, blind, against lesson 1's real transcript; 30 ratings per arm. Made-up memory: BEFORE 7/30 (5/30 excluding the product's own pretend student 'Golu', which the judges did not know) vs AFTER 0/30. Code check (explicit past-reference sentences): 2/15 vs 0/15. Truthful on memory questions 10/18 vs 19/20. Blanket denial 2/30 vs 0/30. Promise / companion 0 vs 0. Refers to something true from lesson 1: 3/30 vs 8/30. Opener callback (author's reading): 0/3 vs 3/3. Forget honoured on the parent page: no route vs 3/3. Natural (1-5) 3.20 vs 3.47, but P3 'will you remember everything' 3.50 vs 2.33 ('policy-toned'). Pairwise 'a real teacher who remembers this child, truthfully': after 52, before 8, ties 0 of 60; consistent in both orders 24/30. n = 3 children per arm: direction consistent, size not established.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "ms-r3rh-listen-judges-2026-10-09",
+   "kind": "measurement",
+   "title": "Audio judges for 'sounds like a real teacher' (evals/relational-human/listen.mjs; 41 pairs built from the saved audio of the measured runs: 8 echo vs echo-silenced, 25 before vs after on the same child words, 4 gap controls, 4 identical controls; gpt-realtime-2.1 and gpt-realtime-2.1-mini, both orders, a beep between versions; 164 judgements, 2 errors), 2026-10-09. Gap control (the same reply 1.0 s vs 8.0 s after the child): realtime 0/0/8 ties, mini 1 vs 2 vs 4 ties: both FAIL. Identical control: 8/8 ties (passes). Echo vs no echo: realtime 1 vs 4 (11 ties), mini 1 vs 3 (11 ties). Before vs after: 22 vs 24 (realtime), 21 vs 24 (mini). The judges do not hear timing: result reported, not used. Human blind page built (19 items), not run.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "ms-r3rh-policy-bench-2026-10-09",
+   "kind": "measurement",
+   "title": "Relational decide cost, HEAD vs this tree (alternating same-process benchmark: signalsOf + decide over 60-turn lessons, 400 lessons per arm, n = 24,000 turns each), 2026-10-09, load ~17: HEAD p50 0.0166 / p90 0.0296 / p99 0.0713 ms; this tree 0.0168 / 0.0306 / 0.0698 ms. AT-U8 (p99 <= 3 ms in the test runner) fails under this machine's load on HEAD and this tree alike (3.0-14.9 ms).",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "ms-r3rh-content-filter-false-safeguard-2026-10-09",
+   "kind": "measurement",
+   "title": "Observed once in load-after-1 (lesson L1 turn 7, 2026-10-09). The child said 'छह faces.' (six faces): classify correct/model with a clean distress read, but the REPLY call was blocked by the Azure content filter. The turn failed closed into the safeguarding move, and the lesson stayed in safeguard mode the next turn. The echo had already played 0.8 s before the turn response. Since fixed: an echo is refused when a speculative reply on the same words was filter-blocked (bus 'filtered'), and the device stops a sounding echo when her reply carries the helplines (patch 02). The false-positive filter block itself is the turn path's (not this stream's): n = 1 of 180 turns.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "rj-r3rh-floor-only-ack-timing",
+   "kind": "rejection",
+   "title": "Tried: the round-2 floor (decide no sooner than 750 ms after classify started) as the echo's only timing rule. Broke: with the production classifier, right answers were decided sooner in 86 % of right/wrong pairs (AUC 0.86, p = 0.017, n = 9 vs 7). Exact-key right answers sit at the floor; wrong ones always wait for the model, with a tail to ~3 s. Replaced by the fixed instant (dec-r3rh-ack-fixed-instant).",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "rj-r3rh-callback-mid-brief",
+   "kind": "rejection",
+   "title": "Tried: the callback as a droppable note in the compile's MOVE section ('callback (once, only if it fits…)'), then as a bare 'FIRST, in a few words…' note in the last section. Broke: the opener callback was voiced 0/3 both times (memory-2day v1, v2). The hook shape's own 'open with…' instruction won. Fixed by 'OPEN THIS TURN WITH what you remember of them… before the move' in the last section: 3/3 (v3).",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "rj-r3rh-strict-memory-lexicon",
+   "kind": "rejection",
+   "title": "Tried: memory-question and forget-request patterns with no gap words ('jo maine bataya woh bhool jao', 'aap(+2 words) yaad rakhogi'). Broke: missed 'jo maine AAJ bataya woh bhool jao' (P5 3/3: the child was told yes and nothing was recorded or deleted). Also missed 'aap meri SAARI baatein HAMESHA yaad rakhogi' (P3 3/3: no truth shape). Fixed with bounded gaps (<= 2 / <= 4 words), keeping 'forget it' / 'bhool jao' (never mind) and 'mujhe yaad hai' (the child remembering) out (tests).",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "rj-r3rh-audio-judges-for-timing",
+   "kind": "rejection",
+   "title": "Tried: gpt-realtime-2.1 and gpt-realtime-2.1-mini as blind 'real teacher' judges of before/after audio. Broke: both failed the gap control. They did not prefer the same reply 1.0 s after the child over 8.0 s after (0 of 8 and 1 of 7 judgements). They cannot judge what this stream changes. Use human listeners (the blind page) or a judge that passes the gap control >= 7/8.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "rj-r3rh-punctuation-prosody",
+   "kind": "rejection",
+   "title": "Tried: steering the echo's terminal contour with ',' or '?' in the text sent to DragonHD. Broke: punctuation pushes renders toward rising (5/8, 6/8), not level, and plain is mixed (3 falling, 1 level, 4 rising).",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "rj-r3rh-kit-as-claim-support",
+   "kind": "rejection",
+   "title": "Tried (design review): counting the kit's own words as backing for a 'last time' claim. Broke: a first-lesson 'pichhli baar humne cube ke faces gine the' is all kit words and is made up. The kit is not a record of the child.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "rj-r3rh-token-ack-before-distress",
+   "kind": "rejection",
+   "title": "Considered: echo on the token alone, before classify (~1 s sooner). Broke: the child-safety floor. Nothing she says may precede the model distress read on a turn that might be a disclosure (classifier-only disclosures exist). Kept as a hard rule.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "rj-r3rh-echo-phrase-cut",
+   "kind": "rejection",
+   "title": "Tried: token + the ONE next word when it is in the item's vocabulary. Broke: 'Baarah sticks and eight clay balls' gave the echo 'eight clay' (after-local-2 turn 19), and 'six faces.' carried a stray full stop into the cache key. Now the phrase completes the noun phrase (<= 2 words, every word in the item vocabulary, ends there) or stays the token.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "open-r3rh-real-teacher-listening",
+   "kind": "open",
+   "title": "Not decided: does the echo (and the after arm overall) sound more like a real teacher to people? The audio-model judges failed their gap control (rj-r3rh-audio-judges-for-timing). The human blind page docs/design/round3/relational-human/listening/blind.html (19 items: 8 echo vs silenced, 9 before vs after, 2 gap controls; key in KEY-open-only-after-listening.json; scoring: node evals/relational-human/listen.mjs --score) has not been run. One weak signal: the realtime judge leaned toward 'no echo' 4 vs 1 (11 ties), with one reason 'repeated child speech', the parroting risk HV-16 warned of.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "open-r3rh-first-sound-900",
+   "kind": "open",
+   "title": "V4.3 first sound <= 900 ms is not met. Best measured: the echo at p50 2,683 / p90 4,206 ms (n = 12), the reply at 5,443 / 7,392 (n = 90), local US + Neon TEST, synthetic child. The irreducible parts: end of turn ~1.15 s (900 ms server VAD; the word-aware duplex EOT is SHADOW), the prefetch sent ~1.25 s after speech end, the distress read with the fixed 1.2 s instant (verdict neutrality), and the final transcript gate on the device. Non-answers (78 % of turns) get no echo by rule and still wait 5.6 s p50.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "open-r3rh-memory-answer-policy-tone",
+   "kind": "open",
+   "title": "The truthful answer to 'will you remember everything forever?' reads as policy: judges' natural 2.33/5 after vs 3.50 before (n = 6 ratings each), e.g. 'main AI hoon, isliye insaan ki tarah sab baatein hamesha yaad nahi rakhti' then an abrupt return to the card. The memory_keeps_* shape sits mid-brief (relational note, MOVE section) and the conversation guards pull the turn back to the item.",
+   "at": "2026-10-09"
+  }
+ ],
+ "edges": [
+  {
+   "src": "dec-r3rh-ack-fixed-instant",
+   "rel": "supersedes",
+   "dst": "rj-r3rh-floor-only-ack-timing"
+  },
+  {
+   "src": "dec-r3rh-ack-fixed-instant",
+   "rel": "measured_by",
+   "dst": "ms-r3rh-ack-leak-2026-10-09"
+  },
+  {
+   "src": "dec-r3rh-played-uptake-echo",
+   "rel": "measured_by",
+   "dst": "ms-r3rh-first-sound-load-2026-10-09"
+  },
+  {
+   "src": "dec-r3rh-played-uptake-echo",
+   "rel": "measured_by",
+   "dst": "ms-r3rh-ack-prosody-2026-10-09"
+  },
+  {
+   "src": "dec-r3rh-played-uptake-echo",
+   "rel": "constrains",
+   "dst": "dec-r3rh-perception-bus"
+  },
+  {
+   "src": "dec-r3rh-played-uptake-echo",
+   "rel": "constrains",
+   "dst": "dec-r3rh-prefetch-on"
+  },
+  {
+   "src": "dec-r3rh-prefetch-on",
+   "rel": "measured_by",
+   "dst": "ms-r3rh-prefetch-429-2026-10-09"
+  },
+  {
+   "src": "dec-r3rh-perception-bus",
+   "rel": "caused_by",
+   "dst": "ms-r3rh-content-filter-false-safeguard-2026-10-09"
+  },
+  {
+   "src": "dec-r3rh-callbacks-from-learning-record",
+   "rel": "measured_by",
+   "dst": "ms-r3rh-memory-2day-2026-10-09"
+  },
+  {
+   "src": "dec-r3rh-callback-lead-last-section",
+   "rel": "supersedes",
+   "dst": "rj-r3rh-callback-mid-brief"
+  },
+  {
+   "src": "dec-r3rh-callback-lead-last-section",
+   "rel": "measured_by",
+   "dst": "ms-r3rh-memory-2day-2026-10-09"
+  },
+  {
+   "src": "dec-r3rh-claim-check",
+   "rel": "supersedes",
+   "dst": "rj-r3rh-kit-as-claim-support"
+  },
+  {
+   "src": "dec-r3rh-claim-check",
+   "rel": "measured_by",
+   "dst": "ms-r3rh-memory-2day-2026-10-09"
+  },
+  {
+   "src": "dec-r3rh-forget-honoured",
+   "rel": "supersedes",
+   "dst": "rj-r3rh-strict-memory-lexicon"
+  },
+  {
+   "src": "dec-r3rh-forget-honoured",
+   "rel": "measured_by",
+   "dst": "ms-r3rh-memory-2day-2026-10-09"
+  },
+  {
+   "src": "dec-r3rh-played-uptake-echo",
+   "rel": "supersedes",
+   "dst": "rj-r3rh-echo-phrase-cut"
+  },
+  {
+   "src": "dec-r3rh-played-uptake-echo",
+   "rel": "constrains",
+   "dst": "rj-r3rh-token-ack-before-distress"
+  },
+  {
+   "src": "dec-r3rh-played-uptake-echo",
+   "rel": "constrains",
+   "dst": "rj-r3rh-punctuation-prosody"
+  },
+  {
+   "src": "ms-r3rh-listen-judges-2026-10-09",
+   "rel": "caused_by",
+   "dst": "rj-r3rh-audio-judges-for-timing"
+  },
+  {
+   "src": "dec-r3rh-face-knowledge-states",
+   "rel": "constrains",
+   "dst": "dec-r3rh-played-uptake-echo"
+  },
+  {
+   "src": "dec-r3rh-duplex-eot-tap",
+   "rel": "constrains",
+   "dst": "dec-r3rh-perception-bus"
+  },
+  {
+   "src": "open-r3rh-real-teacher-listening",
+   "rel": "caused_by",
+   "dst": "ms-r3rh-listen-judges-2026-10-09"
+  },
+  {
+   "src": "open-r3rh-first-sound-900",
+   "rel": "caused_by",
+   "dst": "ms-r3rh-first-sound-load-2026-10-09"
+  },
+  {
+   "src": "open-r3rh-memory-answer-policy-tone",
+   "rel": "caused_by",
+   "dst": "ms-r3rh-memory-2day-2026-10-09"
+  }
+ ]
+}

@@ -18,7 +18,14 @@
 //   W9 no reveal    nothing drawn equals the answer of a kit item (the one being asked, or one still to come) unless she
 //                   says that value in this line: a drawn number, a result the gate re-computes, a number-line tick or a
 //                   dot placed at the answer's position, and the current item's word answer (owner priority 1: the board
-//                   must never answer the question she is asking, or the covert-comprehension signal is corrupt)
+//                   must never answer the question she is asking, or the covert-comprehension signal is corrupt); also
+//                   (wb-gate@3) the current item's word answer of any length when most of its words are written
+//   W10 screen claims every count her line says is on the screen ("5 equal gaps", "3 groups, each with 5 dots") is drawn
+//   W11 shows idea   not only medium words ("Screen") or generic category words ("fraction of fraction multiply")
+//   W12 next step    her line asks what comes after X: the board does not draw X's successor
+//   W13 fractions    a board that names fractions names at least one of the fractions her line names
+//   W14 about line   (advisory, logged) a board with words shares a content word or number with her line (or item)
+//   (W10-W13: server/studio/qa/semantics.js, round 3 forge, from the taxila.dev audit of 2026-10-09)
 //
 // gateWhiteboard(raw, ctx) → { pass, checks, script, facts }.  The script returned is the normalised one (draw this).
 import { normalizeScript, lintScript, opGeometry, textBox, TEXT_SIZE, scriptFacts } from "../../../shared/whiteboard.js";
@@ -27,8 +34,9 @@ import { SEVERE, MILD, PII } from "../../forge/g2/safety.js";
 import { PHONE_TRAY } from "../archetypes/index.js";
 import { numbersIn as phraseNumbers } from "../../comprehension/grade/numbers.js";
 import { NUMBER_WORDS, cardinalOf } from "../../voice/translit/numbers.js";
+import { claimsNotDrawn, placeholderBoard, nextStepRevealed, fractionsDisagree, longAnswerWritten, boardOffLine } from "./semantics.js";
 
-export const WB_GATE_VERSION = "wb-gate@2";
+export const WB_GATE_VERSION = "wb-gate@3";
 /** Speech rate used for the line's duration when no DeliveryPlan is known (HUMAN-VOICE HV-15: 11-13 chars/s). */
 export const CHARS_PER_SEC = 12;
 export const MIN_TEXT_PX = 11;
@@ -124,7 +132,7 @@ function valueTokens(text) {
 export function withheldValues(kit, { itemId, line = "" } = {}) {
   const said = [...numbersIn(line)].map(rat).filter(Boolean);
   const items = [...(kit?.items ?? [])].sort((a, b) => (b?.id === itemId) - (a?.id === itemId));
-  const values = [], words = [];
+  const values = [], words = [], phrases = [];
   const lineWords = new Set(String(line).toLowerCase().match(/[\p{L}\p{M}]+/gu) ?? []);
   for (const i of items) {
     for (const a of [i?.answer, ...(i?.acceptable ?? [])]) {
@@ -138,10 +146,11 @@ export function withheldValues(kit, { itemId, line = "" } = {}) {
         const w = String(a).toLowerCase().trim();
         const ws = w.match(/[\p{L}\p{M}]+/gu) ?? [];
         if (ws.length && ws.length <= 3 && !ws.every((x) => lineWords.has(x))) words.push(w);
+        else if (ws.length >= 4) phrases.push(w);
       }
     }
   }
-  return { values, words };
+  return { values, words, phrases };
 }
 
 /** Evaluate "a op b op c" left to right with × ÷ first; null when it is not pure arithmetic. */
@@ -467,7 +476,23 @@ export function gateWhiteboard(raw, ctx) {
   add("W2.text_clear_of_lines", crossed.length === 0, crossed.slice(0, 3));
   // W9 no reveal: nothing on the board equals a withheld answer (ctx.withhold = withheldValues(kit, {itemId, line}))
   const reveals = revealsOf(ops, per, byId, texts, ctx.withhold);
+  // round 3 forge: the current item's word answer of ANY length (≥ 4 content words) written on the board (semantics.js)
+  const longWords = Array.isArray(ctx.withhold) ? [] : (ctx.withhold?.phrases ?? []);
+  reveals.push(...longAnswerWritten(longWords, ops, ctx.reply));
   add("W9.no_reveal", reveals.length === 0, reveals.slice(0, 4));
+  // round 3 forge (wb-gate@3, semantics.js): what she says is on the screen IS on the screen, and the board shows an idea
+  const notDrawn = claimsNotDrawn(ctx.reply, ops);
+  add("W10.screen_claims_drawn", notDrawn.length === 0, notDrawn.slice(0, 3));
+  const placeholder = placeholderBoard(ops);
+  add("W11.shows_the_idea", placeholder.length === 0, placeholder.slice(0, 3));
+  const nextStep = nextStepRevealed(ctx.reply, ops);
+  add("W12.no_next_step_reveal", nextStep.length === 0, nextStep.slice(0, 2));
+  const fracs = fractionsDisagree(ctx.reply, ops);
+  add("W13.fractions_agree", fracs.length === 0, fracs.slice(0, 2));
+  // W14 is ADVISORY (logged, never blocks): over 234 real boards it flagged 69, with false refusals across languages (a
+  // Hinglish line "paani garam hokar upar jaata hai" under an English "evaporates" board shares no word but is on topic)
+  const off = boardOffLine(ctx.reply, ops, ctx.itemText ?? "");
+  const advisories = off.length ? [{ id: "W14.about_her_line", detail: off[0] }] : [];
   const pass = checks.every((c) => c.pass);
-  return { pass, checks, script, facts: pass ? scriptFacts(script, { kind: "diagram", archetype: "whiteboard" }) : null };
+  return { pass, checks, advisories, script, facts: pass ? scriptFacts(script, { kind: "diagram", archetype: "whiteboard" }) : null };
 }

@@ -1,0 +1,48 @@
+--- a/server/director/classify.js
++++ b/server/director/classify.js
+@@ -71,6 +71,10 @@
+ export const ASR_MIN = 0.5;
+ /** Below this classifier confidence the label is not evidence either; the move re-asks instead. */
+ export const CONFIDENCE_MIN = 0.5;
++/** A reply that is only a number: ASCII or Devanagari digits, a fraction or a decimal, grouping commas, a closing stop. */
++export const BARE_NUMBER = /^\s*[-−]?[\d०-९][\d०-९,]*(?:[./][\d०-९]+)?\s*[.!?।]?\s*$/;
++/** round3 truth kill switch: TAXILA_NUMBER_FLOOR=off restores HEAD (a bare wrong number the model abstains on stays no evidence). */
++const numberFloorOn = () => !/^(off|0|false|no)$/i.test(String(process.env.TAXILA_NUMBER_FLOOR ?? ""));
+ /** Teach-back passes when it covers this share of the kit's expectations with no misconception. */
+ export const TEACHBACK_PASS = 0.6;
+ 
+@@ -529,7 +533,9 @@
+       if (vals.length === 1 && Math.abs(vals[0] - kv) < 1e-9) return sameThing ? done("correct", "number") : { result: null, flags, text, nounMismatch: true };
+       if (vals.length >= 2 && !/(?:^|[^\p{L}])(?:sorry|matlab|i mean)(?![\p{L}])/iu.test(text)) return done("no_evidence", "number_hedge");
+       if (vals.length >= 2) { const last = ph.at(-1); return Math.abs(last - kv) >= 1e-9 ? { result: null, flags, text, numericMismatch: true } : sameThing ? done("correct", "number_selfcorrect") : { result: null, flags, text, nounMismatch: true }; }
+-      return { result: null, flags, text, numericMismatch: true };
++      // round3 truth: the reply is ONLY a number, and it is not the key's value: a wrong answer by value, whatever else the
++      // model reads (bareWrongNumber, applied in classifyModel when the model abstains)
++      return { result: null, flags, text, numericMismatch: true, ...(BARE_NUMBER.test(text) ? { bareWrongNumber: true } : {}) };
+     }
+   }
+   // A bare "pata nahi" / "just tell me" (no number, a few words) needs no model to read.
+@@ -625,6 +631,14 @@
+     if (fast.unitMismatch && label.outcome === "correct") { label.outcome = "incorrect"; label.overridden = "unit_mismatch"; }
+     // review v1: "21" for "21 June" names the number but not what it is: partial, never the full key
+     if (fast.bareDecisive && label.outcome === "correct") { label.outcome = "partial"; label.overridden = "bare_number_of_decisive_key"; }
++    // round3 truth (prod w1c-reteach 7/13): a reply that is only a number, not the key's value, is a wrong answer decided in
++    // code. The model may still name the misconception it shows, but its abstention is not a reading of a bare number
++    // ("999" for "1/4" read as off-topic or unclear: grok-4-1-fast-non-reasoning, prod's classifier, 3 of 32 isolated calls
++    // and the first try on an item inside a lesson; taxila-fast 0 of 32): the answer earned no evidence, the hint ladder did
++    // not move, and the re-teach trigger (two fails past rung 3) never accrued.
++    if (fast.bareWrongNumber && label.outcome === "no_evidence" && !modelFlags.distress && !modelFlags.wantsToStop && numberFloorOn()) {
++      label.outcome = "incorrect"; label.overridden = "bare_wrong_number"; modelFlags.offTopic = false; modelFlags.dontKnow = false;
++    }
+     for (const k of Object.keys(modelFlags)) flags[k] = flags[k] || modelFlags[k];
+     const signals = signalsOn() ? parseSignals(json) : null;
+     if (signals) Object.assign(flags, signalFlags(signals));
+@@ -656,6 +670,8 @@
+     // A classifier outage costs one turn of evidence, never the lesson.
+     flags.distress = flags.distress || await distressCheck(text, classLevel, trace);
+     if (flags.distress) flags.distressKind ??= "model";
++    // round3 truth: a bare wrong number needs no model to be wrong (degrade gracefully on 429: the grade is code's)
++    if (fast.bareWrongNumber && !flags.distress && !flags.wantsToStop && numberFloorOn()) return done("incorrect", "number");
+     return done("no_evidence", "error");
+   }
+ }

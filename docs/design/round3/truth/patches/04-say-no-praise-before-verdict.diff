@@ -1,0 +1,40 @@
+--- a/server/director/say.js
++++ b/server/director/say.js
+@@ -33,6 +33,16 @@
+   `(?:aapne|tumne|you)\\s+(?:\\p{L}+\\s+){0,3}?(?:bilkul\\s+|ekdam\\s+)?(?:sahi|correct(?:ly)?|right)\\s+(?:likha|likhi|likhe|chuna|chuni|joda|jodi|pehchana|pehchaana|wrote|picked|chose|matched)`,
+ ].join("|"), "iu");
+ /**
++ * round3 truth (owner-1 on taxila.dev 2026-10-09, c5-maths-ch07-t02-i06, an UNGRADED re-ask: "Aapne Pattern A ka niyam sahi
++ * pehchaana: …"): the F5 form allowed at most 3 words between "aapne" and "sahi", so a 4-word object slipped through and
++ * the turn praised an answer nothing had graded. PRAISE_ANY_WIDE allows up to 8 words (and a few more verb forms) and is
++ * used for every verdict except a GRADED partial, where naming the part that is right is the honest, specific feedback
++ * (the narrow PRAISE_ANY still applies there, as before).
++ */
++const PRAISE_ANY_WIDE = new RegExp([PRAISE_ANY.source,
++  `(?:aapne|tumne|you)\\s+(?:[\\p{L}\\p{N}'’]+[\\s,:]+){0,8}?(?:bilkul\\s+|ekdam\\s+)?(?:sahi|correct(?:ly)?|right)\\s+(?:kaha|bataya|socha|pakda|nikala|got|said|found|likha|likhi|likhe|chuna|chuni|joda|jodi|pehchana|pehchaana|pehchani|pehchaani|pehchane|pehchaane|identified|spotted|wrote|picked|chose|matched)(?![\\p{L}])`,
++].join("|"), "iu");
++/**
+  * A "you made a mistake" statement anywhere in a turn after a RIGHT answer (F2, evals/owner-truth: "yahan galti hui",
+  * "step toot gaya" after a correct pick). Negations ("galti nahi", "no mistake") are not denials.
+  */
+@@ -88,9 +98,9 @@
+   if (!t || verdict === "ungraded") return null;
+   if (verdict === "correct") return DENY_OPEN.test(t) || DENY_ANY.test(t) ? "contradicts" : null;
+   // F5: a turn with nothing graded may still not tell an attempt it is right ("aapne sahi likha" on an ungraded reply)
+-  if (verdict === "attempt") return PRAISE_ANY.test(t) ? "praise" : null;
++  if (verdict === "attempt") return PRAISE_ANY_WIDE.test(t) ? "praise" : null;
+   // partial: "nearly" is honest; "bilkul / sahi" is not.
+-  if (PRAISE_OPEN.test(t) || PRAISE_ANY.test(t) || PRAISE_EMOJI.test(t)) return "praise";
++  if (PRAISE_OPEN.test(t) || (verdict === "partial" ? PRAISE_ANY : PRAISE_ANY_WIDE).test(t) || PRAISE_EMOJI.test(t)) return "praise";
+   if (verdict === "not_yet" && AGREE_OPEN.test(t)) return "praise";
+   return null;
+ }
+@@ -100,7 +110,7 @@
+ /** The turn with its praise / agreement removed: sentences that praise the answer, and a praising opener on a question. */
+ export function stripPraise(text) {
+   const sentences = String(text ?? "").match(/[^.!?।]+[.!?।]*\s*/g) ?? [];
+-  const praising = (x) => { const y = withoutEffortPraise(x).trim(); return PRAISE_ANY.test(y) || PRAISE_OPEN.test(y) || AGREE_OPEN.test(y); };
++  const praising = (x) => { const y = withoutEffortPraise(x).trim(); return PRAISE_ANY_WIDE.test(y) || PRAISE_OPEN.test(y) || AGREE_OPEN.test(y); };
+   let out = sentences.filter((x) => /[?？]/.test(x) || !praising(x)).join("").replace(new RegExp(PRAISE_EMOJI.source, "gu"), "").trim();
+   for (let i = 0; i < 3 && OPENER.test(out); i++) out = out.replace(OPENER, "");
+   return out ? out[0].toUpperCase() + out.slice(1) : "";

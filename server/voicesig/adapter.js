@@ -18,6 +18,9 @@ export const KV_F_RANGES = Object.freeze({
   onsetMs: [0, 20_000], contentOnsetMs: [0, 40_000], fillerLeadMs: [0, 20_000], fillerRuns: [0, 200], durationMs: [0, 120_000],
   voicedFrac: [0, 1], pauseFrac: [0, 1], longestPauseMs: [0, 120_000], articulationWps: [0, 15], finalRelDb: [-60, 60],
   flatVoicedRuns: [0, 500],
+  // round 3: the thinking-pause cue's counters for this turn (src/voicesig/holdCue.ts): pauses it read, pauses it called
+  // a thinking pause. Numbers only; shadow telemetry (the trace's vs_hold.fired), never a knowledge-state input.
+  pausesRead: [0, 200], thinkPauses: [0, 200],
 });
 const MIC = new Set(["builtin", "wired", "bt", "speaker_route", "unknown"]);
 const LANG = new Set(["hi", "hinglish", "en", "unk"]);

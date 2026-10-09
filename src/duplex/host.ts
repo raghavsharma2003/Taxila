@@ -41,7 +41,7 @@ import { faceCue, phasePose, shippedFloor, type FaceCue } from "./face.ts";
 import { packFeatures } from "./features.ts";
 import { tokens, valuesOf } from "./numerals.ts";
 import { hasListeningToken, overlapKind } from "./turnPolicy.ts";
-import { OVERLAP, WT1_DEFAULT } from "./config.ts";
+import { OVERLAP, PREPARE, WT1_DEFAULT } from "./config.ts";
 
 export type HostCommand =
   | { to: "voice"; op: "speak"; t: Ms; reason: SpeakReason; firstSound: FirstSound; verdictNotBefore: Ms | null; text: string; textHash: string; uptake: string | null; turnSeq: number }
@@ -166,11 +166,15 @@ export class EngineHost {
   /** Hushes that ended as "nothing" (no words, a continuer-length burst): too many → hush off for the session (echo). */
   private hushUnconfirmed = 0;
   private hushOff = false;
+  /** Round 3: the current hush's burst sat within OVERLAP.echoNearDb of her echo (only those count toward the give-up). */
+  private hushNearEcho = false;
+  /** Round 3: the overlap onset whose quiet already sent a micro-commit probe (one per burst). */
+  private overlapProbedFor: Ms | null = null;
   /** The child's own speech level (dBFS, voiced frames while she is quiet): background speech well below it is not the child. */
   private childLevelPrior: number | null = null;
   private prevTurnStart: Ms = 0;
   private lastLog: string | null = null;
-  private lastPrepare: { draft: string; warm: string; hash: string } | null = null;
+  private lastPrepare: { draft: string; warm: string; hash: string; eager: string } | null = null;
   private lastPose: string | null = null;
   private safeguardSpoken = false;
   /** The uptake of the last SPEAK, until her reply starts (echo subtraction skips it). */
@@ -219,6 +223,14 @@ export class EngineHost {
     } else if (this.ducked && this.her.speaking && this.audio.voicing) {
       this.maybeHush(t);
     }
+    // round 3: a burst over her went quiet → commit the transcription buffer now, so its words (continuer or barge-in) arrive
+    // in ~0.3-0.6 s instead of the lane's first-text delay (OVERLAP.overlapProbe; live only, one probe per burst)
+    if (OVERLAP.overlapProbe && !this.flags.shadow && this.o.supportsCommit && this.her.speaking && this.overlapOnset !== null && !this.audio.voicing
+      && this.overlapProbedFor !== this.overlapOnset && (this.audio.silenceRunMs() ?? 0) >= PREPARE.probeSilenceMs) {
+      this.overlapProbedFor = this.overlapOnset;
+      this.fanin.commitSent(t);
+      this.o.emit({ to: "stt", op: "commit", t });
+    }
   }
 
   /** The hush: see `hushAt`. Only for a burst that is plausibly the child (not her echo, not quiet background speech). */
@@ -230,6 +242,7 @@ export class EngineHost {
     const o = this.overlapFeatures(t, true, this.fanin.view(t, (from) => this.audio.voicedAfter(from)));
     if (!o || o.echoLikelihood >= 0.5 || (o.targetSpeaker !== null && o.targetSpeaker < 0.5)) return;
     this.hushAt = t;
+    this.hushNearEcho = o.levelOverEchoDb === null || o.levelOverEchoDb < OVERLAP.echoNearDb;
     if (!this.flags.shadow) this.o.emit({ to: "voice", op: "duck", t, level: OVERLAP.hushLevel });
     this.o.emit({ to: "log", row: { t, cause: "voice_onset", phase: ph, action: "HUSH", proposed: "-", detail: null, reasons: ["short_burst"], pComplete: 0, pHoldWanted: 0, engine: this.engine.id.id, turnSeq: this.governor.turnSeq } });
   }
@@ -238,7 +251,13 @@ export class EngineHost {
   private unhush(nothing: boolean): void {
     if (this.hushAt === null) return;
     this.hushAt = null;
-    if (nothing && !this.fanin.view(this.t).text && ++this.hushUnconfirmed >= OVERLAP.hushGiveUp) this.hushOff = true;
+    // round 3: only an echo-like burst with no words is evidence that the hush is chasing her own voice; a burst the child's
+    // words confirmed resets the count (OVERLAP.hushGiveUpEchoOnly)
+    const empty = !this.fanin.view(this.t).text;
+    if (OVERLAP.hushGiveUpEchoOnly) {
+      if (!nothing || !empty) this.hushUnconfirmed = 0;
+      else if (this.hushNearEcho && ++this.hushUnconfirmed >= OVERLAP.hushGiveUp) this.hushOff = true;
+    } else if (nothing && empty && ++this.hushUnconfirmed >= OVERLAP.hushGiveUp) this.hushOff = true;
   }
 
   /** The child's speech level from earlier in the lesson (dBFS); the host also learns it from the child's own turns. */
@@ -505,6 +524,7 @@ export class EngineHost {
       words,
       lexicalKind: kind,
       herAskedYesNo: askedYesNo,
+      hushed: this.hushAt !== null,
     };
   }
 
@@ -617,11 +637,13 @@ export class EngineHost {
     // think track first: a warm-up / draft keyed on this tick's text must exist before the SPEAK that would promote it
     const p = d.prepare;
     if (p) {
-      const changed = !this.lastPrepare || this.lastPrepare.draft !== p.draft || this.lastPrepare.warm !== p.warmTts || this.lastPrepare.hash !== p.textHash;
-      if (changed && (p.draft !== "none" || p.warmTts !== "none")) {
+      // round 3: the eager end of turn (hint.eager) is part of the change key, so its start / cancel always reach the think track
+      const eager = p.eager ?? "none";
+      const changed = !this.lastPrepare || this.lastPrepare.draft !== p.draft || this.lastPrepare.warm !== p.warmTts || this.lastPrepare.hash !== p.textHash || this.lastPrepare.eager !== eager;
+      if (changed && (p.draft !== "none" || p.warmTts !== "none" || eager === "start" || eager === "cancel")) {
         this.o.emit({ to: "think", op: "prepare", t, hint: p, text: tr.text, uptake: tick.context.exchange === "closed_answer" ? uptakeOf(tr.text) : null });
       }
-      this.lastPrepare = { draft: p.draft, warm: p.warmTts, hash: p.textHash };
+      this.lastPrepare = { draft: p.draft, warm: p.warmTts, hash: p.textHash, eager };
       if (p.sttProbe && this.o.supportsCommit) {
         this.fanin.commitSent(t);
         this.o.emit({ to: "stt", op: "commit", t });

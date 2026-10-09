@@ -31,10 +31,10 @@ import type {
   SpeakReason,
 } from "./engine.ts";
 import {
-  BACKSTOP_HOLD_PH, BACKSTOP_HOLD_STRETCH, CONTEXT, CUT_IN, FALLBACK, HOLD, HORIZON_ACOUSTIC_P, HORIZON_MS, OVERLAP, RATE,
+  BACKSTOP_HOLD_PH, BACKSTOP_HOLD_STRETCH, CONTEXT, CUT_IN, FALLBACK, HOLD, HORIZON_ACOUSTIC_P, HORIZON_MS, OVERLAP, PAUSE_WAIT, RATE,
   REVOCABLE_MS, SAFETY, VERDICT, ACOUSTIC_FRESH_MS, FIRST_TEXT_P90, TURN_PACE,
 } from "./config.ts";
-import { exchangeOf, holdProfile, verdictAnchor } from "./engineRules.ts";
+import { exchangeOf, holdProfile, pauseClass, verdictAnchor } from "./engineRules.ts";
 import { overlapKind } from "./turnPolicy.ts";
 
 export type GovernorEvent =
@@ -107,6 +107,9 @@ export class Governor {
   private yielded: { at: Ms; resumable: boolean; onsetAt: Ms } | null = null;
   private overlapOnsetAt: Ms | null = null;
   private pendingRevoke = false;
+  /** Round 3 (OVERLAP.armedRevoke): a child onset over her reply inside the revoke window; the overlap classifier decides. */
+  private armedRevoke = false;
+  private armedAt: Ms = 0;
   private pendingSafeguardDefer = false;
   private pose: string | null = null;
   private quarantined = false;
@@ -155,6 +158,7 @@ export class Governor {
         if (this.spoke) this.spoke.verdictPlayed = true;
         break;
       case "her_end": {
+        this.armedRevoke = false;
         const wasSafeguard = !!this.spoke?.safeguard;
         this.spoke = null;
         this.yielded = null;
@@ -185,7 +189,12 @@ export class Governor {
         // first sound): defer it to the next pause instead of talking over them
         if ((this.phase === "committed" || this.phase === "her_turn") && this.spoke?.safeguard) this.pendingSafeguardDefer = true;
         else if (this.phase === "committed") this.pendingRevoke = true;
-        else if (this.phase === "her_turn" && this.spoke && !this.spoke.safeguard && this.revocable(o.at)) this.pendingRevoke = true;
+        else if (this.phase === "her_turn" && this.spoke && !this.spoke.safeguard && this.revocable(o.at)) {
+          // round 3: arm, do not fire: the hush meets the child at once and the overlap classifier decides (a continuer disarms)
+          // (a pending VERDICT still revokes at once: a verdict on a value the child is correcting must never play, even hushed)
+          if (OVERLAP.armedRevoke && this.spoke.verdictNotBefore === null) { this.armedRevoke = true; this.armedAt = o.at; this.overlapOnsetAt = o.at; this.go("overlap", o.t); }
+          else this.pendingRevoke = true;
+        }
         else if (this.phase === "her_turn") { this.overlapOnsetAt = o.at; this.go("overlap", o.t); }
         // ship5 fixer (experience B3/B4): after a granted hold the child's next words are a NEW turn: the hold phrase ("ruko
         // ruko didi ek second") was floor control, and folding it in sent "ruko ruko didi ek second aur batao na" as one turn
@@ -423,6 +432,10 @@ export class Governor {
   /** The context's silence backstop (G10), stretched while the child plainly holds the floor. */
   private backstopMs(tick: EngineTick): number {
     const ex = exchangeOf(tick);
+    // round 3 (duplex): in the free, question-to-her and chit-chat exchanges the word-aware wait IS the backstop (one clock,
+    // never undercut: before, the free 1,000 ms backstop beat the 1,100 ms turn-end wait on 303/400 real turns and a hold
+    // shape bought nothing), floored by the child's own within-turn pace
+    if (ex === "free" || ex === "question_to_her" || ex === "chit_chat") return Math.max(PAUSE_WAIT[pauseClass(tick)], this.paceMs());
     const { p50, p90 } = holdProfile(tick);
     const base = CONTEXT[ex].backstopMs(p50, p90, tick.markers.values.length > 0);
     const b = base * (this.stretch(tick) ? BACKSTOP_HOLD_STRETCH : 1);
@@ -469,6 +482,23 @@ export class Governor {
   private finish(tick: EngineTick, d: EngineDecision): EngineDecision {
     const t = tick.t;
     this.lastGovernedPH = d.pHoldWanted;
+    // round 3: an ARMED revoke resolves with the overlap: a yield (barge-in, a turn's words, a sustained burst) on her reply
+    // inside the revoke window is the child going on with the turn just committed → revoke; a decided continuer disarms
+    if (this.armedRevoke) {
+      if (d.action === "YIELD" && d.detail?.action === "YIELD" && d.detail.reason !== "safety" && d.detail.reason !== "revoke" && this.spoke && !this.spoke.safeguard) {
+        this.armedRevoke = false;
+        d = { ...d, detail: { action: "YIELD", reason: "revoke", atWordBoundary: true, resumable: false }, reasons: ["repaired", ...d.reasons.filter((r) => r !== "repaired")] };
+        this.events.push({ kind: "revoke", at: t });
+        this.spoke = null;
+        this.overlapOnsetAt = null;
+        this.go("child_turn", t);
+        return d;
+      }
+      // only the WORDS disarm (a lexical continuer, or her echo): an acoustic continuer read is revised by the words that follow
+      if (d.action === "KEEP_TALKING" && d.detail?.action === "KEEP_TALKING" && (d.detail.reason === "echo" || (d.detail.reason === "continuer" && !!tick.overlap?.lexicalKind))) this.armedRevoke = false;
+      // an arming burst that never resolved: past the window (+ the hushed sustain) a later burst is an ordinary overlap
+      if (!HER_FLOOR.has(this.phase) || t - this.armedAt > REVOCABLE_MS + OVERLAP.hushedSustainMs) this.armedRevoke = false;
+    }
     const det = d.detail;
     if (d.action === "SPEAK" || d.action === "CUT_IN") {
       const safeguard = (det?.action === "SPEAK" && det.reason === "safeguard") || (det?.action === "CUT_IN" && det.reason === "safety");

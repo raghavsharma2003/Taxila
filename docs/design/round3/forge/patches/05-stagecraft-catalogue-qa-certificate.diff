@@ -1,0 +1,41 @@
+--- a/server/stagecraft/catalogue.js
++++ b/server/stagecraft/catalogue.js
+@@ -13,7 +13,9 @@
+ //   - the blind cross-check's verdict is "pass" (an unchecked or failed entry is reported, never shown);
+ //   - every child-visible string passes the local SEVERE and PII predicates (forge/g2/safety.js; the MILD list is not
+ //     applied: "blood", "die", "kill" are curriculum words in kit content, and the blind check reads suitability);
+-//   - every whiteboard beat passes the strict script shape and the stage lint (shared/whiteboard.js).
++//   - every whiteboard beat passes the strict script shape and the stage lint (shared/whiteboard.js);
++//   - (round 3 forge) the game and the explainer passed the visual QA at one judged size at least
++//     (server/forge3/certs/catalogue.json from server/forge3/certify.js; never judged = allowed and the device decides).
+ //
+ // Pure reads, once per process (cached); no model call, no network, no child data. The lesson uses an entry through the
+ // Stagecraft instant rung (builders.js engineDefault): correct-by-construction, ≈ 0 ms, graded by the host (gradeAny).
+@@ -22,6 +24,10 @@
+ import { ENGINE_SPECS_EXT, validateAny, SAFETY_EXCLUDED, TOPIC_RE_EXT } from "../../shared/studio-spec-ext/index.ts";
+ import { normalizeScript, lintScript } from "../../shared/whiteboard.js";
+ import { SEVERE, PII } from "../forge/g2/safety.js";
++import { servable } from "../forge3/certify.js";
++
++/** round 3 forge: a piece the visual QA found broken at EVERY judged size is not served (FORGE3_QA_CERTS=0: ignore). */
++const qaServable = (topicId, piece) => process.env.FORGE3_QA_CERTS === "0" || servable(topicId, piece);
+ 
+ const DIR = new URL("../../data/studio-catalogue/topics/", import.meta.url);
+ const KITS = new URL("../../data/kits/", import.meta.url);
+@@ -114,12 +120,14 @@
+   if (rec?.game?.archetype) {
+     const g = checkSpec(rec.game.archetype, rec.game.spec, kit);
+     e.status.game = !g.ok ? g.why : checked ? "ok" : "unchecked";
+-    if (g.ok && checked) e.game = { archetype: rec.game.archetype, kind: kindOf(rec.game.archetype), title: titleOf(rec.game.archetype), spec: g.spec };
++    if (g.ok && checked && !qaServable(topicId, "game")) e.status.game = "qa_broken";
++    else if (g.ok && checked) e.game = { archetype: rec.game.archetype, kind: kindOf(rec.game.archetype), title: titleOf(rec.game.archetype), spec: g.spec };
+   }
+   if (rec?.explainer?.spec) {
+     const x = checkSpec(EXPLAINER, rec.explainer.spec, kit);
+     e.status.explainer = !x.ok ? x.why : checked ? "ok" : "unchecked";
+-    if (x.ok && checked) e.explainer = { archetype: EXPLAINER, kind: "animation", title: titleOf(EXPLAINER), spec: x.spec, seconds: rec.explainer.seconds ?? null };
++    if (x.ok && checked && !qaServable(topicId, "explainer")) e.status.explainer = "qa_broken";
++    else if (x.ok && checked) e.explainer = { archetype: EXPLAINER, kind: "animation", title: titleOf(EXPLAINER), spec: x.spec, seconds: rec.explainer.seconds ?? null };
+   }
+   const beats = Array.isArray(rec?.whiteboard?.beats) ? rec.whiteboard.beats : [];
+   e.status.boardsTotal = beats.length;

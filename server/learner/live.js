@@ -65,8 +65,14 @@ export function commitLive(child, prevMaxSeq, state, seqs, { cache = CACHE } = {
 
 // ───────────── the seam: Director evidence → EvidenceEvents ─────────────
 
-/** Classifier sources that are code decisions (a verified key, a tap, a module's own verdict); a model label is "llm". */
-const CODE_SOURCES = new Set(["exact", "chip", "module", "forge_g1", "lexical", "empty", "predicate", "asr", "branch", "test"]);
+/**
+ * Classifier sources that are code decisions (a verified key, a tap, a module's own verdict); a model label is "llm".
+ * round3 truth: "number" / "number_selfcorrect" are classifyFast's by-value verdicts against the verified key (V1.1: a
+ * number key is graded by value in code). They were missing, so every number answer was folded with the model's 0.7
+ * confusion (outcomes.js), dropped from θ (ability.js "not_code") and shown to the parent as "AI-checked against the book's
+ * key idea" (report/howweknow.js) although no model read it. Stored rows keep the grader they were written with.
+ */
+const CODE_SOURCES = new Set(["exact", "chip", "module", "forge_g1", "lexical", "empty", "predicate", "asr", "branch", "test", "number", "number_selfcorrect"]);
 export const graderOf = (cls) => (cls && !CODE_SOURCES.has(cls.source) ? "llm" : "code");
 /** Classifier / evidence sources that mean "a module graded it" (source weight ×0.75 until the agreement gate). */
 const MODULE_SOURCES = new Set(["module", "forge_g1"]);

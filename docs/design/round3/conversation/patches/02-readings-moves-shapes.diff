@@ -1,0 +1,342 @@
+diff --git a/server/conversation/lexicon.js b/server/conversation/lexicon.js
+index 85a0080..a4fbbdc 100644
+--- a/server/conversation/lexicon.js
++++ b/server/conversation/lexicon.js
+@@ -30,6 +30,8 @@
+ //   adult        "hi this is his father…", "main iski mummy hoon…"            → answer the grown-up briefly, hand back
+ //   thinking     also an unfinished non-numeric thought ending on a connective ("hmm so it can't be that because wait")
+ 
++import { p5Flag } from "./flags.js";
++
+ const T = (s) => String(s ?? "").toLowerCase().normalize("NFKC").replace(/[’`]/g, "'").replace(/\s+/g, " ").trim();
+ const words = (t) => t.split(/\s+/).filter(Boolean).length;
+ 
+@@ -72,6 +74,42 @@ export function fragmentLike(t) {
+   return (stutter || filler) && content && DANGLING.test(w.at(-1));
+ }
+ 
++/** Round 3: the whole turn is "I'm back" in the forms the battery's break follow-ups use ("aa gaya, chalo", "back, let's go",
++ *  "आ गया"): the welcome-back move, never a re-pose with a generic "no problem" lead (smoke on the round-3 tree). */
++const BACK_WHOLE = /^(?:(?:ok|okay|haan|ha|achha|accha|didi)[\s,]+)?(?:aa\s*(?:gaya|gayi|gya|gyi)|आ\s*गय[ाी]|(?:i'?m\s+)?back)(?:[\s,!.]+(?:chalo|chaliye|let'?s\s+go|lets\s+go|ready|didi|now|हूँ|चलो))*[\s!.]*$/i;
++/** Round 3: words that ask HER to do something (show, draw, explain, tell): a turn with one is a request, not a mid-thought. */
++const ASKS_HER = /\b(?:dikhao|dikhaiye|dikha\s+do|dikha\s+dijiye|samjhao|samjhaiye|banao|banaiye|sunao|sunaiye|batao|bataiye|draw|show|explain|tell)\b/i;
++/** Round 3: an easier ask in the forms the battery's two-needs lines use ("kya thoda easy kar sakte ho?", "aasan karo"). */
++const EASIER_TOO = /\b(?:(?:thoda|zara|bit)\s+)?(?:easy|aasan|asaan|simple)\s+(?:kar|karo|karke|kijiye|bana|banao)\b|\bmake\s+it\s+(?:easier|simpler)\b/i;
++const SLOWER_TOO = /\b(?:slowly|slower|dheere|dheere\s+dheere|aaram\s+se)\b/i;
++const TIRED_TOO = /\b(?:thak\s+(?:gaya|gayi|gaye)|thaka\s+hua|tired|thakaan)\b/i;
++/**
++ * Round 3 (conversation; battery multi_intent "two needs in one breath", 0-1 of 8 in round 2): the SECOND need of a turn whose
++ * first need the Director acts on, read in code from the turn's own clauses ("boring hai, game khelein?", "slowly and in
++ * hindi please", "thak gaya hoon, kya thoda easy kar sakte ho?"). Only the needs a move can honour in its words: going
++ * slower, an easier step, empathy for boredom or for finding it hard, saying it more simply. PURE. → up to two types, or null.
++ */
++export function alsoReading(text, primary = null) {
++  const t = T(text);
++  if (!t || words(t) > 16 || /\d/.test(t)) return null;
++  const clauses = t.split(/\s*(?:[,;?!]|\band\b|\baur\b|\balso\b|\bphir\b|\bbut\b|\blekin\b|\bpar\b)\s*/).filter((c) => c && words(c) >= 1);
++  const found = new Set();
++  for (const c of clauses.length > 1 ? clauses : []) {
++    const r = readIntent(c)?.type;
++    if (r) found.add(r === "confused" || r === "clarify" ? "simpler" : r);
++  }
++  if (SLOWER_TOO.test(t)) found.add("slower");
++  if (EASIER.test(t) || EASIER_TOO.test(t)) found.add("easier");
++  if (TIRED_TOO.test(t)) found.add("frustration");
++  const p = primary === "confused" || primary === "clarify" || primary === "another" ? "simpler" : primary;
++  const out = ["frustration", "boredom", "easier", "slower", "simpler"].filter((x) => found.has(x) && x !== p).slice(0, 2);
++  return out.length ? out : null;
++}
++/** Round 3: a question to HER about what she does ("PUBG khelte ho?", "Free Fire khelte ho?", "tumne woh movie dekhi?"):
++ *  small talk she answers honestly now (owner-2 OFFTOPIC "PUBG khelte ho?"; R7.defer: deferring it is ignoring it, F11). */
++const SMALL_TALK_DO = /^(?:(?:aap|tum|tu)\s+)?[\p{L} ]{1,24}?\s+(?:khelte|khelti|dekhte|dekhti|sunte|sunti|khaate|khate|khaati|padhte|padhti)\s+(?:ho|h)\s*\?+$|^aap\s+[\p{L} ]{1,24}?\s+(?:khelte|khelti|dekhte|dekhti|sunte|sunti|khaate|khate|padhte|padhti)\s+(?:hain|hai)\s*\?+$|^(?:aapne|tumne)\s+[\p{L} ]{1,24}?\s+(?:dekhi|dekha|khela|khele|suna|suni|padhi|padha)\s*\?+$|^do\s+you\s+(?:play|watch|like\s+playing)\s+[\p{L} ]{1,24}\?+$/iu;
++/** Giving up on the work said beside a confusion ("…, chhodo", "…, i give up on this question", "rehne do"). */
++const GIVE_UP = /(?:^|[\s,.!])(?:chhodo|chhod\s+do|chodo|chod\s+do|rehne\s+do|rahne\s+do|jane\s+do|jaane\s+do|forget\s+it|i\s+quit|give\s+up|gave\s+up)(?:$|[\s,.!?])|छोड़ो|रहने\s+दो/i;
+ /** Words of an attempt (a number), or more words than a request carries: never read as one of these. */
+ const attemptLike = (t) => /\d/.test(t);
+ 
+@@ -97,14 +135,18 @@ export function readIntent(text) {
+   // or finish it) serves a child who was also thinking
+   if (fragmentLike(t)) return hit("unclear");
+   if (BREAK.test(t)) return hit("break");
+-  if (BACK.test(t)) return hit("back");
+-  if (CONFUSED.test(t)) return hit("confused");
++  if (BACK.test(t) || (p5Flag("R3CONV") && BACK_WHOLE.test(t))) return hit("back");
++  // round 3 (conversation; battery frustration "kuch samajh nahi aa raha, chhodo", "this is too confusing, i give up on this
++  // question" read as confused → another way, and the judges failed empathy and the smaller step): not following it AND
++  // giving up on it is frustration (the empathy line, then a smaller first step), never only a new explanation
++  if (CONFUSED.test(t)) return hit(p5Flag("R3CONV") && (FRUSTRATION.test(t) || GIVE_UP.test(t)) ? "frustration" : "confused");
+   if (CLARIFY.test(t)) return hit("clarify");
+   if (THINKING.test(t) && !GO_ON.test(t)) return hit("thinking");
+   // an unfinished thought: four or more words, no number, ending on a connective or a trailing "…"/"wait" (never a question)
+   if (n >= 4 && !/[?？]/.test(t) && THINK_TRAIL.test(t) && !GO_ON.test(t)) return hit("thinking");
+   // ... or a turn that opens on a hold marker and goes on reasoning ("रुको, सोच रहा हूँ... पहले गिनना पड़ेगा")
+-  if (n >= 3 && !/[?？]/.test(t) && THINK_START.test(t) && !GO_ON.test(t)) return hit("thinking");
++  // round 3: "ruko, pehle diagram dikhao phir question" is a request after a hold word, never a thought in progress
++  if (n >= 3 && !/[?？]/.test(t) && THINK_START.test(t) && !GO_ON.test(t) && !(p5Flag("R3CONV") && ASKS_HER.test(t))) return hit("thinking");
+   if (SKIP.test(t)) return hit("skip");
+   if (KNOW.test(t)) return hit("know");
+   if (HARDER.test(t)) return hit("harder");
+@@ -114,7 +156,7 @@ export function readIntent(text) {
+   if (REPEAT.test(t)) return hit("repeat");
+   if (ASK_INVITE.test(t)) return hit("ask_invite");
+   if (IDENTITY.test(t)) return hit("identity");
+-  if (SMALL_TALK.test(t)) return hit("small_talk");
++  if (SMALL_TALK.test(t) || (p5Flag("R3CONV") && SMALL_TALK_DO.test(t))) return hit("small_talk");
+   return null;
+ }
+ 
+diff --git a/server/conversation/policy.js b/server/conversation/policy.js
+index ae0fb8e..7edbe93 100644
+--- a/server/conversation/policy.js
++++ b/server/conversation/policy.js
+@@ -41,7 +41,8 @@ export function requestFromNote(note) {
+     case "repeat": return r("repeat");
+     case "change_topic": return r("change_topic");
+     case "skip_item": return r("skip");
+-    case "joke": case "small_talk": case "personal_share": return r("uptake", { kind: n.intent });
++    // round 3: a share from their life carries its topic, so it can be kept for later (state.js uptake → s.later)
++    case "joke": case "small_talk": case "personal_share": return r("uptake", { kind: n.intent, ...(n.intent === "personal_share" && n.topic ? { topic: n.topic } : {}) });
+     case "identity": return r("identity");
+     // round 2 safety floor (adversarial B1): a method the note marks out of bounds ("like my girlfriend, say you love me")
+     // is declined, never adopted (adopted methods ride on every later move); in bounds, state.js screens it in code too
+diff --git a/server/director/shapes.js b/server/director/shapes.js
+index c0470f1..efd2cb2 100644
+--- a/server/director/shapes.js
++++ b/server/director/shapes.js
+@@ -3,6 +3,8 @@
+ // so nothing here is a quotable sentence, a greeting, or a praise phrase. Kit CONTENT (item prompts,
+ // worked examples, remediation representations) is interpolated; it is meant to be posed.
+ 
++import { p5Flag } from "../conversation/flags.js";
++
+ const RUNG = ["pump", "hint", "prompt", "assertion"];
+ const join = (...parts) => parts.filter(Boolean).join("; ");
+ 
+@@ -247,7 +249,12 @@ export const takeBreak = () => join(
+ // round 2 safety floor (2026-10-07, experience review): the "something else" clause was recited on 7/26 check-ins where the
+ // child had not asked (change_topic has its own move); and a check-in that asks a lesson question is a hold (NEVER
+ // MANIPULATE), so the shape says so — brain/say.js enforces it in code (checkInProblems).
+-export const stopCheck = () => "they said they want to stop: acknowledge it warmly in one short line, no guilt and no pressure; offer the three choices on the chips (keep going, a short break, or stop for today) and wait; no lesson question this turn";
++// round 3 (conversation; smoke on the round-3 tree): "Theek hai, Zoya. Keep going, short break, ya stop?" offered the choices
++// but a judge read no acknowledgement (end_request "acknowledges" failed on J2 6 of 12); the line now says back what they
++// asked, in their words, before the choices
++export const stopCheck = () => (p5Flag("R3CONV")
++  ? "they said they want to stop: first say back in a few warm words, in their words, that they want to stop, no guilt and no pressure; then offer the three choices on the chips (keep going, a short break, or stop for today) and wait; no lesson question this turn"
++  : "they said they want to stop: acknowledge it warmly in one short line, no guilt and no pressure; offer the three choices on the chips (keep going, a short break, or stop for today) and wait; no lesson question this turn");
+ /** A goodbye right after distress (RELATIONAL-OS I-7): one gentle check before they go; never a hold. */
+ export const relCheckIn = () => "they are leaving after something hard: one gentle check that they are okay and that a grown-up is near; stopping is fine; the chips let them stop now";
+ export const stretch = () => "a 30-second stretch: stand, stretch, say ready when back";
+@@ -287,7 +294,13 @@ export const wrap = ({ prefix, nextTitle, stopping }) => stopping
+  * answer). The correct case needs none: CONFIRM / retrievalNext already confirm it.
+  */
+ export const VERDICT_NOTE = {
+-  not_yet: "their answer was not right: no agreement or praise word for it; name what is sensible in it, then the step",
++  // round 3 (conversation): "name what is sensible in it" was recited as the word itself ("B chunna sensible tha", "Minecraft
++  // ka bada ghar alag baat hai; aapne usse yaad dilaya, sensible": 5 of 599 battery replies, round 2 run C) — the
++  // recited-prompt law. Now a shape with no quotable adjective: start from what they did (uptake), then the step.
++  get not_yet() {
++    return p5Flag("R3CONV") ? "their answer was not right: no agreement or praise word for it; start from what they actually did, in their terms, then the step"
++      : "their answer was not right: no agreement or praise word for it; name what is sensible in it, then the step";
++  },
+   partial: "their answer was partly right: name the right part, no full agreement",
+   unverified: "no verdict on their reply: neither praise nor 'wrong'",
+ };
+@@ -324,7 +337,8 @@ export const welcomeBack = () => "they are back after a moment away: welcome the
+ export const levelHarder = () => "they asked for a harder one: take them at their word, a short warm line; the harder question";
+ export const levelEasier = () => "they asked for an easier one: a short warm line, no fuss; the easier question";
+ export const boredOffer = () => join(
+-  "they are bored: no guilt; change something NOW",
++  // round 3: say back what they said (it is boring) before the change: "acknowledges" failed on J2 for "game, picture or challenge?"
++  p5Flag("R3CONV") ? "they are bored: first say back in a few words, in their words, that this part is boring for them, no guilt; then change something NOW" : "they are bored: no guilt; change something NOW",
+   "offer a different way into today's idea: a game, a picture or a quick challenge, shown on screen as choices; ask which",
+   "no lesson question this turn",
+ );
+@@ -336,17 +350,38 @@ export const disclose = () => "they asked what you are: plainly an AI teacher, i
+ export const uptake = ({ kind }) => (kind === "joke" ? "they joked: one playful line back of your own, not a stock laugh; then back to the work"
+   : kind === "personal_share" ? "they shared something from their life: name what they shared in their words and react to it warmly and specifically in one line, no question about it; then back to the work"
+     : "a friendly question about you: one honest line as an AI (no body, home, food or favourite things of your own); then back to the work");
+-export const declineOob = () => join(
++// round 3 (conversation): the battery's out_of_bounds "reengages" failed on 8 of 12 (round 2 run C): the decline came, the
++// hook did not, and a "why not" line read as a lecture ("kisi ko hurt karna theek nahi"). Chirpy Cardinal (Alexa Prize,
++// Chi et al. 2020) measured the re-offence rate per strategy: avoid + the child's name + a prompt into something new 0.346,
++// empathetic 0.461, a counter-argument 0.567, asking why 0.638. So: no reason given, their name, and the hook carries it.
++export const declineOob = () => (p5Flag("R3CONV") ? join(
++  "that is not something for our lesson: a warm, short no in a few words, with their name — no reason why, no shame, no lecture, no promise of it later, never any part of it",
++  "then a hook into today's work: one surprising true fact about today's idea, or a few words that make the question a small challenge for them (a statement, not a question)",
++) : join(
+   "that is not something for our lesson: a clear, warm, short no — no shame, no lecture, no promise of it later, never any part of it",
+   "then one genuinely interesting hook from today's idea (a surprising fact or a quick challenge) that pulls them back, and the work",
+-);
++));
++// round 3 (conversation): "kindly name that it is a different thing from today's work" came back as the same sentence in
++// every park ("Yeh aaj ke maths se alag baat hai", local battery base-head-1, 4 of 4 parks): the recited-prompt law. The
++// park itself (the promise) says it is for later; the clause is gone.
+ export const parkIt = ({ topic, promise }) => join(
+-  `they brought up ${clean(topic) || "something else"}: notice it warmly in their words, and kindly name that it is a different thing from today's work`,
++  p5Flag("R3CONV") ? `they brought up ${clean(topic) || "something else"}: notice it warmly and specifically, in their words`
++    : `they brought up ${clean(topic) || "something else"}: notice it warmly in their words, and kindly name that it is a different thing from today's work`,
+   promise === "after_question" ? "promise to come back to it right after this question" : "promise to come back to it at the end",
+   "no answer to it now; then back to the work",
+ );
+ export const detourTo = ({ topic }) => `they asked again about ${clean(topic) || "it"}: engage for real in at most two sentences, then back to the work`;
+-export const returnParked = ({ topic }) => `before the next thing: come back to what they asked earlier (${clean(topic) || "their question"}) — at most two sentences, or a guided question`;
++export const returnParked = ({ topic, share = false }) => (share
++  // round 3: a share from their life kept for later (uptakeShare) comes back as what they TOLD you, not a question to answer
++  ? `before the next thing: come back to what they told you earlier (${clean(topic) || "it"}) in one warm line, no question about it`
++  : `before the next thing: come back to what they asked earlier (${clean(topic) || "their question"}) — at most two sentences, or a guided question`);
++/** Round 3: a share from their life ("mere paas naya cycle aaya hai") noticed now AND kept: the promise is a real later slot
++ *  (s.later, served when the question resolves or before the wrap), so it is never a promise she does not keep. */
++export const uptakeShare = ({ topic, promise }) => join(
++  `they shared something from their life (${clean(topic) || "it"}): react to it warmly and specifically in one line, in their words, never naming a feeling of theirs`,
++  promise === "after_question" ? "say you will come back to it right after this question" : "say you will come back to it before the lesson ends",
++  "no question about it now; then back to the work",
++);
+ export const answerTheirQuestion = () => "they asked a real question about today's idea: answer it in at most two sentences, correctly and simply, without giving the key; then the question";
+ export const adaptTo = ({ method }) => `they said how they want it${clean(method, 80) ? ` (${clean(method, 80)})` : ""}: do it that way from now on, or say kindly why not and do the nearest thing`;
+ export const adultVoice = () => "a grown-up is speaking: greet them briefly and respectfully; say what you will do about what they asked (go over it again, go slower, more practice, keep it short) and do it now; then hand back to the child by name";
+@@ -368,7 +403,18 @@ export const MOD_NOTE = {
+   check: "they asked whether it is right: say plainly whether it is",
+   insist: "they hold to their answer: take it seriously and give them a way to test it (substitute, count, a counter-example); never a flat no again",
+ };
++/** Round 3: the second need of a two-needs turn (conversation/lexicon.js alsoReading), honoured in the same turn's words. */
++export const ALSO_NOTE = {
++  frustration: "they also find it hard or are tired: one short line of empathy about the work first (never about them)",
++  boredom: "they also said it is boring: acknowledge it in a few words, no guilt",
++  easier: "they also asked for it easier: make the step smaller and simpler",
++  slower: "they also asked you to go slower: short simple sentences, one small step",
++  simpler: "they also did not follow: say it more simply",
++};
+ export const parkAlso = ({ topic }) => `they also asked about ${clean(topic) || "something else"}: one line that you will come back to it after this`;
++/** Round 3: the turn after a stop check-in that was not a stop ("haan", an answer): the lesson simply goes on. Local
++ *  battery base-head-1: "yes" after the check-in got "Lesson ended, Meher. You may close the book now. <a question>". */
++export const afterCheckin = () => "after the check-in they did not ask to stop: carry on as normal, warmly; no talk of resting, breaks or ending";
+ 
+ // ── p5-interaction, second pass (conversation-v2 battery on a local server, 2026-10-05: the judges failed requests whose shape
+ // came FIRST and the pose after it — the model posed the question and dropped the request). The request is the first part of
+@@ -399,4 +445,10 @@ export const languageAskedP5 = ({ lang }) => join(
+   "first say what the question asks, simply, in it; then the question in it",
+ );
+ /** Frustration on a question: the empathy line FIRST (about the work), then the smaller step. */
+-export const frustrationFirst = () => "first: one short line that this one is hard work and that is okay (about the work, never about them, no ability words); then a smaller first step on the same question";
++// round 3 (conversation): "one short line that this one is hard work and that is okay" was said back word for word ("is
++// question mein hard work hai, aur yeh okay hai", base-head-1): the recited-prompt law. A shape: what the line does.
++/** Round 3: frustration with no question on the table (teaching): the empathy line first, then the SAME idea smaller. */
++export const frustrationTeach = () => "first, in your own words, a short line of empathy about how tough this part is and that getting stuck on it is normal (about the work, never about them, no ability words); then the same idea again in a smaller, simpler step";
++export const frustrationFirst = () => (p5Flag("R3CONV")
++  ? "first, in your own words, a short line of empathy about how tough THIS question is and that getting stuck on it is normal (about the work, never about them, no ability words); then a smaller first step on the same question"
++  : "first: one short line that this one is hard work and that is okay (about the work, never about them, no ability words); then a smaller first step on the same question");
+diff --git a/server/director/state.js b/server/director/state.js
+index f912980..ea4df35 100644
+--- a/server/director/state.js
++++ b/server/director/state.js
+@@ -39,6 +39,7 @@ import { directorProposal } from "./proposal.js";
+ import { p5Flag } from "../conversation/flags.js";
+ import { unsafeChildPhrase } from "../conversation/screen.js";
+ import { parkEntry, pushLater, recentParked, dueParked, serveLater } from "../conversation/policy.js";
++import { alsoReading } from "../conversation/lexicon.js";
+ 
+ /**
+  * Probe shapes the live lane can pose AND grade today: the why-class shapes (probe.why, R-EXP against the kit's key
+@@ -372,9 +373,11 @@ function leavePractice(s, kit) {
+ function poseNext(s, input, prefix, preferred) {
+   const { kit } = input;
+   // CONVERSATION-V2 §5: a question parked "after this question" comes back now that the item on the table resolved
+-  if (p5Flag("STEER") && s.later?.length && s.activeItemId) {
++  // round 3 (conversation; tests/prod/round3-conversation C): after a right answer the why-probe path reaches here with no
++  // active item, so "right after this question" was kept only at the wrap; the question that just resolved is the last move's
++  if (p5Flag("STEER") && s.later?.length && (s.activeItemId || (p5Flag("R3CONV") && s.lastMove?.itemId))) {
+     const due = dueParked(s.later, "item_resolved");
+-    if (due) { s.later = serveLater(s.later, due.id, s.turn); prefix = join(prefix, SH.returnParked({ topic: due.topic })); }
++    if (due) { s.later = serveLater(s.later, due.id, s.turn); prefix = join(prefix, SH.returnParked({ topic: due.topic, share: !!due.share })); }
+   }
+   s.activeItemId = undefined; s.hintLevel = 0; s.pendingWhy = undefined;
+   if (leavePractice(s, kit)) return s.practiceSet ? practiceDone(s, prefix) : enterTeachback(s, prefix);
+@@ -857,7 +860,8 @@ function p5RequestMove(s, input, item, req, labels) {
+     }
+     case "boredom": return plan("repair", SH.boredOffer(), { chips: waysChips(labels), request: "boredom" });
+     case "frustration": {
+-      if (!item) return teachAgainPlan(s, kit, "another");
++      // round 3: no question on the table: the re-explanation still opens with the empathy line (it had none)
++      if (!item) { const t = teachAgainPlan(s, kit, "another"); return p5Flag("R3CONV") ? { ...t, shape: join(SH.frustrationTeach(), t.shape), request: "frustration" } : t; }
+       const p = decideAs(s, input, item, "stuck");
+       return { ...p, shape: join(SH.frustrationFirst(), p.shape), request: "frustration" };
+     }
+@@ -868,7 +872,18 @@ function p5RequestMove(s, input, item, req, labels) {
+     case "hold_checkin": return plan("repair", SH.holdCheckin(), { request: "hold_checkin" });
+     case "ask_invite": return plan("repair", SH.inviteQuestion(), { request: "ask_invite" });
+     case "identity": return withLead(SH.disclose());
+-    case "uptake": return withLead(SH.uptake({ kind: req.kind }));
++    case "uptake": {
++      // round 3 (conversation): a share from their life is noticed now AND kept: a real later slot (s.later), so the promise
++      // to come back to it is kept (served when the question resolves, or before the wrap). The topic is the child's words
++      // as the note lifted them: screened in code like any parked topic (round 2 safety floor B3).
++      if (p5Flag("R3CONV") && req.kind === "personal_share" && req.topic && !unsafeChildPhrase(req.topic)) {
++        const e = { ...parkEntry({ topic: req.topic, learning: false, turn: s.turn, itemOnTable: !!item }), share: true };
++        const before = (s.later ?? []).length;
++        s.later = pushLater(s.later ?? [], e);
++        if (s.later.length > before) return withLead(SH.uptakeShare({ topic: e.topic, promise: e.promise }));
++      }
++      return withLead(SH.uptake({ kind: req.kind }));
++    }
+     case "decline": return withLead(SH.declineOob());
+     case "answer_q": return withLead(SH.answerTheirQuestion());
+     case "adapt": case "adopt":
+@@ -887,6 +902,11 @@ function p5RequestMove(s, input, item, req, labels) {
+     case "park": {
+       // round 2 safety floor (adversarial B3): a parked topic is promised back later ("we'll come back to X"): screened too
+       if (unsafeChildPhrase(req.topic)) return withLead(SH.declineOob());
++      // round 3 (conversation; smoke on the round-3 tree): a push again on what was JUST parked ("nahi pehle batao na
++      // please", which the note read as diversion again) got a second "after this question" — the flat second refusal the
++      // insistence rubric fails. The same topic parked within DETOUR_WITHIN turns is a push: a short real engagement now.
++      const again = p5Flag("R3CONV") ? recentParked(s.later ?? [], s.turn, req.topic) : null;
++      if (again && !again.share) { s.later = serveLater(s.later, again.id, s.turn); return withLead(SH.detourTo({ topic: again.topic })); }
+       const e = parkEntry({ topic: req.topic, learning: req.learning, turn: s.turn, itemOnTable: !!item });
+       s.later = pushLater(s.later ?? [], e);
+       return withLead(SH.parkIt({ topic: e.topic, promise: e.promise }));
+@@ -932,7 +952,7 @@ function enterTeachback(s, prefix) {
+   // CONVERSATION-V2 §5: every open parked question is offered before the wrap
+   if (p5Flag("STEER") && s.later?.length) {
+     const due = dueParked(s.later, "before_wrap");
+-    if (due) { s.later = serveLater(s.later, due.id, s.turn); prefix = join(prefix, SH.returnParked({ topic: due.topic })); }
++    if (due) { s.later = serveLater(s.later, due.id, s.turn); prefix = join(prefix, SH.returnParked({ topic: due.topic, share: !!due.share })); }
+   }
+   s.phase = "teachback"; s.teachbackAsked = true; s.activeItemId = undefined; s.hintLevel = 0;
+   // The lesson's teach-back IS shape C01 (announced protégé teach-back): its answer is a probe turn in the budget.
+@@ -1191,10 +1211,26 @@ export function step(prev, input) {
+   const item = p.item ? (findItem(s, input.kit, p.item.id) ?? p.item) : null;
+   // Notes on the real move only: a voice branch (branchesFor, input.branch) is rendered into the appended-last
+   // section, whose budget the kit load gate measured without them (compile.js checkFits).
++  // round 3 (conversation): the move right after a stop check-in that the child did not answer with a stop (s.lastMove is
++  // still the check-in here) carries on as normal; a chosen "keep going" already says so (resume's prefix)
++  const goOn = p5Flag("STEER") && !input.branch && s.lastMove?.checkin === "stop" && !p.checkin && !["wrap", "break", "safeguard"].includes(p.kind)
++    && !/keep going/.test(String(p.shape ?? ""));
++  // round 3 (conversation): the second need of a two-needs turn, honoured in the same move's words (lexicon.js alsoReading)
++  const also = p5Flag("R3CONV") && !input.branch && input.event === "turn" && !NO_VERDICT_MOVES.has(p.kind)
++    && !["correct", "incorrect", "partial", "misconception"].includes(input.cls?.outcome)
++    ? alsoReading(input.text ?? "", input.cls?.request?.type ?? p.request ?? null) : null;
+   const notes = input.branch ? [] : [gradedItem && !NO_VERDICT_MOVES.has(p.kind) ? SH.VERDICT_NOTE[verdictKey(input.cls)] : null, registerNote(s.ctx.address),
+     // p5-interaction: the UNDERSTAND note's alongside readings on a graded answer (hedge, check, insist; a parked question)
+     ...(p5Flag("STEER") && !NO_VERDICT_MOVES.has(p.kind) ? [...(input.cls?.mods ?? []).map((m) => SH.MOD_NOTE[m]), input.cls?.alsoPark ? SH.parkAlso({ topic: input.cls.alsoPark.topic }) : null] : [])];
+-  const move = { kind: p.kind, shape: join(p.shape, ...notes) };
++  // round 3: the extra notes (after a check-in, a second need) ride only while the shape keeps room under the MOVE section's
++  // cap (compile.js SECTION_CAPS.move 260 tokens ≈ 910 characters with its two header lines): the shape is not droppable, and
++  // an over-cap MOVE section is a BudgetError → a 500 on a live turn (ship5 integration, w2c-personalisation). Optional
++  // notes are dropped first, never the move.
++  let shape = join(p.shape, ...notes);
++  for (const extra of input.branch ? [] : [goOn ? SH.afterCheckin() : null, ...(also ?? []).map((x) => SH.ALSO_NOTE[x])]) {
++    if (extra && join(shape, extra).length <= SHAPE_ROOM) shape = join(shape, extra);
++  }
++  const move = { kind: p.kind, shape };
+   // round 2 (conversation): how the child asked to be taught ("step by step", "picture first") rides on every later move
+   // (compile.js renders it, droppable): before this, s.prefs was written and never read, so a method request lasted one turn
+   if (p5Flag("STEER") && s.prefs?.length && !["safeguard", "wrap"].includes(p.kind)) move.prefs = s.prefs.slice(-2);
+@@ -1239,6 +1275,9 @@ export function step(prev, input) {
+   return { state: s, move, moduleCommands, ui, end: s.phase === "done", proposal, ...describe(s, input.kit) };
+ }
+ 
++/** Round 3: the most characters a move shape may grow to by OPTIONAL notes (the MOVE section cap is 260 tokens at 3.5
++ *  characters per token, less its two header lines and a margin for the address-register note on a voice lane). */
++const SHAPE_ROOM = 760;
+ /** Moves that carry no verdict note: care, goodbye and a break are never about the answer. */
+ const NO_VERDICT_MOVES = new Set(["safeguard", "wrap", "break"]);
+ /** classification → VERDICT_NOTE key (null: correct, which the confirm shapes already state). */

@@ -144,6 +144,19 @@ export function relNoteStmt(child, n) {
     [c.id, n.agentId, UUID.test(String(n.lessonId ?? "")) ? n.lessonId : null, n.kind, JSON.stringify(slots)]);
 }
 
+/**
+ * Round 3 (relational-human): the child asked her not to keep what they said ("jo maine bataya woh bhool jao", "forget what
+ * I told you"): every memory row CITING A TURN OF THIS LESSON is deleted, in the lesson end's own transaction after its
+ * inserts (so the end summary's fresh memories go too). Earlier lessons' memories stay for the parent to see and delete
+ * (GET / DELETE /api/parent/memory). Deleting needs no layer: less data is always allowed, in every mode.
+ * @param {any} child @param {string} lessonId
+ */
+export function memoryForgetStmt(child, lessonId) {
+  const c = childOf(child);
+  if (!UUID.test(String(lessonId ?? ""))) throw new Error("relational writer: lessonId required");
+  return stmt("session", `delete from memory where child_id = $1 and source_turn in (select id from turn where lesson_id = $2) returning id`, [c.id, lessonId], "any");
+}
+
 const OVERLAY_KEYS = ["warmth", "permanence", "secret", "night", "goodbyeDistress", "loneliness"];
 /**
  * The M3-only cross-session overlay counters for the week (integers only). Throws below M3 (AT-U4): no M1/M2 write path.

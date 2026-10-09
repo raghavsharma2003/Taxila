@@ -1,0 +1,42 @@
+diff --git a/server/director/items.js b/server/director/items.js
+index 1bd3808..e84e228 100644
+--- a/server/director/items.js
++++ b/server/director/items.js
+@@ -460,7 +460,11 @@ export const handsBack = (text) => /[?？]|_{2,}|\b(batao|bataao|bolo|socho|try|
+   || /\b(?!chahiye\b)[a-z]{2,}iye\b|इए(?![\p{L}\p{M}])/iu.test(String(text));
+ 
+ /** Does a why-probe turn actually ask for the reason (how / why, in Hindi or English)? */
+-export const asksWhy = (text) => /\b(kaise|kaisay|kyun|kyon|kyu|kyoon|why|how|reason|wajah|vajah)\b|कैसे|क्यों/i.test(String(text));
++// round 3 (conversation; local battery base-head-1): "Tumne kaunsa rule use karke decide kiya?" asks for the method but has
++// none of the words, so the turn was rewritten (nowhy) and the rewrite dropped the confirmation. The method / rule / "what
++// did you think" forms count too.
++export const asksWhy = (text) => /\b(kaise|kaisay|kyun|kyon|kyu|kyoon|why|how|reason|wajah|vajah)\b|कैसे|क्यों/i.test(String(text))
++  || /\b(?:kaun\s*sa|kaunsa|kis)\s+(?:rule|niyam|tarika|tareeka|tarah|tareeke|step|clue|cheez|baat)\b|\bkya\s+socha\b|\bsoch\s+kya\b|\bwhat\s+(?:made|told|helped)\s+you\b|\bwhich\s+(?:rule|clue|step)\b|\byour\s+thinking\b|\bexplain\b|\bsamjha(?:o|iye|ao|aiye)\b/i.test(String(text));
+ 
+ // ── answer-leak predicate ──
+ const CUT = "\u0000";
+diff --git a/server/director/say.js b/server/director/say.js
+index 038a68d..32f87f0 100644
+--- a/server/director/say.js
++++ b/server/director/say.js
+@@ -31,6 +31,11 @@ const PRAISE_ANY = new RegExp([
+   `you\\s+got\\s+it`, `that(?:'?s|\\s+is)\\s+(?:right|correct)`, `sahi\\s+jawab(?!\\s+(?:kya|kaun|kaunsa|hoga))`,
+   // F5 (evals/owner-truth s17 t17: "sahi likhi" on a pasted, irrelevant reply): the written / picked / joined forms
+   `(?:aapne|tumne|you)\\s+(?:\\p{L}+\\s+){0,3}?(?:bilkul\\s+|ekdam\\s+)?(?:sahi|correct(?:ly)?|right)\\s+(?:likha|likhi|likhe|chuna|chuni|joda|jodi|pehchana|pehchaana|wrote|picked|chose|matched)`,
++  // round 3 (conversation; prod owner-1 2026-10-09 c5-maths-ch07-t02-i06, no verdict: "Aapne Pattern A ka niyam sahi
++  // pehchaana"; and two module answers graded not_yet: "Aapne pattern ka agla number sahi nikala"): the object may run to
++  // a clause before the verdict word (the owner checker allows 60 characters, tests/prod/_owner.mjs RX.praiseAny), and the
++  // verbs of finding / working out / doing count too. A superset of the checker's pattern, within one sentence.
++  `(?:aapne|tumne|you)(?![\\p{L}])[^.!?।]{0,60}?(?<![\\p{L}])(?:bilkul\\s+|ekdam\\s+)?(?:sahi|correct(?:ly)?|right)\\s+(?:kaha|bataya|batayi|socha|sochi|pakda|pakdi|pakde|nikala|nikaala|nikali|nikale|likha|likhi|likhe|chuna|chuni|chune|joda|jodi|jode|pehchana|pehchaana|pehchani|pehchaani|pehchane|gina|gini|gine|kiya|kiye|samjha|samjhi|lagaya|lagayi|wrote|picked|chose|matched|got|said|found|identified|figured|worked|did|spotted)(?![\\p{L}])`,
+ ].join("|"), "iu");
+ /**
+  * A "you made a mistake" statement anywhere in a turn after a RIGHT answer (F2, evals/owner-truth: "yahan galti hui",
+@@ -278,7 +283,7 @@ export function lastQuestionOnly(reply) {
+ }
+ 
+ // ── wrap language only on a wrap move (personalisation 13: "Aaj ke liye bas itna." in a probe turn, mid-lesson) ──
+-const WRAP_WORDS = /\b(?:aaj\s+ke\s+liye\s+(?:bas\s+)?(?:itna|itni|yahin|ye(?:h)?\s+hi)|aaj\s+(?:ka\s+)?(?:lesson|class|session)\s+(?:khatam|khatm|poora|pura|yahin)|that'?s\s+(?:all|it)\s+for\s+today|see\s+you\s+(?:next\s+time|tomorrow|soon|later)|(?:phir|kal|jaldi)\s+milte\s+hain|good\s*bye|bye[\s-]*bye|alvida|we(?:'re|\s+are)\s+done\s+for\s+today|let'?s\s+stop\s+(?:here|for\s+today)|(?:we'?ll|we\s+will|let'?s)\s+stop\s+(?:here|now)|yahin\s+(?:rok|ruk|stop|khatam|band)\s*(?:te|dete|kar\s*te|karte|lete|jaate)?\s*(?:hain|hai)|lesson\s+(?:yahin\s+)?(?:khatam|khatm)\s+(?:karte|kar\s+dete)\s+hain|yahin\s+(?:rok|rokte|roke|stop|khatam|khatm|band)\b(?:\s+(?:dete|karte|kar\s+dete|kar\s+lete)\s+hain)?|(?:lesson|class|padhai)\s+(?:yahin\s+)?(?:rok|band|stop)\s+(?:dete|karte|kar\s+dete)\s+(?:hain|hai)|apna\s+(?:khayal|khyal|dhyan)\s+rakh(?:iye|na|o))\b|आज\s+के\s+लिए\s+(?:बस\s+)?इतना|फिर\s+मिलते\s+हैं/iu;
++const WRAP_WORDS = /\b(?:aaj\s+ke\s+liye\s+(?:bas\s+)?(?:itna|itni|yahin|ye(?:h)?\s+hi)|aaj\s+(?:ka\s+)?(?:lesson|class|session)\s+(?:khatam|khatm|poora|pura|yahin)|that'?s\s+(?:all|it)\s+for\s+today|see\s+you\s+(?:next\s+time|tomorrow|soon|later)|(?:phir|kal|jaldi)\s+milte\s+hain|good\s*bye|bye[\s-]*bye|alvida|we(?:'re|\s+are)\s+done\s+for\s+today|let'?s\s+stop\s+(?:here|for\s+today)|(?:we'?ll|we\s+will|let'?s)\s+stop\s+(?:here|now)|(?:we['’]?ll|we\s+will|let['’]?s)\s+(?:stop|end)\s+(?:here|now|(?:the\s+|our\s+|today['’]?s\s+)?(?:lesson|class)(?:\s+(?:here|now|for\s+today))?)|lesson\s+ended|yahin\s+(?:rok|ruk|stop|khatam|band)\s*(?:te|dete|kar\s*te|karte|lete|jaate)?\s*(?:hain|hai)|lesson\s+(?:yahin\s+)?(?:khatam|khatm)\s+(?:karte|kar\s+dete)\s+hain|yahin\s+(?:rok|rokte|roke|stop|khatam|khatm|band)\b(?:\s+(?:dete|karte|kar\s+dete|kar\s+lete)\s+hain)?|(?:lesson|class|padhai)\s+(?:yahin\s+)?(?:rok|band|stop)\s+(?:dete|karte|kar\s+dete)\s+(?:hain|hai)|apna\s+(?:khayal|khyal|dhyan)\s+rakh(?:iye|na|o))\b|आज\s+के\s+लिए\s+(?:बस\s+)?इतना|फिर\s+मिलते\s+हैं/iu;
+ /** Does a line close the lesson (a goodbye, "that's all for today")? Only a wrap move may say that. */
+ export const wrapsUp = (text) => WRAP_WORDS.test(String(text ?? ""));
+ /** The line without its closing sentences. */

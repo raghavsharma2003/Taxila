@@ -1,0 +1,12 @@
+--- a/src/lesson/runtime.ts
++++ b/src/lesson/runtime.ts
+@@ -606,6 +606,9 @@
+         if (e.text) this.upsertCaption(id, "child", e.text, true);
+         else this.removeCaption(id);
+         // "" with confidence 0 = the child spoke and ASR failed: still worth a Director call (repair move).
++        // round 3 play (docs/design/round3/play/patches/05): a committed utterance also goes to a play piece on screen, whose
++        // closed voice grammar (src/play/core/voice.ts) may press a control with it; the turn below is sent either way
++        if (e.text && !e.chipId && typeof window !== "undefined") { try { window.dispatchEvent(new CustomEvent("taxila:play-heard", { detail: { text: e.text } })); } catch { /* no play */ } }
+         if ((e.text || e.asrConfidence === 0) && this.state.phase === "live") {
+           const input: ChildInput = { childText: e.text, startedAt: e.startedAt, asrConfidence: e.asrConfidence, chipId: e.chipId, typed: e.typed, ...(voice ? { voiceFeatures: voice } : {}), ...(e.duplex ? { duplex: e.duplex } : {}) };
+           // ship5 fixer (experience B3): a turn the duplex engine merged with a revoked commit never re-sends words

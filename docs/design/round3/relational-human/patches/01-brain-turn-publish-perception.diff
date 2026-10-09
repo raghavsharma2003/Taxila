@@ -1,0 +1,24 @@
+--- a/server/brain/turn.js	2026-10-09 11:05:53.940837771 +0000
++++ b/server/brain/turn.js	2026-10-09 11:06:08.026086581 +0000
+@@ -57,6 +57,9 @@
+ import { conv2Mode, p5Flag } from "../conversation/flags.js";
+ // Round 2, stream latency: the perceive stage as one function the turn PREFETCH shares (adopted on identical inputs only)
+ import { perceive, fingerprint as prefetchFingerprint, adoptPrefetch, adoptMissOf } from "../latency/perceive.js";
++// Round 3, stream relational-human: the perception bus (server/latency/bus.js): the acknowledgement route waits on THIS
++// classify — the turn's own, or the adopted prefetch's — and never makes a model call of its own
++import { publishPerception } from "../latency/bus.js";
+ import { childTurnRow, clientInstructions, debugFor, floorIncidentStmt, incidentStmt, kitFor, laneOf, runTurnTx, stageTurns, turnInsertStmt, turnLane, withAsk, withSeamUi, withStudioSlot } from "./rows.js";
+ 
+ /**
+@@ -379,6 +382,11 @@
+   const P = pre ?? perceive(PERCEIVE_DEPS, { classified, clsArgs, state, target, planCtx, said, historyOf, textLane, late, help, childText, noteArgs });
+   const { now, fast, specs, noteP, noteT0, c2 } = P;
+   if (pre) mark("prefetch_adopted");
++  // round 3 (relational-human): a spoken child answer on a text lane: the ack route may hear it back once THIS classify (and
++  // its model distress read) is in; the duplex floor's sticky partial-safety bit rides along (it only ever refuses an ack)
++  if (classified && textLane && !late && !help && !moduleOnly && !laneResume && !body.chipId && !typed && childText) {
++    publishPerception(lesson.id, { text: childText, clsP: P.clsP, source: "turn", turn: (state.turn ?? 0) + 1, pendingSafety: !!body.duplex?.safetyPending, specs: P.specs });
++  }
+   let cls;
+   try { cls = classified ? await P.clsP : null; } finally { clsDone(); }
+   if (pre) trace.push(...pre.prefetch.trace.map((t) => ({ ...t, prefetched: true })));
