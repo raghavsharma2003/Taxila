@@ -1,0 +1,161 @@
+{
+ "summary": {
+  "grammar": "chars",
+  "dep": "taxila-fast-bg",
+  "effort": "none",
+  "n": 12,
+  "errors": 0,
+  "ok": 12,
+  "ms_p50": 1401,
+  "ms_p90": 1648,
+  "out_p50": 56,
+  "at": "2026-10-09T08:49:08.515Z"
+ },
+ "grammar": "start: \"form=\" FORM \" ctx=\" CTX \" rope=\" ROPE \" move=\" MOVE \" goal=\" GOAL \" why=\" WHY\nFORM: \"shape\" | \"predict\" | \"spot\"\nCTX: \"garden\" | \"net\" | \"pen\" | \"bed\" | \"rangoli\"\nROPE: \"16\" | \"20\" | \"24\" | \"28\"\nMOVE: \"thin\" | \"square\" | \"none\"\nGOAL: /[A-Za-z][A-Za-z ,?'-]{7,47}/\nWHY: /[A-Za-z][A-Za-z ,?'-]{7,59}/",
+ "rows": [
+  {
+   "i": 0,
+   "ms": 1788,
+   "status": 200,
+   "err": null,
+   "ok": true,
+   "out": 46,
+   "reasoning": 0,
+   "line": "form=predict ctx=garden rope=20 move=square goal=Samjho rassi se alag aakaar why same rassi se k? why=require?",
+   "goalLen": 48,
+   "whyLen": 8
+  },
+  {
+   "i": 1,
+   "ms": 1220,
+   "status": 200,
+   "err": null,
+   "ok": true,
+   "out": 49,
+   "reasoning": 0,
+   "line": "form=predict ctx=garden rope=20 move=thin goal=Perimeter same hai area check karo why Khet ke a why=strings badal sakti hain panai se?",
+   "goalLen": 48,
+   "whyLen": 34
+  },
+  {
+   "i": 2,
+   "ms": 1529,
+   "status": 200,
+   "err": null,
+   "ok": true,
+   "out": 49,
+   "reasoning": 0,
+   "line": "form=shape ctx=garden rope=20 move=square goal=Alag area wali shapes banao why Same perimeter h why=same area nahi hota aam galti sudharo",
+   "goalLen": 48,
+   "whyLen": 37
+  },
+  {
+   "i": 3,
+   "ms": 1632,
+   "status": 200,
+   "err": null,
+   "ok": true,
+   "out": 60,
+   "reasoning": 0,
+   "line": "form=shape ctx=garden rope=20 move=thin goal=Barabar ghere mein bada kshetra pehchano why Chh why=Zyada lamba hona hamesha zyada kshetra nahi dikhata",
+   "goalLen": 48,
+   "whyLen": 51
+  },
+  {
+   "i": 4,
+   "ms": 1309,
+   "status": 200,
+   "err": null,
+   "ok": true,
+   "out": 57,
+   "reasoning": 0,
+   "line": "form=predict ctx=garden rope=20 move=square goal=Dikhana ki ek hi rassi se alag area bante hain?  why=Chhota square aur lambi patli shape ka area compare karo",
+   "goalLen": 48,
+   "whyLen": 56
+  },
+  {
+   "i": 5,
+   "ms": 1648,
+   "status": 200,
+   "err": null,
+   "ok": true,
+   "out": 56,
+   "reasoning": 0,
+   "line": "form=spot ctx=garden rope=20 move=square goal=Area badal sakta hai? why same perimeter par khe why=Rectangle aur square se samjho, kinaare barabar rakho par k-",
+   "goalLen": 48,
+   "whyLen": 60
+  },
+  {
+   "i": 6,
+   "ms": 1426,
+   "status": 200,
+   "err": null,
+   "ok": true,
+   "out": 64,
+   "reasoning": 0,
+   "line": "form=shape ctx=garden rope=20 move=square goal=Alag aakar banao whyake same ghera alag jagah g? why=Ek hi ghere se alag chitra bante hain, jagah badal sakti hai",
+   "goalLen": 48,
+   "whyLen": 60
+  },
+  {
+   "i": 7,
+   "ms": 1387,
+   "status": 200,
+   "err": null,
+   "ok": true,
+   "out": 55,
+   "reasoning": 0,
+   "line": "form=spot ctx=garden rope=20 move=thin goal=Perimeter same par area dekho why lamba hona bda why=Seedha football field compare karke samjho shape badle area?",
+   "goalLen": 48,
+   "whyLen": 60
+  },
+  {
+   "i": 8,
+   "ms": 1223,
+   "status": 200,
+   "err": null,
+   "ok": true,
+   "out": 59,
+   "reasoning": 0,
+   "line": "form=predict ctx=garden rope=20 move=square goal=Dikhao ki ek hi rassi se alag area ban sakte why why=Chhota sa khel se socho ki boundary barabar par andar ki jag",
+   "goalLen": 48,
+   "whyLen": 60
+  },
+  {
+   "i": 9,
+   "ms": 1257,
+   "status": 200,
+   "err": null,
+   "ok": true,
+   "out": 56,
+   "reasoning": 0,
+   "line": "form=predict ctx=garden rope=20 move=square goal=Perimeter same area alag ho sakta hai? why do a, why=lambai chaudai badalne par area badalta hai pata chalega",
+   "goalLen": 48,
+   "whyLen": 56
+  },
+  {
+   "i": 10,
+   "ms": 1178,
+   "status": 200,
+   "err": null,
+   "ok": true,
+   "out": 52,
+   "reasoning": 0,
+   "line": "form=shape ctx=garden rope=20 move=square goal=Area badal sakte ho? whyije Same boundary, alag? why=Same boundary mein shapes badal kar area dekho",
+   "goalLen": 48,
+   "whyLen": 46
+  },
+  {
+   "i": 11,
+   "ms": 1401,
+   "status": 200,
+   "err": null,
+   "ok": true,
+   "out": 57,
+   "reasoning": 0,
+   "line": "form=predict ctx=garden rope=20 move=thin goal=Perimeter same area badal sakta hai why length z why=Football field jaisa soch kar lamba patla aur chhota chaura,",
+   "goalLen": 48,
+   "whyLen": 60
+  }
+ ]
+}

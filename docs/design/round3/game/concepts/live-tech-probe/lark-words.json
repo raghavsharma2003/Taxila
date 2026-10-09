@@ -1,0 +1,161 @@
+{
+ "summary": {
+  "grammar": "words",
+  "dep": "taxila-fast-bg",
+  "effort": "none",
+  "n": 12,
+  "errors": 0,
+  "ok": 12,
+  "ms_p50": 1315,
+  "ms_p90": 1470,
+  "out_p50": 50,
+  "at": "2026-10-09T08:50:05.267Z"
+ },
+ "grammar": "start: \"form=\" FORM \" ctx=\" CTX \" rope=\" ROPE \" move=\" MOVE \" goal=\" goal \" | why=\" why\ngoal: WORD \" \" WORD \" \" WORD (\" \" WORD)? (\" \" WORD)? (\" \" WORD)? \".\"\nwhy: WORD \" \" WORD \" \" WORD \" \" WORD (\" \" WORD)? (\" \" WORD)? (\" \" WORD)? (\" \" WORD)? \"?\"\nFORM: \"shape\" | \"predict\" | \"spot\"\nCTX: \"garden\" | \"net\" | \"pen\" | \"bed\" | \"rangoli\"\nROPE: \"16\" | \"20\" | \"24\" | \"28\"\nMOVE: \"thin\" | \"square\" | \"none\"\nWORD: /[A-Za-z']{1,12}/",
+ "rows": [
+  {
+   "i": 0,
+   "ms": 1827,
+   "status": 200,
+   "err": null,
+   "ok": true,
+   "out": 48,
+   "reasoning": 0,
+   "line": "form=spot ctx=garden rope=20 move=thin goal=alag shape ka area dekho. | why=ek jaisi rassi se area same kyun zaruri?",
+   "goalLen": 25,
+   "whyLen": 40
+  },
+  {
+   "i": 1,
+   "ms": 1470,
+   "status": 200,
+   "err": null,
+   "ok": true,
+   "out": 55,
+   "reasoning": 0,
+   "line": "form=spot ctx=garden rope=20 move=square goal=Same perimeter shapes dikhao why Area'saaf'ky. | why=Kya same ghera hamesha same jagah banata?",
+   "goalLen": 46,
+   "whyLen": 41
+  },
+  {
+   "i": 2,
+   "ms": 1302,
+   "status": 200,
+   "err": null,
+   "ok": true,
+   "out": 48,
+   "reasoning": 0,
+   "line": "form=shape ctx=net rope=20 move=square goal=alag shapes banao perimeter same rakho. | why=alag shapes ka area alag ho sakta hai?",
+   "goalLen": 39,
+   "whyLen": 38
+  },
+  {
+   "i": 3,
+   "ms": 1377,
+   "status": 200,
+   "err": null,
+   "ok": true,
+   "out": 53,
+   "reasoning": 0,
+   "line": "form=spot ctx=garden rope=20 move=thin goal=area compare same perimeter why long'longer'. | why=Kya lamba hona hamesha bada area banata hai?",
+   "goalLen": 45,
+   "whyLen": 44
+  },
+  {
+   "i": 4,
+   "ms": 1244,
+   "status": 200,
+   "err": null,
+   "ok": true,
+   "out": 50,
+   "reasoning": 0,
+   "line": "form=predict ctx=pen rope=20 move=square goal=Area badla samajh cricket se. | why=Kaise ek rassi se alag area milta hai?",
+   "goalLen": 29,
+   "whyLen": 38
+  },
+  {
+   "i": 5,
+   "ms": 1315,
+   "status": 200,
+   "err": null,
+   "ok": true,
+   "out": 50,
+   "reasoning": 0,
+   "line": "form=spot ctx=garden rope=20 move=square goal=Perimeter same area alag dikhao. | why=Kya same perimeter se area hamesha same hota?",
+   "goalLen": 32,
+   "whyLen": 45
+  },
+  {
+   "i": 6,
+   "ms": 1317,
+   "status": 200,
+   "err": null,
+   "ok": true,
+   "out": 47,
+   "reasoning": 0,
+   "line": "form=shape ctx=garden rope=20 move=square goal=alag shape banao area badle. | why=ek perimeter se area hamesha same kyon?",
+   "goalLen": 28,
+   "whyLen": 39
+  },
+  {
+   "i": 7,
+   "ms": 1127,
+   "status": 200,
+   "err": null,
+   "ok": true,
+   "out": 44,
+   "reasoning": 0,
+   "line": "form=spot ctx=bed rope=20 move=thin goal=area alag perimeter same. | why=long shape hamesha bada area hota?",
+   "goalLen": 25,
+   "whyLen": 34
+  },
+  {
+   "i": 8,
+   "ms": 1418,
+   "status": 200,
+   "err": null,
+   "ok": true,
+   "out": 53,
+   "reasoning": 0,
+   "line": "form=shape ctx=garden rope=20 move=square goal=perimeter bad area why same rope'Verna'k. | why=Rassi same hone se area bhi same hota?",
+   "goalLen": 41,
+   "whyLen": 38
+  },
+  {
+   "i": 9,
+   "ms": 1095,
+   "status": 200,
+   "err": null,
+   "ok": true,
+   "out": 48,
+   "reasoning": 0,
+   "line": "form=spot ctx=garden rope=20 move=thin goal=alag aakar dekho area badlega. | why=same ghera hone par area same kyon nahi?",
+   "goalLen": 30,
+   "whyLen": 40
+  },
+  {
+   "i": 10,
+   "ms": 1155,
+   "status": 200,
+   "err": null,
+   "ok": true,
+   "out": 50,
+   "reasoning": 0,
+   "line": "form=shape ctx=bed rope=20 move=square goal=Same perimeter shapes banao aur areacompare. | why=Kya same perimeter se area hamesha same hota?",
+   "goalLen": 44,
+   "whyLen": 45
+  },
+  {
+   "i": 11,
+   "ms": 1144,
+   "status": 200,
+   "err": null,
+   "ok": true,
+   "out": 57,
+   "reasoning": 0,
+   "line": "form=spot ctx=net rope=20 move=thin goal=Area samajh perimeter barabar kyun why'Lamba'oh. | why=Kya lamba matlab hamesha zyada area hota?",
+   "goalLen": 48,
+   "whyLen": 41
+  }
+ ]
+}

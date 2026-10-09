@@ -1,0 +1,242 @@
+{
+ "nodes": [
+  {
+   "id": "ms-r3-stage-box-prod-2026-10-07",
+   "kind": "measurement",
+   "title": "Round-2 production review shot docs/design/round2/review-shots/c4-voice-and-next-day/16-c4-s-animation.png (360 x 800 at DPR 2, 2026-10-07): the Studio v2 piece rendered in a 181.5 x 113.5 CSS px 16:10 box (PIL bounds of near-black pixels in the tray band, n = 1 image, measured 2026-10-09). Studio v2 engines draw a fixed 1000 x 625 world scaled to fit (src/studio-v2/core/tokens.ts, host.css), so the host's own floors became: label 38 units = 6.9 px, value 48 = 8.7 px, target 130 = 23.6 px; the caption overflowed the box and labels were clipped ('...housands'). Cause: the Desk's Work tray is the elastic remainder after card, strip and dock (src/child/lesson/deskLayout.ts); DESIGN-V3's 326 x 334-360 slot was never the shipped geometry, and STUDIO-V2 measured only at 1280 x 800, 960 x 600 and 915 x 412.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "ms-r3-catalogue-style-2026-10-09",
+   "kind": "measurement",
+   "title": "Style and coverage of the shipped Studio v2 catalogue (grep over src/studio-v2/engines and data/studio-catalogue/topics, 2026-10-09): all 16 core engines paint near-black or deep-navy grounds (#05060B-#0B0D16, water cycle #08122A); 24 of 26 extension engines paint the same ext/kit.ts backdrop() (radial gradient + engineering grid + vignette); one token set C and three fonts everywhere, inside a cream Desk shell. Of 385 class 4-7 topics, the explainer is scene-explainer@1 in 382; games: story-rail@1 87, sort-storm@1 33, beat-line@1 28. Mismatch reproduced in 2 of 2 round-2 runs: c6-maths-ch06-t01 (perimeter) mounted a geoboard asking 'Aisi shape rango jiska kshetrafal = 3' (area) under 'Perimeter ke liye 20, 10, 20, 10 jodiye' with the grid clipped at the right edge (review-shots c6-typed-c7-voice/12, c4-voice-and-next-day/33).",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "ms-r3-catalogue-spec-latency-2026-10-09",
+   "kind": "measurement",
+   "title": "Full Studio v2 spec generation time, from data/studio-catalogue/spend.jsonl (3,533 batch calls, 2026-10-05/06, US sandbox, analysed 2026-10-09): games p50 6.2 s / p90 11.9 s (n = 815, ~884 output + ~312 reasoning tokens; 154/815 = 19% needed a fix pass); explainers p50 9.7 s / p90 13.7 s (n = 1193, ~1968 tokens); whiteboards p50 14.6 s. Linear fit over taxila-fast* rows (n = 3038): ms = 2869 + 3.75 x output tokens (batch concurrency inflates the intercept). Consistent with server/stagecraft/config.js RS-4 BUILD_MS (3.4-7.0 s p50, n = 30 per archetype). A full spec cannot answer a child's request within the 3 s p90 bar.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "ms-r3-live-delta-probe-2026-10-09",
+   "kind": "measurement",
+   "title": "Small 'play delta' on the Stagecraft spec lane (taxila-fast-bg = gpt-5.6-luna background twin), 2026-10-09, US sandbox -> eastus2, sequential with 400 ms gaps, c6 area scenario, ~450 input tokens (scripts + rows: docs/design/round3/game/concepts/live-tech-probe/). A strict json_schema, 5 enums + 2 free strings, effort none, n = 24: p50 1525 / p90 1859 / max 1933 ms, 80 output tokens, 0 errors, enums valid 24/24, strings within the description's limits 11/24 (goal > 48 chars 10x, why > 60 chars 4x); context choice consistent with the child's interests 6/6 per case. B same, effort low, n = 12: p50 2282 / p90 3030 ms, 170 tokens (82 reasoning), 12/12 within limits. C Lark custom tool (Responses API), char-bounded regex strings, effort none, n = 12: p50 1401 / p90 1648 ms, 56 tokens, 12/12 within bounds but most strings cut mid-word or leaking into the next field (by eye, one rater). D Lark, word-bounded strings ending in '.'/'?', n = 12: p50 1315 / p90 1470 ms, 50 tokens, why-questions 12/12 well-formed, goal lines 7/12 clean. E Lark with '~2..5' repetition: HTTP 400 'Invalid lark grammar' 12/12. Cost ~ $0.0002 per call. Not measured: India lane, concurrency, longer contexts, a second rater.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "dec-r3-model-writes-delta-not-spec",
+   "kind": "decision",
+   "title": "Live game generation (Composed Play, docs/design/round3/game/concepts/live-tech.md): code builds a complete playable base spec from the topic playbook and kit (no model); the model only writes a small delta (enums and ids: which certified form x representation pair of <= 3, which context from the kit's interestContexts intersected with the child's stored interests, which beat pattern, which legal teacher move; optionally a why-question via a word-bounded grammar), effort none, ~50-80 tokens, measured 1.3-1.9 s p90 on taxila-fast-bg. If the delta is not back by the reveal, the base spec plays and the delta is discarded; a 429 drops to the base spec for the lesson. Numbers, keys and layout are never the model's. Reverse if: a full-spec call reaches p90 <= 2.0 s with usable >= 95% on the India lane, or children show no preference for dressed over base specs in a blind A/B (then drop the delta entirely).",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "dec-r3-composed-play-typed-pairs",
+   "kind": "decision",
+   "title": "Games are composed from hand-built, reviewed modules combined by a type check: representations (curriculum object + laws + hit-testing + layout arrangements + board twin: line, area-grid, bar, set, balance, circuit, rate-box, field-2d, want-graph, timeline, map-grid, chart, token-strip, sky) x forms (feel + loop + knobs + ideal interaction graph + editor mode: predict-run, shape-under-constraint, fair-test, route, catch, aim, sort-by-rule, order, spot-the-slip, build-a-level). A form's requires must be a subset of a representation's provides, and only pairs certified in CI (every viewport, pack and language, bot-played) can be picked live. Progress is measured by items whose keys an engine computes (83/2497 class 4-7 maths items today), never by 'a piece exists for the topic'. Reverse if: certified pairs cannot reach a strict all-checks pass in CI for a form across >= 3 representations (then that form ships as one-off engines), or E-LT10 shows composed games no better than board-only explanations.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "dec-r3-play-mode-owns-phone-screen",
+   "kind": "decision",
+   "title": "On phones, a live game switches the lesson to play mode: teacher strip (face 48 px + 2-line caption), world = the rest (360 x 372 at the 360 x 640 floor, 360 x 454 at 360 x 800; 6.5-7.9x the area of the shipped 181 x 113 tray), goal rail 56 px (the question folds in), dock = the game's controls; the Desk returns with a 420 ms cross-fade at the end. Wide screens: world left, teacher tile right. Reverse if: child tests show the teacher strip loses presence (children stop addressing her during play) more than a tray layout, measured as spoken turns per play minute, with the world still >= 360 x 372.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "dec-r3-legibility-as-layout-constraint",
+   "kind": "decision",
+   "title": "Game layout is solved at the device's real world box (1 layout px = 1 CSS px, never a fixed world scaled to fit): text >= 14 px (16 px for classes 4-5, numerals >= 18 px), hit areas >= 48 px with >= 8 px gaps, no label overlap, nothing in the teacher strip or rail, as hard constraints. Representations offer discrete arrangements (orientation, corner- vs edge-drag, one vs two fields, zoom-pan) and a Cassowary solver places the chosen one; infeasible -> fewer items -> alternative arrangement -> board twin, never a smaller font. All words are DOM over the canvas. The device runs an offscreen self-check of each beat's key frame before reveal. Reverse if: on the reference phones the solve + self-check exceeds 90 ms p90 on tier C, then precompute layouts per viewport class server-side and keep only the self-check on device.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "dec-r3-art-packs-style-interface",
+   "kind": "decision",
+   "title": "Variety of look comes from art packs over one style interface (representations call style.line/region/token/label/arrow/particle/highlight; packs implement it as tokens + small functions): Chalk, Kagaz (paper-cut), Blueprint, Night Lab (today's dark instrument look, kept as one of six), Syahi (ink and wash), Toy-Lab (muted soft geometry, no faces). Code picks the pack (subject fit, the child's choice of 2-3 in settings, never twice in a row per child and subject, ground matched to the shell theme); contrast >= 4.5:1 text and >= 3:1 graphics; the one 'your move' hue reserved; packs restyle relevant objects only, no decoration (seductive details). Folk-art packs (Warli, Gond, Madhubani) only by paid, credited commission from artists of those communities, never generated. Reverse if: blind raters score a pack < 4/5 'premium and made for this topic' on 6 topics, or it fails the babyish lint: pull that pack.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "dec-r3-child-facing-words-from-bank",
+   "kind": "decision",
+   "title": "Child-facing words in a live game come from an authored bank per form x language (Q8-checked once); a model-written string is accepted only after code checks (length, script, Q8, revealsAnswer, no junk tokens) and is otherwise replaced by the bank line, never truncated. Grammars and strict schemas constrain structure (enums, ids, ranges), not wording. Evidence: ms-r3-live-delta-probe-2026-10-09 (description limits violated 13/24; char-bounded grammar cut words; word-bounded grammar left 5/12 goal lines with junk). Reverse if: a decode-time constraint keeps >= 98% of strings clean and within length on n >= 100 calls rated by two raters.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "dec-r3-play-duplex-turn-points",
+   "kind": "decision",
+   "title": "Play-duplex: game events join the duplex ScreenState track. C_PLAYING (finger down or moved in the last 600 ms) = no speech and no new content, face nods only; safety pre-empts. The teacher speaks only at play turn-points (commit = finger up + 600 ms settle or a spoken act; settled near-miss; stall past the child's own p75 hesitation, floor 6 s; beat end; request). Her lines for the enumerable outcome classes (best, near, misconception value) are drafted while the child drags (duplex v1 wait-time drafts), target first word <= 900 ms after a commit. Her ghost hand moves on her clause cues (400 ms pre-roll); one planted slip per run, only after the child's first correct act, from the kit's misconception value, corrected by her if not caught. Spoken game acts (Hinglish numbers, verbs, deixis) are parsed in code and graded like touches, after scanSafety and the lexicon. Play signals (first-touch time, oscillation, undo, commit speed at a misconception value) map to knowledge states only, in shadow until precision >= 0.80 on children. Reverse if: talk-over-play events cannot be driven to 0 in the battery, or children rate the teacher's in-game moves as interrupting (then reactions only at beat ends).",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "rj-r3-fixed-16x10-world-in-leftover-tray",
+   "kind": "rejection",
+   "title": "Tried (shipped, round 2): every Studio v2 piece as a fixed 1000 x 625 world, contain-fitted into the Desk's Work tray, which is whatever height the card, strip and dock leave. Broke: on a 360 x 800 phone the piece was 181 x 113 CSS px, labels 6.9 px, targets 24 px, the caption spilled out of the box and labels were clipped (ms-r3-stage-box-prod-2026-10-07); the engine's tooSmall check passed because it measured world units, and no gate rendered at the box the product actually gives. Replaced by dec-r3-play-mode-owns-phone-screen and dec-r3-legibility-as-layout-constraint.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "rj-r3-schema-description-length-limits",
+   "kind": "rejection",
+   "title": "Tried (probe, 2026-10-09): limiting a delta's free strings by stating the limit in the strict json_schema property description ('<= 48 chars') at effort none on taxila-fast-bg. Broke: 13/24 responses exceeded it (goal > 48 chars 10x, why > 60 chars 4x); effort low obeyed 12/12 but cost +760 ms p50. Do not rely on descriptions for limits on the hot path; see dec-r3-child-facing-words-from-bank.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "rj-r3-char-bounded-grammar-strings",
+   "kind": "rejection",
+   "title": "Tried (probe, 2026-10-09): bounding free strings at decode time with a Lark custom tool whose string terminals are char-bounded regexes (/[A-Za-z][A-Za-z ,?'-]{7,47}/). Broke: every string stayed within bounds (12/12) but most were cut mid-word or absorbed the next field's label ('goal=Samjho rassi se alag aakaar why same rassi se k? why=require?'), by eye, one rater: the model does not plan to a hard bound, the same failure as rj-w2b-label-maxlength-24-in-schema. Word-bounded terminals with closing punctuation were better (why 12/12) but still left 5/12 junk goal lines. Grammars constrain structure, not wording.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "rj-r3-lark-range-repetition",
+   "kind": "rejection",
+   "title": "Tried (probe, 2026-10-09): Lark grammar with the bounded repetition operator (goal: WORD (\" \" WORD)~2..5) in an Azure Responses API custom tool on taxila-fast-bg. Broke: HTTP 400 'Invalid lark grammar ... error parsing signed integer' on 12/12 calls (76-216 ms). Write bounded repetition as explicit optional groups ((\" \" WORD)? repeated), which Azure accepts.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "rj-r3-keyword-topic-coverage",
+   "kind": "rejection",
+   "title": "Tried (2026-10-09): estimating which class 4-7 topics the proposed representations cover by keyword regexes over kit skill titles, engine hints and expectations. Broke: it 'covered' 385/385 topics, which measures the regexes, not the ability to teach or grade (the same trap as the ship-five 'board plan 379/385' that counted boards by shape). Coverage is the share of items whose keys an engine computes and whose pair is certified (83/2497 class 4-7 maths items today).",
+   "at": "2026-10-09"
+  }
+ ],
+ "edges": [
+  {
+   "src": "dec-r3-model-writes-delta-not-spec",
+   "rel": "measured_by",
+   "dst": "ms-r3-live-delta-probe-2026-10-09"
+  },
+  {
+   "src": "dec-r3-model-writes-delta-not-spec",
+   "rel": "caused_by",
+   "dst": "ms-r3-catalogue-spec-latency-2026-10-09"
+  },
+  {
+   "src": "dec-r3-model-writes-delta-not-spec",
+   "rel": "inherits",
+   "dst": "studio-v2-engine-plus-spec"
+  },
+  {
+   "src": "dec-r3-model-writes-delta-not-spec",
+   "rel": "constrains",
+   "dst": "azure-only-compute"
+  },
+  {
+   "src": "dec-r3-model-writes-delta-not-spec",
+   "rel": "inherits",
+   "dst": "live-free-generation"
+  },
+  {
+   "src": "dec-r3-composed-play-typed-pairs",
+   "rel": "caused_by",
+   "dst": "ms-r3-catalogue-style-2026-10-09"
+  },
+  {
+   "src": "dec-r3-composed-play-typed-pairs",
+   "rel": "inherits",
+   "dst": "studio-v2-engine-plus-spec"
+  },
+  {
+   "src": "dec-r3-composed-play-typed-pairs",
+   "rel": "inherits",
+   "dst": "in-game-success-as-mastery"
+  },
+  {
+   "src": "dec-r3-composed-play-typed-pairs",
+   "rel": "inherits",
+   "dst": "rj-mean-check-pass-as-quality"
+  },
+  {
+   "src": "dec-r3-play-mode-owns-phone-screen",
+   "rel": "caused_by",
+   "dst": "ms-r3-stage-box-prod-2026-10-07"
+  },
+  {
+   "src": "dec-r3-play-mode-owns-phone-screen",
+   "rel": "supersedes",
+   "dst": "rj-r3-fixed-16x10-world-in-leftover-tray"
+  },
+  {
+   "src": "dec-r3-legibility-as-layout-constraint",
+   "rel": "supersedes",
+   "dst": "design-v3-stage-contract"
+  },
+  {
+   "src": "dec-r3-legibility-as-layout-constraint",
+   "rel": "caused_by",
+   "dst": "ms-r3-stage-box-prod-2026-10-07"
+  },
+  {
+   "src": "dec-r3-legibility-as-layout-constraint",
+   "rel": "inherits",
+   "dst": "w2f-stage-360x320-targets"
+  },
+  {
+   "src": "dec-r3-art-packs-style-interface",
+   "rel": "caused_by",
+   "dst": "ms-r3-catalogue-style-2026-10-09"
+  },
+  {
+   "src": "dec-r3-art-packs-style-interface",
+   "rel": "inherits",
+   "dst": "design-v3-dark-instrument-identity"
+  },
+  {
+   "src": "dec-r3-child-facing-words-from-bank",
+   "rel": "caused_by",
+   "dst": "rj-r3-char-bounded-grammar-strings"
+  },
+  {
+   "src": "dec-r3-child-facing-words-from-bank",
+   "rel": "caused_by",
+   "dst": "rj-r3-schema-description-length-limits"
+  },
+  {
+   "src": "dec-r3-child-facing-words-from-bank",
+   "rel": "measured_by",
+   "dst": "ms-r3-live-delta-probe-2026-10-09"
+  },
+  {
+   "src": "dec-r3-play-duplex-turn-points",
+   "rel": "inherits",
+   "dst": "duplex-continuous-engine-2026-10-04"
+  },
+  {
+   "src": "dec-r3-play-duplex-turn-points",
+   "rel": "inherits",
+   "dst": "teacher-stage-cue-scheduler"
+  },
+  {
+   "src": "dec-r3-play-duplex-turn-points",
+   "rel": "constrains",
+   "dst": "ct-no-voice-emotion-inference"
+  },
+  {
+   "src": "rj-r3-fixed-16x10-world-in-leftover-tray",
+   "rel": "measured_by",
+   "dst": "ms-r3-stage-box-prod-2026-10-07"
+  },
+  {
+   "src": "rj-r3-schema-description-length-limits",
+   "rel": "measured_by",
+   "dst": "ms-r3-live-delta-probe-2026-10-09"
+  },
+  {
+   "src": "rj-r3-char-bounded-grammar-strings",
+   "rel": "measured_by",
+   "dst": "ms-r3-live-delta-probe-2026-10-09"
+  },
+  {
+   "src": "rj-r3-char-bounded-grammar-strings",
+   "rel": "inherits",
+   "dst": "rj-w2b-label-maxlength-24-in-schema"
+  },
+  {
+   "src": "rj-r3-lark-range-repetition",
+   "rel": "measured_by",
+   "dst": "ms-r3-live-delta-probe-2026-10-09"
+  },
+  {
+   "src": "rj-r3-keyword-topic-coverage",
+   "rel": "inherits",
+   "dst": "rj-plumbing-batteries-as-acceptance"
+  }
+ ]
+}

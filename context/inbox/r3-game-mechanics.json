@@ -1,0 +1,112 @@
+{
+ "nodes": [
+  {
+   "id": "ms-r3g-review-walk-stage-audit-2026-10-09",
+   "kind": "measurement",
+   "title": "Round-2 review walks (docs/design/round2/review-shots: 3 walks c4/c6/c7, local production build of the round-2 tree at 127.0.0.1:8811, captured 2026-10-07; NOT taxila.dev), every in-lesson frame n=73: a board or Studio piece was on screen in 15/73 frames at median 21% of the 720x1600 screen (min 8%, max 38%); 0/15 were a game the child could manipulate to do the maths or science; the only game (dukaan@1, 2 frames, c4) was tagged to c4-maths-ch07-t01 but asked Enough/Not-enough taps on rupee amounts while the lesson taught regrouping in 5000-1834, had an overlapped HUD (PATIENCE under the menu button) and ended on 'Shop closed 0/2 served'; a numbers-only board '14 · 18 · 10' stayed up beside a new 50 m x 30 m perimeter question; the same 'fraction of fraction -> multiply' word board answered 3 c7 frames incl. 'animation dikhao'; one c7 pie was empty with uneven sectors. Method: luminance<80 row detector (>=35% row width, >=60 rows, below the teacher tile) + by-eye classification of all 15 crops on one contact sheet, one rater, scratch tools r3-game-mechanics/tools/stage_area.py. Date 2026-10-09.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "ms-r3g-family-coverage-2026-10-09",
+   "kind": "measurement",
+   "title": "Eight mechanic families give a primary family to 224/250 class 4-7 maths + EVS/science topics (data/curriculum c4-c7 maths, c4-c5 evs, c6-c7 science): F1 split-merge 49, F4 program-run 44, F6 investigate 37, F8 perspective 28, F7 run-the-system 20, F3 estimate 16, F2 balance 15, F5 rule-hunt 15; 26 topics are teacher-conversation by default (c4 EVS 10, c5 EVS 9, c6 science 2, c7 science 5 incl. all 3 adolescence topics). Method: keyword rules over topic/chapter/skill titles + 21 reviewed overrides, one rater (the r3 mechanics designer), not validated by a second rater; scratch tools/coverage.mjs + finalize.mjs. English/Hindi/SST (135 of 385) not covered. Date 2026-10-09.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "r3g-idea-is-the-controller",
+   "kind": "decision",
+   "title": "PROPOSED (r3 game mechanics, docs/design/round3/game/concepts/mechanics.md L1): every game's primary input is an operation of the concept's own model (split, merge, balance, place, compose-and-run, test an example, set conditions and run time, route, rotate); a numeral is a read-out of a state the child built; answer-entry inputs (choice, numpad, free text) only for the final 'name it' act and the bare transfer item; >= 80% of graded acts in a family session are manipulations. Why: intrinsic integration (Habgood & Ainsworth; Clark 2016 simplistically intrinsic g=0.49), doer effect, FH2T/DragonBox 12+ beat active control in a 3,600-student grade-7 RCT while immediate-feedback problem sets did not (Decker-Woodrow 2023). Reverse if: the child pilot shows no delayed-transfer difference between manipulation-input and answer-input versions of the same family on matched topics (CI excludes d >= 0.15).",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "r3g-eight-deep-families",
+   "kind": "decision",
+   "title": "PROPOSED (mechanics.md L7, §4): the game build target is eight deep family engines (F1 Todo-Jodo split-merge, F2 Taraazu balance, F3 Nishana estimate, F4 Chalao program-run, F5 Niyam rule-hunt, F6 Kyun-Lab investigate, F7 Karkhana run-the-system, F8 Nazariya perspective) plus the Galti Pakdo spot-and-fix mode every engine must support, each with a hand-tuned feel, a level grammar spanning 2-3 grade levels, a solver, kit mal-rules, a board twin and many skins; the 42 thin Studio V2 archetype engines (core 126-405 lines each) fold in as family instances. Keeps studio-v2-engine-plus-spec's split (engine owns truth and craft, model writes words). Reverse if: after F1 ships, engineer-days per topic inside a family are >= those of a fresh archetype, or blind craft ratings of family pieces do not beat today's pieces.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "r3g-levels-as-experiments",
+   "kind": "decision",
+   "title": "PROPOSED (mechanics.md L3+L4): levels are generated in code from the family grammar (target <= 50 ms, unmeasured), served only if solver-proven solvable and shortcut-free (no goal-reaching solution that skips the target concept features; Smith, Butler & Popovic 2013), and chosen by discrimination between the correct rule and the kit misconceptions run as mal-rules, weighted by the child's misconception posteriors, x band fit (predicted first-try 70-85%) x moderate novelty x fade stage; outcomes update the existing misconception logits at game weight w=0.5. No model writes positions, counts, keys or physics. Adaptivity is for diagnosis and band, not the learning lever (adaptive-sequencing-as-the-lever). Reverse if: the synthetic-learner sim (M-S1) needs >= 80% of the levels random-valid selection needs to classify the mal-rule, or the pilot shows no faster misconception resolution.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "r3g-teacher-plays-alongside",
+   "kind": "decision",
+   "title": "PROPOSED (mechanics.md L5, §5): in play the teacher acts on three channels: (1) micro-reactions of 2-6 words from a per-level reaction bank written by one taxila-fast call from the level's facts with the key withheld, guarded (never-rules, persona invariants, revealsAnswer, praise/deny guards, Devanagari step) and pre-synthesised (DragonHD first byte 228 ms), chosen by code from engine moments under duplex floor rules, <= 1 per 4 s, deterministic rotation, target event->audio p50 <= 250 ms; (2) full Director turns only at seams (level end, impasse, committed prediction, child speech, confirmed mal-rule signature) while the world keeps running; (3) narrated in-world ghost-hand moves that never count as evidence. Reactions notice the world, never verdicts or the key. Cost about $0.10 per 12-level segment [estimate]. Reverse if: the pilot's teacher-ablation arm (M-P2) shows no delayed-transfer benefit over the same game silent (CI excludes d >= 0.15); then the voice budget moves to seams only.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "r3g-world-first-screen",
+   "kind": "decision",
+   "title": "PROPOSED (mechanics.md §10.4): during play the world takes >= 65% of a 360x800 viewport (not the 328x290 tray), the teacher becomes a 72-96 px puppet PiP, the question card leaves the screen (goal = world object + her voice, optional one-line caption), targets >= 44 px, labels >= 12 CSS px; one persistent world per lesson segment with levels changing inside it instead of a new piece per request. Owners outside the mechanics stream must apply it. Reverse if: goal comprehension (intended first act on the first try) drops below the card layout in usability tests (n >= 10 children per band).",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "r3g-voice-verbs-discrete-only",
+   "kind": "decision",
+   "title": "PROPOSED (mechanics.md §5.3): speech is a game verb only for discrete, non-time-critical acts (commit a prediction, choose a split, name a rule, pick a door), echoed in the world at once with free undo; touch carries continuous control. Why: streaming STT first partial is 1.4-2.6 s (MODEL-STACK). Reverse if: streaming or on-device keyword spotting reaches <= 300 ms at >= 95% precision on child Hinglish game verbs.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "r3g-pf-by-class",
+   "kind": "decision",
+   "title": "PROPOSED (mechanics.md §3): attempt-first (productive failure) levels only for class 6-7 with prerequisite skills secure; class 4-5 get a narrated teacher move in the world first. Why: Sinha & Kapur 2021, PS-I g=0.36 over 53 studies but the trend favoured instruction first for grades 2-5. Reverse if: the pilot's PF A/B (M-P3) shows class 4-5 benefit from attempt-first (CI > 0).",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "r3g-door-choice",
+   "kind": "decision",
+   "title": "PROPOSED (mechanics.md §6): after each level the child picks between two generator-chosen valid next levels, 'garam' (in band) and 'teekha' (harder). Why: Lomas et al. 2017 (n=10,472) moderate difficulty most motivating only when self-selected, easiest most motivating when assigned blind; the door gives autonomy without letting engagement set difficulty (G11). Reverse if: children pick 'garam' > 80% of the time and learn slower than an assigned-difficulty arm.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "r3g-admission-by-skill",
+   "kind": "decision",
+   "title": "PROPOSED (mechanics.md §10.3): a family runs for a skill only if that skill is in its grammar's coverage map, never by topic tag or keyword mention. Why: rj-studio-fraction-mention-as-topic and the review-walk dukaan@1 (topic-tagged, wrong skill). Reverse if: after F1-F8 ship, >= 20% of class 4-7 maths/science skills have no family level, and a topic-level fallback shows 0 off-skill pieces over 50 scripted lessons.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "rj-r3g-piece-beside-the-quiz",
+   "kind": "rejection",
+   "title": "Tried (current product, observed in the round-2 review walks): the Studio piece as a separate card beside the question card in a 328x290 CSS px tray. What broke: pieces are glance-sized (8-38% of the screen, median 21%), the learning act stays the typed or spoken answer to the card, and 0/15 visuals on screen across 73 frames were playable games; 'animation' requests returned text cards. Replaced by r3g-world-first-screen and one persistent world per lesson segment.",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "rj-r3g-model-turn-per-play-event",
+   "kind": "rejection",
+   "title": "Rejected by measurement before any build: a Director/model turn per game event for the teacher's live reactions. What breaks: the Director stage alone is 1562/2328 ms p50/p90 and first audio about 3.2 s end to end (MODEL-STACK §2.3), so a reaction would land after the child's next act. Replaced by the per-level pre-synthesised reaction bank (r3g-teacher-plays-alongside).",
+   "at": "2026-10-09"
+  },
+  {
+   "id": "rj-r3g-topic-tag-admission",
+   "kind": "rejection",
+   "title": "Tried (current product, observed 2026-10-07 review walk c4): admitting a game by topic tag. dukaan@1 is tagged c4-maths-ch07-t01 and mounted in a column-subtraction moment (5000-1834), but its act was Enough/Not-enough taps on rupee amounts, a different skill; it ended on a fail screen. Replaced by r3g-admission-by-skill.",
+   "at": "2026-10-09"
+  }
+ ],
+ "edges": [
+  { "src": "r3g-idea-is-the-controller", "rel": "measured_by", "dst": "ms-r3g-review-walk-stage-audit-2026-10-09" },
+  { "src": "r3g-idea-is-the-controller", "rel": "constrains", "dst": "game-evidence-into-kt-not-bayesnets" },
+  { "src": "r3g-idea-is-the-controller", "rel": "constrains", "dst": "in-game-success-as-mastery" },
+  { "src": "r3g-eight-deep-families", "rel": "measured_by", "dst": "ms-r3g-family-coverage-2026-10-09" },
+  { "src": "r3g-eight-deep-families", "rel": "caused_by", "dst": "ms-r3g-review-walk-stage-audit-2026-10-09" },
+  { "src": "r3g-eight-deep-families", "rel": "constrains", "dst": "studio-v2-engine-plus-spec" },
+  { "src": "r3g-levels-as-experiments", "rel": "constrains", "dst": "adaptive-sequencing-as-the-lever" },
+  { "src": "r3g-levels-as-experiments", "rel": "constrains", "dst": "forge-live-codegen-race" },
+  { "src": "r3g-levels-as-experiments", "rel": "constrains", "dst": "live-free-generation" },
+  { "src": "r3g-levels-as-experiments", "rel": "caused_by", "dst": "rj-array-dims-binding" },
+  { "src": "r3g-teacher-plays-alongside", "rel": "caused_by", "dst": "rj-r3g-model-turn-per-play-event" },
+  { "src": "r3g-teacher-plays-alongside", "rel": "constrains", "dst": "rj-static-filler-list" },
+  { "src": "r3g-teacher-plays-alongside", "rel": "constrains", "dst": "teacher-stage-cue-scheduler" },
+  { "src": "r3g-teacher-plays-alongside", "rel": "constrains", "dst": "ct-no-voice-emotion-inference" },
+  { "src": "r3g-world-first-screen", "rel": "supersedes", "dst": "rj-r3g-piece-beside-the-quiz" },
+  { "src": "r3g-world-first-screen", "rel": "measured_by", "dst": "ms-r3g-review-walk-stage-audit-2026-10-09" },
+  { "src": "r3g-world-first-screen", "rel": "caused_by", "dst": "rj-w2f-probe-portrait-viewport" },
+  { "src": "r3g-voice-verbs-discrete-only", "rel": "measured_by", "dst": "stt-mai2-stream-primary-india-2026-10-04" },
+  { "src": "r3g-admission-by-skill", "rel": "supersedes", "dst": "rj-r3g-topic-tag-admission" },
+  { "src": "r3g-admission-by-skill", "rel": "caused_by", "dst": "rj-studio-fraction-mention-as-topic" },
+  { "src": "rj-r3g-piece-beside-the-quiz", "rel": "measured_by", "dst": "ms-r3g-review-walk-stage-audit-2026-10-09" },
+  { "src": "rj-r3g-topic-tag-admission", "rel": "measured_by", "dst": "ms-r3g-review-walk-stage-audit-2026-10-09" }
+ ]
+}
